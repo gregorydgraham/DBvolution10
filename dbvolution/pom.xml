@@ -36,11 +36,16 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.24</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-ssh-external</artifactId>
+            <version>2.4</version>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>
             <id>ssh-repository</id>
-            <url>scpexe://frs.sourceforge.net:/home/frs/project/p/dbvolution</url>
+            <url>scp://frs.sourceforge.net:/home/frs/project/p/dbvolution</url>
         </repository>
     </distributionManagement>
 </project>
