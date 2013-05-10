@@ -467,4 +467,8 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             return null;
         }
     }
+    
+    public final E firstElement(){
+        return this.firstRow();
+    }
 }
