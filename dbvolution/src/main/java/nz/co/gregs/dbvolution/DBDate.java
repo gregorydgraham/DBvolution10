@@ -4,22 +4,54 @@
  */
 package nz.co.gregs.dbvolution;
 
-import java.util.Date;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  *
  * @author gregory.graham
  */
-class DBDate extends QueryableDatatype{
+class DBDate extends QueryableDatatype {
+
     private static final long serialVersionUID = 1L;
-    
+    private Date dateValue = new Date();
+
+    public DBDate() {
+        super();
+    }
+
     public DBDate(Date date) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        dateValue = date;
     }
 
     DBDate(Timestamp timestamp) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        dateValue.setTime(timestamp.getTime());
     }
-    
+
+    DBDate(String str) {
+        super(str);
+        dateValue.setTime(Date.parse(str));
+    }
+
+    @Override
+    public void blankQuery() {
+        super.blankQuery();
+        this.dateValue = new Date();
+    }
+
+    @Override
+    public String getWhereClause(String columnName) {
+//        StringBuilder whereClause = new StringBuilder();
+        if (this.usingLikeComparison) {
+            throw new RuntimeException("DATE COLUMNS CAN'T USE \"LIKE\": " + columnName);
+        } else {
+            return super.getWhereClause(columnName);
+        }
+//        return whereClause.toString();
+    }
+
+    @Override
+    public void isLike(Object obj) {
+        throw new RuntimeException("LIKE Comparison Cannot Be Used With Date Fields: " + obj);
+    }
 }

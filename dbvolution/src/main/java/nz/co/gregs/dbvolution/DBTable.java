@@ -215,13 +215,16 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBTableRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         //TODO: check column type and field class are compatible
         Object value = null;
-        switch (rsMeta.getColumnType(dbColumnIndex)) {
+        int columnType = rsMeta.getColumnType(dbColumnIndex);
+        switch (columnType) {
             case Types.INTEGER:
             case Types.BIGINT:
             case Types.BINARY:
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
+                value = new DBInteger(resultSet.getLong(dbColumnName));
+                break;
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
@@ -453,7 +456,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
                 try {
                     return pd.getWriteMethod().invoke(tableRow, value);
                 } catch (IllegalArgumentException illarg) {
-                    throw new IllegalArgumentException("Field: " + field.getName() + " is the wrong type for the database value: Field.type: " + field.toGenericString() + " Column.type:" + value.getClass().getSimpleName());
+                    throw new RuntimeException("Field: " + field.getName() + " is the wrong type for the database value: Field.type: " + field.toGenericString() + " Column.type:" + value.getClass().getSimpleName(),illarg);
                 }
             }
         }

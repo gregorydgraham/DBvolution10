@@ -34,7 +34,7 @@ public class QueryableDatatype extends Object implements Serializable {
 
     @Override
     public String toString() {
-        return literalValue.toString();
+        return (literalValue==null?"":literalValue.toString());
     }
 
     protected void blankQuery() {
