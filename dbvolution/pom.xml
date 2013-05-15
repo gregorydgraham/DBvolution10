@@ -5,9 +5,9 @@
 
     <groupId>nz.co.gregs</groupId>
     <artifactId>DBvolution</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
-
+    
     <name>DBvolution</name>
     <description>Advanced Library to Remove Object Relational Impedance</description>
     <url>https://sourceforge.net/projects/dbvolution/</url>
@@ -20,7 +20,8 @@
     </licenses>
     <scm>
         <url>https://sourceforge.net/projects/dbvolution/</url>
-        <connection>scm:svn:https://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/</connection>
+        <connection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/</connection>
+        <developerConnection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/</developerConnection>
     </scm>
     <developers>
         <developer>
@@ -30,17 +31,23 @@
             <organizationUrl>http:www.gregs.co.nz</organizationUrl>
         </developer>
     </developers>
+    
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
         <extensions>
-            <extension>
+            <!--extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh-external</artifactId>
                 <version>2.4</version>
-            </extension>
+            </extension-->
         </extensions>
         <plugins>
             <plugin>
@@ -50,6 +57,9 @@
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
+                    <compilerArgs>
+                        <arg>-Xlint</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -105,11 +115,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.24</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.maven.wagon</groupId>
             <artifactId>wagon-ssh-external</artifactId>
             <version>2.4</version>
-        </dependency>
+        </dependency-->
     </dependencies>
     <distributionManagement>
         <repository>
