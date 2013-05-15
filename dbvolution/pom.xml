@@ -18,9 +18,9 @@
         </license>
     </licenses>
     <scm>
-        <url>https://sourceforge.net/projects/dbvolution/tags/DBvolution-0.6.1</url>
-        <connection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/tags/DBvolution-0.6.1</connection>
-        <developerConnection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/tags/DBvolution-0.6.1</developerConnection>
+        <url>https://sourceforge.net/projects/dbvolution/tags/DBvolution-0.6</url>
+        <connection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/tags/DBvolution-0.6</connection>
+        <developerConnection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/tags/DBvolution-0.6</developerConnection>
     </scm>
     <developers>
         <developer>
@@ -126,4 +126,13 @@
             <url>scp://frs.sourceforge.net:/home/frs/project/p/dbvolution</url>
         </repository>
     </distributionManagement>
+    <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>central</id>
+      <name>Maven Repository Switchboard</name>
+      <url>http://repo1.maven.org/maven2</url>
+    </repository>        </repositories>
 </project>
