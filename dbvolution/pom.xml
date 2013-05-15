@@ -126,13 +126,18 @@
             <url>scp://frs.sourceforge.net:/home/frs/project/p/dbvolution</url>
         </repository>
     </distributionManagement>
-    <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <url>http://repo1.maven.org/maven2</url>
-    </repository>        </repositories>
+    <profiles>
+        <profile>
+            <repositories>
+                <repository>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <id>central</id>
+                    <name>Maven Repository Switchboard</name>
+                    <url>http://repo1.maven.org/maven2</url>
+                </repository>        
+            </repositories>
+        </profile>
+    </profiles>
 </project>
