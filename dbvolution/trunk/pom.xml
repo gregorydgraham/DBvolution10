@@ -4,7 +4,7 @@
 
     <groupId>nz.co.gregs</groupId>
     <artifactId>DBvolution</artifactId>
-    <version>0.6.1-SNAPSHOT</version>
+    <version>0.6.1</version>
     <packaging>jar</packaging>
     
     <name>DBvolution</name>
@@ -36,6 +36,14 @@
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
+    
+    <settings>
+        <activeProfiles>
+            <activeProfile>
+                Central
+            </activeProfile>
+        </activeProfiles>
+    </settings>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
