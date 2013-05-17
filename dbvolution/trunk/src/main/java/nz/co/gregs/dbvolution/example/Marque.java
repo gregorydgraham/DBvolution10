@@ -11,6 +11,9 @@ import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.InformixDB;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
 
 /**
  *
@@ -61,20 +64,15 @@ public class Marque extends DBTableRow {
      */
     public static void main(String[] args) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
 
-//        String driverName = "com.informix.jdbc.IfxDriver";
-//        String jdbcURL = "jdbc:informix-sqli://tnz017:1565/vistest70:INFORMIXSERVER=inftst_net;OPTOFC=1;IFX_AUTOFREE=1;DBDATE=MDY4/";
-//        String username = "mdamgr";
-//        String password = "f1lter";
-
-        // jdbc:mysql://localhost:3306/mysql?zeroDateTimeBehavior=convertToNull
-
         String driverName = "com.mysql.jdbc.Driver";
         String jdbcURL = "jdbc:mysql://localhost:3306/superconductor?zeroDateTimeBehavior=convertToNull";
         String username = "root";
         String password = null;
 
+        DBDatabase myDatabase = new InformixDB(jdbcURL, username, password);
+
         DBTable.setPrintSQLBeforeExecuting(true);
-        DBTable<Marque> marques = new DBTable<Marque>(new Marque(), driverName, jdbcURL, username, password);
+        DBTable<Marque> marques = new DBTable<Marque>(new Marque(), myDatabase);
         marques.getAllRows();
         for (Marque row : marques) {
             System.out.println(row);
@@ -83,7 +81,7 @@ public class Marque extends DBTableRow {
         Marque marque = marques.firstRow();
         if (marque != null) {
             String primaryKey = marque.getPrimaryKey();
-            DBTable<Marque> singleMarque = new DBTable<Marque>(new Marque(), driverName, jdbcURL, username, password);
+            DBTable<Marque> singleMarque = new DBTable<Marque>(new Marque(), myDatabase);
             singleMarque.getByPrimaryKey(primaryKey).printAllRows();
 
 
@@ -92,7 +90,7 @@ public class Marque extends DBTableRow {
         }
         Marque marqueQuery = new Marque();
         marqueQuery.getName().isLike("%T%");
-        marqueQuery.getNumericCode().isBetween(0,90000000);
+        marqueQuery.getNumericCode().isBetween(0, 90000000);
         //System.out.println(marques.getSQLForExample(marqueQuery));
         marques = marques.getByExample(marqueQuery);
         for (Marque row : marques) {

@@ -14,6 +14,8 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.example.Marque;
 
 /**
  *
@@ -24,10 +26,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
 
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
-    String driverName = "com.informix.jdbc.IfxDriver";
-    String jdbcURL = "jdbc:informix-sqli://tnz017:1565/vistest70:INFORMIXSERVER=inftst_net;OPTOFC=1;IFX_AUTOFREE=1;DBDATE=MDY4/";
-    String username = "mdamgr";
-    String password = "f1lter";
+    private DBDatabase theDatabase = null;
     E dummy;
 
     /**
@@ -39,11 +38,20 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      * @param username
      * @param password
      */
+    @Deprecated
     public DBTable(E dummyObject, String driverName, String JDBCURL, String username, String password) {
-        this.driverName = driverName;
-        this.jdbcURL = JDBCURL;
-        this.username = username;
-        this.password = password;
+        this.theDatabase = new DBDatabase(driverName, JDBCURL, username, password);
+        dummy = dummyObject;
+    }
+
+    /**
+     * With a DBDatabase subclass it's easier
+     *
+     * @param dummyObject
+     * @param myDatabase
+     */
+    public DBTable(E dummyObject, DBDatabase myDatabase) {
+        this.theDatabase = myDatabase;
         dummy = dummyObject;
     }
 
@@ -156,31 +164,16 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         java.sql.Connection connection;
         Statement statement;
         ResultSet resultSet;
-        try {
-            // load the driver
-            Class.forName(driverName);
-        } catch (ClassNotFoundException noDriver) {
-            throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + driverName, noDriver);
-        }
-        try {
-            connection = DriverManager.getConnection(jdbcURL, username, password);
-        } catch (SQLException noConnection) {
-            throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + jdbcURL + " USERNAME=" + username, noConnection);
-        }
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + jdbcURL + " USERNAME=" + username, noConnection);
-        }
+        statement = this.theDatabase.getDBStatement();
         try {
             boolean executed = statement.execute(selectStatement);
         } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + jdbcURL + " USERNAME=" + username, noConnection);
+            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + theDatabase.getJdbcURL() + " USERNAME=" + theDatabase.getUsername(), noConnection);
         }
         try {
             resultSet = statement.getResultSet();
         } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + jdbcURL + " USERNAME=" + username, noConnection);
+            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + theDatabase.getJdbcURL() + " USERNAME=" + theDatabase.getUsername(), noConnection);
         }
         addAllFields(this, resultSet);
     }
@@ -299,17 +292,13 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     }
 
     private DBTable<E> getRows(String whereClause) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
-        DBTable<E> dbTable = new DBTable<E>(dummy, driverName, jdbcURL, username, password);
+        DBTable<E> dbTable = new DBTable<E>(dummy, theDatabase);
         String selectStatement = dbTable.getSelectStatementForWhereClause() + whereClause + ";";
         if (printSQLBeforeExecuting) {
             System.out.println(selectStatement);
         }
 
-
-        // load the driver
-        Class.forName(driverName);
-        java.sql.Connection connection = DriverManager.getConnection(jdbcURL, username, password);
-        Statement statement = connection.createStatement();
+        Statement statement = theDatabase.getDBStatement();
         boolean executed = statement.execute(selectStatement);
         ResultSet resultSet = statement.getResultSet();
 
@@ -399,8 +388,8 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      * For the particularly hard queries, just provide the actual WHERE clause
      * you want to use.
      *
-     * myExample.getLanguage.useLikeComparison("%JAVA%"); is similar to: getByRawSQL("and
-     * language like '%JAVA%'");
+     * myExample.getLanguage.useLikeComparison("%JAVA%"); is similar to:
+     * getByRawSQL("and language like '%JAVA%'");
      *
      * N.B. the starting AND is optional and avoid trailing semicolons
      *
@@ -456,7 +445,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
                 try {
                     return pd.getWriteMethod().invoke(tableRow, value);
                 } catch (IllegalArgumentException illarg) {
-                    throw new RuntimeException("Field: " + field.getName() + " is the wrong type for the database value: Field.type: " + field.toGenericString() + " Column.type:" + value.getClass().getSimpleName(),illarg);
+                    throw new RuntimeException("Field: " + field.getName() + " is the wrong type for the database value: Field.type: " + field.toGenericString() + " Column.type:" + value.getClass().getSimpleName(), illarg);
                 }
             }
         }
@@ -470,8 +459,8 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             return null;
         }
     }
-    
-    public final E firstElement(){
+
+    public final E firstElement() {
         return this.firstRow();
     }
 }
