@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.example.Marque;
 
 /**
  *
@@ -28,21 +27,6 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     private static boolean printSQLBeforeExecuting = false;
     private DBDatabase theDatabase = null;
     E dummy;
-
-    /**
-     * All the parameters required to make the DB work seamlessly
-     *
-     * @param dummyObject
-     * @param driverName
-     * @param JDBCURL
-     * @param username
-     * @param password
-     */
-    @Deprecated
-    public DBTable(E dummyObject, String driverName, String JDBCURL, String username, String password) {
-        this.theDatabase = new DBDatabase(driverName, JDBCURL, username, password);
-        dummy = dummyObject;
-    }
 
     /**
      * With a DBDatabase subclass it's easier
@@ -440,8 +424,10 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     private Object setValueOfField(DBTableRow tableRow, Field field, Object value) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
         BeanInfo info = Introspector.getBeanInfo(tableRow.getClass());
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
+        String fieldName = field.getName();
         for (PropertyDescriptor pd : descriptors) {
-            if (pd.getName().equals(field.getName())) {
+            String pdName = pd.getName();
+            if (pdName.equals(fieldName)) {
                 try {
                     return pd.getWriteMethod().invoke(tableRow, value);
                 } catch (IllegalArgumentException illarg) {
@@ -449,7 +435,11 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
                 }
             }
         }
-        throw new UnsupportedOperationException("No Appropriate Set Method Found In " + tableRow.getClass().getSimpleName() + " for " + field.toGenericString());
+        // didn't find a set method so look for a public variable
+        field.set(tableRow, value);
+        
+        return tableRow;
+        //throw new UnsupportedOperationException("No Appropriate Set Method Found In " + tableRow.getClass().getSimpleName() + " for " + field.toGenericString());
     }
 
     public E firstRow() {

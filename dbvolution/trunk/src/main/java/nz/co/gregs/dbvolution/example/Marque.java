@@ -1,19 +1,12 @@
 package nz.co.gregs.dbvolution.example;
 
-import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.DBTableRow;
-import nz.co.gregs.dbvolution.DBNumber;
-import nz.co.gregs.dbvolution.DBString;
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
-import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
+import nz.co.gregs.dbvolution.*;
+import nz.co.gregs.dbvolution.annotations.*;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.InformixDB;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
 
 /**
  *
@@ -50,6 +43,9 @@ public class Marque extends DBTableRow {
     @DBTableColumn("reservationsalwd")
     private DBString reservationsAllowed = new DBString();
 
+    @DBTableColumn("creation_date")
+    public DBDate creationDate = new DBDate();
+
     /**
      *
      * @param args
@@ -69,7 +65,7 @@ public class Marque extends DBTableRow {
         String username = "root";
         String password = null;
 
-        DBDatabase myDatabase = new InformixDB(jdbcURL, username, password);
+        DBDatabase myDatabase = new MySQLDB(jdbcURL, username, password);
 
         DBTable.setPrintSQLBeforeExecuting(true);
         DBTable<Marque> marques = new DBTable<Marque>(new Marque(), myDatabase);

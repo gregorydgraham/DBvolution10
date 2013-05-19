@@ -132,6 +132,12 @@
             <artifactId>wagon-ssh-external</artifactId>
             <version>2.4</version>
         </dependency>
+        <dependency>
+            <groupId>nz.co.gregs</groupId>
+            <artifactId>dbvolution</artifactId>
+            <version>0.6.1-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>

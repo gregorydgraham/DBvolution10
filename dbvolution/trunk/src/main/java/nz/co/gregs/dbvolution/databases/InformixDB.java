@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import com.informix.jdbc.IfxDriver;
 import java.sql.Driver;
+import java.util.Date;
 
 /**
  *
@@ -30,5 +31,10 @@ public class InformixDB extends DBDatabase {
     public InformixDB(String jdbcURL, String username, String password) {
         super(INFORMIXDRIVERNAME, jdbcURL, username, password);
 
+    }
+
+    @Override
+    public String getDateFormattedForQuery(Date date) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

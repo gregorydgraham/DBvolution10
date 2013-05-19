@@ -19,12 +19,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBDatabase {
+public abstract class DBDatabase {
 
     private String driverName = "";
     private String jdbcURL = "";
@@ -91,4 +92,6 @@ public class DBDatabase {
     public String getPassword() {
         return password;
     }
+    
+    public abstract String getDateFormattedForQuery(Date date);
 }

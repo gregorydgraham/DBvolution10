@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author gregory.graham
  */
-class DBDate extends QueryableDatatype {
+public class DBDate extends QueryableDatatype {
 
     private static final long serialVersionUID = 1L;
     private Date dateValue = new Date();
@@ -53,5 +53,10 @@ class DBDate extends QueryableDatatype {
     @Override
     public void isLike(Object obj) {
         throw new RuntimeException("LIKE Comparison Cannot Be Used With Date Fields: " + obj);
+    }
+
+    @Override
+    public String toString() {
+        return dateValue.toString();
     }
 }

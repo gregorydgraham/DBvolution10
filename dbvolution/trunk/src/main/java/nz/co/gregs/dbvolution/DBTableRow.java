@@ -61,7 +61,9 @@ abstract public class DBTableRow {
                 return (Q) pd.getReadMethod().invoke(this);
             }
         }
-        throw new UnsupportedOperationException("No Appropriate Get Method Found In " + this.getClass().getSimpleName() + " for " + field.toGenericString());
+        // no GET method found so try direct method
+        return (Q) field.get(this);
+        //throw new UnsupportedOperationException("No Appropriate Get Method Found In " + this.getClass().getSimpleName() + " for " + field.toGenericString());
     }
 
     @Override
