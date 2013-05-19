@@ -5,6 +5,8 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
@@ -13,28 +15,41 @@ import java.io.Serializable;
 public class QueryableDatatype extends Object implements Serializable {
 
     public static long serialVersionUID = 1L;
+    protected DBDatabase database = null;
     protected Object literalValue = null;
+    protected boolean isDBNull = false;
     protected boolean usingLiteralComparison = false;
     protected boolean usingNullComparison = false;
     protected boolean usingLikeComparison = false;
     protected boolean usingInComparison = false;
     protected boolean usingBetweenComparison = false;
     protected boolean includingNulls = false;
-    protected Object[] inValues = new Object[]{};
-    protected Object lowerBound = null;
-    protected Object upperBound = null;
+    protected QueryableDatatype[] inValues = new QueryableDatatype[]{};
+    protected QueryableDatatype lowerBound = null;
+    protected QueryableDatatype upperBound = null;
 
     QueryableDatatype() {
     }
 
     QueryableDatatype(String str) {
+        if (str == null) {
+            this.isDBNull = true;
+        }
+        this.literalValue = str;
+        this.usingLiteralComparison = true;
+    }
+
+    QueryableDatatype(Object str) {
+        if (str == null) {
+            this.isDBNull = true;
+        }
         this.literalValue = str;
         this.usingLiteralComparison = true;
     }
 
     @Override
     public String toString() {
-        return (literalValue==null?"":literalValue.toString());
+        return (literalValue == null ? "" : literalValue.toString());
     }
 
     protected void blankQuery() {
@@ -43,7 +58,7 @@ public class QueryableDatatype extends Object implements Serializable {
         usingInComparison = false;
         usingBetweenComparison = false;
         includingNulls = false;
-        this.inValues = new String[]{};
+        this.inValues = new QueryableDatatype[]{};
         this.lowerBound = null;
         this.upperBound = null;
     }
@@ -56,18 +71,18 @@ public class QueryableDatatype extends Object implements Serializable {
     public String getWhereClause(String columnName) {
         StringBuilder whereClause = new StringBuilder();
         if (usingLiteralComparison) {
-            whereClause.append(" and ").append(columnName).append(" = '").append(this.toString()).append("' ");
+            whereClause.append(" and ").append(columnName).append(" = ").append(this.toSQLString()).append(" ");
         } else if (usingNullComparison) {
             whereClause.append(" and ").append(columnName).append(" is null ");
         } else if (usingLikeComparison) {
-            whereClause.append(" and ").append(columnName).append(" like '").append(this.toString()).append("' ");
+            whereClause.append(" and ").append(columnName).append(" like ").append(this.toSQLString()).append(" ");
         } else if (usingBetweenComparison) {
-            whereClause.append(" and ").append(columnName).append(" between '").append(this.lowerBound).append("' and '").append(this.upperBound).append("' ");
+            whereClause.append(" and ").append(columnName).append(" between ").append(this.getLowerBound().toSQLString()).append(" and ").append(this.getUpperBound().toSQLString()).append(" ");
         } else if (usingInComparison) {
             whereClause.append(" and ").append(columnName).append(" in (");
             String sep = "";
-            for (Object str : inValues) {
-                whereClause.append(" '").append(str.toString()).append("'").append(sep).append(" ");
+            for (QueryableDatatype str : inValues) {
+                whereClause.append(sep).append(" ").append(str.toSQLString()).append(" ");
                 sep = ",";
             }
             whereClause.append(") ");
@@ -108,9 +123,24 @@ public class QueryableDatatype extends Object implements Serializable {
     }
 
     /**
+     * Converts the objects to QueryableDatatypes and calls
+     * isIn(QueryableDatatype[] inValues) with them
+     *
      * @param inValues the inValues to set
      */
     public void isIn(Object[] inValues) {
+        ArrayList<QueryableDatatype> inVals = new ArrayList<QueryableDatatype>();
+        for (Object obj : inValues) {
+            inVals.add(new QueryableDatatype(obj));
+        }
+        this.isIn(inVals.toArray(this.inValues));
+    }
+
+    /**
+     *
+     * @param inValues
+     */
+    public void isIn(QueryableDatatype[] inValues) {
         this.usingInComparison = true;
         this.inValues = inValues;
     }
@@ -118,9 +148,57 @@ public class QueryableDatatype extends Object implements Serializable {
     /**
      * @param lowerBound the lowerBound to set
      */
-    public void isBetween(Object lowerBound, Object upperBound) {
+    public void isBetween(QueryableDatatype lowerBound, QueryableDatatype upperBound) {
         this.usingBetweenComparison = true;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
+    }
+
+    public void isBetween(Object lowerBound, Object upperBound) {
+        this.usingBetweenComparison = true;
+        this.lowerBound = new QueryableDatatype(lowerBound);
+        this.upperBound = new QueryableDatatype(upperBound);
+    }
+
+    /**
+     *
+     * @return the literal value as it would appear in an SQL statement i.e.
+     * {yada} => 'yada'
+     */
+    protected String toSQLString() {
+        return "'" + this.toString().replace("'", "\'") + "'";
+    }
+
+    /**
+     * @return the database
+     */
+    protected DBDatabase getDatabase() {
+        return database;
+    }
+
+    /**
+     * @param database the database to set
+     */
+    protected void setDatabase(DBDatabase database) {
+        this.database = database;
+        if (this.upperBound != null) {
+            this.upperBound.setDatabase(database);
+        }
+        if (this.lowerBound != null) {
+            this.lowerBound.setDatabase(database);
+        }
+        for (QueryableDatatype qdt : inValues) {
+            if (qdt != null) {
+                qdt.setDatabase(database);
+            }
+        }
+    }
+
+    protected QueryableDatatype getUpperBound() {
+        return this.upperBound;
+    }
+
+    protected QueryableDatatype getLowerBound() {
+        return this.lowerBound;
     }
 }

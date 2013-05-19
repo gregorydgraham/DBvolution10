@@ -15,11 +15,14 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBTable;
+import nz.co.gregs.dbvolution.DBTableRow;
 
 /**
  *
@@ -37,6 +40,11 @@ public abstract class DBDatabase {
         this.jdbcURL = jdbcURL;
         this.password = password;
         this.username = username;
+    }
+    
+    public <T extends DBTableRow> DBTable<T> getTableInstanceForRow(T tableRow){
+        DBTable<T> dbTable = new DBTable<T>(tableRow, this);
+        return dbTable;
     }
 
     /**

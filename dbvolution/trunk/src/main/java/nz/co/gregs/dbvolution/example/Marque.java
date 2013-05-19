@@ -7,6 +7,7 @@ import nz.co.gregs.dbvolution.databases.MySQLDB;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.Date;
 
 /**
  *
@@ -96,6 +97,16 @@ public class Marque extends DBTableRow {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().isLiterally(1L);
         marques = marques.getByExample(hummerQuery);
+        marques.printAllRows();
+
+        hummerQuery.getUidMarque().blankQuery();
+        hummerQuery.getName().isIn(new String[]{"TOYOTA","HUMMER"});
+        marques = marques.getByExample(hummerQuery);
+        marques.printAllRows();
+
+        Marque oldQuery = new Marque();
+        oldQuery.creationDate.isBetween(new Date(0L), new Date());
+        marques = marques.getByExample(oldQuery);
         marques.printAllRows();
 
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";

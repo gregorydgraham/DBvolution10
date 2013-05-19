@@ -36,12 +36,12 @@ public class MySQLDB extends DBDatabase{
         
         return " STR_TO_DATE('"
                 +date.getDate()+","
-                +date.getMonth()+","
-                +date.getYear()+" "
+                +(date.getMonth()+1)+","
+                +(date.getYear()+1900)+" "
                 +date.getHours()+":"
                 +date.getMinutes()+":"
                 +date.getSeconds()
-                +"', '%d,%m,%Y %h:%i:%s') ";
+                +"', '%d,%m,%Y %H:%i:%s') ";
         
     }
     

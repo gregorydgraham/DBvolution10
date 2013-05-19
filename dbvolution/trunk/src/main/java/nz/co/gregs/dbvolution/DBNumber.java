@@ -13,9 +13,13 @@ import java.util.ArrayList;
 public class DBNumber extends QueryableDatatype {
 
     protected Number numberValue = null;
-    protected Number lowerBoundNumber = null;
-    protected Number upperBoundNumber = null;
-    protected Number[] inValuesNumber = new Number[]{};
+    protected DBNumber lowerBoundNumber = null;
+    protected DBNumber upperBoundNumber = null;
+    protected DBNumber[] inValuesNumber = new DBNumber[]{};
+
+    DBNumber(Object aLong) {
+        this(Double.parseDouble(aLong.toString()));
+    }
 
     DBNumber(String aLong) {
         this(Double.parseDouble(aLong));
@@ -46,16 +50,21 @@ public class DBNumber extends QueryableDatatype {
         this.numberValue = null;
         this.lowerBoundNumber = null;
         this.upperBoundNumber = null;
-        this.inValuesNumber = new Long[]{};
+        this.inValuesNumber = new DBNumber[]{};
     }
 
     @Override
     public void isIn(Object[] literalOptions) {
-        ArrayList<Integer> intOptions = new ArrayList<Integer>();
+        ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Object str : literalOptions) {
-            intOptions.add(Integer.parseInt(str.toString()));
+            intOptions.add(new DBNumber(str));
         }
-        isIn(intOptions.toArray());
+        isIn(intOptions.toArray(this.inValuesNumber));
+    }
+
+    public void isIn(DBNumber[] inValues) {
+        super.isIn(inValues);
+        this.inValuesNumber = inValues;
     }
 
     @Override
@@ -70,8 +79,8 @@ public class DBNumber extends QueryableDatatype {
         } else if (this.usingInComparison) {
             whereClause.append(" and ").append(columnName).append(" in (");
             String sep = "";
-            for (Number val : this.inValuesNumber) {
-                whereClause.append(" and ").append(val).append(sep).append(" ");
+            for (DBNumber val : this.inValuesNumber) {
+                whereClause.append(" and ").append(val.toSQLString()).append(sep).append(" ");
                 sep = ",";
             }
             whereClause.append(") ");
@@ -81,26 +90,21 @@ public class DBNumber extends QueryableDatatype {
         return whereClause.toString();
     }
 
-    public void isIn(Number[] inValues) {
-        super.isIn(inValues);
-        this.inValuesNumber = inValues;
+    @Override
+    public void isBetween(Object lower, Object upper) {
+        this.upperBoundNumber = new DBNumber(upper);
+        this.lowerBoundNumber = new DBNumber(lower);
+        super.isBetween(lowerBoundNumber, upperBoundNumber);
+    }
+
+    public void isBetween(Number lower, Number upper) {
+        this.upperBoundNumber = new DBNumber(upper);
+        this.lowerBoundNumber = new DBNumber(lower);
+        super.isBetween(lowerBoundNumber, upperBoundNumber);
     }
 
     @Override
-    public void isBetween(Object lower, Object upper) {
-        this.upperBoundNumber = Double.parseDouble(upper.toString());
-        this.lowerBoundNumber = Double.parseDouble(lower.toString());
-        super.isBetween(lower, upper);
-    }
-    
-    public void isBetween(Number lower, Number upper) {
-        super.isBetween(lower.toString(), upper.toString());
-        this.upperBoundNumber = upper;
-        this.lowerBoundNumber = lower;
-    }
-    
-    @Override
-    public void isLiterally(Object literal){
+    public void isLiterally(Object literal) {
         this.isLiterally(Double.parseDouble(literal.toString()));
     }
 
@@ -108,9 +112,21 @@ public class DBNumber extends QueryableDatatype {
         super.isLiterally(literal);
         this.numberValue = literal;
     }
-    
+
     @Override
-    public void isLike(Object obj){
-        throw new RuntimeException("LIKE Comparison Cannot Be Used With Numeric Fields: "+obj);
+    public void isLike(Object obj) {
+        throw new RuntimeException("LIKE Comparison Cannot Be Used With Numeric Fields: " + obj);
+    }
+
+    /**
+     *
+     * @return the literal value as it would appear in an SQL statement
+     * i.e. {123} => 123
+     *
+     */
+    @Override
+    protected String toSQLString() {
+        return this.numberValue.toString();
+
     }
 }
