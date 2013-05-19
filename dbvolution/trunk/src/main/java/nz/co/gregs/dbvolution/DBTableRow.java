@@ -12,6 +12,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +45,7 @@ abstract public class DBTableRow {
 
     /**
      * DO NOT USE THIS.
+     *
      * @param <Q>
      * @param field
      * @return
@@ -53,17 +55,28 @@ abstract public class DBTableRow {
      * @throws InvocationTargetException
      */
     @SuppressWarnings("unchecked")
-    public <Q extends QueryableDatatype> Q getQueryableValueOfField(Field field) throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public <Q extends QueryableDatatype> Q getQueryableValueOfField(Field field) throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
         BeanInfo info = Introspector.getBeanInfo(this.getClass());
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
         for (PropertyDescriptor pd : descriptors) {
             if (pd.getName().equals(field.getName())) {
-                return (Q) pd.getReadMethod().invoke(this);
+                Method readMethod = pd.getReadMethod();
+                if (readMethod != null) {
+                    try {
+                        return (Q) readMethod.invoke(this);
+                    } catch (IllegalAccessException ex) {
+                        throw new RuntimeException("GET Method Found But Unable To Access: Please change GET method to public for " + this.getClass().getSimpleName() + "." + field.getName(), ex);
+                    }
+                }
             }
         }
-        // no GET method found so try direct method
-        return (Q) field.get(this);
-        //throw new UnsupportedOperationException("No Appropriate Get Method Found In " + this.getClass().getSimpleName() + " for " + field.toGenericString());
+        try {
+            // no GET method found so try direct method
+            return (Q) field.get(this);
+            //throw new UnsupportedOperationException("No Appropriate Get Method Found In " + this.getClass().getSimpleName() + " for " + field.toGenericString());
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("Unable To Access Variable Nor GET Method: Please change protection to public for GET method or field " + this.getClass().getSimpleName() + "." + field.getName(), ex);
+        }
     }
 
     @Override
@@ -89,8 +102,6 @@ abstract public class DBTableRow {
                         Logger.getLogger(DBTableRow.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(DBTableRow.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IllegalAccessException ex) {
                     Logger.getLogger(DBTableRow.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 separator = ",";

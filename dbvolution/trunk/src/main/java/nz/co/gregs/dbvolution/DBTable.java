@@ -14,6 +14,8 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -421,7 +423,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         }
     }
 
-    private Object setValueOfField(DBTableRow tableRow, Field field, Object value) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
+    private Object setValueOfField(DBTableRow tableRow, Field field, Object value) throws IntrospectionException, InvocationTargetException {
         BeanInfo info = Introspector.getBeanInfo(tableRow.getClass());
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
         String fieldName = field.getName();
@@ -430,14 +432,20 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             if (pdName.equals(fieldName)) {
                 try {
                     return pd.getWriteMethod().invoke(tableRow, value);
+                } catch (IllegalAccessException illacc) {
+                    throw new RuntimeException("Could Not Access SET Method for " + tableRow.getClass().getSimpleName() + "." + field.getName() + ": Please ensure the SET method is public: " + tableRow.getClass().getSimpleName() + "." + field.getName());
                 } catch (IllegalArgumentException illarg) {
                     throw new RuntimeException("Field: " + field.getName() + " is the wrong type for the database value: Field.type: " + field.toGenericString() + " Column.type:" + value.getClass().getSimpleName(), illarg);
                 }
             }
         }
-        // didn't find a set method so look for a public variable
-        field.set(tableRow, value);
-        
+        try {
+            // didn't find a set method so look for a public variable
+            field.set(tableRow, value);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("No Means Of Accessing " + tableRow.getClass().getSimpleName() + "." + field.getName() + " Was Found: Please ensure the field is public, or there is a public SET method for it: " + tableRow.getClass().getSimpleName() + "." + field.getName());
+        }
+
         return tableRow;
         //throw new UnsupportedOperationException("No Appropriate Set Method Found In " + tableRow.getClass().getSimpleName() + " for " + field.toGenericString());
     }

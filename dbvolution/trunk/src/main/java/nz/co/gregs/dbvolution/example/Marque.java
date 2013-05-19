@@ -44,7 +44,7 @@ public class Marque extends DBTableRow {
     private DBString reservationsAllowed = new DBString();
 
     @DBTableColumn("creation_date")
-    public DBDate creationDate = new DBDate();
+    private DBDate creationDate = new DBDate();
 
     /**
      *
@@ -242,5 +242,19 @@ public class Marque extends DBTableRow {
      */
     public void setReservationsAllowed(DBString reservationsAllowed) {
         this.reservationsAllowed = reservationsAllowed;
+    }
+
+    /**
+     * @return the creationDate
+     */
+    public DBDate getCreationDate() {
+        return creationDate;
+    }
+
+    /**
+     * @param creationDate the creationDate to set
+     */
+    public void setCreationDate(DBDate creationDate) {
+        this.creationDate = creationDate;
     }
 }
