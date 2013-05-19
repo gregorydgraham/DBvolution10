@@ -142,9 +142,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     {
         
         String selectStatement = this.getSelectStatement();
-//        if (printSQLBeforeExecuting) {
-//            System.out.println(selectStatement);
-//        }
+
         java.sql.Connection connection;
         Statement statement;
         ResultSet resultSet;

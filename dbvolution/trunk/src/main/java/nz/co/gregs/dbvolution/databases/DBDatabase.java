@@ -42,11 +42,6 @@ public abstract class DBDatabase {
         this.username = username;
     }
     
-    public <T extends DBTableRow> DBTable<T> getTableInstanceForRow(T tableRow){
-        DBTable<T> dbTable = new DBTable<T>(tableRow, this);
-        return dbTable;
-    }
-
     /**
      *
      * @return

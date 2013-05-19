@@ -2,12 +2,12 @@ package nz.co.gregs.dbvolution.example;
 
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.*;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
+import nz.co.gregs.dbvolution.databases.*;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.H2DB;
 
 /**
  *
@@ -61,12 +61,14 @@ public class Marque extends DBTableRow {
      */
     public static void main(String[] args) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
 
-        String driverName = "com.mysql.jdbc.Driver";
+        //String driverName = "com.mysql.jdbc.Driver";
         String jdbcURL = "jdbc:mysql://localhost:3306/superconductor?zeroDateTimeBehavior=convertToNull";
         String username = "root";
         String password = null;
 
-        DBDatabase myDatabase = new MySQLDB(jdbcURL, username, password);
+        DBDatabase myDatabase;
+//        myDatabase = new MySQLDB(jdbcURL, username, password);
+        myDatabase = new H2DB("jdbc:h2:~/test","","");
 
         DBTable.setPrintSQLBeforeExecuting(true);
         DBTable<Marque> marques = new DBTable<Marque>(new Marque(), myDatabase);
