@@ -17,15 +17,15 @@ public class DBNumber extends QueryableDatatype {
     protected DBNumber upperBoundNumber = null;
     protected DBNumber[] inValuesNumber = new DBNumber[]{};
 
-    DBNumber(Object aLong) {
+    public DBNumber(Object aLong) {
         this(Double.parseDouble(aLong.toString()));
     }
 
-    DBNumber(String aLong) {
+    public DBNumber(String aLong) {
         this(Double.parseDouble(aLong));
     }
 
-    DBNumber(Number aNumber) {
+    public DBNumber(Number aNumber) {
         if (aNumber == null) {
             numberValue = 0L;
             this.usingNullComparison = true;
@@ -134,7 +134,7 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     protected String toSQLString() {
-        return this.numberValue.toString();
+        return this.numberValue==null?"NULL":this.numberValue.toString();
 
     }
 }

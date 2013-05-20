@@ -12,7 +12,15 @@ public class DBInteger extends DBNumber {
 
     private static final long serialVersionUID = 1L;
 
-    DBInteger(Long aLong) {
+    public DBInteger(int anInt) {
+        super(Double.valueOf(anInt));
+    }
+
+    public DBInteger(Integer anInt) {
+        super(anInt.doubleValue());
+    }
+
+    public DBInteger(Long aLong) {
         super(aLong.doubleValue());
     }
 
@@ -20,6 +28,7 @@ public class DBInteger extends DBNumber {
         super();
     }
 
+    @Override
     public String getCreationClause() {
         return "INTEGER";
     }

@@ -16,12 +16,15 @@ import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
  * @author gregory.graham
  */
 abstract public class DBTableRow {
+
+    private DBDatabase database;
 
     public DBTableRow() {
     }
@@ -129,5 +132,33 @@ abstract public class DBTableRow {
             }
         }
         return string.toString();
+    }
+
+    /**
+     * @param database the database to set
+     */
+    protected void setDatabase(DBDatabase theDatabase) throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        this.database = theDatabase;
+
+        for (Field field : this.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(DBTableColumn.class)) {
+                getQueryableValueOfField(field).setDatabase(database);
+            }
+        }
+    }
+
+    protected String getValuesClause() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        StringBuilder string = new StringBuilder();
+        Class<? extends DBTableRow> thisClass = this.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+
+        String separator = " VALUES ( ";
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBTableColumn.class)) {
+                string.append(separator).append(getQueryableValueOfField(field).toSQLString());
+                separator = ",";
+            }
+        }
+        return string.append(")").toString();
     }
 }

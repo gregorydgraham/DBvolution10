@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregory.graham
  */
 public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implements List<E> {
-    
+
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
     private DBDatabase theDatabase = null;
@@ -49,7 +50,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
 
     private String getDBColumnName(Field field) {
         String columnName = "";
-        
+
         if (field.isAnnotationPresent(DBTableColumn.class)) {
             DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
             columnName = annotation.value();
@@ -60,7 +61,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         }
         return columnName;
     }
-    
+
     private String getAllFieldsForSelect() {
         StringBuilder allFields = new StringBuilder();
         @SuppressWarnings("unchecked")
@@ -73,17 +74,17 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         }
         return allFields.toString();
     }
-    
+
     private String getSelectStatement() {
         StringBuilder selectStatement = new StringBuilder();
         selectStatement.append("select ");
-        
+
         selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(";");
-        
+
         if (printSQLBeforeExecuting) {
             System.out.println(selectStatement);
         }
-        
+
         return selectStatement.toString();
     }
 
@@ -117,7 +118,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      */
     public void getAllRows() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException //throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException 
     {
-        
+
         String selectStatement = this.getSelectStatement();
 
         java.sql.Connection connection;
@@ -136,34 +137,34 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         }
         addAllFields(this, resultSet);
     }
-    
+
     private void addAllFields(DBTable<E> dbTable, ResultSet resultSet) throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException {
         ResultSetMetaData rsMeta = resultSet.getMetaData();
         Map<String, Integer> dbColumnNames = new HashMap<String, Integer>();
         for (int k = 1; k <= rsMeta.getColumnCount(); k++) {
             dbColumnNames.put(rsMeta.getColumnName(k), k);
         }
-        
+
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
             E tableRow = createObject();
-            
+
             Field[] fields = tableRow.getClass().getDeclaredFields();
-            
-            
-            
+
+
+
             for (Field field : fields) {
                 if (field.isAnnotationPresent(DBTableColumn.class)) {
                     String dbColumnName = getDBColumnName(field);
                     int dbColumnIndex = dbColumnNames.get(dbColumnName);
-                    
+
                     setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
                 }
             }
             dbTable.add(tableRow);
         }
     }
-    
+
     private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBTableRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         //TODO: check column type and field class are compatible
         Object value = null;
@@ -210,10 +211,10 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
                 throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));
         }
         setValueOfField(tableRow, field, value);
-        
-        
+
+
     }
-    
+
     private String getPrimaryKeyColumn() {
         String pkColumn = "";
         @SuppressWarnings("unchecked")
@@ -230,18 +231,18 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             return pkColumn;
         }
     }
-    
+
     private String escapeSingleQuotes(String str) {
         if (str == null) {
             return "";
         }
         return str.replace("'", "''").replace("\\", "\\\\");
     }
-    
+
     private String getSelectStatementForWhereClause() {
         StringBuilder selectStatement = new StringBuilder();
         selectStatement.append("select ");
-        
+
         selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(" where 1=1 ");
 
 //        if (printSQLBeforeExecuting){
@@ -249,18 +250,18 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
 //        }
         return selectStatement.toString();
     }
-    
+
     private DBTable<E> getRows(String whereClause) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         DBTable<E> dbTable = new DBTable<E>(dummy, theDatabase);
         String selectStatement = dbTable.getSelectStatementForWhereClause() + whereClause + ";";
         if (printSQLBeforeExecuting) {
             System.out.println(selectStatement);
         }
-        
+
         Statement statement = theDatabase.getDBStatement();
         boolean executed = statement.execute(selectStatement);
         ResultSet resultSet = statement.getResultSet();
-        
+
         addAllFields(dbTable, resultSet);
         return dbTable;
     }
@@ -333,12 +334,9 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         Field[] fields = query.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBTableColumn.class)) {
-                QueryableDatatype fieldValue = query.getQueryableValueOfField(field);
-                fieldValue.setDatabase(theDatabase);
-                //if (fieldValue.getClass().getSuperclass() == QueryableDatatype.class) {
-                QueryableDatatype qdt = fieldValue;
+                QueryableDatatype qdt = query.getQueryableValueOfField(field);
+                qdt.setDatabase(theDatabase);
                 whereClause.append(qdt.getWhereClause(getDBColumnName(field)));
-                //}
             }
         }
         return whereClause.toString();
@@ -348,8 +346,8 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      * For the particularly hard queries, just provide the actual WHERE clause
      * you want to use.
      *
-     * myExample.getLanguage.useLikeComparison("%JAVA%"); is similar to:
-     * getByRawSQL("and language like '%JAVA%'");
+     * myExample.getLanguage.isLike("%JAVA%"); is similar to: getByRawSQL("and
+     * language like '%JAVA%'");
      *
      * N.B. the starting AND is optional and avoid trailing semicolons
      *
@@ -396,7 +394,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             ps.println(row);
         }
     }
-    
+
     private Object setValueOfField(DBTableRow tableRow, Field field, Object value) throws IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
         BeanInfo info = Introspector.getBeanInfo(tableRow.getClass());
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
@@ -419,17 +417,13 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
                 }
             }
         }
-        //try {
+
         // didn't find a set method so look for a public variable
         field.set(tableRow, value);
-//        } catch (IllegalAccessException ex) {
-//            throw new RuntimeException("No Means Of Accessing " + tableRow.getClass().getSimpleName() + "." + field.getName() + " Was Found: Please ensure the field is public, or there is a public SET method for it: " + tableRow.getClass().getSimpleName() + "." + field.getName());
-//        }
 
         return tableRow;
-        //throw new UnsupportedOperationException("No Appropriate Set Method Found In " + tableRow.getClass().getSimpleName() + " for " + field.toGenericString());
     }
-    
+
     public E firstRow() {
         if (this.size() > 1) {
             return this.get(0);
@@ -437,8 +431,29 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             return null;
         }
     }
-    
+
     public final E firstElement() {
         return this.firstRow();
+    }
+
+    public void insert(E newRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException {
+        ArrayList<E> arrayList = new ArrayList<E>();
+        arrayList.add(newRow);
+        insert(arrayList);
+    }
+
+    public void insert(List<E> newRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException {
+        Statement statement = theDatabase.getDBStatement();
+        StringBuilder sqlInsert = new StringBuilder();
+        for (E row : newRows) {
+            row.setDatabase(theDatabase);
+            String sql = "INSERT INTO " + row.getTableName() + "(" + this.getAllFieldsForSelect() + ") " + row.getValuesClause() + ";";
+            if (printSQLBeforeExecuting) {
+                System.out.println(sql);
+            }
+            statement.addBatch(sql);
+        }
+        statement.executeBatch();
+        statement.getConnection().commit();
     }
 }
