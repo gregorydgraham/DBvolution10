@@ -55,6 +55,15 @@ public class DBTableTest extends TestCase {
     }
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
+    
+    public void testInsertRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
+        myTableRow.getUidMarque().isLiterally(2);
+        myTableRow.getName().isLiterally("TOYOTA");
+        myTableRow.getNumericCode().isLiterally(10);
+        marques.insert(myTableRow);
+        marques.getAllRows();
+        marques.printAllRows();
+    }
 
     public void testGetAllRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         marques.getAllRows();
