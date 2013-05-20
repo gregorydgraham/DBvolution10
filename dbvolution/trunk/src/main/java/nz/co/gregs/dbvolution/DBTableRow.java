@@ -4,8 +4,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -15,6 +13,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.annotations.DBTableColumn;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 
 /**
  *
@@ -50,7 +51,6 @@ abstract public class DBTableRow {
      * @param field
      * @return
      * @throws IntrospectionException
-     * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
@@ -78,7 +78,30 @@ abstract public class DBTableRow {
             throw new RuntimeException("Unable To Access Variable Nor GET Method: Please change protection to public for GET method or field " + this.getClass().getSimpleName() + "." + field.getName(), ex);
         }
     }
+    
+    /**     
+     * Probably not needed by the programmer, this is the convenience function
+     * to find the table name specified by
+     *
+     * @DBTableName
+     *
+     * @return the name of the table in the database specified to correlate with
+     * the specified type
+     * 
+     */
+    public String getTableName() {
+        @SuppressWarnings("unchecked")
+        Class<? extends DBTableRow> thisClass = (Class<? extends DBTableRow>) this.getClass();
+        if (thisClass.isAnnotationPresent(DBTableName.class)) {
+            DBTableName annotation = thisClass.getAnnotation(DBTableName.class);
+            return annotation.value();
+        } else {
+            return thisClass.getSimpleName();
+        }
+    }
+    
 
+    
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();

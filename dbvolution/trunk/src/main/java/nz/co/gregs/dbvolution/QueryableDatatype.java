@@ -14,7 +14,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class QueryableDatatype extends Object implements Serializable {
 
-    public static long serialVersionUID = 1L;
+    public static final long serialVersionUID = 1L;
     protected DBDatabase database = null;
     protected Object literalValue = null;
     protected boolean isDBNull = false;
@@ -103,9 +103,6 @@ public class QueryableDatatype extends Object implements Serializable {
         }
     }
 
-    /**
-     * @param usingNullComparison the usingNullComparison to set
-     */
     public final void isNull() {
         this.usingNullComparison = true;
     }
@@ -115,9 +112,6 @@ public class QueryableDatatype extends Object implements Serializable {
         this.literalValue = t;
     }
 
-    /**
-     * @param includingNulls the includingNulls to set
-     */
     public void includingNulls() {
         this.includingNulls = true;
     }
@@ -146,7 +140,8 @@ public class QueryableDatatype extends Object implements Serializable {
     }
 
     /**
-     * @param lowerBound the lowerBound to set
+     * @param lowerBound the lower bound to set
+     * @param upperBound the upper bound to set 
      */
     public void isBetween(QueryableDatatype lowerBound, QueryableDatatype upperBound) {
         this.usingBetweenComparison = true;
@@ -200,5 +195,9 @@ public class QueryableDatatype extends Object implements Serializable {
 
     protected QueryableDatatype getLowerBound() {
         return this.lowerBound;
+    }
+    
+    public String getCreationClause(){
+        return "VARCHAR(1000)";
     }
 }

@@ -19,4 +19,8 @@ public class DBInteger extends DBNumber {
     public DBInteger() {
         super();
     }
+
+    public String getCreationClause() {
+        return "INTEGER";
+    }
 }

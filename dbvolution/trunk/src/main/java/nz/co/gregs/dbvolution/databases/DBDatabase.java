@@ -15,14 +15,20 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
-import nz.co.gregs.dbvolution.DBTable;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.annotations.DBTableColumn;
+import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 
 /**
  *
@@ -41,7 +47,7 @@ public abstract class DBDatabase {
         this.password = password;
         this.username = username;
     }
-    
+
     /**
      *
      * @return
@@ -95,6 +101,77 @@ public abstract class DBDatabase {
     public String getPassword() {
         return password;
     }
-    
+
     public abstract String getDateFormattedForQuery(Date date);
+
+    /**
+     *
+     * @param <TR>
+     * @param marque
+     * @return
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws IntrospectionException
+     * @throws InvocationTargetException
+     * @throws SQLException
+     */
+    public <TR extends DBTableRow> boolean createTable(TR marque) throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException {
+        StringBuilder sqlScript = new StringBuilder();
+        List<Field> pkFields = new ArrayList<Field>();
+        
+        // table name
+
+        sqlScript.append("CREATE TABLE ").append(marque.getTableName()).append("(").append(System.lineSeparator());
+
+        // columns
+        String sep = "";
+        Field[] fields = marque.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
+            if (annotation != null) {
+                QueryableDatatype qdt = marque.getQueryableValueOfField(field);
+                String colName = annotation.value();
+                if (colName == null || colName.isEmpty()) {
+                    colName = field.getName();
+                }
+                sqlScript.append(sep).append(colName).append(" ").append(qdt.getCreationClause());
+                sep = ", " + System.lineSeparator();
+
+                DBTablePrimaryKey pkAnno = field.getAnnotation(DBTablePrimaryKey.class);
+                if (pkAnno != null) {
+                    pkFields.add(field);
+                }
+            }
+        }
+
+        // primary keys
+        String pkStart = System.lineSeparator() + ",PRIMARY KEY (";
+        String pkMiddle = ", ";
+        String pkEnd = ")" + System.lineSeparator();
+        String pkSep = pkStart;
+        for (Field field : pkFields) {
+            DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
+            String colName = annotation.value();
+            if (colName == null || colName.isEmpty()) {
+                colName = field.getName();
+            }
+            sqlScript.append(pkSep).append(colName);
+            pkSep = pkMiddle;
+        }
+        if (!pkSep.equalsIgnoreCase(pkStart)) {
+            sqlScript.append(pkEnd);
+        }
+
+        //finish
+        sqlScript.append(")").append(System.lineSeparator());
+        System.out.print(sqlScript.toString());
+        return getDBStatement().execute(sqlScript.toString());
+    }
+
+    public <TR extends DBTableRow> boolean dropTable(TR marque) throws SQLException {
+        StringBuilder sqlScript = new StringBuilder();
+
+        sqlScript.append("DROP TABLE ").append(marque.getTableName());
+        return getDBStatement().execute(sqlScript.toString());
+    }
 }

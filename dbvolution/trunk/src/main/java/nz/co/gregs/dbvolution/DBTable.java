@@ -1,8 +1,5 @@
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
-import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -14,8 +11,9 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.annotations.DBTableColumn;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -50,26 +48,6 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         printSQLBeforeExecuting = aPrintSQLBeforeExecuting;
     }
 
-    /**
-     * Probably not needed by the programmer, this is the convenience function
-     * to find the table name specified by
-     *
-     * @DBTableName
-     *
-     * @return the name of the table in the database specified to correlate with
-     * the specified type
-     */
-    public String getTableName() {
-        @SuppressWarnings("unchecked")
-        Class<E> thisClass = (Class<E>) dummy.getClass();
-        if (thisClass.isAnnotationPresent(DBTableName.class)) {
-            DBTableName annotation = thisClass.getAnnotation(DBTableName.class);
-            return annotation.value();
-        } else {
-            return thisClass.getSimpleName();
-        }
-    }
-    
     private String getDBColumnName(Field field) {
         String columnName = "";
         
@@ -101,7 +79,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         StringBuilder selectStatement = new StringBuilder();
         selectStatement.append("select ");
         
-        selectStatement.append(getAllFieldsForSelect()).append(" from ").append(getTableName()).append(";");
+        selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(";");
         
         if (printSQLBeforeExecuting) {
             System.out.println(selectStatement);
@@ -265,7 +243,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         StringBuilder selectStatement = new StringBuilder();
         selectStatement.append("select ");
         
-        selectStatement.append(getAllFieldsForSelect()).append(" from ").append(getTableName()).append(" where 1=1 ");
+        selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(" where 1=1 ");
 
 //        if (printSQLBeforeExecuting){
 //            System.out.println(selectStatement);

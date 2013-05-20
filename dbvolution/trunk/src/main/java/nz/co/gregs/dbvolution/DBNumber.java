@@ -119,9 +119,17 @@ public class DBNumber extends QueryableDatatype {
     }
 
     /**
+     * 
+     * @return
+     */
+    public String getCreationClause() {
+        return "NUMERIC(10,5)";
+    }
+
+    /**
      *
-     * @return the literal value as it would appear in an SQL statement
-     * i.e. {123} => 123
+     * @return the literal value as it would appear in an SQL statement i.e.
+     * {123} => 123
      *
      */
     @Override

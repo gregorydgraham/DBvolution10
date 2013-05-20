@@ -13,7 +13,7 @@ import nz.co.gregs.dbvolution.databases.H2DB;
  *
  * @author gregory.graham
  */
-@DBTableName("superconductor.marque")
+@DBTableName("marque")
 public class Marque extends DBTableRow {
 
     /*
@@ -68,7 +68,10 @@ public class Marque extends DBTableRow {
 
         DBDatabase myDatabase;
 //        myDatabase = new MySQLDB(jdbcURL, username, password);
-        myDatabase = new H2DB("jdbc:h2:~/test","","");
+        myDatabase = new H2DB("jdbc:h2:~/dbvolution","","");
+        
+        myDatabase.dropTable(new Marque());
+        myDatabase.createTable(new Marque());
 
         DBTable.setPrintSQLBeforeExecuting(true);
         DBTable<Marque> marques = new DBTable<Marque>(new Marque(), myDatabase);
