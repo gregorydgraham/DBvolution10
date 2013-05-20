@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import com.informix.jdbc.IfxDriver;
 import java.sql.Driver;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -27,6 +28,8 @@ public class InformixDB extends DBDatabase {
 
     public final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
     private Driver informixDriver = new IfxDriver();
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+    //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
 
     public InformixDB(String jdbcURL, String username, String password) {
         super(INFORMIXDRIVERNAME, jdbcURL, username, password);
@@ -35,6 +38,6 @@ public class InformixDB extends DBDatabase {
 
     @Override
     public String getDateFormattedForQuery(Date date) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "TO_DATE('"+dateFormat.format(date)+"'%Y-%m-%d %H:%M:%S')";
     }
 }
