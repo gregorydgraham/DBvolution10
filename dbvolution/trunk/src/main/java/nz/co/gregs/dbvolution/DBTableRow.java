@@ -78,8 +78,8 @@ abstract public class DBTableRow {
             throw new RuntimeException("Unable To Access Variable Nor GET Method: Please change protection to public for GET method or field " + this.getClass().getSimpleName() + "." + field.getName(), ex);
         }
     }
-    
-    /**     
+
+    /**
      * Probably not needed by the programmer, this is the convenience function
      * to find the table name specified by
      *
@@ -87,7 +87,7 @@ abstract public class DBTableRow {
      *
      * @return the name of the table in the database specified to correlate with
      * the specified type
-     * 
+     *
      */
     public String getTableName() {
         @SuppressWarnings("unchecked")
@@ -99,9 +99,7 @@ abstract public class DBTableRow {
             return thisClass.getSimpleName();
         }
     }
-    
 
-    
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();

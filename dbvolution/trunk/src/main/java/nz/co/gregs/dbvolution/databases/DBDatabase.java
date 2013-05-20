@@ -118,10 +118,10 @@ public abstract class DBDatabase {
     public <TR extends DBTableRow> boolean createTable(TR marque) throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException {
         StringBuilder sqlScript = new StringBuilder();
         List<Field> pkFields = new ArrayList<Field>();
-        
+        String lineSeparator = System.getProperty("line.separator");
         // table name
 
-        sqlScript.append("CREATE TABLE ").append(marque.getTableName()).append("(").append(System.lineSeparator());
+        sqlScript.append("CREATE TABLE ").append(marque.getTableName()).append("(").append(lineSeparator);
 
         // columns
         String sep = "";
@@ -135,7 +135,7 @@ public abstract class DBDatabase {
                     colName = field.getName();
                 }
                 sqlScript.append(sep).append(colName).append(" ").append(qdt.getCreationClause());
-                sep = ", " + System.lineSeparator();
+                sep = ", " + lineSeparator;
 
                 DBTablePrimaryKey pkAnno = field.getAnnotation(DBTablePrimaryKey.class);
                 if (pkAnno != null) {
@@ -145,9 +145,9 @@ public abstract class DBDatabase {
         }
 
         // primary keys
-        String pkStart = System.lineSeparator() + ",PRIMARY KEY (";
+        String pkStart = lineSeparator + ",PRIMARY KEY (";
         String pkMiddle = ", ";
-        String pkEnd = ")" + System.lineSeparator();
+        String pkEnd = ")" + lineSeparator;
         String pkSep = pkStart;
         for (Field field : pkFields) {
             DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
@@ -163,7 +163,7 @@ public abstract class DBDatabase {
         }
 
         //finish
-        sqlScript.append(")").append(System.lineSeparator());
+        sqlScript.append(")").append(lineSeparator);
         return getDBStatement().execute(sqlScript.toString());
     }
 
