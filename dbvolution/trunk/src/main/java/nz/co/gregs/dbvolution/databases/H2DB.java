@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -23,13 +24,18 @@ import java.util.Date;
  */
 public class H2DB extends DBDatabase{
     
+    SimpleDateFormat strToDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    
     public H2DB(String jdbcURL, String username, String password){
         super("org.h2.Driver",jdbcURL, username, password);
     }
 
     @Override
     public String getDateFormattedForQuery(Date date) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+//        yyyy-MM-dd hh:mm:ss[.nnnnnnnnn]
+        
+        return "'"+strToDateFormat.format(date)+"'";
     }
     
 }

@@ -164,7 +164,6 @@ public abstract class DBDatabase {
 
         //finish
         sqlScript.append(")").append(System.lineSeparator());
-        System.out.print(sqlScript.toString());
         return getDBStatement().execute(sqlScript.toString());
     }
 
