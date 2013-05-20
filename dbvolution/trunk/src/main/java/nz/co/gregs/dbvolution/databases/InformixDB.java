@@ -28,7 +28,7 @@ public class InformixDB extends DBDatabase {
 
     public final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
     private Driver informixDriver = new IfxDriver();
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
 
     public InformixDB(String jdbcURL, String username, String password) {
