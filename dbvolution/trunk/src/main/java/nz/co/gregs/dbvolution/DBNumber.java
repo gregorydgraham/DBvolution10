@@ -122,7 +122,7 @@ public class DBNumber extends QueryableDatatype {
      * 
      * @return
      */
-    public String getCreationClause() {
+    public String getSQLDatatype() {
         return "NUMERIC(10,5)";
     }
 

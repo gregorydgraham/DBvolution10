@@ -1,9 +1,6 @@
 package nz.co.gregs.dbvolution.example;
 
-import nz.co.gregs.dbvolution.DBDate;
-import nz.co.gregs.dbvolution.DBNumber;
-import nz.co.gregs.dbvolution.DBString;
-import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
@@ -25,7 +22,7 @@ public class Marque extends DBTableRow {
     private DBNumber numericCode = new DBNumber();
     @DBTableColumn("uid_marque")
     @DBTablePrimaryKey
-    private DBNumber uidMarque = new DBNumber();
+    private DBInteger uidMarque = new DBInteger();
     @DBTableColumn("isusedfortafros")
     private DBString isUsedForTAFROs = new DBString();
     @DBTableColumn("fk_toystatusclass")
@@ -63,14 +60,14 @@ public class Marque extends DBTableRow {
     /**
      * @return the uidMarque
      */
-    public DBNumber getUidMarque() {
+    public DBInteger getUidMarque() {
         return uidMarque;
     }
 
     /**
      * @param uidMarque the uidMarque to set
      */
-    public void setUidMarque(DBNumber uidMarque) {
+    public void setUidMarque(DBInteger uidMarque) {
         this.uidMarque = uidMarque;
     }
 

@@ -104,6 +104,10 @@ public abstract class DBDatabase {
 
     public abstract String getDateFormattedForQuery(Date date);
 
+    public String formatColumnName(String columnName) {
+        return columnName;
+    }
+
     /**
      *
      * @param <TR>
@@ -134,7 +138,7 @@ public abstract class DBDatabase {
                 if (colName == null || colName.isEmpty()) {
                     colName = field.getName();
                 }
-                sqlScript.append(sep).append(colName).append(" ").append(qdt.getCreationClause());
+                sqlScript.append(sep).append(colName).append(" ").append(qdt.getSQLDatatype());
                 sep = ", " + lineSeparator;
 
                 DBTablePrimaryKey pkAnno = field.getAnnotation(DBTablePrimaryKey.class);

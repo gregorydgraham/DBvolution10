@@ -79,7 +79,7 @@ public class DBDate extends QueryableDatatype {
         super.isIn(dbDates.toArray(new DBDate[]{}));
     }
 
-    public String getCreationClause() {
+    public String getSQLDatatype() {
         return "TIMESTAMP";
     }
 

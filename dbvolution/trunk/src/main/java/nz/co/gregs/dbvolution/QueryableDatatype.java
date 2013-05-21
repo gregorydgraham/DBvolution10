@@ -197,7 +197,7 @@ public class QueryableDatatype extends Object implements Serializable {
         return this.lowerBound;
     }
     
-    public String getCreationClause(){
+    public String getSQLDatatype(){
         return "VARCHAR(1000)";
     }
 }

@@ -156,7 +156,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             for (Field field : fields) {
                 if (field.isAnnotationPresent(DBTableColumn.class)) {
                     String dbColumnName = getDBColumnName(field);
-                    int dbColumnIndex = dbColumnNames.get(dbColumnName);
+                    int dbColumnIndex = dbColumnNames.get(theDatabase.formatColumnName(dbColumnName));
 
                     setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
                 }

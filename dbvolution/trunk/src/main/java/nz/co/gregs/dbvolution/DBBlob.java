@@ -17,7 +17,7 @@ class DBBlob extends QueryableDatatype {
 
     }
 
-    public String getCreationClause() {
+    public String getSQLDatatype() {
         return "BLOB";
     }
 }

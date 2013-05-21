@@ -11,17 +11,17 @@ package nz.co.gregs.dbvolution;
 public class DBInteger extends DBNumber {
 
     private static final long serialVersionUID = 1L;
-
+    
     public DBInteger(int anInt) {
-        super(Double.valueOf(anInt));
+        super(Integer.valueOf(anInt).longValue());
     }
 
     public DBInteger(Integer anInt) {
-        super(anInt.doubleValue());
+        super(anInt.longValue());
     }
 
     public DBInteger(Long aLong) {
-        super(aLong.doubleValue());
+        super(aLong);
     }
 
     public DBInteger() {
@@ -29,7 +29,7 @@ public class DBInteger extends DBNumber {
     }
 
     @Override
-    public String getCreationClause() {
+    public String getSQLDatatype() {
         return "INTEGER";
     }
 }
