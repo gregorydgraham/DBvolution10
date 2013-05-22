@@ -18,9 +18,9 @@
         </license>
     </licenses>
     <scm>
-        <url>https://sourceforge.net/projects/dbvolution</url>
-        <connection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution</connection>
-        <developerConnection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution</developerConnection>
+        <url>https://sourceforge.net/projects/dbvolution/</url>
+        <connection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/trunk/</connection>
+        <developerConnection>scm:svn:https://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/trunk/</developerConnection>
     </scm>
     <developers>
         <developer>
