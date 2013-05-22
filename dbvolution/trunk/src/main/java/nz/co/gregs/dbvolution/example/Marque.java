@@ -31,7 +31,7 @@ public class Marque extends DBTableRow {
     @DBTableColumn("intindallocallowed")
     private DBString intIndividualAllocationsAllowed = new DBString();
     @DBTableColumn("upd_count")
-    private DBNumber updateCount = new DBNumber();
+    private DBInteger updateCount = new DBInteger();
     @DBTableColumn
     private DBString auto_created = new DBString();
     @DBTableColumn
@@ -42,6 +42,22 @@ public class Marque extends DBTableRow {
     private DBString reservationsAllowed = new DBString();
     @DBTableColumn("creation_date")
     private DBDate creationDate = new DBDate();
+
+
+    public Marque(){
+    }
+    
+    public Marque(int uidMarque, String isIssued, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed) {
+        this.uidMarque.isLiterally(uidMarque);
+        this.isUsedForTAFROs.isLiterally(isIssued);
+        toyotaStatusClassID.isLiterally(statusClass);
+        this.intIndividualAllocationsAllowed.isLiterally(intIndividualAllocationsAllowed);
+        this.updateCount.isLiterally(updateCount);
+        this.auto_created.isLiterally(autoCreated);
+        this.name.isLiterally(name);
+        this.pricingCodePrefix.isLiterally(pricingCodePrefix);
+        this.reservationsAllowed.isLiterally(reservationsAllowed);
+    }
 
     /**
      * @return the numericCode
@@ -124,7 +140,7 @@ public class Marque extends DBTableRow {
     /**
      * @param updateCount the updateCount to set
      */
-    public void setUpdateCount(DBNumber updateCount) {
+    public void setUpdateCount(DBInteger updateCount) {
         this.updateCount = updateCount;
     }
 

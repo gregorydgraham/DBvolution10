@@ -7,6 +7,7 @@ import java.beans.PropertyDescriptor;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -403,11 +404,18 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             String pdName = pd.getName();
             if (pdName.equals(fieldName)) {
                 try {
-                    pd.getWriteMethod().invoke(tableRow, value);
-                    Object invoke = pd.getReadMethod().invoke(tableRow);
-                    if (invoke instanceof QueryableDatatype) {
-                        QueryableDatatype qdt = (QueryableDatatype) invoke;
-                        qdt.setDatabase(this.theDatabase);
+                    //                    Method writeMethod = pd.getWriteMethod();
+                    //                    Object writeResults = writeMethod.invoke(tableRow, value);
+                    Method readMethod = pd.getReadMethod();
+                    if (readMethod == null) {
+                        throw new RuntimeException("Unable To Access Read Method for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
+                    } else {
+                        Object fieldQDT = readMethod.invoke(tableRow);
+                        if (fieldQDT instanceof QueryableDatatype) {
+                            QueryableDatatype qdt = (QueryableDatatype) fieldQDT;
+                            qdt.setDatabase(this.theDatabase);
+                            qdt.isLiterally(value);
+                        }
                     }
                     return tableRow;
                 } catch (IllegalAccessException illacc) {

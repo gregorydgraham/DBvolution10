@@ -123,7 +123,7 @@ public class DBNumber extends QueryableDatatype {
      * @return
      */
     public String getSQLDatatype() {
-        return "NUMERIC(10,5)";
+        return "NUMERIC(15,5)";
     }
 
     /**

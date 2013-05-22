@@ -18,7 +18,9 @@ package nz.co.gregs.dbvolution.h2;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import junit.framework.TestCase;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTableRow;
@@ -30,13 +32,13 @@ import nz.co.gregs.dbvolution.example.Marque;
  *
  * @author gregory.graham
  */
-public class DBTableTest extends TestCase {
+public class DBTableGetTest extends TestCase {
 
     DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolution", "", "");
     Marque myTableRow = new Marque();
     DBTable<Marque> marques;
 
-    public DBTableTest(String testName) {
+    public DBTableGetTest(String testName) {
         super(testName);
     }
 
@@ -50,20 +52,12 @@ public class DBTableTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        super.tearDown();
         myDatabase.dropTable(myTableRow);
+
+        super.tearDown();
     }
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
-    
-    public void testInsertRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
-        myTableRow.getUidMarque().isLiterally(2);
-        myTableRow.getName().isLiterally("TOYOTA");
-        myTableRow.getNumericCode().isLiterally(10);
-        marques.insert(myTableRow);
-        marques.getAllRows();
-        marques.printAllRows();
-    }
 
     public void testGetAllRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         marques.getAllRows();
@@ -80,9 +74,9 @@ public class DBTableTest extends TestCase {
             singleMarque.getByPrimaryKey(primaryKey).printAllRows();
         }
     }
-    
-    public void testisBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException{
-                Marque marqueQuery = new Marque();
+
+    public void testisBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+        Marque marqueQuery = new Marque();
         marqueQuery.getName().isLike("%T%");
         marqueQuery.getNumericCode().isBetween(0, 90000000);
         //System.out.println(marques.getSQLForExample(marqueQuery));
@@ -91,26 +85,30 @@ public class DBTableTest extends TestCase {
             System.out.println(row);
         }
     }
-    public void testIsLiterally() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException{
+
+    public void testIsLiterally() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().isLiterally(1L);
         marques = marques.getByExample(hummerQuery);
         marques.printAllRows();
     }
-    public void testIsIn() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException{
+
+    public void testIsIn() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
         hummerQuery.getName().isIn(new String[]{"TOYOTA", "HUMMER"});
         marques = marques.getByExample(hummerQuery);
-        marques.printAllRows();}
+        marques.printAllRows();
+    }
 
-    public void testDateIsBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException{
+    public void testDateIsBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         Marque oldQuery = new Marque();
         oldQuery.getCreationDate().isBetween(new Date(0L), new Date());
         marques = marques.getByExample(oldQuery);
         marques.printAllRows();
     }
-    public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException{
+
+    public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
         marques = marques.getByRawSQL(rawQuery);
         marques.printAllRows();
