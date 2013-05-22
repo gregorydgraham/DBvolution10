@@ -19,8 +19,8 @@
     </licenses>
     <scm>
         <url>https://sourceforge.net/projects/dbvolution/</url>
-        <connection>scm:svn:http://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/trunk/</connection>
-        <developerConnection>scm:svn:https://sourceforge.net/p/dbvolution/code-0/HEAD/tree/dbvolution/trunk/</developerConnection>
+        <connection>scm:svn+ssh://gregorydgraham@svn.code.sf.net/p/dbvolution/code-0/</connection>
+        <developerConnection>scm:svn+ssh://gregorydgraham@svn.code.sf.net/p/dbvolution/code-0/</developerConnection>
     </scm>
     <developers>
         <developer>
