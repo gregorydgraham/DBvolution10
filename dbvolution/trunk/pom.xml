@@ -149,15 +149,6 @@
             <url>scp://frs.sourceforge.net:/home/frs/project/p/dbvolution</url>
         </repository>
     </distributionManagement>
-    
-    <repositories>
-        
-    </repositories>
-    
-    <pluginRepositories>
-        
-    </pluginRepositories>
-    
     <profiles>
         <profile>
             <repositories>
