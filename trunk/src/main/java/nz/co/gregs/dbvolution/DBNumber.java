@@ -119,7 +119,7 @@ public class DBNumber extends QueryableDatatype {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public String getSQLDatatype() {
@@ -134,7 +134,11 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     protected String toSQLString() {
-        return this.numberValue==null?"NULL":this.numberValue.toString();
+        return this.numberValue == null ? "NULL" : this.numberValue.toString();
+    }
 
+    @Override
+    String getSQLValue() {
+        return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
     }
 }
