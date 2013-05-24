@@ -464,4 +464,25 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         statement.executeBatch();
         statement.getConnection().commit();
     }
+
+    public void delete(E oldRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
+        ArrayList<E> arrayList = new ArrayList<E>();
+        arrayList.add(oldRow);
+        delete(arrayList);
+    }
+
+    public void delete(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
+        Statement statement = theDatabase.getDBStatement();
+        StringBuilder sqlInsert = new StringBuilder();
+        for (E row : oldRows) {
+            row.setDatabase(theDatabase);
+            String sql = "DELETE FROM " + row.getTableName() + " WHERE " + this.getPrimaryKeyColumn() + " = " + row.getPrimaryKey() + ";";
+            if (printSQLBeforeExecuting) {
+                System.out.println(sql);
+            }
+            statement.addBatch(sql);
+        }
+        statement.executeBatch();
+        statement.getConnection().commit();
+    }
 }
