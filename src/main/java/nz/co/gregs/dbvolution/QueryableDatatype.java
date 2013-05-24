@@ -200,4 +200,8 @@ public class QueryableDatatype extends Object implements Serializable {
     public String getSQLDatatype(){
         return "VARCHAR(1000)";
     }
+
+    String getSQLValue() {
+        return database.beginStringValue()+literalValue.toString()+database.endStringValue();
+    }
 }

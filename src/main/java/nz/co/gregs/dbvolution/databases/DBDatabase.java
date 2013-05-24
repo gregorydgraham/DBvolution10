@@ -177,4 +177,20 @@ public abstract class DBDatabase {
         sqlScript.append("DROP TABLE ").append(marque.getTableName());
         return getDBStatement().execute(sqlScript.toString());
     }
+
+    public String beginStringValue() {
+        return "'";
+    }
+
+    public String endStringValue() {
+        return "'";
+    }
+
+    public String beginNumberValue() {
+        return "";
+    }
+
+    public String endNumberValue() {
+        return "";
+    }
 }

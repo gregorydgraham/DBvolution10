@@ -11,7 +11,7 @@ package nz.co.gregs.dbvolution;
 public class DBInteger extends DBNumber {
 
     private static final long serialVersionUID = 1L;
-    
+
     public DBInteger(int anInt) {
         super(Integer.valueOf(anInt).longValue());
     }
@@ -31,5 +31,10 @@ public class DBInteger extends DBNumber {
     @Override
     public String getSQLDatatype() {
         return "INTEGER";
+    }
+
+    @Override
+    String getSQLValue() {
+        return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
     }
 }
