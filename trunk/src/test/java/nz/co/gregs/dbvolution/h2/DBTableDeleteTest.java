@@ -41,15 +41,20 @@ public class DBTableDeleteTest extends TestCase {
     }
 
     @Override
+    @SuppressWarnings("empty-statement")
     protected void setUp() throws Exception {
         super.setUp();
 
+        try {
+            myDatabase.dropTable(new Marque());
+        } catch (Exception exp) {;
+        }
         myDatabase.createTable(myTableRow);
         DBTable.setPrintSQLBeforeExecuting(false);
         marques = new DBTable<Marque>(myTableRow, myDatabase);
 
         List<Marque> myTableRows = new ArrayList<Marque>();
-        myTableRows.add(new Marque(4893059, "False", 1246974, "", 3, "UV", "PEUGEOT", "", "Y"));
+        myTableRows.add(new Marque(4893059, "True", 1246974, "", 3, "UV", "PEUGEOT", "", "Y"));
         myTableRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y"));
         myTableRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y"));
         myTableRows.add(new Marque(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y"));
@@ -69,6 +74,8 @@ public class DBTableDeleteTest extends TestCase {
         myTableRows.add(new Marque(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y"));
         myTableRows.add(new Marque(13224369, "False", 1246974, "", 0, "", "VW", "", "Y"));
         myTableRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y"));
+        myTableRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y"));
+        myTableRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y"));
 
         marques.insert(myTableRows);
         DBTable.setPrintSQLBeforeExecuting(true);
@@ -84,12 +91,19 @@ public class DBTableDeleteTest extends TestCase {
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
 
-    public void testDeleteAllRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
+    public void testDeleteListOfRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         marques.getAllRows();
-        ArrayList<Marque> arrayList = new ArrayList<Marque>();
+        int originalSize = marques.size();
+        System.out.println("marques.size()==" + marques.size());
+        ArrayList<Marque> deleteList = new ArrayList<Marque>();
         for (Marque row : marques) {
-            arrayList.add(row);
+            if (row.getIsUsedForTAFROs().toString().equals("False")) {
+                deleteList.add(row);
+            }
         }
-        marques.delete(arrayList);
+        marques.delete(deleteList);
+        marques.getAllRows();
+        System.out.println("marques.size()==" + marques.size());
+        assertTrue("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.size());
     }
 }

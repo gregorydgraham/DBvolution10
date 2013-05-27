@@ -37,7 +37,7 @@ abstract public class DBTableRow {
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
                 QueryableDatatype queryableValueOfField = this.getQueryableValueOfField(field);
-                pkColumnValue = queryableValueOfField.getSQLValue();
+                pkColumnValue = queryableValueOfField.toSQLString();
             }
         }
         if (pkColumnValue.isEmpty()) {

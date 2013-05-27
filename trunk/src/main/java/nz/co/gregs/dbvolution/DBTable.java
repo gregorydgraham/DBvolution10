@@ -119,10 +119,10 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      */
     public void getAllRows() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException //throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException 
     {
+        this.clear();
 
         String selectStatement = this.getSelectStatement();
 
-        java.sql.Connection connection;
         Statement statement;
         ResultSet resultSet;
         statement = this.theDatabase.getDBStatement();
@@ -168,7 +168,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
 
     private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBTableRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         //TODO: check column type and field class are compatible
-        Object value = null;
+        QueryableDatatype value = null;
         int columnType = rsMeta.getColumnType(dbColumnIndex);
         switch (columnType) {
             case Types.INTEGER:
@@ -396,7 +396,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         }
     }
 
-    private Object setValueOfField(DBTableRow tableRow, Field field, Object value) throws IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
+    private Object setValueOfField(DBTableRow tableRow, Field field, QueryableDatatype value) throws IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
         BeanInfo info = Introspector.getBeanInfo(tableRow.getClass());
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
         String fieldName = field.getName();
