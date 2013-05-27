@@ -8,7 +8,7 @@ package nz.co.gregs.dbvolution;
  *
  * @author gregory.graham
  */
-class DBBlob extends QueryableDatatype {
+public class DBBlob extends QueryableDatatype {
 
     private static final long serialVersionUID = 1L;
 
