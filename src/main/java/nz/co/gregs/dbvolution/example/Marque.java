@@ -47,9 +47,9 @@ public class Marque extends DBTableRow {
     public Marque(){
     }
     
-    public Marque(int uidMarque, String isIssued, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed) {
+    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed) {
         this.uidMarque.isLiterally(uidMarque);
-        this.isUsedForTAFROs.isLiterally(isIssued);
+        this.isUsedForTAFROs.isLiterally(isUsedForTAFROs);
         toyotaStatusClassID.isLiterally(statusClass);
         this.intIndividualAllocationsAllowed.isLiterally(intIndividualAllocationsAllowed);
         this.updateCount.isLiterally(updateCount);

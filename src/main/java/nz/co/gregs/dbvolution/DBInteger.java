@@ -13,11 +13,11 @@ public class DBInteger extends DBNumber {
     private static final long serialVersionUID = 1L;
 
     public DBInteger(int anInt) {
-        super(Integer.valueOf(anInt).longValue());
+        super(Integer.valueOf(anInt));
     }
 
     public DBInteger(Integer anInt) {
-        super(anInt.longValue());
+        super(anInt);
     }
 
     public DBInteger(Long aLong) {

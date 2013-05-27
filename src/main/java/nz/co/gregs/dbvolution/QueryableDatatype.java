@@ -103,6 +103,16 @@ public class QueryableDatatype extends Object implements Serializable {
         }
     }
 
+    public void isLiterally(QueryableDatatype literalValue) {
+        blankQuery();
+        if (literalValue == null) {
+            isNull();
+        } else {
+            usingLiteralComparison = true;
+            this.literalValue = literalValue.literalValue;
+        }
+    }
+
     public final void isNull() {
         this.usingNullComparison = true;
     }

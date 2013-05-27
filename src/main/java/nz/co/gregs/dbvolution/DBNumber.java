@@ -17,12 +17,12 @@ public class DBNumber extends QueryableDatatype {
     protected DBNumber upperBoundNumber = null;
     protected DBNumber[] inValuesNumber = new DBNumber[]{};
 
-    public DBNumber(Object aLong) {
-        this(Double.parseDouble(aLong.toString()));
+    public DBNumber(Object aNumber) {
+        this(Double.parseDouble(aNumber.toString()));
     }
 
-    public DBNumber(String aLong) {
-        this(Double.parseDouble(aLong));
+    public DBNumber(String aNumber) {
+        this(Double.parseDouble(aNumber));
     }
 
     public DBNumber(Number aNumber) {
@@ -30,7 +30,7 @@ public class DBNumber extends QueryableDatatype {
             numberValue = 0L;
             this.usingNullComparison = true;
         } else {
-            super.isLiterally(aNumber.toString());
+            super.isLiterally(aNumber);
             numberValue = aNumber;
         }
     }
@@ -108,6 +108,15 @@ public class DBNumber extends QueryableDatatype {
         this.isLiterally(Double.parseDouble(literal.toString()));
     }
 
+    @Override
+    public void isLiterally(QueryableDatatype literalValue) {
+        if (literalValue instanceof DBNumber) {
+            this.isLiterally(((DBNumber)literalValue).numberValue);
+        } else {
+            super.isLiterally(literalValue);
+        }
+    }
+
     public void isLiterally(Number literal) {
         super.isLiterally(literal);
         this.numberValue = literal;
@@ -122,6 +131,7 @@ public class DBNumber extends QueryableDatatype {
      *
      * @return
      */
+    @Override
     public String getSQLDatatype() {
         return "NUMERIC(15,5)";
     }
