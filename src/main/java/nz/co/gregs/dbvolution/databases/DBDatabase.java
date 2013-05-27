@@ -119,7 +119,7 @@ public abstract class DBDatabase {
      * @throws InvocationTargetException
      * @throws SQLException
      */
-    public <TR extends DBTableRow> boolean createTable(TR marque) throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException {
+    public <TR extends DBTableRow> void createTable(TR marque) throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException {
         StringBuilder sqlScript = new StringBuilder();
         List<Field> pkFields = new ArrayList<Field>();
         String lineSeparator = System.getProperty("line.separator");
@@ -168,14 +168,14 @@ public abstract class DBDatabase {
 
         //finish
         sqlScript.append(")").append(lineSeparator);
-        return getDBStatement().execute(sqlScript.toString());
+        getDBStatement().execute(sqlScript.toString());
     }
 
-    public <TR extends DBTableRow> boolean dropTable(TR marque) throws SQLException {
+    public <TR extends DBTableRow> void dropTable(TR marque) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
 
         sqlScript.append("DROP TABLE ").append(marque.getTableName());
-        return getDBStatement().execute(sqlScript.toString());
+        getDBStatement().execute(sqlScript.toString());
     }
 
     public String beginStringValue() {
