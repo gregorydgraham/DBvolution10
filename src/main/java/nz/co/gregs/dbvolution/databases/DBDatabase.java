@@ -29,7 +29,6 @@ import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
-import nz.co.gregs.dbvolution.example.Marque;
 
 /**
  *

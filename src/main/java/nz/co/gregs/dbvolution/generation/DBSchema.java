@@ -23,6 +23,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
 
@@ -34,9 +36,11 @@ public class DBSchema {
 
     DBDatabase database = new H2DB("jdbc:h2:~/dbvolution", "", "");
 
-    public static void generateSchema(DBDatabase database, String packageName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+    public static List<DBTableClass> generateSchema(DBDatabase database, String packageName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         DBSchema schema = new DBSchema();
+        List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
         schema.database = database;
+        String lineSeparator = System.getProperty("line.separator");
 
         Statement dbStatement = schema.database.getDBStatement();
         Connection connection = dbStatement.getConnection();
@@ -44,32 +48,43 @@ public class DBSchema {
         ResultSet tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
 
         while (tables.next()) {
+            DBTableClass dbTableClass = new DBTableClass();
+            StringBuilder javaSource = new StringBuilder();
             if (packageName != null) {
-                System.out.println("package " + packageName + ";");
-                System.out.println("");
+                javaSource.append("package ").append(packageName).append(";");
+                javaSource.append(lineSeparator);
             }
-            System.out.println("import nz.co.gregs.dbvolution.*;");
-            System.out.println("import nz.co.gregs.dbvolution.annotations.*;");
-            System.out.println();
+            javaSource.append("import nz.co.gregs.dbvolution.*;");
+            javaSource.append(lineSeparator);
+            javaSource.append("import nz.co.gregs.dbvolution.annotations.*;");
+            javaSource.append(lineSeparator);
             //@DBTableName("marque") public class Marque extends DBTableRow {
 
             String tableName = tables.getString("TABLE_NAME");
             String className = toClassCase(tableName);
-            System.out.println("@DBTableName(\"" + tableName + "\") ");
-            System.out.println("public class " + className + " extends DBTableRow {");
-            System.out.println();
+            javaSource.append("@DBTableName(\"").append(tableName).append("\") ");
+            javaSource.append(lineSeparator);
+            javaSource.append("public class ").append(className).append(" extends DBTableRow {");
+            javaSource.append(lineSeparator);
 
             ResultSet columns = metaData.getColumns(null, null, tableName, null);
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
                 String fieldName = toCamelCase(columnName);
                 String columnType = getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"));
-                System.out.println("    @DBTableColumn(\"" + columnName + "\")");
-                System.out.println("    public " + columnType + " " + fieldName + " = new " + columnType + "();");
-            System.out.println("");
+                javaSource.append("    @DBTableColumn(\"").append(columnName).append("\")");
+                javaSource.append(lineSeparator);
+                javaSource.append("    public ").append(columnType).append(" ").append(fieldName).append(" = new ").append(columnType).append("();");
+                javaSource.append(lineSeparator);
             }
-            System.out.println("}");
+            javaSource.append("}");
+            javaSource.append(lineSeparator);
+            dbTableClass.className = className;
+            dbTableClass.packageName = packageName;
+            dbTableClass.javaSource = javaSource.toString();
+            dbTableClasses.add(dbTableClass);
         }
+        return dbTableClasses;
     }
 
     private static String getQueryableDatatypeOfSQLType(int columnType) {
