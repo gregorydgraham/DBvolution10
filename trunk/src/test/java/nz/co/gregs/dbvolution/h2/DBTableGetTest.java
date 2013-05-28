@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -34,9 +36,10 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class DBTableGetTest extends TestCase {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolution", "", "");
+    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionGetTest", "", "");
     Marque myTableRow = new Marque();
     DBTable<Marque> marques;
+    List<Marque> myTableRows = new ArrayList<Marque>();
 
     public DBTableGetTest(String testName) {
         super(testName);
@@ -45,11 +48,12 @@ public class DBTableGetTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        myDatabase.dropTableNoExceptions(myTableRow);
         myDatabase.createTable(myTableRow);
         DBTable.setPrintSQLBeforeExecuting(false);
         marques = new DBTable<Marque>(myTableRow, myDatabase);
-        
-                List<Marque> myTableRows = new ArrayList<Marque>();
+
+
         myTableRows.add(new Marque(4893059, "False", 1246974, "", 3, "UV", "PEUGEOT", "", "Y"));
         myTableRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y"));
         myTableRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y"));
@@ -89,41 +93,48 @@ public class DBTableGetTest extends TestCase {
         for (DBTableRow row : marques) {
             System.out.println(row);
         }
+        assertTrue("Incorrect number of marques retreived", marques.size() == myTableRows.size());
     }
 
     public void testGetFirstAndPrimaryKey() throws SQLException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, InstantiationException, SQLException, ClassNotFoundException {
-        DBTableRow row = marques.firstRow();
+        DBTable<Marque> singleMarque = new DBTable<Marque>(new Marque(), myDatabase);
+        DBTableRow row = myTableRows.get(0);
+        String primaryKey;
         if (row != null) {
-            String primaryKey = row.getPrimaryKey();
-            DBTable<Marque> singleMarque = new DBTable<Marque>(new Marque(), myDatabase);
-            singleMarque.getByPrimaryKey(primaryKey).printAllRows();
+            primaryKey = row.getPrimaryKey();
+            singleMarque.getByPrimaryKey(Long.parseLong(primaryKey));
+            singleMarque.printAllRows();
         }
+        assertTrue("Incorrect number of marques retreived", singleMarque.size() == 1);
     }
 
-    public void testisBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+    public void testNumberIsBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         Marque marqueQuery = new Marque();
-        marqueQuery.getName().isLike("%T%");
-        marqueQuery.getNumericCode().isBetween(0, 90000000);
+        marqueQuery.getUidMarque().isBetween(0, 90000000);
         //System.out.println(marques.getSQLForExample(marqueQuery));
         marques = marques.getByExample(marqueQuery);
         for (Marque row : marques) {
             System.out.println(row);
         }
+        assertTrue("Incorrect number of marques retreived", marques.size() == myTableRows.size());
     }
 
     public void testIsLiterally() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
-        Marque hummerQuery = new Marque();
-        hummerQuery.getUidMarque().isLiterally(1L);
-        marques = marques.getByExample(hummerQuery);
+        Marque literalQuery = new Marque();
+        literalQuery.getUidMarque().isLiterally(4893059);
+        marques = marques.getByExample(literalQuery);
         marques.printAllRows();
+        assertEquals(marques.size(), 1);
+        assertEquals(marques.get(0).getPrimaryKey(), "" + 4893059);
     }
 
     public void testIsIn() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
-        hummerQuery.getName().isIn(new String[]{"TOYOTA", "HUMMER"});
+        hummerQuery.getName().isIn(new String[]{"PEUGEOT", "HUMMER"});
         marques = marques.getByExample(hummerQuery);
         marques.printAllRows();
+        assertEquals(marques.size(), 1);
     }
 
     public void testDateIsBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
@@ -131,12 +142,13 @@ public class DBTableGetTest extends TestCase {
         oldQuery.getCreationDate().isBetween(new Date(0L), new Date());
         marques = marques.getByExample(oldQuery);
         marques.printAllRows();
+        assertTrue("Wrong number of rows selected, should be all of them", marques.size() == myTableRows.size());
     }
 
     public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
-        String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
+        String rawQuery = "and lower(name) in ('peugeot','hummer') ;  ";
         marques = marques.getByRawSQL(rawQuery);
         marques.printAllRows();
-
+        assertEquals(marques.size(), 1);
     }
 }

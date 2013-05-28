@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class DBDatabaseTest extends TestCase {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolution", "", "");
+    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionDBTest", "", "");
 
     public DBDatabaseTest(String testName) {
         super(testName);

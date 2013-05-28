@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class DBTableDeleteTest extends TestCase {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolution", "", "");
+    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionDeleteTest", "", "");
     Marque myTableRow = new Marque();
     DBTable<Marque> marques;
 
@@ -45,10 +45,8 @@ public class DBTableDeleteTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        try {
-            myDatabase.dropTable(new Marque());
-        } catch (Exception exp) {;
-        }
+        myDatabase.dropTableNoExceptions(new Marque());
+
         myDatabase.createTable(myTableRow);
         DBTable.setPrintSQLBeforeExecuting(false);
         marques = new DBTable<Marque>(myTableRow, myDatabase);
