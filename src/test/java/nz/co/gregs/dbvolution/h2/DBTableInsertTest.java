@@ -31,28 +31,28 @@ import nz.co.gregs.dbvolution.example.Marque;
  * @author gregory.graham
  */
 public class DBTableInsertTest extends TestCase {
-
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolution", "", "");
+    
+    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionInsertTest", "", "");
     Marque myTableRow = new Marque();
     DBTable<Marque> marques;
-
+    
     public DBTableInsertTest(String testName) {
         super(testName);
     }
-
+    
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
+        myDatabase.dropTableNoExceptions(myTableRow);
         myDatabase.createTable(myTableRow);
         DBTable.setPrintSQLBeforeExecuting(true);
         marques = new DBTable<Marque>(myTableRow, myDatabase);
     }
-
+    
     @Override
     protected void tearDown() throws Exception {
         myDatabase.dropTable(myTableRow);
-
+        
         super.tearDown();
     }
     // TODO add test methods here. The name must begin with 'test'. For example:
@@ -65,7 +65,7 @@ public class DBTableInsertTest extends TestCase {
         marques.insert(myTableRow);
         marques.getAllRows();
         marques.printAllRows();
-
+        
         List<Marque> myTableRows = new ArrayList<Marque>();
         myTableRows.add(new Marque(4893059, "False", 1246974, "", 3, "UV", "PEUGEOT", "", "Y"));
         myTableRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y"));
@@ -87,7 +87,7 @@ public class DBTableInsertTest extends TestCase {
         myTableRows.add(new Marque(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y"));
         myTableRows.add(new Marque(13224369, "False", 1246974, "", 0, "", "VW", "", "Y"));
         myTableRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y"));
-
+        
         marques.insert(myTableRows);
         marques.size();
         marques.getAllRows();

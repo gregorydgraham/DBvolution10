@@ -38,6 +38,7 @@ abstract public class DBTableRow {
             if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
                 QueryableDatatype queryableValueOfField = this.getQueryableValueOfField(field);
                 pkColumnValue = queryableValueOfField.toSQLString();
+                break;
             }
         }
         if (pkColumnValue.isEmpty()) {

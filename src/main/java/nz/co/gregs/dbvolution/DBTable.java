@@ -253,8 +253,8 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     }
 
     private DBTable<E> getRows(String whereClause) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
-        DBTable<E> dbTable = new DBTable<E>(dummy, theDatabase);
-        String selectStatement = dbTable.getSelectStatementForWhereClause() + whereClause + ";";
+        this.clear();
+        String selectStatement = this.getSelectStatementForWhereClause() + whereClause + ";";
         if (printSQLBeforeExecuting) {
             System.out.println(selectStatement);
         }
@@ -263,8 +263,8 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         boolean executed = statement.execute(selectStatement);
         ResultSet resultSet = statement.getResultSet();
 
-        addAllFields(dbTable, resultSet);
-        return dbTable;
+        addAllFields(this, resultSet);
+        return this;
     }
 
     /**
@@ -285,9 +285,21 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      * @throws IntrospectionException
      */
     public DBTable<E> getByPrimaryKey(Object pkValue) throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, SQLException, ClassNotFoundException, IntrospectionException {
-        String whereClause = "and " + getPrimaryKeyColumn() + " = '" + escapeSingleQuotes(pkValue.toString()) + "'";
-        DBTable<E> table = this.getRows(whereClause);
-        return table;
+        String whereClause = " and " + getPrimaryKeyColumn() + " = '" + escapeSingleQuotes(pkValue.toString()) + "'";
+        this.getRows(whereClause);
+        return this;
+    }
+
+    public DBTable<E> getByPrimaryKey(Number pkValue) throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, SQLException, ClassNotFoundException, IntrospectionException {
+        String whereClause = " and " + getPrimaryKeyColumn() + " = " + pkValue + " ";
+        this.getRows(whereClause);
+        return this;
+    }
+
+    public DBTable<E> getByPrimaryKey(Date pkValue) throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, SQLException, ClassNotFoundException, IntrospectionException {
+        String whereClause = " and " + getPrimaryKeyColumn() + " = " + this.theDatabase.getDateFormattedForQuery(pkValue) + " ";
+        this.getRows(whereClause);
+        return this;
     }
 
     /**

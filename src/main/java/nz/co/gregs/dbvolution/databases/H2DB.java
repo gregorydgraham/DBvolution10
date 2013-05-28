@@ -38,6 +38,7 @@ public class H2DB extends DBDatabase{
         return "'"+strToDateFormat.format(date)+"'";
     }
     
+    @Override
     public String formatColumnName(String columnName){
         return columnName.toUpperCase();
     }

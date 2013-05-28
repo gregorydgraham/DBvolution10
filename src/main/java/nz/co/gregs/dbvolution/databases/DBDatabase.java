@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
+import nz.co.gregs.dbvolution.example.Marque;
 
 /**
  *
@@ -171,10 +172,10 @@ public abstract class DBDatabase {
         getDBStatement().execute(sqlScript.toString());
     }
 
-    public <TR extends DBTableRow> void dropTable(TR marque) throws SQLException {
+    public <TR extends DBTableRow> void dropTable(TR tableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
 
-        sqlScript.append("DROP TABLE ").append(marque.getTableName());
+        sqlScript.append("DROP TABLE ").append(tableRow.getTableName());
         getDBStatement().execute(sqlScript.toString());
     }
 
@@ -192,5 +193,10 @@ public abstract class DBDatabase {
 
     public String endNumberValue() {
         return "";
+    }
+
+    @SuppressWarnings("empty-statement")
+    public <TR extends DBTableRow> void dropTableNoExceptions(TR tableRow) {
+        try{this.dropTable(tableRow);}catch(Exception exp){;}
     }
 }
