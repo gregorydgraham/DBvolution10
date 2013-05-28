@@ -25,6 +25,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
@@ -40,6 +41,11 @@ public abstract class DBDatabase {
     private String jdbcURL = "";
     private String username = "";
     private String password = null;
+    private DataSource dataSource = null;
+
+    public DBDatabase(DataSource ds) {
+        this.dataSource = ds;
+    }
 
     public DBDatabase(String driverName, String jdbcURL, String username, String password) {
         this.driverName = driverName;
@@ -52,26 +58,30 @@ public abstract class DBDatabase {
      *
      * @return
      */
-    public Statement getDBStatement() {
+    public Statement getDBStatement() throws SQLException {
         Connection connection;
         Statement statement;
-        try {
-            // load the driver
-            Class.forName(getDriverName());
-        } catch (ClassNotFoundException noDriver) {
-            throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
+        if (this.dataSource == null) {
+            try {
+                // load the driver
+                Class.forName(getDriverName());
+            } catch (ClassNotFoundException noDriver) {
+                throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
+            }
+            try {
+                connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+            } catch (SQLException noConnection) {
+                throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+            }
+            try {
+                statement = connection.createStatement();
+            } catch (SQLException noConnection) {
+                throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+            }
+            return statement;
+        } else {
+            return this.dataSource.getConnection().createStatement();
         }
-        try {
-            connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
-        } catch (SQLException noConnection) {
-            throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
-        }
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
-        }
-        return statement;
     }
 
     /**
@@ -196,6 +206,9 @@ public abstract class DBDatabase {
 
     @SuppressWarnings("empty-statement")
     public <TR extends DBTableRow> void dropTableNoExceptions(TR tableRow) {
-        try{this.dropTable(tableRow);}catch(Exception exp){;}
+        try {
+            this.dropTable(tableRow);
+        } catch (Exception exp) {;
+        }
     }
 }
