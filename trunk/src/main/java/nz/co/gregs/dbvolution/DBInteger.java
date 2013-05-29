@@ -12,12 +12,20 @@ public class DBInteger extends DBNumber {
 
     private static final long serialVersionUID = 1L;
 
+    public DBInteger(Object someNumber) {
+        this(Long.parseLong(someNumber.toString()));
+    }
+
     public DBInteger(int anInt) {
-        super(Integer.valueOf(anInt));
+        this(Integer.valueOf(anInt));
     }
 
     public DBInteger(Integer anInt) {
         super(anInt);
+    }
+
+    public DBInteger(long aLong) {
+        super(Long.valueOf(aLong));
     }
 
     public DBInteger(Long aLong) {
@@ -26,6 +34,10 @@ public class DBInteger extends DBNumber {
 
     public DBInteger() {
         super();
+    }
+    
+    public void isLiterally(Object someNumber){
+        super.isLiterally(Long.parseLong(someNumber.toString()));
     }
 
     @Override

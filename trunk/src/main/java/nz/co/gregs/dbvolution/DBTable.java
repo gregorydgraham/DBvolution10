@@ -167,8 +167,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     }
 
     private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBTableRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
-        //TODO: check column type and field class are compatible
-        QueryableDatatype value = null;
+        QueryableDatatype qdt = getQueryableDatatypeOfField(tableRow, field);
         int columnType = rsMeta.getColumnType(dbColumnIndex);
         switch (columnType) {
             case Types.INTEGER:
@@ -177,14 +176,16 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
-                value = new DBInteger(resultSet.getLong(dbColumnName));
+                Long aLong = resultSet.getLong(dbColumnName);
+                    qdt.isLiterally(aLong);
                 break;
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.NUMERIC:
             case Types.REAL:
-                value = new DBNumber(resultSet.getDouble(dbColumnName));
+                Double aDouble = resultSet.getDouble(dbColumnName);
+                    qdt.isLiterally(aDouble);
                 break;
             case Types.VARCHAR:
             case Types.CHAR:
@@ -194,26 +195,27 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             case Types.NCLOB:
             case Types.LONGNVARCHAR:
             case Types.LONGVARCHAR:
-                value = new DBString(resultSet.getString(dbColumnName));
+                String string = resultSet.getString(dbColumnName);
+                    qdt.isLiterally(string);
                 break;
             case Types.DATE:
             case Types.TIME:
-                value = new DBDate(resultSet.getDate(dbColumnName));
+                Date date = resultSet.getDate(dbColumnName);
+                    qdt.isLiterally(date);
                 break;
             case Types.TIMESTAMP:
-                value = new DBDate(resultSet.getTimestamp(dbColumnName));
+                Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
+                    qdt.isLiterally(timestamp);
                 break;
             case Types.VARBINARY:
             case Types.JAVA_OBJECT:
             case Types.LONGVARBINARY:
-                value = new DBBlob(resultSet.getObject(dbColumnName));
+                Object obj = resultSet.getObject(dbColumnName);
+                    qdt.isLiterally(obj);
                 break;
             default:
                 throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));
         }
-        setValueOfField(tableRow, field, value);
-
-
     }
 
     private String getPrimaryKeyColumn() {
@@ -408,7 +410,8 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         }
     }
 
-    private Object setValueOfField(DBTableRow tableRow, Field field, QueryableDatatype value) throws IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
+    private QueryableDatatype getQueryableDatatypeOfField(DBTableRow tableRow, Field field) throws IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
+        QueryableDatatype qdt = null;
         BeanInfo info = Introspector.getBeanInfo(tableRow.getClass());
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
         String fieldName = field.getName();
@@ -416,32 +419,38 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             String pdName = pd.getName();
             if (pdName.equals(fieldName)) {
                 try {
-                    //                    Method writeMethod = pd.getWriteMethod();
-                    //                    Object writeResults = writeMethod.invoke(tableRow, value);
                     Method readMethod = pd.getReadMethod();
                     if (readMethod == null) {
-                        throw new RuntimeException("Unable To Access Read Method for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
+                        Object possQDT = field.get(tableRow);
+                        if (possQDT instanceof QueryableDatatype) {
+                            return (QueryableDatatype) possQDT;
+                        } else {
+                            throw new RuntimeException("Unable To Access Read Method for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
+                        }
                     } else {
                         Object fieldQDT = readMethod.invoke(tableRow);
                         if (fieldQDT instanceof QueryableDatatype) {
-                            QueryableDatatype qdt = (QueryableDatatype) fieldQDT;
+                            qdt = (QueryableDatatype) fieldQDT;
                             qdt.setDatabase(this.theDatabase);
-                            qdt.isLiterally(value);
                         }
                     }
-                    return tableRow;
+                    break;
                 } catch (IllegalAccessException illacc) {
                     throw new RuntimeException("Could Not Access SET Method for " + tableRow.getClass().getSimpleName() + "." + field.getName() + ": Please ensure the SET method is public: " + tableRow.getClass().getSimpleName() + "." + field.getName());
-                } catch (IllegalArgumentException illarg) {
-                    throw new RuntimeException("Field: " + field.getName() + " is the wrong type for the database value: Field.type: " + field.toGenericString() + " Column.type:" + value.getClass().getSimpleName(), illarg);
                 }
             }
         }
 
-        // didn't find a set method so look for a public variable
-        field.set(tableRow, value);
+        if (qdt == null) {
+            Object possQDT = field.get(tableRow);
+            if (possQDT instanceof QueryableDatatype) {
+                return (QueryableDatatype) possQDT;
+            } else {
+                throw new RuntimeException("Unable Access Queryable for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
+            }
+        }
 
-        return tableRow;
+        return qdt;
     }
 
     public E firstRow() {
