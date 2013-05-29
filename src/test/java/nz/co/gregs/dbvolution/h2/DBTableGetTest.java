@@ -125,7 +125,7 @@ public class DBTableGetTest extends TestCase {
         marques = marques.getByExample(literalQuery);
         marques.printAllRows();
         assertEquals(marques.size(), 1);
-        assertEquals(marques.get(0).getPrimaryKey(), "" + 4893059);
+        assertEquals("" + 4893059, marques.get(0).getPrimaryKey());
     }
 
     public void testIsIn() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {

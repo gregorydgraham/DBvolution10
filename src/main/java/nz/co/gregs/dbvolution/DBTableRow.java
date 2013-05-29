@@ -31,12 +31,13 @@ abstract public class DBTableRow {
 
     public String getPrimaryKey() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         String pkColumnValue = "";
+        QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
         Class<? extends DBTableRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
-                QueryableDatatype queryableValueOfField = this.getQueryableValueOfField(field);
+                queryableValueOfField = this.getQueryableValueOfField(field);
                 pkColumnValue = queryableValueOfField.toSQLString();
                 break;
             }
