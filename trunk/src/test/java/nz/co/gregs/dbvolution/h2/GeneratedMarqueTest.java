@@ -72,7 +72,8 @@ public class GeneratedMarqueTest extends TestCase {
     // public void testHello() {}
 
     public void testGetSchema() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
-        List<DBTableClass> generateSchema = DBSchema.generateSchema(myDatabase, "nz.co.gregs.dbvolution.generation");
+        List<DBTableClass> generateSchema;
+        generateSchema = DBSchema.generateSchemaOfTables(myDatabase, "nz.co.gregs.dbvolution.generation");
         for(DBTableClass dbcl:generateSchema){
             System.out.print(""+dbcl.javaSource);
         }
