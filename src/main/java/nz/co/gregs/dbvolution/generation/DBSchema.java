@@ -34,9 +34,17 @@ import nz.co.gregs.dbvolution.databases.H2DB;
  */
 public class DBSchema {
 
-    DBDatabase database = new H2DB("jdbc:h2:~/dbvolution", "", "");
+    DBDatabase database;// = new H2DB("jdbc:h2:~/dbvolution", "", "");
 
-    public static List<DBTableClass> generateSchema(DBDatabase database, String packageName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+    public static List<DBTableClass> generateSchemaOfTables(DBDatabase database, String packageName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+        return generateSchema(database, packageName, new String[]{"TABLE"});
+    }
+
+    public static List<DBTableClass> generateSchemaOfViews(DBDatabase database, String packageName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+        return generateSchema(database, packageName, new String[]{"VIEW"});
+    }
+    
+    public static List<DBTableClass> generateSchema(DBDatabase database, String packageName, String[] dbObjectTypes) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         DBSchema schema = new DBSchema();
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
         schema.database = database;
@@ -45,7 +53,7 @@ public class DBSchema {
         Statement dbStatement = schema.database.getDBStatement();
         Connection connection = dbStatement.getConnection();
         DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
+        ResultSet tables = metaData.getTables(null, null, null, dbObjectTypes);
 
         while (tables.next()) {
             DBTableClass dbTableClass = new DBTableClass();
@@ -61,6 +69,7 @@ public class DBSchema {
             //@DBTableName("marque") public class Marque extends DBTableRow {
 
             String tableName = tables.getString("TABLE_NAME");
+            System.err.println(tableName);
             String className = toClassCase(tableName);
             javaSource.append("@DBTableName(\"").append(tableName).append("\") ");
             javaSource.append(lineSeparator);
