@@ -49,6 +49,7 @@ public class DBSchema {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
         schema.database = database;
         String lineSeparator = System.getProperty("line.separator");
+        String conceptBreak = lineSeparator+lineSeparator;
 
         Statement dbStatement = schema.database.getDBStatement();
         Connection connection = dbStatement.getConnection();
@@ -60,7 +61,7 @@ public class DBSchema {
             StringBuilder javaSource = new StringBuilder();
             if (packageName != null) {
                 javaSource.append("package ").append(packageName).append(";");
-                javaSource.append(lineSeparator);
+                javaSource.append(conceptBreak);
             }
             javaSource.append("import nz.co.gregs.dbvolution.*;");
             javaSource.append(lineSeparator);
@@ -74,7 +75,7 @@ public class DBSchema {
             javaSource.append("@DBTableName(\"").append(tableName).append("\") ");
             javaSource.append(lineSeparator);
             javaSource.append("public class ").append(className).append(" extends DBTableRow {");
-            javaSource.append(lineSeparator);
+            javaSource.append(conceptBreak);
 
             ResultSet columns = metaData.getColumns(null, null, tableName, null);
             while (columns.next()) {
@@ -84,10 +85,10 @@ public class DBSchema {
                 javaSource.append("    @DBTableColumn(\"").append(columnName).append("\")");
                 javaSource.append(lineSeparator);
                 javaSource.append("    public ").append(columnType).append(" ").append(fieldName).append(" = new ").append(columnType).append("();");
-                javaSource.append(lineSeparator);
+                javaSource.append(conceptBreak);
             }
             javaSource.append("}");
-            javaSource.append(lineSeparator);
+            javaSource.append(conceptBreak);
             dbTableClass.className = className;
             dbTableClass.packageName = packageName;
             dbTableClass.javaSource = javaSource.toString();
