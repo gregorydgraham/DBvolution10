@@ -454,7 +454,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     }
 
     public E firstRow() {
-        if (this.size() > 1) {
+        if (this.size() > 0) {
             return this.get(0);
         } else {
             return null;
