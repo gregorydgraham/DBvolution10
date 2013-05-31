@@ -151,4 +151,16 @@ public class DBNumber extends QueryableDatatype {
     String getSQLValue() {
         return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
     }
+    
+    public Double doubleValue(){
+        return numberValue.doubleValue();
+    }
+    
+    public Long longValue(){
+        return numberValue.longValue();
+    }
+    
+    public Integer intValue(){
+        return numberValue.intValue();
+    }
 }
