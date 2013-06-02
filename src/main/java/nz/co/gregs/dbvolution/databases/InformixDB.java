@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import com.informix.jdbc.IfxDriver;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +26,7 @@ import java.util.Date;
 public class InformixDB extends DBDatabase {
 
     public final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
-    private IfxDriver informixDriver;
+
     private SimpleDateFormat dateFormat;
     private String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
     //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
@@ -35,16 +34,6 @@ public class InformixDB extends DBDatabase {
     public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
         super(INFORMIXDRIVERNAME, jdbcURL, username, password);
         this.dateFormat = new SimpleDateFormat(DATE_FORMAT);
-//        Class.forName("com.informix.jdbc.IfxDriver");
-//        this.informixDriver = new IfxDriver();
-//        try {
-//            this.informixDriver.connect(jdbcURL, null);
-//        } catch (SQLException exp) {
-//            throw new RuntimeException("Unable to connect to URL: '" + "'. Please check your URL and database driver.", exp);
-//        }
-//        int majorVersion = informixDriver.getMajorVersion();
-//        int minorVersion = informixDriver.getMinorVersion();
-//        System.out.println("Using Informix " + majorVersion + "." + minorVersion);
     }
 
     @Override
