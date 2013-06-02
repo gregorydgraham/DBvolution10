@@ -18,9 +18,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:svn:https://svn.code.sf.net/p/dbvolution/code-0/trunk</connection>
-        <developerConnection>scm:svn:https://svn.code.sf.net/p/dbvolution/code-0/trunk</developerConnection>
-        <url>http://svn.code.sf.net/p/dbvolution/code-0/trunk</url>
+        <connection>scm:svn:https://svn.code.sf.net/p/dbvolution/code-0/</connection>
+        <developerConnection>scm:svn:https://svn.code.sf.net/p/dbvolution/code-0/</developerConnection>
+        <url>http://svn.code.sf.net/p/dbvolution/code-0/</url>
     </scm>
     <developers>
         <developer>
