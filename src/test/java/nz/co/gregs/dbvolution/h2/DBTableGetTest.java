@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
 
 /**
  *
@@ -150,5 +151,11 @@ public class DBTableGetTest extends TestCase {
         marques = marques.getByRawSQL(rawQuery);
         marques.printAllRows();
         assertEquals(marques.size(), 1);
+    }
+    
+    public void testDBSelectQuery() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException{
+        DBTable<MarqueSelectQuery> msq = new DBTable<MarqueSelectQuery>(new MarqueSelectQuery(), myDatabase);
+        msq.getAllRows();
+        msq.printAllRows();
     }
 }

@@ -67,7 +67,6 @@ public class DBSchema {
             javaSource.append(lineSeparator);
             javaSource.append("import nz.co.gregs.dbvolution.annotations.*;");
             javaSource.append(lineSeparator);
-            //@DBTableName("marque") public class Marque extends DBTableRow {
 
             String tableName = tables.getString("TABLE_NAME");
             System.err.println(tableName);

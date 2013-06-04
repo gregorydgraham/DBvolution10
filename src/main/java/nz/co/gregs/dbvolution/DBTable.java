@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -78,9 +79,13 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
 
     private String getSelectStatement() {
         StringBuilder selectStatement = new StringBuilder();
-        selectStatement.append("select ");
-
-        selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(";");
+        DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
+        if (selectQueryAnnotation != null) {
+            selectStatement.append(selectQueryAnnotation.value());
+        } else {
+            selectStatement.append("select ");
+            selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(";");
+        }
 
         if (printSQLBeforeExecuting) {
             System.out.println(selectStatement);
@@ -177,7 +182,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             case Types.ROWID:
             case Types.SMALLINT:
                 Long aLong = resultSet.getLong(dbColumnName);
-                    qdt.isLiterally(aLong);
+                qdt.isLiterally(aLong);
                 break;
             case Types.DECIMAL:
             case Types.DOUBLE:
@@ -185,7 +190,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             case Types.NUMERIC:
             case Types.REAL:
                 Double aDouble = resultSet.getDouble(dbColumnName);
-                    qdt.isLiterally(aDouble);
+                qdt.isLiterally(aDouble);
                 break;
             case Types.VARCHAR:
             case Types.CHAR:
@@ -196,22 +201,22 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             case Types.LONGNVARCHAR:
             case Types.LONGVARCHAR:
                 String string = resultSet.getString(dbColumnName);
-                    qdt.isLiterally(string);
+                qdt.isLiterally(string);
                 break;
             case Types.DATE:
             case Types.TIME:
                 Date date = resultSet.getDate(dbColumnName);
-                    qdt.isLiterally(date);
+                qdt.isLiterally(date);
                 break;
             case Types.TIMESTAMP:
                 Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
-                    qdt.isLiterally(timestamp);
+                qdt.isLiterally(timestamp);
                 break;
             case Types.VARBINARY:
             case Types.JAVA_OBJECT:
             case Types.LONGVARBINARY:
                 Object obj = resultSet.getObject(dbColumnName);
-                    qdt.isLiterally(obj);
+                qdt.isLiterally(obj);
                 break;
             default:
                 throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));
@@ -446,7 +451,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             if (possQDT instanceof QueryableDatatype) {
                 return (QueryableDatatype) possQDT;
             } else {
-                throw new RuntimeException("Unable Access Queryable for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
+                throw new RuntimeException("Unable Access QueryDatatype for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
             }
         }
 
