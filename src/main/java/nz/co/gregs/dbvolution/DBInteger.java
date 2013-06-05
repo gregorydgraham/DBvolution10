@@ -4,6 +4,9 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  *
  * @author gregory.graham
@@ -35,9 +38,30 @@ public class DBInteger extends DBNumber {
     public DBInteger() {
         super();
     }
-    
-    public void isLiterally(Object someNumber){
+
+    @Override
+    public void isLiterally(Object someNumber) {
         super.isLiterally(Long.parseLong(someNumber.toString()));
+    }
+
+    public void isIn(Integer[] inValues) {
+        ArrayList<DBInteger> intOptions = new ArrayList<DBInteger>();
+        for (Integer num : inValues) {
+            intOptions.add(new DBInteger(num));
+        }
+        isIn(intOptions.toArray(this.inValuesNumber));
+    }
+
+    public void isIn(Long[] inValues) {
+        ArrayList<DBInteger> intOptions = new ArrayList<DBInteger>();
+        for (Long num : inValues) {
+            intOptions.add(new DBInteger(num));
+        }
+        isIn(intOptions.toArray(this.inValuesNumber));
+    }
+
+    public void isIn(DBInteger[] inValues) {
+        super.isIn(inValues);
     }
 
     @Override
