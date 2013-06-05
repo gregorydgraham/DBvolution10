@@ -43,7 +43,7 @@ abstract public class DBTableRow {
             }
         }
         if (pkColumnValue.isEmpty()) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primay key field using the @DBTablePrimaryKey annotation.");
+            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field using the @DBTablePrimaryKey annotation.");
         } else {
             return pkColumnValue;
         }

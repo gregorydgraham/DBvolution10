@@ -5,6 +5,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -62,32 +63,40 @@ public class DBNumber extends QueryableDatatype {
         isIn(intOptions.toArray(this.inValuesNumber));
     }
 
+    public void isIn(Number[] inValues) {
+        ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
+        for (Number num : inValues) {
+            intOptions.add(new DBNumber(num));
+        }
+        isIn(intOptions.toArray(this.inValuesNumber));
+    }
+
     public void isIn(DBNumber[] inValues) {
-        super.isIn(inValues);
         this.inValuesNumber = inValues;
+        super.isIn(inValues);
     }
 
     @Override
     public String getWhereClause(String columnName) {
-        StringBuilder whereClause = new StringBuilder();
-        if (this.usingLiteralComparison) {
-            whereClause.append(" and ").append(columnName).append(" = ").append(this.toString()).append(" ");
-        } else if (this.usingLikeComparison) {
+//        StringBuilder whereClause = new StringBuilder();
+        if (this.usingLikeComparison) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
-        } else if (this.usingBetweenComparison) {
-            whereClause.append(" and ").append(columnName).append(" between ").append(this.lowerBoundNumber).append(" and ").append(this.upperBoundNumber).append(" ");
-        } else if (this.usingInComparison) {
-            whereClause.append(" and ").append(columnName).append(" in (");
-            String sep = "";
-            for (DBNumber val : this.inValuesNumber) {
-                whereClause.append(" and ").append(val.toSQLString()).append(sep).append(" ");
-                sep = ",";
-            }
-            whereClause.append(") ");
+//        } else if (this.usingLiteralComparison) {
+//            whereClause.append(" and ").append(columnName).append(" = ").append(this.toString()).append(" ");
+//        } else if (this.usingBetweenComparison) {
+//            whereClause.append(" and ").append(columnName).append(" between ").append(this.lowerBoundNumber.getSQLValue()).append(" and ").append(this.upperBoundNumber.getSQLValue()).append(" ");
+//        } else if (this.usingInComparison) {
+//            whereClause.append(" and ").append(columnName).append(" in (");
+//            String sep = "";
+//            for (DBNumber val : this.inValuesNumber) {
+//                whereClause.append(val.getSQLValue()).append(sep);
+//                sep = ", ";
+//            }
+//            whereClause.append(") ");
         } else {
             return super.getWhereClause(columnName);
         }
-        return whereClause.toString();
+//        return whereClause.toString();
     }
 
     @Override

@@ -79,6 +79,7 @@ public class DBDate extends QueryableDatatype {
         super.isIn(dbDates.toArray(new DBDate[]{}));
     }
 
+    @Override
     public String getSQLDatatype() {
         return "TIMESTAMP";
     }
@@ -92,4 +93,10 @@ public class DBDate extends QueryableDatatype {
     public String toSQLString() {
         return getDatabase().getDateFormattedForQuery(this.dateValue);
     }
+    
+        @Override
+    String getSQLValue() {
+        return database.getDateFormattedForQuery(dateValue);
+    }
+
 }

@@ -6,6 +6,7 @@ package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -71,18 +72,18 @@ public class QueryableDatatype extends Object implements Serializable {
     public String getWhereClause(String columnName) {
         StringBuilder whereClause = new StringBuilder();
         if (usingLiteralComparison) {
-            whereClause.append(" and ").append(columnName).append(" = ").append(this.toSQLString()).append(" ");
+            whereClause.append(" and ").append(columnName).append(" = ").append(this.getSQLValue()).append(" ");
         } else if (usingNullComparison) {
             whereClause.append(" and ").append(columnName).append(" is null ");
         } else if (usingLikeComparison) {
-            whereClause.append(" and ").append(columnName).append(" like ").append(this.toSQLString()).append(" ");
+            whereClause.append(" and ").append(columnName).append(" like ").append(this.getSQLValue()).append(" ");
         } else if (usingBetweenComparison) {
-            whereClause.append(" and ").append(columnName).append(" between ").append(this.getLowerBound().toSQLString()).append(" and ").append(this.getUpperBound().toSQLString()).append(" ");
+            whereClause.append(" and ").append(columnName).append(" between ").append(this.getLowerBound().getSQLValue()).append(" and ").append(this.getUpperBound().getSQLValue()).append(" ");
         } else if (usingInComparison) {
             whereClause.append(" and ").append(columnName).append(" in (");
             String sep = "";
-            for (QueryableDatatype str : inValues) {
-                whereClause.append(sep).append(" ").append(str.toSQLString()).append(" ");
+            for (QueryableDatatype qdt : inValues) {
+                whereClause.append(sep).append(" ").append(qdt.getSQLValue()).append(" ");
                 sep = ",";
             }
             whereClause.append(") ");
