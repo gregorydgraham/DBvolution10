@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
+import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
@@ -458,6 +459,13 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         return qdt;
     }
 
+    /**
+     *
+     * Returns the first row of the table, particularly helpful when you know
+     * there is only one row
+     *
+     * @return
+     */
     public E firstRow() {
         if (this.size() > 0) {
             return this.get(0);
@@ -466,6 +474,12 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         }
     }
 
+    /**
+     *
+     * Synonym for firstRow()
+     *
+     * @return
+     */
     public final E firstElement() {
         return this.firstRow();
     }
@@ -502,7 +516,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         StringBuilder sqlInsert = new StringBuilder();
         for (E row : oldRows) {
             row.setDatabase(theDatabase);
-            String sql = "DELETE FROM " + row.getTableName() + " WHERE " + this.getPrimaryKeyColumn() + " = " + row.getPrimaryKey() + ";";
+            String sql = "DELETE FROM " + row.getTableName() + " WHERE " + this.getPrimaryKeyColumn() + " = " + row.getPrimaryKeyValue() + ";";
             if (printSQLBeforeExecuting) {
                 System.out.println(sql);
             }
@@ -510,5 +524,21 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         }
         statement.executeBatch();
         statement.getConnection().commit();
+    }
+
+    public String getTableName() {
+        return this.dummy.getTableName();
+    }
+
+    List<String> getColumnNames() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        return dummy.getColumnNames();
+    }
+
+    Map<DBTableForeignKey,DBTableColumn> getForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        return dummy.getForeignKeys();
+    }
+
+    String getPrimaryKeyName() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        return dummy.getPrimaryKeyValue();
     }
 }

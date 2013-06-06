@@ -42,12 +42,16 @@ public class Marque extends DBTableRow {
     private DBString reservationsAllowed = new DBString();
     @DBTableColumn("creation_date")
     private DBDate creationDate = new DBDate();
+    
+    @DBTableForeignKey("CAR_COMPANY.UID_CARCOMPANY")
+    @DBTableColumn("fk_carcompany")
+    private DBInteger carCompany = new DBInteger();
 
 
     public Marque(){
     }
     
-    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed) {
+    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, int carCompany) {
         this.uidMarque.isLiterally(uidMarque);
         this.isUsedForTAFROs.isLiterally(isUsedForTAFROs);
         toyotaStatusClassID.isLiterally(statusClass);
@@ -57,6 +61,7 @@ public class Marque extends DBTableRow {
         this.name.isLiterally(name);
         this.pricingCodePrefix.isLiterally(pricingCodePrefix);
         this.reservationsAllowed.isLiterally(reservationsAllowed);
+        this.carCompany.isLiterally(carCompany);
     }
 
     /**
@@ -212,5 +217,12 @@ public class Marque extends DBTableRow {
      */
     public void setCreationDate(DBDate creationDate) {
         this.creationDate = creationDate;
+    }
+
+    /**
+     * @return the carCompany
+     */
+    public DBInteger getCarCompany() {
+        return carCompany;
     }
 }
