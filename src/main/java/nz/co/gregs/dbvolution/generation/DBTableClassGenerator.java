@@ -67,19 +67,24 @@ public class DBTableClassGenerator {
 
         String viewsPackage = packageName + ".views";
         String viewsPath = viewsPackage.replaceAll("[.]", "/");
-        List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(informixDB, viewsPackage);
         File dir = new File(baseDirectory + "/" + viewsPath);
-        if (dir.mkdirs()) {
+        if (dir.mkdirs()||dir.exists()) {
+            List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(informixDB, viewsPackage);
             saveGenerateClassesToDirectory(generatedViews, dir);
+        } else {
+            throw new RuntimeException("Unable to Make Directories, QUITTING!");
         }
 
         String tablesPackage = packageName + ".tables";
         String tablesPath = tablesPackage.replaceAll("[.]", "/");
-        List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(informixDB, tablesPackage);
         dir = new File(baseDirectory + "/" + tablesPath);
-        if (dir.mkdirs()) {
+        if (dir.mkdirs()||dir.exists()) {
+            List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(informixDB, tablesPackage);
             saveGenerateClassesToDirectory(generatedTables, dir);
+        } else {
+            throw new RuntimeException("Unable to Make Directories, QUITTING!");
         }
+
     }
 
     /**
@@ -161,15 +166,21 @@ public class DBTableClassGenerator {
      * @throws InvocationTargetException
      */
     public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, String[] dbObjectTypes) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
-        DBTableClassGenerator schema = new DBTableClassGenerator();
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
         String lineSeparator = System.getProperty("line.separator");
         String conceptBreak = lineSeparator + lineSeparator;
 
         Statement dbStatement = database.getDBStatement();
         Connection connection = dbStatement.getConnection();
+        String catalog = connection.getCatalog();
+        String schema = null;
+        try {
+            schema = connection.getSchema();
+        } catch (java.lang.AbstractMethodError exp) {
+            // NOT USING Java 1.7+ apparently
+        }
         DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet tables = metaData.getTables(null, null, null, dbObjectTypes);
+        ResultSet tables = metaData.getTables(catalog, schema, null, dbObjectTypes);
 
         while (tables.next()) {
             DBTableClass dbTableClass = new DBTableClass();
@@ -184,21 +195,21 @@ public class DBTableClassGenerator {
             javaSource.append(conceptBreak);
 
             String tableName = tables.getString("TABLE_NAME");
-            System.err.println(tableName);
+            System.out.println(tableName);
             String className = toClassCase(tableName);
             javaSource.append("@DBTableName(\"").append(tableName).append("\") ");
             javaSource.append(lineSeparator);
             javaSource.append("public class ").append(className).append(" extends DBTableRow {");
             javaSource.append(conceptBreak);
 
-            ResultSet primaryKeysRS = metaData.getPrimaryKeys(null, null, tableName);
+            ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, tableName);
             List<String> pkNames = new ArrayList<String>();
             while (primaryKeysRS.next()) {
                 String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
                 pkNames.add(pkColumnName);
             }
 
-            ResultSet foreignKeysRS = metaData.getImportedKeys(null, null, tableName);
+            ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, tableName);
             Map<String, String[]> fkNames = new HashMap<String, String[]>();
             while (foreignKeysRS.next()) {
                 String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
@@ -207,7 +218,7 @@ public class DBTableClassGenerator {
                 fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
             }
 
-            ResultSet columns = metaData.getColumns(null, null, tableName, null);
+            ResultSet columns = metaData.getColumns(catalog, schema, tableName, null);
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
                 String fieldName = toFieldCase(columnName);
@@ -218,7 +229,7 @@ public class DBTableClassGenerator {
                     javaSource.append("    @DBTablePrimaryKey").append(lineSeparator);
                 }
                 String[] pkData = fkNames.get(columnName);
-                if (pkData!=null&&pkData.length == 2) {
+                if (pkData != null && pkData.length == 2) {
                     javaSource.append("    @DBTableForeignKey(").append(pkData[0]).append(".").append(pkData[1]).append(")");
                     javaSource.append(lineSeparator);
                 }
@@ -227,6 +238,7 @@ public class DBTableClassGenerator {
             }
             javaSource.append("}");
             javaSource.append(conceptBreak);
+            System.out.println(javaSource.toString());
             dbTableClass.className = className;
             dbTableClass.packageName = packageName;
             dbTableClass.javaSource = javaSource.toString();
@@ -317,12 +329,13 @@ public class DBTableClassGenerator {
      * @return
      */
     public static String toFieldCase(String s) {
-        String[] parts = s.split("_");
-        String camelCaseString = "";
-        for (String part : parts) {
-            camelCaseString = camelCaseString + toProperCase(part);
-        }
-        camelCaseString = camelCaseString.substring(0, 1).toLowerCase() + camelCaseString.substring(1);
+//        String[] parts = s.split("_");
+//        String camelCaseString = "";
+//        for (String part : parts) {
+//            camelCaseString = camelCaseString + toProperCase(part);
+//        }
+        String classClass = toClassCase(s);
+        String camelCaseString = classClass.substring(0, 1).toLowerCase() + classClass.substring(1);
         return camelCaseString;
     }
 
@@ -334,7 +347,12 @@ public class DBTableClassGenerator {
      * @return
      */
     public static String toProperCase(String s) {
-        return s.substring(0, 1).toUpperCase()
-                + s.substring(1).toLowerCase();
+        String firstChar = s.substring(0, 1);
+        String rest = s.substring(1);
+        if ("[^a-zA-Z]".matches(firstChar)) {
+            return "_" + firstChar + rest.toLowerCase();
+        } else {
+            return firstChar.toUpperCase() + rest.toLowerCase();
+        }
     }
 }
