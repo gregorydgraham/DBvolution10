@@ -26,7 +26,6 @@ import java.util.Date;
 public class InformixDB extends DBDatabase {
 
     public final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
-
     private SimpleDateFormat dateFormat;
     private String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
     //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
@@ -39,5 +38,16 @@ public class InformixDB extends DBDatabase {
     @Override
     public String getDateFormattedForQuery(Date date) {
         return "TO_DATE('" + dateFormat.format(date) + "','%Y-%m-%d %H:%M:%S')";
+    }
+
+    /**
+     *
+     * @param tableName
+     * @param columnName
+     * @return
+     */
+    @Override
+    public String getTableAnColumnFormattedForDBTableForeignKey(String tableName, String columnName) {
+        return "\"" + tableName + "\".\"" + columnName + "\"";
     }
 }

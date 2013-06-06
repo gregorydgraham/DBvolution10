@@ -211,4 +211,8 @@ public abstract class DBDatabase {
         } catch (Exception exp) {;
         }
     }
+
+    public String getTableAnColumnFormattedForDBTableForeignKey(String tableName, String columnName) {
+        return tableName+"."+columnName;
+    }
 }

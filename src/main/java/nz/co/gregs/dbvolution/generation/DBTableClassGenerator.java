@@ -230,7 +230,7 @@ public class DBTableClassGenerator {
                 }
                 String[] pkData = fkNames.get(columnName);
                 if (pkData != null && pkData.length == 2) {
-                    javaSource.append("    @DBTableForeignKey(").append(pkData[0]).append(".").append(pkData[1]).append(")");
+                    javaSource.append("    @DBTableForeignKey(\"").append(database.getTableAnColumnFormattedForDBTableForeignKey(pkData[0], pkData[1])).append("\")");
                     javaSource.append(lineSeparator);
                 }
                 javaSource.append("    public ").append(columnType).append(" ").append(fieldName).append(" = new ").append(columnType).append("();");
@@ -312,11 +312,11 @@ public class DBTableClassGenerator {
      */
     public static String toClassCase(String s) {
         String[] parts = s.split("_");
-        String camelCaseString = "";
+        String classCaseString = "";
         for (String part : parts) {
-            camelCaseString = camelCaseString + toProperCase(part);
+            classCaseString = classCaseString + toProperCase(part);
         }
-        return camelCaseString;
+        return classCaseString;
     }
 
     /**
@@ -348,11 +348,11 @@ public class DBTableClassGenerator {
      */
     public static String toProperCase(String s) {
         String firstChar = s.substring(0, 1);
-        String rest = s.substring(1);
-        if ("[^a-zA-Z]".matches(firstChar)) {
-            return "_" + firstChar + rest.toLowerCase();
+        String rest = s.substring(1).toLowerCase();
+        if (firstChar.matches("[^a-zA-Z]")) {
+            return "_" + firstChar + rest;
         } else {
-            return firstChar.toUpperCase() + rest.toLowerCase();
+            return firstChar.toUpperCase() + rest;
         }
     }
 }
