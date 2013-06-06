@@ -11,9 +11,14 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
+import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -29,7 +34,7 @@ abstract public class DBTableRow {
     public DBTableRow() {
     }
 
-    public String getPrimaryKey() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public String getPrimaryKeyValue() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         String pkColumnValue = "";
         QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
@@ -48,6 +53,20 @@ abstract public class DBTableRow {
             return pkColumnValue;
         }
 
+    }
+
+    public String getPrimaryKeyName() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        String pkColumnValue = "";
+        QueryableDatatype queryableValueOfField;
+        @SuppressWarnings("unchecked")
+        Class<? extends DBTableRow> thisClass = this.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
+                return field.getAnnotation(DBTableColumn.class).value();
+            }
+        }
+        throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field using the @DBTablePrimaryKey annotation.");
     }
 
     /**
@@ -163,5 +182,68 @@ abstract public class DBTableRow {
             }
         }
         return string.append(")").toString();
+    }
+
+    /**
+     *
+     * @return @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
+    protected List<String> getColumnNames() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        ArrayList<String> columnNames = new ArrayList<String>();
+        Class<? extends DBTableRow> thisClass = this.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            //            if (field.isAnnotationPresent(DBTableColumn.class)) {
+            //                DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
+            //                columnNames.add(annotation.value());
+            //            }
+            String dbColumnName = getDBColumnName(field);
+            if (dbColumnName!=null){
+                columnNames.add(dbColumnName);
+            }
+        }
+        return columnNames;
+    }
+    
+        private String getDBColumnName(Field field) {
+        String columnName = "";
+
+        if (field.isAnnotationPresent(DBTableColumn.class)) {
+            DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
+            columnName = annotation.value();
+            if (columnName
+                    == null || columnName.isEmpty()) {
+                columnName = field.getName();
+            }
+        }
+        return columnName;
+    }
+
+    protected Map<DBTableForeignKey, DBTableColumn> getForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        HashMap<DBTableForeignKey,DBTableColumn> foreignKeys;
+        foreignKeys = new HashMap<DBTableForeignKey,DBTableColumn>();
+        Class<? extends DBTableRow> thisClass = this.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBTableForeignKey.class)) {
+                DBTableForeignKey annotation = field.getAnnotation(DBTableForeignKey.class);
+                DBTableColumn columnName = field.getAnnotation(DBTableColumn.class);
+                foreignKeys.put(annotation, columnName);
+            }
+        }
+        return foreignKeys;
+    }
+
+    boolean hasPrimaryKeyForFK(DBTableForeignKey fk) throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        final String tableName = getTableName();
+        final String primaryKeyName = getPrimaryKeyName();
+        final String properPKName = database.formatTableAndColumnForDBTableForeignKey(tableName, primaryKeyName);
+        final String fkName = fk.value();
+
+        return properPKName.equals(fkName);
     }
 }

@@ -35,57 +35,57 @@ import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
  *
  * @author gregory.graham
  */
-public class DBTableGetTest extends TestCase {
+public class DBTableGetTest extends AbstractTest {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionGetTest", "", "");
+//    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionGetTest", "", "");
     Marque myTableRow = new Marque();
-    DBTable<Marque> marques;
+//    DBTable<Marque> marques;
     List<Marque> myTableRows = new ArrayList<Marque>();
 
     public DBTableGetTest(String testName) {
         super(testName);
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        myDatabase.dropTableNoExceptions(myTableRow);
-        myDatabase.createTable(myTableRow);
-        DBTable.setPrintSQLBeforeExecuting(false);
-        marques = new DBTable<Marque>(myTableRow, myDatabase);
-
-
-        myTableRows.add(new Marque(4893059, "False", 1246974, "", 3, "UV", "PEUGEOT", "", "Y"));
-        myTableRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y"));
-        myTableRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y"));
-        myTableRows.add(new Marque(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y"));
-        myTableRows.add(new Marque(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y"));
-        myTableRows.add(new Marque(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y"));
-        myTableRows.add(new Marque(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y"));
-        myTableRows.add(new Marque(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y"));
-        myTableRows.add(new Marque(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y"));
-        myTableRows.add(new Marque(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y"));
-        myTableRows.add(new Marque(4896300, "False", 1246974, "", 2, "UV", "HYUNDAI", "", "Y"));
-        myTableRows.add(new Marque(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y"));
-        myTableRows.add(new Marque(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y"));
-        myTableRows.add(new Marque(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y"));
-        myTableRows.add(new Marque(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y"));
-        myTableRows.add(new Marque(8376505, "False", 1246974, "", 0, "", "ISUZU", "", "Y"));
-        myTableRows.add(new Marque(8587147, "False", 1246974, "", 0, "", "DAEWOO", "", "Y"));
-        myTableRows.add(new Marque(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y"));
-        myTableRows.add(new Marque(13224369, "False", 1246974, "", 0, "", "VW", "", "Y"));
-        myTableRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y"));
-
-        marques.insert(myTableRows);
-        DBTable.setPrintSQLBeforeExecuting(true);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        myDatabase.dropTable(myTableRow);
-
-        super.tearDown();
-    }
+//    @Override
+//    protected void setUp() throws Exception {
+//        super.setUp();
+//        myDatabase.dropTableNoExceptions(myTableRow);
+//        myDatabase.createTable(myTableRow);
+//        DBTable.setPrintSQLBeforeExecuting(false);
+//        marques = new DBTable<Marque>(myTableRow, myDatabase);
+//
+//
+//        myTableRows.add(new Marque(4893059, "False", 1246974, "", 3, "UV", "PEUGEOT", "", "Y"));
+//        myTableRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y"));
+//        myTableRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y"));
+//        myTableRows.add(new Marque(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y"));
+//        myTableRows.add(new Marque(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y"));
+//        myTableRows.add(new Marque(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y"));
+//        myTableRows.add(new Marque(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y"));
+//        myTableRows.add(new Marque(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y"));
+//        myTableRows.add(new Marque(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y"));
+//        myTableRows.add(new Marque(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y"));
+//        myTableRows.add(new Marque(4896300, "False", 1246974, "", 2, "UV", "HYUNDAI", "", "Y"));
+//        myTableRows.add(new Marque(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y"));
+//        myTableRows.add(new Marque(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y"));
+//        myTableRows.add(new Marque(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y"));
+//        myTableRows.add(new Marque(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y"));
+//        myTableRows.add(new Marque(8376505, "False", 1246974, "", 0, "", "ISUZU", "", "Y"));
+//        myTableRows.add(new Marque(8587147, "False", 1246974, "", 0, "", "DAEWOO", "", "Y"));
+//        myTableRows.add(new Marque(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y"));
+//        myTableRows.add(new Marque(13224369, "False", 1246974, "", 0, "", "VW", "", "Y"));
+//        myTableRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y"));
+//
+//        marques.insert(myTableRows);
+//        DBTable.setPrintSQLBeforeExecuting(true);
+//    }
+//
+//    @Override
+//    protected void tearDown() throws Exception {
+//        myDatabase.dropTable(myTableRow);
+//
+//        super.tearDown();
+//    }
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
 
@@ -94,15 +94,15 @@ public class DBTableGetTest extends TestCase {
         for (DBTableRow row : marques) {
             System.out.println(row);
         }
-        assertTrue("Incorrect number of marques retreived", marques.size() == myTableRows.size());
+        assertTrue("Incorrect number of marques retreived", marques.size() == marqueRows.size());
     }
 
     public void testGetFirstAndPrimaryKey() throws SQLException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, InstantiationException, SQLException, ClassNotFoundException {
         DBTable<Marque> singleMarque = new DBTable<Marque>(new Marque(), myDatabase);
-        DBTableRow row = myTableRows.get(0);
+        DBTableRow row = marqueRows.get(0);
         String primaryKey;
         if (row != null) {
-            primaryKey = row.getPrimaryKey();
+            primaryKey = row.getPrimaryKeyValue();
             singleMarque.getByPrimaryKey(Long.parseLong(primaryKey));
             singleMarque.printAllRows();
         }
@@ -117,7 +117,7 @@ public class DBTableGetTest extends TestCase {
         for (Marque row : marques) {
             System.out.println(row);
         }
-        assertTrue("Incorrect number of marques retreived", marques.size() == myTableRows.size());
+        assertTrue("Incorrect number of marques retreived", marques.size() == marqueRows.size());
     }
 
     public void testIsLiterally() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
@@ -126,7 +126,7 @@ public class DBTableGetTest extends TestCase {
         marques = marques.getByExample(literalQuery);
         marques.printAllRows();
         assertEquals(marques.size(), 1);
-        assertEquals("" + 4893059, marques.get(0).getPrimaryKey());
+        assertEquals("" + 4893059, marques.get(0).getPrimaryKeyValue());
     }
 
     public void testIsIn() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
@@ -135,7 +135,7 @@ public class DBTableGetTest extends TestCase {
         hummerQuery.getName().isIn(new String[]{"PEUGEOT", "HUMMER"});
         marques = marques.getByExample(hummerQuery);
         marques.printAllRows();
-        assertEquals(marques.size(), 1);
+        assertEquals(marques.size(), 2);
     }
 
     public void testDateIsBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
@@ -143,14 +143,14 @@ public class DBTableGetTest extends TestCase {
         oldQuery.getCreationDate().isBetween(new Date(0L), new Date());
         marques = marques.getByExample(oldQuery);
         marques.printAllRows();
-        assertTrue("Wrong number of rows selected, should be all of them", marques.size() == myTableRows.size());
+        assertTrue("Wrong number of rows selected, should be all of them", marques.size() == marqueRows.size());
     }
 
     public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         String rawQuery = "and lower(name) in ('peugeot','hummer') ;  ";
         marques = marques.getByRawSQL(rawQuery);
         marques.printAllRows();
-        assertEquals(marques.size(), 1);
+        assertEquals(marques.size(), 2);
     }
     
     public void testDBSelectQuery() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException{

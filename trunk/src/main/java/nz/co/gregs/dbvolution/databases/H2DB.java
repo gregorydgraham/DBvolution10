@@ -43,4 +43,16 @@ public class H2DB extends DBDatabase{
         return columnName.toUpperCase();
     }
     
+    /**
+     * 
+     * overrides standard method and uppercases everything
+     *
+     * @param tableName
+     * @param columnName
+     * @return
+     */
+    @Override
+    public String formatTableAndColumnForDBTableForeignKey(String tableName, String columnName) {
+        return super.formatTableAndColumnForDBTableForeignKey(tableName, columnName).toUpperCase();
+    }
 }

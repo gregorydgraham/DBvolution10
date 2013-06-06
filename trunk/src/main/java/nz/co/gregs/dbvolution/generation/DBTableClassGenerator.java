@@ -230,7 +230,7 @@ public class DBTableClassGenerator {
                 }
                 String[] pkData = fkNames.get(columnName);
                 if (pkData != null && pkData.length == 2) {
-                    javaSource.append("    @DBTableForeignKey(\"").append(database.getTableAnColumnFormattedForDBTableForeignKey(pkData[0], pkData[1])).append("\")");
+                    javaSource.append("    @DBTableForeignKey(\"").append(database.formatTableAndColumnForDBTableForeignKey(pkData[0], pkData[1])).append("\")");
                     javaSource.append(lineSeparator);
                 }
                 javaSource.append("    public ").append(columnType).append(" ").append(fieldName).append(" = new ").append(columnType).append("();");
