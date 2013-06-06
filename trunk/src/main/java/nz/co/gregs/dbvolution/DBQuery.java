@@ -112,6 +112,7 @@ public class DBQuery {
                 for (Field field : fields) {
                     DBTableColumn columnName = field.getAnnotation(DBTableColumn.class);
                     QueryableDatatype qdt = tab.getQueryableValueOfField(field);
+                    throw new RuntimeException("NOT YET IMPLEMENTED");
                 }
             }
         }
