@@ -28,7 +28,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.InformixDB;
 
@@ -105,7 +107,7 @@ public class DBTableClassGenerator {
             File file;
             FileOutputStream fileOutputStream;
             for (DBTableClass clazz : generatedClasses) {
-                System.out.println(clazz.className+" => "+classDirectory.getAbsolutePath()+"/"+clazz.className + ".java");
+                System.out.println(clazz.className + " => " + classDirectory.getAbsolutePath() + "/" + clazz.className + ".java");
                 file = new File(classDirectory, clazz.className + ".java");
                 fileOutputStream = new FileOutputStream(file);
                 System.out.println(clazz.javaSource);
@@ -179,7 +181,7 @@ public class DBTableClassGenerator {
             javaSource.append("import nz.co.gregs.dbvolution.*;");
             javaSource.append(lineSeparator);
             javaSource.append("import nz.co.gregs.dbvolution.annotations.*;");
-            javaSource.append(lineSeparator);
+            javaSource.append(conceptBreak);
 
             String tableName = tables.getString("TABLE_NAME");
             System.err.println(tableName);
@@ -189,6 +191,22 @@ public class DBTableClassGenerator {
             javaSource.append("public class ").append(className).append(" extends DBTableRow {");
             javaSource.append(conceptBreak);
 
+            ResultSet primaryKeysRS = metaData.getPrimaryKeys(null, null, tableName);
+            List<String> pkNames = new ArrayList<String>();
+            while (primaryKeysRS.next()) {
+                String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
+                pkNames.add(pkColumnName);
+            }
+
+            ResultSet foreignKeysRS = metaData.getImportedKeys(null, null, tableName);
+            Map<String, String[]> fkNames = new HashMap<String, String[]>();
+            while (foreignKeysRS.next()) {
+                String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
+                String pkColumnName = foreignKeysRS.getString("PKCOLUMN_NAME");
+                String fkColumnName = foreignKeysRS.getString("FKCOLUMN_NAME");
+                fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
+            }
+
             ResultSet columns = metaData.getColumns(null, null, tableName, null);
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
@@ -196,6 +214,14 @@ public class DBTableClassGenerator {
                 String columnType = getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"));
                 javaSource.append("    @DBTableColumn(\"").append(columnName).append("\")");
                 javaSource.append(lineSeparator);
+                if (pkNames.contains(columnName)) {
+                    javaSource.append("    @DBTablePrimaryKey").append(lineSeparator);
+                }
+                String[] pkData = fkNames.get(columnName);
+                if (pkData!=null&&pkData.length == 2) {
+                    javaSource.append("    @DBTableForeignKey(").append(pkData[0]).append(".").append(pkData[1]).append(")");
+                    javaSource.append(lineSeparator);
+                }
                 javaSource.append("    public ").append(columnType).append(" ").append(fieldName).append(" = new ").append(columnType).append("();");
                 javaSource.append(conceptBreak);
             }
