@@ -45,7 +45,7 @@ public class DBQueryTest extends AbstractTest {
         final String generateSQLString = dbQuery.generateSQLString().replaceAll(" +", " ");
 
 
-        String expectedResult = "select car_company.name, car_company.uid_carcompany, marque.numeric_code, marque.uid_marque, marque.isusedfortafros, marque.fk_toystatusclass, marque.intindallocallowed, marque.upd_count, marque.auto_created, marque.name, marque.pricingcodeprefix, marque.reservationsalwd, marque.creation_date, marque.fk_carcompany from car_company, marque where 1=1 and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
+        String expectedResult = "select CAR_COMPANY.NAME, CAR_COMPANY.UID_CARCOMPANY, MARQUE.NUMERIC_CODE, MARQUE.UID_MARQUE, MARQUE.ISUSEDFORTAFROS, MARQUE.FK_TOYSTATUSCLASS, MARQUE.INTINDALLOCALLOWED, MARQUE.UPD_COUNT, MARQUE.AUTO_CREATED, MARQUE.NAME, MARQUE.PRICINGCODEPREFIX, MARQUE.RESERVATIONSALWD, MARQUE.CREATION_DATE, MARQUE.FK_CARCOMPANY from car_company, marque where 1=1 and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertEquals(expectedResult, generateSQLString);
@@ -63,7 +63,7 @@ public class DBQueryTest extends AbstractTest {
         final String generateSQLString = dbQuery.generateSQLString().replaceAll(" +", " ");
 
 
-//        List<Map<Class,DBTableRow>>results = dbQuery.getResults();
+        List<Map<Class,DBTableRow>> results = dbQuery.getResults();
         //results.printAll();
 
     }
