@@ -63,7 +63,7 @@ public class DBQueryTest extends AbstractTest {
         final String generateSQLString = dbQuery.generateSQLString().replaceAll(" +", " ");
 
 
-        List<Map<Class,DBTableRow>>results = dbQuery.getResults();
+//        List<Map<Class,DBTableRow>>results = dbQuery.getResults();
         //results.printAll();
 
     }

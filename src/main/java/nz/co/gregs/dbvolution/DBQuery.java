@@ -108,10 +108,15 @@ public class DBQuery {
         ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
         while (resultSet.next()) {
             for (DBTableRow tab : queryTables) {
+                String tableName = tab.getTableName();
                 Field[] fields = tab.getClass().getFields();
                 for (Field field : fields) {
                     DBTableColumn columnName = field.getAnnotation(DBTableColumn.class);
                     QueryableDatatype qdt = tab.getQueryableValueOfField(field);
+                    //EITHER
+                    // pick the table+column from the resultset and use the right QDT impl
+                    //OR
+                    // crop the result set and send it to the existing DBTableRow functions
                     throw new RuntimeException("NOT YET IMPLEMENTED");
                 }
             }
