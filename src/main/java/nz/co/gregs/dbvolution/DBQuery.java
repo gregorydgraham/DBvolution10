@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
@@ -68,11 +69,12 @@ public class DBQuery {
             otherTables.addAll(queryTables);
             otherTables.remove(tab);
             tableName = tab.getTableName();
-            DBTable<DBTableRow> actualTable = new DBTable<DBTableRow>(tab, database);
+            //DBTable<DBTableRow> actualTable = new DBTable<DBTableRow>(tab, database);
 
             List<String> columnNames = tab.getColumnNames();
             for (String columnName : columnNames) {
-                selectClause.append(colSep).append(tableName).append(".").append(columnName);
+                String formattedColumnName = database.formatTableAndColumnForDBTableForeignKey(tableName, columnName);
+                selectClause.append(colSep).append(formattedColumnName);
                 colSep = ", ";
             }
             fromClause.append(separator).append(tableName);
@@ -103,10 +105,12 @@ public class DBQuery {
 
     public List<Map<Class, DBTableRow>> getResults() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
         ArrayList<Map<Class, DBTableRow>> resultList = new ArrayList<Map<Class, DBTableRow>>();
+        Map<Class, DBTableRow> rowClassMap;
 
         Statement dbStatement = database.getDBStatement();
         ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
         while (resultSet.next()) {
+            rowClassMap = new HashMap();
             for (DBTableRow tab : queryTables) {
                 String tableName = tab.getTableName();
                 Field[] fields = tab.getClass().getFields();
@@ -115,15 +119,17 @@ public class DBQuery {
                     QueryableDatatype qdt = tab.getQueryableValueOfField(field);
                     //EITHER
                     // pick the table+column from the resultset and use the right QDT impl
+                    String formattedColumnName = database.formatTableAndColumnForDBTableForeignKey(tableName, columnName.value());
+                    String stringOfValue = resultSet.getString(formattedColumnName);
+                    qdt.isLiterally(stringOfValue);
                     //OR
                     // crop the result set and send it to the existing DBTableRow functions
-                    throw new RuntimeException("NOT YET IMPLEMENTED");
+                    //throw new RuntimeException("NOT YET IMPLEMENTED");
                 }
+                rowClassMap.put(tab.getClass(), tab);
             }
+            resultList.add(rowClassMap);
         }
-
-
-
         return resultList;
     }
 }
