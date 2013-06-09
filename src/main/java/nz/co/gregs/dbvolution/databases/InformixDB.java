@@ -47,7 +47,7 @@ public class InformixDB extends DBDatabase {
      * @return
      */
     @Override
-    public String formatTableAndColumnForDBTableForeignKey(String tableName, String columnName) {
+    public String formatTableAndColumnName(String tableName, String columnName) {
         return "\\\"" + tableName + "\\\".\\\"" + columnName + "\\\"";
     }
 }

@@ -11,6 +11,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,6 +103,47 @@ abstract public class DBTableRow {
         } catch (IllegalAccessException ex) {
             throw new RuntimeException("Unable To Access Variable Nor GET Method: Please change protection to public for GET method or field " + this.getClass().getSimpleName() + "." + field.getName(), ex);
         }
+    }
+    
+    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() throws IntrospectionException, IllegalArgumentException, InvocationTargetException{
+        HashMap<String, QueryableDatatype> columnsAndQDTs = new HashMap<String, QueryableDatatype>();
+        String columnName;
+        QueryableDatatype qdt;
+        
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBTableColumn.class)) {
+                qdt = this.getQueryableValueOfField(field);
+                columnName = this.database.formatTableAndColumnName(this.getTableName(), getDBColumnName(field));
+                columnsAndQDTs.put(columnName, qdt);
+            }
+        }
+        return columnsAndQDTs;
+    }
+
+    /**
+     *
+     * @return
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws SQLException
+     * @throws InstantiationException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws ClassNotFoundException
+     * @throws IntrospectionException
+     */
+    public String getWhereClause() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+        StringBuilder whereClause = new StringBuilder();
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBTableColumn.class)) {
+                QueryableDatatype qdt = this.getQueryableValueOfField(field);
+                qdt.setDatabase(this.database);
+                whereClause.append(qdt.getWhereClause(this.database.formatTableAndColumnName(this.getTableName(), getDBColumnName(field))));
+            }
+        }
+        return whereClause.toString();
     }
 
     /**
@@ -201,14 +243,14 @@ abstract public class DBTableRow {
             //                columnNames.add(annotation.value());
             //            }
             String dbColumnName = getDBColumnName(field);
-            if (dbColumnName!=null){
+            if (dbColumnName != null) {
                 columnNames.add(dbColumnName);
             }
         }
         return columnNames;
     }
-    
-        private String getDBColumnName(Field field) {
+
+    private String getDBColumnName(Field field) {
         String columnName = "";
 
         if (field.isAnnotationPresent(DBTableColumn.class)) {
@@ -223,8 +265,8 @@ abstract public class DBTableRow {
     }
 
     protected Map<DBTableForeignKey, DBTableColumn> getForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
-        HashMap<DBTableForeignKey,DBTableColumn> foreignKeys;
-        foreignKeys = new HashMap<DBTableForeignKey,DBTableColumn>();
+        HashMap<DBTableForeignKey, DBTableColumn> foreignKeys;
+        foreignKeys = new HashMap<DBTableForeignKey, DBTableColumn>();
         Class<? extends DBTableRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
 
@@ -241,7 +283,7 @@ abstract public class DBTableRow {
     boolean hasPrimaryKeyForFK(DBTableForeignKey fk) throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final String tableName = getTableName();
         final String primaryKeyName = getPrimaryKeyName();
-        final String properPKName = database.formatTableAndColumnForDBTableForeignKey(tableName, primaryKeyName);
+        final String properPKName = database.formatTableAndColumnName(tableName, primaryKeyName);
         final String fkName = fk.value();
 
         return properPKName.equals(fkName);

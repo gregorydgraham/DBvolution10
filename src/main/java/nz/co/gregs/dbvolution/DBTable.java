@@ -351,16 +351,18 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      * @throws IntrospectionException
      */
     public String getSQLForExample(E query) throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
-        StringBuilder whereClause = new StringBuilder();
-        Field[] fields = query.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTableColumn.class)) {
-                QueryableDatatype qdt = query.getQueryableValueOfField(field);
-                qdt.setDatabase(theDatabase);
-                whereClause.append(qdt.getWhereClause(getDBColumnName(field)));
-            }
-        }
-        return whereClause.toString();
+//        StringBuilder whereClause = new StringBuilder();
+//        Field[] fields = query.getClass().getDeclaredFields();
+//        for (Field field : fields) {
+//            if (field.isAnnotationPresent(DBTableColumn.class)) {
+//                QueryableDatatype qdt = query.getQueryableValueOfField(field);
+//                qdt.setDatabase(theDatabase);
+//                whereClause.append(qdt.getWhereClause(getDBColumnName(field)));
+//            }
+//        }
+//        return whereClause.toString();
+        query.setDatabase(theDatabase);
+        return query.getWhereClause();
     }
 
     /**

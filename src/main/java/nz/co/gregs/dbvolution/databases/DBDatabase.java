@@ -212,7 +212,17 @@ public abstract class DBDatabase {
         }
     }
 
-    public String formatTableAndColumnForDBTableForeignKey(String tableName, String columnName) {
+    /**
+     * 
+     * Formats the table and column name pair correctly for this database
+     * 
+     * e.g table, column => TABLE.COLUMN
+     *
+     * @param tableName
+     * @param columnName
+     * @return
+     */
+    public String formatTableAndColumnName(String tableName, String columnName) {
         return tableName+"."+columnName;
     }
 }

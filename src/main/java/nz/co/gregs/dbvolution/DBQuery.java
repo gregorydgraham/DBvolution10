@@ -17,6 +17,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.beans.IntrospectionException;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
@@ -38,10 +39,12 @@ public class DBQuery {
 
     DBDatabase database;
     private List<DBTableRow> queryTables;
+    private List<DBQueryRow> results;
 
     public DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBTableRow>();
         this.database = database;
+        this.results = null;
     }
 
     /**
@@ -52,9 +55,10 @@ public class DBQuery {
      */
     public void add(DBTableRow table) {
         queryTables.add(table);
+        results = null;
     }
 
-    public String generateSQLString() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
+    public String generateSQLString() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
         StringBuilder selectClause = new StringBuilder().append("select ");
         StringBuilder fromClause = new StringBuilder().append(" from ");
         StringBuilder whereClause = new StringBuilder().append(" where 1=1 ");
@@ -64,29 +68,31 @@ public class DBQuery {
         String colSep = "";
         String tableName;
 
-        for (DBTableRow tab : queryTables) {
+        for (DBTableRow tabRow : queryTables) {
             otherTables.clear();
             otherTables.addAll(queryTables);
-            otherTables.remove(tab);
-            tableName = tab.getTableName();
+            otherTables.remove(tabRow);
+            tableName = tabRow.getTableName();
             //DBTable<DBTableRow> actualTable = new DBTable<DBTableRow>(tab, database);
 
-            List<String> columnNames = tab.getColumnNames();
+            List<String> columnNames = tabRow.getColumnNames();
             for (String columnName : columnNames) {
-                String formattedColumnName = database.formatTableAndColumnForDBTableForeignKey(tableName, columnName);
+                String formattedColumnName = database.formatTableAndColumnName(tableName, columnName);
                 selectClause.append(colSep).append(formattedColumnName);
                 colSep = ", ";
             }
             fromClause.append(separator).append(tableName);
+            tabRow.setDatabase(database);
+            whereClause.append(tabRow.getWhereClause());
 
             for (DBTableRow otherTab : otherTables) {
                 Map<DBTableForeignKey, DBTableColumn> fks = otherTab.getForeignKeys();
                 for (DBTableForeignKey fk : fks.keySet()) {
-                    tab.setDatabase(database);
-                    String formattedPK = database.formatTableAndColumnForDBTableForeignKey(tableName, tab.getPrimaryKeyName());
+                    tabRow.setDatabase(database);
+                    String formattedPK = database.formatTableAndColumnName(tableName, tabRow.getPrimaryKeyName());
                     if (formattedPK.equalsIgnoreCase(fk.value())) {
                         String fkColumnName = fks.get(fk).value();
-                        String formattedFK = database.formatTableAndColumnForDBTableForeignKey(otherTab.getTableName(), fkColumnName);
+                        String formattedFK = database.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
                         whereClause
                                 .append(" and ")
                                 .append(formattedPK)
@@ -103,33 +109,60 @@ public class DBQuery {
         return selectClause.append(fromClause).append(whereClause).append(";").toString();
     }
 
-    public List<Map<Class, DBTableRow>> getResults() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
-        ArrayList<Map<Class, DBTableRow>> resultList = new ArrayList<Map<Class, DBTableRow>>();
-        Map<Class, DBTableRow> rowClassMap;
+    public List<DBQueryRow> getResults() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+        results = new ArrayList<DBQueryRow>();
+        DBQueryRow queryRow;
 
         Statement dbStatement = database.getDBStatement();
         ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
         while (resultSet.next()) {
-            rowClassMap = new HashMap();
-            for (DBTableRow tab : queryTables) {
-                String tableName = tab.getTableName();
-                Field[] fields = tab.getClass().getFields();
-                for (Field field : fields) {
-                    DBTableColumn columnName = field.getAnnotation(DBTableColumn.class);
-                    QueryableDatatype qdt = tab.getQueryableValueOfField(field);
-                    //EITHER
-                    // pick the table+column from the resultset and use the right QDT impl
-                    String formattedColumnName = database.formatTableAndColumnForDBTableForeignKey(tableName, columnName.value());
-                    String stringOfValue = resultSet.getString(formattedColumnName);
+            queryRow = new DBQueryRow();
+            for (DBTableRow tableRow : queryTables) {
+                //String tableName = tableRow.getTableName();
+                DBTableRow newInstance = tableRow.getClass().getConstructor().newInstance();
+                newInstance.setDatabase(database);
+                Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
+                //Field[] fields = tableRow.getClass().getFields();
+                for (String columnName : columnsAndQueryableDatatypes.keySet()) {
+                    QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
+                    String stringOfValue = resultSet.getString(columnName);
                     qdt.isLiterally(stringOfValue);
-                    //OR
-                    // crop the result set and send it to the existing DBTableRow functions
-                    //throw new RuntimeException("NOT YET IMPLEMENTED");
                 }
-                rowClassMap.put(tab.getClass(), tab);
+                queryRow.put(newInstance.getClass(), newInstance);
             }
-            resultList.add(rowClassMap);
+            results.add(queryRow);
         }
-        return resultList;
+        return results;
+    }
+
+    /**
+     * Convenience method to print all the rows in the current collection
+     * Equivalent to: printAll(System.out);
+     *
+     */
+    public void printAll() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+        printAll(System.out);
+    }
+
+    /**
+     * Fast way to print the results
+     *
+     * myTable.printAllRows(System.err);
+     *
+     * @param ps
+     */
+    public void printAll(PrintStream ps) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+        if (results == null) {
+            this.getResults();
+        }
+
+        for (DBQueryRow row : this.results) {
+            for (DBTableRow tab : this.queryTables) {
+                DBTableRow rowPart = row.get(tab.getClass());
+                String rowPartStr = rowPart.toString();
+                ps.print(rowPartStr);
+            }
+            ps.println();
+        }
     }
 }

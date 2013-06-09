@@ -52,7 +52,7 @@ public class H2DB extends DBDatabase{
      * @return
      */
     @Override
-    public String formatTableAndColumnForDBTableForeignKey(String tableName, String columnName) {
-        return super.formatTableAndColumnForDBTableForeignKey(tableName, columnName).toUpperCase();
+    public String formatTableAndColumnName(String tableName, String columnName) {
+        return super.formatTableAndColumnName(tableName, columnName).toUpperCase();
     }
 }
