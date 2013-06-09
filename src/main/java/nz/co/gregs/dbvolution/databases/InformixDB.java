@@ -48,6 +48,11 @@ public class InformixDB extends DBDatabase {
      */
     @Override
     public String formatTableAndColumnName(String tableName, String columnName) {
-        return "\\\"" + tableName + "\\\".\\\"" + columnName + "\\\"";
+        return "" + tableName + "." + columnName + "";
+    }
+
+    @Override
+    public String formatColumnNameForResultSet(String tableName, String columnName) {
+        return columnName;
     }
 }

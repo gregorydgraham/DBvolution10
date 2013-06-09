@@ -18,13 +18,11 @@ package nz.co.gregs.dbvolution;
 
 import java.beans.IntrospectionException;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
@@ -109,7 +107,7 @@ public class DBQuery {
         return selectClause.append(fromClause).append(whereClause).append(";").toString();
     }
 
-    public List<DBQueryRow> getResults() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public List<DBQueryRow> getAllRows() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
         results = new ArrayList<DBQueryRow>();
         DBQueryRow queryRow;
 
@@ -125,7 +123,8 @@ public class DBQuery {
                 //Field[] fields = tableRow.getClass().getFields();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
-                    String stringOfValue = resultSet.getString(columnName);
+                    String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(),columnName);
+                    String stringOfValue = resultSet.getString(fullColumnName);
                     qdt.isLiterally(stringOfValue);
                 }
                 queryRow.put(newInstance.getClass(), newInstance);
@@ -153,7 +152,7 @@ public class DBQuery {
      */
     public void printAll(PrintStream ps) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
         if (results == null) {
-            this.getResults();
+            this.getAllRows();
         }
 
         for (DBQueryRow row : this.results) {

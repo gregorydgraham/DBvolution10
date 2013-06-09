@@ -114,7 +114,7 @@ abstract public class DBTableRow {
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBTableColumn.class)) {
                 qdt = this.getQueryableValueOfField(field);
-                columnName = this.database.formatTableAndColumnName(this.getTableName(), getDBColumnName(field));
+                columnName = getDBColumnName(field);
                 columnsAndQDTs.put(columnName, qdt);
             }
         }

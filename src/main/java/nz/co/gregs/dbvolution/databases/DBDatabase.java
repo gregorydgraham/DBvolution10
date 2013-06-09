@@ -225,4 +225,8 @@ public abstract class DBDatabase {
     public String formatTableAndColumnName(String tableName, String columnName) {
         return tableName+"."+columnName;
     }
+
+    public String formatColumnNameForResultSet(String tableName, String columnName) {
+        return formatTableAndColumnName(tableName, columnName);
+    }
 }
