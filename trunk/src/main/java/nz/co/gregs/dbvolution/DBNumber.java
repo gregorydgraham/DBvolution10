@@ -114,7 +114,11 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     public void isLiterally(Object literal) {
-        this.isLiterally(Double.parseDouble(literal.toString()));
+        if (literal==null){
+            super.isLiterally(null);
+            this.numberValue = null;
+        }else{
+        this.isLiterally(Double.parseDouble(literal.toString()));}
     }
 
     @Override

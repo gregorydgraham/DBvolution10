@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import static junit.framework.TestCase.assertEquals;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -36,7 +37,7 @@ public class DBQueryTest extends AbstractTest {
         super(name);
     }
 
-    public void testQueryGeneration() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
+    public void testQueryGeneration() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
         DBQuery dbQuery = new DBQuery(myDatabase);
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
@@ -45,7 +46,7 @@ public class DBQueryTest extends AbstractTest {
         final String generateSQLString = dbQuery.generateSQLString().replaceAll(" +", " ");
 
 
-        String expectedResult = "select CAR_COMPANY.NAME, CAR_COMPANY.UID_CARCOMPANY, MARQUE.NUMERIC_CODE, MARQUE.UID_MARQUE, MARQUE.ISUSEDFORTAFROS, MARQUE.FK_TOYSTATUSCLASS, MARQUE.INTINDALLOCALLOWED, MARQUE.UPD_COUNT, MARQUE.AUTO_CREATED, MARQUE.NAME, MARQUE.PRICINGCODEPREFIX, MARQUE.RESERVATIONSALWD, MARQUE.CREATION_DATE, MARQUE.FK_CARCOMPANY from car_company, marque where 1=1 and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
+        String expectedResult = "select CAR_COMPANY.NAME, CAR_COMPANY.UID_CARCOMPANY, MARQUE.NUMERIC_CODE, MARQUE.UID_MARQUE, MARQUE.ISUSEDFORTAFROS, MARQUE.FK_TOYSTATUSCLASS, MARQUE.INTINDALLOCALLOWED, MARQUE.UPD_COUNT, MARQUE.AUTO_CREATED, MARQUE.NAME, MARQUE.PRICINGCODEPREFIX, MARQUE.RESERVATIONSALWD, MARQUE.CREATION_DATE, MARQUE.FK_CARCOMPANY from car_company, marque where 1=1 and CAR_COMPANY.NAME = 'TOYOTA' and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertEquals(expectedResult, generateSQLString);
@@ -54,7 +55,7 @@ public class DBQueryTest extends AbstractTest {
 //        results.printAll();
 
     }
-    public void testQueryExecution() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException {
+    public void testQueryExecution() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
         DBQuery dbQuery = new DBQuery(myDatabase);
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
@@ -63,8 +64,8 @@ public class DBQueryTest extends AbstractTest {
         final String generateSQLString = dbQuery.generateSQLString().replaceAll(" +", " ");
 
 
-        List<Map<Class,DBTableRow>> results = dbQuery.getResults();
-        //results.printAll();
+        List<DBQueryRow> results = dbQuery.getResults();
+        dbQuery.printAll();
 
     }
 }
