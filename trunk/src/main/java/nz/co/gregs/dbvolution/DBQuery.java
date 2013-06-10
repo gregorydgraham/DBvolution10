@@ -78,12 +78,14 @@ public class DBQuery {
             for (String columnName : columnNames) {
                 String formattedColumnName = database.formatTableAndColumnName(tableName, columnName);
                 selectClause.append(colSep).append(formattedColumnName);
-                colSep = ", "+lineSep;
+                colSep = ", " + lineSep;
             }
             fromClause.append(separator).append(tableName);
             tabRow.setDatabase(database);
             String tabRowCriteria = tabRow.getWhereClause();
-            whereClause.append(lineSep).append(tabRowCriteria);
+            if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
+                whereClause.append(lineSep).append(tabRowCriteria);
+            }
 
             for (DBTableRow otherTab : otherTables) {
                 Map<DBTableForeignKey, DBTableColumn> fks = otherTab.getForeignKeys();
@@ -103,11 +105,11 @@ public class DBQuery {
                 }
             }
 
-            separator = ", "+lineSep;
+            separator = ", " + lineSep;
             otherTables.addAll(queryTables);
         }
 
-        return selectClause.append(fromClause).append(whereClause).append(";").toString();
+        return selectClause.append(lineSep).append(fromClause).append(lineSep).append(whereClause).append(";").toString();
     }
 
     public List<DBQueryRow> getAllRows() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
@@ -126,7 +128,7 @@ public class DBQuery {
                 //Field[] fields = tableRow.getClass().getFields();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
-                    String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(),columnName);
+                    String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
                     String stringOfValue = resultSet.getString(fullColumnName);
                     qdt.isLiterally(stringOfValue);
                 }
