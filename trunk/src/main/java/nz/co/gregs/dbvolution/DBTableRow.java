@@ -67,7 +67,7 @@ abstract public class DBTableRow {
                 return field.getAnnotation(DBTableColumn.class).value();
             }
         }
-        throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field using the @DBTablePrimaryKey annotation.");
+        throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of "+this.getClass().getSimpleName()+" using the @DBTablePrimaryKey annotation.");
     }
 
     /**
