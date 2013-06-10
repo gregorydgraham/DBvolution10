@@ -78,25 +78,11 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     public String getWhereClause(String columnName) {
-//        StringBuilder whereClause = new StringBuilder();
         if (this.usingLikeComparison) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
-//        } else if (this.usingLiteralComparison) {
-//            whereClause.append(" and ").append(columnName).append(" = ").append(this.toString()).append(" ");
-//        } else if (this.usingBetweenComparison) {
-//            whereClause.append(" and ").append(columnName).append(" between ").append(this.lowerBoundNumber.getSQLValue()).append(" and ").append(this.upperBoundNumber.getSQLValue()).append(" ");
-//        } else if (this.usingInComparison) {
-//            whereClause.append(" and ").append(columnName).append(" in (");
-//            String sep = "";
-//            for (DBNumber val : this.inValuesNumber) {
-//                whereClause.append(val.getSQLValue()).append(sep);
-//                sep = ", ";
-//            }
-//            whereClause.append(") ");
         } else {
             return super.getWhereClause(columnName);
         }
-//        return whereClause.toString();
     }
 
     @Override
@@ -114,17 +100,18 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     public void isLiterally(Object literal) {
-        if (literal==null){
+        if (literal == null) {
             super.isLiterally(null);
             this.numberValue = null;
-        }else{
-        this.isLiterally(Double.parseDouble(literal.toString()));}
+        } else {
+            this.isLiterally(Double.parseDouble(literal.toString()));
+        }
     }
 
     @Override
     public void isLiterally(QueryableDatatype literalValue) {
         if (literalValue instanceof DBNumber) {
-            this.isLiterally(((DBNumber)literalValue).numberValue);
+            this.isLiterally(((DBNumber) literalValue).numberValue);
         } else {
             super.isLiterally(literalValue);
         }
@@ -164,16 +151,16 @@ public class DBNumber extends QueryableDatatype {
     String getSQLValue() {
         return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
     }
-    
-    public Double doubleValue(){
-        return numberValue.doubleValue();
+
+    public Double doubleValue() {
+        return numberValue == null ? null : numberValue.doubleValue();
     }
-    
-    public Long longValue(){
-        return numberValue.longValue();
+
+    public Long longValue() {
+        return numberValue == null ? null : numberValue.longValue();
     }
-    
-    public Integer intValue(){
-        return numberValue.intValue();
+
+    public Integer intValue() {
+        return numberValue == null ? null : numberValue.intValue();
     }
 }
