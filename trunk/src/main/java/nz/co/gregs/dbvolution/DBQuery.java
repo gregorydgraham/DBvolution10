@@ -162,7 +162,7 @@ public class DBQuery {
 
         for (DBQueryRow row : this.results) {
             for (DBTableRow tab : this.queryTables) {
-                DBTableRow rowPart = row.get(tab.getClass());
+                DBTableRow rowPart = row.get(tab);
                 String rowPartStr = rowPart.toString();
                 ps.print(rowPartStr);
             }

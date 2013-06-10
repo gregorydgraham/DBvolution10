@@ -22,6 +22,15 @@ import java.util.Map;
  *
  * @author gregorygraham
  */
-public class DBQueryRow extends HashMap<Class, DBTableRow>{
+public class DBQueryRow<Class, E extends DBTableRow> extends HashMap<Class, E>{
+    
+    /**
+     *
+     * @param exemplar
+     * @return
+     */
+    public E get(E exemplar){
+        return (E)get(exemplar.getClass());
+    }
     
 }
