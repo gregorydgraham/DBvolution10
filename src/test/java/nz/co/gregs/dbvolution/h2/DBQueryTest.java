@@ -61,10 +61,11 @@ public class DBQueryTest extends AbstractTest {
 "MARQUE.CREATION_DATE, \n" +
 "MARQUE.FK_CARCOMPANY from car_company, \n" +
 "marque where 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n" +
-"and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";//"select CAR_COMPANY.NAME, CAR_COMPANY.UID_CARCOMPANY, MARQUE.NUMERIC_CODE, MARQUE.UID_MARQUE, MARQUE.ISUSEDFORTAFROS, MARQUE.FK_TOYSTATUSCLASS, MARQUE.INTINDALLOCALLOWED, MARQUE.UPD_COUNT, MARQUE.AUTO_CREATED, MARQUE.NAME, MARQUE.PRICINGCODEPREFIX, MARQUE.RESERVATIONSALWD, MARQUE.CREATION_DATE, MARQUE.FK_CARCOMPANY from car_company, marque where 1=1 and CAR_COMPANY.NAME = 'TOYOTA' and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
+"and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY\n;";
+        //"select CAR_COMPANY.NAME, CAR_COMPANY.UID_CARCOMPANY, MARQUE.NUMERIC_CODE, MARQUE.UID_MARQUE, MARQUE.ISUSEDFORTAFROS, MARQUE.FK_TOYSTATUSCLASS, MARQUE.INTINDALLOCALLOWED, MARQUE.UPD_COUNT, MARQUE.AUTO_CREATED, MARQUE.NAME, MARQUE.PRICINGCODEPREFIX, MARQUE.RESERVATIONSALWD, MARQUE.CREATION_DATE, MARQUE.FK_CARCOMPANY from car_company, marque where 1=1 and CAR_COMPANY.NAME = 'TOYOTA' and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        //assertEquals(expectedResult, generateSQLString);
+        assertEquals(expectedResult.replaceAll("\\s+", " "), generateSQLString.replaceAll("\\s+", " "));
     }
     public void testQueryExecution() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
         DBQuery dbQuery = new DBQuery(myDatabase);

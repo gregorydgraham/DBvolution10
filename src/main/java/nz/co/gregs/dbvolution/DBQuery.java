@@ -82,7 +82,8 @@ public class DBQuery {
             }
             fromClause.append(separator).append(tableName);
             tabRow.setDatabase(database);
-            whereClause.append(tabRow.getWhereClause());
+            String tabRowCriteria = tabRow.getWhereClause();
+            whereClause.append(lineSep).append(tabRowCriteria);
 
             for (DBTableRow otherTab : otherTables) {
                 Map<DBTableForeignKey, DBTableColumn> fks = otherTab.getForeignKeys();
