@@ -61,6 +61,7 @@ public class DBQuery {
         StringBuilder fromClause = new StringBuilder().append(" from ");
         StringBuilder whereClause = new StringBuilder().append(" where 1=1 ");
         ArrayList<DBTableRow> otherTables = new ArrayList<DBTableRow>();
+        String lineSep = System.getProperty("line.separator");
 
         String separator = "";
         String colSep = "";
@@ -77,7 +78,7 @@ public class DBQuery {
             for (String columnName : columnNames) {
                 String formattedColumnName = database.formatTableAndColumnName(tableName, columnName);
                 selectClause.append(colSep).append(formattedColumnName);
-                colSep = ", ";
+                colSep = ", "+lineSep;
             }
             fromClause.append(separator).append(tableName);
             tabRow.setDatabase(database);
@@ -92,7 +93,8 @@ public class DBQuery {
                         String fkColumnName = fks.get(fk).value();
                         String formattedFK = database.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
                         whereClause
-                                .append(" and ")
+                                .append(lineSep)
+                                .append("and ")
                                 .append(formattedPK)
                                 .append(" = ")
                                 .append(formattedFK);
@@ -100,7 +102,7 @@ public class DBQuery {
                 }
             }
 
-            separator = ", ";
+            separator = ", "+lineSep;
             otherTables.addAll(queryTables);
         }
 
