@@ -1,0 +1,72 @@
+package nz.co.gregs.dbvolution.h2;
+
+import java.util.List;
+
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.example.Marque;
+
+/**
+ * Alternative suggestions for usability of a DBQuery and DBQueryRow type.
+ * @author Malcolm Lett
+ */
+public class DBQueryUsageSuggestion {
+	// test that the most common usage is easy to do:
+	//   JOIN two tables, adding WHERE on any fields within either table, and having
+	//   the tree of associations automatically built up.
+	// NOTE: internally within dbvolution, this is probably a convenience mapping from List<Map<Class, DBTableRow<?>>
+	public static void getCarCompanyWithCommonTreeAssociations() {
+		// assumes: CarCompany class has property "marques: List<Marque>";
+        DBSimpleQuery<CarCompany> dbQuery = new DBSimpleQuery<CarCompany>(myDatabase);
+        CarCompany carCompany = new CarCompany();
+        carCompany.name.isLiterally("TOYOTA");
+        dbQuery.add(carCompany);
+        dbQuery.add(new Marque());
+        
+        List<CarCompany> results = dbQuery.getAllRows();
+        
+        for (CarCompany company: results) {
+        	System.out.println(company);
+        	for (Marque marque: company.getMarques()) {
+        		System.out.println("   "+marque);
+        	}
+        }
+	}
+
+	// minor alternative to the above
+	public static void getCarCompanyWithCommonTreeAssociations2() {
+        CarCompany carCompany = new CarCompany();
+        carCompany.name.isLiterally("TOYOTA");
+        DBSimpleQuery<CarCompany> dbQuery = new DBSimpleQuery<CarCompany>(carCompany);
+        dbQuery.add(new Marque());
+        
+        List<CarCompany> results = dbQuery.getAllRows();
+        
+        // ...etc...
+	}
+
+	// test that the weirder joins can be supported
+	public static void getArbitraryJoin() {
+        DBArbitraryQuery dbQuery = new DBArbitraryQuery(myDatabase);
+        CarCompany carCompany = new CarCompany();
+        carCompany.name.isLiterally("TOYOTA");
+        dbQuery.add(carCompany);
+        dbQuery.add(new Marque());
+        // ...plus other crazy joiny stuff that doesn't fit in the above examples.
+        // ...maybe the ability to specify how tables are joined?? eeek.
+
+        List<DBQueryRow> results = dbQuery.getAllRows();
+        dbQuery.printAll();
+
+        for (DBQueryRow queryRow : results) {
+            CarCompany carCo = (CarCompany) queryRow.get(carCompany);
+            String carCoName = carCo.name.toString();
+
+            Marque marque = (Marque) queryRow.get(new Marque());
+            Long marqueUID = marque.getUidMarque().longValue();
+
+            System.out.println(carCoName + ": " + marqueUID);
+        }
+	}
+}
