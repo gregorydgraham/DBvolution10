@@ -93,4 +93,28 @@ public class DBQueryTest extends AbstractTest {
             assertTrue(marqueUID==1||marqueUID==4896300);
         }
     }
+    public void testQuickQueryCreation() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+        
+        CarCompany carCompany = new CarCompany();
+        carCompany.name.isLiterally("TOYOTA");
+        DBQuery dbQuery = new DBQuery(myDatabase, carCompany,new Marque());
+
+        List<DBQueryRow> results = dbQuery.getAllRows();
+        System.out.println(dbQuery.generateSQLString());
+        dbQuery.printAll();
+        assertEquals(2, results.size());
+
+        for (DBQueryRow queryRow : results) {
+            //DBQueryRow queryRow = results.get(1);
+            CarCompany carCo = (CarCompany) queryRow.get(carCompany);
+            String carCoName = carCo.name.toString();
+
+            Marque marque = (Marque) queryRow.get(new Marque());
+            Long marqueUID = marque.getUidMarque().longValue();
+
+            System.out.println(carCoName + ": " + marqueUID);
+            assertTrue(carCoName.equals("TOYOTA"));
+            assertTrue(marqueUID==1||marqueUID==4896300);
+        }
+    }
 }

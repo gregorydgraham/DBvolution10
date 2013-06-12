@@ -45,6 +45,12 @@ public class DBQuery {
         this.results = null;
     }
 
+    public DBQuery(DBDatabase database, DBTableRow ... examples){
+        this(database);
+        for (DBTableRow example: examples){
+            this.add(example);
+        }
+    }
     /**
      *
      * Add a table to the query
