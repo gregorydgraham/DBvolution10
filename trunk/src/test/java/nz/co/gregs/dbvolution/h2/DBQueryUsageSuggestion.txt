@@ -62,35 +62,5 @@ public class DBQueryUsageSuggestion {
         // ...etc...
 	}
 
-	// test that the weirder joins can be supported
-	public static void getArbitraryJoin() {
-        DBArbitraryQuery dbQuery = new DBArbitraryQuery(myDatabase);
-        CarCompany carCompany = new CarCompany();
-        carCompany.name.isLiterally("TOYOTA");
-        dbQuery.add(carCompany);
-        dbQuery.add(new Marque());
-        // ...plus other crazy joiny stuff that doesn't fit in the above examples.
-        // ...maybe the ability to specify how tables are joined?? eeek.
-//Eeek indeed! This "here a miracle occurs" bit has been annoying me for a while :-S
-//could we do something like dbQuery.add(marque, marque.getName, DBOperator.EQUALS, carCompany.getName)
-//or is that just too diabolical?
-//It is, isn't it :(
-//An only hideous option might be dbQuery.add(marque, "marque.name = carCompany.Name")
-//but getting the raw SQL right would be, umm, hideous.
-//Of course the other problem is Java programmer will just use it all the time, instead of defining the schema properly.
-//Sigh...
-
-        List<DBQueryRow> results = dbQuery.getAllRows();
-        dbQuery.printAll();
-
-        for (DBQueryRow queryRow : results) {
-            CarCompany carCo = (CarCompany) queryRow.get(carCompany);
-            String carCoName = carCo.name.toString();
-
-            Marque marque = (Marque) queryRow.get(new Marque());
-            Long marqueUID = marque.getUidMarque().longValue();
-
-            System.out.println(carCoName + ": " + marqueUID);
-        }
-	}
-}
+next section moved to:
+https://sourceforge.net/p/dbvolution/tickets/7/
