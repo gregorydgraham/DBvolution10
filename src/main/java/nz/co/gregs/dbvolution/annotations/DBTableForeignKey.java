@@ -18,6 +18,6 @@ import nz.co.gregs.dbvolution.DBTableRow;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBTableForeignKey {
     
-    Class<? extends DBTableRow> dbTableRow();
+    Class<? extends DBTableRow> value();
 
 }
