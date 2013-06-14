@@ -5,6 +5,7 @@ import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
+import nz.co.gregs.dbvolution.example.CarCompany;
 
 /**
  *
@@ -26,7 +27,7 @@ public class Marque extends DBTableRow {
     @DBTableColumn("isusedfortafros")
     private DBString isUsedForTAFROs = new DBString();
     @DBTableColumn("fk_toystatusclass")
-    @DBTableForeignKey("\"mdamgr\".toystatusclass")
+//    @DBTableForeignKey("\"mdamgr\".toystatusclass")
     private DBNumber toyotaStatusClassID = new DBNumber();
     @DBTableColumn("intindallocallowed")
     private DBString intIndividualAllocationsAllowed = new DBString();
@@ -43,7 +44,8 @@ public class Marque extends DBTableRow {
     @DBTableColumn("creation_date")
     private DBDate creationDate = new DBDate();
     
-    @DBTableForeignKey("CAR_COMPANY.UID_CARCOMPANY")
+//    @DBTableForeignKey("CAR_COMPANY.UID_CARCOMPANY")
+    @DBTableForeignKey(dbTableRow = CarCompany.class)
     @DBTableColumn("fk_carcompany")
     private DBInteger carCompany = new DBInteger();
 

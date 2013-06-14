@@ -281,11 +281,12 @@ abstract public class DBTableRow {
     }
 
     boolean hasPrimaryKeyForFK(DBTableForeignKey fk) throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        final String tableName = getTableName();
-        final String primaryKeyName = getPrimaryKeyName();
-        final String properPKName = database.formatTableAndColumnName(tableName, primaryKeyName);
-        final String fkName = fk.value();
-
-        return properPKName.equals(fkName);
+        //        final String tableName = getTableName();
+        //        final String primaryKeyName = getPrimaryKeyName();
+        //        final String properPKName = database.formatTableAndColumnName(tableName, primaryKeyName);
+        //        final String fkName = fk.value();
+        //        return properPKName.equals(fkName);
+        Class fkTableRow = fk.dbTableRow();
+        return this.getClass().equals(fkTableRow);
     }
 }

@@ -98,7 +98,10 @@ public class DBQuery {
                 for (DBTableForeignKey fk : fks.keySet()) {
                     tabRow.setDatabase(database);
                     String formattedPK = database.formatTableAndColumnName(tableName, tabRow.getPrimaryKeyName());
-                    if (formattedPK.equalsIgnoreCase(fk.value())) {
+                    Class pkClass= fk.dbTableRow();
+                    DBTableRow fkReferencesTable = (DBTableRow)pkClass.getConstructor().newInstance();
+                    String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(),fkReferencesTable.getPrimaryKeyName());
+                    if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                         String fkColumnName = fks.get(fk).value();
                         String formattedFK = database.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
                         whereClause
