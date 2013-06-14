@@ -286,7 +286,7 @@ abstract public class DBTableRow {
         //        final String properPKName = database.formatTableAndColumnName(tableName, primaryKeyName);
         //        final String fkName = fk.value();
         //        return properPKName.equals(fkName);
-        Class fkTableRow = fk.dbTableRow();
+        Class fkTableRow = fk.value();
         return this.getClass().equals(fkTableRow);
     }
 }

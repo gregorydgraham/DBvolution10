@@ -45,7 +45,7 @@ public class Marque extends DBTableRow {
     private DBDate creationDate = new DBDate();
     
 //    @DBTableForeignKey("CAR_COMPANY.UID_CARCOMPANY")
-    @DBTableForeignKey(dbTableRow = CarCompany.class)
+    @DBTableForeignKey(CarCompany.class)
     @DBTableColumn("fk_carcompany")
     private DBInteger carCompany = new DBInteger();
 
