@@ -8,6 +8,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import nz.co.gregs.dbvolution.DBTableRow;
 
 /**
  *
@@ -16,7 +17,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBTableForeignKey {
-    //String value();
-    Class dbTableRow();
+    
+    Class<? extends DBTableRow> dbTableRow();
 
 }
