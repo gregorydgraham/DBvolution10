@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
@@ -38,6 +39,7 @@ public class DBQuery {
     DBDatabase database;
     private List<DBTableRow> queryTables;
     private List<DBQueryRow> results;
+    private Map<Class, Map<String, DBTableRow>>existingInstances = new HashMap<Class, Map<String, DBTableRow>>();
 
     public DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBTableRow>();
@@ -141,7 +143,17 @@ public class DBQuery {
                     String stringOfValue = resultSet.getString(fullColumnName);
                     qdt.isLiterally(stringOfValue);
                 }
-                queryRow.put(newInstance.getClass(), newInstance);
+                Map<String, DBTableRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
+                if(existingInstancesOfThisTableRow==null){
+                    existingInstancesOfThisTableRow=new HashMap<String, DBTableRow>();
+                    existingInstances.put(tableRow.getClass(), existingInstancesOfThisTableRow);
+                }
+                DBTableRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeyValue());
+                if(existingInstance==null){
+                    existingInstance=newInstance;
+                    existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKeyValue(), existingInstance);
+                }
+                queryRow.put(existingInstance.getClass(), existingInstance);
             }
             results.add(queryRow);
         }
