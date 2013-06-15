@@ -27,7 +27,9 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.DBTableClass;
+import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
 import nz.co.gregs.dbvolution.generation.Marque;
+import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
 
 /**
  *
@@ -72,7 +74,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     // public void testHello() {}
     public void testGetSchema() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         List<DBTableClass> generateSchema;
-        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation");
+        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation",new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.javaSource);
         }
