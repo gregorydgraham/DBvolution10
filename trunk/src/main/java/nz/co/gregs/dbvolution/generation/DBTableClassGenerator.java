@@ -47,6 +47,9 @@ public class DBTableClassGenerator {
      *
      * Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
+     * 
+     * convenience method which calls 
+     *      generateClassesFromJDBCURLToDirectory(jdbcURL,username,password,packageName,baseDirectory,new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
      *
      * @param jdbcURL
      * @param username
@@ -63,13 +66,17 @@ public class DBTableClassGenerator {
      * @throws IOException
      */
     public static void generateClassesFromJDBCURLToDirectory(String jdbcURL, String username, String password, String packageName, String baseDirectory) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
+        generateClassesFromJDBCURLToDirectory(jdbcURL,username,password,packageName,baseDirectory,new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+    }
+
+    public static void generateClassesFromJDBCURLToDirectory(String jdbcURL, String username, String password, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
         InformixDB informixDB = new InformixDB(jdbcURL, username, password);
 
         String viewsPackage = packageName + ".views";
         String viewsPath = viewsPackage.replaceAll("[.]", "/");
         File dir = new File(baseDirectory + "/" + viewsPath);
-        if (dir.mkdirs()||dir.exists()) {
-            List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(informixDB, viewsPackage);
+        if (dir.mkdirs() || dir.exists()) {
+            List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(informixDB, viewsPackage, pkRecog, fkRecog);
             saveGenerateClassesToDirectory(generatedViews, dir);
         } else {
             throw new RuntimeException("Unable to Make Directories, QUITTING!");
@@ -78,8 +85,8 @@ public class DBTableClassGenerator {
         String tablesPackage = packageName + ".tables";
         String tablesPath = tablesPackage.replaceAll("[.]", "/");
         dir = new File(baseDirectory + "/" + tablesPath);
-        if (dir.mkdirs()||dir.exists()) {
-            List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(informixDB, tablesPackage);
+        if (dir.mkdirs() || dir.exists()) {
+            List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(informixDB, tablesPackage, pkRecog, fkRecog);
             saveGenerateClassesToDirectory(generatedTables, dir);
         } else {
             throw new RuntimeException("Unable to Make Directories, QUITTING!");
@@ -134,8 +141,8 @@ public class DBTableClassGenerator {
      * @throws IntrospectionException
      * @throws InvocationTargetException
      */
-    public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
-        return generateClassesOfObjectTypes(database, packageName, new String[]{"TABLE"});
+    public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, new String[]{"TABLE"});
     }
 
     /**
@@ -149,8 +156,8 @@ public class DBTableClassGenerator {
      * @throws IntrospectionException
      * @throws InvocationTargetException
      */
-    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
-        return generateClassesOfObjectTypes(database, packageName, new String[]{"VIEW"});
+    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, new String[]{"VIEW"});
     }
 
     /**
@@ -165,7 +172,7 @@ public class DBTableClassGenerator {
      * @throws IntrospectionException
      * @throws InvocationTargetException
      */
-    public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, String[] dbObjectTypes) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+    public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String[] dbObjectTypes) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
         String lineSeparator = System.getProperty("line.separator");
         String conceptBreak = lineSeparator + lineSeparator;
@@ -225,12 +232,17 @@ public class DBTableClassGenerator {
                 String columnType = getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"));
                 javaSource.append("    @DBTableColumn(\"").append(columnName).append("\")");
                 javaSource.append(lineSeparator);
-                if (pkNames.contains(columnName)) {
+                if (pkNames.contains(columnName) || pkRecog.isPrimaryKeyColumn(tableName, columnName)) {
                     javaSource.append("    @DBTablePrimaryKey").append(lineSeparator);
                 }
                 String[] pkData = fkNames.get(columnName);
                 if (pkData != null && pkData.length == 2) {
                     javaSource.append("    @DBTableForeignKey(\"").append(database.formatTableAndColumnName(pkData[0], pkData[1])).append("\")");
+                    javaSource.append(lineSeparator);
+                } else if (fkRecog.isForeignKeyColumn(tableName, columnName)) {
+                    String referencedColumn = fkRecog.getReferencedColumn(tableName, columnName);
+                    String referencedTable = fkRecog.getReferencedTable(tableName, columnName);
+                    javaSource.append("    @DBTableForeignKey(\"").append(database.formatTableAndColumnName(referencedTable, referencedColumn)).append("\")");
                     javaSource.append(lineSeparator);
                 }
                 javaSource.append("    public ").append(columnType).append(" ").append(fieldName).append(" = new ").append(columnType).append("();");
