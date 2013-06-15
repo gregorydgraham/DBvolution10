@@ -26,7 +26,12 @@
         <developer>
             <name>Gregory Graham</name>
             <email>gregory@gregs.co.nz</email>
-            <timezone>12</timezone>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>software engineer</role>
+            </roles>
+            <timezone>+12</timezone>
             <organizationUrl>http://www.gregs.co.nz</organizationUrl>
         </developer>
     </developers>
@@ -121,12 +126,12 @@
             <version>1.3.171</version>
         </dependency>
     </dependencies>
-  <distributionManagement>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <name>Nexus Staging Repository</name>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-      <!-- Sonatype JIRA ticket: https://issues.sonatype.org/browse/OSSRH-6397 -->
-    </repository>
-  </distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Staging Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+            <!-- Sonatype JIRA ticket: https://issues.sonatype.org/browse/OSSRH-6397 -->
+        </repository>
+    </distributionManagement>
 </project>
