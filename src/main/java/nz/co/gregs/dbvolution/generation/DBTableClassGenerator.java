@@ -242,7 +242,7 @@ public class DBTableClassGenerator {
                 } else if (fkRecog.isForeignKeyColumn(tableName, columnName)) {
                     String referencedColumn = fkRecog.getReferencedColumn(tableName, columnName);
                     String referencedTable = fkRecog.getReferencedTable(tableName, columnName);
-                    javaSource.append("    @DBTableForeignKey(\"").append(database.formatTableAndColumnName(referencedTable, referencedColumn)).append("\")");
+                    javaSource.append("    @DBTableForeignKey(").append(toClassCase(referencedTable)).append(".class)");
                     javaSource.append(lineSeparator);
                 }
                 javaSource.append("    public ").append(columnType).append(" ").append(fieldName).append(" = new ").append(columnType).append("();");
