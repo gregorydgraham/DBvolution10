@@ -25,11 +25,14 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
+import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
+import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.DBTableClass;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
 import nz.co.gregs.dbvolution.generation.Marque;
 import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
+import org.junit.Test;
 
 /**
  *
@@ -45,33 +48,9 @@ public class GeneratedMarqueTest extends AbstractTest {
         super(testName);
     }
 
-//    @Override
-//    protected void setUp() throws Exception {
-//        super.setUp();
-//
-//        myDatabase.dropTableNoExceptions(myTableRow);
-//        myDatabase.createTable(myTableRow);
-//
-//        DBTable.setPrintSQLBeforeExecuting(false);
-//        DBTable<nz.co.gregs.dbvolution.example.Marque> originalMarques = new DBTable<nz.co.gregs.dbvolution.example.Marque>(myTableRow, myDatabase);
-//
-//        List<nz.co.gregs.dbvolution.example.Marque> myTableRows = new ArrayList<nz.co.gregs.dbvolution.example.Marque>();
-//        myTableRows.add(new nz.co.gregs.dbvolution.example.Marque(4893059, "False", 1246974, "", 3, "UV", "PEUGEOT", "", "Y"));
-//        myTableRows.add(new nz.co.gregs.dbvolution.example.Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y"));
-//        myTableRows.add(new nz.co.gregs.dbvolution.example.Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y"));
-//
-//        originalMarques.insert(myTableRows);
-//        DBTable.setPrintSQLBeforeExecuting(true);
-//    }
-//
-//    @Override
-//    protected void tearDown() throws Exception {
-//        myDatabase.dropTable(myTableRow);
-//
-//        super.tearDown();
-//    }
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
+    @Test
     public void testGetSchema() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         List<DBTableClass> generateSchema;
         generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation",new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
@@ -80,6 +59,16 @@ public class GeneratedMarqueTest extends AbstractTest {
         }
     }
 
+    @Test
+    public void testGetSchemaWithRecognisor() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
+        List<DBTableClass> generateSchema;
+        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation",new UIDBasedPKRecognisor(),new FKBasedFKRecognisor());
+        for (DBTableClass dbcl : generateSchema) {
+            System.out.print("" + dbcl.javaSource);
+        }
+    }
+
+    @Test
     public void testGetAllRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         DBTable<Marque> marq = new DBTable<Marque>(new Marque(), myDatabase);
         marq.getAllRows();
@@ -88,6 +77,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         }
     }
 
+    @Test
     public void testGetFirstAndPrimaryKey() throws SQLException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, InstantiationException, SQLException, ClassNotFoundException {
         DBTable<Marque> marq = new DBTable<Marque>(new Marque(), myDatabase);
         DBTableRow row = marq.firstRow();
@@ -98,6 +88,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         }
     }
 
+    @Test
     public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         DBTable<Marque> marq = new DBTable<Marque>(new Marque(), myDatabase);
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";

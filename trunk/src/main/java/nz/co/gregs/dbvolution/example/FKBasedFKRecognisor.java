@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.example;
 
+import java.util.regex.Pattern;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
 
@@ -23,6 +24,8 @@ import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
  * @author gregorygraham
  */
 public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
+    
+    Pattern fkStartPattern = Pattern.compile("^[fF][kK]_");
 
     /**
      *
@@ -44,7 +47,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
     @Override
     public String getReferencedColumn(String tableName, String columnName) {
         if (isForeignKeyColumn(tableName, columnName)) {
-            return columnName.replaceAll("^fk_", "uid_");
+            String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_");
+            return strippedOfFK;
         } else {
             return null;
         }
@@ -59,7 +63,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
     @Override
     public String getReferencedTable(String tableName, String columnName) {
         if (isForeignKeyColumn(tableName, columnName)) {
-            return DBTableClassGenerator.toClassCase(columnName.replaceAll("^fk_", ""));
+            String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("");
+            return DBTableClassGenerator.toClassCase(strippedOfFK);
         } else {
             return null;
         }
