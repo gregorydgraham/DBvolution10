@@ -47,9 +47,10 @@ public class DBTableClassGenerator {
      *
      * Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
-     * 
-     * convenience method which calls 
-     *      generateClassesFromJDBCURLToDirectory(jdbcURL,username,password,packageName,baseDirectory,new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+     *
+     * convenience method which calls
+     * generateClassesFromJDBCURLToDirectory(jdbcURL,username,password,packageName,baseDirectory,new
+     * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
      *
      * @param jdbcURL
      * @param username
@@ -66,7 +67,7 @@ public class DBTableClassGenerator {
      * @throws IOException
      */
     public static void generateClassesFromJDBCURLToDirectory(String jdbcURL, String username, String password, String packageName, String baseDirectory) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
-        generateClassesFromJDBCURLToDirectory(jdbcURL,username,password,packageName,baseDirectory,new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+        generateClassesFromJDBCURLToDirectory(jdbcURL, username, password, packageName, baseDirectory, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
     }
 
     public static void generateClassesFromJDBCURLToDirectory(String jdbcURL, String username, String password, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
@@ -174,8 +175,9 @@ public class DBTableClassGenerator {
      */
     public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String[] dbObjectTypes) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
-        String lineSeparator = System.getProperty("line.separator");
-        String conceptBreak = lineSeparator + lineSeparator;
+        List<String> dbTableClassNames = new ArrayList<String>();
+        //String lineSeparator = System.getProperty("line.separator");
+        //String conceptBreak = lineSeparator + lineSeparator;
 
         Statement dbStatement = database.getDBStatement();
         Connection connection = dbStatement.getConnection();
@@ -191,32 +193,20 @@ public class DBTableClassGenerator {
 
         while (tables.next()) {
             DBTableClass dbTableClass = new DBTableClass();
-            StringBuilder javaSource = new StringBuilder();
-            if (packageName != null) {
-                javaSource.append("package ").append(packageName).append(";");
-                javaSource.append(conceptBreak);
-            }
-            javaSource.append("import nz.co.gregs.dbvolution.*;");
-            javaSource.append(lineSeparator);
-            javaSource.append("import nz.co.gregs.dbvolution.annotations.*;");
-            javaSource.append(conceptBreak);
+            dbTableClass.packageName = packageName;
+            dbTableClass.tableName = tables.getString("TABLE_NAME");
+            System.out.println(dbTableClass.tableName);
+            dbTableClass.className = toClassCase(dbTableClass.tableName);
+            dbTableClassNames.add(dbTableClass.className);
 
-            String tableName = tables.getString("TABLE_NAME");
-            System.out.println(tableName);
-            String className = toClassCase(tableName);
-            javaSource.append("@DBTableName(\"").append(tableName).append("\") ");
-            javaSource.append(lineSeparator);
-            javaSource.append("public class ").append(className).append(" extends DBTableRow {");
-            javaSource.append(conceptBreak);
-
-            ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, tableName);
+            ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.tableName);
             List<String> pkNames = new ArrayList<String>();
             while (primaryKeysRS.next()) {
                 String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
                 pkNames.add(pkColumnName);
             }
 
-            ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, tableName);
+            ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.tableName);
             Map<String, String[]> fkNames = new HashMap<String, String[]>();
             while (foreignKeysRS.next()) {
                 String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
@@ -225,36 +215,49 @@ public class DBTableClassGenerator {
                 fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
             }
 
-            ResultSet columns = metaData.getColumns(catalog, schema, tableName, null);
+            ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.tableName, null);
             while (columns.next()) {
-                String columnName = columns.getString("COLUMN_NAME");
-                String fieldName = toFieldCase(columnName);
-                String columnType = getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"));
-                javaSource.append("    @DBTableColumn(\"").append(columnName).append("\")");
-                javaSource.append(lineSeparator);
-                if (pkNames.contains(columnName) || pkRecog.isPrimaryKeyColumn(tableName, columnName)) {
-                    javaSource.append("    @DBTablePrimaryKey").append(lineSeparator);
+                DBTableField dbTableField = new DBTableField();
+                dbTableField.columnName = columns.getString("COLUMN_NAME");
+                dbTableField.fieldName = toFieldCase(dbTableField.columnName);
+                dbTableField.columnType = getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"));
+                if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
+                    dbTableField.isPrimaryKey = true;
                 }
-                String[] pkData = fkNames.get(columnName);
+                String[] pkData = fkNames.get(dbTableField.columnName);
                 if (pkData != null && pkData.length == 2) {
-                    javaSource.append("    @DBTableForeignKey(\"").append(database.formatTableAndColumnName(pkData[0], pkData[1])).append("\")");
-                    javaSource.append(lineSeparator);
-                } else if (fkRecog.isForeignKeyColumn(tableName, columnName)) {
-                    String referencedColumn = fkRecog.getReferencedColumn(tableName, columnName);
-                    String referencedTable = fkRecog.getReferencedTable(tableName, columnName);
-                    javaSource.append("    @DBTableForeignKey(").append(toClassCase(referencedTable)).append(".class)");
-                    javaSource.append(lineSeparator);
+                    dbTableField.isForeignKey = true;
+                    dbTableField.referencesClass = toClassCase(pkData[0]);
+                    dbTableField.referencesField = pkData[1];
+                } else if (fkRecog.isForeignKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
+                    dbTableField.isForeignKey = true;
+                    dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.tableName, dbTableField.columnName);
+                    dbTableField.referencesClass = fkRecog.getReferencedTable(dbTableClass.tableName, dbTableField.columnName);
                 }
-                javaSource.append("    public ").append(columnType).append(" ").append(fieldName).append(" = new ").append(columnType).append("();");
-                javaSource.append(conceptBreak);
+                dbTableClass.fields.add(dbTableField);
             }
-            javaSource.append("}");
-            javaSource.append(conceptBreak);
-            System.out.println(javaSource.toString());
-            dbTableClass.className = className;
-            dbTableClass.packageName = packageName;
-            dbTableClass.javaSource = javaSource.toString();
             dbTableClasses.add(dbTableClass);
+        }
+        for (DBTableClass dbt : dbTableClasses) {
+            for (DBTableField dbf : dbt.fields) {
+                if (dbf.isForeignKey) {
+                    if (!dbTableClassNames.contains(dbf.referencesClass)) {
+                        List<String> matchingNames = new ArrayList<String>();
+                        for (String name : dbTableClassNames) {
+                            if (name.toLowerCase().startsWith(dbf.referencesClass.toLowerCase())) {
+                                matchingNames.add(name);
+                            }
+                        }
+                        if (matchingNames.size() == 1) {
+                            String properClassname = matchingNames.get(0);
+                            dbf.referencesClass = properClassname;
+                        }
+                    }
+                }
+            }
+            dbt.generateJavaSource();
+            System.out.println(dbt.javaSource);
+
         }
         return dbTableClasses;
     }
@@ -323,6 +326,7 @@ public class DBTableClassGenerator {
      * @return
      */
     public static String toClassCase(String s) {
+        System.out.println("Splitting: " + s);
         String[] parts = s.split("_");
         String classCaseString = "";
         for (String part : parts) {
@@ -359,12 +363,18 @@ public class DBTableClassGenerator {
      * @return
      */
     public static String toProperCase(String s) {
-        String firstChar = s.substring(0, 1);
-        String rest = s.substring(1).toLowerCase();
-        if (firstChar.matches("[^a-zA-Z]")) {
-            return "_" + firstChar + rest;
+        if (s.length() == 0) {
+            return s;
+        } else if (s.length() == 1) {
+            return s.toUpperCase();
         } else {
-            return firstChar.toUpperCase() + rest;
+            String firstChar = s.substring(0, 1);
+            String rest = s.substring(1).toLowerCase();
+            if (firstChar.matches("[^a-zA-Z]")) {
+                return "_" + firstChar + rest;
+            } else {
+                return firstChar.toUpperCase() + rest;
+            }
         }
     }
 }
