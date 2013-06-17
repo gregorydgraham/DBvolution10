@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
  * @author gregorygraham
  */
 public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
-    
+
     Pattern fkStartPattern = Pattern.compile("^[fF][kK]_");
 
     /**
@@ -64,7 +64,11 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
     public String getReferencedTable(String tableName, String columnName) {
         if (isForeignKeyColumn(tableName, columnName)) {
             String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("");
-            return DBTableClassGenerator.toClassCase(strippedOfFK);
+            if (strippedOfFK.matches("^_[0-9]+$")) {
+                return "T" + strippedOfFK;
+            } else {
+                return DBTableClassGenerator.toClassCase(strippedOfFK.replaceAll("_[0-9]+$", ""));
+            }
         } else {
             return null;
         }
