@@ -15,14 +15,8 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import static nz.co.gregs.dbvolution.generation.DBTableClassGenerator.getQueryableDatatypeOfSQLType;
-import static nz.co.gregs.dbvolution.generation.DBTableClassGenerator.toClassCase;
-import static nz.co.gregs.dbvolution.generation.DBTableClassGenerator.toFieldCase;
 
 /**
  *

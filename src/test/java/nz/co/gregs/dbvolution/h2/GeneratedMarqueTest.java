@@ -18,13 +18,10 @@ package nz.co.gregs.dbvolution.h2;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTableRow;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
@@ -53,7 +50,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     @Test
     public void testGetSchema() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         List<DBTableClass> generateSchema;
-        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation",new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.javaSource);
         }
@@ -62,7 +59,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     @Test
     public void testGetSchemaWithRecognisor() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         List<DBTableClass> generateSchema;
-        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation",new UIDBasedPKRecognisor(),new FKBasedFKRecognisor());
+        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation", new UIDBasedPKRecognisor(), new FKBasedFKRecognisor());
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.javaSource);
         }
@@ -94,6 +91,36 @@ public class GeneratedMarqueTest extends AbstractTest {
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
         marq = marq.getByRawSQL(rawQuery);
         marq.printAllRows();
+
+    }
+
+    @Test
+    public void testToClassCase() {
+        String test = "T_31";
+        String expected = "T_31";
+        String result = DBTableClassGenerator.toClassCase(test);
+        System.out.println(test + " => " + result + "(" + expected + ")");
+        assertEquals(result, expected);
+        test = "T_3_1";
+        expected = "T_3_1";
+        result = DBTableClassGenerator.toClassCase(test);
+        System.out.println(test + " => " + result + "(" + expected + ")");
+        assertEquals(result, expected);
+        test = "car_company";
+        expected = "CarCompany";
+        result = DBTableClassGenerator.toClassCase(test);
+        System.out.println(test + " => " + result + "(" + expected + ")");
+        assertEquals(result, expected);
+        test = "CAR_COMPANY";
+        expected = "CarCompany";
+        result = DBTableClassGenerator.toClassCase(test);
+        System.out.println(test + " => " + result + "(" + expected + ")");
+        assertEquals(result, expected);
+        test = "CARCOMPANY";
+        expected = "Carcompany";
+        result = DBTableClassGenerator.toClassCase(test);
+        System.out.println(test + " => " + result + "(" + expected + ")");
+        assertEquals(result, expected);
 
     }
 }
