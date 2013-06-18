@@ -47,7 +47,10 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
     @Override
     public String getReferencedColumn(String tableName, String columnName) {
         if (isForeignKeyColumn(tableName, columnName)) {
-            String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_");
+            String strippedOfFK = "";
+
+            strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_").replaceAll("^(uid_[a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
+
             return strippedOfFK;
         } else {
             return null;
@@ -64,8 +67,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
     public String getReferencedTable(String tableName, String columnName) {
         if (isForeignKeyColumn(tableName, columnName)) {
             String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("");
-            if (strippedOfFK.matches("^_[0-9]+$")) {
-                return "T" + strippedOfFK;
+            if (strippedOfFK.matches("^[0-9_]+$")) {
+                return "T_" + strippedOfFK.replaceAll("^([a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
             } else {
                 return DBTableClassGenerator.toClassCase(strippedOfFK.replaceAll("_[0-9]+$", ""));
             }

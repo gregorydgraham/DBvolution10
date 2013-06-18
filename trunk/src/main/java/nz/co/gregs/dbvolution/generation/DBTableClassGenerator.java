@@ -75,20 +75,26 @@ public class DBTableClassGenerator {
 
         String viewsPackage = packageName + ".views";
         String viewsPath = viewsPackage.replaceAll("[.]", "/");
+        List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(informixDB, viewsPackage, pkRecog, fkRecog);
+
+        String tablesPackage = packageName + ".tables";
+        String tablesPath = tablesPackage.replaceAll("[.]", "/");
+        List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(informixDB, tablesPackage, pkRecog, fkRecog);
+        List<DBTableClass> allGeneratedClasses = new ArrayList<DBTableClass>();
+        allGeneratedClasses.addAll(generatedViews);
+        allGeneratedClasses.addAll(generatedTables);
+        generateAllJavaSource(allGeneratedClasses);
+
         File dir = new File(baseDirectory + "/" + viewsPath);
         if (dir.mkdirs() || dir.exists()) {
-            List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(informixDB, viewsPackage, pkRecog, fkRecog);
-            saveGenerateClassesToDirectory(generatedViews, dir);
+            saveGeneratedClassesToDirectory(generatedViews, dir);
         } else {
             throw new RuntimeException("Unable to Make Directories, QUITTING!");
         }
 
-        String tablesPackage = packageName + ".tables";
-        String tablesPath = tablesPackage.replaceAll("[.]", "/");
         dir = new File(baseDirectory + "/" + tablesPath);
         if (dir.mkdirs() || dir.exists()) {
-            List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(informixDB, tablesPackage, pkRecog, fkRecog);
-            saveGenerateClassesToDirectory(generatedTables, dir);
+            saveGeneratedClassesToDirectory(generatedTables, dir);
         } else {
             throw new RuntimeException("Unable to Make Directories, QUITTING!");
         }
@@ -115,7 +121,7 @@ public class DBTableClassGenerator {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void saveGenerateClassesToDirectory(List<DBTableClass> generatedClasses, File classDirectory) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
+    static void saveGeneratedClassesToDirectory(List<DBTableClass> generatedClasses, File classDirectory) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
         {
             File file;
             FileOutputStream fileOutputStream;
@@ -175,9 +181,6 @@ public class DBTableClassGenerator {
      */
     public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String[] dbObjectTypes) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
-        List<String> dbTableClassNames = new ArrayList<String>();
-        //String lineSeparator = System.getProperty("line.separator");
-        //String conceptBreak = lineSeparator + lineSeparator;
 
         Statement dbStatement = database.getDBStatement();
         Connection connection = dbStatement.getConnection();
@@ -197,7 +200,6 @@ public class DBTableClassGenerator {
             dbTableClass.tableName = tables.getString("TABLE_NAME");
             System.out.println(dbTableClass.tableName);
             dbTableClass.className = toClassCase(dbTableClass.tableName);
-            dbTableClassNames.add(dbTableClass.className);
 
             ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.tableName);
             List<String> pkNames = new ArrayList<String>();
@@ -238,6 +240,16 @@ public class DBTableClassGenerator {
             }
             dbTableClasses.add(dbTableClass);
         }
+        generateAllJavaSource(dbTableClasses);
+        return dbTableClasses;
+    }
+
+    static void generateAllJavaSource(List<DBTableClass> dbTableClasses) {
+        List<String> dbTableClassNames = new ArrayList<String>();
+
+        for (DBTableClass dbt : dbTableClasses) {
+            dbTableClassNames.add(dbt.className);
+        }
         for (DBTableClass dbt : dbTableClasses) {
             for (DBTableField dbf : dbt.fields) {
                 if (dbf.isForeignKey) {
@@ -257,9 +269,7 @@ public class DBTableClassGenerator {
             }
             dbt.generateJavaSource();
             System.out.println(dbt.javaSource);
-
         }
-        return dbTableClasses;
     }
 
     /**
@@ -326,11 +336,16 @@ public class DBTableClassGenerator {
      * @return
      */
     public static String toClassCase(String s) {
-        System.out.println("Splitting: " + s);
-        String[] parts = s.split("_");
         String classCaseString = "";
-        for (String part : parts) {
-            classCaseString = classCaseString + toProperCase(part);
+        if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
+            classCaseString= s.toUpperCase();
+        }
+        else{
+            System.out.println("Splitting: " + s);
+            String[] parts = s.split("_");
+            for (String part : parts) {
+                classCaseString = classCaseString + toProperCase(part);
+            }
         }
         return classCaseString;
     }

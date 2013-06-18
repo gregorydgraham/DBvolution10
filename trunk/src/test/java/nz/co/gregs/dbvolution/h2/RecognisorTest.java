@@ -16,8 +16,10 @@
 package nz.co.gregs.dbvolution.h2;
 
 import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
@@ -50,8 +52,16 @@ public class RecognisorTest extends TestCase{
         assertNull(fkRecognisor.getReferencedTable("table", "column"));
 
         assertTrue(fkRecognisor.isForeignKeyColumn("table", "fk_table"));
-        assertEquals(fkRecognisor.getReferencedColumn("table", "fk_table"),"uid_table");
-        assertEquals(fkRecognisor.getReferencedTable("table", "fk_table"), "Table");
+        assertEquals("uid_table", fkRecognisor.getReferencedColumn("table", "fk_table"));
+        assertEquals("Table", fkRecognisor.getReferencedTable("table", "fk_table"));
+
+        assertTrue(fkRecognisor.isForeignKeyColumn("t_4", "fk_3"));
+        assertEquals("uid_3", fkRecognisor.getReferencedColumn("t_4", "fk_3"));
+        assertEquals("T_3", fkRecognisor.getReferencedTable("t_4", "fk_3"));
+
+        assertTrue(fkRecognisor.isForeignKeyColumn("t_4", "fk_3_1"));
+        assertEquals("uid_3", fkRecognisor.getReferencedColumn("t_4", "fk_3_1"));
+        assertEquals("T_3",fkRecognisor.getReferencedTable("t_4", "fk_3_1"));
 
     }
     
