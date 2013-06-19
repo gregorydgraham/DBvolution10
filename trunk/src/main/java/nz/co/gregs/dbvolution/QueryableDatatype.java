@@ -28,6 +28,7 @@ public class QueryableDatatype extends Object implements Serializable {
     protected QueryableDatatype[] inValues = new QueryableDatatype[]{};
     protected QueryableDatatype lowerBound = null;
     protected QueryableDatatype upperBound = null;
+    private boolean invertOperator;
 
     QueryableDatatype() {
     }
@@ -72,15 +73,15 @@ public class QueryableDatatype extends Object implements Serializable {
     public String getWhereClause(String columnName) {
         StringBuilder whereClause = new StringBuilder();
         if (usingLiteralComparison) {
-            whereClause.append(" and ").append(columnName).append(" = ").append(this.getSQLValue()).append(" ");
+            whereClause.append(" and ").append(columnName).append(invertOperator?" <> ":" = ").append(this.getSQLValue()).append(" ");
         } else if (usingNullComparison) {
-            whereClause.append(" and ").append(columnName).append(" is null ");
+            whereClause.append(" and ").append(columnName).append(invertOperator?" is not null ":" is null ");
         } else if (usingLikeComparison) {
-            whereClause.append(" and ").append(columnName).append(" like ").append(this.getSQLValue()).append(" ");
+            whereClause.append(" and ").append(columnName).append(invertOperator?" not like ":" like ").append(this.getSQLValue()).append(" ");
         } else if (usingBetweenComparison) {
-            whereClause.append(" and ").append(columnName).append(" between ").append(this.getLowerBound().getSQLValue()).append(" and ").append(this.getUpperBound().getSQLValue()).append(" ");
+            whereClause.append(" and ").append(invertOperator?" !(":"(").append(columnName).append(" between ").append(this.getLowerBound().getSQLValue()).append(" and ").append(this.getUpperBound().getSQLValue()).append(") ");
         } else if (usingInComparison) {
-            whereClause.append(" and ").append(columnName).append(" in (");
+            whereClause.append(" and ").append(columnName).append(invertOperator?" not in ":" in (");
             String sep = "";
             for (QueryableDatatype qdt : inValues) {
                 whereClause.append(sep).append(" ").append(qdt.getSQLValue()).append(" ");
@@ -89,6 +90,10 @@ public class QueryableDatatype extends Object implements Serializable {
             whereClause.append(") ");
         }
         return whereClause.toString();
+    }
+    
+    public void invertOperator(){
+        invertOperator = true;
     }
 
     /**
