@@ -21,13 +21,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import junit.framework.TestCase;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTableRow;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
 
@@ -147,15 +144,20 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
-        String rawQuery = "and lower(name) in ('peugeot','hummer') ;  ";
+        String rawQuery = "and lower(name) in ('peugeot','hummer')  ";
         marques = marques.getByRawSQL(rawQuery);
         marques.printAllRows();
         assertEquals(marques.size(), 2);
     }
     
-    public void testDBSelectQuery() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException{
+    public void testDBSelectQuery() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, ClassNotFoundException{
         DBTable<MarqueSelectQuery> msq = new DBTable<MarqueSelectQuery>(new MarqueSelectQuery(), myDatabase);
         msq.getAllRows();
+        msq.printAllRows();
+
+        MarqueSelectQuery marqueSelectQuery = new MarqueSelectQuery();
+        marqueSelectQuery.uidMarque.isLiterally(1);
+        msq.getByExample(marqueSelectQuery);
         msq.printAllRows();
     }
 }

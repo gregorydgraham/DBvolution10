@@ -24,7 +24,8 @@ import nz.co.gregs.dbvolution.annotations.*;
  *
  * @author gregorygraham
  */
-@DBSelectQuery("select uid_marque, isusedfortafros from marque;")
+@DBSelectQuery("select uid_marque, isusedfortafros from marque")
+@DBTableName("marque")
 public class MarqueSelectQuery extends DBTableRow {
 
     @DBTableColumn("uid_marque")
