@@ -95,6 +95,22 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         return selectStatement.toString();
     }
 
+    private String getSelectStatementForWhereClause() {
+        StringBuilder selectStatement = new StringBuilder();
+        DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
+        if (selectQueryAnnotation != null) {
+            selectStatement.append(selectQueryAnnotation.value()).append(" where 1=1 ");
+        } else {
+            selectStatement.append("select ");
+
+            selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(" where 1=1 ");
+        }
+//        if (printSQLBeforeExecuting){
+//            System.out.println(selectStatement);
+//        }
+        return selectStatement.toString();
+    }
+
     /**
      * Not used externally but used to create instances of the TableRow subclass
      *
@@ -246,18 +262,6 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
             return "";
         }
         return str.replace("'", "''").replace("\\", "\\\\");
-    }
-
-    private String getSelectStatementForWhereClause() {
-        StringBuilder selectStatement = new StringBuilder();
-        selectStatement.append("select ");
-
-        selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(" where 1=1 ");
-
-//        if (printSQLBeforeExecuting){
-//            System.out.println(selectStatement);
-//        }
-        return selectStatement.toString();
     }
 
     private DBTable<E> getRows(String whereClause) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
@@ -536,7 +540,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         return dummy.getColumnNames();
     }
 
-    Map<DBTableForeignKey,DBTableColumn> getForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    Map<DBTableForeignKey, DBTableColumn> getForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
         return dummy.getForeignKeys();
     }
 

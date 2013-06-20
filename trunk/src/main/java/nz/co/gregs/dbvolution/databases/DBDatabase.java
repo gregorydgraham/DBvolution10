@@ -229,4 +229,8 @@ public abstract class DBDatabase {
     public String formatColumnNameForResultSet(String tableName, String columnName) {
         return formatTableAndColumnName(tableName, columnName);
     }
+
+    public String safeString(String toString) {
+        return toString.replaceAll("'", "''");
+    }
 }

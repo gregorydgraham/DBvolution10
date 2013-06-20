@@ -218,6 +218,6 @@ public class QueryableDatatype extends Object implements Serializable {
     }
 
     String getSQLValue() {
-        return database.beginStringValue()+literalValue.toString()+database.endStringValue();
+        return database.beginStringValue()+database.safeString(literalValue.toString())+database.endStringValue();
     }
 }
