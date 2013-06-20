@@ -77,7 +77,7 @@ public abstract class DBDatabase {
             try {
                 connection = dataSource.getConnection();
             } catch (SQLException noConnection) {
-                throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource" + dataSource.toString(), noConnection);
+                throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource - " + dataSource.toString(), noConnection);
             }
         }
         try {
