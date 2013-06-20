@@ -58,7 +58,7 @@ public abstract class DBDatabase {
      *
      * @return
      */
-    public Statement getDBStatement() throws SQLException {
+    public Statement getDBStatement() {
         Connection connection;
         Statement statement;
         if (this.dataSource == null) {
@@ -73,15 +73,19 @@ public abstract class DBDatabase {
             } catch (SQLException noConnection) {
                 throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
             }
-            try {
-                statement = connection.createStatement();
-            } catch (SQLException noConnection) {
-                throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
-            }
-            return statement;
         } else {
-            return this.dataSource.getConnection().createStatement();
+            try {
+                connection = dataSource.getConnection();
+            } catch (SQLException noConnection) {
+                throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource" + dataSource.toString(), noConnection);
+            }
         }
+        try {
+            statement = connection.createStatement();
+        } catch (SQLException noConnection) {
+            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+        }
+        return statement;
     }
 
     /**
@@ -213,9 +217,9 @@ public abstract class DBDatabase {
     }
 
     /**
-     * 
+     *
      * Formats the table and column name pair correctly for this database
-     * 
+     *
      * e.g table, column => TABLE.COLUMN
      *
      * @param tableName
@@ -223,7 +227,7 @@ public abstract class DBDatabase {
      * @return
      */
     public String formatTableAndColumnName(String tableName, String columnName) {
-        return tableName+"."+columnName;
+        return tableName + "." + columnName;
     }
 
     public String formatColumnNameForResultSet(String tableName, String columnName) {
