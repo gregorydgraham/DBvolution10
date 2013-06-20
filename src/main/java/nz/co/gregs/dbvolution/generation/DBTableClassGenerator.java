@@ -51,9 +51,7 @@ public class DBTableClassGenerator {
      * generateClassesFromJDBCURLToDirectory(jdbcURL,username,password,packageName,baseDirectory,new
      * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
      *
-     * @param jdbcURL
-     * @param username
-     * @param password
+     * @param database
      * @param packageName
      * @param baseDirectory
      * @throws ClassNotFoundException
