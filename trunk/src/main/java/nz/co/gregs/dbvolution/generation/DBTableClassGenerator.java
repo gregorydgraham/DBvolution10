@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.InformixDB;
 
 /**
  *
@@ -66,20 +65,18 @@ public class DBTableClassGenerator {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void generateClassesFromJDBCURLToDirectory(String jdbcURL, String username, String password, String packageName, String baseDirectory) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
-        generateClassesFromJDBCURLToDirectory(jdbcURL, username, password, packageName, baseDirectory, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+    public static void generateClassesFromJDBCURLToDirectory(DBDatabase database, String packageName, String baseDirectory) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
+        generateClassesFromJDBCURLToDirectory(database, packageName, baseDirectory, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
     }
 
-    public static void generateClassesFromJDBCURLToDirectory(String jdbcURL, String username, String password, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
-        InformixDB informixDB = new InformixDB(jdbcURL, username, password);
-
+    public static void generateClassesFromJDBCURLToDirectory(DBDatabase database, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
         String viewsPackage = packageName + ".views";
         String viewsPath = viewsPackage.replaceAll("[.]", "/");
-        List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(informixDB, viewsPackage, pkRecog, fkRecog);
+        List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, pkRecog, fkRecog);
 
         String tablesPackage = packageName + ".tables";
         String tablesPath = tablesPackage.replaceAll("[.]", "/");
-        List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(informixDB, tablesPackage, pkRecog, fkRecog);
+        List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, pkRecog, fkRecog);
         List<DBTableClass> allGeneratedClasses = new ArrayList<DBTableClass>();
         allGeneratedClasses.addAll(generatedViews);
         allGeneratedClasses.addAll(generatedTables);
