@@ -74,7 +74,7 @@ public class DBInteger extends DBNumber {
     }
 
     @Override
-    String getSQLValue() {
+    public String getSQLValue() {
         return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
     }
 }

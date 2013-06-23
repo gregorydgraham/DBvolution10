@@ -147,7 +147,7 @@ public class DBNumber extends QueryableDatatype {
     }
 
     @Override
-    String getSQLValue() {
+    public String getSQLValue() {
         return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
     }
 

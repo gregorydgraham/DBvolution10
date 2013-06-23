@@ -237,4 +237,8 @@ public abstract class DBDatabase {
     public String safeString(String toString) {
         return toString.replaceAll("'", "''");
     }
+
+    public String beginWhereLine() {
+        return " and ";
+    }
 }
