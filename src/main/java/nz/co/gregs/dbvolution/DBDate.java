@@ -95,7 +95,7 @@ public class DBDate extends QueryableDatatype {
     }
     
         @Override
-    String getSQLValue() {
+    public String getSQLValue() {
         return database.getDateFormattedForQuery(dateValue);
     }
 
