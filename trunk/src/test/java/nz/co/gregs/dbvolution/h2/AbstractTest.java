@@ -55,7 +55,7 @@ public class AbstractTest extends TestCase {
         myDatabase.dropTableNoExceptions(myCarCompanyRow);
         myDatabase.createTable(myCarCompanyRow);
 
-        DBTable.setPrintSQLBeforeExecuting(false);
+        DBTable.setPrintSQLBeforeExecuting(true);
         marques = new DBTable<Marque>(myMarqueRow, myDatabase);
         carCompanies = new DBTable<CarCompany>(myCarCompanyRow, myDatabase);
         carTableRows.add(new CarCompany("TOYOTA", 1));

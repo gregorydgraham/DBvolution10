@@ -23,8 +23,9 @@ import java.util.Date;
  * @author greg
  */
 public class H2DB extends DBDatabase{
-    
-    SimpleDateFormat strToDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    String dateFormatStr = "yyyy-M-d hh:mm:ss";
+    String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
+    SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
     
     public H2DB(String jdbcURL, String username, String password){
         super("org.h2.Driver",jdbcURL, username, password);
@@ -34,8 +35,8 @@ public class H2DB extends DBDatabase{
     public String getDateFormattedForQuery(Date date) {
         
 //        yyyy-MM-dd hh:mm:ss[.nnnnnnnnn]
-        
-        return "'"+strToDateFormat.format(date)+"'";
+        return " PARSEDATETIME('"+strToDateFormat.format(date)+"','"+h2DateFormatStr+"') ";
+        //return "'"+strToDateFormat.format(date)+"'";
     }
     
     @Override
