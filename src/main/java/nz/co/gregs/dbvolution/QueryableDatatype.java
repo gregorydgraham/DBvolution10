@@ -141,6 +141,50 @@ public class QueryableDatatype extends Object implements Serializable {
         }
     }
     
+    public void isGreaterThan(QueryableDatatype literalValue) {
+        blankQuery();
+        if (literalValue == null) {
+            isNull();
+        } else {
+//            usingLiteralComparison = true;
+            this.literalValue = literalValue.literalValue;
+            this.operator = new DBGreaterThanOperator(literalValue);
+        }
+    }
+    
+    public void isGreaterThanOrEqualTo(QueryableDatatype literalValue) {
+        blankQuery();
+        if (literalValue == null) {
+            isNull();
+        } else {
+//            usingLiteralComparison = true;
+            this.literalValue = literalValue.literalValue;
+            this.operator = new DBGreaterThanOrEqualsOperator(literalValue);
+        }
+    }
+    
+    public void isLessThan(QueryableDatatype literalValue) {
+        blankQuery();
+        if (literalValue == null) {
+            isNull();
+        } else {
+//            usingLiteralComparison = true;
+            this.literalValue = literalValue.literalValue;
+            this.operator = new DBLessThanOperator(literalValue);
+        }
+    }
+    
+    public void isLessThanOrEqualTo(QueryableDatatype literalValue) {
+        blankQuery();
+        if (literalValue == null) {
+            isNull();
+        } else {
+//            usingLiteralComparison = true;
+            this.literalValue = literalValue.literalValue;
+            this.operator = new DBLessThanOrEqualOperator(literalValue);
+        }
+    }
+    
     public final void isNull() {
 //        this.usingNullComparison = true;
         this.operator = new DBIsNullOp();
