@@ -7,6 +7,7 @@ package nz.co.gregs.dbvolution;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import nz.co.gregs.dbvolution.operators.DBLike;
 
 /**
  *
@@ -22,11 +23,19 @@ public class DBDate extends QueryableDatatype {
     }
 
     public DBDate(Date date) {
-        dateValue = date;
+        if (date == null) {
+            this.isDBNull = true;
+        } else {
+            dateValue = date;
+        }
     }
 
     DBDate(Timestamp timestamp) {
-        dateValue.setTime(timestamp.getTime());
+        if (timestamp == null) {
+            this.isDBNull = true;
+        } else {
+            dateValue.setTime(timestamp.getTime());
+        }
     }
 
     DBDate(String str) {
@@ -42,8 +51,8 @@ public class DBDate extends QueryableDatatype {
 
     @Override
     public String getWhereClause(String columnName) {
-//        StringBuilder whereClause = new StringBuilder();
-        if (this.usingLikeComparison) {
+//        if (this.usingLikeComparison) {
+        if (this.operator instanceof DBLike) {
             throw new RuntimeException("DATE COLUMNS CAN'T USE \"LIKE\": " + columnName);
         } else {
             return super.getWhereClause(columnName);
@@ -93,10 +102,9 @@ public class DBDate extends QueryableDatatype {
     public String toSQLString() {
         return getDatabase().getDateFormattedForQuery(this.dateValue);
     }
-    
-        @Override
+
+    @Override
     public String getSQLValue() {
         return database.getDateFormattedForQuery(dateValue);
     }
-
 }

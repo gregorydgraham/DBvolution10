@@ -19,17 +19,17 @@ public class QueryableDatatype extends Object implements Serializable {
     protected DBDatabase database = null;
     protected Object literalValue = null;
     protected boolean isDBNull = false;
-    protected boolean usingLiteralComparison = false;
-    protected boolean usingNullComparison = false;
-    protected boolean usingLikeComparison = false;
-    protected boolean usingInComparison = false;
-    protected boolean usingBetweenComparison = false;
+//    protected boolean usingLiteralComparison = false;
+//    protected boolean usingNullComparison = false;
+//    protected boolean usingLikeComparison = false;
+//    protected boolean usingInComparison = false;
+//    protected boolean usingBetweenComparison = false;
     protected boolean includingNulls = false;
-    protected QueryableDatatype[] inValues = new QueryableDatatype[]{};
-    protected QueryableDatatype lowerBound = null;
-    protected QueryableDatatype upperBound = null;
+//    protected QueryableDatatype[] inValues = new QueryableDatatype[]{};
+//    protected QueryableDatatype lowerBound = null;
+//    protected QueryableDatatype upperBound = null;
     private boolean invertOperator;
-    private DBOperator operator = null;
+    protected DBOperator operator = null;
     
     QueryableDatatype() {
     }
@@ -39,7 +39,7 @@ public class QueryableDatatype extends Object implements Serializable {
             this.isDBNull = true;
         }
         this.literalValue = str;
-        this.usingLiteralComparison = true;
+//        this.usingLiteralComparison = true;
     }
     
     QueryableDatatype(Object str) {
@@ -47,7 +47,7 @@ public class QueryableDatatype extends Object implements Serializable {
             this.isDBNull = true;
         }
         this.literalValue = str;
-        this.usingLiteralComparison = true;
+//        this.usingLiteralComparison = true;
     }
     
     @Override
@@ -56,14 +56,14 @@ public class QueryableDatatype extends Object implements Serializable {
     }
     
     protected void blankQuery() {
-        usingLiteralComparison = false;
-        usingLikeComparison = false;
-        usingInComparison = false;
-        usingBetweenComparison = false;
+//        usingLiteralComparison = false;
+//        usingLikeComparison = false;
+//        usingInComparison = false;
+//        usingBetweenComparison = false;
         includingNulls = false;
-        this.inValues = new QueryableDatatype[]{};
-        this.lowerBound = null;
-        this.upperBound = null;
+//        this.inValues = new QueryableDatatype[]{};
+//        this.lowerBound = null;
+//        this.upperBound = null;
         this.operator = null;
     }
 
@@ -124,7 +124,7 @@ public class QueryableDatatype extends Object implements Serializable {
         if (literalValue == null) {
             isNull();
         } else {
-            usingLiteralComparison = true;
+//            usingLiteralComparison = true;
             this.literalValue = literalValue.toString();
             this.operator = new DBEquals(new QueryableDatatype(literalValue.toString()));
         }
@@ -135,19 +135,19 @@ public class QueryableDatatype extends Object implements Serializable {
         if (literalValue == null) {
             isNull();
         } else {
-            usingLiteralComparison = true;
+//            usingLiteralComparison = true;
             this.literalValue = literalValue.literalValue;
             this.operator = new DBEquals(literalValue);
         }
     }
     
     public final void isNull() {
-        this.usingNullComparison = true;
+//        this.usingNullComparison = true;
         this.operator = new DBIsNullOp();
     }
     
     public void isLike(Object t) {
-        this.usingLikeComparison = true;
+//        this.usingLikeComparison = true;
         this.literalValue = t;
         this.operator = new DBLike(new QueryableDatatype(t.toString()));
     }
@@ -170,7 +170,7 @@ public class QueryableDatatype extends Object implements Serializable {
         for (Object obj : inValues) {
             inVals.add(new QueryableDatatype(obj));
         }
-        this.isIn(inVals.toArray(this.inValues));
+//        this.isIn(inVals.toArray(this.inValues));
         this.operator = new DBInOperator(inVals);
     }
 
@@ -179,8 +179,8 @@ public class QueryableDatatype extends Object implements Serializable {
      * @param inValues
      */
     public void isIn(QueryableDatatype[] inValues) {
-        this.usingInComparison = true;
-        this.inValues = inValues;
+//        this.usingInComparison = true;
+//        this.inValues = inValues;
         ArrayList<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
         for (QueryableDatatype qdt : inValues) {
             arrayList.add(qdt);
@@ -193,17 +193,18 @@ public class QueryableDatatype extends Object implements Serializable {
      * @param upperBound the upper bound to set
      */
     public void isBetween(QueryableDatatype lowerBound, QueryableDatatype upperBound) {
-        this.usingBetweenComparison = true;
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
+//        this.usingBetweenComparison = true;
+//        this.lowerBound = lowerBound;
+//        this.upperBound = upperBound;
         this.operator = new DBBetweenOperator(lowerBound, upperBound);
     }
     
     public void isBetween(Object lowerBound, Object upperBound) {
-        this.usingBetweenComparison = true;
-        this.lowerBound = new QueryableDatatype(lowerBound);
-        this.upperBound = new QueryableDatatype(upperBound);
-        this.operator = new DBBetweenOperator(this.lowerBound, this.upperBound);
+//        this.usingBetweenComparison = true;
+//        this.lowerBound = new QueryableDatatype(lowerBound);
+//        this.upperBound = new QueryableDatatype(upperBound);
+//        this.operator = new DBBetweenOperator(this.lowerBound, this.upperBound);
+        isBetween(new QueryableDatatype(lowerBound), new QueryableDatatype(upperBound));
     }
 
     /**
@@ -227,32 +228,33 @@ public class QueryableDatatype extends Object implements Serializable {
      */
     public void setDatabase(DBDatabase database) {
         this.database = database;
-        if (this.upperBound != null) {
-            this.upperBound.setDatabase(database);
-        }
-        if (this.lowerBound != null) {
-            this.lowerBound.setDatabase(database);
-        }
-        for (QueryableDatatype qdt : inValues) {
-            if (qdt != null) {
-                qdt.setDatabase(database);
-            }
-        }
+//        if (this.upperBound != null) {
+//            this.upperBound.setDatabase(database);
+//        }
+//        if (this.lowerBound != null) {
+//            this.lowerBound.setDatabase(database);
+//        }
+//        for (QueryableDatatype qdt : inValues) {
+//            if (qdt != null) {
+//                qdt.setDatabase(database);
+//            }
+//        }
     }
     
-    protected QueryableDatatype getUpperBound() {
-        return this.upperBound;
-    }
-    
-    protected QueryableDatatype getLowerBound() {
-        return this.lowerBound;
-    }
+//    protected QueryableDatatype getUpperBound() {
+//        return this.upperBound;
+//    }
+//    
+//    protected QueryableDatatype getLowerBound() {
+//        return this.lowerBound;
+//    }
     
     public String getSQLDatatype() {
         return "VARCHAR(1000)";
     }
     
     public String getSQLValue() {
-        return database.beginStringValue() + database.safeString(literalValue.toString()) + database.endStringValue();
+        String unsafeValue = literalValue.toString();
+        return database.beginStringValue() + database.safeString(unsafeValue) + database.endStringValue();
     }
 }
