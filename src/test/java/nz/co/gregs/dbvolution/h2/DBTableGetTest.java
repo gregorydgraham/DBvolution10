@@ -19,7 +19,9 @@ import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -144,13 +146,16 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     public void testDateIsLessThanAndGreaterThan() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.add(Calendar.SECOND, 60);
+        Date future = gregorianCalendar.getTime();
         Marque oldQuery = new Marque();
-        oldQuery.getCreationDate().isLessThan(new DBDate(new Date()));
+        oldQuery.getCreationDate().isLessThan(new DBDate(future));
         marques = marques.getByExample(oldQuery);
         marques.printAllRows();
         assertTrue("Wrong number of rows selected, should be all of them", marques.size() == marqueRows.size());
         oldQuery = new Marque();
-        oldQuery.getCreationDate().isLessThanOrEqualTo(new DBDate(new Date()));
+        oldQuery.getCreationDate().isLessThanOrEqualTo(new DBDate(future));
         marques = marques.getByExample(oldQuery);
         marques.printAllRows();
         assertTrue("Wrong number of rows selected, should be all of them", marques.size() == marqueRows.size());
