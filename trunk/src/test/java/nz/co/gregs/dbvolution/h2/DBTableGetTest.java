@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import nz.co.gregs.dbvolution.DBDate;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -85,7 +86,6 @@ public class DBTableGetTest extends AbstractTest {
 //    }
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
-
     public void testGetAllRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         marques.getAllRows();
         for (DBTableRow row : marques) {
@@ -143,14 +143,37 @@ public class DBTableGetTest extends AbstractTest {
         assertTrue("Wrong number of rows selected, should be all of them", marques.size() == marqueRows.size());
     }
 
+    public void testDateIsLessThanAndGreaterThan() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+        Marque oldQuery = new Marque();
+        oldQuery.getCreationDate().isLessThan(new DBDate(new Date()));
+        marques = marques.getByExample(oldQuery);
+        marques.printAllRows();
+        assertTrue("Wrong number of rows selected, should be all of them", marques.size() == marqueRows.size());
+        oldQuery = new Marque();
+        oldQuery.getCreationDate().isLessThanOrEqualTo(new DBDate(new Date()));
+        marques = marques.getByExample(oldQuery);
+        marques.printAllRows();
+        assertTrue("Wrong number of rows selected, should be all of them", marques.size() == marqueRows.size());
+        oldQuery = new Marque();
+        oldQuery.getCreationDate().isGreaterThan(new DBDate(new Date(0L)));
+        marques = marques.getByExample(oldQuery);
+        marques.printAllRows();
+        assertTrue("Wrong number of rows selected, should be all of them", marques.size() == marqueRows.size());
+        oldQuery = new Marque();
+        oldQuery.getCreationDate().isGreaterThanOrEqualTo(new DBDate(new Date(0L)));
+        marques = marques.getByExample(oldQuery);
+        marques.printAllRows();
+        assertTrue("Wrong number of rows selected, should be all of them", marques.size() == marqueRows.size());
+    }
+
     public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         String rawQuery = "and lower(name) in ('peugeot','hummer')  ";
         marques = marques.getByRawSQL(rawQuery);
         marques.printAllRows();
         assertEquals(marques.size(), 2);
     }
-    
-    public void testDBSelectQuery() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, ClassNotFoundException{
+
+    public void testDBSelectQuery() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, ClassNotFoundException {
         DBTable<MarqueSelectQuery> msq = new DBTable<MarqueSelectQuery>(new MarqueSelectQuery(), myDatabase);
         msq.getAllRows();
         msq.printAllRows();
