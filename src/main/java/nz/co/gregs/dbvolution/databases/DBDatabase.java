@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.beans.IntrospectionException;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -42,6 +43,7 @@ public abstract class DBDatabase {
     private String username = "";
     private String password = null;
     private DataSource dataSource = null;
+    private boolean printSQLBeforeExecuting;
 
     public DBDatabase(DataSource ds) {
         this.dataSource = ds;
@@ -116,6 +118,25 @@ public abstract class DBDatabase {
         return password;
     }
 
+    public void setPrintSQLBeforeExecuting(boolean b) {
+        printSQLBeforeExecuting = b;
+    }
+
+    /**
+     * @return the printSQLBeforeExecuting
+     */
+    public boolean isPrintSQLBeforeExecuting() {
+        return printSQLBeforeExecuting;
+    }
+
+    protected void printSQLIfRequested(String sqlString) {
+        printSQLIfRequested(sqlString, System.out);
+    }
+
+    protected void printSQLIfRequested(String sqlString, PrintStream out) {
+        out.println(sqlString);
+    }
+
     public abstract String getDateFormattedForQuery(Date date);
 
     public String formatColumnName(String columnName) {
@@ -139,10 +160,11 @@ public abstract class DBDatabase {
         String lineSeparator = System.getProperty("line.separator");
         // table name
 
-        sqlScript.append("CREATE TABLE ").append(marque.getTableName()).append("(").append(lineSeparator);
+        sqlScript.append(getCreateTableStart()).append(marque.getTableName()).append(getCreateTableColumnsStart()).append(lineSeparator);
 
         // columns
         String sep = "";
+        String nextSep = getCreateTableColumnsSeparator();
         Field[] fields = marque.getClass().getDeclaredFields();
         for (Field field : fields) {
             DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
@@ -152,8 +174,8 @@ public abstract class DBDatabase {
                 if (colName == null || colName.isEmpty()) {
                     colName = field.getName();
                 }
-                sqlScript.append(sep).append(colName).append(" ").append(qdt.getSQLDatatype());
-                sep = ", " + lineSeparator;
+                sqlScript.append(sep).append(colName).append(getCreateTableColumnsNameAndTypeSeparator()).append(qdt.getSQLDatatype());
+                sep = nextSep + lineSeparator;
 
                 DBTablePrimaryKey pkAnno = field.getAnnotation(DBTablePrimaryKey.class);
                 if (pkAnno != null) {
@@ -163,9 +185,9 @@ public abstract class DBDatabase {
         }
 
         // primary keys
-        String pkStart = lineSeparator + ",PRIMARY KEY (";
-        String pkMiddle = ", ";
-        String pkEnd = ")" + lineSeparator;
+        String pkStart = lineSeparator + getCreateTablePrimaryKeyClauseStart();
+        String pkMiddle = getCreateTablePrimaryKeyClauseMiddle();
+        String pkEnd = getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
         String pkSep = pkStart;
         for (Field field : pkFields) {
             DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
@@ -181,16 +203,19 @@ public abstract class DBDatabase {
         }
 
         //finish
-        sqlScript.append(")").append(lineSeparator);
-        System.out.println(sqlScript.toString());
-        getDBStatement().execute(sqlScript.toString());
+        sqlScript.append(getCreateTableColumnsEnd()).append(lineSeparator);
+        String sqlString = sqlScript.toString();
+        printSQLIfRequested(sqlString);
+        getDBStatement().execute(sqlString);
     }
 
     public <TR extends DBTableRow> void dropTable(TR tableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
 
-        sqlScript.append("DROP TABLE ").append(tableRow.getTableName());
-        getDBStatement().execute(sqlScript.toString());
+        sqlScript.append(getDropTableStart()).append(tableRow.getTableName());
+        String sqlString = sqlScript.toString();
+        printSQLIfRequested(sqlString);
+        getDBStatement().execute(sqlString);
     }
 
     public String beginStringValue() {
@@ -242,4 +267,41 @@ public abstract class DBDatabase {
     public String beginWhereLine() {
         return " and ";
     }
+
+    public String getDropTableStart() {
+        return "DROP TABLE ";
+    }
+
+    public String getCreateTablePrimaryKeyClauseStart() {
+        return ",PRIMARY KEY (";
+    }
+
+    private String getCreateTablePrimaryKeyClauseMiddle() {
+        return ", ";
+    }
+
+    private String getCreateTablePrimaryKeyClauseEnd() {
+        return ")";
+    }
+
+    private String getCreateTableStart() {
+        return "CREATE TABLE ";
+    }
+
+    private String getCreateTableColumnsStart() {
+        return "(";
+    }
+
+    private String getCreateTableColumnsSeparator() {
+        return ", ";
+    }
+
+    private String getCreateTableColumnsNameAndTypeSeparator() {
+        return " ";
+    }
+
+    private Object getCreateTableColumnsEnd() {
+        return ")";
+    }
+
 }

@@ -49,13 +49,14 @@ public class AbstractTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
+        myDatabase.setPrintSQLBeforeExecuting(false);
         myDatabase.dropTableNoExceptions(new Marque());
         myDatabase.createTable(myMarqueRow);
 
         myDatabase.dropTableNoExceptions(myCarCompanyRow);
         myDatabase.createTable(myCarCompanyRow);
 
-        DBTable.setPrintSQLBeforeExecuting(true);
+        DBTable.setPrintSQLBeforeExecuting(false);
         marques = new DBTable<Marque>(myMarqueRow, myDatabase);
         carCompanies = new DBTable<CarCompany>(myCarCompanyRow, myDatabase);
         carTableRows.add(new CarCompany("TOYOTA", 1));
