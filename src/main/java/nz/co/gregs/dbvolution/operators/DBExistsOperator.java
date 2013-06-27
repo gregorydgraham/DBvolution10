@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import java.beans.IntrospectionException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.QueryableDatatype;
 
 /**
  *
@@ -33,9 +35,13 @@ public class DBExistsOperator extends DBOperator {
     DBTableRow tableRow;
     private final String referencedColumnName;
 
-    public DBExistsOperator(DBTableRow tableRow, String referencedColumnName) {
+    public DBExistsOperator(DBTableRow tableRow, QueryableDatatype qdtOfTheRow) throws IllegalArgumentException, IllegalAccessException {
         this.tableRow = tableRow;
-        this.referencedColumnName = referencedColumnName;
+        Field qdtField = tableRow.getFieldOf(qdtOfTheRow);
+        if (qdtField == null) {
+            throw new RuntimeException("QueryableDatatype Not Found: the specified " + qdtOfTheRow.getClass().getSimpleName() + " is not part of the specified row, please use only columns from the actual row");
+        }
+        this.referencedColumnName = tableRow.getDBColumnName(qdtField);
     }
 
     @Override
