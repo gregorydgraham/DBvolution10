@@ -49,7 +49,7 @@ abstract public class DBTableRow {
             }
         }
         if (pkColumnValue.isEmpty()) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of "+this.getClass().getSimpleName()+" using the @DBTablePrimaryKey annotation.");
+            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
         } else {
             return pkColumnValue;
         }
@@ -67,7 +67,7 @@ abstract public class DBTableRow {
                 return field.getAnnotation(DBTableColumn.class).value();
             }
         }
-        throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of "+this.getClass().getSimpleName()+" using the @DBTablePrimaryKey annotation.");
+        throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
     }
 
     /**
@@ -104,12 +104,12 @@ abstract public class DBTableRow {
             throw new RuntimeException("Unable To Access Variable Nor GET Method: Please change protection to public for GET method or field " + this.getClass().getSimpleName() + "." + field.getName(), ex);
         }
     }
-    
-    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() throws IntrospectionException, IllegalArgumentException, InvocationTargetException{
+
+    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
         HashMap<String, QueryableDatatype> columnsAndQDTs = new HashMap<String, QueryableDatatype>();
         String columnName;
         QueryableDatatype qdt;
-        
+
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBTableColumn.class)) {
@@ -123,8 +123,7 @@ abstract public class DBTableRow {
 
     /**
      *
-     * @return
-     * @throws IllegalArgumentException
+     * @return @throws IllegalArgumentException
      * @throws IllegalAccessException
      * @throws SQLException
      * @throws InstantiationException
@@ -238,10 +237,6 @@ abstract public class DBTableRow {
         Field[] fields = thisClass.getDeclaredFields();
 
         for (Field field : fields) {
-            //            if (field.isAnnotationPresent(DBTableColumn.class)) {
-            //                DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
-            //                columnNames.add(annotation.value());
-            //            }
             String dbColumnName = getDBColumnName(field);
             if (dbColumnName != null) {
                 columnNames.add(dbColumnName);
@@ -250,7 +245,7 @@ abstract public class DBTableRow {
         return columnNames;
     }
 
-    private String getDBColumnName(Field field) {
+    public String getDBColumnName(Field field) {
         String columnName = "";
 
         if (field.isAnnotationPresent(DBTableColumn.class)) {
@@ -288,5 +283,18 @@ abstract public class DBTableRow {
         //        return properPKName.equals(fkName);
         Class fkTableRow = fk.value();
         return this.getClass().equals(fkTableRow);
+    }
+
+    public Field getFieldOf(QueryableDatatype qdt) throws IllegalArgumentException, IllegalAccessException {
+        Field fieldReqd = null;
+
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            if (field.get(this).equals(qdt)) {
+                return field;
+            }
+        }
+        return fieldReqd;
     }
 }

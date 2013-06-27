@@ -38,7 +38,7 @@ public class DBExistsOperatorTest extends AbstractTest {
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
         carCompany.uidCarCompany.isLiterally(3);
-        DBExistsOperator op = new DBExistsOperator(carCompany, "UID_CARCOMPANY");
+        DBExistsOperator op = new DBExistsOperator(carCompany, carCompany.uidCarCompany);
         marque.getCarCompany().setOperator(op);
         marques.getByExample(marque);
         for (DBTableRow row : marques) {
