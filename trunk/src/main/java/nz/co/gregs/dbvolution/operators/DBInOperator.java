@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.operators;
 import java.util.List;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import static nz.co.gregs.dbvolution.operators.DBEquals.getInverse;
 
 /**
  *
