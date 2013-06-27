@@ -95,7 +95,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         return selectStatement.toString();
     }
 
-    private String getSelectStatementForWhereClause() {
+    public String getSelectStatementForWhereClause() {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation != null) {
@@ -546,5 +546,13 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
 
     String getPrimaryKeyName() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         return dummy.getPrimaryKeyValue();
+    }
+
+    public String getWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+        if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
+            return getSQLForExample(query)+ sqlWhereClause.replaceAll("\\s*;\\s*$", "");
+        } else {
+            return getSQLForExample(query)+" AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
+        }
     }
 }

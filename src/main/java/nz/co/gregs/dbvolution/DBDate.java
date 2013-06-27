@@ -7,7 +7,7 @@ package nz.co.gregs.dbvolution;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import nz.co.gregs.dbvolution.operators.DBLike;
+import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 
 /**
  *
@@ -52,7 +52,7 @@ public class DBDate extends QueryableDatatype {
     @Override
     public String getWhereClause(String columnName) {
 //        if (this.usingLikeComparison) {
-        if (this.getOperator() instanceof DBLike) {
+        if (this.getOperator() instanceof DBLikeOperator) {
             throw new RuntimeException("DATE COLUMNS CAN'T USE \"LIKE\": " + columnName);
         } else {
             return super.getWhereClause(columnName);

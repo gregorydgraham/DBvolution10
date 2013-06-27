@@ -5,8 +5,8 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.ArrayList;
-import nz.co.gregs.dbvolution.operators.DBIsNullOp;
-import nz.co.gregs.dbvolution.operators.DBLike;
+import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
+import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 
 /**
  *
@@ -80,7 +80,7 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     public String getWhereClause(String columnName) {
-        if (this.getOperator() instanceof DBLike) {
+        if (this.getOperator() instanceof DBLikeOperator) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
         } else {
             return super.getWhereClause(columnName);

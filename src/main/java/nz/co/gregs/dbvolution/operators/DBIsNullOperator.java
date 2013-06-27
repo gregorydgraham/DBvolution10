@@ -20,7 +20,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  *
  * @author gregorygraham
  */
-public class DBIsNullOp extends DBOperator {
+public class DBIsNullOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
