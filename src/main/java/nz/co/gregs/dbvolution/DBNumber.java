@@ -80,7 +80,7 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     public String getWhereClause(String columnName) {
-        if (this.operator instanceof DBLike) {
+        if (this.getOperator() instanceof DBLike) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
         } else {
             return super.getWhereClause(columnName);

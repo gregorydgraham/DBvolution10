@@ -33,11 +33,11 @@ public class DBEquals extends DBOperator {
         this.equalTo = equalTo;
     }
 
-    static String getInverse() {
+    public String getInverse() {
         return " <> ";
     }
 
-    static String getOperator() {
+    public String getOperator() {
         return " = ";
     }
 

@@ -15,10 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import static nz.co.gregs.dbvolution.operators.DBEquals.getInverse;
-
 /**
  *
  * @author gregorygraham
