@@ -22,28 +22,20 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  *
  * @author gregorygraham
  */
-public class DBEquals extends DBOperator {
-    private final QueryableDatatype equalTo;
+public class DBLikeOperator extends DBOperator {
+    private final QueryableDatatype likeableValue;
 
-    /**
-     *
-     */
-    public DBEquals(QueryableDatatype equalTo) {
-        super();
-        this.equalTo = equalTo;
-    }
-
-    public String getInverse() {
-        return " <> ";
-    }
-
-    public String getOperator() {
-        return " = ";
+    public DBLikeOperator(QueryableDatatype likeableValue) {
+        this.likeableValue = likeableValue;
     }
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
-        equalTo.setDatabase(database);
-        return database.beginWhereLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
+        return database.beginWhereLine() +(invertOperator?"!(":"(")+ columnName + getOperator()+" "+likeableValue.getSQLValue()+")";
     }
+
+    private String getOperator() {
+        return " like ";
+    }
+    
 }
