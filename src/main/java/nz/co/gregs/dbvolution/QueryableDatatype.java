@@ -193,6 +193,10 @@ public class QueryableDatatype extends Object implements Serializable {
     public void isBetween(Object lowerBound, Object upperBound) {
         isBetween(new QueryableDatatype(lowerBound), new QueryableDatatype(upperBound));
     }
+    
+    public void doesExist(DBTableRow tableRow, QueryableDatatype qdtOfTheRow) throws IllegalArgumentException, IllegalAccessException{
+        this.setOperator(new DBExistsOperator(tableRow, qdtOfTheRow));
+    }
 
     /**
      *

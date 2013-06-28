@@ -35,11 +35,28 @@ public class DBExistsOperatorTest extends AbstractTest {
     }
 
     public void testDBExistsOperator() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
-        Marque marque = new Marque();
+        
         CarCompany carCompany = new CarCompany();
         carCompany.uidCarCompany.isLiterally(3);
-        DBExistsOperator op = new DBExistsOperator(carCompany, carCompany.uidCarCompany);
-        marque.getCarCompany().setOperator(op);
+        DBExistsOperator carCompanyExists = new DBExistsOperator(carCompany, carCompany.uidCarCompany);
+
+        Marque marque = new Marque();
+        marque.getCarCompany().setOperator(carCompanyExists);
+        
+        //Malcolm's ideas
+        //marque.exists(carCompany);
+        //marque.getCarCompany().uidCarCompany.isLiterally(3);
+        //marque.getCarCompany().exists(carCompany.uidCarCompany, CarCompany.class);
+        
+        marques.getByExample(marque);
+        for (DBTableRow row : marques) {
+            System.out.println(row);
+        }
+        assertTrue("Incorrect number of marques retreived", marques.size() == 3);
+        
+        marque = new Marque();
+        marque.getCarCompany().doesExist(carCompany, carCompany.uidCarCompany);
+        
         marques.getByExample(marque);
         for (DBTableRow row : marques) {
             System.out.println(row);
