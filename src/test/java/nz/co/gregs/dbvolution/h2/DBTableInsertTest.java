@@ -20,10 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.TestCase;
-import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.Marque;
 
 /**
@@ -32,31 +28,11 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class DBTableInsertTest extends AbstractTest {
     
-//    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionInsertTest", "", "");
     Marque myTableRow = new Marque();
-//    DBTable<Marque> marques;
     
     public DBTableInsertTest(String testName) {
         super(testName);
     }
-    
-//    @Override
-//    protected void setUp() throws Exception {
-//        super.setUp();
-//        myDatabase.dropTableNoExceptions(myTableRow);
-//        myDatabase.createTable(myTableRow);
-//        DBTable.setPrintSQLBeforeExecuting(true);
-//        marques = new DBTable<Marque>(myTableRow, myDatabase);
-//    }
-//    
-//    @Override
-//    protected void tearDown() throws Exception {
-//        myDatabase.dropTable(myTableRow);
-//        
-//        super.tearDown();
-//    }
-    // TODO add test methods here. The name must begin with 'test'. For example:
-    // public void testHello() {}
 
     public void testInsertRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         myTableRow.getUidMarque().isLiterally(999);
@@ -70,7 +46,6 @@ public class DBTableInsertTest extends AbstractTest {
         myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",4));
         
         marques.insert(myTableRows);
-        marques.size();
         marques.getAllRows();
         marques.printAllRows();
     }

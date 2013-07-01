@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.h2;
 import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -43,24 +44,20 @@ public class DBExistsOperatorTest extends AbstractTest {
         Marque marque = new Marque();
         marque.getCarCompany().setOperator(carCompanyExists);
         
-        //Malcolm's ideas
-        //marque.exists(carCompany);
-        //marque.getCarCompany().uidCarCompany.isLiterally(3);
-        //marque.getCarCompany().exists(carCompany.uidCarCompany, CarCompany.class);
-        
         marques.getByExample(marque);
-        for (DBTableRow row : marques) {
+        ArrayList<Marque> rowList = marques.toList();
+        for (DBTableRow row : rowList) {
             System.out.println(row);
         }
-        assertTrue("Incorrect number of marques retreived", marques.size() == 3);
+        assertTrue("Incorrect number of marques retreived", rowList.size() == 3);
         
         marque = new Marque();
         marque.getCarCompany().doesExist(carCompany, carCompany.uidCarCompany);
         
         marques.getByExample(marque);
-        for (DBTableRow row : marques) {
+        for (DBTableRow row : rowList) {
             System.out.println(row);
         }
-        assertTrue("Incorrect number of marques retreived", marques.size() == 3);
+        assertTrue("Incorrect number of marques retreived", rowList.size() == 3);
     }
 }
