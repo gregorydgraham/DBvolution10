@@ -6,6 +6,7 @@ package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.operators.*;
 
@@ -176,9 +177,7 @@ public class QueryableDatatype extends Object implements Serializable {
      */
     public void isIn(QueryableDatatype[] inValues) {
         ArrayList<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
-        for (QueryableDatatype qdt : inValues) {
-            arrayList.add(qdt);
-        }
+        boolean addAll = arrayList.addAll(Arrays.asList(inValues));
         this.setOperator(new DBInOperator(arrayList));
     }
 
@@ -194,10 +193,6 @@ public class QueryableDatatype extends Object implements Serializable {
         isBetween(new QueryableDatatype(lowerBound), new QueryableDatatype(upperBound));
     }
     
-    public void doesExist(DBTableRow tableRow, QueryableDatatype qdtOfTheRow) throws IllegalArgumentException, IllegalAccessException{
-        this.setOperator(new DBExistsOperator(tableRow, qdtOfTheRow));
-    }
-
     /**
      *
      * @return the literal value as it would appear in an SQL statement i.e.
