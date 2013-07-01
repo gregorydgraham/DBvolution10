@@ -43,6 +43,8 @@ public class DBExistsOperator extends DBOperator {
         }
         this.referencedColumnName = tableRow.getDBColumnName(qdtField);
     }
+    
+    
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
@@ -68,6 +70,6 @@ public class DBExistsOperator extends DBOperator {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }
 
-        return database.beginWhereLine() + " exists (" + subSelect + ") ";
+        return database.beginWhereLine() + (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
     }
 }

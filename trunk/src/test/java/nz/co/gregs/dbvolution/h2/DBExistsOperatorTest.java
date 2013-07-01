@@ -52,12 +52,15 @@ public class DBExistsOperatorTest extends AbstractTest {
         assertTrue("Incorrect number of marques retreived", rowList.size() == 3);
         
         marque = new Marque();
-        marque.getCarCompany().doesExist(carCompany, carCompany.uidCarCompany);
+        carCompany.uidCarCompany.isLiterally(3);
+        marque.getCarCompany().setOperator(new DBExistsOperator(carCompany, carCompany.uidCarCompany));
+        marque.getCarCompany().invertOperator();
         
         marques.getByExample(marque);
+        rowList = marques.toList();
         for (DBTableRow row : rowList) {
             System.out.println(row);
         }
-        assertTrue("Incorrect number of marques retreived", rowList.size() == 3);
+        assertTrue("Incorrect number of marques retreived", rowList.size() == 19);
     }
 }

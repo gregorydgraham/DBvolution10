@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @param <E>
  * @author gregory.graham
  */
-public class DBTable<E extends DBTableRow> /*extends java.util.ArrayList<E> implements List<E>*/ {
+public class DBTable<E extends DBTableRow> {
 
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
