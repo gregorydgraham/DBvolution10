@@ -61,7 +61,7 @@ public class DBQueryTest extends AbstractTest {
                 + "MARQUE.FK_CARCOMPANY from car_company, \n"
                 + "marque where 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
                 + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
-        //"select CAR_COMPANY.NAME, CAR_COMPANY.UID_CARCOMPANY, MARQUE.NUMERIC_CODE, MARQUE.UID_MARQUE, MARQUE.ISUSEDFORTAFROS, MARQUE.FK_TOYSTATUSCLASS, MARQUE.INTINDALLOCALLOWED, MARQUE.UPD_COUNT, MARQUE.AUTO_CREATED, MARQUE.NAME, MARQUE.PRICINGCODEPREFIX, MARQUE.RESERVATIONSALWD, MARQUE.CREATION_DATE, MARQUE.FK_CARCOMPANY from car_company, marque where 1=1 and CAR_COMPANY.NAME = 'TOYOTA' and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
+
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertEquals(expectedResult.replaceAll("\\s+", " "), generateSQLString.replaceAll("\\s+", " "));
@@ -79,7 +79,7 @@ public class DBQueryTest extends AbstractTest {
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
-            //DBQueryRow queryRow = results.get(1);
+            
             CarCompany carCo = (CarCompany) queryRow.get(carCompany);
             String carCoName = carCo.name.toString();
 
@@ -104,7 +104,7 @@ public class DBQueryTest extends AbstractTest {
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
-            //DBQueryRow queryRow = results.get(1);
+            
             CarCompany carCo = (CarCompany) queryRow.get(carCompany);
             String carCoName = carCo.name.toString();
 

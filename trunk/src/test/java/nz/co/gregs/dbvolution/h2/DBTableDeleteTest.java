@@ -19,12 +19,6 @@ import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
-import junit.framework.TestCase;
-import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 
 /**
@@ -37,22 +31,20 @@ public class DBTableDeleteTest extends AbstractTest {
         super(testName);
     }
 
-    // TODO add test methods here. The name must begin with 'test'. For example:
-    // public void testHello() {}
-
     public void testDeleteListOfRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         marques.getAllRows();
-        int originalSize = marques.size();
-        System.out.println("marques.size()==" + marques.size());
+        ArrayList<Marque> rowList = marques.toList();
+        int originalSize = rowList.size();
+        System.out.println("rowList.size()==" + rowList.size());
         ArrayList<Marque> deleteList = new ArrayList<Marque>();
-        for (Marque row : marques) {
+        for (Marque row : rowList) {
             if (row.getIsUsedForTAFROs().toString().equals("False")) {
                 deleteList.add(row);
             }
         }
         marques.delete(deleteList);
         marques.getAllRows();
-        System.out.println("marques.size()==" + marques.size());
-        assertTrue("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.size());
+        System.out.println("rowList.size()==" + marques.toList().size());
+        assertTrue("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
     }
 }

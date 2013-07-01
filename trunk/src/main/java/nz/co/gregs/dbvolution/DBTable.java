@@ -24,12 +24,13 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @param <E>
  * @author gregory.graham
  */
-public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implements List<E> {
+public class DBTable<E extends DBTableRow> /*extends java.util.ArrayList<E> implements List<E>*/ {
 
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
     private DBDatabase theDatabase = null;
     E dummy;
+    private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
 
     /**
      * With a DBDatabase subclass it's easier
@@ -141,7 +142,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      */
     public void getAllRows() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException //throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException 
     {
-        this.clear();
+        this.listOfRows.clear();
 
         String selectStatement = this.getSelectStatement();
 
@@ -184,7 +185,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
                     setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
                 }
             }
-            dbTable.add(tableRow);
+            dbTable.listOfRows.add(tableRow);
         }
     }
 
@@ -265,7 +266,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
     }
 
     private DBTable<E> getRows(String whereClause) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
-        this.clear();
+        this.listOfRows.clear();
         String selectStatement = this.getSelectStatementForWhereClause() + whereClause + ";";
         if (printSQLBeforeExecuting) {
             System.out.println(selectStatement);
@@ -403,7 +404,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      *
      */
     public void printAllRows() {
-        for (E row : this) {
+        for (E row : this.listOfRows) {
             System.out.println(row);
         }
     }
@@ -417,7 +418,7 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      * @param ps
      */
     public void printAllRows(PrintStream ps) {
-        for (E row : this) {
+        for (E row : this.listOfRows) {
             ps.println(row);
         }
     }
@@ -473,8 +474,8 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
      * @return
      */
     public E firstRow() {
-        if (this.size() > 0) {
-            return this.get(0);
+        if (this.listOfRows.size() > 0) {
+            return this.listOfRows.get(0);
         } else {
             return null;
         }
@@ -554,5 +555,9 @@ public class DBTable<E extends DBTableRow> extends java.util.ArrayList<E> implem
         } else {
             return getSQLForExample(query)+" AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
         }
+    }
+    
+    public java.util.ArrayList<E> toList(){
+        return new java.util.ArrayList<E>(listOfRows);
     }
 }

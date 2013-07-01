@@ -69,7 +69,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     public void testGetAllRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         DBTable<Marque> marq = new DBTable<Marque>(new Marque(), myDatabase);
         marq.getAllRows();
-        for (DBTableRow row : marq) {
+        for (DBTableRow row : marq.toList()) {
             System.out.println(row);
         }
     }
