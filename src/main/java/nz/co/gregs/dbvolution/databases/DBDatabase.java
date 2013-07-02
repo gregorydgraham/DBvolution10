@@ -304,4 +304,8 @@ public abstract class DBDatabase {
         return ")";
     }
 
+    public String toLowerCase(String string) {
+        return "lower("+string+")";
+    }
+
 }
