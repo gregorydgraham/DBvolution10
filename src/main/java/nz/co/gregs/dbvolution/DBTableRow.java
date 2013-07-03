@@ -315,16 +315,16 @@ abstract public class DBTableRow {
      *
      * @param qdt
      */
-    public void ignoreRelation(QueryableDatatype qdt) throws IllegalArgumentException, IllegalAccessException {
+    public void ignoreForeignKey(QueryableDatatype qdt) throws IllegalArgumentException, IllegalAccessException {
         Field fieldOfFK = getFieldOf(qdt);
         ignoredRelationships.add(fieldOfFK);
     }
 
-    public void checkAllRelations() {
+    public void useAllForeignKeys() {
         ignoredRelationships.clear();
     }
 
-    public void ignoreAllRelations() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    public void ignoreAllForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
         ignoredRelationships.addAll(this.getForeignKeyFields());
     }
 }
