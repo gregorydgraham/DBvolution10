@@ -20,34 +20,34 @@ public class Marque extends DBTableRow {
      * as
      */
     @DBTableColumn("numeric_code")
-    private DBNumber numericCode = new DBNumber();
+    public DBNumber numericCode = new DBNumber();
     @DBTableColumn("uid_marque")
     @DBTablePrimaryKey
-    private DBInteger uidMarque = new DBInteger();
+    public DBInteger uidMarque = new DBInteger();
     @DBTableColumn("isusedfortafros")
-    private DBString isUsedForTAFROs = new DBString();
+    public DBString isUsedForTAFROs = new DBString();
     @DBTableColumn("fk_toystatusclass")
 //    @DBTableForeignKey("\"mdamgr\".toystatusclass")
-    private DBNumber toyotaStatusClassID = new DBNumber();
+    public DBNumber toyotaStatusClassID = new DBNumber();
     @DBTableColumn("intindallocallowed")
-    private DBString intIndividualAllocationsAllowed = new DBString();
+    public DBString intIndividualAllocationsAllowed = new DBString();
     @DBTableColumn("upd_count")
-    private DBInteger updateCount = new DBInteger();
+    public DBInteger updateCount = new DBInteger();
     @DBTableColumn
-    private DBString auto_created = new DBString();
+    public DBString auto_created = new DBString();
     @DBTableColumn
-    private DBString name = new DBString();
+    public DBString name = new DBString();
     @DBTableColumn("pricingcodeprefix")
-    private DBString pricingCodePrefix = new DBString();
+    public DBString pricingCodePrefix = new DBString();
     @DBTableColumn("reservationsalwd")
-    private DBString reservationsAllowed = new DBString();
+    public DBString reservationsAllowed = new DBString();
     @DBTableColumn("creation_date")
-    private DBDate creationDate = new DBDate();
+    public DBDate creationDate = new DBDate();
     
 //    @DBTableForeignKey("CAR_COMPANY.UID_CARCOMPANY")
     @DBTableForeignKey(CarCompany.class)
     @DBTableColumn("fk_carcompany")
-    private DBInteger carCompany = new DBInteger();
+    public DBInteger carCompany = new DBInteger();
 
 
     public Marque(){
