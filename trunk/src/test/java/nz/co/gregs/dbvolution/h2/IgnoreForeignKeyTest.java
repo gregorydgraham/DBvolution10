@@ -40,11 +40,25 @@ public class IgnoreForeignKeyTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
         DBQuery dbQuery = new DBQuery(myDatabase, carCompany, marque);
         List<DBQueryRow> allRows = dbQuery.getAllRows();
+        dbQuery.printAll();
         assertTrue("Number of rows should be 22", allRows.size() == 22);
 
-        marque.ignoreRelation(marque.getCarCompany());
+        marque.ignoreForeignKey(marque.getCarCompany());
         dbQuery = new DBQuery(myDatabase, carCompany, marque);
         allRows = dbQuery.getAllRows();
+        dbQuery.printAll();
+        assertTrue("Number of rows should be 88", allRows.size() == 88);
+
+        marque.useAllForeignKeys();
+        dbQuery = new DBQuery(myDatabase, carCompany, marque);
+        allRows = dbQuery.getAllRows();
+        dbQuery.printAll();
+        assertTrue("Number of rows should be 88", allRows.size() == 22);
+
+        marque.ignoreAllForeignKeys();
+        dbQuery = new DBQuery(myDatabase, carCompany, marque);
+        allRows = dbQuery.getAllRows();
+        dbQuery.printAll();
         assertTrue("Number of rows should be 88", allRows.size() == 88);
 
     }

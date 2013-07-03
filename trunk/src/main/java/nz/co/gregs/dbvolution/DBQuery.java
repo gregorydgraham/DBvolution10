@@ -159,6 +159,17 @@ public class DBQuery {
         }
         return results;
     }
+    
+    public List<DBTableRow> getAllInstancesOf(DBTableRow exemplar) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException{
+        ArrayList<DBTableRow> objList = new ArrayList<DBTableRow>();
+        if (results.isEmpty()){
+            getAllRows();
+        }
+        for (DBQueryRow row: results){
+            objList.add(row.get(exemplar));
+        }
+        return objList;
+    }
 
     /**
      * Convenience method to print all the rows in the current collection
@@ -186,6 +197,27 @@ public class DBQuery {
                 DBTableRow rowPart = row.get(tab);
                 String rowPartStr = rowPart.toString();
                 ps.print(rowPartStr);
+            }
+            ps.println();
+        }
+    }
+    /**
+     * Fast way to print the results
+     *
+     * myTable.printAllPrimaryKeys(System.err);
+     *
+     * @param ps
+     */
+    public void printAllPrimaryKeys(PrintStream ps) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+        if (results == null) {
+            this.getAllRows();
+        }
+
+        for (DBQueryRow row : this.results) {
+            for (DBTableRow tab : this.queryTables) {
+                DBTableRow rowPart = row.get(tab);
+                String rowPartStr = rowPart.getPrimaryKeyValue();
+                ps.print(" "+rowPart.getPrimaryKeyName()+": "+rowPartStr);
             }
             ps.println();
         }
