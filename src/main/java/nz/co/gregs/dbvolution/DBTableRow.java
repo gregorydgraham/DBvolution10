@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 abstract public class DBTableRow {
 
     private DBDatabase database;
+    private List<Field> ignoredRelationships = new ArrayList<Field>();
+    private final List<Field> fkFields = new ArrayList<Field>();
 
     public DBTableRow() {
     }
@@ -57,8 +60,8 @@ abstract public class DBTableRow {
     }
 
     public String getPrimaryKeyName() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        String pkColumnValue = "";
-        QueryableDatatype queryableValueOfField;
+//        String pkColumnValue = "";
+//        QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
         Class<? extends DBTableRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
@@ -263,10 +266,10 @@ abstract public class DBTableRow {
         HashMap<DBTableForeignKey, DBTableColumn> foreignKeys;
         foreignKeys = new HashMap<DBTableForeignKey, DBTableColumn>();
         Class<? extends DBTableRow> thisClass = this.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
+        List<Field> fields = this.getForeignKeyFields();
 
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTableForeignKey.class)) {
+            if (!ignoredRelationships.contains(field)) {
                 DBTableForeignKey annotation = field.getAnnotation(DBTableForeignKey.class);
                 DBTableColumn columnName = field.getAnnotation(DBTableColumn.class);
                 foreignKeys.put(annotation, columnName);
@@ -275,16 +278,24 @@ abstract public class DBTableRow {
         return foreignKeys;
     }
 
-    boolean hasPrimaryKeyForFK(DBTableForeignKey fk) throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        //        final String tableName = getTableName();
-        //        final String primaryKeyName = getPrimaryKeyName();
-        //        final String properPKName = database.formatTableAndColumnName(tableName, primaryKeyName);
-        //        final String fkName = fk.value();
-        //        return properPKName.equals(fkName);
-        Class fkTableRow = fk.value();
-        return this.getClass().equals(fkTableRow);
+    protected List<Field> getForeignKeyFields() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        if (fkFields.isEmpty()) {
+            Class<? extends DBTableRow> thisClass = this.getClass();
+            Field[] fields = thisClass.getDeclaredFields();
+
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(DBTableForeignKey.class)) {
+                    fkFields.add(field);
+                }
+            }
+        }
+        return fkFields;
     }
 
+//    boolean hasPrimaryKeyForFK(DBTableForeignKey fk) throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+//        Class fkTableRow = fk.value();
+//        return this.getClass().equals(fkTableRow);
+//    }
     public Field getFieldOf(QueryableDatatype qdt) throws IllegalArgumentException, IllegalAccessException {
         Field fieldReqd = null;
 
@@ -296,5 +307,24 @@ abstract public class DBTableRow {
             }
         }
         return fieldReqd;
+    }
+
+    /**
+     *
+     * Requires the field to be from this instance to work
+     *
+     * @param qdt
+     */
+    public void ignoreRelation(QueryableDatatype qdt) throws IllegalArgumentException, IllegalAccessException {
+        Field fieldOfFK = getFieldOf(qdt);
+        ignoredRelationships.add(fieldOfFK);
+    }
+
+    public void checkAllRelations() {
+        ignoredRelationships.clear();
+    }
+
+    public void ignoreAllRelations() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        ignoredRelationships.addAll(this.getForeignKeyFields());
     }
 }
