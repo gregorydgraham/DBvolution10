@@ -23,7 +23,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
@@ -39,7 +41,7 @@ public class DBQuery {
     DBDatabase database;
     private List<DBTableRow> queryTables;
     private List<DBQueryRow> results;
-    private Map<Class, Map<String, DBTableRow>>existingInstances = new HashMap<Class, Map<String, DBTableRow>>();
+    private Map<Class, Map<String, DBTableRow>> existingInstances = new HashMap<Class, Map<String, DBTableRow>>();
 
     public DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBTableRow>();
@@ -47,12 +49,13 @@ public class DBQuery {
         this.results = null;
     }
 
-    public DBQuery(DBDatabase database, DBTableRow ... examples){
+    public DBQuery(DBDatabase database, DBTableRow... examples) {
         this(database);
-        for (DBTableRow example: examples){
+        for (DBTableRow example : examples) {
             this.add(example);
         }
     }
+
     /**
      *
      * Add a table to the query
@@ -100,9 +103,9 @@ public class DBQuery {
                 for (DBTableForeignKey fk : fks.keySet()) {
                     tabRow.setDatabase(database);
                     String formattedPK = database.formatTableAndColumnName(tableName, tabRow.getPrimaryKeyName());
-                    Class pkClass= fk.value();
-                    DBTableRow fkReferencesTable = (DBTableRow)pkClass.getConstructor().newInstance();
-                    String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(),fkReferencesTable.getPrimaryKeyName());
+                    Class pkClass = fk.value();
+                    DBTableRow fkReferencesTable = (DBTableRow) pkClass.getConstructor().newInstance();
+                    String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
                     if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                         String fkColumnName = fks.get(fk).value();
                         String formattedFK = database.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
@@ -144,13 +147,13 @@ public class DBQuery {
                     qdt.isLiterally(stringOfValue);
                 }
                 Map<String, DBTableRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
-                if(existingInstancesOfThisTableRow==null){
-                    existingInstancesOfThisTableRow=new HashMap<String, DBTableRow>();
+                if (existingInstancesOfThisTableRow == null) {
+                    existingInstancesOfThisTableRow = new HashMap<String, DBTableRow>();
                     existingInstances.put(tableRow.getClass(), existingInstancesOfThisTableRow);
                 }
                 DBTableRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeyValue());
-                if(existingInstance==null){
-                    existingInstance=newInstance;
+                if (existingInstance == null) {
+                    existingInstance = newInstance;
                     existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKeyValue(), existingInstance);
                 }
                 queryRow.put(existingInstance.getClass(), existingInstance);
@@ -159,16 +162,20 @@ public class DBQuery {
         }
         return results;
     }
-    
-    public List<DBTableRow> getAllInstancesOf(DBTableRow exemplar) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException{
-        ArrayList<DBTableRow> objList = new ArrayList<DBTableRow>();
-        if (results.isEmpty()){
+
+    public ArrayList<DBTableRow> getAllInstancesOf(DBTableRow exemplar) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+        HashSet<DBTableRow> objList = new HashSet<DBTableRow>();
+        if (results.isEmpty()) {
             getAllRows();
         }
-        for (DBQueryRow row: results){
+        for (DBQueryRow row : results) {
             objList.add(row.get(exemplar));
         }
-        return objList;
+        
+        DBTableRow[] arrayOfInstances = objList.toArray(new DBTableRow[]{});
+        ArrayList<DBTableRow> arrayList = new ArrayList<DBTableRow>();
+        arrayList.addAll(Arrays.asList(arrayOfInstances));
+        return arrayList;
     }
 
     /**
@@ -201,6 +208,7 @@ public class DBQuery {
             ps.println();
         }
     }
+
     /**
      * Fast way to print the results
      *
@@ -217,7 +225,7 @@ public class DBQuery {
             for (DBTableRow tab : this.queryTables) {
                 DBTableRow rowPart = row.get(tab);
                 String rowPartStr = rowPart.getPrimaryKeyValue();
-                ps.print(" "+rowPart.getPrimaryKeyName()+": "+rowPartStr);
+                ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
             }
             ps.println();
         }
