@@ -556,6 +556,19 @@ public class DBTable<E extends DBTableRow> {
     public void update(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
         Statement statement = theDatabase.getDBStatement();
         StringBuilder sqlInsert = new StringBuilder();
+        List<String> allSQL = getSQLForUpdate(oldRows);
+        for (String sql : allSQL) {
+            if (printSQLBeforeExecuting) {
+                System.out.println(sql);
+            }
+            statement.addBatch(sql);
+        }
+        statement.executeBatch();
+        statement.getConnection().commit();
+    }
+    
+    public List<String> getSQLForUpdate(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException{
+        List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
             row.setDatabase(theDatabase);
             String sql =
@@ -568,13 +581,10 @@ public class DBTable<E extends DBTableRow> {
                     + theDatabase.getEqualsComparator()
                     + row.getPrimaryKeyValue()
                     + theDatabase.endDeleteLine();
-            if (printSQLBeforeExecuting) {
-                System.out.println(sql);
-            }
-            statement.addBatch(sql);
+            allSQL.add(sql);
         }
-        statement.executeBatch();
-        statement.getConnection().commit();
+        
+        return allSQL;
     }
 
     public String getTableName() {
