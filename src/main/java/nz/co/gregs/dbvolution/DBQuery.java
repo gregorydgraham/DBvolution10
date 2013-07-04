@@ -183,18 +183,18 @@ public class DBQuery {
      * Equivalent to: printAll(System.out);
      *
      */
-    public void printAll() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
-        printAll(System.out);
+    public void printRows() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+        printRows(System.out);
     }
 
     /**
      * Fast way to print the results
      *
-     * myTable.printAllRows(System.err);
+     * myTable.printRows(System.err);
      *
      * @param ps
      */
-    public void printAll(PrintStream ps) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void printRows(PrintStream ps) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
         if (results == null) {
             this.getAllRows();
         }

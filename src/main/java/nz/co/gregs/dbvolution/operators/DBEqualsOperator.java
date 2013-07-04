@@ -44,6 +44,6 @@ public class DBEqualsOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         equalTo.setDatabase(database);
-        return database.beginWhereLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
+        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
     }
 }

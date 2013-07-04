@@ -40,6 +40,11 @@ public class H2DB extends DBDatabase{
     }
     
     @Override
+    public String formatTableName(String tableName){
+        return tableName.toUpperCase();
+    }
+    
+    @Override
     public String formatColumnName(String columnName){
         return columnName.toUpperCase();
     }
@@ -52,8 +57,8 @@ public class H2DB extends DBDatabase{
      * @param columnName
      * @return
      */
-    @Override
-    public String formatTableAndColumnName(String tableName, String columnName) {
-        return super.formatTableAndColumnName(tableName, columnName).toUpperCase();
-    }
+//    @Override
+//    public String formatTableAndColumnName(String tableName, String columnName) {
+//        return super.formatTableAndColumnName(tableName, columnName).toUpperCase();
+//    }
 }

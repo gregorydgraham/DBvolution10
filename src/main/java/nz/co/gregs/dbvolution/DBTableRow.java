@@ -228,6 +228,26 @@ abstract public class DBTableRow {
         return string.append(")").toString();
     }
 
+    protected String getSetClause() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        StringBuilder sql = new StringBuilder();
+        Class<? extends DBTableRow> thisClass = this.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+
+        String separator = database.getStartingSetSubClauseSeparator();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBTableColumn.class)) {
+                String columnName = getDBColumnName(field);
+                sql.append(separator)
+                        .append(database.formatColumnName(columnName))
+                        .append(database.getEqualsComparator())
+                        .append(getQueryableValueOfField(field)
+                        .toSQLString());
+                separator = database.getSubsequentSetSubClauseSeparator();
+            }
+        }
+        return sql.toString();
+    }
+
     /**
      *
      * @return @throws IntrospectionException
