@@ -567,6 +567,17 @@ public class DBTable<E extends DBTableRow> {
         statement.getConnection().commit();
     }
     
+    /**
+     * Creates the SQL used to update the rows.  Helpful debugging and mollifying grumpy DBAs
+     * 
+     * 
+     * @param oldRows
+     * @return
+     * @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
     public List<String> getSQLForUpdate(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException{
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
