@@ -35,10 +35,10 @@ public class DBTable<E extends DBTableRow> {
     /**
      * With a DBDatabase subclass it's easier
      *
-     * @param dummyObject
      * @param myDatabase
+     * @param dummyObject
      */
-    public DBTable(E dummyObject, DBDatabase myDatabase) {
+    public DBTable(DBDatabase myDatabase, E dummyObject) {
         this.theDatabase = myDatabase;
         dummy = dummyObject;
     }
