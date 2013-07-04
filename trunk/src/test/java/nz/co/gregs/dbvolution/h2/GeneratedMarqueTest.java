@@ -67,7 +67,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     @Test
     public void testGetAllRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
-        DBTable<Marque> marq = new DBTable<Marque>(new Marque(), myDatabase);
+        DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
         marq.getAllRows();
         for (DBTableRow row : marq.toList()) {
             System.out.println(row);
@@ -76,18 +76,18 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     @Test
     public void testGetFirstAndPrimaryKey() throws SQLException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, InstantiationException, SQLException, ClassNotFoundException {
-        DBTable<Marque> marq = new DBTable<Marque>(new Marque(), myDatabase);
+        DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
         DBTableRow row = marq.firstRow();
         if (row != null) {
             String primaryKey = row.getPrimaryKeyValue();
-            DBTable<Marque> singleMarque = new DBTable<Marque>(new Marque(), myDatabase);
+            DBTable<Marque> singleMarque = new DBTable<Marque>(myDatabase, new Marque());
             singleMarque.getByPrimaryKey(primaryKey).printRows();
         }
     }
 
     @Test
     public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
-        DBTable<Marque> marq = new DBTable<Marque>(new Marque(), myDatabase);
+        DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
         marq = marq.getByRawSQL(rawQuery);
         marq.printRows();

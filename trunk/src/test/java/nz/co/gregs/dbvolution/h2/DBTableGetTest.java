@@ -53,7 +53,7 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     public void testGetFirstAndPrimaryKey() throws SQLException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, InstantiationException, SQLException, ClassNotFoundException {
-        DBTable<Marque> singleMarque = new DBTable<Marque>(new Marque(), myDatabase);
+        DBTable<Marque> singleMarque = new DBTable<Marque>(myDatabase, new Marque());
         DBTableRow row = marqueRows.get(0);
         String primaryKey;
         if (row != null) {
@@ -142,7 +142,7 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     public void testDBSelectQuery() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException, ClassNotFoundException {
-        DBTable<MarqueSelectQuery> msq = new DBTable<MarqueSelectQuery>(new MarqueSelectQuery(), myDatabase);
+        DBTable<MarqueSelectQuery> msq = new DBTable<MarqueSelectQuery>(myDatabase, new MarqueSelectQuery());
         msq.getAllRows();
         msq.printRows();
 

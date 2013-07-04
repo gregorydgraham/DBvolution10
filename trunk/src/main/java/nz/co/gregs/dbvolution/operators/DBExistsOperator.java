@@ -48,7 +48,7 @@ public class DBExistsOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
-        DBTable<DBTableRow> table = new DBTable<DBTableRow>(tableRow, database);
+        DBTable<DBTableRow> table = new DBTable<DBTableRow>(database, tableRow);
         String subSelect;
         try {
             subSelect = table.getSelectStatementForWhereClause() + table.getWhereClauseWithExampleAndRawSQL(tableRow, " and " + columnName + " = " + referencedColumnName);
