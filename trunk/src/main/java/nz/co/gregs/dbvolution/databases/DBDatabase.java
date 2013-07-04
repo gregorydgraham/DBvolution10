@@ -252,8 +252,12 @@ public abstract class DBDatabase {
      * @param columnName
      * @return
      */
+    public String formatTableName(String tableName) {
+        return tableName;
+    }
+
     public String formatTableAndColumnName(String tableName, String columnName) {
-        return tableName + "." + columnName;
+        return formatTableName(tableName) + "." + formatColumnName(columnName);
     }
 
     public String formatColumnNameForResultSet(String tableName, String columnName) {
@@ -264,7 +268,7 @@ public abstract class DBDatabase {
         return toString.replaceAll("'", "''");
     }
 
-    public String beginWhereLine() {
+    public String beginAndLine() {
         return " and ";
     }
 
@@ -306,6 +310,54 @@ public abstract class DBDatabase {
 
     public String toLowerCase(String string) {
         return "lower("+string+")";
+    }
+
+    public String beginInsertLine() {
+        return "INSERT INTO ";
+    }
+
+    public String endInsertLine() {
+        return ";";
+    }
+
+    public String beginInsertColumnList() {
+        return "(";
+    }
+
+    public String endInsertColumnList() {
+        return ") ";
+    }
+
+    public String beginDeleteLine() {
+        return "DELETE FROM ";
+    }
+
+    public String endDeleteLine() {
+        return ";";
+    }
+
+    public String getEqualsComparator() {
+        return " = ";
+    }
+
+    public String beginWhereClause() {
+        return " WHERE ";
+    }
+
+    public String beginUpdateLine() {
+        return "UPDATE ";
+    }
+
+    public String beginSetClause() {
+        return " SET ";
+    }
+
+    public String getStartingSetSubClauseSeparator() {
+        return "";
+    }
+
+    public String getSubsequentSetSubClauseSeparator() {
+        return ",";
     }
 
 }

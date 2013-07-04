@@ -252,7 +252,7 @@ public class DBTable<E extends DBTableRow> {
             }
         }
         if (pkColumn.isEmpty()) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of "+thisClass.getSimpleName()+"using the @DBTablePrimaryKey annotation.");
+            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + "using the @DBTablePrimaryKey annotation.");
         } else {
             return pkColumn;
         }
@@ -403,7 +403,7 @@ public class DBTable<E extends DBTableRow> {
      * Equivalent to: for (E row : this) { System.out.println(row); }
      *
      */
-    public void printAllRows() {
+    public void printRows() {
         for (E row : this.listOfRows) {
             System.out.println(row);
         }
@@ -502,7 +502,14 @@ public class DBTable<E extends DBTableRow> {
         StringBuilder sqlInsert = new StringBuilder();
         for (E row : newRows) {
             row.setDatabase(theDatabase);
-            String sql = "INSERT INTO " + row.getTableName() + "(" + this.getAllFieldsForSelect() + ") " + row.getValuesClause() + ";";
+            String sql =
+                    theDatabase.beginInsertLine()
+                    + row.getTableName()
+                    + theDatabase.beginInsertColumnList()
+                    + this.getAllFieldsForSelect()
+                    + theDatabase.endInsertColumnList()
+                    + row.getValuesClause()
+                    + theDatabase.endInsertLine();
             if (printSQLBeforeExecuting) {
                 System.out.println(sql);
             }
@@ -523,7 +530,44 @@ public class DBTable<E extends DBTableRow> {
         StringBuilder sqlInsert = new StringBuilder();
         for (E row : oldRows) {
             row.setDatabase(theDatabase);
-            String sql = "DELETE FROM " + row.getTableName() + " WHERE " + this.getPrimaryKeyColumn() + " = " + row.getPrimaryKeyValue() + ";";
+            String sql =
+                    theDatabase.beginDeleteLine()
+                    + row.getTableName()
+                    + theDatabase.beginWhereClause()
+                    + this.getPrimaryKeyColumn()
+                    + theDatabase.getEqualsComparator()
+                    + row.getPrimaryKeyValue()
+                    + theDatabase.endDeleteLine();
+            if (printSQLBeforeExecuting) {
+                System.out.println(sql);
+            }
+            statement.addBatch(sql);
+        }
+        statement.executeBatch();
+        statement.getConnection().commit();
+    }
+
+    public void update(E oldRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
+        ArrayList<E> arrayList = new ArrayList<E>();
+        arrayList.add(oldRow);
+        update(arrayList);
+    }
+
+    public void update(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
+        Statement statement = theDatabase.getDBStatement();
+        StringBuilder sqlInsert = new StringBuilder();
+        for (E row : oldRows) {
+            row.setDatabase(theDatabase);
+            String sql =
+                    theDatabase.beginUpdateLine()
+                    + theDatabase.formatTableName(row.getTableName())
+                    + theDatabase.beginSetClause();
+            sql = sql + row.getSetClause();
+            sql = sql + theDatabase.beginWhereClause()
+                    + theDatabase.formatColumnName(this.getPrimaryKeyColumn())
+                    + theDatabase.getEqualsComparator()
+                    + row.getPrimaryKeyValue()
+                    + theDatabase.endDeleteLine();
             if (printSQLBeforeExecuting) {
                 System.out.println(sql);
             }
@@ -551,13 +595,13 @@ public class DBTable<E extends DBTableRow> {
 
     public String getWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
-            return getSQLForExample(query)+ sqlWhereClause.replaceAll("\\s*;\\s*$", "");
+            return getSQLForExample(query) + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
         } else {
-            return getSQLForExample(query)+" AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
+            return getSQLForExample(query) + " AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
         }
     }
-    
-    public java.util.ArrayList<E> toList(){
+
+    public java.util.ArrayList<E> toList() {
         return new java.util.ArrayList<E>(listOfRows);
     }
 }

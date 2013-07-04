@@ -35,7 +35,7 @@ public class DBInOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append(database.beginWhereLine());
+        whereClause.append(database.beginAndLine());
         whereClause.append(invertOperator ? "!(" : "(");
         whereClause.append(columnName);
         whereClause.append(getOperator());

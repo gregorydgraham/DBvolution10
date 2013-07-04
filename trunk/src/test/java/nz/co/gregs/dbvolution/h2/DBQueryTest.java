@@ -75,7 +75,7 @@ public class DBQueryTest extends AbstractTest {
         dbQuery.add(new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
-        dbQuery.printAll();
+        dbQuery.printRows();
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
@@ -100,7 +100,7 @@ public class DBQueryTest extends AbstractTest {
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.generateSQLString());
-        dbQuery.printAll();
+        dbQuery.printRows();
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
@@ -125,7 +125,7 @@ public class DBQueryTest extends AbstractTest {
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.generateSQLString());
-        dbQuery.printAll();
+        dbQuery.printRows();
         assertEquals(2, results.size());
 
         DBQueryRow[] rows = new DBQueryRow[2];

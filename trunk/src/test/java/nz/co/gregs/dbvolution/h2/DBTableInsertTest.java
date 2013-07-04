@@ -40,13 +40,13 @@ public class DBTableInsertTest extends AbstractTest {
         myTableRow.getNumericCode().isLiterally(10);
         marques.insert(myTableRow);
         marques.getAllRows();
-        marques.printAllRows();
+        marques.printRows();
         
         List<Marque> myTableRows = new ArrayList<Marque>();
         myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",4));
         
         marques.insert(myTableRows);
         marques.getAllRows();
-        marques.printAllRows();
+        marques.printRows();
     }
 }

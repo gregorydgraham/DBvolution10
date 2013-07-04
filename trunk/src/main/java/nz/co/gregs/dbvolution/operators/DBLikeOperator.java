@@ -32,7 +32,7 @@ public class DBLikeOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         likeableValue.setDatabase(database);
-        return database.beginWhereLine() +(invertOperator?"!(":"(")+ database.toLowerCase(database.formatColumnName(columnName)) + getOperator()+" "+database.toLowerCase(likeableValue.getSQLValue())+")";
+        return database.beginAndLine() +(invertOperator?"!(":"(")+ database.toLowerCase(database.formatColumnName(columnName)) + getOperator()+" "+database.toLowerCase(likeableValue.getSQLValue())+")";
     }
 
     private String getOperator() {
