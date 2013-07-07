@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
 
 /**
@@ -33,7 +34,7 @@ public class DBTableDeleteTest extends AbstractTest {
 
     public void testDeleteListOfRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
         marques.getAllRows();
-        ArrayList<Marque> rowList = marques.toList();
+        List<Marque> rowList = marques.toList();
         int originalSize = rowList.size();
         System.out.println("rowList.size()==" + rowList.size());
         ArrayList<Marque> deleteList = new ArrayList<Marque>();

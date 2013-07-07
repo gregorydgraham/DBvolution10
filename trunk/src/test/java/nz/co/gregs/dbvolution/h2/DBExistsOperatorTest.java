@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBTableRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -44,8 +45,8 @@ public class DBExistsOperatorTest extends AbstractTest {
         Marque marque = new Marque();
         marque.getCarCompany().setOperator(carCompanyExists);
         
-        marques.getByExample(marque);
-        ArrayList<Marque> rowList = marques.toList();
+        marques.getRowsByExample(marque);
+        List<Marque> rowList = marques.toList();
         for (DBTableRow row : rowList) {
             System.out.println(row);
         }
@@ -56,7 +57,7 @@ public class DBExistsOperatorTest extends AbstractTest {
         marque.getCarCompany().setOperator(new DBExistsOperator(carCompany, carCompany.uidCarCompany));
         marque.getCarCompany().invertOperator();
         
-        marques.getByExample(marque);
+        marques.getRowsByExample(marque);
         rowList = marques.toList();
         for (DBTableRow row : rowList) {
             System.out.println(row);

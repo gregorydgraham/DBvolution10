@@ -31,7 +31,7 @@ public class DBTableUpdateTest extends AbstractTest {
         Marque myTableRow = new Marque();
         myTableRow.getUidMarque().isLiterally(1);
 
-        marques.getByExample(myTableRow);
+        marques.getRowsByExample(myTableRow);
         marques.printRows();
         Marque toyota = marques.toList().get(0);
         System.out.println("===" + toyota.name.toString());
@@ -40,7 +40,7 @@ public class DBTableUpdateTest extends AbstractTest {
         toyota.name.isLiterally("NOTTOYOTA");
         marques.update(toyota);
 
-        marques.getByExample(myTableRow);
+        marques.getRowsByExample(myTableRow);
         marques.printRows();
         toyota = marques.toList().get(0);
         assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
