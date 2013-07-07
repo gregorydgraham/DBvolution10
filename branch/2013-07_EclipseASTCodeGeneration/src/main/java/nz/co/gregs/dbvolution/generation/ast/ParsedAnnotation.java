@@ -47,7 +47,9 @@ public class ParsedAnnotation {
 	}
 	
 	/**
-	 * Gets the fully qualified name.
+	 * Gets the (inferred) fully qualified name.
+	 * This value returned by this method is inferred where possible,
+	 * and left as the declared name when not possible due to ambiguous wildcard imports.
 	 */
 	public String getQualifiedTypeName() {
 		return typeContext.getFullyQualifiedNameOf(getDeclaredTypeName());
@@ -57,7 +59,7 @@ public class ParsedAnnotation {
 	 * Indicates whether this annotation is {@link nz.co.gregs.dbvolution.annotations.DBTableColumn}.
 	 */
 	public boolean isDBTableColumn() {
-		return getQualifiedTypeName().equals(DBTableColumn.class.getName());
+		return typeContext.isDeclarationOfType(DBTableColumn.class, getDeclaredTypeName());
 	}
 	
 	/**

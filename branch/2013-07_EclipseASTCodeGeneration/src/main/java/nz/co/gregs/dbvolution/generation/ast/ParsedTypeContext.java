@@ -72,6 +72,53 @@ public class ParsedTypeContext {
 	}
 	
 	/**
+	 * Checks if the specified {@code declaredTypeName} is the given type,
+	 * according to the imports available.
+	 * This method handles wildcard imports accurately (although
+	 * it assumes the source file is correct and does not have overlapping
+	 * imports).
+	 * @param type the reference type
+	 * @param declaredTypeName the declared type name to check
+	 * @return
+	 */
+	public boolean isDeclarationOfType(Class<?> type, String declaredTypeName) {
+		// check for already-fully-qualified match
+		if (type.getName().equals(declaredTypeName)) {
+			return true;
+		}
+		
+		// check simple names match
+		String simpleDeclaredTypeName = declaredTypeName;
+		if (declaredTypeName.contains(".")) {
+			simpleDeclaredTypeName = declaredTypeName.substring(declaredTypeName.lastIndexOf(".")+1);
+		}
+		if (!type.getSimpleName().equals(simpleDeclaredTypeName)) {
+			return false; // not even possible
+		}
+		
+		// check against imports
+		// (if 'type' is imported and its sample name matches the declared name, then we've found a match)
+		// (TODO: think it should require that 'declaredTypeName' is only a simple name) 
+		for (ImportDeclaration importDecl: (List<ImportDeclaration>)unit.imports()) {
+			if (!importDecl.isStatic()) {
+				if (!importDecl.isOnDemand() &&
+						importDecl.getName().getFullyQualifiedName().equals(type.getName())) {
+					return true;
+				}
+				else if (importDecl.isOnDemand() &&
+						importDecl.getName().getFullyQualifiedName().equals(type.getPackage().getName())) {
+					// package wildcard present
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Attempts to infer the fully qualified name of the given type,
+	 * or otherwise just returns the same name given.
 	 * Looks up the imports to fully qualify the given name.
 	 * Note: the current implementation can't handle wildcard imports.
 	 * @param name
