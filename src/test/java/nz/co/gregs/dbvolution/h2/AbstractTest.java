@@ -95,6 +95,7 @@ public class AbstractTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
+       myDatabase.setPrintSQLBeforeExecuting(false);
         myDatabase.dropTable(myMarqueRow);
         myDatabase.dropTable(myCarCompanyRow);
 

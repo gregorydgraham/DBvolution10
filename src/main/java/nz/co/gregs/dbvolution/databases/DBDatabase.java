@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.DBTransaction;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
@@ -44,6 +45,8 @@ public abstract class DBDatabase {
     private String password = null;
     private DataSource dataSource = null;
     private boolean printSQLBeforeExecuting;
+    private boolean isInATransaction;
+    private Statement transactionStatement;
 
     public DBDatabase(DataSource ds) {
         this.dataSource = ds;
@@ -63,29 +66,33 @@ public abstract class DBDatabase {
     public Statement getDBStatement() {
         Connection connection;
         Statement statement;
-        if (this.dataSource == null) {
-            try {
-                // load the driver
-                Class.forName(getDriverName());
-            } catch (ClassNotFoundException noDriver) {
-                throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
-            }
-            try {
-                connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
-            } catch (SQLException noConnection) {
-                throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
-            }
+        if (isInATransaction) {
+            statement = this.transactionStatement;
         } else {
-            try {
-                connection = dataSource.getConnection();
-            } catch (SQLException noConnection) {
-                throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource - " + dataSource.toString(), noConnection);
+            if (this.dataSource == null) {
+                try {
+                    // load the driver
+                    Class.forName(getDriverName());
+                } catch (ClassNotFoundException noDriver) {
+                    throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
+                }
+                try {
+                    connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+                } catch (SQLException noConnection) {
+                    throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+                }
+            } else {
+                try {
+                    connection = dataSource.getConnection();
+                } catch (SQLException noConnection) {
+                    throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource - " + dataSource.toString(), noConnection);
+                }
             }
-        }
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+            try {
+                statement = connection.createStatement();
+            } catch (SQLException noConnection) {
+                throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+            }
         }
         return statement;
     }
@@ -134,7 +141,9 @@ public abstract class DBDatabase {
     }
 
     protected void printSQLIfRequested(String sqlString, PrintStream out) {
-        out.println(sqlString);
+        if (printSQLBeforeExecuting) {
+            out.println(sqlString);
+        }
     }
 
     public abstract String getDateFormattedForQuery(Date date);
@@ -309,7 +318,7 @@ public abstract class DBDatabase {
     }
 
     public String toLowerCase(String string) {
-        return "lower("+string+")";
+        return "lower(" + string + ")";
     }
 
     public String beginInsertLine() {
@@ -360,4 +369,23 @@ public abstract class DBDatabase {
         return ",";
     }
 
+    synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+        V returnValues = null;
+        Connection connection;
+        this.transactionStatement = getDBStatement();
+        this.isInATransaction = true;
+        connection = transactionStatement.getConnection();
+        connection.setAutoCommit(false);
+        try {
+            returnValues = dbTransaction.doTransaction(this);
+            connection.commit();
+        } catch (Exception ex) {
+            connection.rollback();
+            connection.setAutoCommit(true);
+            this.isInATransaction = false;
+            transactionStatement = null;
+            throw ex;
+        }
+        return returnValues;
+    }
 }

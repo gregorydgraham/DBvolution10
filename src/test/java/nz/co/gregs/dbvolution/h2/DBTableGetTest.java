@@ -58,7 +58,7 @@ public class DBTableGetTest extends AbstractTest {
         String primaryKey;
         if (row != null) {
             primaryKey = row.getPrimaryKeyValue();
-            singleMarque.getByPrimaryKey(Long.parseLong(primaryKey));
+            singleMarque.getRowsByPrimaryKey(Long.parseLong(primaryKey));
             singleMarque.printRows();
         }
         assertTrue("Incorrect number of marques retreived", singleMarque.toList().size() == 1);
@@ -68,7 +68,7 @@ public class DBTableGetTest extends AbstractTest {
         Marque marqueQuery = new Marque();
         marqueQuery.getUidMarque().isBetween(0, 90000000);
         //System.out.println(marques.getSQLForExample(marqueQuery));
-        marques = marques.getByExample(marqueQuery);
+        marques = marques.getRowsByExample(marqueQuery);
         for (Marque row : marques.toList()) {
             System.out.println(row);
         }
@@ -78,7 +78,7 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsLiterally() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         Marque literalQuery = new Marque();
         literalQuery.getUidMarque().isLiterally(4893059);
-        marques = marques.getByExample(literalQuery);
+        marques = marques.getRowsByExample(literalQuery);
         marques.printRows();
         assertEquals(marques.toList().size(), 1);
         assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKeyValue());
@@ -88,7 +88,7 @@ public class DBTableGetTest extends AbstractTest {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
         hummerQuery.getName().isIn(new String[]{"PEUGEOT", "HUMMER"});
-        marques = marques.getByExample(hummerQuery);
+        marques = marques.getRowsByExample(hummerQuery);
         marques.printRows();
         assertEquals(marques.toList().size(), 2);
     }
@@ -96,7 +96,7 @@ public class DBTableGetTest extends AbstractTest {
     public void testDateIsBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         Marque oldQuery = new Marque();
         oldQuery.getCreationDate().isBetween(new Date(0L), new Date());
-        marques = marques.getByExample(oldQuery);
+        marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
         assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
     }
@@ -107,29 +107,29 @@ public class DBTableGetTest extends AbstractTest {
         Date future = gregorianCalendar.getTime();
         Marque oldQuery = new Marque();
         oldQuery.getCreationDate().isLessThan(new DBDate(future));
-        marques = marques.getByExample(oldQuery);
+        marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
         assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
         oldQuery.getCreationDate().isGreaterThan(new DBDate(future));
-        marques = marques.getByExample(oldQuery);
+        marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
         assertTrue("Wrong number of rows selected, should be NONE of them", marques.toList().size() == 0);
         oldQuery = new Marque();
         oldQuery.getCreationDate().isLessThanOrEqualTo(new DBDate(future));
-        marques = marques.getByExample(oldQuery);
+        marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
         assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
         oldQuery.getCreationDate().isGreaterThan(new DBDate(new Date(0L)));
-        marques = marques.getByExample(oldQuery);
+        marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
         assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
         oldQuery.getCreationDate().isLessThan(new DBDate(new Date(0L)));
-        marques = marques.getByExample(oldQuery);
+        marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
         assertTrue("Wrong number of rows selected, should be NONE of them", marques.toList().size() == 0);
         oldQuery = new Marque();
         oldQuery.getCreationDate().isGreaterThanOrEqualTo(new DBDate(new Date(0L)));
-        marques = marques.getByExample(oldQuery);
+        marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
         assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
     }
@@ -148,7 +148,7 @@ public class DBTableGetTest extends AbstractTest {
 
         MarqueSelectQuery marqueSelectQuery = new MarqueSelectQuery();
         marqueSelectQuery.uidMarque.isLiterally(1);
-        msq.getByExample(marqueSelectQuery);
+        msq.getRowsByExample(marqueSelectQuery);
         msq.printRows();
     }
 }

@@ -81,7 +81,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         if (row != null) {
             String primaryKey = row.getPrimaryKeyValue();
             DBTable<Marque> singleMarque = new DBTable<Marque>(myDatabase, new Marque());
-            singleMarque.getByPrimaryKey(primaryKey).printRows();
+            singleMarque.getRowsByPrimaryKey(primaryKey).printRows();
         }
     }
 
