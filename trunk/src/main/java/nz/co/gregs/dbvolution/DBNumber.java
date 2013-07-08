@@ -5,6 +5,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 
@@ -66,6 +67,14 @@ public class DBNumber extends QueryableDatatype {
     }
 
     public void isIn(Number[] inValues) {
+        ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
+        for (Number num : inValues) {
+            intOptions.add(new DBNumber(num));
+        }
+        isIn(intOptions.toArray(this.inValuesNumber));
+    }
+
+    public void isIn(List<Number> inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Number num : inValues) {
             intOptions.add(new DBNumber(num));
