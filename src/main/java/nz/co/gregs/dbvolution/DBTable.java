@@ -100,11 +100,11 @@ public class DBTable<E extends DBTableRow> {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation != null) {
-            selectStatement.append(selectQueryAnnotation.value()).append(" where 1=1 ");
+            selectStatement.append(selectQueryAnnotation.value()).append(theDatabase.beginWhereClause()+theDatabase.getTrueOperation());
         } else {
             selectStatement.append("select ");
 
-            selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(" where 1=1 ");
+            selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(theDatabase.beginWhereClause()+theDatabase.getTrueOperation());
         }
         return selectStatement.toString();
     }

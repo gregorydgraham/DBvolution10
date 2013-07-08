@@ -70,7 +70,7 @@ public class DBQuery {
     public String generateSQLString() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
         StringBuilder selectClause = new StringBuilder().append("select ");
         StringBuilder fromClause = new StringBuilder().append(" from ");
-        StringBuilder whereClause = new StringBuilder().append(" where 1=1 ");
+        StringBuilder whereClause = new StringBuilder().append(database.beginWhereClause()).append(database.getTrueOperation());
         ArrayList<DBTableRow> otherTables = new ArrayList<DBTableRow>();
         String lineSep = System.getProperty("line.separator");
 

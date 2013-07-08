@@ -59,7 +59,7 @@ public class DBQueryTest extends AbstractTest {
                 + "MARQUE.RESERVATIONSALWD, \n"
                 + "MARQUE.CREATION_DATE, \n"
                 + "MARQUE.FK_CARCOMPANY from car_company, \n"
-                + "marque where 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
+                + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
                 + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
 
         System.out.println(expectedResult);
