@@ -155,10 +155,10 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     protected String toSQLString() {
-        if (this.isDBNull){
+        if (this.isDBNull||this.numberValue==null){
             return database.getNull();
         }
-        return this.numberValue == null ? "NULL" : this.numberValue.toString();
+        return this.numberValue.toString();
     }
 
     @Override

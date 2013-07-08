@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.example;
 
+import java.util.Date;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
@@ -53,7 +54,7 @@ public class Marque extends DBTableRow {
     public Marque(){
     }
     
-    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, int carCompany) {
+    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany) {
         this.uidMarque.isLiterally(uidMarque);
         this.isUsedForTAFROs.isLiterally(isUsedForTAFROs);
         toyotaStatusClassID.isLiterally(statusClass);
@@ -63,6 +64,7 @@ public class Marque extends DBTableRow {
         this.name.isLiterally(name);
         this.pricingCodePrefix.isLiterally(pricingCodePrefix);
         this.reservationsAllowed.isLiterally(reservationsAllowed);
+        this.creationDate.isLiterally(creationDate);
         this.carCompany.isLiterally(carCompany);
     }
 
