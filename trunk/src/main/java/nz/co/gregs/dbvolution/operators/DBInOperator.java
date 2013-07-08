@@ -36,16 +36,21 @@ public class DBInOperator extends DBOperator {
     public String generateWhereLine(DBDatabase database, String columnName) {
         StringBuilder whereClause = new StringBuilder();
         whereClause.append(database.beginAndLine());
-        whereClause.append(invertOperator ? "!(" : "(");
-        whereClause.append(columnName);
-        whereClause.append(getOperator());
-        String sep = "";
-        for (QueryableDatatype qdt : listOfPossibleValues) {
-            qdt.setDatabase(database);
-            whereClause.append(sep).append(" ").append(qdt.getSQLValue()).append(" ");
-            sep = ",";
+        if (listOfPossibleValues.isEmpty()) {
+            // prevent any rows from returning as an empty list means no rows can match
+            whereClause.append(database.getFalseOperation());
+        } else {
+            whereClause.append(invertOperator ? "!(" : "(");
+            whereClause.append(columnName);
+            whereClause.append(getOperator());
+            String sep = "";
+            for (QueryableDatatype qdt : listOfPossibleValues) {
+                qdt.setDatabase(database);
+                whereClause.append(sep).append(" ").append(qdt.getSQLValue()).append(" ");
+                sep = ",";
+            }
+            whereClause.append("))");
         }
-        whereClause.append("))");
         return whereClause.toString();
     }
 

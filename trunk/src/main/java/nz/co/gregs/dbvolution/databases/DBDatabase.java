@@ -381,11 +381,19 @@ public abstract class DBDatabase {
             connection.commit();
         } catch (Exception ex) {
             connection.rollback();
+            throw ex;
+        } finally {
             connection.setAutoCommit(true);
             this.isInATransaction = false;
             transactionStatement = null;
-            throw ex;
         }
         return returnValues;
+    }
+
+    public Object getFalseOperation() {
+        return " 1=0 ";
+    }
+    public Object getTrueOperation() {
+        return " 1=1 ";
     }
 }
