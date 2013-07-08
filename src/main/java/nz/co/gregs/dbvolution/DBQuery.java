@@ -151,10 +151,10 @@ public class DBQuery {
                     existingInstancesOfThisTableRow = new HashMap<String, DBTableRow>();
                     existingInstances.put(tableRow.getClass(), existingInstancesOfThisTableRow);
                 }
-                DBTableRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeyValue());
+                DBTableRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeySQLStringValue());
                 if (existingInstance == null) {
                     existingInstance = newInstance;
-                    existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKeyValue(), existingInstance);
+                    existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKeySQLStringValue(), existingInstance);
                 }
                 queryRow.put(existingInstance.getClass(), existingInstance);
             }
@@ -224,7 +224,7 @@ public class DBQuery {
         for (DBQueryRow row : this.results) {
             for (DBTableRow tab : this.queryTables) {
                 DBTableRow rowPart = row.get(tab);
-                String rowPartStr = rowPart.getPrimaryKeyValue();
+                String rowPartStr = rowPart.getPrimaryKeySQLStringValue();
                 ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
             }
             ps.println();

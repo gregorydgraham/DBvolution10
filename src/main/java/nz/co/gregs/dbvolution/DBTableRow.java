@@ -38,7 +38,57 @@ abstract public class DBTableRow {
     public DBTableRow() {
     }
 
-    public String getPrimaryKeyValue() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public Long getPrimaryKeyLongValue() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Long pkColumnValue = -1L;
+        boolean pkFound = false;
+        QueryableDatatype queryableValueOfField;
+        @SuppressWarnings("unchecked")
+        Class<? extends DBTableRow> thisClass = this.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
+                pkFound = true;
+                queryableValueOfField = this.getQueryableValueOfField(field);
+                pkColumnValue = queryableValueOfField.longValue();
+                break;
+            }
+        }
+        if (pkColumnValue == null) {
+            if (!pkFound) {
+                throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
+            } else {
+                throw new RuntimeException("Primary Key Field Not Parsable as an Integer type or is Null. Please check the PK values of " + this.getClass().getSimpleName());
+            }
+        } else {
+            return pkColumnValue;
+        }
+
+    }
+
+    public String getPrimaryKeyStringValue() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        String pkColumnValue = "";
+        boolean pkFound = false;
+        QueryableDatatype queryableValueOfField;
+        @SuppressWarnings("unchecked")
+        Class<? extends DBTableRow> thisClass = this.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
+                pkFound = true;
+                queryableValueOfField = this.getQueryableValueOfField(field);
+                pkColumnValue = queryableValueOfField.toString();
+                break;
+            }
+        }
+        if (!pkFound) {
+            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
+        } else {
+            return pkColumnValue;
+        }
+
+    }
+
+    public String getPrimaryKeySQLStringValue() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         String pkColumnValue = "";
         QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")

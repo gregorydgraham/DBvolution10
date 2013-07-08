@@ -57,7 +57,7 @@ public class DBTableGetTest extends AbstractTest {
         DBTableRow row = marqueRows.get(0);
         String primaryKey;
         if (row != null) {
-            primaryKey = row.getPrimaryKeyValue();
+            primaryKey = row.getPrimaryKeySQLStringValue();
             singleMarque.getRowsByPrimaryKey(Long.parseLong(primaryKey));
             singleMarque.printRows();
         }
@@ -81,7 +81,7 @@ public class DBTableGetTest extends AbstractTest {
         marques = marques.getRowsByExample(literalQuery);
         marques.printRows();
         assertEquals(marques.toList().size(), 1);
-        assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKeyValue());
+        assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKeySQLStringValue());
     }
 
     public void testIsIn() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {

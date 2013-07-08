@@ -106,9 +106,6 @@ public class DBTable<E extends DBTableRow> {
 
             selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(" where 1=1 ");
         }
-//        if (printSQLBeforeExecuting){
-//            System.out.println(selectStatement);
-//        }
         return selectStatement.toString();
     }
 
@@ -523,7 +520,7 @@ public class DBTable<E extends DBTableRow> {
                     + theDatabase.beginWhereClause()
                     + this.getPrimaryKeyColumn()
                     + theDatabase.getEqualsComparator()
-                    + row.getPrimaryKeyValue()
+                    + row.getPrimaryKeySQLStringValue()
                     + theDatabase.endDeleteLine();
             if (printSQLBeforeExecuting) {
                 System.out.println(sql);
@@ -541,7 +538,6 @@ public class DBTable<E extends DBTableRow> {
 
     public void update(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
         Statement statement = theDatabase.getDBStatement();
-        StringBuilder sqlInsert = new StringBuilder();
         List<String> allSQL = getSQLForUpdate(oldRows);
         for (String sql : allSQL) {
             if (printSQLBeforeExecuting) {
@@ -576,7 +572,7 @@ public class DBTable<E extends DBTableRow> {
             sql = sql + theDatabase.beginWhereClause()
                     + theDatabase.formatColumnName(this.getPrimaryKeyColumn())
                     + theDatabase.getEqualsComparator()
-                    + row.getPrimaryKeyValue()
+                    + row.getPrimaryKeySQLStringValue()
                     + theDatabase.endDeleteLine();
             allSQL.add(sql);
         }
@@ -584,20 +580,24 @@ public class DBTable<E extends DBTableRow> {
         return allSQL;
     }
 
+    @Deprecated
     public String getTableName() {
         return this.dummy.getTableName();
     }
 
+    @Deprecated
     List<String> getColumnNames() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
         return dummy.getColumnNames();
     }
 
+    @Deprecated
     Map<DBTableForeignKey, DBTableColumn> getForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
         return dummy.getForeignKeys();
     }
 
+    @Deprecated
     String getPrimaryKeyName() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        return dummy.getPrimaryKeyValue();
+        return dummy.getPrimaryKeySQLStringValue();
     }
 
     public String getWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
@@ -614,5 +614,21 @@ public class DBTable<E extends DBTableRow> {
      */
     public List<E> toList() {
         return new java.util.ArrayList<E>(listOfRows);
+    }
+
+    public List<Number> getPrimaryKeysAsNumber() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        List<Number> primaryKeys = new ArrayList<Number>();
+        for(E e:listOfRows){
+            primaryKeys.add(e.getPrimaryKeyLongValue());
+        }
+        return primaryKeys;
+    }
+    
+    public List<String> getPrimaryKeysAsString() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        List<String> primaryKeys = new ArrayList<String>();
+        for(E e:listOfRows){
+            primaryKeys.add(e.getPrimaryKeyStringValue());
+        }
+        return primaryKeys;
     }
 }

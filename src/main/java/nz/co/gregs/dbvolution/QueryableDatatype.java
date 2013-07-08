@@ -46,6 +46,14 @@ public class QueryableDatatype extends Object implements Serializable {
         return (literalValue == null ? "" : literalValue.toString());
     }
     
+    public Long longValue() {
+        return (literalValue == null ? null : Long.parseLong(literalValue.toString()));
+    }
+    
+    public Double doubleValue() {
+        return (literalValue == null ? null : Double.parseDouble(literalValue.toString()));
+    }
+    
     protected void blankQuery() {
         includingNulls = false;
         this.setOperator(null);
@@ -199,7 +207,7 @@ public class QueryableDatatype extends Object implements Serializable {
      * {yada} => 'yada'
      */
     protected String toSQLString() {
-        return "'" + this.toString().replace("'", "\'") + "'";
+        return database.beginStringValue() + this.toString().replace("'", "\'") + database.endStringValue();
     }
 
     /**
