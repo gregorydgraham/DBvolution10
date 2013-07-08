@@ -16,7 +16,7 @@ import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 public class DBDate extends QueryableDatatype {
 
     private static final long serialVersionUID = 1L;
-    private Date dateValue = new Date();
+    protected Date dateValue = null;
 
     public DBDate() {
         super();
@@ -28,6 +28,7 @@ public class DBDate extends QueryableDatatype {
         } else {
             dateValue = date;
         }
+        this.isLiterally(date);
     }
 
     DBDate(Timestamp timestamp) {
@@ -35,18 +36,20 @@ public class DBDate extends QueryableDatatype {
             this.isDBNull = true;
         } else {
             dateValue.setTime(timestamp.getTime());
+            this.isLiterally(dateValue);
         }
     }
 
     DBDate(String str) {
         super(str);
         dateValue.setTime(Date.parse(str));
+        this.isLiterally(dateValue);
     }
 
     @Override
     public void blankQuery() {
         super.blankQuery();
-        this.dateValue = new Date();
+        this.dateValue = null;
     }
 
     @Override
@@ -58,6 +61,11 @@ public class DBDate extends QueryableDatatype {
             return super.getWhereClause(columnName);
         }
 //        return whereClause.toString();
+    }
+
+    public void isLiterally(Date date) {
+        super.isLiterally(this);
+        dateValue = date;
     }
 
     @Override
@@ -95,12 +103,15 @@ public class DBDate extends QueryableDatatype {
 
     @Override
     public String toString() {
+        if (this.isDBNull || dateValue == null) {
+            return "";
+        }
         return dateValue.toString();
     }
 
     @Override
     public String toSQLString() {
-        if (this.isDBNull){
+        if (this.isDBNull || dateValue == null) {
             return this.database.getNull();
         }
         return getDatabase().getDateFormattedForQuery(this.dateValue);

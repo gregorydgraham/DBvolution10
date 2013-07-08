@@ -22,35 +22,37 @@ import java.util.Date;
  *
  * @author greg
  */
-public class H2DB extends DBDatabase{
+public class H2DB extends DBDatabase {
+
     String dateFormatStr = "yyyy-M-d hh:mm:ss";
     String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
     SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
-    
-    public H2DB(String jdbcURL, String username, String password){
-        super("org.h2.Driver",jdbcURL, username, password);
+
+    public H2DB(String jdbcURL, String username, String password) {
+        super("org.h2.Driver", jdbcURL, username, password);
     }
 
     @Override
     public String getDateFormattedForQuery(Date date) {
-        
+        if (date == null) {
+            return getNull();
+        }
 //        yyyy-MM-dd hh:mm:ss[.nnnnnnnnn]
-        return " PARSEDATETIME('"+strToDateFormat.format(date)+"','"+h2DateFormatStr+"') ";
+        return " PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "') ";
         //return "'"+strToDateFormat.format(date)+"'";
     }
-    
+
     @Override
-    public String formatTableName(String tableName){
+    public String formatTableName(String tableName) {
         return tableName.toUpperCase();
     }
-    
+
     @Override
-    public String formatColumnName(String columnName){
+    public String formatColumnName(String columnName) {
         return columnName.toUpperCase();
     }
-    
     /**
-     * 
+     *
      * overrides standard method and uppercases everything
      *
      * @param tableName
