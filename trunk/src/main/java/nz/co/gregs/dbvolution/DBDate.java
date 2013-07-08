@@ -100,6 +100,9 @@ public class DBDate extends QueryableDatatype {
 
     @Override
     public String toSQLString() {
+        if (this.isDBNull){
+            return this.database.getNull();
+        }
         return getDatabase().getDateFormattedForQuery(this.dateValue);
     }
 

@@ -396,4 +396,8 @@ public abstract class DBDatabase {
     public Object getTrueOperation() {
         return " 1=1 ";
     }
+
+    public String getNull() {
+        return " NULL ";
+    }
 }

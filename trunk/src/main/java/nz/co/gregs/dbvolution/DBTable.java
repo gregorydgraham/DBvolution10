@@ -89,10 +89,6 @@ public class DBTable<E extends DBTableRow> {
             selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(";");
         }
 
-        if (printSQLBeforeExecuting) {
-            System.out.println(selectStatement);
-        }
-
         return selectStatement.toString();
     }
 
@@ -100,11 +96,11 @@ public class DBTable<E extends DBTableRow> {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation != null) {
-            selectStatement.append(selectQueryAnnotation.value()).append(theDatabase.beginWhereClause()+theDatabase.getTrueOperation());
+            selectStatement.append(selectQueryAnnotation.value()).append(theDatabase.beginWhereClause() + theDatabase.getTrueOperation());
         } else {
             selectStatement.append("select ");
 
-            selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(theDatabase.beginWhereClause()+theDatabase.getTrueOperation());
+            selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(theDatabase.beginWhereClause() + theDatabase.getTrueOperation());
         }
         return selectStatement.toString();
     }
@@ -142,6 +138,10 @@ public class DBTable<E extends DBTableRow> {
         this.listOfRows.clear();
 
         String selectStatement = this.getSelectStatement();
+
+        if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
+            System.out.println(selectStatement);
+        }
 
         Statement statement;
         ResultSet resultSet;
@@ -265,7 +265,7 @@ public class DBTable<E extends DBTableRow> {
     private DBTable<E> getRows(String whereClause) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         this.listOfRows.clear();
         String selectStatement = this.getSelectStatementForWhereClause() + whereClause + ";";
-        if (printSQLBeforeExecuting||theDatabase.isPrintSQLBeforeExecuting()) {
+        if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
             System.out.println(selectStatement);
         }
 
@@ -495,7 +495,7 @@ public class DBTable<E extends DBTableRow> {
                     + theDatabase.endInsertColumnList()
                     + row.getValuesClause()
                     + theDatabase.endInsertLine();
-            if (printSQLBeforeExecuting) {
+            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
                 System.out.println(sql);
             }
             statement.addBatch(sql);
@@ -522,7 +522,7 @@ public class DBTable<E extends DBTableRow> {
                     + theDatabase.getEqualsComparator()
                     + row.getPrimaryKeySQLStringValue()
                     + theDatabase.endDeleteLine();
-            if (printSQLBeforeExecuting) {
+            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
                 System.out.println(sql);
             }
             statement.addBatch(sql);
@@ -540,7 +540,7 @@ public class DBTable<E extends DBTableRow> {
         Statement statement = theDatabase.getDBStatement();
         List<String> allSQL = getSQLForUpdate(oldRows);
         for (String sql : allSQL) {
-            if (printSQLBeforeExecuting) {
+            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
                 System.out.println(sql);
             }
             statement.addBatch(sql);
@@ -618,15 +618,15 @@ public class DBTable<E extends DBTableRow> {
 
     public List<Number> getPrimaryKeysAsNumber() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<Number> primaryKeys = new ArrayList<Number>();
-        for(E e:listOfRows){
+        for (E e : listOfRows) {
             primaryKeys.add(e.getPrimaryKeyLongValue());
         }
         return primaryKeys;
     }
-    
+
     public List<String> getPrimaryKeysAsString() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         List<String> primaryKeys = new ArrayList<String>();
-        for(E e:listOfRows){
+        for (E e : listOfRows) {
             primaryKeys.add(e.getPrimaryKeyStringValue());
         }
         return primaryKeys;
