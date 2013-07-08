@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
 
@@ -42,8 +43,9 @@ public class DBTableInsertTest extends AbstractTest {
         marques.getAllRows();
         marques.printRows();
         
+        Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();
-        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",4));
+        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4));
         
         marques.insert(myTableRows);
         marques.getAllRows();
