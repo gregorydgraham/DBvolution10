@@ -207,6 +207,9 @@ public class QueryableDatatype extends Object implements Serializable {
      * {yada} => 'yada'
      */
     protected String toSQLString() {
+        if (this.isDBNull){
+            return database.getNull();
+        }
         return database.beginStringValue() + this.toString().replace("'", "\'") + database.endStringValue();
     }
 
