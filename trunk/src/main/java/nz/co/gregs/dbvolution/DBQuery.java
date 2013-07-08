@@ -122,8 +122,12 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(queryTables);
         }
+        final String sqlString = selectClause.append(lineSep).append(fromClause).append(lineSep).append(whereClause).append(";").toString();
+        if (database.isPrintSQLBeforeExecuting()) {
+            System.out.println(sqlString);
+        }
 
-        return selectClause.append(lineSep).append(fromClause).append(lineSep).append(whereClause).append(";").toString();
+        return sqlString;
     }
 
     public List<DBQueryRow> getAllRows() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
@@ -171,7 +175,7 @@ public class DBQuery {
         for (DBQueryRow row : results) {
             objList.add(row.get(exemplar));
         }
-        
+
         DBTableRow[] arrayOfInstances = objList.toArray(new DBTableRow[]{});
         ArrayList<DBTableRow> arrayList = new ArrayList<DBTableRow>();
         arrayList.addAll(Arrays.asList(arrayOfInstances));
