@@ -265,7 +265,7 @@ public class DBTable<E extends DBTableRow> {
     private DBTable<E> getRows(String whereClause) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
         this.listOfRows.clear();
         String selectStatement = this.getSelectStatementForWhereClause() + whereClause + ";";
-        if (printSQLBeforeExecuting) {
+        if (printSQLBeforeExecuting||theDatabase.isPrintSQLBeforeExecuting()) {
             System.out.println(selectStatement);
         }
 
