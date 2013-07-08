@@ -20,6 +20,7 @@ import java.beans.IntrospectionException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBTable;
@@ -54,7 +55,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 marques.printRows();
 
                 List<Marque> myTableRows = new ArrayList<Marque>();
-                myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", 4));
+                myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4));
 
                 System.out.println("EXPECT A UNIQUE CONSTRAINT VIOLATION EXCEPTION HERE:");
                 marques.insert(myTableRows);
@@ -87,7 +88,7 @@ public class DBTableTransactionTest extends AbstractTest {
 //                marques.printRows();
 
                 List<Marque> myTableRows = new ArrayList<Marque>();
-                myTableRows.add(new Marque(999, "False", 1246974, "", 3, "UV", "TVR", "", "Y", 4));
+                myTableRows.add(new Marque(999, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4));
 
                 marques.insert(myTableRows);
 

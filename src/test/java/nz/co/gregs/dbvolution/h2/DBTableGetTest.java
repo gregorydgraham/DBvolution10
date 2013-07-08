@@ -94,11 +94,15 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     public void testDateIsBetween() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        gregorianCalendar.add(Calendar.SECOND, 60);
+        Date future = gregorianCalendar.getTime();
+
         Marque oldQuery = new Marque();
-        oldQuery.getCreationDate().isBetween(new Date(0L), new Date());
+        oldQuery.getCreationDate().isBetween(new Date(0L), future);
         marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
-        assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
+        assertTrue("Wrong number of rows selected, should be all but one of them", marques.toList().size() == marqueRows.size()-1);
     }
 
     public void testDateIsLessThanAndGreaterThan() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
@@ -109,29 +113,29 @@ public class DBTableGetTest extends AbstractTest {
         oldQuery.getCreationDate().isLessThan(new DBDate(future));
         marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
-        assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
+        assertTrue("Wrong number of rows selected, should be all but one of them", marques.toList().size() == marqueRows.size()-1);
         oldQuery.getCreationDate().isGreaterThan(new DBDate(future));
         marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
-        assertTrue("Wrong number of rows selected, should be NONE of them", marques.toList().size() == 0);
+        assertTrue("Wrong number of rows selected, should be NONE of them", marques.toList().isEmpty());
         oldQuery = new Marque();
         oldQuery.getCreationDate().isLessThanOrEqualTo(new DBDate(future));
         marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
-        assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
+        assertTrue("Wrong number of rows selected, should be all but one of them", marques.toList().size() == marqueRows.size()-1);
         oldQuery.getCreationDate().isGreaterThan(new DBDate(new Date(0L)));
         marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
-        assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
+        assertTrue("Wrong number of rows selected, should be all but one of them", marques.toList().size() == marqueRows.size()-1);
         oldQuery.getCreationDate().isLessThan(new DBDate(new Date(0L)));
         marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
-        assertTrue("Wrong number of rows selected, should be NONE of them", marques.toList().size() == 0);
+        assertTrue("Wrong number of rows selected, should be NONE of them", marques.toList().isEmpty());
         oldQuery = new Marque();
         oldQuery.getCreationDate().isGreaterThanOrEqualTo(new DBDate(new Date(0L)));
         marques = marques.getRowsByExample(oldQuery);
         marques.printRows();
-        assertTrue("Wrong number of rows selected, should be all of them", marques.toList().size() == marqueRows.size());
+        assertTrue("Wrong number of rows selected, should be all but one of them", marques.toList().size() == marqueRows.size()-1);
     }
 
     public void testRawQuery() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
