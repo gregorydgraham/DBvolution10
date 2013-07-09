@@ -482,9 +482,42 @@ public class DBTable<E extends DBTableRow> {
         insert(arrayList);
     }
 
+    /**
+     *
+     * @param newRows
+     * @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws SQLException
+     */
     public void insert(List<E> newRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException {
         Statement statement = theDatabase.getDBStatement();
-        StringBuilder sqlInsert = new StringBuilder();
+        List<String> allInserts = getSQLForInsert(newRows);
+        for (String sql : allInserts) {
+            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
+                System.out.println(sql);
+            }
+            statement.addBatch(sql);
+        }
+        statement.executeBatch();
+    }
+
+    public String getSQLForInsert(E newRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        ArrayList<E> arrayList = new ArrayList<E>();
+        arrayList.add(newRow);
+        return getSQLForInsert(arrayList).get(0);
+    }
+
+    /**
+     *
+     * @param newRows
+     * @return
+     * @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
+    public List<String> getSQLForInsert(List<E> newRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+        List<String> allInserts = new ArrayList<String>();
         for (E row : newRows) {
             row.setDatabase(theDatabase);
             String sql =
@@ -495,12 +528,9 @@ public class DBTable<E extends DBTableRow> {
                     + theDatabase.endInsertColumnList()
                     + row.getValuesClause()
                     + theDatabase.endInsertLine();
-            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
-                System.out.println(sql);
-            }
-            statement.addBatch(sql);
+            allInserts.add(sql);
         }
-        statement.executeBatch();
+        return allInserts;
     }
 
     public void delete(E oldRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
@@ -509,9 +539,56 @@ public class DBTable<E extends DBTableRow> {
         delete(arrayList);
     }
 
+    /**
+     *
+     * @param oldRows
+     * @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws SQLException
+     * @throws IllegalAccessException
+     */
     public void delete(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
         Statement statement = theDatabase.getDBStatement();
-        StringBuilder sqlInsert = new StringBuilder();
+        List<String> allSQL = getSQLForDelete(oldRows);
+        for (String sql : allSQL) {
+            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
+                System.out.println(sql);
+            }
+            statement.addBatch(sql);
+        }
+        statement.executeBatch();
+    }
+    
+    /**
+     *
+     * Convenience method
+     * 
+     * @param oldRow
+     * @return
+     * @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public String getSQLForDelete(E oldRow) throws IntrospectionException, IllegalArgumentException, IllegalArgumentException, InvocationTargetException, IllegalAccessException  {
+        ArrayList<E> arrayList = new ArrayList<E>();
+        arrayList.add(oldRow);
+        return getSQLForDelete(arrayList).get(0);
+    }
+
+    /**
+     *
+     * @param oldRows
+     * @return
+     * @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public List<String> getSQLForDelete(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
+        List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
             row.setDatabase(theDatabase);
             String sql =
@@ -522,12 +599,9 @@ public class DBTable<E extends DBTableRow> {
                     + theDatabase.getEqualsComparator()
                     + row.getPrimaryKeySQLStringValue()
                     + theDatabase.endDeleteLine();
-            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
-                System.out.println(sql);
-            }
-            statement.addBatch(sql);
+            allInserts.add(sql);
         }
-        statement.executeBatch();
+        return allInserts;
     }
 
     public void update(E oldRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
@@ -546,6 +620,23 @@ public class DBTable<E extends DBTableRow> {
             statement.addBatch(sql);
         }
         statement.executeBatch();
+    }
+
+    /**
+     *
+     * Convenience method for getSQLForUpdate(List<E>)
+     *
+     * @param oldRow
+     * @return
+     * @throws IntrospectionException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public List<String> getSQLForUpdate(E oldRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
+        ArrayList<E> arrayList = new ArrayList<E>();
+        arrayList.add(oldRow);
+        return getSQLForUpdate(arrayList);
     }
 
     /**
