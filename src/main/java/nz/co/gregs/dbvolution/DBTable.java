@@ -249,7 +249,7 @@ public class DBTable<E extends DBTableRow> {
             }
         }
         if (pkColumn.isEmpty()) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + "using the @DBTablePrimaryKey annotation.");
+            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + " using the @DBTablePrimaryKey annotation.");
         } else {
             return pkColumn;
         }
