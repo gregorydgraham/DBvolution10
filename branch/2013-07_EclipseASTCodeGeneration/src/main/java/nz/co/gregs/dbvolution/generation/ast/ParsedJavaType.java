@@ -140,6 +140,42 @@ public class ParsedJavaType {
 			astNode.bodyDeclarations().add(refFieldPos+1, newField.astNode());
 		}
 	}
+
+	/**
+	 * Adds a new method after the specified reference field.
+	 * If no {@code after} method is specified, then adds after all
+	 * other methods.
+	 * If no methods are present, then adds after fields.
+	 * @param after may be null
+	 * @param newMethod the method to add
+	 */
+	public void addMethodAfter(ParsedMethod after, ParsedMethod newMethod) {
+		Integer refMethodPos = null;
+		
+		// find reference field
+		int contentPos = 0;
+		for (BodyDeclaration body: (List<BodyDeclaration>)astNode.bodyDeclarations()) {
+			if (body.getNodeType() == ASTNode.FIELD_DECLARATION) {
+				if (refMethodPos == null) {
+					refMethodPos = contentPos;
+				}
+			}
+			else if (body.getNodeType() == ASTNode.METHOD_DECLARATION) {
+				if (after == null || body == after.astNode()) {
+					refMethodPos = contentPos;
+				}
+			}
+			contentPos++;
+		}
+		
+		// if no method found, then insert before everything else
+		if (refMethodPos == null) {
+			astNode.bodyDeclarations().add(0, newMethod.astNode());
+		}
+		else {
+			astNode.bodyDeclarations().add(refMethodPos+1, newMethod.astNode());
+		}
+	}
 	
 	// TODO: ensure it retains the same line endings as the original file
 	public void writeTo(File file) {

@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import nz.co.gregs.dbvolution.DBInteger;
 import nz.co.gregs.dbvolution.generation.ast.ParsedField;
 import nz.co.gregs.dbvolution.generation.ast.ParsedJavaType;
+import nz.co.gregs.dbvolution.generation.ast.ParsedMethod;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.text.edits.MalformedTreeException;
@@ -27,6 +28,10 @@ public class TryEclipseJDT2 {
 		ParsedField newField = ParsedField.newDBTableColumnInstance(javatype.getTypeContext(), false, "c_2", DBInteger.class);
 		System.out.println(newField);
 		javatype.addFieldAfter(null, newField);
+		
+		ParsedMethod newMethod = ParsedMethod.newFieldGetterInstance(javatype.getTypeContext(), newField);
+		System.out.println(newMethod);
+		javatype.addMethodAfter(null, newMethod);
 		
 		javatype.writeTo(new File("target/"+TryEclipseJDT2.class.getSimpleName()+"-output.java"));
 	}
