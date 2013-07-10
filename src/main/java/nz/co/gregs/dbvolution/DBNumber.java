@@ -20,14 +20,14 @@ public class DBNumber extends QueryableDatatype {
     protected DBNumber upperBoundNumber = null;
     protected DBNumber[] inValuesNumber = new DBNumber[]{};
 
-    public DBNumber(Object aNumber) {
-        this(Double.parseDouble(aNumber.toString()));
+    public DBNumber() {
+        super();
     }
 
-    public DBNumber(String aNumber) {
-        this(Double.parseDouble(aNumber));
-    }
-
+    /**
+     *
+     * @param aNumber
+     */
     public DBNumber(Number aNumber) {
         if (aNumber == null) {
             numberValue = 0L;
@@ -39,8 +39,20 @@ public class DBNumber extends QueryableDatatype {
         }
     }
 
-    public DBNumber() {
-        super();
+    /**
+     *
+     * @param aNumber
+     */
+    public DBNumber(Object aNumber) {
+        this(aNumber.toString());
+    }
+
+    /**
+     *
+     * @param aNumber
+     */
+    public DBNumber(String aNumber) {
+        this(Double.parseDouble(aNumber));
     }
 
     @Override
@@ -48,6 +60,9 @@ public class DBNumber extends QueryableDatatype {
         return (numberValue == null ? null : numberValue.toString());
     }
 
+    /**
+     *
+     */
     @Override
     public void blankQuery() {
         super.blankQuery();
@@ -66,6 +81,10 @@ public class DBNumber extends QueryableDatatype {
         isIn(intOptions.toArray(this.inValuesNumber));
     }
 
+    /**
+     *
+     * @param inValues
+     */
     public void isIn(Number[] inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Number num : inValues) {
@@ -74,6 +93,10 @@ public class DBNumber extends QueryableDatatype {
         isIn(intOptions.toArray(this.inValuesNumber));
     }
 
+    /**
+     *
+     * @param inValues
+     */
     public void isIn(List<Number> inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Number num : inValues) {
@@ -82,6 +105,10 @@ public class DBNumber extends QueryableDatatype {
         isIn(intOptions.toArray(this.inValuesNumber));
     }
 
+    /**
+     *
+     * @param inValues
+     */
     public void isIn(DBNumber[] inValues) {
         this.inValuesNumber = inValues;
         super.isIn(inValues);
@@ -96,6 +123,11 @@ public class DBNumber extends QueryableDatatype {
         }
     }
 
+    /**
+     *
+     * @param lower
+     * @param upper
+     */
     @Override
     public void isBetween(Object lower, Object upper) {
         this.upperBoundNumber = new DBNumber(upper);
@@ -103,6 +135,11 @@ public class DBNumber extends QueryableDatatype {
         super.isBetween(lowerBoundNumber, upperBoundNumber);
     }
 
+    /**
+     *
+     * @param lower
+     * @param upper
+     */
     public void isBetween(Number lower, Number upper) {
         this.upperBoundNumber = new DBNumber(upper);
         this.lowerBoundNumber = new DBNumber(lower);
@@ -119,20 +156,29 @@ public class DBNumber extends QueryableDatatype {
         }
     }
 
-    @Override
-    public void isLiterally(QueryableDatatype literalValue) {
-        if (literalValue instanceof DBNumber) {
-            this.isLiterally(((DBNumber) literalValue).numberValue);
-        } else {
-            super.isLiterally(literalValue);
-        }
-    }
+//    @Deprecated
+//    @Override
+//    public void isLiterally(QueryableDatatype literalValue) {
+//        if (literalValue instanceof DBNumber) {
+//            this.isLiterally(((DBNumber) literalValue).numberValue);
+//        } else {
+//            super.isLiterally(literalValue);
+//        }
+//    }
 
+    /**
+     *
+     * @param literal
+     */
     public void isLiterally(Number literal) {
         super.isLiterally(literal);
         this.numberValue = literal;
     }
 
+    /**
+     *
+     * @param obj
+     */
     @Override
     public void isLike(Object obj) {
         throw new RuntimeException("LIKE Comparison Cannot Be Used With Numeric Fields: " + obj);
@@ -161,19 +207,37 @@ public class DBNumber extends QueryableDatatype {
         return this.numberValue.toString();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getSQLValue() {
         return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public Double doubleValue() {
         return numberValue == null ? null : numberValue.doubleValue();
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public Long longValue() {
         return numberValue == null ? null : numberValue.longValue();
     }
 
+    /**
+     *
+     * @return
+     */
     public Integer intValue() {
         return numberValue == null ? null : numberValue.intValue();
     }

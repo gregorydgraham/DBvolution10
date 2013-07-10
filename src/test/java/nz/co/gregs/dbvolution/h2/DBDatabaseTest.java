@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import junit.framework.TestCase;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -47,7 +45,7 @@ public class DBDatabaseTest extends TestCase {
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
 
-    public void testCreateTable() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException {
+    public void testCreateTable() throws SQLException {
 
         try {
             myDatabase.dropTable(new Marque());

@@ -15,10 +15,7 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBTableRow;
@@ -36,7 +33,7 @@ public class DBExistsOperatorTest extends AbstractTest {
         super(name);
     }
 
-    public void testDBExistsOperator() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void testDBExistsOperator() throws SQLException {
         
         CarCompany carCompany = new CarCompany();
         carCompany.uidCarCompany.isLiterally(3);

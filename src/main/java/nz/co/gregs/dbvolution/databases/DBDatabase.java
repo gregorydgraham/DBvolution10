@@ -15,10 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.beans.IntrospectionException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -96,6 +94,36 @@ public abstract class DBDatabase {
         }
         return statement;
     }
+    
+    /**
+     *
+     * @param <V>
+     * @param dbTransaction
+     * @return
+     * @throws SQLException
+     * @throws Exception
+     */
+    synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+        V returnValues = null;
+        Connection connection;
+        this.transactionStatement = getDBStatement();
+        this.isInATransaction = true;
+        connection = transactionStatement.getConnection();
+        connection.setAutoCommit(false);
+        try {
+            returnValues = dbTransaction.doTransaction(this);
+            connection.commit();
+        } catch (Exception ex) {
+            connection.rollback();
+            throw ex;
+        } finally {
+            connection.setAutoCommit(true);
+            this.isInATransaction = false;
+            transactionStatement = null;
+        }
+        return returnValues;
+    }
+
 
     /**
      * @return the driverName
@@ -157,13 +185,9 @@ public abstract class DBDatabase {
      * @param <TR>
      * @param marque
      * @return
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws IntrospectionException
-     * @throws InvocationTargetException
      * @throws SQLException
      */
-    public <TR extends DBTableRow> void createTable(TR marque) throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException {
+    public <TR extends DBTableRow> void createTable(TR marque) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
         List<Field> pkFields = new ArrayList<Field>();
         String lineSeparator = System.getProperty("line.separator");
@@ -243,11 +267,19 @@ public abstract class DBDatabase {
         return "";
     }
 
+    /**
+     * 
+     * The easy way to drop a table that might not exist.
+     *
+     * @param <TR>
+     * @param tableRow
+     */
     @SuppressWarnings("empty-statement")
     public <TR extends DBTableRow> void dropTableNoExceptions(TR tableRow) {
         try {
             this.dropTable(tableRow);
-        } catch (Exception exp) {;
+        } catch (Exception exp) {
+            ;
         }
     }
 
@@ -261,14 +293,24 @@ public abstract class DBDatabase {
      * @param columnName
      * @return
      */
-    public String formatTableName(String tableName) {
-        return tableName;
-    }
-
     public String formatTableAndColumnName(String tableName, String columnName) {
         return formatTableName(tableName) + "." + formatColumnName(columnName);
     }
 
+    public String formatTableName(String tableName) {
+        return tableName;
+    }
+
+    /**
+     * 
+     * Specifies the column name used within the JDBC ResultSet to identify the column.
+     * 
+     * Usually this is the same as formatTableAndColumnName(table, column) but sometimes not.
+     *
+     * @param tableName
+     * @param columnName
+     * @return
+     */
     public String formatColumnNameForResultSet(String tableName, String columnName) {
         return formatTableAndColumnName(tableName, columnName);
     }
@@ -369,35 +411,23 @@ public abstract class DBDatabase {
         return ",";
     }
 
-    synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
-        V returnValues = null;
-        Connection connection;
-        this.transactionStatement = getDBStatement();
-        this.isInATransaction = true;
-        connection = transactionStatement.getConnection();
-        connection.setAutoCommit(false);
-        try {
-            returnValues = dbTransaction.doTransaction(this);
-            connection.commit();
-        } catch (Exception ex) {
-            connection.rollback();
-            throw ex;
-        } finally {
-            connection.setAutoCommit(true);
-            this.isInATransaction = false;
-            transactionStatement = null;
-        }
-        return returnValues;
-    }
-
-    public Object getFalseOperation() {
+    public String getFalseOperation() {
         return " 1=0 ";
     }
-    public Object getTrueOperation() {
+
+    public String getTrueOperation() {
         return " 1=1 ";
     }
 
     public String getNull() {
         return " NULL ";
+    }
+
+    public String beginSelectStatement() {
+        return " SELECT ";
+    }
+
+    public String beginFromClause() {
+        return " FROM ";
     }
 }

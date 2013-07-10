@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,13 +33,13 @@ public class DBTableInsertTest extends AbstractTest {
         super(testName);
     }
 
-    public void testInsertRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
+    public void testInsertRows() throws SQLException{
         myTableRow.getUidMarque().isLiterally(999);
         myTableRow.getName().isLiterally("TOYOTA");
         myTableRow.getNumericCode().isLiterally(10);
         marques.insert(myTableRow);
         marques.getAllRows();
-        marques.printRows();
+        marques.printAllRows();
         
         Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();
@@ -49,6 +47,6 @@ public class DBTableInsertTest extends AbstractTest {
         
         marques.insert(myTableRows);
         marques.getAllRows();
-        marques.printRows();
+        marques.printAllRows();
     }
 }

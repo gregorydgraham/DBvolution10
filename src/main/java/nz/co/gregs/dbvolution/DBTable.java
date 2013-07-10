@@ -1,13 +1,7 @@
 package nz.co.gregs.dbvolution;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
@@ -98,42 +91,28 @@ public class DBTable<E extends DBTableRow> {
         if (selectQueryAnnotation != null) {
             selectStatement.append(selectQueryAnnotation.value()).append(theDatabase.beginWhereClause() + theDatabase.getTrueOperation());
         } else {
-            selectStatement.append("select ");
+            selectStatement.append(theDatabase.beginSelectStatement());
 
-            selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(theDatabase.beginWhereClause() + theDatabase.getTrueOperation());
+            selectStatement
+                    .append(getAllFieldsForSelect())
+                    .append(theDatabase.beginFromClause())
+                    .append(dummy.getTableName())
+                    .append(theDatabase.beginWhereClause())
+                    .append(theDatabase.getTrueOperation());
         }
         return selectStatement.toString();
     }
 
     /**
-     * Not used externally but used to create instances of the TableRow subclass
-     *
-     * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws NoSuchMethodException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     */
-    @SuppressWarnings("unchecked")
-    protected E createObject() throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
-        return (E) dummy.getClass().getConstructor().newInstance();
-    }
-
-    /**
      * Use this carefully as it does what it says on the label: Gets All Rows of
-     * the table from the database. If your database has umpteen gazillion rows
-     * in the VeryBig table and you call this, don't come crying to me.
+     * the table from the database. 
+     * 
+     * If your database has umpteen gazillion rows
+     * in VeryBig table and you call this, don't come crying to me.
      *
      * @throws SQLException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws NoSuchMethodException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     * @throws IntrospectionException
      */
-    public void getAllRows() throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException //throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException 
+    public void getAllRows() throws SQLException
     {
         this.listOfRows.clear();
 
@@ -159,7 +138,7 @@ public class DBTable<E extends DBTableRow> {
         addAllFields(this, resultSet);
     }
 
-    private void addAllFields(DBTable<E> dbTable, ResultSet resultSet) throws SQLException, InstantiationException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IntrospectionException {
+    private void addAllFields(DBTable<E> dbTable, ResultSet resultSet) throws SQLException {
         ResultSetMetaData rsMeta = resultSet.getMetaData();
         Map<String, Integer> dbColumnNames = new HashMap<String, Integer>();
         for (int k = 1; k <= rsMeta.getColumnCount(); k++) {
@@ -168,7 +147,7 @@ public class DBTable<E extends DBTableRow> {
 
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
-            E tableRow = createObject();
+            E tableRow = (E) DBTableRow.getInstance(dummy.getClass()); 
 
             Field[] fields = tableRow.getClass().getDeclaredFields();
 
@@ -186,8 +165,8 @@ public class DBTable<E extends DBTableRow> {
         }
     }
 
-    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBTableRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
-        QueryableDatatype qdt = getQueryableDatatypeOfField(tableRow, field);
+    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBTableRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
+        QueryableDatatype qdt = tableRow.getQueryableValueOfField(field);
         int columnType = rsMeta.getColumnType(dbColumnIndex);
         switch (columnType) {
             case Types.INTEGER:
@@ -262,7 +241,7 @@ public class DBTable<E extends DBTableRow> {
         return str.replace("'", "''").replace("\\", "\\\\");
     }
 
-    private DBTable<E> getRows(String whereClause) throws SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+    private DBTable<E> getRows(String whereClause) throws SQLException {
         this.listOfRows.clear();
         String selectStatement = this.getSelectStatementForWhereClause() + whereClause + ";";
         if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
@@ -285,28 +264,21 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param pkValue
      * @return
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws NoSuchMethodException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
      * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws IntrospectionException
      */
-    public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, SQLException, ClassNotFoundException, IntrospectionException {
+    public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
         String whereClause = " and " + getPrimaryKeyColumn() + " = '" + escapeSingleQuotes(pkValue.toString()) + "'";
         this.getRows(whereClause);
         return this;
     }
 
-    public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, SQLException, ClassNotFoundException, IntrospectionException {
+    public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         String whereClause = " and " + getPrimaryKeyColumn() + " = " + pkValue + " ";
         this.getRows(whereClause);
         return this;
     }
 
-    public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, SQLException, ClassNotFoundException, IntrospectionException {
+    public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         String whereClause = " and " + getPrimaryKeyColumn() + " = " + this.theDatabase.getDateFormattedForQuery(pkValue) + " ";
         this.getRows(whereClause);
         return this;
@@ -324,16 +296,9 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param queryTemplate
      * @return
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
      * @throws SQLException
-     * @throws InstantiationException
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws ClassNotFoundException
-     * @throws IntrospectionException
      */
-    public DBTable<E> getRowsByExample(E queryTemplate) throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+    public DBTable<E> getRowsByExample(E queryTemplate) throws SQLException {
         return getRows(getSQLForExample(queryTemplate));
     }
 
@@ -343,16 +308,8 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param query
      * @return
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws SQLException
-     * @throws InstantiationException
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws ClassNotFoundException
-     * @throws IntrospectionException
      */
-    public String getSQLForExample(E query) throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+    public String getSQLForExample(E query) {
         query.setDatabase(theDatabase);
         return query.getWhereClause();
     }
@@ -368,16 +325,8 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param sqlWhereClause
      * @return
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws SQLException
-     * @throws InstantiationException
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws ClassNotFoundException
-     * @throws IntrospectionException
      */
-    public DBTable<E> getByRawSQL(String sqlWhereClause) throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+    public DBTable<E> getByRawSQL(String sqlWhereClause) throws SQLException {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
             return getRows(sqlWhereClause.replaceAll("\\s*;\\s*$", ""));
         } else {
@@ -390,8 +339,8 @@ public class DBTable<E extends DBTableRow> {
      * Equivalent to: printRows(System.out)
      *
      */
-    public void printRows() {
-        printRows(System.out);
+    public void printAllRows() {
+        printAllRows(System.out);
     }
 
     /**
@@ -402,55 +351,54 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param ps
      */
-    public void printRows(PrintStream ps) {
+    public void printAllRows(PrintStream ps) {
         for (E row : this.listOfRows) {
             ps.println(row);
         }
     }
 
-    private QueryableDatatype getQueryableDatatypeOfField(DBTableRow tableRow, Field field) throws IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
-        QueryableDatatype qdt = null;
-        BeanInfo info = Introspector.getBeanInfo(tableRow.getClass());
-        PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
-        String fieldName = field.getName();
-        for (PropertyDescriptor pd : descriptors) {
-            String pdName = pd.getName();
-            if (pdName.equals(fieldName)) {
-                try {
-                    Method readMethod = pd.getReadMethod();
-                    if (readMethod == null) {
-                        Object possQDT = field.get(tableRow);
-                        if (possQDT instanceof QueryableDatatype) {
-                            return (QueryableDatatype) possQDT;
-                        } else {
-                            throw new RuntimeException("Unable To Access Read Method for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
-                        }
-                    } else {
-                        Object fieldQDT = readMethod.invoke(tableRow);
-                        if (fieldQDT instanceof QueryableDatatype) {
-                            qdt = (QueryableDatatype) fieldQDT;
-                            qdt.setDatabase(this.theDatabase);
-                        }
-                    }
-                    break;
-                } catch (IllegalAccessException illacc) {
-                    throw new RuntimeException("Could Not Access SET Method for " + tableRow.getClass().getSimpleName() + "." + field.getName() + ": Please ensure the SET method is public: " + tableRow.getClass().getSimpleName() + "." + field.getName());
-                }
-            }
-        }
-
-        if (qdt == null) {
-            Object possQDT = field.get(tableRow);
-            if (possQDT instanceof QueryableDatatype) {
-                return (QueryableDatatype) possQDT;
-            } else {
-                throw new RuntimeException("Unable Access QueryDatatype for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
-            }
-        }
-
-        return qdt;
-    }
-
+//    private QueryableDatatype getQueryableDatatypeOfField(DBTableRow tableRow, Field field) {
+//        QueryableDatatype qdt = null;
+//        BeanInfo info = Introspector.getBeanInfo(tableRow.getClass());
+//        PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
+//        String fieldName = field.getName();
+//        for (PropertyDescriptor pd : descriptors) {
+//            String pdName = pd.getName();
+//            if (pdName.equals(fieldName)) {
+//                try {
+//                    Method readMethod = pd.getReadMethod();
+//                    if (readMethod == null) {
+//                        Object possQDT = field.get(tableRow);
+//                        if (possQDT instanceof QueryableDatatype) {
+//                            return (QueryableDatatype) possQDT;
+//                        } else {
+//                            throw new RuntimeException("Unable To Access Read Method for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
+//                        }
+//                    } else {
+//                        Object fieldQDT = readMethod.invoke(tableRow);
+//                        if (fieldQDT instanceof QueryableDatatype) {
+//                            qdt = (QueryableDatatype) fieldQDT;
+//                            qdt.setDatabase(this.theDatabase);
+//                        }
+//                    }
+//                    break;
+//                } catch (IllegalAccessException illacc) {
+//                    throw new RuntimeException("Could Not Access SET Method for " + tableRow.getClass().getSimpleName() + "." + field.getName() + ": Please ensure the SET method is public: " + tableRow.getClass().getSimpleName() + "." + field.getName());
+//                }
+//            }
+//        }
+//
+//        if (qdt == null) {
+//            Object possQDT = field.get(tableRow);
+//            if (possQDT instanceof QueryableDatatype) {
+//                return (QueryableDatatype) possQDT;
+//            } else {
+//                throw new RuntimeException("Unable Access QueryDatatype for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
+//            }
+//        }
+//
+//        return qdt;
+//    }
     /**
      *
      * Returns the first row of the table, particularly helpful when you know
@@ -458,7 +406,7 @@ public class DBTable<E extends DBTableRow> {
      *
      * @return
      */
-    public E firstRow() {
+    public E getFirstRow() {
         if (this.listOfRows.size() > 0) {
             return this.listOfRows.get(0);
         } else {
@@ -466,17 +414,7 @@ public class DBTable<E extends DBTableRow> {
         }
     }
 
-    /**
-     *
-     * Synonym for firstRow()
-     *
-     * @return
-     */
-    public final E firstElement() {
-        return this.firstRow();
-    }
-
-    public void insert(E newRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException {
+    public void insert(E newRow) throws SQLException {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(newRow);
         insert(arrayList);
@@ -485,12 +423,9 @@ public class DBTable<E extends DBTableRow> {
     /**
      *
      * @param newRows
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
      * @throws SQLException
      */
-    public void insert(List<E> newRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException {
+    public void insert(List<E> newRows) throws SQLException {
         Statement statement = theDatabase.getDBStatement();
         List<String> allInserts = getSQLForInsert(newRows);
         for (String sql : allInserts) {
@@ -502,7 +437,7 @@ public class DBTable<E extends DBTableRow> {
         statement.executeBatch();
     }
 
-    public String getSQLForInsert(E newRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    public String getSQLForInsert(E newRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(newRow);
         return getSQLForInsert(arrayList).get(0);
@@ -512,11 +447,8 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param newRows
      * @return
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
      */
-    public List<String> getSQLForInsert(List<E> newRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    public List<String> getSQLForInsert(List<E> newRows) {
         List<String> allInserts = new ArrayList<String>();
         for (E row : newRows) {
             row.setDatabase(theDatabase);
@@ -533,7 +465,7 @@ public class DBTable<E extends DBTableRow> {
         return allInserts;
     }
 
-    public void delete(E oldRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
+    public void delete(E oldRow) throws SQLException {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(oldRow);
         delete(arrayList);
@@ -542,13 +474,9 @@ public class DBTable<E extends DBTableRow> {
     /**
      *
      * @param oldRows
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
      * @throws SQLException
-     * @throws IllegalAccessException
      */
-    public void delete(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
+    public void delete(List<E> oldRows) throws SQLException {
         Statement statement = theDatabase.getDBStatement();
         List<String> allSQL = getSQLForDelete(oldRows);
         for (String sql : allSQL) {
@@ -559,20 +487,15 @@ public class DBTable<E extends DBTableRow> {
         }
         statement.executeBatch();
     }
-    
+
     /**
      *
      * Convenience method
-     * 
+     *
      * @param oldRow
      * @return
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
-    public String getSQLForDelete(E oldRow) throws IntrospectionException, IllegalArgumentException, IllegalArgumentException, InvocationTargetException, IllegalAccessException  {
+    public String getSQLForDelete(E oldRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(oldRow);
         return getSQLForDelete(arrayList).get(0);
@@ -582,12 +505,8 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param oldRows
      * @return
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
-    public List<String> getSQLForDelete(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
+    public List<String> getSQLForDelete(List<E> oldRows) {
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
             row.setDatabase(theDatabase);
@@ -604,13 +523,13 @@ public class DBTable<E extends DBTableRow> {
         return allInserts;
     }
 
-    public void update(E oldRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
+    public void update(E oldRow) throws SQLException {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(oldRow);
         update(arrayList);
     }
 
-    public void update(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, IllegalAccessException {
+    public void update(List<E> oldRows) throws SQLException {
         Statement statement = theDatabase.getDBStatement();
         List<String> allSQL = getSQLForUpdate(oldRows);
         for (String sql : allSQL) {
@@ -628,12 +547,8 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param oldRow
      * @return
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
-    public List<String> getSQLForUpdate(E oldRow) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
+    public List<String> getSQLForUpdate(E oldRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(oldRow);
         return getSQLForUpdate(arrayList);
@@ -646,12 +561,8 @@ public class DBTable<E extends DBTableRow> {
      *
      * @param oldRows
      * @return
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
      */
-    public List<String> getSQLForUpdate(List<E> oldRows) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException {
+    public List<String> getSQLForUpdate(List<E> oldRows) {
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
             row.setDatabase(theDatabase);
@@ -671,27 +582,13 @@ public class DBTable<E extends DBTableRow> {
         return allSQL;
     }
 
-    @Deprecated
-    public String getTableName() {
-        return this.dummy.getTableName();
-    }
-
-    @Deprecated
-    List<String> getColumnNames() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
-        return dummy.getColumnNames();
-    }
-
-    @Deprecated
-    Map<DBTableForeignKey, DBTableColumn> getForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
-        return dummy.getForeignKeys();
-    }
-
-    @Deprecated
-    String getPrimaryKeyName() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        return dummy.getPrimaryKeySQLStringValue();
-    }
-
-    public String getWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+    /**
+     *
+     * @param query
+     * @param sqlWhereClause
+     * @return
+     */
+    public String getWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
             return getSQLForExample(query) + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
         } else {
@@ -707,7 +604,7 @@ public class DBTable<E extends DBTableRow> {
         return new java.util.ArrayList<E>(listOfRows);
     }
 
-    public List<Number> getPrimaryKeysAsNumber() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public List<Number> getPrimaryKeysAsNumber() {
         List<Number> primaryKeys = new ArrayList<Number>();
         for (E e : listOfRows) {
             primaryKeys.add(e.getPrimaryKeyLongValue());
@@ -715,7 +612,7 @@ public class DBTable<E extends DBTableRow> {
         return primaryKeys;
     }
 
-    public List<String> getPrimaryKeysAsString() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public List<String> getPrimaryKeysAsString() {
         List<String> primaryKeys = new ArrayList<String>();
         for (E e : listOfRows) {
             primaryKeys.add(e.getPrimaryKeyStringValue());

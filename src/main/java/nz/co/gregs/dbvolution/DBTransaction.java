@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -23,5 +24,5 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public interface DBTransaction<V>{
     
-    V doTransaction(DBDatabase dbDatabase) throws Exception;
+    V doTransaction(DBDatabase dbDatabase) throws SQLException;
 }

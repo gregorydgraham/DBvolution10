@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
 import static junit.framework.TestCase.assertEquals;
@@ -36,7 +34,7 @@ public class DBQueryTest extends AbstractTest {
         super(name);
     }
 
-    public void testQueryGeneration() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void testQueryGeneration() throws SQLException {
         DBQuery dbQuery = new DBQuery(myDatabase);
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
@@ -67,7 +65,7 @@ public class DBQueryTest extends AbstractTest {
         assertEquals(expectedResult.replaceAll("\\s+", " "), generateSQLString.replaceAll("\\s+", " "));
     }
 
-    public void testQueryExecution() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void testQueryExecution() throws SQLException {
         DBQuery dbQuery = new DBQuery(myDatabase);
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
@@ -75,7 +73,7 @@ public class DBQueryTest extends AbstractTest {
         dbQuery.add(new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
-        dbQuery.printRows();
+        dbQuery.printAllRows();
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
@@ -92,7 +90,7 @@ public class DBQueryTest extends AbstractTest {
         }
     }
 
-    public void testQuickQueryCreation() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void testQuickQueryCreation() throws SQLException{
 
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
@@ -100,7 +98,7 @@ public class DBQueryTest extends AbstractTest {
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.generateSQLString());
-        dbQuery.printRows();
+        dbQuery.printAllRows();
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
@@ -117,15 +115,14 @@ public class DBQueryTest extends AbstractTest {
         }
     }
 
-    public void testDBTableRowReuse() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
-
+    public void testDBTableRowReuse() throws SQLException{
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
         DBQuery dbQuery = new DBQuery(myDatabase, carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.generateSQLString());
-        dbQuery.printRows();
+        dbQuery.printAllRows();
         assertEquals(2, results.size());
 
         DBQueryRow[] rows = new DBQueryRow[2];
