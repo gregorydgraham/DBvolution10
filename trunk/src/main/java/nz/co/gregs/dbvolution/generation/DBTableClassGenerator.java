@@ -15,12 +15,10 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
-import java.beans.IntrospectionException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -54,20 +52,15 @@ public class DBTableClassGenerator {
      * @param database
      * @param packageName
      * @param baseDirectory
-     * @throws ClassNotFoundException
      * @throws SQLException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws IntrospectionException
-     * @throws InvocationTargetException
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void generateClassesFromJDBCURLToDirectory(DBDatabase database, String packageName, String baseDirectory) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
+    public static void generateClassesFromJDBCURLToDirectory(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
         generateClassesFromJDBCURLToDirectory(database, packageName, baseDirectory, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
     }
 
-    public static void generateClassesFromJDBCURLToDirectory(DBDatabase database, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
+    public static void generateClassesFromJDBCURLToDirectory(DBDatabase database, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, FileNotFoundException, IOException {
         String viewsPackage = packageName + ".views";
         String viewsPath = viewsPackage.replaceAll("[.]", "/");
         List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, pkRecog, fkRecog);
@@ -107,16 +100,11 @@ public class DBTableClassGenerator {
      *
      * @param generatedClasses
      * @param classDirectory
-     * @throws ClassNotFoundException
      * @throws SQLException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws IntrospectionException
-     * @throws InvocationTargetException
      * @throws FileNotFoundException
      * @throws IOException
      */
-    static void saveGeneratedClassesToDirectory(List<DBTableClass> generatedClasses, File classDirectory) throws ClassNotFoundException, SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, FileNotFoundException, IOException {
+    static void saveGeneratedClassesToDirectory(List<DBTableClass> generatedClasses, File classDirectory) throws SQLException, FileNotFoundException, IOException {
         {
             File file;
             FileOutputStream fileOutputStream;
@@ -138,12 +126,8 @@ public class DBTableClassGenerator {
      * @param packageName
      * @return
      * @throws SQLException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws IntrospectionException
-     * @throws InvocationTargetException
      */
-    public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+    public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
         return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, new String[]{"TABLE"});
     }
 
@@ -153,12 +137,8 @@ public class DBTableClassGenerator {
      * @param packageName
      * @return
      * @throws SQLException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws IntrospectionException
-     * @throws InvocationTargetException
      */
-    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException{
         return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, new String[]{"VIEW"});
     }
 
@@ -169,12 +149,8 @@ public class DBTableClassGenerator {
      * @param dbObjectTypes
      * @return
      * @throws SQLException
-     * @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws IntrospectionException
-     * @throws InvocationTargetException
      */
-    public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String[] dbObjectTypes) throws SQLException, IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException {
+    public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String[] dbObjectTypes) throws SQLException {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
 
         Statement dbStatement = database.getDBStatement();
@@ -217,7 +193,7 @@ public class DBTableClassGenerator {
                 DBTableField dbTableField = new DBTableField();
                 dbTableField.columnName = columns.getString("COLUMN_NAME");
                 dbTableField.fieldName = toFieldCase(dbTableField.columnName);
-                dbTableField.columnType = getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"));
+                dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"));
                 if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
                     dbTableField.isPrimaryKey = true;
                 }
@@ -275,7 +251,7 @@ public class DBTableClassGenerator {
      * @param columnType
      * @return
      */
-    public static String getQueryableDatatypeOfSQLType(int columnType) {
+    public static String getQueryableDatatypeNameOfSQLType(int columnType) {
         String value = "";
         switch (columnType) {
             case Types.INTEGER:

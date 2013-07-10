@@ -15,12 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBTableRow;
@@ -35,7 +30,7 @@ public class DBExistsOperator extends DBOperator {
     DBTableRow tableRow;
     private final String referencedColumnName;
 
-    public DBExistsOperator(DBTableRow tableRow, QueryableDatatype qdtOfTheRow) throws IllegalArgumentException, IllegalAccessException {
+    public DBExistsOperator(DBTableRow tableRow, QueryableDatatype qdtOfTheRow) {
         this.tableRow = tableRow;
         Field qdtField = tableRow.getFieldOf(qdtOfTheRow);
         if (qdtField == null) {
@@ -53,20 +48,6 @@ public class DBExistsOperator extends DBOperator {
         try {
             subSelect = table.getSelectStatementForWhereClause() + table.getWhereClauseWithExampleAndRawSQL(tableRow, " and " + columnName + " = " + referencedColumnName);
         } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (InstantiationException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (ClassNotFoundException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (IntrospectionException ex) {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }
 

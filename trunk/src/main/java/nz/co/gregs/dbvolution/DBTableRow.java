@@ -11,14 +11,10 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
@@ -31,6 +27,24 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 abstract public class DBTableRow {
 
+    static <T extends DBTableRow> T getInstance(Class<T> requiredDBTableRowClass) {
+        try {
+            return requiredDBTableRowClass.getConstructor().newInstance();
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public",ex);
+        } catch (SecurityException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+        } catch (InstantiationException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+        }
+    }
+
     private DBDatabase database;
     private List<Field> ignoredRelationships = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
@@ -38,7 +52,7 @@ abstract public class DBTableRow {
     public DBTableRow() {
     }
 
-    public Long getPrimaryKeyLongValue() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public Long getPrimaryKeyLongValue() {
         Long pkColumnValue = -1L;
         boolean pkFound = false;
         QueryableDatatype queryableValueOfField;
@@ -65,7 +79,7 @@ abstract public class DBTableRow {
 
     }
 
-    public String getPrimaryKeyStringValue() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public String getPrimaryKeyStringValue() {
         String pkColumnValue = "";
         boolean pkFound = false;
         QueryableDatatype queryableValueOfField;
@@ -88,7 +102,7 @@ abstract public class DBTableRow {
 
     }
 
-    public String getPrimaryKeySQLStringValue() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public String getPrimaryKeySQLStringValue() {
         String pkColumnValue = "";
         QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
@@ -109,7 +123,7 @@ abstract public class DBTableRow {
 
     }
 
-    public String getPrimaryKeyName() throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public String getPrimaryKeyName() {
 //        String pkColumnValue = "";
 //        QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
@@ -129,13 +143,15 @@ abstract public class DBTableRow {
      * @param <Q>
      * @param field
      * @return
-     * @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
      */
     @SuppressWarnings("unchecked")
-    public <Q extends QueryableDatatype> Q getQueryableValueOfField(Field field) throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
-        BeanInfo info = Introspector.getBeanInfo(this.getClass());
+    public <Q extends QueryableDatatype> Q getQueryableValueOfField(Field field) {
+        BeanInfo info = null;
+        try {
+            info = Introspector.getBeanInfo(this.getClass());
+        } catch (IntrospectionException ex) {
+            throw new RuntimeException("Unable Retrieve Bean Information: Bean Information Not Found For Class: " + this.getClass().getSimpleName());
+        }
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
         for (PropertyDescriptor pd : descriptors) {
             if (pd.getName().equals(field.getName())) {
@@ -145,6 +161,10 @@ abstract public class DBTableRow {
                         return (Q) readMethod.invoke(this);
                     } catch (IllegalAccessException ex) {
                         throw new RuntimeException("GET Method Found But Unable To Access: Please change GET method to public for " + this.getClass().getSimpleName() + "." + field.getName(), ex);
+                    } catch (IllegalArgumentException ex) {
+                        throw new RuntimeException("GET Method Found But Somehow The Argument Was Illegal: Please ensure the read method of " + this.getClass().getSimpleName() + "." + field.getName() + "  has NO arguments.", ex.getCause());
+                    } catch (InvocationTargetException ex) {
+                        throw new RuntimeException("GET Method Found But Unable To Access: Please ensure the read method of " + this.getClass().getSimpleName() + "." + field.getName() + "  has NO arguments.", ex.getCause());
                     }
                 }
             }
@@ -158,7 +178,7 @@ abstract public class DBTableRow {
         }
     }
 
-    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() {
         HashMap<String, QueryableDatatype> columnsAndQDTs = new HashMap<String, QueryableDatatype>();
         String columnName;
         QueryableDatatype qdt;
@@ -176,16 +196,10 @@ abstract public class DBTableRow {
 
     /**
      *
-     * @return @throws IllegalArgumentException
-     * @throws IllegalAccessException
-     * @throws SQLException
-     * @throws InstantiationException
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws ClassNotFoundException
-     * @throws IntrospectionException
+     * @return 
+     * 
      */
-    public String getWhereClause() throws IllegalArgumentException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException, IntrospectionException {
+    public String getWhereClause() {
         StringBuilder whereClause = new StringBuilder();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
@@ -229,21 +243,11 @@ abstract public class DBTableRow {
 
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBTableColumn.class)) {
-                try {
-                    string.append(separator);
-                    string.append(" ");
-                    string.append(field.getName());
-                    string.append(":");
-                    try {
-                        string.append(getQueryableValueOfField(field));
-                    } catch (IntrospectionException ex) {
-                        Logger.getLogger(DBTableRow.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (InvocationTargetException ex) {
-                        Logger.getLogger(DBTableRow.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } catch (IllegalArgumentException ex) {
-                    Logger.getLogger(DBTableRow.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                string.append(separator);
+                string.append(" ");
+                string.append(field.getName());
+                string.append(":");
+                string.append(getQueryableValueOfField(field));
                 separator = ",";
             }
         }
@@ -253,7 +257,7 @@ abstract public class DBTableRow {
     /**
      * @param database the database to set
      */
-    protected void setDatabase(DBDatabase theDatabase) throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    protected void setDatabase(DBDatabase theDatabase) {
         this.database = theDatabase;
 
         for (Field field : this.getClass().getDeclaredFields()) {
@@ -263,7 +267,7 @@ abstract public class DBTableRow {
         }
     }
 
-    protected String getValuesClause() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    protected String getValuesClause() {
         StringBuilder string = new StringBuilder();
         Class<? extends DBTableRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
@@ -278,7 +282,7 @@ abstract public class DBTableRow {
         return string.append(")").toString();
     }
 
-    protected String getSetClause() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    protected String getSetClause() {
         StringBuilder sql = new StringBuilder();
         Class<? extends DBTableRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
@@ -300,11 +304,9 @@ abstract public class DBTableRow {
 
     /**
      *
-     * @return @throws IntrospectionException
-     * @throws IllegalArgumentException
-     * @throws InvocationTargetException
+     * @return 
      */
-    protected List<String> getColumnNames() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    protected List<String> getColumnNames() {
         ArrayList<String> columnNames = new ArrayList<String>();
         Class<? extends DBTableRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
@@ -332,7 +334,7 @@ abstract public class DBTableRow {
         return columnName;
     }
 
-    protected Map<DBTableForeignKey, DBTableColumn> getForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    protected Map<DBTableForeignKey, DBTableColumn> getForeignKeys() {
         HashMap<DBTableForeignKey, DBTableColumn> foreignKeys;
         foreignKeys = new HashMap<DBTableForeignKey, DBTableColumn>();
         Class<? extends DBTableRow> thisClass = this.getClass();
@@ -348,7 +350,7 @@ abstract public class DBTableRow {
         return foreignKeys;
     }
 
-    protected List<Field> getForeignKeyFields() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    protected List<Field> getForeignKeyFields() {
         if (fkFields.isEmpty()) {
             Class<? extends DBTableRow> thisClass = this.getClass();
             Field[] fields = thisClass.getDeclaredFields();
@@ -362,17 +364,21 @@ abstract public class DBTableRow {
         return fkFields;
     }
 
-//    boolean hasPrimaryKeyForFK(DBTableForeignKey fk) throws IntrospectionException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-//        Class fkTableRow = fk.value();
-//        return this.getClass().equals(fkTableRow);
-//    }
-    public Field getFieldOf(QueryableDatatype qdt) throws IllegalArgumentException, IllegalAccessException {
+    public Field getFieldOf(QueryableDatatype qdt) {
         Field fieldReqd = null;
 
         Field[] fields = this.getClass().getDeclaredFields();
 
         for (Field field : fields) {
-            if (field.get(this).equals(qdt)) {
+            final Object fieldOfThisInstance;
+            try {
+                fieldOfThisInstance = field.get(this);
+            } catch (IllegalArgumentException ex) {
+                        throw new RuntimeException("Field Found But Somehow The Argument Was Illegal: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.getName() + "  are public.", ex.getCause());
+            } catch (IllegalAccessException ex) {
+                        throw new RuntimeException("Field Found But Unable To Access: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.getName() + "  are public.", ex);
+            }
+            if (fieldOfThisInstance.equals(qdt)) {
                 return field;
             }
         }
@@ -385,7 +391,7 @@ abstract public class DBTableRow {
      *
      * @param qdt
      */
-    public void ignoreForeignKey(QueryableDatatype qdt) throws IllegalArgumentException, IllegalAccessException {
+    public void ignoreForeignKey(QueryableDatatype qdt) {
         Field fieldOfFK = getFieldOf(qdt);
         ignoredRelationships.add(fieldOfFK);
     }
@@ -394,7 +400,7 @@ abstract public class DBTableRow {
         ignoredRelationships.clear();
     }
 
-    public void ignoreAllForeignKeys() throws IntrospectionException, IllegalArgumentException, InvocationTargetException {
+    public void ignoreAllForeignKeys() {
         ignoredRelationships.addAll(this.getForeignKeyFields());
     }
 }

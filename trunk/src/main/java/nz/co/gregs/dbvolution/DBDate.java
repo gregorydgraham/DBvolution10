@@ -64,7 +64,7 @@ public class DBDate extends QueryableDatatype {
     }
 
     public void isLiterally(Date date) {
-        super.isLiterally(this);
+        super.isLiterally(date);
         dateValue = date;
     }
 

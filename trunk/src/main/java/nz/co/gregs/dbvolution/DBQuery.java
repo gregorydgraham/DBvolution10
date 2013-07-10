@@ -16,9 +16,7 @@
  */
 package nz.co.gregs.dbvolution;
 
-import java.beans.IntrospectionException;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -67,7 +65,7 @@ public class DBQuery {
         results = null;
     }
 
-    public String generateSQLString() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public String generateSQLString() throws SQLException {
         StringBuilder selectClause = new StringBuilder().append("select ");
         StringBuilder fromClause = new StringBuilder().append(" from ");
         StringBuilder whereClause = new StringBuilder().append(database.beginWhereClause()).append(database.getTrueOperation());
@@ -103,8 +101,8 @@ public class DBQuery {
                 for (DBTableForeignKey fk : fks.keySet()) {
                     tabRow.setDatabase(database);
                     String formattedPK = database.formatTableAndColumnName(tableName, tabRow.getPrimaryKeyName());
-                    Class pkClass = fk.value();
-                    DBTableRow fkReferencesTable = (DBTableRow) pkClass.getConstructor().newInstance();
+                    Class<? extends DBTableRow> pkClass = fk.value();
+                    DBTableRow fkReferencesTable = DBTableRow.getInstance(pkClass);
                     String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
                     if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                         String fkColumnName = fks.get(fk).value();
@@ -130,20 +128,18 @@ public class DBQuery {
         return sqlString;
     }
 
-    public List<DBQueryRow> getAllRows() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public List<DBQueryRow> getAllRows() throws SQLException{
         results = new ArrayList<DBQueryRow>();
-        DBQueryRow queryRow;
+        DBQueryRow<Class, DBTableRow> queryRow;
 
         Statement dbStatement = database.getDBStatement();
         ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
         while (resultSet.next()) {
-            queryRow = new DBQueryRow();
+            queryRow = new DBQueryRow<Class, DBTableRow>();
             for (DBTableRow tableRow : queryTables) {
-                //String tableName = tableRow.getTableName();
-                DBTableRow newInstance = tableRow.getClass().getConstructor().newInstance();
+                DBTableRow newInstance = DBTableRow.getInstance(tableRow.getClass());//.getClass().getConstructor().newInstance();
                 newInstance.setDatabase(database);
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
-                //Field[] fields = tableRow.getClass().getFields();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
                     String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
@@ -167,7 +163,7 @@ public class DBQuery {
         return results;
     }
 
-    public ArrayList<DBTableRow> getAllInstancesOf(DBTableRow exemplar) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public ArrayList<DBTableRow> getAllInstancesOf(DBTableRow exemplar) throws SQLException {
         HashSet<DBTableRow> objList = new HashSet<DBTableRow>();
         if (results.isEmpty()) {
             getAllRows();
@@ -187,8 +183,8 @@ public class DBQuery {
      * Equivalent to: printAll(System.out);
      *
      */
-    public void printRows() throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
-        printRows(System.out);
+    public void printAllRows() throws SQLException {
+        printAllRows(System.out);
     }
 
     /**
@@ -198,7 +194,7 @@ public class DBQuery {
      *
      * @param ps
      */
-    public void printRows(PrintStream ps) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void printAllRows(PrintStream ps) throws SQLException{
         if (results == null) {
             this.getAllRows();
         }
@@ -220,7 +216,7 @@ public class DBQuery {
      *
      * @param ps
      */
-    public void printAllPrimaryKeys(PrintStream ps) throws SQLException, IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void printAllPrimaryKeys(PrintStream ps) throws SQLException{
         if (results == null) {
             this.getAllRows();
         }

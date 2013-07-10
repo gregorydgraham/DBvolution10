@@ -16,8 +16,6 @@
 package nz.co.gregs.dbvolution.h2;
 
 import nz.co.gregs.dbvolution.DBTransaction;
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,12 +37,12 @@ public class DBTableTransactionTest extends AbstractTest {
         super(testName);
     }
 
-    public void testInsertRowsSucceeds() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException, Exception {
+    public void testInsertRowsSucceeds() throws SQLException, Exception{
         List<Marque> original = marques.getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
         DBTable<Marque> transacted = myDatabase.doTransaction(new DBTransaction<DBTable<Marque>>() {
             @Override
-            public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+            public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException {
                 Marque myTableRow = new Marque();
                 DBTable<Marque> marques = new DBTable<Marque>(dbDatabase, myTableRow);
                 myTableRow.getUidMarque().isLiterally(999);
@@ -52,7 +50,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 myTableRow.getNumericCode().isLiterally(10);
                 marques.insert(myTableRow);
                 marques.getAllRows();
-                marques.printRows();
+                marques.printAllRows();
 
                 List<Marque> myTableRows = new ArrayList<Marque>();
                 myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4));
@@ -61,7 +59,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 marques.insert(myTableRows);
 
                 marques.getAllRows();
-                marques.printRows();
+                marques.printAllRows();
                 return marques;
             }
         });
@@ -71,13 +69,13 @@ public class DBTableTransactionTest extends AbstractTest {
         assertTrue("Length of list after insert should be longer than the original", added.size() == original.size() + 2);
     }
 
-    public void testInsertRowsFailure() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException, Exception {
+    public void testInsertRowsFailure() throws SQLException {
         List<Marque> original = marques.getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
         try{
         DBTable<Marque> transacted = myDatabase.doTransaction(new DBTransaction<DBTable<Marque>>() {
             @Override
-            public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws IntrospectionException, IllegalArgumentException, InvocationTargetException, SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+            public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException{
                 Marque myTableRow = new Marque();
                 DBTable<Marque> marques = new DBTable<Marque>(dbDatabase, myTableRow);
                 myTableRow.getUidMarque().isLiterally(999);
@@ -93,7 +91,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 marques.insert(myTableRows);
 
                 marques.getAllRows();
-                marques.printRows();
+                marques.printAllRows();
                 return marques;
             }
 
@@ -102,7 +100,7 @@ public class DBTableTransactionTest extends AbstractTest {
             e.printStackTrace();
         }
         final DBTable<Marque> addedRows = marques.getRowsByExample(new Marque());
-        addedRows.printRows();
+        addedRows.printAllRows();
         List<Marque> added = addedRows.toList();
         System.out.println("original.toList().size(): " + original.size());
         System.out.println("added.toList().size(): " + added.size());

@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +30,7 @@ public class DBTableDeleteTest extends AbstractTest {
         super(testName);
     }
 
-    public void testDeleteListOfRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
+    public void testDeleteListOfRows() throws SQLException {
         marques.getAllRows();
         List<Marque> rowList = marques.toList();
         int originalSize = rowList.size();

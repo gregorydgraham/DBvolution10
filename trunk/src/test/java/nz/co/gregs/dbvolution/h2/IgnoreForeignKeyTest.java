@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
 import static junit.framework.TestCase.assertTrue;
@@ -35,30 +33,30 @@ public class IgnoreForeignKeyTest extends AbstractTest {
         super(testName);
     }
 
-    public void testIgnoreForeignKey() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void testIgnoreForeignKey() throws SQLException{
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
         DBQuery dbQuery = new DBQuery(myDatabase, carCompany, marque);
         List<DBQueryRow> allRows = dbQuery.getAllRows();
-        dbQuery.printRows();
+        dbQuery.printAllRows();
         assertTrue("Number of rows should be 22", allRows.size() == 22);
 
         marque.ignoreForeignKey(marque.getCarCompany());
         dbQuery = new DBQuery(myDatabase, carCompany, marque);
         allRows = dbQuery.getAllRows();
-        dbQuery.printRows();
+        dbQuery.printAllRows();
         assertTrue("Number of rows should be 88", allRows.size() == 88);
 
         marque.useAllForeignKeys();
         dbQuery = new DBQuery(myDatabase, carCompany, marque);
         allRows = dbQuery.getAllRows();
-        dbQuery.printRows();
+        dbQuery.printAllRows();
         assertTrue("Number of rows should be 88", allRows.size() == 22);
 
         marque.ignoreAllForeignKeys();
         dbQuery = new DBQuery(myDatabase, carCompany, marque);
         allRows = dbQuery.getAllRows();
-        dbQuery.printRows();
+        dbQuery.printAllRows();
         assertTrue("Number of rows should be 88", allRows.size() == 88);
 
     }

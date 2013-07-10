@@ -99,15 +99,16 @@ public class QueryableDatatype extends Object implements Serializable {
         }
     }
     
-    public void isLiterally(QueryableDatatype literalValue) {
-        blankQuery();
-        if (literalValue == null) {
-            isNull();
-        } else {
-            this.literalValue = literalValue.literalValue;
-            this.setOperator(new DBEqualsOperator(literalValue));
-        }
-    }
+//    @Deprecated
+//    public void isLiterally(QueryableDatatype literalValue) {
+//        blankQuery();
+//        if (literalValue == null) {
+//            isNull();
+//        } else {
+//            this.literalValue = literalValue.literalValue;
+//            this.setOperator(new DBEqualsOperator(literalValue));
+//        }
+//    }
     
     public void isGreaterThan(QueryableDatatype literalValue) {
         blankQuery();

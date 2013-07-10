@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import static junit.framework.TestCase.assertEquals;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -27,12 +25,12 @@ public class DBTableUpdateTest extends AbstractTest {
         super(name);
     }
 
-    public void testInsertRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    public void testInsertRows() throws SQLException{
         Marque myTableRow = new Marque();
         myTableRow.getUidMarque().isLiterally(1);
 
         marques.getRowsByExample(myTableRow);
-        marques.printRows();
+        marques.printAllRows();
         Marque toyota = marques.toList().get(0);
         System.out.println("===" + toyota.name.toString());
         assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
@@ -41,7 +39,7 @@ public class DBTableUpdateTest extends AbstractTest {
         marques.update(toyota);
 
         marques.getRowsByExample(myTableRow);
-        marques.printRows();
+        marques.printAllRows();
         toyota = marques.toList().get(0);
         assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
     }
