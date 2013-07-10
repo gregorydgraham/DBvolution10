@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 
 import nz.co.gregs.dbvolution.DBInteger;
 import nz.co.gregs.dbvolution.generation.ast.ParsedField;
-import nz.co.gregs.dbvolution.generation.ast.ParsedJavaType;
+import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
 import nz.co.gregs.dbvolution.generation.ast.ParsedMethod;
 
 import org.eclipse.jface.text.BadLocationException;
@@ -22,7 +22,7 @@ import org.eclipse.text.edits.MalformedTreeException;
  */
 public class TryEclipseJDT2 {
 	public static void main(String[] args) throws MalformedTreeException, BadLocationException {
-		ParsedJavaType javatype = ParsedJavaType.of(getSource());
+		ParsedClass javatype = ParsedClass.of(getSource());
 		System.out.println(javatype.toString());
 		
 		ParsedField newField = ParsedField.newDBTableColumnInstance(javatype.getTypeContext(), false, "c_2", DBInteger.class);

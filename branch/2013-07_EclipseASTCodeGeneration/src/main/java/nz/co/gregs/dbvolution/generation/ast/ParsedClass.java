@@ -26,7 +26,7 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
-public class ParsedJavaType {
+public class ParsedClass {
 	private final ASTParser parser;
 	private final Document document;
 	private final CompilationUnit unit;
@@ -35,7 +35,7 @@ public class ParsedJavaType {
 	private List<ParsedField> fields;
 	private List<ParsedMethod> methods;
 	
-	public static ParsedJavaType of(String contents) {
+	public static ParsedClass of(String contents) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		// In order to parse 1.5 code, some compiler options need to be set to 1.5
 		Map<?,?> options = JavaCore.getOptions();
@@ -47,13 +47,13 @@ public class ParsedJavaType {
 		CompilationUnit unit = (CompilationUnit)parser.createAST(null);
 		unit.recordModifications();
 		
-		return new ParsedJavaType(parser, document, unit);
+		return new ParsedClass(parser, document, unit);
 	}
 
 	/**
 	 * Builds up the high-level model of the contents of the java type. 
 	 */
-	public ParsedJavaType(ASTParser parser, Document document, CompilationUnit unit) {
+	public ParsedClass(ASTParser parser, Document document, CompilationUnit unit) {
 		this.parser = parser;
 		this.document = document;
 		this.unit = unit;
