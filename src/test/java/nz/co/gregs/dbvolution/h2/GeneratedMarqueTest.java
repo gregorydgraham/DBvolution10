@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
@@ -67,7 +67,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     public void testGetAllRows() throws SQLException{
         DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
         marq.getAllRows();
-        for (DBTableRow row : marq.toList()) {
+        for (DBRow row : marq.toList()) {
             System.out.println(row);
         }
     }
@@ -75,7 +75,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     @Test
     public void testGetFirstAndPrimaryKey() throws SQLException{
         DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
-        DBTableRow row = marq.getFirstRow();
+        DBRow row = marq.getFirstRow();
         if (row != null) {
             String primaryKey = row.getPrimaryKeySQLStringValue();
             DBTable<Marque> singleMarque = new DBTable<Marque>(myDatabase, new Marque());

@@ -25,7 +25,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBDate;
 import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
 
@@ -44,7 +44,7 @@ public class DBTableGetTest extends AbstractTest {
 
     public void testGetAllRows() throws SQLException {
         marques.getAllRows();
-        for (DBTableRow row : marques.toList()) {
+        for (DBRow row : marques.toList()) {
             System.out.println(row);
         }
         assertTrue("Incorrect number of marques retreived", marques.toList().size() == marqueRows.size());
@@ -52,7 +52,7 @@ public class DBTableGetTest extends AbstractTest {
 
     public void testGetFirstAndPrimaryKey() throws SQLException {
         DBTable<Marque> singleMarque = new DBTable<Marque>(myDatabase, new Marque());
-        DBTableRow row = marqueRows.get(0);
+        DBRow row = marqueRows.get(0);
         String primaryKey;
         if (row != null) {
             primaryKey = row.getPrimaryKeySQLStringValue();

@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTransaction;
 import nz.co.gregs.dbvolution.QueryableDatatype;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 /**
  *
@@ -187,7 +187,7 @@ public abstract class DBDatabase {
      * @return
      * @throws SQLException
      */
-    public <TR extends DBTableRow> void createTable(TR marque) throws SQLException {
+    public <TR extends DBRow> void createTable(TR marque) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
         List<Field> pkFields = new ArrayList<Field>();
         String lineSeparator = System.getProperty("line.separator");
@@ -200,7 +200,7 @@ public abstract class DBDatabase {
         String nextSep = getCreateTableColumnsSeparator();
         Field[] fields = marque.getClass().getDeclaredFields();
         for (Field field : fields) {
-            DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
+            DBColumn annotation = field.getAnnotation(DBColumn.class);
             if (annotation != null) {
                 QueryableDatatype qdt = marque.getQueryableValueOfField(field);
                 String colName = annotation.value();
@@ -210,7 +210,7 @@ public abstract class DBDatabase {
                 sqlScript.append(sep).append(colName).append(getCreateTableColumnsNameAndTypeSeparator()).append(qdt.getSQLDatatype());
                 sep = nextSep + lineSeparator;
 
-                DBTablePrimaryKey pkAnno = field.getAnnotation(DBTablePrimaryKey.class);
+                DBPrimaryKey pkAnno = field.getAnnotation(DBPrimaryKey.class);
                 if (pkAnno != null) {
                     pkFields.add(field);
                 }
@@ -223,7 +223,7 @@ public abstract class DBDatabase {
         String pkEnd = getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
         String pkSep = pkStart;
         for (Field field : pkFields) {
-            DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
+            DBColumn annotation = field.getAnnotation(DBColumn.class);
             String colName = annotation.value();
             if (colName == null || colName.isEmpty()) {
                 colName = field.getName();
@@ -242,7 +242,7 @@ public abstract class DBDatabase {
         getDBStatement().execute(sqlString);
     }
 
-    public <TR extends DBTableRow> void dropTable(TR tableRow) throws SQLException {
+    public <TR extends DBRow> void dropTable(TR tableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
 
         sqlScript.append(getDropTableStart()).append(tableRow.getTableName());
@@ -275,7 +275,7 @@ public abstract class DBDatabase {
      * @param tableRow
      */
     @SuppressWarnings("empty-statement")
-    public <TR extends DBTableRow> void dropTableNoExceptions(TR tableRow) {
+    public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) {
         try {
             this.dropTable(tableRow);
         } catch (Exception exp) {

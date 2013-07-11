@@ -2,10 +2,10 @@ package nz.co.gregs.dbvolution.example;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.example.CarCompany;
 
 /**
@@ -13,41 +13,41 @@ import nz.co.gregs.dbvolution.example.CarCompany;
  * @author gregory.graham
  */
 @DBTableName("marque")
-public class Marque extends DBTableRow {
+public class Marque extends DBRow {
 
     /*
      * create view "mdamgr".marque
      * (numeric_code,uidMarque,isusedfortafros,fk_toystatusclass,intindallocallowed,upd_count,auto_created,name,pricingcodeprefix,reservationsalwd)
      * as
      */
-    @DBTableColumn("numeric_code")
+    @DBColumn("numeric_code")
     public DBNumber numericCode = new DBNumber();
-    @DBTableColumn("uid_marque")
-    @DBTablePrimaryKey
+    @DBColumn("uid_marque")
+    @DBPrimaryKey
     public DBInteger uidMarque = new DBInteger();
-    @DBTableColumn("isusedfortafros")
+    @DBColumn("isusedfortafros")
     public DBString isUsedForTAFROs = new DBString();
-    @DBTableColumn("fk_toystatusclass")
+    @DBColumn("fk_toystatusclass")
 //    @DBTableForeignKey("\"mdamgr\".toystatusclass")
     public DBNumber toyotaStatusClassID = new DBNumber();
-    @DBTableColumn("intindallocallowed")
+    @DBColumn("intindallocallowed")
     public DBString intIndividualAllocationsAllowed = new DBString();
-    @DBTableColumn("upd_count")
+    @DBColumn("upd_count")
     public DBInteger updateCount = new DBInteger();
-    @DBTableColumn
+    @DBColumn
     public DBString auto_created = new DBString();
-    @DBTableColumn
+    @DBColumn
     public DBString name = new DBString();
-    @DBTableColumn("pricingcodeprefix")
+    @DBColumn("pricingcodeprefix")
     public DBString pricingCodePrefix = new DBString();
-    @DBTableColumn("reservationsalwd")
+    @DBColumn("reservationsalwd")
     public DBString reservationsAllowed = new DBString();
-    @DBTableColumn("creation_date")
+    @DBColumn("creation_date")
     public DBDate creationDate = new DBDate();
     
 //    @DBTableForeignKey("CAR_COMPANY.UID_CARCOMPANY")
-    @DBTableForeignKey(CarCompany.class)
-    @DBTableColumn("fk_carcompany")
+    @DBForeignKey(CarCompany.class)
+    @DBColumn("fk_carcompany")
     public DBInteger carCompany = new DBInteger();
 
 

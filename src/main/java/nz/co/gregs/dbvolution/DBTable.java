@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -17,7 +17,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @param <E>
  * @author gregory.graham
  */
-public class DBTable<E extends DBTableRow> {
+public class DBTable<E extends DBRow> {
 
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
@@ -48,8 +48,8 @@ public class DBTable<E extends DBTableRow> {
     private String getDBColumnName(Field field) {
         String columnName = "";
 
-        if (field.isAnnotationPresent(DBTableColumn.class)) {
-            DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
+        if (field.isAnnotationPresent(DBColumn.class)) {
+            DBColumn annotation = field.getAnnotation(DBColumn.class);
             columnName = annotation.value();
             if (columnName
                     == null || columnName.isEmpty()) {
@@ -147,14 +147,14 @@ public class DBTable<E extends DBTableRow> {
 
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
-            E tableRow = (E) DBTableRow.getInstance(dummy.getClass()); 
+            E tableRow = (E) DBRow.getInstance(dummy.getClass()); 
 
             Field[] fields = tableRow.getClass().getDeclaredFields();
 
 
 
             for (Field field : fields) {
-                if (field.isAnnotationPresent(DBTableColumn.class)) {
+                if (field.isAnnotationPresent(DBColumn.class)) {
                     String dbColumnName = getDBColumnName(field);
                     int dbColumnIndex = dbColumnNames.get(theDatabase.formatColumnName(dbColumnName));
 
@@ -165,7 +165,7 @@ public class DBTable<E extends DBTableRow> {
         }
     }
 
-    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBTableRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
+    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
         QueryableDatatype qdt = tableRow.getQueryableValueOfField(field);
         int columnType = rsMeta.getColumnType(dbColumnIndex);
         switch (columnType) {
@@ -223,7 +223,7 @@ public class DBTable<E extends DBTableRow> {
         Class<E> thisClass = (Class<E>) dummy.getClass();
         Field[] fields = thisClass.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
+            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
                 pkColumn = this.getDBColumnName(field);
             }
         }

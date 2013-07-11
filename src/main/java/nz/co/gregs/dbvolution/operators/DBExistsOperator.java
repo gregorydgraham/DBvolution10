@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import java.lang.reflect.Field;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 
 /**
@@ -27,10 +27,10 @@ import nz.co.gregs.dbvolution.QueryableDatatype;
  */
 public class DBExistsOperator extends DBOperator {
 
-    DBTableRow tableRow;
+    DBRow tableRow;
     private final String referencedColumnName;
 
-    public DBExistsOperator(DBTableRow tableRow, QueryableDatatype qdtOfTheRow) {
+    public DBExistsOperator(DBRow tableRow, QueryableDatatype qdtOfTheRow) {
         this.tableRow = tableRow;
         Field qdtField = tableRow.getFieldOf(qdtOfTheRow);
         if (qdtField == null) {
@@ -43,7 +43,7 @@ public class DBExistsOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
-        DBTable<DBTableRow> table = new DBTable<DBTableRow>(database, tableRow);
+        DBTable<DBRow> table = new DBTable<DBRow>(database, tableRow);
         String subSelect;
         try {
             subSelect = table.getSelectStatementForWhereClause() + table.getWhereClauseWithExampleAndRawSQL(tableRow, " and " + columnName + " = " + referencedColumnName);

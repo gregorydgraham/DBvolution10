@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.h2;
 import java.sql.SQLException;
 import java.util.List;
 import static junit.framework.TestCase.assertTrue;
-import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.operators.DBExistsOperator;
@@ -44,7 +44,7 @@ public class DBExistsOperatorTest extends AbstractTest {
         
         marques.getRowsByExample(marque);
         List<Marque> rowList = marques.toList();
-        for (DBTableRow row : rowList) {
+        for (DBRow row : rowList) {
             System.out.println(row);
         }
         assertTrue("Incorrect number of marques retreived", rowList.size() == 3);
@@ -56,7 +56,7 @@ public class DBExistsOperatorTest extends AbstractTest {
         
         marques.getRowsByExample(marque);
         rowList = marques.toList();
-        for (DBTableRow row : rowList) {
+        for (DBRow row : rowList) {
             System.out.println(row);
         }
         assertTrue("Incorrect number of marques retreived", rowList.size() == 19);
