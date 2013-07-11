@@ -15,19 +15,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
  * @author gregory.graham
  */
-abstract public class DBTableRow {
+abstract public class DBRow {
 
-    static <T extends DBTableRow> T getInstance(Class<T> requiredDBTableRowClass) {
+    static <T extends DBRow> T getInstance(Class<T> requiredDBTableRowClass) {
         try {
             return requiredDBTableRowClass.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {
@@ -49,7 +49,7 @@ abstract public class DBTableRow {
     private List<Field> ignoredRelationships = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
 
-    public DBTableRow() {
+    public DBRow() {
     }
 
     public Long getPrimaryKeyLongValue() {
@@ -57,10 +57,10 @@ abstract public class DBTableRow {
         boolean pkFound = false;
         QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
-        Class<? extends DBTableRow> thisClass = this.getClass();
+        Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
+            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
                 pkFound = true;
                 queryableValueOfField = this.getQueryableValueOfField(field);
                 pkColumnValue = queryableValueOfField.longValue();
@@ -84,10 +84,10 @@ abstract public class DBTableRow {
         boolean pkFound = false;
         QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
-        Class<? extends DBTableRow> thisClass = this.getClass();
+        Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
+            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
                 pkFound = true;
                 queryableValueOfField = this.getQueryableValueOfField(field);
                 pkColumnValue = queryableValueOfField.toString();
@@ -106,10 +106,10 @@ abstract public class DBTableRow {
         String pkColumnValue = "";
         QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
-        Class<? extends DBTableRow> thisClass = this.getClass();
+        Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
+            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
                 queryableValueOfField = this.getQueryableValueOfField(field);
                 pkColumnValue = queryableValueOfField.toSQLString();
                 break;
@@ -127,11 +127,11 @@ abstract public class DBTableRow {
 //        String pkColumnValue = "";
 //        QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
-        Class<? extends DBTableRow> thisClass = this.getClass();
+        Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTablePrimaryKey.class)) {
-                return field.getAnnotation(DBTableColumn.class).value();
+            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
+                return field.getAnnotation(DBColumn.class).value();
             }
         }
         throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
@@ -185,7 +185,7 @@ abstract public class DBTableRow {
 
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTableColumn.class)) {
+            if (field.isAnnotationPresent(DBColumn.class)) {
                 qdt = this.getQueryableValueOfField(field);
                 columnName = getDBColumnName(field);
                 columnsAndQDTs.put(columnName, qdt);
@@ -203,7 +203,7 @@ abstract public class DBTableRow {
         StringBuilder whereClause = new StringBuilder();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTableColumn.class)) {
+            if (field.isAnnotationPresent(DBColumn.class)) {
                 QueryableDatatype qdt = this.getQueryableValueOfField(field);
                 qdt.setDatabase(this.database);
                 whereClause.append(qdt.getWhereClause(this.database.formatTableAndColumnName(this.getTableName(), getDBColumnName(field))));
@@ -224,7 +224,7 @@ abstract public class DBTableRow {
      */
     public String getTableName() {
         @SuppressWarnings("unchecked")
-        Class<? extends DBTableRow> thisClass = (Class<? extends DBTableRow>) this.getClass();
+        Class<? extends DBRow> thisClass = (Class<? extends DBRow>) this.getClass();
         if (thisClass.isAnnotationPresent(DBTableName.class)) {
             DBTableName annotation = thisClass.getAnnotation(DBTableName.class);
             return annotation.value();
@@ -236,13 +236,13 @@ abstract public class DBTableRow {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
-        Class<? extends DBTableRow> thisClass = this.getClass();
+        Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
 
         String separator = "";
 
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTableColumn.class)) {
+            if (field.isAnnotationPresent(DBColumn.class)) {
                 string.append(separator);
                 string.append(" ");
                 string.append(field.getName());
@@ -261,7 +261,7 @@ abstract public class DBTableRow {
         this.database = theDatabase;
 
         for (Field field : this.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(DBTableColumn.class)) {
+            if (field.isAnnotationPresent(DBColumn.class)) {
                 getQueryableValueOfField(field).setDatabase(database);
             }
         }
@@ -269,12 +269,12 @@ abstract public class DBTableRow {
 
     protected String getValuesClause() {
         StringBuilder string = new StringBuilder();
-        Class<? extends DBTableRow> thisClass = this.getClass();
+        Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
 
         String separator = " VALUES ( ";
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTableColumn.class)) {
+            if (field.isAnnotationPresent(DBColumn.class)) {
                 string.append(separator).append(getQueryableValueOfField(field).toSQLString());
                 separator = ",";
             }
@@ -284,12 +284,12 @@ abstract public class DBTableRow {
 
     protected String getSetClause() {
         StringBuilder sql = new StringBuilder();
-        Class<? extends DBTableRow> thisClass = this.getClass();
+        Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
 
         String separator = database.getStartingSetSubClauseSeparator();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBTableColumn.class)) {
+            if (field.isAnnotationPresent(DBColumn.class)) {
                 String columnName = getDBColumnName(field);
                 sql.append(separator)
                         .append(database.formatColumnName(columnName))
@@ -308,7 +308,7 @@ abstract public class DBTableRow {
      */
     protected List<String> getColumnNames() {
         ArrayList<String> columnNames = new ArrayList<String>();
-        Class<? extends DBTableRow> thisClass = this.getClass();
+        Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
 
         for (Field field : fields) {
@@ -323,8 +323,8 @@ abstract public class DBTableRow {
     public String getDBColumnName(Field field) {
         String columnName = "";
 
-        if (field.isAnnotationPresent(DBTableColumn.class)) {
-            DBTableColumn annotation = field.getAnnotation(DBTableColumn.class);
+        if (field.isAnnotationPresent(DBColumn.class)) {
+            DBColumn annotation = field.getAnnotation(DBColumn.class);
             columnName = annotation.value();
             if (columnName
                     == null || columnName.isEmpty()) {
@@ -334,16 +334,16 @@ abstract public class DBTableRow {
         return columnName;
     }
 
-    protected Map<DBTableForeignKey, DBTableColumn> getForeignKeys() {
-        HashMap<DBTableForeignKey, DBTableColumn> foreignKeys;
-        foreignKeys = new HashMap<DBTableForeignKey, DBTableColumn>();
-        Class<? extends DBTableRow> thisClass = this.getClass();
+    protected Map<DBForeignKey, DBColumn> getForeignKeys() {
+        HashMap<DBForeignKey, DBColumn> foreignKeys;
+        foreignKeys = new HashMap<DBForeignKey, DBColumn>();
+        Class<? extends DBRow> thisClass = this.getClass();
         List<Field> fields = this.getForeignKeyFields();
 
         for (Field field : fields) {
             if (!ignoredRelationships.contains(field)) {
-                DBTableForeignKey annotation = field.getAnnotation(DBTableForeignKey.class);
-                DBTableColumn columnName = field.getAnnotation(DBTableColumn.class);
+                DBForeignKey annotation = field.getAnnotation(DBForeignKey.class);
+                DBColumn columnName = field.getAnnotation(DBColumn.class);
                 foreignKeys.put(annotation, columnName);
             }
         }
@@ -352,11 +352,11 @@ abstract public class DBTableRow {
 
     protected List<Field> getForeignKeyFields() {
         if (fkFields.isEmpty()) {
-            Class<? extends DBTableRow> thisClass = this.getClass();
+            Class<? extends DBRow> thisClass = this.getClass();
             Field[] fields = thisClass.getDeclaredFields();
 
             for (Field field : fields) {
-                if (field.isAnnotationPresent(DBTableForeignKey.class)) {
+                if (field.isAnnotationPresent(DBForeignKey.class)) {
                     fkFields.add(field);
                 }
             }

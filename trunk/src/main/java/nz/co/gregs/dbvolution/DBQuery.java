@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -37,19 +37,19 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 public class DBQuery {
 
     DBDatabase database;
-    private List<DBTableRow> queryTables;
+    private List<DBRow> queryTables;
     private List<DBQueryRow> results;
-    private Map<Class, Map<String, DBTableRow>> existingInstances = new HashMap<Class, Map<String, DBTableRow>>();
+    private Map<Class, Map<String, DBRow>> existingInstances = new HashMap<Class, Map<String, DBRow>>();
 
     public DBQuery(DBDatabase database) {
-        this.queryTables = new ArrayList<DBTableRow>();
+        this.queryTables = new ArrayList<DBRow>();
         this.database = database;
         this.results = null;
     }
 
-    public DBQuery(DBDatabase database, DBTableRow... examples) {
+    public DBQuery(DBDatabase database, DBRow... examples) {
         this(database);
-        for (DBTableRow example : examples) {
+        for (DBRow example : examples) {
             this.add(example);
         }
     }
@@ -60,7 +60,7 @@ public class DBQuery {
      *
      * @param table
      */
-    public void add(DBTableRow table) {
+    public void add(DBRow table) {
         queryTables.add(table);
         results = null;
     }
@@ -69,14 +69,14 @@ public class DBQuery {
         StringBuilder selectClause = new StringBuilder().append("select ");
         StringBuilder fromClause = new StringBuilder().append(" from ");
         StringBuilder whereClause = new StringBuilder().append(database.beginWhereClause()).append(database.getTrueOperation());
-        ArrayList<DBTableRow> otherTables = new ArrayList<DBTableRow>();
+        ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
 
         String separator = "";
         String colSep = "";
         String tableName;
 
-        for (DBTableRow tabRow : queryTables) {
+        for (DBRow tabRow : queryTables) {
             otherTables.clear();
             otherTables.addAll(queryTables);
             otherTables.remove(tabRow);
@@ -96,13 +96,13 @@ public class DBQuery {
                 whereClause.append(lineSep).append(tabRowCriteria);
             }
 
-            for (DBTableRow otherTab : otherTables) {
-                Map<DBTableForeignKey, DBTableColumn> fks = otherTab.getForeignKeys();
-                for (DBTableForeignKey fk : fks.keySet()) {
+            for (DBRow otherTab : otherTables) {
+                Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
+                for (DBForeignKey fk : fks.keySet()) {
                     tabRow.setDatabase(database);
                     String formattedPK = database.formatTableAndColumnName(tableName, tabRow.getPrimaryKeyName());
-                    Class<? extends DBTableRow> pkClass = fk.value();
-                    DBTableRow fkReferencesTable = DBTableRow.getInstance(pkClass);
+                    Class<? extends DBRow> pkClass = fk.value();
+                    DBRow fkReferencesTable = DBRow.getInstance(pkClass);
                     String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
                     if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                         String fkColumnName = fks.get(fk).value();
@@ -130,14 +130,14 @@ public class DBQuery {
 
     public List<DBQueryRow> getAllRows() throws SQLException{
         results = new ArrayList<DBQueryRow>();
-        DBQueryRow<Class, DBTableRow> queryRow;
+        DBQueryRow<Class, DBRow> queryRow;
 
         Statement dbStatement = database.getDBStatement();
         ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
         while (resultSet.next()) {
-            queryRow = new DBQueryRow<Class, DBTableRow>();
-            for (DBTableRow tableRow : queryTables) {
-                DBTableRow newInstance = DBTableRow.getInstance(tableRow.getClass());//.getClass().getConstructor().newInstance();
+            queryRow = new DBQueryRow<Class, DBRow>();
+            for (DBRow tableRow : queryTables) {
+                DBRow newInstance = DBRow.getInstance(tableRow.getClass());//.getClass().getConstructor().newInstance();
                 newInstance.setDatabase(database);
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
@@ -146,12 +146,12 @@ public class DBQuery {
                     String stringOfValue = resultSet.getString(fullColumnName);
                     qdt.isLiterally(stringOfValue);
                 }
-                Map<String, DBTableRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
+                Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
                 if (existingInstancesOfThisTableRow == null) {
-                    existingInstancesOfThisTableRow = new HashMap<String, DBTableRow>();
+                    existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
                     existingInstances.put(tableRow.getClass(), existingInstancesOfThisTableRow);
                 }
-                DBTableRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeySQLStringValue());
+                DBRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeySQLStringValue());
                 if (existingInstance == null) {
                     existingInstance = newInstance;
                     existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKeySQLStringValue(), existingInstance);
@@ -163,8 +163,8 @@ public class DBQuery {
         return results;
     }
 
-    public ArrayList<DBTableRow> getAllInstancesOf(DBTableRow exemplar) throws SQLException {
-        HashSet<DBTableRow> objList = new HashSet<DBTableRow>();
+    public ArrayList<DBRow> getAllInstancesOf(DBRow exemplar) throws SQLException {
+        HashSet<DBRow> objList = new HashSet<DBRow>();
         if (results.isEmpty()) {
             getAllRows();
         }
@@ -172,8 +172,8 @@ public class DBQuery {
             objList.add(row.get(exemplar));
         }
 
-        DBTableRow[] arrayOfInstances = objList.toArray(new DBTableRow[]{});
-        ArrayList<DBTableRow> arrayList = new ArrayList<DBTableRow>();
+        DBRow[] arrayOfInstances = objList.toArray(new DBRow[]{});
+        ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
         arrayList.addAll(Arrays.asList(arrayOfInstances));
         return arrayList;
     }
@@ -200,8 +200,8 @@ public class DBQuery {
         }
 
         for (DBQueryRow row : this.results) {
-            for (DBTableRow tab : this.queryTables) {
-                DBTableRow rowPart = row.get(tab);
+            for (DBRow tab : this.queryTables) {
+                DBRow rowPart = row.get(tab);
                 String rowPartStr = rowPart.toString();
                 ps.print(rowPartStr);
             }
@@ -222,8 +222,8 @@ public class DBQuery {
         }
 
         for (DBQueryRow row : this.results) {
-            for (DBTableRow tab : this.queryTables) {
-                DBTableRow rowPart = row.get(tab);
+            for (DBRow tab : this.queryTables) {
+                DBRow rowPart = row.get(tab);
                 String rowPartStr = rowPart.getPrimaryKeySQLStringValue();
                 ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
             }

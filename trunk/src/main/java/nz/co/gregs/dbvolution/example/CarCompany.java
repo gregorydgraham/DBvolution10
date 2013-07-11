@@ -23,13 +23,13 @@ import nz.co.gregs.dbvolution.annotations.*;
  * @author gregorygraham
  */
 @DBTableName("car_company")
-public class CarCompany  extends DBTableRow {
+public class CarCompany  extends DBRow {
     
-    @DBTableColumn("name")
+    @DBColumn("name")
     public DBString name =new DBString();
     
-    @DBTablePrimaryKey
-    @DBTableColumn("uid_carcompany")
+    @DBPrimaryKey
+    @DBColumn("uid_carcompany")
     public DBInteger uidCarCompany = new DBInteger();
     
     public CarCompany() {

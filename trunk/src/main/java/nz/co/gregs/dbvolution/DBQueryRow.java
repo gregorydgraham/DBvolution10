@@ -16,13 +16,12 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author gregorygraham
  */
-public class DBQueryRow<Class, E extends DBTableRow> extends HashMap<Class, E>{
+public class DBQueryRow<Class, E extends DBRow> extends HashMap<Class, E>{
     
     /**
      *
@@ -30,7 +29,7 @@ public class DBQueryRow<Class, E extends DBTableRow> extends HashMap<Class, E>{
      * @return
      */
     public E get(E exemplar){
-        return (E)get(exemplar.getClass());
+        return get(exemplar.getClass());
     }
     
 }
