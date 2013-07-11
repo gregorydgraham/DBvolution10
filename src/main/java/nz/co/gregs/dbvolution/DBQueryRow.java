@@ -20,7 +20,7 @@ import java.util.HashMap;
 /**
  *
  * @author gregorygraham
- * 
+ *
  */
 public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
@@ -30,7 +30,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
      * @return
      */
     
+    @SuppressWarnings("unchecked")
     public <E extends DBRow> E get(E exemplar) {
-            return (E) get(exemplar.getClass());
+        return (E) get(exemplar.getClass());
     }
 }
