@@ -20,16 +20,17 @@ import java.util.HashMap;
 /**
  *
  * @author gregorygraham
+ * 
  */
-public class DBQueryRow<Class, E extends DBRow> extends HashMap<Class, E>{
-    
+public class DBQueryRow extends HashMap<Class<?>, DBRow> {
+
     /**
      *
      * @param exemplar
      * @return
      */
-    public E get(E exemplar){
-        return get(exemplar.getClass());
-    }
     
+    public <E extends DBRow> E get(E exemplar) {
+            return (E) get(exemplar.getClass());
+    }
 }

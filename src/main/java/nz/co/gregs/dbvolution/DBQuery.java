@@ -130,12 +130,12 @@ public class DBQuery {
 
     public List<DBQueryRow> getAllRows() throws SQLException{
         results = new ArrayList<DBQueryRow>();
-        DBQueryRow<Class, DBRow> queryRow;
+        DBQueryRow queryRow;
 
         Statement dbStatement = database.getDBStatement();
         ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
         while (resultSet.next()) {
-            queryRow = new DBQueryRow<Class, DBRow>();
+            queryRow = new DBQueryRow();
             for (DBRow tableRow : queryTables) {
                 DBRow newInstance = DBRow.getInstance(tableRow.getClass());//.getClass().getConstructor().newInstance();
                 newInstance.setDatabase(database);
