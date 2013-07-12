@@ -26,6 +26,10 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
+/**
+ * The parsed details of a class within a source file.
+ * @author Malcolm Lett
+ */
 public class ParsedClass {
 	private final ASTParser parser;
 	private final Document document;

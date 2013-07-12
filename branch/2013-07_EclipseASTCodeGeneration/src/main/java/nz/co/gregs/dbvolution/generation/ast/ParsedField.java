@@ -27,10 +27,14 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.WildcardType;
 
+/**
+ * The parsed details of an member field within a class.
+ * @author Malcolm Lett
+ */
 public class ParsedField {
 	private ParsedTypeContext typeContext;
 	private FieldDeclaration astNode;
-	private ParsedType type;
+	private ParsedTypeRef type;
 	private List<String> names; // supports multiple variables on same field declaration
 	private List<ParsedAnnotation> annotations;
 	
@@ -99,7 +103,7 @@ public class ParsedField {
 		this.astNode = astNode;
 		
 		// field type
-		this.type = new ParsedType(typeContext, astNode.getType());
+		this.type = new ParsedTypeRef(typeContext, astNode.getType());
 
 		// field names
 		this.names = new ArrayList<String>();
@@ -134,7 +138,7 @@ public class ParsedField {
 		return astNode;
 	}
 	
-	public ParsedType getType() {
+	public ParsedTypeRef getType() {
 		return type;
 	}
 	

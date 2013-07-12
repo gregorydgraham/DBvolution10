@@ -14,6 +14,10 @@ import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.Type;
 
+/**
+ * The parsed details of a member method within a class.
+ * @author Malcolm Lett
+ */
 public class ParsedMethod {
 	private ParsedTypeContext typeContext;
 	private MethodDeclaration astNode;

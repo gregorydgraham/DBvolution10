@@ -3,6 +3,7 @@ package nz.co.gregs.dbvolution.generation.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.ParameterizedType;
@@ -14,16 +15,23 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.WildcardType;
 
 /**
+ * A reference to a type.
  * Models the type of a field, getter/setter method, type passed
  * to an annotation, or an annotation type itself.
  */
-public class ParsedType {
-	private static final Class<?> UNRECOGNISED_JAVA_TYPE = ParsedType.class; // marker value
+public class ParsedTypeRef {
+	private static final Class<?> UNRECOGNISED_JAVA_TYPE = ParsedTypeRef.class; // marker value
 	private ParsedTypeContext typeContext;
 	private Type astNode;
-	private Class<?> javaType = null; // lazily-initialised
+	private Class<?> javaType = null; // only if available
+
+//	public static ParsedTypeRef newClassInstance(ParsedTypeContext typeContext, Class<?> javaType) {
+//		AST ast = typeContext.getAST();
+//		
+//		// TODO: 
+//	}
 	
-	public ParsedType(ParsedTypeContext typeContext, Type astNode) {
+	public ParsedTypeRef(ParsedTypeContext typeContext, Type astNode) {
 		this.typeContext = typeContext;
 		this.astNode = astNode;
 	}
