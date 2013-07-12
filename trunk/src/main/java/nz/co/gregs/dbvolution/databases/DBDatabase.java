@@ -61,7 +61,7 @@ public abstract class DBDatabase {
      *
      * @return
      */
-    public Statement getDBStatement() {
+    public synchronized Statement getDBStatement() {
         Connection connection;
         Statement statement;
         if (isInATransaction) {
@@ -94,7 +94,7 @@ public abstract class DBDatabase {
         }
         return statement;
     }
-    
+
     /**
      *
      * @param <V>
@@ -113,17 +113,62 @@ public abstract class DBDatabase {
         try {
             returnValues = dbTransaction.doTransaction(this);
             connection.commit();
-        } catch (Exception ex) {
-            connection.rollback();
-            throw ex;
-        } finally {
             connection.setAutoCommit(true);
             this.isInATransaction = false;
             transactionStatement = null;
+        } catch (Exception ex) {
+            connection.rollback();
+            System.err.println("Exception Occurred: ROLLBACK Performed");
+            connection.setAutoCommit(true);
+            this.isInATransaction = false;
+            transactionStatement = null;
+            throw ex;
         }
         return returnValues;
     }
 
+    /**
+     *
+     * @param <V>
+     * @param dbTransaction
+     * @return
+     * @throws SQLException
+     * @throws Exception
+     */
+    synchronized public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+        Connection connection;
+        V returnValues = null;
+        boolean wasReadOnly = false;
+        boolean wasAutoCommit = true;
+
+        this.transactionStatement = getDBStatement();
+        this.isInATransaction = true;
+        
+        connection = transactionStatement.getConnection();
+        wasReadOnly = connection.isReadOnly();
+        wasAutoCommit = connection.getAutoCommit();
+        
+        connection.setReadOnly(true);
+        connection.setAutoCommit(false);
+        try {
+            returnValues = dbTransaction.doTransaction(this);
+            connection.rollback();
+            System.err.println("Transaction Ended: ROLLBACK Performed");
+            connection.setAutoCommit(wasAutoCommit);
+            connection.setReadOnly(wasReadOnly);
+            this.isInATransaction = false;
+            transactionStatement = null;
+        } catch (Exception ex) {
+            connection.rollback();
+            System.err.println("Exception Occurred: ROLLBACK Performed");
+            connection.setAutoCommit(wasAutoCommit);
+            connection.setReadOnly(wasReadOnly);
+            this.isInATransaction = false;
+            transactionStatement = null;
+            throw ex;
+        }
+        return returnValues;
+    }
 
     /**
      * @return the driverName
@@ -268,7 +313,7 @@ public abstract class DBDatabase {
     }
 
     /**
-     * 
+     *
      * The easy way to drop a table that might not exist.
      *
      * @param <TR>
@@ -302,19 +347,25 @@ public abstract class DBDatabase {
     }
 
     /**
-     * 
-     * Specifies the column name used within the JDBC ResultSet to identify the column.
-     * 
-     * Usually this is the same as formatTableAndColumnName(table, column) but sometimes not.
+     *
+     * Specifies the column name used within the JDBC ResultSet to identify the
+     * column.
+     *
+     * Usually this is the same as formatTableAndColumnName(table, column) but
+     * sometimes not.
      *
      * @param tableName
      * @param columnName
      * @return
      */
     public String formatColumnNameForResultSet(String tableName, String columnName) {
-        return formatTableAndColumnName(tableName, columnName);
+        String formattedName = formatTableAndColumnName(tableName, columnName).replaceAll("\\.", "__");
+        return ("_"+formattedName.hashCode()).replaceAll("-", "_");
     }
 
+    public String formatTableAndColumnNameForSelectClause(String tableName, String columnName) {
+        return formatTableAndColumnName(tableName, columnName)+" "+formatColumnNameForResultSet(tableName, columnName);
+    }
     public String safeString(String toString) {
         return toString.replaceAll("'", "''");
     }
@@ -429,5 +480,17 @@ public abstract class DBDatabase {
 
     public String beginFromClause() {
         return " FROM ";
+    }
+
+    public Object endSQLStatement() {
+        return ";";
+    }
+
+    public String getStartingSelectSubClauseSeparator() {
+        return "";
+    }
+
+    public String getSubsequentSelectSubClauseSeparator() {
+        return ", ";
     }
 }

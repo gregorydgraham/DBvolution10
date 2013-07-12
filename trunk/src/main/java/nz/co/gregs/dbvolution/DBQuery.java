@@ -73,7 +73,7 @@ public class DBQuery {
         String lineSep = System.getProperty("line.separator");
 
         String separator = "";
-        String colSep = "";
+        String colSep = database.getStartingSelectSubClauseSeparator();
         String tableName;
 
         for (DBRow tabRow : queryTables) {
@@ -85,9 +85,9 @@ public class DBQuery {
 
             List<String> columnNames = tabRow.getColumnNames();
             for (String columnName : columnNames) {
-                String formattedColumnName = database.formatTableAndColumnName(tableName, columnName);
+                String formattedColumnName = database.formatTableAndColumnNameForSelectClause(tableName, columnName);
                 selectClause.append(colSep).append(formattedColumnName);
-                colSep = ", " + lineSep;
+                colSep = database.getSubsequentSelectSubClauseSeparator() + lineSep;
             }
             fromClause.append(separator).append(tableName);
             tabRow.setDatabase(database);
@@ -120,7 +120,12 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(queryTables);
         }
-        final String sqlString = selectClause.append(lineSep).append(fromClause).append(lineSep).append(whereClause).append(";").toString();
+        final String sqlString =
+                selectClause.append(lineSep)
+                .append(fromClause).append(lineSep)
+                .append(whereClause)
+                .append(database.endSQLStatement())
+                .toString();
         if (database.isPrintSQLBeforeExecuting()) {
             System.out.println(sqlString);
         }
@@ -128,7 +133,7 @@ public class DBQuery {
         return sqlString;
     }
 
-    public List<DBQueryRow> getAllRows() throws SQLException{
+    public List<DBQueryRow> getAllRows() throws SQLException {
         results = new ArrayList<DBQueryRow>();
         DBQueryRow queryRow;
 
@@ -136,14 +141,17 @@ public class DBQuery {
         ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
         while (resultSet.next()) {
             queryRow = new DBQueryRow();
+//            int columnIndex =0;
             for (DBRow tableRow : queryTables) {
                 DBRow newInstance = DBRow.getInstance(tableRow.getClass());//.getClass().getConstructor().newInstance();
                 newInstance.setDatabase(database);
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
+//                    columnIndex++;
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
                     String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
                     String stringOfValue = resultSet.getString(fullColumnName);
+//                    String stringOfValue = resultSet.getString(columnIndex);
                     qdt.isLiterally(stringOfValue);
                 }
                 Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
@@ -163,18 +171,23 @@ public class DBQuery {
         return results;
     }
 
-    public ArrayList<DBRow> getAllInstancesOf(DBRow exemplar) throws SQLException {
+    public List<DBRow> getAllInstancesOf(DBRow exemplar) throws SQLException {
         HashSet<DBRow> objList = new HashSet<DBRow>();
+        ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
         if (results.isEmpty()) {
             getAllRows();
         }
-        for (DBQueryRow row : results) {
-            objList.add(row.get(exemplar));
-        }
+        if (!results.isEmpty()) {
+            for (DBQueryRow row : results) {
+                final DBRow found = row.get(exemplar);
+                if (found != null) { // in case there are no items of the exemplar
+                    objList.add(found);
+                }
+            }
 
-        DBRow[] arrayOfInstances = objList.toArray(new DBRow[]{});
-        ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
-        arrayList.addAll(Arrays.asList(arrayOfInstances));
+            DBRow[] arrayOfInstances = objList.toArray(new DBRow[]{});
+            arrayList.addAll(Arrays.asList(arrayOfInstances));
+        }
         return arrayList;
     }
 
@@ -194,7 +207,7 @@ public class DBQuery {
      *
      * @param ps
      */
-    public void printAllRows(PrintStream ps) throws SQLException{
+    public void printAllRows(PrintStream ps) throws SQLException {
         if (results == null) {
             this.getAllRows();
         }
@@ -216,7 +229,7 @@ public class DBQuery {
      *
      * @param ps
      */
-    public void printAllPrimaryKeys(PrintStream ps) throws SQLException{
+    public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
         if (results == null) {
             this.getAllRows();
         }
