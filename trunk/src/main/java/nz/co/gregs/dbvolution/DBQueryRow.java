@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 
 /**
@@ -29,9 +30,15 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
      * @param exemplar
      * @return
      */
-    
     @SuppressWarnings("unchecked")
     public <E extends DBRow> E get(E exemplar) {
         return (E) get(exemplar.getClass());
+    }
+
+    public void print(PrintStream ps, QueryableDatatype... columns) {
+        for (QueryableDatatype qdt : columns) {
+            ps.print("" + qdt + " ");
+        }
+        ps.println();
     }
 }
