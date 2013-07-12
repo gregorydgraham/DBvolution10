@@ -43,20 +43,20 @@ public class DBQueryTest extends AbstractTest {
         final String generateSQLString = dbQuery.generateSQLString().replaceAll(" +", " ");
 
 
-        String expectedResult = "select CAR_COMPANY.NAME, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY, \n"
-                + "MARQUE.NUMERIC_CODE, \n"
-                + "MARQUE.UID_MARQUE, \n"
-                + "MARQUE.ISUSEDFORTAFROS, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS, \n"
-                + "MARQUE.INTINDALLOCALLOWED, \n"
-                + "MARQUE.UPD_COUNT, \n"
-                + "MARQUE.AUTO_CREATED, \n"
-                + "MARQUE.NAME, \n"
-                + "MARQUE.PRICINGCODEPREFIX, \n"
-                + "MARQUE.RESERVATIONSALWD, \n"
-                + "MARQUE.CREATION_DATE, \n"
-                + "MARQUE.FK_CARCOMPANY from car_company, \n"
+        String expectedResult = "select CAR_COMPANY.NAME _1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
+                + "MARQUE.NUMERIC_CODE __570915006, \n"
+                + "MARQUE.UID_MARQUE __768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
+                + "MARQUE.UPD_COUNT _1497912790, \n"
+                + "MARQUE.AUTO_CREATED _332721019, \n"
+                + "MARQUE.NAME __1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
+                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
+                + "MARQUE.CREATION_DATE __1712481749, \n"
+                + "MARQUE.FK_CARCOMPANY _1664116480 from car_company, \n"
                 + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
                 + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
 
@@ -77,7 +77,7 @@ public class DBQueryTest extends AbstractTest {
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
-            
+
             CarCompany carCo = (CarCompany) queryRow.get(carCompany);
             String carCoName = carCo.name.toString();
 
@@ -90,7 +90,7 @@ public class DBQueryTest extends AbstractTest {
         }
     }
 
-    public void testQuickQueryCreation() throws SQLException{
+    public void testQuickQueryCreation() throws SQLException {
 
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
@@ -102,7 +102,7 @@ public class DBQueryTest extends AbstractTest {
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
-            
+
             CarCompany carCo = (CarCompany) queryRow.get(carCompany);
             String carCoName = carCo.name.toString();
 
@@ -115,7 +115,7 @@ public class DBQueryTest extends AbstractTest {
         }
     }
 
-    public void testDBTableRowReuse() throws SQLException{
+    public void testDBTableRowReuse() throws SQLException {
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
         DBQuery dbQuery = new DBQuery(myDatabase, carCompany, new Marque());
