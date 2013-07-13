@@ -451,11 +451,18 @@ abstract public class DBRow {
         adHocRelationships.add(dbRelationship);
     }
 
+    /**
+     *
+     */
+    public void clearRelationships(){
+        this.adHocRelationships.clear();
+    }
+
     List<String> getAdHocRelationshipSQL() {
-        List<String> builder = new ArrayList<String>();
+        List<String> sqlStrings = new ArrayList<String>();
         for(DBRelationship rel: adHocRelationships){
-            builder.add(rel.generateSQL(database));
+            sqlStrings.add(rel.generateSQL(database));
         }
-        return builder;
+        return sqlStrings;
     }
 }
