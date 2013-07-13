@@ -89,7 +89,10 @@ public class DBTable<E extends DBRow> {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation != null) {
-            selectStatement.append(selectQueryAnnotation.value()).append(theDatabase.beginWhereClause() + theDatabase.getTrueOperation());
+            selectStatement
+                    .append(selectQueryAnnotation.value())
+                    .append(theDatabase.beginWhereClause())
+                    .append(theDatabase.getTrueOperation());
         } else {
             selectStatement.append(theDatabase.beginSelectStatement());
 
