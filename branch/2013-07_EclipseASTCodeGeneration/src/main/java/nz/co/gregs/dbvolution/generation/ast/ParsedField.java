@@ -1,56 +1,50 @@
 package nz.co.gregs.dbvolution.generation.ast;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;
 import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
-import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.Annotation;
-import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.ParameterizedType;
-import org.eclipse.jdt.core.dom.PrimitiveType;
-import org.eclipse.jdt.core.dom.PrimitiveType.Code;
-import org.eclipse.jdt.core.dom.QualifiedType;
-import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.StringLiteral;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.WildcardType;
 
 /**
  * The parsed details of an member field within a class.
+ * 
+ * <p> Member field declarations can specify multiple variables within the same declaration;
+ * while only specifying the type once, and the annotations once.
+ * This type transparently handles that and exposes the variables and independent
+ * fields.
  * @author Malcolm Lett
  */
-// TODO: make this class expose only one field variable and transparently link to
-// a multi-variable field declaration type.
 public class ParsedField {
-	private ParsedTypeContext typeContext;
-	private FieldDeclaration astNode;
-	private ParsedTypeRef type;
-	private List<String> names; // supports multiple variables on same field declaration
-	private List<ParsedAnnotation> annotations;
+	private ParsedFieldDeclaration parsedFieldDeclaration;
+	private String name;
 	
 	/**
 	 * Creates a new field and prepares the type context for addition of the field.
 	 * Updates the imports in the type context.
+	 * 
+	 * <p> Note: field name duplication avoidance must be done outside of this method.
 	 * @param typeContext
+	 * @param fieldName
+	 * @param fieldType
 	 * @param isPrimaryKey
 	 * @param columnName
-	 * @param fieldType
 	 * @return
 	 */
-	// TODO: apply logic to infer field name
-	// TODO: ensure don't duplicate field names
+	// TODO: use ParsedTypeRef instead of manually managing this
 	public static ParsedField newDBTableColumnInstance(ParsedTypeContext typeContext, String fieldName, Class<?> fieldType, boolean isPrimaryKey, String columnName) {
 		AST ast = typeContext.getAST();
 		
@@ -89,8 +83,16 @@ public class ParsedField {
 		initializer.setType(ast.newSimpleType(ast.newName(
 				nameOf(fieldType, fieldTypeImported))));
 		variable.setInitializer(initializer);
-
-		return new ParsedField(typeContext, field);
+		
+		// wrap with domain-specific types
+		ParsedFieldDeclaration parsedFieldDeclaration = new ParsedFieldDeclaration(typeContext, field);
+		if (parsedFieldDeclaration.getFields().isEmpty()) {
+			throw new AssertionError("Internal logic error: expected 1 field, got none");
+		}
+		else if (parsedFieldDeclaration.getFields().size() > 1) {
+			throw new AssertionError("Internal logic error: expected 1 field, got "+parsedFieldDeclaration.getFields().size());
+		}
+		return parsedFieldDeclaration.getFields().get(0);
 	}
 	
 	/** Fully qualified or simple name, depending on whether imported */
@@ -98,35 +100,33 @@ public class ParsedField {
 		return imported ? type.getSimpleName() : type.getName();
 	}
 	
-	public ParsedField(ParsedTypeContext typeContext, FieldDeclaration astNode) {
-		this.typeContext = typeContext;
-		this.astNode = astNode;
-		
-		// field type
-		this.type = new ParsedTypeRef(typeContext, astNode.getType());
+	/**
+	 * Construct new instances for each field variable declared by the field declaration.
+	 * @param typeContext
+	 * @param astNode
+	 * @return
+	 */
+	public static List<ParsedField> of(ParsedTypeContext typeContext, FieldDeclaration astNode) {
+		return new ParsedFieldDeclaration(typeContext, astNode).getFields();
+	}
 
-		// field names
-		this.names = new ArrayList<String>();
-    	for (VariableDeclarationFragment variable: (List<VariableDeclarationFragment>)astNode.fragments()) {
-    		names.add(variable.getName().getFullyQualifiedName());
-    	}
-		
-    	// field annotations
-		this.annotations = new ArrayList<ParsedAnnotation>();
-    	for(IExtendedModifier modifier: (List<IExtendedModifier>)astNode.modifiers()) {
-    		if (modifier.isAnnotation()) {
-    			annotations.add(new ParsedAnnotation(typeContext, (Annotation)modifier));
-    		}
-    	}		
+	/**
+	 * Used internally only for a single field variable.
+	 * @param parsedFieldDeclaration
+	 * @param name
+	 */
+	private ParsedField(ParsedFieldDeclaration parsedFieldDeclaration, VariableDeclarationFragment variableDeclaration) {
+		this.parsedFieldDeclaration = parsedFieldDeclaration;
+		this.name = variableDeclaration.getName().getFullyQualifiedName();
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
-		for (ParsedAnnotation annotation: annotations) {
+		for (ParsedAnnotation annotation: getAnnotations()) {
 			buf.append(annotation).append("\n");
 		}
-		buf.append("field "+join(getNames(), ", "));
+		buf.append("field "+getName());
 		buf.append(";");
 		if (isDBTableColumn()) {
 			buf.append(" // columnName="+getColumnNameIfSet());
@@ -135,11 +135,11 @@ public class ParsedField {
 	}
 	
 	public FieldDeclaration astNode() {
-		return astNode;
+		return parsedFieldDeclaration.astNode();
 	}
 	
 	public ParsedTypeRef getType() {
-		return type;
+		return parsedFieldDeclaration.getType();
 	}
 	
 	/**
@@ -152,36 +152,27 @@ public class ParsedField {
 	 * @return
 	 */
 	public List<Class<?>> getReferencedTypes() {
-		return type.getReferencedTypes();
+		return getType().getReferencedTypes();
 	}
 	
 	public String getName() {
-		return names.get(0); // FIXME: this needs to be much smarter
-	}
-	
-	public List<String> getNames() {
-		return names;
+		return name;
 	}
 	
 	public List<ParsedAnnotation> getAnnotations() {
-		return annotations;
+		return parsedFieldDeclaration.getAnnotations();
 	}
 	
 	/**
 	 * Indicates whether this annotation is {@link nz.co.gregs.dbvolution.annotations.DBTableColumn}.
 	 */
 	public boolean isDBTableColumn() {
-		for (ParsedAnnotation annotation: getAnnotations()) {
-			if (annotation.isDBTableColumn()) {
-				return true;
-			}
-		}
-		return false;
+		return parsedFieldDeclaration.isDBTableColumn();
 	}
 	
 	/**
 	 * Gets the table name, as specified via the {@code DBTableColumn} annotation
-	 * or defaulted based on the method name, if it has a {@code DBTableColumn}
+	 * or defaulted based on the field name, if it has a {@code DBTableColumn}
 	 * annotation.
 	 * @return {@code null} if not applicable
 	 */
@@ -190,7 +181,7 @@ public class ParsedField {
 			if (annotation.isDBTableColumn()) {
 				String columnName = annotation.getColumnNameIfSet();
 				if (columnName == null) {
-					columnName = getNames().get(0);
+					columnName = getName();
 				}
 				return columnName;
 			}
@@ -198,6 +189,18 @@ public class ParsedField {
 		return null;
 	}
 
+	private static String joinNamesOf(List<ParsedField> fields, String delimiter) {
+		StringBuilder buf = new StringBuilder();
+		boolean first = true;
+		for (ParsedField field: fields) {
+			if (!first) buf.append(delimiter);
+			first = false;
+			
+			buf.append(field.getName());
+		}
+		return buf.toString();
+	}
+	
 	private static String join(List<String> strings, String delimiter) {
 		StringBuilder buf = new StringBuilder();
 		boolean first = true;
@@ -208,5 +211,100 @@ public class ParsedField {
 			buf.append(str);
 		}
 		return buf.toString();
+	}
+	
+	/**
+	 * Models the actual field declaration within the source file that
+	 * contains one or more variable declarations, and zero or more
+	 * shared annotations.
+	 */
+	public static class ParsedFieldDeclaration {
+		private ParsedTypeContext typeContext;
+		private FieldDeclaration astNode;
+		private ParsedTypeRef type;
+		private List<ParsedAnnotation> annotations;
+		private List<ParsedField> fields; // one or more variables within the field declaration
+		
+		public ParsedFieldDeclaration(ParsedTypeContext typeContext, FieldDeclaration astNode) {
+			this.typeContext = typeContext;
+			this.astNode = astNode;
+			
+			// field type
+			this.type = new ParsedTypeRef(typeContext, astNode.getType());
+
+	    	// field annotations
+			this.annotations = new ArrayList<ParsedAnnotation>();
+	    	for(IExtendedModifier modifier: (List<IExtendedModifier>)astNode.modifiers()) {
+	    		if (modifier.isAnnotation()) {
+	    			annotations.add(new ParsedAnnotation(typeContext, (Annotation)modifier));
+	    		}
+	    	}		
+			
+			// field names
+			this.fields = new ArrayList<ParsedField>();
+	    	for (VariableDeclarationFragment variable: (List<VariableDeclarationFragment>)astNode.fragments()) {
+	    		fields.add(new ParsedField(this, variable));
+	    	}
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder buf = new StringBuilder();
+			for (ParsedAnnotation annotation: getAnnotations()) {
+				buf.append(annotation).append("\n");
+			}
+			buf.append("field "+joinNamesOf(getFields(), ", "));
+			buf.append(";");
+			if (isDBTableColumn()) {
+				buf.append(" // columnNames="+join(getColumnNamesIfSet(),","));
+			}
+			return buf.toString();
+		}
+		
+		public FieldDeclaration astNode() {
+			return astNode;
+		}
+		
+		public ParsedTypeRef getType() {
+			return type;
+		}
+		
+		public List<ParsedAnnotation> getAnnotations() {
+			return annotations;
+		}
+		
+		public List<ParsedField> getFields() {
+			return fields;
+		}
+		
+		/**
+		 * Indicates whether this annotation is {@link nz.co.gregs.dbvolution.annotations.DBTableColumn}.
+		 */
+		public boolean isDBTableColumn() {
+			for (ParsedAnnotation annotation: getAnnotations()) {
+				if (annotation.isDBTableColumn()) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		/**
+		 * Gets the table names, as specified via the {@code DBTableColumn} annotation
+		 * or defaulted based on the field names, if it has a {@code DBTableColumn}
+		 * annotation.
+		 * Really just here for use by the {@link #toString()} method.
+		 * @return {@code null} if not applicable
+		 */
+		public List<String> getColumnNamesIfSet() {
+			Set<String> uniqueNames = new LinkedHashSet<String>(); // retains order
+			for (ParsedField field: fields) {
+				String name = field.getColumnNameIfSet();
+				if (name != null) {
+					uniqueNames.add(name);
+				}
+			}
+			return new ArrayList<String>(uniqueNames);
+		}
 	}
 }

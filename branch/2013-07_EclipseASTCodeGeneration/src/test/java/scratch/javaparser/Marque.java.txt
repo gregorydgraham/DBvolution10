@@ -43,6 +43,10 @@ public class Marque extends DBTableRow {
     public DBString reservationsAllowed = new DBString();
     @DBTableColumn("creation_date")
     public DBDate creationDate = new DBDate();
+    @DBTableColumn
+    public DBString folicAcid = new DBString(), aceticAcid = new DBString(), yellowOcra = new DBString();
+    @DBTableColumn("all_the_same")
+    public DBString folicAcid2 = new DBString(), aceticAcid2 = new DBString(), yellowOcra2 = new DBString();
     
 //    @DBTableForeignKey("CAR_COMPANY.UID_CARCOMPANY")
     @DBTableForeignKey(CarCompany.class)

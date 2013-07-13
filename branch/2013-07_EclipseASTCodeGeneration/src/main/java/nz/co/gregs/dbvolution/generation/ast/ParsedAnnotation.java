@@ -25,6 +25,7 @@ public class ParsedAnnotation {
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append("@").append(getDeclaredTypeName());
+		buf.append("(...)");
 		return buf.toString();
 	}
 	

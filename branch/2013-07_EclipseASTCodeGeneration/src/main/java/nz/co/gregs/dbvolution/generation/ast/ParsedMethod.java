@@ -32,11 +32,7 @@ public class ParsedMethod {
 	public static ParsedMethod newFieldGetterInstance(ParsedTypeContext typeContext, ParsedField field) {
 		AST ast = typeContext.getAST();
 		
-		if (field.getNames().size() > 1) {
-			throw new UnsupportedOperationException("Can't handle field declarations with multiple variables yet");
-		}
-		
-		String methodName = "get"+titleCaseOf(field.getNames().get(0));
+		String methodName = "get"+titleCaseOf(field.getName());
 		
 		// add imports: TODO
 		// (field may not be actually defined in this class, so still need to check imports)
@@ -49,7 +45,7 @@ public class ParsedMethod {
 		
 		// add body
 		ReturnStatement returnStatement = ast.newReturnStatement();
-		returnStatement.setExpression(ast.newSimpleName(field.getNames().get(0)));
+		returnStatement.setExpression(ast.newSimpleName(field.getName()));
 		method.setBody(ast.newBlock());
 		method.getBody().statements().add(returnStatement);
 		
@@ -58,7 +54,7 @@ public class ParsedMethod {
 		
 		// add javadoc
 		TextElement javadocText = ast.newTextElement();
-		javadocText.setText("the "+field.getNames().get(0));
+		javadocText.setText("the "+field.getName());
 		TagElement javadocTag = ast.newTagElement();
 		javadocTag.setTagName("@return");
 		javadocTag.fragments().add(javadocText);

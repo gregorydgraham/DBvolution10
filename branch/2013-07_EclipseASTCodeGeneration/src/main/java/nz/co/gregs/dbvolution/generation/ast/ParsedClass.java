@@ -163,7 +163,7 @@ public class ParsedClass {
 		this.fields = new ArrayList<ParsedField>();
 		for (BodyDeclaration body: (List<BodyDeclaration>)astNode.bodyDeclarations()) {
 			if (body.getNodeType() == ASTNode.FIELD_DECLARATION) {
-				fields.add(new ParsedField(typeContext, (FieldDeclaration)body));
+				fields.addAll(ParsedField.of(typeContext, (FieldDeclaration)body));
 			}
 		}
 
