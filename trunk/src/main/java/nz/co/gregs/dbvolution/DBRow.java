@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
  *
@@ -408,8 +409,45 @@ abstract public class DBRow {
         ignoredRelationships.addAll(this.getForeignKeyFields());
     }
 
+    /**
+     *
+     * Creates a foreign key like relationship between columns on 2 different DBRow objects
+     * 
+     * this function relies on the QueryableDatatypes being part of the DBRows that are also passed.
+     * So every call to this function should be similar to:
+     * 
+     *  myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
+     * 
+     * uses the default DBEqualsOperator 
+     * 
+     * @param thisTableField
+     * @param otherTable
+     * @param otherTableField
+     */
     public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
         DBRelationship dbRelationship = new DBRelationship(this, thisTableField,otherTable,otherTableField);
+        adHocRelationships.add(dbRelationship);
+    }
+
+    /**
+     *
+     * Creates a foreign key like relationship between columns on 2 different DBRow objects
+     * 
+     * this function relies on the QueryableDatatypes being part of the DBRows that are also passed.
+     * So every call to this function should be similar to:
+     * 
+     *  myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
+     * 
+     * Uses the supplied operator to establish the relationship rather than the default DBEqualsOperator.
+     * Not all operators can be used for relationships.
+     * 
+     * @param thisTableField
+     * @param otherTable
+     * @param otherTableField
+     * @param operator
+     */
+    public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField, DBOperator operator) {
+        DBRelationship dbRelationship = new DBRelationship(this, thisTableField,otherTable,otherTableField, operator);
         adHocRelationships.add(dbRelationship);
     }
 

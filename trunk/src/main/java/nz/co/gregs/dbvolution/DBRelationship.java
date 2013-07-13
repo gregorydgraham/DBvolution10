@@ -32,12 +32,18 @@ class DBRelationship {
     private DBOperator operation;
 
     public DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
-        
+
         firstTable = thisTable.getTableName();
         firstColumn = thisTable.getDBColumnName(thisTableField);
         secondTable = otherTable.getTableName();
         secondColumn = otherTable.getDBColumnName(otherTableField);
         operation = new DBEqualsOperator(thisTableField);
+    }
+
+    public DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField, DBOperator operator) {
+
+        this(thisTable, thisTableField, otherTable, otherTableField);
+        this.operation = operator;
     }
 
     public String generateSQL(DBDatabase database) {

@@ -16,33 +16,50 @@
 package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
+import java.util.List;
+import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.operators.DBLessThanOrEqualOperator;
+import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 
 /**
  *
  * @author gregorygraham
  */
-public class AdHocRelationshipTest extends AbstractTest{
+public class AdHocRelationshipTest extends AbstractTest {
 
     public AdHocRelationshipTest(String name) {
         super(name);
     }
-    
-    public void testAdHocRelationshipTest() throws SQLException{
+
+    public void testAdHocRelationship() throws SQLException {
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
-        
+
         marque.addRelationship(marque.name, carCompany, carCompany.name);
-        
+
         DBQuery query = new DBQuery(myDatabase, carCompany, marque);
-        
-        query.getAllRows();
+
+        List<DBQueryRow> allRows = query.getAllRows();
         query.printAllRows();
-        
-        assertTrue("There should only be rows for FORD and TOYOTA", query.getAllRows().size()==2);
+
+        assertTrue("There should only be rows for FORD and TOYOTA", allRows.size() == 2);
     }
-    
-    
+
+    public void testAdHocRelationshipWithOperator() throws SQLException{
+        Marque marque = new Marque();
+        CarCompany carCompany = new CarCompany();
+//        carCompany.name.isLiterally("FORD");
+
+        marque.addRelationship(marque.name, carCompany, carCompany.name, new DBLikeOperator(null));
+
+        DBQuery query = new DBQuery(myDatabase, carCompany, marque);
+        List<DBQueryRow> allRows = query.getAllRows();
+        query.printAllRows();
+
+        assertTrue("There should only be rows for FORD and TOYOTA", allRows.size() == 2);
+    }
 }
