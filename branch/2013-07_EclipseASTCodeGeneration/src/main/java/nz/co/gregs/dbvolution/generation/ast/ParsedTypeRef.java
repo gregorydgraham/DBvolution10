@@ -25,12 +25,24 @@ public class ParsedTypeRef {
 	private Type astNode;
 	private Class<?> javaType = null; // only if available
 
-//	public static ParsedTypeRef newClassInstance(ParsedTypeContext typeContext, Class<?> javaType) {
-//		AST ast = typeContext.getAST();
-//		
-//		// TODO: 
-//	}
+	/**
+	 * Constructs a new type reference that is guaranteed to be imported by the context.
+	 * @param typeContext
+	 * @param javaType
+	 * @return
+	 */
+	public static ParsedTypeRef newClassInstance(ParsedTypeContext typeContext, Class<?> javaType) {
+		AST ast = typeContext.getAST();
+		
+		boolean fieldTypeImported = typeContext.ensureImport(javaType);
+		Type type = ast.newSimpleType(ast.newName(nameOf(javaType, fieldTypeImported)));
+		return new ParsedTypeRef(typeContext, type);
+	}
 	
+	/** Fully qualified or simple name, depending on whether imported */
+	private static String nameOf(Class<?> type, boolean imported) {
+		return imported ? type.getSimpleName() : type.getName();
+	}
 	public ParsedTypeRef(ParsedTypeContext typeContext, Type astNode) {
 		this.typeContext = typeContext;
 		this.astNode = astNode;
@@ -43,6 +55,10 @@ public class ParsedTypeRef {
 	
 	public Type astNode() {
 		return astNode;
+	}
+	
+	public Name nameAstNode() {
+		return ((SimpleType) astNode).getName();
 	}
 	
 	/**

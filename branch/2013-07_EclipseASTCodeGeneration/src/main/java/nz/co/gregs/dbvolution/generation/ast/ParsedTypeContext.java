@@ -11,6 +11,7 @@ import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 
 import scratch.javaparser.TryEclipseJDT;
 
@@ -24,12 +25,49 @@ public class ParsedTypeContext {
 		DBTableName.class, DBTablePrimaryKey.class}; // TODO: ideally pick this up somehow automatically
 	private CompilationUnit unit;
 	
+	public static ParsedTypeContext newInstance(String packageName) {
+		AST ast = AST.newAST(AST.JLS4);
+		ParsedTypeContext typeContext = new ParsedTypeContext(ast.newCompilationUnit());
+		typeContext.setPackage(packageName);
+		return typeContext;
+	}
+	
 	public ParsedTypeContext(CompilationUnit unit) {
 		this.unit = unit;
 	}
 	
 	public AST getAST() {
 		return unit.getAST();
+	}
+	
+	public CompilationUnit unitAstNode() {
+		return unit;
+	}
+	
+	/**
+	 * 
+	 * @return null if no package
+	 */
+	public String getPackage() {
+		PackageDeclaration packageDeclaration = unit.getPackage();
+		if (packageDeclaration != null) {
+			return packageDeclaration.getName().getFullyQualifiedName();
+		}
+		return null;
+	}
+	
+	public void setPackage(String name) {
+		PackageDeclaration packageDeclaration = unit.getPackage();
+		if (name != null) {
+			if (packageDeclaration == null) {
+				packageDeclaration = getAST().newPackageDeclaration();
+				unit.setPackage(packageDeclaration);
+			}
+			packageDeclaration.setName(getAST().newName(name));
+		}
+		else if (name == null) {
+			unit.setPackage(null);
+		}
 	}
 	
 	// TODO: keep order of imports following standards

@@ -10,16 +10,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
+
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
-import org.eclipse.jdt.core.dom.ChildListPropertyDescriptor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -30,6 +36,8 @@ import org.eclipse.text.edits.TextEdit;
  * The parsed details of a class within a source file.
  * @author Malcolm Lett
  */
+// TODO: consider making this type transparently expose a single instance of a type
+// within a multi-type compilation unit, in the same way as planned for ParsedFields.s
 public class ParsedClass {
 	private final ASTParser parser;
 	private final Document document;
@@ -54,6 +62,81 @@ public class ParsedClass {
 		return new ParsedClass(parser, document, unit);
 	}
 
+	public static ParsedClass newInstance(String fullyQualifiedName, ParsedTypeRef superType) {
+		String packageName = null;
+		String simpleName = fullyQualifiedName;
+		if (fullyQualifiedName.contains(".")) {
+			simpleName = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf(".")+1);
+		}
+		if (fullyQualifiedName.contains(".")) {
+			packageName = fullyQualifiedName.substring(0, fullyQualifiedName.lastIndexOf("."));
+		}
+		ParsedTypeContext typeContext = ParsedTypeContext.newInstance(packageName);
+		return newInstance(typeContext, simpleName, superType);
+	}
+	
+	public static ParsedClass newInstance(ParsedTypeContext typeContext, String simpleName, ParsedTypeRef superType) {
+		AST ast = typeContext.getAST();
+		
+		// create type
+		TypeDeclaration typeDeclaration = ast.newTypeDeclaration();
+		typeDeclaration.setName(ast.newSimpleName(simpleName));
+		
+		// set super type
+		if (superType != null) {
+			typeDeclaration.setSuperclassType(superType.astNode());
+		}
+		
+		// set visibility modifiers
+		typeDeclaration.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
+		
+		// wrap with everything else
+		CompilationUnit unit = ast.newCompilationUnit();
+		unit.types().add(typeDeclaration);
+		
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+		// In order to parse 1.5 code, some compiler options need to be set to 1.5
+		Map<?,?> options = JavaCore.getOptions();
+		JavaCore.setComplianceOptions(JavaCore.VERSION_1_5, options);
+		parser.setCompilerOptions(options);
+		
+		return new ParsedClass(parser, null, unit);
+	}
+
+	public static ParsedClass newDBTableInstance(String fullyQualifiedClassName, String tableName) {
+		String packageName = null;
+		String simpleClassName = fullyQualifiedClassName;
+		if (fullyQualifiedClassName.contains(".")) {
+			simpleClassName = fullyQualifiedClassName.substring(fullyQualifiedClassName.lastIndexOf(".")+1);
+		}
+		if (fullyQualifiedClassName.contains(".")) {
+			packageName = fullyQualifiedClassName.substring(0, fullyQualifiedClassName.lastIndexOf("."));
+		}
+		ParsedTypeContext typeContext = ParsedTypeContext.newInstance(packageName);
+		return newDBTableInstance(typeContext, simpleClassName, tableName);
+	}
+	
+	public static ParsedClass newDBTableInstance(ParsedTypeContext typeContext, String simpleClassName, String tableName) {
+		ParsedTypeRef superType = ParsedTypeRef.newClassInstance(typeContext, DBTableRow.class);
+		ParsedClass parsedClass = newInstance(typeContext, simpleClassName, superType);
+		
+		AST ast = typeContext.getAST();
+		TypeDeclaration typeDeclaration = parsedClass.astNode();
+		
+		ParsedTypeRef dbTableNameType = ParsedTypeRef.newClassInstance(typeContext, DBTableName.class);
+		
+		// add annotation
+		StringLiteral annotationValue = ast.newStringLiteral();
+		annotationValue.setLiteralValue(tableName);
+		SingleMemberAnnotation annotation = ast.newSingleMemberAnnotation();
+		annotation.setTypeName((Name) ASTNode.copySubtree(ast, dbTableNameType.nameAstNode()));
+		annotation.setValue(annotationValue);
+		typeDeclaration.modifiers().add(0, annotation); // add before visibility modifiers		
+		
+		return parsedClass;
+	}
+	
+	
 	/**
 	 * Builds up the high-level model of the contents of the java type. 
 	 */
@@ -110,8 +193,16 @@ public class ParsedClass {
 		return buf.toString();
 	}
 	
+	public TypeDeclaration astNode() {
+		return astNode;
+	}
+	
 	public ParsedTypeContext getTypeContext() {
 		return typeContext;
+	}
+	
+	public String getDBTableNameIfSet() {
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -206,16 +297,27 @@ public class ParsedClass {
 		}
 	}
 	
-	public String getName() {
+	public String getPackage() {
+		if (unit.getPackage() != null) {
+			return unit.getPackage().getName().getFullyQualifiedName();
+		}
+		return null;
+	}
+
+	public String getSimpleName() {
+		String name = getDeclaredName();
+		if (name.contains(".")) {
+			return name.substring(name.lastIndexOf(".")+1);
+		}
+		return name;
+	}
+	
+	public String getDeclaredName() {
 		return astNode.getName().getFullyQualifiedName();
 	}
 	
-	public String getPackage() {
-		return unit.getPackage().getName().getFullyQualifiedName();
-	}
-	
 	public String getFullyQualifiedName() {
-		return getPackage()+"."+getName();
+		return ((getPackage() == null) ? "" : getPackage()+".")+getDeclaredName();
 	}
 	
 	public List<ParsedField> getFields() {

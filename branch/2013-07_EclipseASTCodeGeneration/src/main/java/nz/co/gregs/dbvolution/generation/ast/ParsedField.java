@@ -31,6 +31,8 @@ import org.eclipse.jdt.core.dom.WildcardType;
  * The parsed details of an member field within a class.
  * @author Malcolm Lett
  */
+// TODO: make this class expose only one field variable and transparently link to
+// a multi-variable field declaration type.
 public class ParsedField {
 	private ParsedTypeContext typeContext;
 	private FieldDeclaration astNode;
@@ -43,16 +45,14 @@ public class ParsedField {
 	 * Updates the imports in the type context.
 	 * @param typeContext
 	 * @param isPrimaryKey
-	 * @param tableName
+	 * @param columnName
 	 * @param fieldType
 	 * @return
 	 */
 	// TODO: apply logic to infer field name
 	// TODO: ensure don't duplicate field names
-	public static ParsedField newDBTableColumnInstance(ParsedTypeContext typeContext, boolean isPrimaryKey, String tableName, Class<?> fieldType) {
+	public static ParsedField newDBTableColumnInstance(ParsedTypeContext typeContext, String fieldName, Class<?> fieldType, boolean isPrimaryKey, String columnName) {
 		AST ast = typeContext.getAST();
-		
-		String fieldName = DBTableClassGenerator.toFieldCase(tableName);
 		
 		// add imports
 		boolean fieldTypeImported = typeContext.ensureImport(fieldType);
@@ -73,12 +73,12 @@ public class ParsedField {
 					nameOf(DBTablePrimaryKey.class, dbTablePrimaryKeyImported)));
 			field.modifiers().add(annotation);
 		}
-		StringLiteral annotationName = ast.newStringLiteral();
-		annotationName.setLiteralValue(tableName);
+		StringLiteral annotationValue = ast.newStringLiteral();
+		annotationValue.setLiteralValue(columnName);
 		SingleMemberAnnotation annotation = ast.newSingleMemberAnnotation();
 		annotation.setTypeName(ast.newSimpleName(
 					nameOf(DBTableColumn.class, dbTableColumnImported)));
-		annotation.setValue(annotationName);
+		annotation.setValue(annotationValue);
 		field.modifiers().add(annotation);
 		
 		// set visibility modifiers
@@ -153,6 +153,10 @@ public class ParsedField {
 	 */
 	public List<Class<?>> getReferencedTypes() {
 		return type.getReferencedTypes();
+	}
+	
+	public String getName() {
+		return names.get(0); // FIXME: this needs to be much smarter
 	}
 	
 	public List<String> getNames() {
