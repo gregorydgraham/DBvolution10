@@ -31,23 +31,23 @@ abstract public class DBRow {
         try {
             return requiredDBTableRowClass.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public",ex);
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         } catch (SecurityException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         } catch (InstantiationException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         } catch (IllegalAccessException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         } catch (InvocationTargetException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName()+": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName()+" has no arguments, throws no exceptions, and is public", ex);
+            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         }
     }
-
     private DBDatabase database;
     private List<Field> ignoredRelationships = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
+    private List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
 
     public DBRow() {
     }
@@ -196,8 +196,8 @@ abstract public class DBRow {
 
     /**
      *
-     * @return 
-     * 
+     * @return
+     *
      */
     public String getWhereClause() {
         StringBuilder whereClause = new StringBuilder();
@@ -304,7 +304,7 @@ abstract public class DBRow {
 
     /**
      *
-     * @return 
+     * @return
      */
     protected List<String> getColumnNames() {
         ArrayList<String> columnNames = new ArrayList<String>();
@@ -320,6 +320,10 @@ abstract public class DBRow {
         return columnNames;
     }
 
+    public String getDBColumnName(QueryableDatatype qdt) {
+        return getDBColumnName(this.getFieldOf(qdt));
+    }
+    
     public String getDBColumnName(Field field) {
         String columnName = "";
 
@@ -374,9 +378,9 @@ abstract public class DBRow {
             try {
                 fieldOfThisInstance = field.get(this);
             } catch (IllegalArgumentException ex) {
-                        throw new RuntimeException("Field Found But Somehow The Argument Was Illegal: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.getName() + "  are public.", ex.getCause());
+                throw new RuntimeException("Field Found But Somehow The Argument Was Illegal: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.getName() + "  are public.", ex.getCause());
             } catch (IllegalAccessException ex) {
-                        throw new RuntimeException("Field Found But Unable To Access: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.getName() + "  are public.", ex);
+                throw new RuntimeException("Field Found But Unable To Access: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.getName() + "  are public.", ex);
             }
             if (fieldOfThisInstance.equals(qdt)) {
                 return field;
@@ -402,5 +406,18 @@ abstract public class DBRow {
 
     public void ignoreAllForeignKeys() {
         ignoredRelationships.addAll(this.getForeignKeyFields());
+    }
+
+    public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
+        DBRelationship dbRelationship = new DBRelationship(this, thisTableField,otherTable,otherTableField);
+        adHocRelationships.add(dbRelationship);
+    }
+
+    List<String> getAdHocRelationshipSQL() {
+        List<String> builder = new ArrayList<String>();
+        for(DBRelationship rel: adHocRelationships){
+            builder.add(rel.generateSQL(database));
+        }
+        return builder;
     }
 }

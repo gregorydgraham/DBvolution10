@@ -23,4 +23,9 @@ public class DBNonOperator extends DBOperator {
     public String generateWhereLine(DBDatabase database, String columnName) {
         return "";
     }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        return "";
+    }
 }

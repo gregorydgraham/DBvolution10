@@ -38,5 +38,10 @@ public class DBLikeOperator extends DBOperator {
     private String getOperator() {
         return " like ";
     }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        return database.beginAndLine() +(invertOperator?"!(":"(")+ database.toLowerCase(database.formatColumnName(columnName)) + getOperator()+" "+database.toLowerCase(otherColumnName)+")";
+    }
     
 }

@@ -57,4 +57,13 @@ public class DBInOperator extends DBOperator {
     private String getOperator() {
         return " in (";
     }
+
+    private String getInverse() {
+        return " not in (";
+    }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+                return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName+" ) ";
+    }
 }
