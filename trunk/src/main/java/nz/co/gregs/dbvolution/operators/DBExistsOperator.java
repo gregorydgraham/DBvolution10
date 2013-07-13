@@ -53,4 +53,9 @@ public class DBExistsOperator extends DBOperator {
 
         return database.beginAndLine() + (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
     }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        throw new UnsupportedOperationException("The SQL EXISTS Operator Can Not Be Used To Specify A Relationship"); //To change body of generated methods, choose Tools | Templates.
+    }
 }

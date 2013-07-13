@@ -331,6 +331,8 @@ public abstract class DBDatabase {
     /**
      *
      * Formats the table and column name pair correctly for this database
+     * 
+     * This should be used for column names in the select query
      *
      * e.g table, column => TABLE.COLUMN
      *
@@ -348,11 +350,8 @@ public abstract class DBDatabase {
 
     /**
      *
-     * Specifies the column name used within the JDBC ResultSet to identify the
+     * Specifies the column alias used within the JDBC ResultSet to identify the
      * column.
-     *
-     * Usually this is the same as formatTableAndColumnName(table, column) but
-     * sometimes not.
      *
      * @param tableName
      * @param columnName
@@ -370,6 +369,14 @@ public abstract class DBDatabase {
         return toString.replaceAll("'", "''");
     }
 
+    /**
+     * 
+     * returns the required SQL to begin a line within the Where Clause
+     * 
+     * usually, but not always " and "
+     *
+     * @return
+     */
     public String beginAndLine() {
         return " and ";
     }
@@ -411,7 +418,7 @@ public abstract class DBDatabase {
     }
 
     public String toLowerCase(String string) {
-        return "lower(" + string + ")";
+        return " lower(" + string + ")";
     }
 
     public String beginInsertLine() {

@@ -47,4 +47,9 @@ public class DBLessThanOperator extends DBOperator {
         lessThanThis.setDatabase(database);
         return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + lessThanThis.getSQLValue() + " ";
     }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+    }
 }

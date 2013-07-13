@@ -34,6 +34,7 @@ abstract public class DBOperator {
      * @return
      */
     abstract public String generateWhereLine(DBDatabase database, String columnName);
+    abstract public String generateRelationship(DBDatabase database, String columnName, String otherColumnName);
 
     public void invertOperator(Boolean invertOperator) {
         this.invertOperator = invertOperator;

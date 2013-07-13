@@ -46,4 +46,8 @@ public class DBEqualsOperator extends DBOperator {
         equalTo.setDatabase(database);
         return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
     }
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+    }
 }

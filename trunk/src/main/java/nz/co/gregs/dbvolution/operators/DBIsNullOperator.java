@@ -34,5 +34,10 @@ public class DBIsNullOperator extends DBOperator {
     private String getInverse() {
         return " is not null ";
     }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        throw new UnsupportedOperationException("The DB IS NULL Operator Cannot Be Used To Specify a Relationship"); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

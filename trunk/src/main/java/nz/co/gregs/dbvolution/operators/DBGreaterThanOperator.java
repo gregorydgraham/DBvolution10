@@ -47,4 +47,9 @@ public class DBGreaterThanOperator extends DBOperator {
         greaterThanThis.setDatabase(database);
         return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + greaterThanThis.getSQLValue() + " ";
     }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ";
+    }
 }

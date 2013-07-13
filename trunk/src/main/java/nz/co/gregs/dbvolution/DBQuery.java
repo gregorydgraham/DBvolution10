@@ -81,7 +81,6 @@ public class DBQuery {
             otherTables.addAll(queryTables);
             otherTables.remove(tabRow);
             tableName = tabRow.getTableName();
-            //DBTable<DBTableRow> actualTable = new DBTable<DBTableRow>(tab, database);
 
             List<String> columnNames = tabRow.getColumnNames();
             for (String columnName : columnNames) {
@@ -94,6 +93,10 @@ public class DBQuery {
             String tabRowCriteria = tabRow.getWhereClause();
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
+            }
+            List<String> adHocRelationshipSQL = tabRow.getAdHocRelationshipSQL();
+            for (String sql : adHocRelationshipSQL) {
+                whereClause.append(sql);
             }
 
             for (DBRow otherTab : otherTables) {
@@ -141,17 +144,14 @@ public class DBQuery {
         ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
         while (resultSet.next()) {
             queryRow = new DBQueryRow();
-//            int columnIndex =0;
             for (DBRow tableRow : queryTables) {
-                DBRow newInstance = DBRow.getInstance(tableRow.getClass());//.getClass().getConstructor().newInstance();
+                DBRow newInstance = DBRow.getInstance(tableRow.getClass());
                 newInstance.setDatabase(database);
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
-//                    columnIndex++;
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
                     String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
                     String stringOfValue = resultSet.getString(fullColumnName);
-//                    String stringOfValue = resultSet.getString(columnIndex);
                     qdt.isLiterally(stringOfValue);
                 }
                 Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
