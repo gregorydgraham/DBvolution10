@@ -52,7 +52,6 @@ public class AdHocRelationshipTest extends AbstractTest {
     public void testAdHocRelationshipWithOperator() throws SQLException{
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
-//        carCompany.name.isLiterally("FORD");
 
         marque.addRelationship(marque.name, carCompany, carCompany.name, new DBLikeOperator(null));
 
