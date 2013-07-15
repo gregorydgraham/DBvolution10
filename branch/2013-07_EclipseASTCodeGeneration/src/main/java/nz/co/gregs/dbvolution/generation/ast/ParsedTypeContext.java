@@ -13,8 +13,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 
-import scratch.javaparser.TryEclipseJDT;
-
 /**
  * Information available to types, fields, members within a java source file.
  * @author Malcolm Lett
@@ -70,11 +68,12 @@ public class ParsedTypeContext {
 		}
 	}
 	
-	// TODO: keep order of imports following standards
 	/**
 	 * Attempts to add the import if it is missing.
 	 * If the import can't be added because an import already exists with the
-	 * same unqualified name, then  
+	 * same unqualified name, then the full type reference must be used inline.
+	 * 
+	 * <p> Imports are added according to standard ordering.
 	 * @param type
 	 * @return {@code true} if import included afterwards, {@code false} if can't add due to duplicate name
 	 */
@@ -102,11 +101,34 @@ public class ParsedTypeContext {
 		}
 		
 		AST ast = unit.getAST();
-	    ImportDeclaration id = ast.newImportDeclaration();
-	    String classToImport = TryEclipseJDT.class.getName();
-	    id.setName(ast.newName(type.getName()));
-	    unit.imports().add(id); // add import declaration at end
+	    ImportDeclaration importDeclaration = ast.newImportDeclaration();
+	    importDeclaration.setName(ast.newName(type.getName()));
+	    addImport(importDeclaration);
 	    return true;
+	}
+	
+	/**
+	 * Adds the import, maintaining preferred order.
+	 * @param newImport
+	 * @return
+	 */
+	protected void addImport(ImportDeclaration newImport) {
+		int targetIndex = -1;
+		int index = 0;
+		ImportComparator order = new ImportComparator();
+		for (ImportDeclaration currentImport: (List<ImportDeclaration>) unit.imports()) {
+			if (order.compare(newImport, currentImport) < 0) {
+				targetIndex = index;
+				break;
+			}
+			index++;
+		}
+		if (targetIndex == -1) {
+			targetIndex = index;
+		}
+		
+		// add before next in order, or at end
+		unit.imports().add(targetIndex, newImport);
 	}
 	
 	/**

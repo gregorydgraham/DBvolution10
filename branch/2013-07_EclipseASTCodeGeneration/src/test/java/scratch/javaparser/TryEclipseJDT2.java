@@ -1,17 +1,15 @@
 package scratch.javaparser;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import nz.co.gregs.dbvolution.DBInteger;
 import nz.co.gregs.dbvolution.generation.ast.ColumnNameResolver;
-import nz.co.gregs.dbvolution.generation.ast.ParsedField;
 import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
+import nz.co.gregs.dbvolution.generation.ast.ParsedField;
 import nz.co.gregs.dbvolution.generation.ast.ParsedMethod;
 
 import org.eclipse.jface.text.BadLocationException;
@@ -36,7 +34,9 @@ public class TryEclipseJDT2 {
 		System.out.println(newMethod);
 		javatype.addMethodAfter(null, newMethod);
 		
-		javatype.writeTo(new File("target/"+TryEclipseJDT2.class.getSimpleName()+"-output.java"));
+		File srcFolder = new File("target/test-output");
+		srcFolder.mkdirs();
+		javatype.writeToSourceFolder(srcFolder);
 	}
 	
 	private static String getSource() {
@@ -56,20 +56,6 @@ public class TryEclipseJDT2 {
 		} finally {
 			try {
 				reader.close();
-			} catch (IOException dropped) {} // assume caused by earlier exception
-		}
-	}
-	
-	private static void writeResult(String contents) {
-		BufferedWriter writer = null;
-		try {
-			writer = new BufferedWriter(new FileWriter(new File("target/result.java")));
-			writer.write(contents);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				writer.close();
 			} catch (IOException dropped) {} // assume caused by earlier exception
 		}
 	}

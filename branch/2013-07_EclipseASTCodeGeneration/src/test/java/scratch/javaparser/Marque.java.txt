@@ -8,7 +8,6 @@ import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 import nz.co.gregs.dbvolution.example.CarCompany;
 
 /**
- *
  * @author gregory.graham
  */
 @DBTableName("marque")

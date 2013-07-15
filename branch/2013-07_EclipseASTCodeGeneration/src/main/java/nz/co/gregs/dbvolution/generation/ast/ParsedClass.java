@@ -24,8 +24,11 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.TagElement;
+import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -44,9 +47,13 @@ public class ParsedClass {
 	private final CompilationUnit unit;
 	private final ParsedTypeContext typeContext;
 	private TypeDeclaration astNode;
+	private ParsedTypeRef superType;
 	private List<ParsedField> fields;
 	private List<ParsedMethod> methods;
 	
+	/**
+	 * Parses an existing source file.
+	 */
 	public static ParsedClass of(String contents) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		// In order to parse 1.5 code, some compiler options need to be set to 1.5
@@ -62,7 +69,12 @@ public class ParsedClass {
 		return new ParsedClass(parser, document, unit);
 	}
 
-	public static ParsedClass newInstance(String fullyQualifiedName, ParsedTypeRef superType) {
+	/**
+	 * Creates a brand new type for a brand new source file.
+	 * @param fullyQualifiedName
+	 * @return
+	 */
+	public static ParsedClass newInstance(String fullyQualifiedName) {
 		String packageName = null;
 		String simpleName = fullyQualifiedName;
 		if (fullyQualifiedName.contains(".")) {
@@ -71,38 +83,53 @@ public class ParsedClass {
 		if (fullyQualifiedName.contains(".")) {
 			packageName = fullyQualifiedName.substring(0, fullyQualifiedName.lastIndexOf("."));
 		}
-		ParsedTypeContext typeContext = ParsedTypeContext.newInstance(packageName);
-		return newInstance(typeContext, simpleName, superType);
+		return newInstance(packageName, simpleName);
 	}
 	
-	public static ParsedClass newInstance(ParsedTypeContext typeContext, String simpleName, ParsedTypeRef superType) {
-		AST ast = typeContext.getAST();
-		
-		// create type
-		TypeDeclaration typeDeclaration = ast.newTypeDeclaration();
-		typeDeclaration.setName(ast.newSimpleName(simpleName));
-		
-		// set super type
-		if (superType != null) {
-			typeDeclaration.setSuperclassType(superType.astNode());
-		}
-		
-		// set visibility modifiers
-		typeDeclaration.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
-		
-		// wrap with everything else
-		CompilationUnit unit = ast.newCompilationUnit();
-		unit.types().add(typeDeclaration);
-		
+	/**
+	 * Creates a brand new type for a brand new source file.
+	 * @param packageName
+	 * @param simpleName
+	 * @return
+	 */
+	public static ParsedClass newInstance(String packageName, String simpleName) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		// In order to parse 1.5 code, some compiler options need to be set to 1.5
 		Map<?,?> options = JavaCore.getOptions();
 		JavaCore.setComplianceOptions(JavaCore.VERSION_1_5, options);
 		parser.setCompilerOptions(options);
 		
-		return new ParsedClass(parser, null, unit);
+		Document document = new Document("");
+		parser.setSource(document.get().toCharArray());
+		CompilationUnit unit = (CompilationUnit)parser.createAST(null);
+		unit.recordModifications();
+		
+		AST ast = unit.getAST();		
+		
+		// create type
+		TypeDeclaration typeDeclaration = ast.newTypeDeclaration();
+		typeDeclaration.setName(ast.newSimpleName(simpleName));
+		unit.types().add(typeDeclaration);
+		
+		// set visibility modifiers
+		typeDeclaration.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
+
+		// set package
+		if (packageName != null) {
+			PackageDeclaration packageDeclaration = ast.newPackageDeclaration();
+			packageDeclaration.setName(ast.newName(packageName));
+			unit.setPackage(packageDeclaration);
+		}
+		
+		return new ParsedClass(parser, document, unit);
 	}
 
+	/**
+	 * Creates a brand new type for a brand new source file.
+	 * @param fullyQualifiedClassName
+	 * @param tableName
+	 * @return
+	 */
 	public static ParsedClass newDBTableInstance(String fullyQualifiedClassName, String tableName) {
 		String packageName = null;
 		String simpleClassName = fullyQualifiedClassName;
@@ -112,26 +139,50 @@ public class ParsedClass {
 		if (fullyQualifiedClassName.contains(".")) {
 			packageName = fullyQualifiedClassName.substring(0, fullyQualifiedClassName.lastIndexOf("."));
 		}
-		ParsedTypeContext typeContext = ParsedTypeContext.newInstance(packageName);
-		return newDBTableInstance(typeContext, simpleClassName, tableName);
+		return newDBTableInstance(packageName, simpleClassName, tableName);
 	}
 	
-	public static ParsedClass newDBTableInstance(ParsedTypeContext typeContext, String simpleClassName, String tableName) {
-		ParsedTypeRef superType = ParsedTypeRef.newClassInstance(typeContext, DBTableRow.class);
-		ParsedClass parsedClass = newInstance(typeContext, simpleClassName, superType);
+	/**
+	 * Creates a brand new type for a brand new source file.
+	 * @param packageName
+	 * @param simpleClassName
+	 * @param tableName
+	 * @return
+	 */
+	public static ParsedClass newDBTableInstance(String packageName, String simpleClassName, String tableName) {
+		ParsedClass parsedClass = newInstance(packageName, simpleClassName);
 		
+		ParsedTypeContext typeContext = parsedClass.getTypeContext();
 		AST ast = typeContext.getAST();
 		TypeDeclaration typeDeclaration = parsedClass.astNode();
 		
+		// super type
+		parsedClass.setSuperType(ParsedTypeRef.newClassInstance(typeContext, DBTableRow.class));
+
+		// add @DBTableName
 		ParsedTypeRef dbTableNameType = ParsedTypeRef.newClassInstance(typeContext, DBTableName.class);
 		
-		// add annotation
 		StringLiteral annotationValue = ast.newStringLiteral();
 		annotationValue.setLiteralValue(tableName);
 		SingleMemberAnnotation annotation = ast.newSingleMemberAnnotation();
 		annotation.setTypeName((Name) ASTNode.copySubtree(ast, dbTableNameType.nameAstNode()));
 		annotation.setValue(annotationValue);
-		typeDeclaration.modifiers().add(0, annotation); // add before visibility modifiers		
+		typeDeclaration.modifiers().add(0, annotation); // add before visibility modifiers
+		
+		// add javadoc
+		TextElement javadocText1 = ast.newTextElement();
+		javadocText1.setText("Auto-generated code. Modify at leisure.");
+		TagElement javadocTag1 = ast.newTagElement();
+		javadocTag1.fragments().add(javadocText1);
+
+		TextElement javadocText2 = ast.newTextElement();
+		javadocText2.setText("Subsequent auto-generations will retain modified code wherever possible.");
+		TagElement javadocTag2 = ast.newTagElement();
+		javadocTag2.fragments().add(javadocText2);
+		
+		typeDeclaration.setJavadoc(ast.newJavadoc());
+		typeDeclaration.getJavadoc().tags().add(javadocTag1);
+		typeDeclaration.getJavadoc().tags().add(javadocTag2);
 		
 		return parsedClass;
 	}
@@ -156,8 +207,18 @@ public class ParsedClass {
 	        }
 	    }
 	    if (astNode == null) {
-	    	throw new RuntimeException("found no type");
+	    	AST ast = unit.getAST();
+			TypeDeclaration typeDeclaration = ast.newTypeDeclaration();
+			typeDeclaration.setName(ast.newSimpleName("Name"));
+			unit.types().add(typeDeclaration);
+	    	astNode = typeDeclaration;
+	    	
+	    	//throw new RuntimeException("found no type");
 	    }
+	    
+	    // inheritance
+	    this.superType = (astNode.getSuperclassType() == null) ? null :
+	    	new ParsedTypeRef(typeContext, astNode.getSuperclassType());
 
 	    // fields
 		this.fields = new ArrayList<ParsedField>();
@@ -199,6 +260,11 @@ public class ParsedClass {
 	
 	public ParsedTypeContext getTypeContext() {
 		return typeContext;
+	}
+	
+	public void setSuperType(ParsedTypeRef superType) {
+		astNode.setSuperclassType(superType.astNode());
+		this.superType = superType;
 	}
 	
 	public String getDBTableNameIfSet() {
@@ -271,6 +337,37 @@ public class ParsedClass {
 			astNode.bodyDeclarations().add(refMethodPos+1, newMethod.astNode());
 		}
 	}
+
+	/**
+	 * Writes the file to the appropriate sub-folder and filename within the specified
+	 * source folder.
+	 * @param sourceRoot root of source tree
+	 */
+	public void writeToSourceFolder(File sourceRoot) {
+		if (!sourceRoot.exists()) {
+			throw new IllegalArgumentException("Source folder does not exist: "+sourceRoot);
+		}
+		else if (!sourceRoot.isDirectory()) {
+			throw new IllegalArgumentException("Given source folder is not a directory: "+sourceRoot);
+		}
+		
+		String packagePath = getPackage();
+		if (packagePath != null) {
+			packagePath = packagePath.replace(".", File.separator);
+		}
+		
+		File packageFolder;
+		if (packagePath == null) {
+			packageFolder = sourceRoot;
+		}
+		else {
+			packageFolder = new File(sourceRoot, packagePath);
+		}
+		packageFolder.mkdirs();
+		
+		File outputFile = new File(packageFolder, getSimpleName()+".java");
+		writeTo(outputFile);
+	}
 	
 	// TODO: ensure it retains the same line endings as the original file
 	public void writeTo(File file) {
@@ -292,7 +389,9 @@ public class ParsedClass {
 			throw new RuntimeException(e);
 		} finally {
 			try {
-				writer.close();
+				if (writer != null) {
+					writer.close();
+				}
 			} catch (IOException dropped) {} // assume caused by earlier exception
 		}
 	}
