@@ -15,7 +15,7 @@ import nz.co.gregs.dbvolution.operators.*;
  * @author gregory.graham
  */
 public class QueryableDatatype extends Object implements Serializable {
-    
+
     public static final long serialVersionUID = 1L;
     protected DBDatabase database = null;
     protected Object literalValue = null;
@@ -23,37 +23,38 @@ public class QueryableDatatype extends Object implements Serializable {
     protected boolean includingNulls = false;
     private boolean invertOperator;
     private DBOperator operator = null;
-    
+    private boolean changed = false;
+
     QueryableDatatype() {
     }
-    
+
     QueryableDatatype(String str) {
         if (str == null) {
             this.isDBNull = true;
         }
         this.literalValue = str;
     }
-    
+
     QueryableDatatype(Object str) {
         if (str == null) {
             this.isDBNull = true;
         }
         this.literalValue = str;
     }
-    
+
     @Override
     public String toString() {
         return (literalValue == null ? "" : literalValue.toString());
     }
-    
+
     public Long longValue() {
         return (literalValue == null ? null : Long.parseLong(literalValue.toString()));
     }
-    
+
     public Double doubleValue() {
         return (literalValue == null ? null : Double.parseDouble(literalValue.toString()));
     }
-    
+
     protected void blankQuery() {
         includingNulls = false;
         this.setOperator(null);
@@ -67,7 +68,7 @@ public class QueryableDatatype extends Object implements Serializable {
     public String getWhereClause(String columnName) {
         return getWhereClauseUsingOperators(columnName);
     }
-    
+
     public String getWhereClauseUsingOperators(String columnName) {
         StringBuilder whereClause = new StringBuilder();
         DBOperator op = this.getOperator();
@@ -76,29 +77,37 @@ public class QueryableDatatype extends Object implements Serializable {
         }
         return whereClause.toString();
     }
-    
+
     public void invertOperator() {
         invertOperator = true;
         if (getOperator() != null) {
             getOperator().invertOperator(invertOperator);
-        }else{
+        } else {
             throw new RuntimeException("No Operator Has Been Defined Yet: please use the query methods before inverting the operation");
         }
     }
 
     /**
-     * @param literalValue the literalValue to set
+     * @param newLiteralValue the literalValue to set
      */
-    public void isLiterally(Object literalValue) {
+    public void isLiterally(Object newLiteralValue) {
         blankQuery();
-        if (literalValue == null) {
+        if (newLiteralValue == null) {
             isNull();
         } else {
-            this.literalValue = literalValue.toString();
-            this.setOperator(new DBEqualsOperator(new QueryableDatatype(literalValue.toString())));
+            if (this.isDBNull
+                    || (literalValue != null && !newLiteralValue.equals(literalValue))) {
+                changed = true;
+            }
+            this.literalValue = newLiteralValue.toString();
+            this.setOperator(new DBEqualsOperator(new QueryableDatatype(newLiteralValue.toString())));
         }
     }
-    
+
+    public void setUnchanged() {
+        changed = false;
+    }
+
 //    @Deprecated
 //    public void isLiterally(QueryableDatatype literalValue) {
 //        blankQuery();
@@ -109,7 +118,6 @@ public class QueryableDatatype extends Object implements Serializable {
 //            this.setOperator(new DBEqualsOperator(literalValue));
 //        }
 //    }
-    
     public void isGreaterThan(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
@@ -119,7 +127,7 @@ public class QueryableDatatype extends Object implements Serializable {
             this.setOperator(new DBGreaterThanOperator(literalValue));
         }
     }
-    
+
     public void isGreaterThanOrEqualTo(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
@@ -129,7 +137,7 @@ public class QueryableDatatype extends Object implements Serializable {
             this.setOperator(new DBGreaterThanOrEqualsOperator(literalValue));
         }
     }
-    
+
     public void isLessThan(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
@@ -139,7 +147,7 @@ public class QueryableDatatype extends Object implements Serializable {
             this.setOperator(new DBLessThanOperator(literalValue));
         }
     }
-    
+
     public void isLessThanOrEqualTo(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
@@ -149,11 +157,11 @@ public class QueryableDatatype extends Object implements Serializable {
             this.setOperator(new DBLessThanOrEqualOperator(literalValue));
         }
     }
-    
+
     public final void isNull() {
         this.setOperator(new DBIsNullOperator());
     }
-    
+
     public void isLike(Object t) {
         this.literalValue = t;
         this.setOperator(new DBLikeOperator(new QueryableDatatype(t.toString())));
@@ -197,18 +205,18 @@ public class QueryableDatatype extends Object implements Serializable {
     public void isBetween(QueryableDatatype lowerBound, QueryableDatatype upperBound) {
         this.setOperator(new DBBetweenOperator(lowerBound, upperBound));
     }
-    
+
     public void isBetween(Object lowerBound, Object upperBound) {
         isBetween(new QueryableDatatype(lowerBound), new QueryableDatatype(upperBound));
     }
-    
+
     /**
      *
      * @return the literal value as it would appear in an SQL statement i.e.
      * {yada} => 'yada'
      */
     protected String toSQLString() {
-        if (this.isDBNull){
+        if (this.isDBNull) {
             return database.getNull();
         }
         return database.beginStringValue() + this.toString().replace("'", "\'") + database.endStringValue();
@@ -227,11 +235,11 @@ public class QueryableDatatype extends Object implements Serializable {
     public void setDatabase(DBDatabase database) {
         this.database = database;
     }
-        
+
     public String getSQLDatatype() {
         return "VARCHAR(1000)";
     }
-    
+
     public String getSQLValue() {
         String unsafeValue = literalValue.toString();
         return database.beginStringValue() + database.safeString(unsafeValue) + database.endStringValue();
@@ -249,5 +257,9 @@ public class QueryableDatatype extends Object implements Serializable {
      */
     public void setOperator(DBOperator operator) {
         this.operator = operator;
+    }
+
+    boolean isChanged() {
+        return changed;
     }
 }
