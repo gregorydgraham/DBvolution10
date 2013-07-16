@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -108,15 +110,14 @@ public class DBTable<E extends DBRow> {
 
     /**
      * Use this carefully as it does what it says on the label: Gets All Rows of
-     * the table from the database. 
-     * 
-     * If your database has umpteen gazillion rows
-     * in VeryBig table and you call this, don't come crying to me.
+     * the table from the database.
+     *
+     * If your database has umpteen gazillion rows in VeryBig table and you call
+     * this, don't come crying to me.
      *
      * @throws SQLException
      */
-    public void getAllRows() throws SQLException
-    {
+    public void getAllRows() throws SQLException {
         this.listOfRows.clear();
 
         String selectStatement = this.getSelectStatement();
@@ -150,7 +151,7 @@ public class DBTable<E extends DBRow> {
 
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
-            E tableRow = (E) DBRow.getInstance(dummy.getClass()); 
+            E tableRow = (E) DBRow.getInstance(dummy.getClass());
 
             Field[] fields = tableRow.getClass().getDeclaredFields();
 

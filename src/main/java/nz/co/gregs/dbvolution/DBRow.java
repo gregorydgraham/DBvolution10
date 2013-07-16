@@ -299,10 +299,8 @@ abstract public class DBRow {
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBColumn.class)) {
                 final QueryableDatatype qdt = getQueryableValueOfField(field);
-                if (qdt.isChanged()) {
-                    string.append(separator).append(qdt.toSQLString());
-                    separator = ",";
-                }
+                string.append(separator).append(qdt.toSQLString());
+                separator = ",";
             }
         }
         return string.append(")").toString();
@@ -316,13 +314,16 @@ abstract public class DBRow {
         String separator = database.getStartingSetSubClauseSeparator();
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBColumn.class)) {
-                String columnName = getDBColumnName(field);
-                sql.append(separator)
-                        .append(database.formatColumnName(columnName))
-                        .append(database.getEqualsComparator())
-                        .append(getQueryableValueOfField(field)
-                        .toSQLString());
-                separator = database.getSubsequentSetSubClauseSeparator();
+                final QueryableDatatype qdt = getQueryableValueOfField(field);
+                if (qdt.hasChanged()) {
+                    String columnName = getDBColumnName(field);
+                    sql.append(separator)
+                            .append(database.formatColumnName(columnName))
+                            .append(database.getEqualsComparator())
+                            .append(qdt
+                            .toSQLString());
+                    separator = database.getSubsequentSetSubClauseSeparator();
+                }
             }
         }
         return sql.toString();
