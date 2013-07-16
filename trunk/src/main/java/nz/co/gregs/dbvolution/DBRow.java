@@ -255,6 +255,28 @@ abstract public class DBRow {
         return string.toString();
     }
 
+    public String toStringMinusFKs() {
+        StringBuilder string = new StringBuilder();
+        Class<? extends DBRow> thisClass = this.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+
+        String separator = "";
+
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(DBColumn.class)) {
+                if (!field.isAnnotationPresent(DBForeignKey.class)) {
+                    string.append(separator);
+                    string.append(" ");
+                    string.append(field.getName());
+                    string.append(":");
+                    string.append(getQueryableValueOfField(field));
+                    separator = ",";
+                }
+            }
+        }
+        return string.toString();
+    }
+
     /**
      * @param database the database to set
      */
@@ -324,7 +346,7 @@ abstract public class DBRow {
     public String getDBColumnName(QueryableDatatype qdt) {
         return getDBColumnName(this.getFieldOf(qdt));
     }
-    
+
     public String getDBColumnName(Field field) {
         String columnName = "";
 
@@ -342,7 +364,7 @@ abstract public class DBRow {
     protected Map<DBForeignKey, DBColumn> getForeignKeys() {
         HashMap<DBForeignKey, DBColumn> foreignKeys;
         foreignKeys = new HashMap<DBForeignKey, DBColumn>();
-        Class<? extends DBRow> thisClass = this.getClass();
+//        Class<? extends DBRow> thisClass = this.getClass();
         List<Field> fields = this.getForeignKeyFields();
 
         for (Field field : fields) {
@@ -411,56 +433,61 @@ abstract public class DBRow {
 
     /**
      *
-     * Creates a foreign key like relationship between columns on 2 different DBRow objects
-     * 
-     * this function relies on the QueryableDatatypes being part of the DBRows that are also passed.
-     * So every call to this function should be similar to:
-     * 
-     *  myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
-     * 
-     * uses the default DBEqualsOperator 
-     * 
+     * Creates a foreign key like relationship between columns on 2 different
+     * DBRow objects
+     *
+     * this function relies on the QueryableDatatypes being part of the DBRows
+     * that are also passed. So every call to this function should be similar
+     * to:
+     *
+     * myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
+     *
+     * uses the default DBEqualsOperator
+     *
      * @param thisTableField
      * @param otherTable
      * @param otherTableField
      */
     public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
-        DBRelationship dbRelationship = new DBRelationship(this, thisTableField,otherTable,otherTableField);
+        DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField);
         adHocRelationships.add(dbRelationship);
     }
 
     /**
      *
-     * Creates a foreign key like relationship between columns on 2 different DBRow objects
-     * 
-     * this function relies on the QueryableDatatypes being part of the DBRows that are also passed.
-     * So every call to this function should be similar to:
-     * 
-     *  myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
-     * 
-     * Uses the supplied operator to establish the relationship rather than the default DBEqualsOperator.
-     * Not all operators can be used for relationships.
-     * 
+     * Creates a foreign key like relationship between columns on 2 different
+     * DBRow objects
+     *
+     * this function relies on the QueryableDatatypes being part of the DBRows
+     * that are also passed. So every call to this function should be similar
+     * to:
+     *
+     * myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
+     *
+     * Uses the supplied operator to establish the relationship rather than the
+     * default DBEqualsOperator. Not all operators can be used for
+     * relationships.
+     *
      * @param thisTableField
      * @param otherTable
      * @param otherTableField
      * @param operator
      */
     public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField, DBOperator operator) {
-        DBRelationship dbRelationship = new DBRelationship(this, thisTableField,otherTable,otherTableField, operator);
+        DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField, operator);
         adHocRelationships.add(dbRelationship);
     }
 
     /**
      *
      */
-    public void clearRelationships(){
+    public void clearRelationships() {
         this.adHocRelationships.clear();
     }
 
     List<String> getAdHocRelationshipSQL() {
         List<String> sqlStrings = new ArrayList<String>();
-        for(DBRelationship rel: adHocRelationships){
+        for (DBRelationship rel : adHocRelationships) {
             sqlStrings.add(rel.generateSQL(database));
         }
         return sqlStrings;

@@ -244,6 +244,28 @@ public class DBQuery {
     /**
      * Fast way to print the results
      *
+     * myTable.printRows(System.err);
+     *
+     * @param ps
+     */
+    public void printAllDataColumns(PrintStream ps) throws SQLException {
+        if (results == null) {
+            this.getAllRows();
+        }
+
+        for (DBQueryRow row : this.results) {
+            for (DBRow tab : this.queryTables) {
+                DBRow rowPart = row.get(tab);
+                String rowPartStr = rowPart.toStringMinusFKs();
+                ps.print(rowPartStr);
+            }
+            ps.println();
+        }
+    }
+
+    /**
+     * Fast way to print the results
+     *
      * myTable.printAllPrimaryKeys(System.err);
      *
      * @param ps
