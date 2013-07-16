@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -171,7 +172,26 @@ public class DBQuery {
         return results;
     }
 
-    public List<DBRow> getAllInstancesOf(DBRow exemplar) throws SQLException {
+    public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
+        HashSet<R> objList = new HashSet<R>();
+        ArrayList<R> arrayList = new ArrayList<R>();
+        if (results.isEmpty()) {
+            getAllRows();
+        }
+        if (!results.isEmpty()) {
+            for (DBQueryRow row : results) {
+                final R found = row.get(exemplar);
+                if (found != null) { // in case there are no items of the exemplar
+                    objList.add(found);
+                }
+            }
+
+            arrayList.addAll(objList);
+        }
+        return arrayList;
+    }
+
+    public <R extends DBRow> List<DBRow> getAllInstancesOfExemplarAsDBRow(R exemplar) throws SQLException {
         HashSet<DBRow> objList = new HashSet<DBRow>();
         ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
         if (results.isEmpty()) {
@@ -185,8 +205,7 @@ public class DBQuery {
                 }
             }
 
-            DBRow[] arrayOfInstances = objList.toArray(new DBRow[]{});
-            arrayList.addAll(Arrays.asList(arrayOfInstances));
+            arrayList.addAll(objList);
         }
         return arrayList;
     }

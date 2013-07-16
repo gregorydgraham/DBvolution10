@@ -70,7 +70,7 @@ abstract public class DBRow {
         }
         if (pkColumnValue == null) {
             if (!pkFound) {
-                throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
+                throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
             } else {
                 throw new RuntimeException("Primary Key Field Not Parsable as an Integer type or is Null. Please check the PK values of " + this.getClass().getSimpleName());
             }
@@ -96,7 +96,7 @@ abstract public class DBRow {
             }
         }
         if (!pkFound) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
+            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
         } else {
             return pkColumnValue;
         }
@@ -117,7 +117,7 @@ abstract public class DBRow {
             }
         }
         if (pkColumnValue.isEmpty()) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
+            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
         } else {
             return pkColumnValue;
         }
@@ -135,7 +135,7 @@ abstract public class DBRow {
                 return field.getAnnotation(DBColumn.class).value();
             }
         }
-        throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBTablePrimaryKey annotation.");
+        throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
     }
 
     /**
