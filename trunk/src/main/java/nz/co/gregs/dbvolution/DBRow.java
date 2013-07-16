@@ -298,8 +298,11 @@ abstract public class DBRow {
         String separator = " VALUES ( ";
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBColumn.class)) {
-                string.append(separator).append(getQueryableValueOfField(field).toSQLString());
-                separator = ",";
+                final QueryableDatatype qdt = getQueryableValueOfField(field);
+                if (qdt.isChanged()) {
+                    string.append(separator).append(qdt.toSQLString());
+                    separator = ",";
+                }
             }
         }
         return string.append(")").toString();

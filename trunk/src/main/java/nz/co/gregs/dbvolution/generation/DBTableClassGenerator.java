@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -29,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -158,10 +162,15 @@ public class DBTableClassGenerator {
         String catalog = connection.getCatalog();
         String schema = null;
         try {
-            schema = connection.getSchema();
+            Method method = connection.getClass().getMethod("getSchema");
+            schema = (String) method.invoke(connection);
+            //schema = connection.getSchema();
         } catch (java.lang.AbstractMethodError exp) {
             // NOT USING Java 1.7+ apparently
+        } catch (Exception ex) {
+            // NOT USING Java 1.7+ apparently
         }
+        
         DatabaseMetaData metaData = connection.getMetaData();
         ResultSet tables = metaData.getTables(catalog, schema, null, dbObjectTypes);
 
