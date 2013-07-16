@@ -259,7 +259,7 @@ public class QueryableDatatype extends Object implements Serializable {
         this.operator = operator;
     }
 
-    boolean isChanged() {
+    boolean hasChanged() {
         return changed;
     }
 }

@@ -25,7 +25,7 @@ public class DBTableUpdateTest extends AbstractTest {
         super(name);
     }
 
-    public void testInsertRows() throws SQLException{
+    public void testInsertRows() throws SQLException {
         Marque myTableRow = new Marque();
         myTableRow.getUidMarque().isLiterally(1);
 
@@ -36,8 +36,11 @@ public class DBTableUpdateTest extends AbstractTest {
         assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
         toyota.name.isLiterally("NOTTOYOTA");
-        marques.update(toyota);
+        String sqlForUpdate = marques.getSQLForUpdate(toyota).get(0);
+        assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;", sqlForUpdate);
 
+        marques.update(toyota);
+        
         marques.getRowsByExample(myTableRow);
         marques.printAllRows();
         toyota = marques.toList().get(0);
