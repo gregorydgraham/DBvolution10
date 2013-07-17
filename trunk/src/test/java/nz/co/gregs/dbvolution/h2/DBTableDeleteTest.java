@@ -15,10 +15,13 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
+import static org.hamcrest.Matchers.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
@@ -26,10 +29,7 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class DBTableDeleteTest extends AbstractTest {
 
-    public DBTableDeleteTest(String testName) {
-        super(testName);
-    }
-
+    @Test
     public void testDeleteListOfRows() throws SQLException {
         marques.getAllRows();
         List<Marque> rowList = marques.toList();
@@ -44,6 +44,8 @@ public class DBTableDeleteTest extends AbstractTest {
         marques.delete(deleteList);
         marques.getAllRows();
         System.out.println("rowList.size()==" + marques.toList().size());
-        assertTrue("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
+        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
+        Assert.assertThat(originalSize - deleteList.size(), is(marques.toList().size()));
+        
     }
 }

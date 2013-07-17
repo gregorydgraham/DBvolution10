@@ -18,37 +18,31 @@ package nz.co.gregs.dbvolution.h2;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import junit.framework.TestCase;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  *
  * @author gregorygraham
  */
-public class AbstractTest extends TestCase {
+public class AbstractTest {
 
     DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionTest", "", "");
     Marque myMarqueRow = new Marque();
     CarCompany myCarCompanyRow = new CarCompany();
     DBTable<Marque> marques;
     DBTable<CarCompany> carCompanies;
-    public List<Marque> marqueRows;
-    public List<CarCompany> carTableRows;
-    
-    public AbstractTest(String name){
-        super(name);
-        carTableRows = new ArrayList<CarCompany>();
-        marqueRows = new ArrayList<Marque>();
-    }
+    public List<Marque> marqueRows = new ArrayList<Marque>();
+    public List<CarCompany> carTableRows = new ArrayList<CarCompany>();
 
-    @Override
+    @Before
     @SuppressWarnings("empty-statement")
-    protected void setUp() throws Exception {
-        super.setUp();
+    public void setUp() throws Exception {
 
         myDatabase.setPrintSQLBeforeExecuting(false);
         myDatabase.dropTableNoExceptions(new Marque());
@@ -65,7 +59,7 @@ public class AbstractTest extends TestCase {
         carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
         carTableRows.add(new CarCompany("OTHER", 4));
         carCompanies.insert(carTableRows);
-        
+
         Date creationDate = new Date();
         marqueRows.add(new Marque(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4));
         marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", creationDate, 2));
@@ -96,16 +90,10 @@ public class AbstractTest extends TestCase {
 
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-       myDatabase.setPrintSQLBeforeExecuting(false);
+    @After
+    public void tearDown() throws Exception {
+        myDatabase.setPrintSQLBeforeExecuting(false);
         myDatabase.dropTable(myMarqueRow);
         myDatabase.dropTable(myCarCompanyRow);
-
-
-        super.tearDown();
     }
-    
-        public void testCreateTable() {
-        }
 }

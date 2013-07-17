@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
 import java.util.List;
-import static junit.framework.TestCase.assertEquals;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
@@ -27,6 +26,7 @@ import nz.co.gregs.dbvolution.generation.DBTableClass;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
 import nz.co.gregs.dbvolution.generation.Marque;
 import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -35,16 +35,8 @@ import org.junit.Test;
  */
 public class GeneratedMarqueTest extends AbstractTest {
 
-//    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolution", "", "");
     nz.co.gregs.dbvolution.example.Marque myTableRow = new nz.co.gregs.dbvolution.example.Marque();
-//    DBTable<Marque> marques;
 
-    public GeneratedMarqueTest(String testName) {
-        super(testName);
-    }
-
-    // TODO add test methods here. The name must begin with 'test'. For example:
-    // public void testHello() {}
     @Test
     public void testGetSchema() throws SQLException{
         List<DBTableClass> generateSchema;
@@ -98,27 +90,27 @@ public class GeneratedMarqueTest extends AbstractTest {
         String expected = "T_31";
         String result = DBTableClassGenerator.toClassCase(test);
         System.out.println(test + " => " + result + "(" + expected + ")");
-        assertEquals(result, expected);
+        Assert.assertEquals(result, expected);
         test = "T_3_1";
         expected = "T_3_1";
         result = DBTableClassGenerator.toClassCase(test);
         System.out.println(test + " => " + result + "(" + expected + ")");
-        assertEquals(result, expected);
+        Assert.assertEquals(result, expected);
         test = "car_company";
         expected = "CarCompany";
         result = DBTableClassGenerator.toClassCase(test);
         System.out.println(test + " => " + result + "(" + expected + ")");
-        assertEquals(result, expected);
+        Assert.assertEquals(result, expected);
         test = "CAR_COMPANY";
         expected = "CarCompany";
         result = DBTableClassGenerator.toClassCase(test);
         System.out.println(test + " => " + result + "(" + expected + ")");
-        assertEquals(result, expected);
+        Assert.assertEquals(result, expected);
         test = "CARCOMPANY";
         expected = "Carcompany";
         result = DBTableClassGenerator.toClassCase(test);
         System.out.println(test + " => " + result + "(" + expected + ")");
-        assertEquals(result, expected);
+        Assert.assertEquals(result, expected);
 
     }
 }

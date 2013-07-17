@@ -22,8 +22,8 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
-import nz.co.gregs.dbvolution.operators.DBLessThanOrEqualOperator;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
+import org.junit.Test;
 
 /**
  *
@@ -31,10 +31,7 @@ import nz.co.gregs.dbvolution.operators.DBLikeOperator;
  */
 public class AdHocRelationshipTest extends AbstractTest {
 
-    public AdHocRelationshipTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testAdHocRelationship() throws SQLException {
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
@@ -49,6 +46,7 @@ public class AdHocRelationshipTest extends AbstractTest {
         assertTrue("There should only be rows for FORD and TOYOTA", allRows.size() == 2);
     }
 
+    @Test
     public void testAdHocRelationshipWithOperator() throws SQLException{
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();

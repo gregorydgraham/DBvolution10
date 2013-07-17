@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Test;
 
 /**
  *
@@ -30,10 +31,7 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class DBQueryTest extends AbstractTest {
 
-    public DBQueryTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testQueryGeneration() throws SQLException {
         DBQuery dbQuery = new DBQuery(myDatabase);
         CarCompany carCompany = new CarCompany();
@@ -65,6 +63,7 @@ public class DBQueryTest extends AbstractTest {
         assertEquals(expectedResult.replaceAll("\\s+", " "), generateSQLString.replaceAll("\\s+", " "));
     }
 
+    @Test
     public void testQueryExecution() throws SQLException {
         DBQuery dbQuery = new DBQuery(myDatabase);
         CarCompany carCompany = new CarCompany();
@@ -90,7 +89,8 @@ public class DBQueryTest extends AbstractTest {
         }
     }
 
-    public void testQuickQueryCreation() throws SQLException {
+    @Test
+    public void quickQueryCreation() throws SQLException {
 
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
@@ -115,6 +115,7 @@ public class DBQueryTest extends AbstractTest {
         }
     }
 
+    @Test
     public void testDBTableRowReuse() throws SQLException {
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
