@@ -10,7 +10,7 @@ import java.beans.PropertyEditorSupport;
  *
  * @author gregory.graham
  */
-public class DBNumberEditor extends PropertyEditorSupport {
+public class DBIntegerEditor extends PropertyEditorSupport {
 
     private String format;
 
@@ -28,11 +28,11 @@ public class DBNumberEditor extends PropertyEditorSupport {
      */
     @Override
     public void setAsText(String text) {
-        DBNumber type;
+        DBInteger type;
         if (text == null || text.isEmpty()) {
             type = new DBInteger();
         } else {
-            type = new DBNumber(text);
+            type = new DBInteger(text);
         }
         setValue(type);
     }
