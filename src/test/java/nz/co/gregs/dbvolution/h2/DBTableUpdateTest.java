@@ -16,15 +16,13 @@
 package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
-import static junit.framework.TestCase.assertEquals;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class DBTableUpdateTest extends AbstractTest {
 
-    public DBTableUpdateTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testInsertRows() throws SQLException {
         Marque myTableRow = new Marque();
         myTableRow.getUidMarque().isLiterally(1);
@@ -33,17 +31,17 @@ public class DBTableUpdateTest extends AbstractTest {
         marques.printAllRows();
         Marque toyota = marques.toList().get(0);
         System.out.println("===" + toyota.name.toString());
-        assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
+        Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
         toyota.name.isLiterally("NOTTOYOTA");
         String sqlForUpdate = marques.getSQLForUpdate(toyota).get(0);
-        assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;", sqlForUpdate);
+        Assert.assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;", sqlForUpdate);
 
         marques.update(toyota);
         
         marques.getRowsByExample(myTableRow);
         marques.printAllRows();
         toyota = marques.toList().get(0);
-        assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
+        Assert.assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
     }
 }

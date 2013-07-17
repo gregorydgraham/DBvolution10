@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Test;
 
 /**
  *
@@ -29,10 +30,7 @@ public class DBTableInsertTest extends AbstractTest {
     
     Marque myTableRow = new Marque();
     
-    public DBTableInsertTest(String testName) {
-        super(testName);
-    }
-
+    @Test
     public void testInsertRows() throws SQLException{
         myTableRow.getUidMarque().isLiterally(999);
         myTableRow.getName().isLiterally("TOYOTA");

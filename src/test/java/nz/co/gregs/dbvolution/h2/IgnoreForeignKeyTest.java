@@ -22,6 +22,8 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
@@ -29,35 +31,32 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class IgnoreForeignKeyTest extends AbstractTest {
 
-    public IgnoreForeignKeyTest(String testName) {
-        super(testName);
-    }
-
+    @Test
     public void testIgnoreForeignKey() throws SQLException{
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
         DBQuery dbQuery = new DBQuery(myDatabase, carCompany, marque);
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         dbQuery.printAllRows();
-        assertTrue("Number of rows should be 22", allRows.size() == 22);
+        Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 
         marque.ignoreForeignKey(marque.getCarCompany());
         dbQuery = new DBQuery(myDatabase, carCompany, marque);
         allRows = dbQuery.getAllRows();
         dbQuery.printAllRows();
-        assertTrue("Number of rows should be 88", allRows.size() == 88);
+        Assert.assertTrue("Number of rows should be 88", allRows.size() == 88);
 
         marque.useAllForeignKeys();
         dbQuery = new DBQuery(myDatabase, carCompany, marque);
         allRows = dbQuery.getAllRows();
         dbQuery.printAllRows();
-        assertTrue("Number of rows should be 88", allRows.size() == 22);
+        Assert.assertTrue("Number of rows should be 88", allRows.size() == 22);
 
         marque.ignoreAllForeignKeys();
         dbQuery = new DBQuery(myDatabase, carCompany, marque);
         allRows = dbQuery.getAllRows();
         dbQuery.printAllRows();
-        assertTrue("Number of rows should be 88", allRows.size() == 88);
+        Assert.assertTrue("Number of rows should be 88", allRows.size() == 88);
 
     }
 }

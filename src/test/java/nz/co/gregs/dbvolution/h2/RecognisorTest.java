@@ -15,53 +15,52 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import junit.framework.TestCase;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
 import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
  * @author gregorygraham
  */
-public class RecognisorTest extends TestCase{
+public class RecognisorTest{
     
+    @Test
     public void testPkRecognisor(){
         PrimaryKeyRecognisor pkRecognisor = new PrimaryKeyRecognisor();
-        assertFalse(pkRecognisor.isPrimaryKeyColumn("table","column"));
+        Assert.assertFalse(pkRecognisor.isPrimaryKeyColumn("table","column"));
         
         pkRecognisor = new UIDBasedPKRecognisor();
-        assertFalse(pkRecognisor.isPrimaryKeyColumn("table", "column"));
-        assertTrue(pkRecognisor.isPrimaryKeyColumn("table", "uid_table"));
+        Assert.assertFalse(pkRecognisor.isPrimaryKeyColumn("table", "column"));
+        Assert.assertTrue(pkRecognisor.isPrimaryKeyColumn("table", "uid_table"));
     }
     
+    @Test
     public void testFKRecognisor(){
         ForeignKeyRecognisor fkRecognisor = new ForeignKeyRecognisor();
-        assertFalse(fkRecognisor.isForeignKeyColumn("table", "column"));
-        assertNull(fkRecognisor.getReferencedColumn("table", "column"));
-        assertNull(fkRecognisor.getReferencedTable("table", "column"));
+        Assert.assertFalse(fkRecognisor.isForeignKeyColumn("table", "column"));
+        Assert.assertNull(fkRecognisor.getReferencedColumn("table", "column"));
+        Assert.assertNull(fkRecognisor.getReferencedTable("table", "column"));
         
         fkRecognisor = new FKBasedFKRecognisor();
-        assertFalse(fkRecognisor.isForeignKeyColumn("table", "column"));
-        assertNull(fkRecognisor.getReferencedColumn("table", "column"));
-        assertNull(fkRecognisor.getReferencedTable("table", "column"));
+        Assert.assertFalse(fkRecognisor.isForeignKeyColumn("table", "column"));
+        Assert.assertNull(fkRecognisor.getReferencedColumn("table", "column"));
+        Assert.assertNull(fkRecognisor.getReferencedTable("table", "column"));
 
-        assertTrue(fkRecognisor.isForeignKeyColumn("table", "fk_table"));
-        assertEquals("uid_table", fkRecognisor.getReferencedColumn("table", "fk_table"));
-        assertEquals("Table", fkRecognisor.getReferencedTable("table", "fk_table"));
+        Assert.assertTrue(fkRecognisor.isForeignKeyColumn("table", "fk_table"));
+        Assert.assertEquals("uid_table", fkRecognisor.getReferencedColumn("table", "fk_table"));
+        Assert.assertEquals("Table", fkRecognisor.getReferencedTable("table", "fk_table"));
 
-        assertTrue(fkRecognisor.isForeignKeyColumn("t_4", "fk_3"));
-        assertEquals("uid_3", fkRecognisor.getReferencedColumn("t_4", "fk_3"));
-        assertEquals("T_3", fkRecognisor.getReferencedTable("t_4", "fk_3"));
+        Assert.assertTrue(fkRecognisor.isForeignKeyColumn("t_4", "fk_3"));
+        Assert.assertEquals("uid_3", fkRecognisor.getReferencedColumn("t_4", "fk_3"));
+        Assert.assertEquals("T_3", fkRecognisor.getReferencedTable("t_4", "fk_3"));
 
-        assertTrue(fkRecognisor.isForeignKeyColumn("t_4", "fk_3_1"));
-        assertEquals("uid_3", fkRecognisor.getReferencedColumn("t_4", "fk_3_1"));
-        assertEquals("T_3",fkRecognisor.getReferencedTable("t_4", "fk_3_1"));
+        Assert.assertTrue(fkRecognisor.isForeignKeyColumn("t_4", "fk_3_1"));
+        Assert.assertEquals("uid_3", fkRecognisor.getReferencedColumn("t_4", "fk_3_1"));
+        Assert.assertEquals("T_3",fkRecognisor.getReferencedTable("t_4", "fk_3_1"));
 
     }
     

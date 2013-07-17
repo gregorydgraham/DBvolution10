@@ -20,10 +20,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
@@ -33,10 +34,7 @@ public class DBTableTransactionTest extends AbstractTest {
 
     Marque myTableRow = new Marque();
 
-    public DBTableTransactionTest(String testName) {
-        super(testName);
-    }
-
+    @Test
     public void testInsertRowsSucceeds() throws SQLException, Exception{
         List<Marque> original = marques.getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
@@ -66,9 +64,10 @@ public class DBTableTransactionTest extends AbstractTest {
         List<Marque> added = marques.getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
         System.out.println("added.toList().size(): " + added.size());
-        assertTrue("Length of list after insert should be longer than the original", added.size() == original.size() + 2);
+        Assert.assertTrue("Length of list after insert should be longer than the original", added.size() == original.size() + 2);
     }
 
+    @Test
     public void testInsertRowsFailure() throws SQLException {
         List<Marque> original = marques.getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
@@ -104,7 +103,7 @@ public class DBTableTransactionTest extends AbstractTest {
         List<Marque> added = addedRows.toList();
         System.out.println("original.toList().size(): " + original.size());
         System.out.println("added.toList().size(): " + added.size());
-        assertTrue("Length of list after insert should be the same as the original", added.size() == original.size());
+        Assert.assertTrue("Length of list after insert should be the same as the original", added.size() == original.size());
 
     }
 }
