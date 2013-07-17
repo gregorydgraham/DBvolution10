@@ -117,7 +117,7 @@ public class DBTable<E extends DBRow> {
      *
      * @throws SQLException
      */
-    public void getAllRows() throws SQLException {
+    public DBTable<E> getAllRows() throws SQLException {
         this.listOfRows.clear();
 
         String selectStatement = this.getSelectStatement();
@@ -140,6 +140,7 @@ public class DBTable<E extends DBRow> {
             throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + theDatabase.getJdbcURL() + " USERNAME=" + theDatabase.getUsername(), noConnection);
         }
         addAllFields(this, resultSet);
+        return this;
     }
 
     private void addAllFields(DBTable<E> dbTable, ResultSet resultSet) throws SQLException {
