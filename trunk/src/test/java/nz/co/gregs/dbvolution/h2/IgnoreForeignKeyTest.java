@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
 import java.util.List;
-import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
