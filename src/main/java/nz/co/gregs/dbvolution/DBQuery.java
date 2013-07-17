@@ -246,9 +246,9 @@ public class DBQuery {
      *
      * myTable.printRows(System.err);
      *
-     * @param ps
+     * @param printStream
      */
-    public void printAllDataColumns(PrintStream ps) throws SQLException {
+    public void printAllDataColumns(PrintStream printStream) throws SQLException {
         if (results == null) {
             this.getAllRows();
         }
@@ -257,9 +257,9 @@ public class DBQuery {
             for (DBRow tab : this.queryTables) {
                 DBRow rowPart = row.get(tab);
                 String rowPartStr = rowPart.toStringMinusFKs();
-                ps.print(rowPartStr);
+                printStream.print(rowPartStr);
             }
-            ps.println();
+            printStream.println();
         }
     }
 
