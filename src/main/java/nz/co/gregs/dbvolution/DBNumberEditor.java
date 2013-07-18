@@ -30,9 +30,10 @@ public class DBNumberEditor extends PropertyEditorSupport {
     public void setAsText(String text) {
         DBNumber type;
         if (text == null || text.isEmpty()) {
-            type = new DBInteger();
+            type = new DBNumber();
         } else {
-            type = new DBNumber(text);
+            type = new DBNumber();
+            type.isLiterally(text);
         }
         setValue(type);
     }
