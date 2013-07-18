@@ -295,10 +295,12 @@ public class DBTableClassGenerator {
             case Types.TIMESTAMP:
                 value = "DBDate";
                 break;
-            case Types.VARBINARY:
             case Types.JAVA_OBJECT:
+                value = "DBObject";
+                break;
+            case Types.VARBINARY:
             case Types.LONGVARBINARY:
-                value = "DBBlob";
+                value = "DBByteArray";
                 break;
             default:
                 throw new RuntimeException("Unknown Java SQL Type: " + columnType);

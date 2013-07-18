@@ -8,14 +8,14 @@ package nz.co.gregs.dbvolution;
  *
  * @author gregory.graham
  */
-public class DBBlob extends QueryableDatatype {
+public class DBByteArray extends QueryableDatatype {
 
-    public DBBlob(Object object) {
+    public DBByteArray(Object object) {
         super(object);
 
     }
 
-    public DBBlob() {
+    public DBByteArray() {
         super();
     }
 
