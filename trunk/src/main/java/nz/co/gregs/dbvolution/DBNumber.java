@@ -29,12 +29,13 @@ public class DBNumber extends QueryableDatatype {
      * @param aNumber
      */
     public DBNumber(Number aNumber) {
+        super(aNumber);
         if (aNumber == null) {
             numberValue = 0L;
-            this.isDBNull = true;
+//            this.isDBNull = true;
 //            this.usingNullComparison = true;
         } else {
-            super.isLiterally(aNumber);
+//            super.isLiterally(aNumber);
             numberValue = aNumber;
         }
     }

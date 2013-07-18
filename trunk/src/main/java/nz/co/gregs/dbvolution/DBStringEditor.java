@@ -21,15 +21,21 @@ public class DBStringEditor extends PropertyEditorSupport {
     public void setFormat(String format) {
         this.format = format;
     }
-    
+
     /**
      *
      * @param text
      */
     @Override
     public void setAsText(String text) {
-        DBString type = new DBString(text);
-        setValue(type);
+        Object value = getValue();
+        if (value instanceof DBString) {
+            DBString qdt = (DBString) value;
+            qdt.isLiterally(text);
+        } else {
+            DBString type = new DBString();
+            type.isLiterally(text);
+            setValue(type);
+        }
     }
-    
 }

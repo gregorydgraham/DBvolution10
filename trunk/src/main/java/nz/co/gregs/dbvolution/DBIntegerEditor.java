@@ -32,7 +32,8 @@ public class DBIntegerEditor extends PropertyEditorSupport {
         if (text == null || text.isEmpty()) {
             type = new DBInteger();
         } else {
-            type = new DBInteger(text);
+            type = new DBInteger();
+            type.isLiterally(text);
         }
         setValue(type);
     }
