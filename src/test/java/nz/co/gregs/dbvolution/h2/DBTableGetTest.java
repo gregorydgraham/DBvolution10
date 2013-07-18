@@ -97,9 +97,6 @@ public class DBTableGetTest extends AbstractTest {
 
     @Test
     public void testDateIsBetween() throws SQLException, ParseException{
-//        GregorianCalendar gregorianCalendar = new GregorianCalendar();
-//        gregorianCalendar.add(Calendar.SECOND, 60);
-//        Date future = gregorianCalendar.getTime();
         
         Date afterAllTheDates = tedhiFormat.parse("July 2013");
         DateRange coversFirstDate = tedhiRangeFormat.parse("March 2013");
@@ -109,7 +106,8 @@ public class DBTableGetTest extends AbstractTest {
         marques = marques.getRowsByExample(oldQuery);
         marques.printAllRows();
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", marques.toList().size() == marqueRows.size()-1);
-        oldQuery.getCreationDate().isBetween(coversFirstDate.getFrom(), coversFirstDate.getTo());
+        
+        oldQuery.getCreationDate().isBetween(coversFirstDate.getStart(), coversFirstDate.getEnd());
         marques = marques.getRowsByExample(oldQuery);
         marques.printAllRows();
         Assert.assertThat(marques.toList().size(),is(18));
