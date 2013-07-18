@@ -175,7 +175,7 @@ public class DBQuery {
     public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
         HashSet<R> objList = new HashSet<R>();
         ArrayList<R> arrayList = new ArrayList<R>();
-        if (results.isEmpty()) {
+        if (results==null||results.isEmpty()) {
             getAllRows();
         }
         if (!results.isEmpty()) {
