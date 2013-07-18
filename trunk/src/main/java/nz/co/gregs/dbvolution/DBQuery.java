@@ -284,4 +284,9 @@ public class DBQuery {
             ps.println();
         }
     }
+
+    public void clear() {
+        this.queryTables.clear();
+        results = null;
+    }
 }
