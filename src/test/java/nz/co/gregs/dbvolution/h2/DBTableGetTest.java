@@ -16,16 +16,19 @@
 package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import net.sourceforge.tedhi.DateRange;
 import nz.co.gregs.dbvolution.DBDate;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
+import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -93,16 +96,23 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     @Test
-    public void testDateIsBetween() throws SQLException{
-        GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        gregorianCalendar.add(Calendar.SECOND, 60);
-        Date future = gregorianCalendar.getTime();
-
+    public void testDateIsBetween() throws SQLException, ParseException{
+//        GregorianCalendar gregorianCalendar = new GregorianCalendar();
+//        gregorianCalendar.add(Calendar.SECOND, 60);
+//        Date future = gregorianCalendar.getTime();
+        
+        Date afterAllTheDates = tedhiFormat.parse("July 2013");
+        DateRange coversFirstDate = tedhiRangeFormat.parse("March 2013");
+        
         Marque oldQuery = new Marque();
-        oldQuery.getCreationDate().isBetween(new Date(0L), future);
+        oldQuery.getCreationDate().isBetween(new Date(0L), afterAllTheDates);
         marques = marques.getRowsByExample(oldQuery);
         marques.printAllRows();
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", marques.toList().size() == marqueRows.size()-1);
+        oldQuery.getCreationDate().isBetween(coversFirstDate.getFrom(), coversFirstDate.getTo());
+        marques = marques.getRowsByExample(oldQuery);
+        marques.printAllRows();
+        Assert.assertThat(marques.toList().size(),is(18));
     }
 
     @Test
