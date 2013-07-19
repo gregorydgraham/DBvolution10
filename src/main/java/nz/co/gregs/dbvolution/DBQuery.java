@@ -66,7 +66,7 @@ public class DBQuery {
         results = null;
     }
 
-    public String generateSQLString() throws SQLException {
+    public String getSQLForQuery() throws SQLException {
         StringBuilder selectClause = new StringBuilder().append("select ");
         StringBuilder fromClause = new StringBuilder().append(" from ");
         StringBuilder whereClause = new StringBuilder().append(database.beginWhereClause()).append(database.getTrueOperation());
@@ -142,7 +142,7 @@ public class DBQuery {
         DBQueryRow queryRow;
 
         Statement dbStatement = database.getDBStatement();
-        ResultSet resultSet = dbStatement.executeQuery(this.generateSQLString());
+        ResultSet resultSet = dbStatement.executeQuery(this.getSQLForQuery());
         while (resultSet.next()) {
             queryRow = new DBQueryRow();
             for (DBRow tableRow : queryTables) {
