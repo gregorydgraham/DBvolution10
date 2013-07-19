@@ -48,7 +48,7 @@ public class DBInteger extends DBNumber {
         }
     }
 
-    public void isIn(Integer[] inValues) {
+    public void isIn(Integer... inValues) {
         ArrayList<DBInteger> intOptions = new ArrayList<DBInteger>();
         for (Integer num : inValues) {
             intOptions.add(new DBInteger(num));
@@ -56,7 +56,7 @@ public class DBInteger extends DBNumber {
         isIn(intOptions.toArray(this.inValuesNumber));
     }
 
-    public void isIn(Long[] inValues) {
+    public void isIn(Long... inValues) {
         ArrayList<DBInteger> intOptions = new ArrayList<DBInteger>();
         for (Long num : inValues) {
             intOptions.add(new DBInteger(num));
@@ -64,7 +64,7 @@ public class DBInteger extends DBNumber {
         isIn(intOptions.toArray(this.inValuesNumber));
     }
 
-    public void isIn(DBInteger[] inValues) {
+    public void isIn(DBInteger... inValues) {
         super.isIn(inValues);
     }
 
