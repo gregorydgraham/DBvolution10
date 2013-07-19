@@ -38,7 +38,7 @@ public class DBQueryTest extends AbstractTest {
         carCompany.name.isLiterally("TOYOTA");
         dbQuery.add(carCompany);
         dbQuery.add(new Marque());
-        final String generateSQLString = dbQuery.generateSQLString().replaceAll(" +", " ");
+        final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
 
         String expectedResult = "select CAR_COMPANY.NAME _1064314813, \n"
@@ -97,7 +97,7 @@ public class DBQueryTest extends AbstractTest {
         DBQuery dbQuery = new DBQuery(myDatabase, carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
-        System.out.println(dbQuery.generateSQLString());
+        System.out.println(dbQuery.getSQLForQuery());
         dbQuery.printAllRows();
         assertEquals(2, results.size());
 
@@ -122,7 +122,7 @@ public class DBQueryTest extends AbstractTest {
         DBQuery dbQuery = new DBQuery(myDatabase, carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
-        System.out.println(dbQuery.generateSQLString());
+        System.out.println(dbQuery.getSQLForQuery());
         dbQuery.printAllRows();
         assertEquals(2, results.size());
 
