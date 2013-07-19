@@ -74,7 +74,7 @@ public class DBNumber extends QueryableDatatype {
     }
 
     @Override
-    public void isIn(Object[] literalOptions) {
+    public void isIn(Object... literalOptions) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Object str : literalOptions) {
             intOptions.add(new DBNumber(str));
@@ -86,7 +86,7 @@ public class DBNumber extends QueryableDatatype {
      *
      * @param inValues
      */
-    public void isIn(Number[] inValues) {
+    public void isIn(Number... inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Number num : inValues) {
             intOptions.add(new DBNumber(num));
@@ -110,7 +110,7 @@ public class DBNumber extends QueryableDatatype {
      *
      * @param inValues
      */
-    public void isIn(DBNumber[] inValues) {
+    public void isIn(DBNumber... inValues) {
         this.inValuesNumber = inValues;
         super.isIn(inValues);
     }

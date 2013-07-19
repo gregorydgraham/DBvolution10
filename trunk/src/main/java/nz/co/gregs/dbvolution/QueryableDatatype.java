@@ -176,11 +176,11 @@ public class QueryableDatatype extends Object implements Serializable {
 
     /**
      * Converts the objects to QueryableDatatypes and calls
-     * isIn(QueryableDatatype[] inValues) with them
+     * isIn(QueryableDatatype... inValues) with them
      *
      * @param inValues the inValues to set
      */
-    public void isIn(Object[] inValues) {
+    public void isIn(Object... inValues) {
         ArrayList<QueryableDatatype> inVals = new ArrayList<QueryableDatatype>();
         for (Object obj : inValues) {
             inVals.add(new QueryableDatatype(obj));
@@ -192,7 +192,7 @@ public class QueryableDatatype extends Object implements Serializable {
      *
      * @param inValues
      */
-    public void isIn(QueryableDatatype[] inValues) {
+    public void isIn(QueryableDatatype... inValues) {
         ArrayList<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
         boolean addAll = arrayList.addAll(Arrays.asList(inValues));
         this.setOperator(new DBInOperator(arrayList));
