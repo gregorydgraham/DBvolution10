@@ -172,10 +172,27 @@ public class DBQuery {
         return results;
     }
 
+    public <R extends DBRow> R getOnlyInstanceOf(R exemplar) throws SQLException, UnexpectedNumberOfRowsException {
+        List<R> allInstancesFound = getAllInstancesOf(exemplar, 1);
+        return allInstancesFound.get(0);
+    }
+
+    public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, int expected) throws SQLException, UnexpectedNumberOfRowsException {
+        List<R> allInstancesFound = getAllInstancesOf(exemplar);
+        final int actual = allInstancesFound.size();
+        if (actual > expected) {
+            throw new UnexpectedNumberOfRowsException(expected, actual, "Too Many Results: expected " + expected + ", actually got " + actual);
+        } else if (actual < expected) {
+            throw new UnexpectedNumberOfRowsException(expected, actual, "Too Few Results: expected " + expected + ", actually got " + actual);
+        } else {
+            return allInstancesFound;
+        }
+    }
+
     public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
         HashSet<R> objList = new HashSet<R>();
         ArrayList<R> arrayList = new ArrayList<R>();
-        if (results==null||results.isEmpty()) {
+        if (results == null || results.isEmpty()) {
             getAllRows();
         }
         if (!results.isEmpty()) {
