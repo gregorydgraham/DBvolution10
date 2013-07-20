@@ -89,7 +89,7 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsIn() throws SQLException{
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
-        hummerQuery.getName().isIn(new String[]{"PEUGEOT", "HUMMER"});
+        hummerQuery.getName().isIn("PEUGEOT", "HUMMER");
         marques = marques.getRowsByExample(hummerQuery);
         marques.printAllRows();
         Assert.assertEquals(marques.toList().size(), 2);
