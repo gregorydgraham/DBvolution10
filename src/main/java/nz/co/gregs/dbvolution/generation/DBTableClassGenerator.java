@@ -129,7 +129,7 @@ public class DBTableClassGenerator {
      * @throws SQLException
      */
     public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, new String[]{"TABLE"});
+        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "TABLE");
     }
 
     /**
@@ -140,7 +140,7 @@ public class DBTableClassGenerator {
      * @throws SQLException
      */
     public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException{
-        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, new String[]{"VIEW"});
+        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "VIEW");
     }
 
     /**
@@ -151,7 +151,7 @@ public class DBTableClassGenerator {
      * @return
      * @throws SQLException
      */
-    public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String[] dbObjectTypes) throws SQLException {
+    public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
 
         Statement dbStatement = database.getDBStatement();

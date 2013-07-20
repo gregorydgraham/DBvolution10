@@ -88,7 +88,7 @@ public class DBDate extends QueryableDatatype {
      *
      * @param dates
      */
-    public void isIn(Date[] dates) {
+    public void isIn(Date... dates) {
         ArrayList<DBDate> dbDates = new ArrayList<DBDate>();
         for (Date date : dates) {
             dbDates.add(new DBDate(date));
