@@ -305,6 +305,10 @@ public class DBTable<E extends DBRow> {
         return getRows(getSQLForExample(queryTemplate));
     }
 
+    public E getOnlyRowByExample(E queryTemplate) throws SQLException, UnexpectedNumberOfRowsException {
+        return getRowsByExample(queryTemplate, 1).listOfRows.get(0);
+    }
+    
     public DBTable<E> getRowsByExample(E queryTemplate, int expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException {
         DBTable<E> rowsByExample = getRowsByExample(queryTemplate);
         int actualNumberOfRows = rowsByExample.toList().size();

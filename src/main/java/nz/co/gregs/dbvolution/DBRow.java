@@ -339,9 +339,11 @@ abstract public class DBRow {
         Field[] fields = thisClass.getDeclaredFields();
 
         for (Field field : fields) {
-            String dbColumnName = getDBColumnName(field);
-            if (dbColumnName != null) {
-                columnNames.add(dbColumnName);
+            if (field.isAnnotationPresent(DBColumn.class)) {
+                String dbColumnName = getDBColumnName(field);
+                if (dbColumnName != null) {
+                    columnNames.add(dbColumnName);
+                }
             }
         }
         return columnNames;

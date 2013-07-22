@@ -111,9 +111,9 @@ public class DBQuery {
                         String formattedFK = database.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
                         whereClause
                                 .append(lineSep)
-                                .append("and ")
+                                .append(database.beginAndLine())
                                 .append(formattedPK)
-                                .append(" = ")
+                                .append(database.getEqualsComparator())
                                 .append(formattedFK);
                     }
                 }
