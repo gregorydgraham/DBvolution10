@@ -29,7 +29,7 @@ import org.junit.Test;
  */
 public class DBDatabaseTest {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionDBTest", "", "");
+    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionTest", "", "");
 
     @Before
     public void setUp() throws Exception {
