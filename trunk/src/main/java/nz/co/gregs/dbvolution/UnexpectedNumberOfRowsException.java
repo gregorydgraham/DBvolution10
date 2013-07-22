@@ -19,7 +19,7 @@ package nz.co.gregs.dbvolution;
  *
  * @author gregory.graham
  */
-class UnexpectedNumberOfRowsException extends Exception {
+public class UnexpectedNumberOfRowsException extends Exception {
 
     private int expectedRows;
     private int actualRows;
