@@ -15,18 +15,26 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
+ *
+ * Implements the abstractions required for handling Java Objects stored in the
+ * database
  *
  * @author gregory.graham
  */
-public class DBObject extends QueryableDatatype{
-    
+public class DBObject extends QueryableDatatype {
+
     // NOT YET IMPLEMENTED
-    
-    
-    
     @Override
     public String getSQLDatatype() {
         return "JAVA_OBJECT";
+    }
+
+    @Override
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
+        this.isLiterally(resultSet.getObject(fullColumnName));
     }
 }

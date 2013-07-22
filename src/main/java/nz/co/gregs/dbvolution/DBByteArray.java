@@ -4,8 +4,13 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
- *
+ * 
+ * Implements the abstractions necessary to handle arbitrary byte streams and files stored in the database
+ * 
  * @author gregory.graham
  */
 public class DBByteArray extends QueryableDatatype {
@@ -23,4 +28,10 @@ public class DBByteArray extends QueryableDatatype {
     public String getSQLDatatype() {
         return "BLOB";
     }
+    
+    @Override
+        protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException{
+        this.isLiterally(resultSet.getBytes(fullColumnName));
+    }
+
 }

@@ -4,9 +4,10 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 
 /**
@@ -166,7 +167,6 @@ public class DBNumber extends QueryableDatatype {
 //            super.isLiterally(literalValue);
 //        }
 //    }
-
     /**
      *
      * @param literal
@@ -202,7 +202,7 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     protected String toSQLString() {
-        if (this.isDBNull||this.numberValue==null){
+        if (this.isDBNull || this.numberValue == null) {
             return database.getNull();
         }
         return this.numberValue.toString();
@@ -241,5 +241,16 @@ public class DBNumber extends QueryableDatatype {
      */
     public Integer intValue() {
         return numberValue == null ? null : numberValue.intValue();
+    }
+
+    /**
+     *
+     * @param resultSet
+     * @param fullColumnName
+     * @throws SQLException
+     */
+    @Override
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
+        this.isLiterally(resultSet.getBigDecimal(fullColumnName));
     }
 }

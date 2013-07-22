@@ -4,6 +4,8 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -133,5 +135,10 @@ public class DBDate extends QueryableDatatype {
     @Override
     public String getSQLValue() {
         return database.getDateFormattedForQuery(dateValue);
+    }
+
+    @Override
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
+        this.isLiterally(resultSet.getDate(fullColumnName));
     }
 }
