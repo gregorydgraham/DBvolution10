@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -307,6 +305,19 @@ public class DBTable<E extends DBRow> {
         return getRows(getSQLForExample(queryTemplate));
     }
 
+    public DBTable<E> getRowsByExample(E queryTemplate, int expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException {
+        DBTable<E> rowsByExample = getRowsByExample(queryTemplate);
+        int actualNumberOfRows = rowsByExample.toList().size();
+        if (actualNumberOfRows==expectedNumberOfRows){
+            return rowsByExample;
+        }else{
+            throw new UnexpectedNumberOfRowsException(expectedNumberOfRows, actualNumberOfRows, "Unexpected Number Of Rows Detected: was expecting "
+                    +expectedNumberOfRows
+                    +", found "
+                    +actualNumberOfRows);
+        }
+    }
+
     /**
      * Returns the WHERE clause used by the getByExample method. Provided to aid
      * understanding and debugging.
@@ -416,6 +427,14 @@ public class DBTable<E extends DBRow> {
             return this.listOfRows.get(0);
         } else {
             return null;
+        }
+    }
+
+    public E getOnlyRow() throws UnexpectedNumberOfRowsException {
+        if (this.listOfRows.size() > 0) {
+            return this.listOfRows.get(0);
+        } else {
+            throw new UnexpectedNumberOfRowsException(1, listOfRows.size(), "Unexpected Number Of Rows Detected: was expecting 1, found "+listOfRows.size());
         }
     }
 

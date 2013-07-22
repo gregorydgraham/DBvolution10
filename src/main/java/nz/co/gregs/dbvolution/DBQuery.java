@@ -21,8 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -172,11 +170,32 @@ public class DBQuery {
         return results;
     }
 
+    /**
+     *
+     * Expects there to be exactly one(1) object of the exemplar type. 
+     * 
+     * An UnexpectedNumberOfRowsException is thrown if there is zero or more than one row.
+     * 
+     * @param <R>
+     * @param exemplar
+     * @return
+     * @throws SQLException
+     * @throws UnexpectedNumberOfRowsException
+     */
     public <R extends DBRow> R getOnlyInstanceOf(R exemplar) throws SQLException, UnexpectedNumberOfRowsException {
         List<R> allInstancesFound = getAllInstancesOf(exemplar, 1);
         return allInstancesFound.get(0);
     }
 
+    /**
+     *
+     * @param <R>: A Java Object that extends DBRow
+     * @param exemplar: The DBRow class that you would like returned.
+     * @param expected: The expected number of rows, an exception will be thrown if this expectation is not met.
+     * @return
+     * @throws SQLException
+     * @throws UnexpectedNumberOfRowsException
+     */
     public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, int expected) throws SQLException, UnexpectedNumberOfRowsException {
         List<R> allInstancesFound = getAllInstancesOf(exemplar);
         final int actual = allInstancesFound.size();
