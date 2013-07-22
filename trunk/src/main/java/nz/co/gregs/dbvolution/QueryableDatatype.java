@@ -5,8 +5,10 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.operators.*;
 
@@ -101,6 +103,40 @@ public class QueryableDatatype extends Object implements Serializable {
             }
             this.literalValue = newLiteralValue.toString();
             this.setOperator(new DBEqualsOperator(new QueryableDatatype(newLiteralValue.toString())));
+        }
+    }
+
+    /**
+     * @param newLiteralValue the literalValue to set
+     */
+    public void isLiterally(Date newLiteralValue) {
+        blankQuery();
+        if (newLiteralValue == null) {
+            isNull();
+        } else {
+            if (this.isDBNull
+                    || (literalValue != null && !newLiteralValue.equals(literalValue))) {
+                changed = true;
+            }
+            this.literalValue = newLiteralValue;
+            this.setOperator(new DBEqualsOperator(new DBDate(newLiteralValue)));
+        }
+    }
+
+    /**
+     * @param newLiteralValue the literalValue to set
+     */
+    public void isLiterally(Timestamp newLiteralValue) {
+        blankQuery();
+        if (newLiteralValue == null) {
+            isNull();
+        } else {
+            if (this.isDBNull
+                    || (literalValue != null && !newLiteralValue.equals(literalValue))) {
+                changed = true;
+            }
+            this.literalValue = newLiteralValue;
+            this.setOperator(new DBEqualsOperator(new DBDate(newLiteralValue)));
         }
     }
 
@@ -241,8 +277,16 @@ public class QueryableDatatype extends Object implements Serializable {
     }
 
     public String getSQLValue() {
-        String unsafeValue = literalValue.toString();
-        return database.beginStringValue() + database.safeString(unsafeValue) + database.endStringValue();
+        if (this.isDBNull) {
+            return database.getNull();
+        } else {
+            if (literalValue instanceof Date) {
+                return database.getDateFormattedForQuery((Date) literalValue);
+            } else {
+                String unsafeValue = literalValue.toString();
+                return database.beginStringValue() + database.safeString(unsafeValue) + database.endStringValue();
+            }
+        }
     }
 
     /**

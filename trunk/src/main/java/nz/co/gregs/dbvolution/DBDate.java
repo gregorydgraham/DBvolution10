@@ -23,26 +23,31 @@ public class DBDate extends QueryableDatatype {
     }
 
     public DBDate(Date date) {
+        super(date);
         if (date == null) {
             this.isDBNull = true;
         } else {
             dateValue = date;
         }
-        this.isLiterally(date);
+//        this.isLiterally(date);
     }
 
     DBDate(Timestamp timestamp) {
+        super(timestamp);
         if (timestamp == null) {
             this.isDBNull = true;
         } else {
-            dateValue.setTime(timestamp.getTime());
-            this.isLiterally(dateValue);
+            Date date = new Date();
+            date.setTime(timestamp.getTime());
+            dateValue = date;
+//            this.isLiterally(dateValue);
         }
     }
 
     DBDate(String str) {
-        super(str);
-        dateValue.setTime(Date.parse(str));
+        final long dateLong = Date.parse(str);
+        dateValue = new Date();
+        dateValue.setTime(dateLong);
         this.isLiterally(dateValue);
     }
 
@@ -64,6 +69,14 @@ public class DBDate extends QueryableDatatype {
     }
 
     public void isLiterally(Date date) {
+        super.isLiterally(date);
+        dateValue = date;
+    }
+
+    public void isLiterally(String dateStr) {
+        final long dateLong = Date.parse(dateStr);
+        Date date = new Date();
+        date.setTime(dateLong);
         super.isLiterally(date);
         dateValue = date;
     }
