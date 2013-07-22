@@ -5,6 +5,8 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -305,5 +307,15 @@ public class QueryableDatatype extends Object implements Serializable {
 
     boolean hasChanged() {
         return changed;
+    }
+
+    /**
+     *
+     * @param resultSet
+     * @param fullColumnName
+     * @throws SQLException
+     */
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException{
+        this.isLiterally(resultSet.getString(fullColumnName));
     }
 }

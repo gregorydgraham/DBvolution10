@@ -4,8 +4,9 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  *
@@ -76,5 +77,10 @@ public class DBInteger extends DBNumber {
     @Override
     public String getSQLValue() {
         return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
+    }
+
+    @Override
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
+        this.isLiterally(resultSet.getLong(fullColumnName));
     }
 }

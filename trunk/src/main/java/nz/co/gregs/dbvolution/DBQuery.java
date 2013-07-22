@@ -151,7 +151,8 @@ public class DBQuery {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
                     String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
                     String stringOfValue = resultSet.getString(fullColumnName);
-                    qdt.isLiterally(stringOfValue);
+                    qdt.setFromResultSet(resultSet, fullColumnName);
+//                    qdt.isLiterally(stringOfValue);
                 }
                 Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
                 if (existingInstancesOfThisTableRow == null) {
