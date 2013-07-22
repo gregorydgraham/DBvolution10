@@ -150,8 +150,8 @@ public class DBQuery {
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
                     String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
-                    String stringOfValue = resultSet.getString(fullColumnName);
                     qdt.setFromResultSet(resultSet, fullColumnName);
+//                    String stringOfValue = resultSet.getString(fullColumnName);
 //                    qdt.isLiterally(stringOfValue);
                 }
                 Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
