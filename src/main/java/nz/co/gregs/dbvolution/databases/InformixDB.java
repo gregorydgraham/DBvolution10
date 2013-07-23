@@ -37,7 +37,7 @@ public class InformixDB extends DBDatabase {
 
     @Override
     public String getDateFormattedForQuery(Date date) {
-        return "TO_DATE('" + dateFormat.format(date) + "','%Y-%m-%d %H:%M')";
+        return "TO_DATE('" + dateFormat.format(date) + "','%Y-%m-%d %H:%M:%S')";
     }
 
     /**
