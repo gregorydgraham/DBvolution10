@@ -35,15 +35,19 @@ public class QueryableDatatype extends Object implements Serializable {
     QueryableDatatype(String str) {
         if (str == null) {
             this.isDBNull = true;
+        } else if (!str.isEmpty()) {
+            this.literalValue = str;
+            this.operator = new DBEqualsOperator(this);
         }
-        this.literalValue = str;
     }
 
     QueryableDatatype(Object str) {
         if (str == null) {
             this.isDBNull = true;
+        } else if (!str.toString().isEmpty()) {
+            this.literalValue = str;
+            this.operator = new DBEqualsOperator(this);
         }
-        this.literalValue = str;
     }
 
     @Override
@@ -74,12 +78,12 @@ public class QueryableDatatype extends Object implements Serializable {
     }
 
     public String getWhereClauseUsingOperators(String columnName) {
-        StringBuilder whereClause = new StringBuilder();
+        String whereClause = "";
         DBOperator op = this.getOperator();
         if (op != null) {
-            whereClause.append(op.generateWhereLine(database, columnName));
+            whereClause = op.generateWhereLine(database, columnName);
         }
-        return whereClause.toString();
+        return whereClause;
     }
 
     public void invertOperator() {
@@ -104,7 +108,7 @@ public class QueryableDatatype extends Object implements Serializable {
                 changed = true;
             }
             this.literalValue = newLiteralValue.toString();
-            this.setOperator(new DBEqualsOperator(new QueryableDatatype(newLiteralValue.toString())));
+            this.setOperator(new DBEqualsOperator(this));
         }
     }
 
@@ -202,7 +206,7 @@ public class QueryableDatatype extends Object implements Serializable {
 
     public void isLike(Object t) {
         this.literalValue = t;
-        this.setOperator(new DBLikeOperator(new QueryableDatatype(t.toString())));
+        this.setOperator(new DBLikeOperator(this));
     }
 
     /**
@@ -221,7 +225,8 @@ public class QueryableDatatype extends Object implements Serializable {
     public void isIn(Object... inValues) {
         ArrayList<QueryableDatatype> inVals = new ArrayList<QueryableDatatype>();
         for (Object obj : inValues) {
-            inVals.add(new QueryableDatatype(obj));
+            QueryableDatatype qdt = new QueryableDatatype(obj);
+            inVals.add(qdt);
         }
         this.setOperator(new DBInOperator(inVals));
     }
@@ -245,7 +250,9 @@ public class QueryableDatatype extends Object implements Serializable {
     }
 
     public void isBetween(Object lowerBound, Object upperBound) {
-        isBetween(new QueryableDatatype(lowerBound), new QueryableDatatype(upperBound));
+        QueryableDatatype lower = new QueryableDatatype(lowerBound);
+        QueryableDatatype upper = new QueryableDatatype(upperBound);
+        isBetween(lower, upper);
     }
 
     /**
@@ -315,7 +322,7 @@ public class QueryableDatatype extends Object implements Serializable {
      * @param fullColumnName
      * @throws SQLException
      */
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException{
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
         this.isLiterally(resultSet.getString(fullColumnName));
     }
 }
