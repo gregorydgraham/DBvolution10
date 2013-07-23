@@ -28,14 +28,16 @@ public class DBStringEditor extends PropertyEditorSupport {
      */
     @Override
     public void setAsText(String text) {
+        DBString type;
         Object value = getValue();
         if (value instanceof DBString) {
-            DBString qdt = (DBString) value;
-            qdt.isLiterally(text);
+            type = (DBString) value;
         } else {
-            DBString type = new DBString();
-            type.isLiterally(text);
-            setValue(type);
+            type = new DBString();
         }
+        if (text != null && !text.isEmpty()) {
+            type.isLiterally(text);
+        }
+        setValue(type);
     }
 }
