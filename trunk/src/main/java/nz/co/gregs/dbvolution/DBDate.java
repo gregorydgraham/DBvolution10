@@ -69,6 +69,10 @@ public class DBDate extends QueryableDatatype {
         }
 //        return whereClause.toString();
     }
+    
+    public Date dateValue(){
+        return dateValue;
+    }
 
     public void isLiterally(Date date) {
         super.isLiterally(date);
