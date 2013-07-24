@@ -56,7 +56,7 @@ public class DBTableGetTest extends AbstractTest {
         DBRow row = marqueRows.get(0);
         String primaryKey;
         if (row != null) {
-            primaryKey = row.getPrimaryKeySQLStringValue();
+            primaryKey = row.getPrimaryKeySQLStringValue(myDatabase);
             singleMarque.getRowsByPrimaryKey(Long.parseLong(primaryKey));
             singleMarque.printAllRows();
         }
@@ -82,7 +82,7 @@ public class DBTableGetTest extends AbstractTest {
         marques = marques.getRowsByExample(literalQuery);
         marques.printAllRows();
         Assert.assertEquals(marques.toList().size(), 1);
-        Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKeySQLStringValue());
+        Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKeySQLStringValue(myDatabase));
     }
 
     @Test
