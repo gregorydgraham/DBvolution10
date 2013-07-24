@@ -88,8 +88,8 @@ public class DBQuery {
                 colSep = database.getSubsequentSelectSubClauseSeparator() + lineSep;
             }
             fromClause.append(separator).append(tableName);
-            tabRow.setDatabase(database);
-            String tabRowCriteria = tabRow.getWhereClause();
+//            tabRow.setDatabase(database);
+            String tabRowCriteria = tabRow.getWhereClause(database);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
             }
@@ -101,7 +101,7 @@ public class DBQuery {
             for (DBRow otherTab : otherTables) {
                 Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
                 for (DBForeignKey fk : fks.keySet()) {
-                    tabRow.setDatabase(database);
+                    //tabRow.setDatabase(database);
                     String formattedPK = database.formatTableAndColumnName(tableName, tabRow.getPrimaryKeyName());
                     Class<? extends DBRow> pkClass = fk.value();
                     DBRow fkReferencesTable = DBRow.getInstance(pkClass);
@@ -145,7 +145,7 @@ public class DBQuery {
             queryRow = new DBQueryRow();
             for (DBRow tableRow : queryTables) {
                 DBRow newInstance = DBRow.getInstance(tableRow.getClass());
-                newInstance.setDatabase(database);
+                //newInstance.setDatabase(database);
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
@@ -159,10 +159,10 @@ public class DBQuery {
                     existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
                     existingInstances.put(tableRow.getClass(), existingInstancesOfThisTableRow);
                 }
-                DBRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeySQLStringValue());
+                DBRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeySQLStringValue(database));
                 if (existingInstance == null) {
                     existingInstance = newInstance;
-                    existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKeySQLStringValue(), existingInstance);
+                    existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKeySQLStringValue(database), existingInstance);
                 }
                 queryRow.put(existingInstance.getClass(), existingInstance);
             }
@@ -315,7 +315,7 @@ public class DBQuery {
         for (DBQueryRow row : this.results) {
             for (DBRow tab : this.queryTables) {
                 DBRow rowPart = row.get(tab);
-                String rowPartStr = rowPart.getPrimaryKeySQLStringValue();
+                String rowPartStr = rowPart.getPrimaryKeySQLStringValue(database);
                 ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
             }
             ps.println();

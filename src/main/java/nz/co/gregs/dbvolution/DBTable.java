@@ -330,8 +330,8 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public String getSQLForExample(E query) {
-        query.setDatabase(theDatabase);
-        return query.getWhereClause();
+//        query.setDatabase(theDatabase);
+        return query.getWhereClause(theDatabase);
     }
 
     /**
@@ -479,14 +479,14 @@ public class DBTable<E extends DBRow> {
     public List<String> getSQLForInsert(List<E> newRows) {
         List<String> allInserts = new ArrayList<String>();
         for (E row : newRows) {
-            row.setDatabase(theDatabase);
+//            row.setDatabase(theDatabase);
             String sql =
                     theDatabase.beginInsertLine()
                     + row.getTableName()
                     + theDatabase.beginInsertColumnList()
                     + this.getAllFieldsForSelect()
                     + theDatabase.endInsertColumnList()
-                    + row.getValuesClause()
+                    + row.getValuesClause(theDatabase)
                     + theDatabase.endInsertLine();
             allInserts.add(sql);
         }
@@ -537,14 +537,14 @@ public class DBTable<E extends DBRow> {
     public List<String> getSQLForDelete(List<E> oldRows) {
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
-            row.setDatabase(theDatabase);
+//            row.setDatabase(theDatabase);
             String sql =
                     theDatabase.beginDeleteLine()
                     + row.getTableName()
                     + theDatabase.beginWhereClause()
                     + this.getPrimaryKeyColumn()
                     + theDatabase.getEqualsComparator()
-                    + row.getPrimaryKeySQLStringValue()
+                    + row.getPrimaryKeySQLStringValue(theDatabase)
                     + theDatabase.endDeleteLine();
             allInserts.add(sql);
         }
@@ -593,16 +593,16 @@ public class DBTable<E extends DBRow> {
     public List<String> getSQLForUpdate(List<E> oldRows) {
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
-            row.setDatabase(theDatabase);
+//            row.setDatabase(theDatabase);
             String sql =
                     theDatabase.beginUpdateLine()
                     + theDatabase.formatTableName(row.getTableName())
                     + theDatabase.beginSetClause();
-            sql = sql + row.getSetClause();
+            sql = sql + row.getSetClause(theDatabase);
             sql = sql + theDatabase.beginWhereClause()
                     + theDatabase.formatColumnName(this.getPrimaryKeyColumn())
                     + theDatabase.getEqualsComparator()
-                    + row.getPrimaryKeySQLStringValue()
+                    + row.getPrimaryKeySQLStringValue(theDatabase)
                     + theDatabase.endDeleteLine();
             allSQL.add(sql);
         }
