@@ -103,7 +103,8 @@ abstract public class DBRow {
 
     }
 
-    public String getPrimaryKeySQLStringValue() {
+    public String getPrimaryKeySQLStringValue(DBDatabase db) {
+        this.setDatabase(db);
         String pkColumnValue = "";
         QueryableDatatype queryableValueOfField;
         @SuppressWarnings("unchecked")
@@ -200,7 +201,8 @@ abstract public class DBRow {
      * @return
      *
      */
-    public String getWhereClause() {
+    public String getWhereClause(DBDatabase db) {
+        this.setDatabase(db);
         StringBuilder whereClause = new StringBuilder();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
@@ -290,7 +292,8 @@ abstract public class DBRow {
         }
     }
 
-    protected String getValuesClause() {
+    protected String getValuesClause(DBDatabase db) {
+        this.setDatabase(db);
         StringBuilder string = new StringBuilder();
         Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
@@ -306,7 +309,8 @@ abstract public class DBRow {
         return string.append(")").toString();
     }
 
-    protected String getSetClause() {
+    protected String getSetClause(DBDatabase db) {
+        this.setDatabase(db);
         StringBuilder sql = new StringBuilder();
         Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
