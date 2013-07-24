@@ -215,6 +215,12 @@ abstract public class DBRow {
         return whereClause.toString();
     }
 
+    /**
+     *
+     * @param db
+     * @return true if this DBRow instance has no specified criteria and will create a blank query returning the whole table.
+     * 
+     */
     public boolean willCreateBlankQuery(DBDatabase db) {
         String whereClause = getWhereClause(db);
         if (whereClause == null || whereClause.isEmpty()) {
