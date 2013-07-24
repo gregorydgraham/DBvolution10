@@ -64,6 +64,18 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     @Test
+    public void newDBRowWillCauseBlankQuery(){
+        Marque marque = new Marque();
+        Assert.assertThat(marque.willCreateBlankQuery(myDatabase),is(true));}
+    
+    @Test
+    public void newAlteredDBRowWillCauseBlankQuery(){
+        Marque marque = new Marque();
+        marque.name.isLiterally("HOLDEN");
+        Assert.assertThat(marque.willCreateBlankQuery(myDatabase),is(false));
+    }
+    
+    @Test
     public void testNumberIsBetween() throws SQLException{
         Marque marqueQuery = new Marque();
         marqueQuery.getUidMarque().isBetween(0, 90000000);

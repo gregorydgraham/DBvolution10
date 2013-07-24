@@ -215,6 +215,15 @@ abstract public class DBRow {
         return whereClause.toString();
     }
 
+    public boolean willCreateBlankQuery(DBDatabase db) {
+        String whereClause = getWhereClause(db);
+        if (whereClause == null || whereClause.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Probably not needed by the programmer, this is the convenience function
      * to find the table name specified by
