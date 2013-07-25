@@ -29,7 +29,7 @@ public class Marque extends DBRow {
     @DBColumn("fk_toystatusclass")
     public DBNumber toyotaStatusClassID = new DBNumber();
     @DBColumn("intindallocallowed")
-    public DBString intIndividualAllocationsAllowed = new DBString();
+    public DBString individualAllocationsAllowed = new DBString();
     @DBColumn("upd_count")
     public DBInteger updateCount = new DBInteger();
     @DBColumn
@@ -55,7 +55,7 @@ public class Marque extends DBRow {
         this.uidMarque.isLiterally(uidMarque);
         this.isUsedForTAFROs.isLiterally(isUsedForTAFROs);
         toyotaStatusClassID.isLiterally(statusClass);
-        this.intIndividualAllocationsAllowed.isLiterally(intIndividualAllocationsAllowed);
+        this.individualAllocationsAllowed.isLiterally(intIndividualAllocationsAllowed);
         this.updateCount.isLiterally(updateCount);
         this.auto_created.isLiterally(autoCreated);
         this.name.isLiterally(name);
@@ -125,7 +125,7 @@ public class Marque extends DBRow {
      * @return the intIndividualAllocationsAllowed
      */
     public DBString getIntIndividualAllocationsAllowed() {
-        return intIndividualAllocationsAllowed;
+        return individualAllocationsAllowed;
     }
 
     /**
@@ -133,7 +133,7 @@ public class Marque extends DBRow {
      * intIndividualAllocationsAllowed to set
      */
     public void setIntIndividualAllocationsAllowed(DBString intIndividualAllocationsAllowed) {
-        this.intIndividualAllocationsAllowed = intIndividualAllocationsAllowed;
+        this.individualAllocationsAllowed = intIndividualAllocationsAllowed;
     }
 
     /**

@@ -162,7 +162,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testRawQuery() throws SQLException{
         String rawQuery = "and lower(name) in ('peugeot','hummer')  ";
-        marques = marques.getByRawSQL(rawQuery);
+        marques = marques.getRowsByRawSQL(rawQuery);
         marques.printAllRows();
         Assert.assertEquals(marques.toList().size(), 2);
     }

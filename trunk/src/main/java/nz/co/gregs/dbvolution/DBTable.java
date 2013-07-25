@@ -348,7 +348,7 @@ public class DBTable<E extends DBRow> {
      * @param sqlWhereClause
      * @return
      */
-    public DBTable<E> getByRawSQL(String sqlWhereClause) throws SQLException {
+    public DBTable<E> getRowsByRawSQL(String sqlWhereClause) throws SQLException {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
             return getRows(sqlWhereClause.replaceAll("\\s*;\\s*$", ""));
         } else {
