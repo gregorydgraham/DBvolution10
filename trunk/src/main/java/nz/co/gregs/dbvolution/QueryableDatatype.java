@@ -27,6 +27,7 @@ public class QueryableDatatype extends Object implements Serializable {
     protected boolean includingNulls = false;
     private boolean invertOperator;
     private DBOperator operator = null;
+    private boolean undefined = true;
     private boolean changed = false;
 
     QueryableDatatype() {
@@ -65,7 +66,7 @@ public class QueryableDatatype extends Object implements Serializable {
 
     protected void blankQuery() {
         includingNulls = false;
-        this.setOperator(null);
+        this.operator = null;
     }
 
     /**
@@ -201,10 +202,12 @@ public class QueryableDatatype extends Object implements Serializable {
     }
 
     public final void isNull() {
+        blankQuery();
         this.setOperator(new DBIsNullOperator());
     }
 
     public void isLike(Object t) {
+        blankQuery();
         this.literalValue = t;
         this.setOperator(new DBLikeOperator(this));
     }
@@ -223,6 +226,7 @@ public class QueryableDatatype extends Object implements Serializable {
      * @param inValues the inValues to set
      */
     public void isIn(Object... inValues) {
+        blankQuery();
         ArrayList<QueryableDatatype> inVals = new ArrayList<QueryableDatatype>();
         for (Object obj : inValues) {
             QueryableDatatype qdt = new QueryableDatatype(obj);
@@ -236,6 +240,7 @@ public class QueryableDatatype extends Object implements Serializable {
      * @param inValues
      */
     public void isIn(QueryableDatatype... inValues) {
+        blankQuery();
         ArrayList<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
         boolean addAll = arrayList.addAll(Arrays.asList(inValues));
         this.setOperator(new DBInOperator(arrayList));
@@ -246,10 +251,12 @@ public class QueryableDatatype extends Object implements Serializable {
      * @param upperBound the upper bound to set
      */
     public void isBetween(QueryableDatatype lowerBound, QueryableDatatype upperBound) {
+        blankQuery();
         this.setOperator(new DBBetweenOperator(lowerBound, upperBound));
     }
 
     public void isBetween(Object lowerBound, Object upperBound) {
+        blankQuery();
         QueryableDatatype lower = new QueryableDatatype(lowerBound);
         QueryableDatatype upper = new QueryableDatatype(upperBound);
         isBetween(lower, upper);
@@ -310,6 +317,11 @@ public class QueryableDatatype extends Object implements Serializable {
      */
     public void setOperator(DBOperator operator) {
         this.operator = operator;
+        if (undefined) {
+            undefined = false;
+        } else {
+            changed = true;
+        }
     }
 
     boolean hasChanged() {
