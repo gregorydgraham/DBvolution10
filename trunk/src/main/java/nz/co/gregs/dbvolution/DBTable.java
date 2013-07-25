@@ -66,8 +66,10 @@ public class DBTable<E extends DBRow> {
         Field[] fields = thisClass.getDeclaredFields();
         String separator = "";
         for (Field field : fields) {
-            allFields.append(separator).append(" ").append(getDBColumnName(field));
-            separator = ",";
+            if (field.isAnnotationPresent(DBColumn.class)) {
+                allFields.append(separator).append(" ").append(getDBColumnName(field));
+                separator = ",";
+            }
         }
         return allFields.toString();
     }
@@ -308,17 +310,17 @@ public class DBTable<E extends DBRow> {
     public E getOnlyRowByExample(E queryTemplate) throws SQLException, UnexpectedNumberOfRowsException {
         return getRowsByExample(queryTemplate, 1).listOfRows.get(0);
     }
-    
+
     public DBTable<E> getRowsByExample(E queryTemplate, int expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException {
         DBTable<E> rowsByExample = getRowsByExample(queryTemplate);
         int actualNumberOfRows = rowsByExample.toList().size();
-        if (actualNumberOfRows==expectedNumberOfRows){
+        if (actualNumberOfRows == expectedNumberOfRows) {
             return rowsByExample;
-        }else{
+        } else {
             throw new UnexpectedNumberOfRowsException(expectedNumberOfRows, actualNumberOfRows, "Unexpected Number Of Rows Detected: was expecting "
-                    +expectedNumberOfRows
-                    +", found "
-                    +actualNumberOfRows);
+                    + expectedNumberOfRows
+                    + ", found "
+                    + actualNumberOfRows);
         }
     }
 
@@ -438,7 +440,7 @@ public class DBTable<E extends DBRow> {
         if (this.listOfRows.size() > 0) {
             return this.listOfRows.get(0);
         } else {
-            throw new UnexpectedNumberOfRowsException(1, listOfRows.size(), "Unexpected Number Of Rows Detected: was expecting 1, found "+listOfRows.size());
+            throw new UnexpectedNumberOfRowsException(1, listOfRows.size(), "Unexpected Number Of Rows Detected: was expecting 1, found " + listOfRows.size());
         }
     }
 
