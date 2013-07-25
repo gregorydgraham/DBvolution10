@@ -79,7 +79,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     public void testRawQuery() throws SQLException {
         DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
-        marq = marq.getByRawSQL(rawQuery);
+        marq = marq.getRowsByRawSQL(rawQuery);
         marq.printAllRows();
 
     }
