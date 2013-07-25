@@ -50,7 +50,7 @@ public class DBExistsOperatorTest extends AbstractTest {
         marque = new Marque();
         carCompany.uidCarCompany.isLiterally(3);
         marque.getCarCompany().setOperator(new DBExistsOperator(carCompany, carCompany.uidCarCompany));
-        marque.getCarCompany().invertOperator();
+        marque.getCarCompany().negateOperator();
         
         marques.getRowsByExample(marque);
         rowList = marques.toList();
