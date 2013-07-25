@@ -86,7 +86,7 @@ public class QueryableDatatype extends Object implements Serializable {
         return whereClause;
     }
 
-    public void invertOperator() {
+    public void negateOperator() {
         invertOperator = true;
         if (getOperator() != null) {
             getOperator().invertOperator(invertOperator);
