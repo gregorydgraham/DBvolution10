@@ -326,4 +326,14 @@ public class DBQuery {
         this.queryTables.clear();
         results = null;
     }
+
+    public <R extends DBRow> List<R> addAndGetInstancesOf(R dbRow) throws SQLException {
+        this.add(dbRow);
+        return this.getAllInstancesOf(dbRow);
+    }
+
+    public <R extends DBRow> List<R> addAndGetInstancesOf(R dbRow, int expected) throws SQLException, UnexpectedNumberOfRowsException {
+        this.add(dbRow);
+        return this.getAllInstancesOf(dbRow,expected);
+    }
 }
