@@ -59,9 +59,10 @@ public class DBQuery {
      *
      * @param table
      */
-    public void add(DBRow table) {
+    public DBQuery add(DBRow table) {
         queryTables.add(table);
         results = null;
+        return this;
     }
 
     public String getSQLForQuery() throws SQLException {
@@ -322,18 +323,19 @@ public class DBQuery {
         }
     }
 
-    public void clear() {
+    public DBQuery clear() {
         this.queryTables.clear();
         results = null;
+        return this;
     }
 
-    public <R extends DBRow> List<R> addAndGetInstancesOf(R dbRow) throws SQLException {
-        this.add(dbRow);
-        return this.getAllInstancesOf(dbRow);
-    }
-
-    public <R extends DBRow> List<R> addAndGetInstancesOf(R dbRow, int expected) throws SQLException, UnexpectedNumberOfRowsException {
-        this.add(dbRow);
-        return this.getAllInstancesOf(dbRow,expected);
-    }
+//    public <R extends DBRow> List<R> addAndGetInstancesOf(R dbRow) throws SQLException {
+//        this.add(dbRow);
+//        return this.getAllInstancesOf(dbRow);
+//    }
+//
+//    public <R extends DBRow> List<R> addAndGetInstancesOf(R dbRow, int expected) throws SQLException, UnexpectedNumberOfRowsException {
+//        this.add(dbRow);
+//        return this.getAllInstancesOf(dbRow,expected);
+//    }
 }
