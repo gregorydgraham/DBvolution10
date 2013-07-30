@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregorygraham
  */
 public class DBLikeOperator extends DBOperator {
+
     private final QueryableDatatype likeableValue;
 
     public DBLikeOperator(QueryableDatatype likeableValue) {
@@ -32,7 +33,19 @@ public class DBLikeOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         likeableValue.setDatabase(database);
-        return database.beginAndLine() +(invertOperator?"!(":"(")+ database.toLowerCase(database.formatColumnName(columnName)) + getOperator()+" "+database.toLowerCase(likeableValue.getSQLValue())+")";
+        if (database == null) {
+            throw new RuntimeException("Database Cannot Be NULL: Please supply a proper DBDatabase instance.");
+        } else if (likeableValue.getSQLValue() == null) {
+            throw new RuntimeException("Actual Comparison Is Required: please supply an actual object to compare against");
+        } else if (columnName == null) {
+            throw new RuntimeException("MalFormed DBRow: please supply a column name using the DBColumn annotation");
+        } else if (invertOperator == null) {
+            throw new RuntimeException("Invert Operator Missing: somehow you have removed the invertOperator instance, whatever you did with it, stop it.");
+        } else if (getOperator() == null) {
+            throw new RuntimeException("Get Operator Returns NULL: the getOperator() method returned null when it should return a String of the database's operator.");
+        } else {
+            return database.beginAndLine() + (invertOperator ? "!(" : "(") + database.toLowerCase(database.formatColumnName(columnName)) + getOperator() + " " + database.toLowerCase(likeableValue.getSQLValue()) + ")";
+        }
     }
 
     private String getOperator() {
@@ -41,7 +54,6 @@ public class DBLikeOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return database.beginAndLine() +(invertOperator?"!(":"(")+ database.toLowerCase(database.formatColumnName(columnName)) + getOperator()+" "+database.toLowerCase(otherColumnName)+")";
+        return database.beginAndLine() + (invertOperator ? "!(" : "(") + database.toLowerCase(database.formatColumnName(columnName)) + getOperator() + " " + database.toLowerCase(otherColumnName) + ")";
     }
-    
 }
