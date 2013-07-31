@@ -66,6 +66,10 @@ public class DBQuery {
     }
 
     public String getSQLForQuery() throws SQLException {
+        return getSQLForQuery(null);
+    }
+
+    private String getSQLForQuery(String providedSelectClause) throws SQLException {
         StringBuilder selectClause = new StringBuilder().append("select ");
         StringBuilder fromClause = new StringBuilder().append(" from ");
         StringBuilder whereClause = new StringBuilder().append(database.beginWhereClause()).append(database.getTrueOperation());
@@ -82,11 +86,15 @@ public class DBQuery {
             otherTables.remove(tabRow);
             tableName = tabRow.getTableName();
 
-            List<String> columnNames = tabRow.getColumnNames();
-            for (String columnName : columnNames) {
-                String formattedColumnName = database.formatTableAndColumnNameForSelectClause(tableName, columnName);
-                selectClause.append(colSep).append(formattedColumnName);
-                colSep = database.getSubsequentSelectSubClauseSeparator() + lineSep;
+            if (providedSelectClause == null) {
+                List<String> columnNames = tabRow.getColumnNames();
+                for (String columnName : columnNames) {
+                    String formattedColumnName = database.formatTableAndColumnNameForSelectClause(tableName, columnName);
+                    selectClause.append(colSep).append(formattedColumnName);
+                    colSep = database.getSubsequentSelectSubClauseSeparator() + lineSep;
+                }
+            } else {
+                selectClause = new StringBuilder(providedSelectClause);
             }
             fromClause.append(separator).append(tableName);
 //            tabRow.setDatabase(database);
@@ -136,6 +144,10 @@ public class DBQuery {
         return sqlString;
     }
 
+    public String getSQLForCount() throws SQLException {
+        return getSQLForQuery("select " + database.countStarClause());
+    }
+
     public List<DBQueryRow> getAllRows() throws SQLException {
         results = new ArrayList<DBQueryRow>();
         DBQueryRow queryRow;
@@ -174,10 +186,11 @@ public class DBQuery {
 
     /**
      *
-     * Expects there to be exactly one(1) object of the exemplar type. 
-     * 
-     * An UnexpectedNumberOfRowsException is thrown if there is zero or more than one row.
-     * 
+     * Expects there to be exactly one(1) object of the exemplar type.
+     *
+     * An UnexpectedNumberOfRowsException is thrown if there is zero or more
+     * than one row.
+     *
      * @param <R>
      * @param exemplar
      * @return
@@ -193,7 +206,8 @@ public class DBQuery {
      *
      * @param <R>: A Java Object that extends DBRow
      * @param exemplar: The DBRow class that you would like returned.
-     * @param expected: The expected number of rows, an exception will be thrown if this expectation is not met.
+     * @param expected: The expected number of rows, an exception will be thrown
+     * if this expectation is not met.
      * @return
      * @throws SQLException
      * @throws UnexpectedNumberOfRowsException
@@ -229,6 +243,17 @@ public class DBQuery {
         return arrayList;
     }
 
+    /**
+     *
+     * What is this for????
+     *
+     * @param <R>
+     * @param exemplar
+     * @return
+     * @throws SQLException
+     * @deprecated
+     */
+    @Deprecated
     public <R extends DBRow> List<DBRow> getAllInstancesOfExemplarAsDBRow(R exemplar) throws SQLException {
         HashSet<DBRow> objList = new HashSet<DBRow>();
         ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
@@ -329,13 +354,27 @@ public class DBQuery {
         return this;
     }
 
-//    public <R extends DBRow> List<R> addAndGetInstancesOf(R dbRow) throws SQLException {
-//        this.add(dbRow);
-//        return this.getAllInstancesOf(dbRow);
-//    }
-//
-//    public <R extends DBRow> List<R> addAndGetInstancesOf(R dbRow, int expected) throws SQLException, UnexpectedNumberOfRowsException {
-//        this.add(dbRow);
-//        return this.getAllInstancesOf(dbRow,expected);
-//    }
+    public Long count() throws SQLException {
+        if (results != null) {
+            return new Long(results.size());
+        } else {
+            Long result = 0L;
+
+            Statement dbStatement = database.getDBStatement();
+            ResultSet resultSet = dbStatement.executeQuery(this.getSQLForCount());
+            while (resultSet.next()) {
+                result = resultSet.getLong(1);
+            }
+            return result;
+        }
+    }
+
+    public boolean willCreateBlankQuery() {
+        boolean willCreateBlankQuery = true;
+        for(DBRow table : queryTables){
+            willCreateBlankQuery = willCreateBlankQuery&&table.willCreateBlankQuery(this.database);
+        }
+        return willCreateBlankQuery;
+    }
+
 }

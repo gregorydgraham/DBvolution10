@@ -500,4 +500,8 @@ public abstract class DBDatabase {
     public String getSubsequentSelectSubClauseSeparator() {
         return ", ";
     }
+
+    public String countStarClause() {
+        return " COUNT(*) ";
+    }
 }
