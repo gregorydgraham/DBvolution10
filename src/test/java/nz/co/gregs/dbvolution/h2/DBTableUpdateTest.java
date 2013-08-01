@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.*;
 public class DBTableUpdateTest extends AbstractTest {
 
     @Test
-    public void changingPrimarykKey() throws SQLException, UnexpectedNumberOfRowsException {
+    public void changingPrimaryKey() throws SQLException, UnexpectedNumberOfRowsException {
         Marque marqueExample = new Marque();
         marqueExample.getUidMarque().isLiterally(1);
 

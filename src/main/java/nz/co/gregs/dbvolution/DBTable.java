@@ -569,6 +569,9 @@ public class DBTable<E extends DBRow> {
             statement.addBatch(sql);
         }
         statement.executeBatch();
+        for (DBRow row : oldRows) {
+            row.getPrimaryKeyQueryableDatatype(theDatabase).setUnchanged();
+        }
     }
 
     /**
@@ -607,7 +610,6 @@ public class DBTable<E extends DBRow> {
                     + row.getPrimaryKeySQLStringValue(theDatabase)
                     + theDatabase.endDeleteLine();
             allSQL.add(sql);
-            row.getPrimaryKeyQueryableDatatype(theDatabase).setUnchanged();
         }
 
         return allSQL;
