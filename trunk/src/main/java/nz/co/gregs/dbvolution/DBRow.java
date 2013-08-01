@@ -81,59 +81,33 @@ abstract public class DBRow {
     }
 
     public String getPrimaryKeyStringValue() {
-        String pkColumnValue = "";
-        boolean pkFound = false;
+        String pkColumnValue;
         QueryableDatatype queryableValueOfField;
-        @SuppressWarnings("unchecked")
-        Class<? extends DBRow> thisClass = this.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
-                pkFound = true;
-                queryableValueOfField = this.getQueryableValueOfField(field);
-                pkColumnValue = queryableValueOfField.toString();
-                break;
-            }
-        }
-        if (!pkFound) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
-        } else {
-            return pkColumnValue;
-        }
+        Field field = this.getPrimaryKeyField();
+        queryableValueOfField = this.getQueryableValueOfField(field);
+        pkColumnValue = queryableValueOfField.toString();
+        return pkColumnValue;
 
     }
 
     public String getPrimaryKeySQLStringValue(DBDatabase db) {
         this.setDatabase(db);
-        String pkColumnValue = "";
         QueryableDatatype queryableValueOfField;
-        @SuppressWarnings("unchecked")
-        Class<? extends DBRow> thisClass = this.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
-                queryableValueOfField = this.getQueryableValueOfField(field);
-                pkColumnValue = queryableValueOfField.toSQLString();
-                break;
-            }
-        }
-        if (pkColumnValue.isEmpty()) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
-        } else {
-            return pkColumnValue;
-        }
-
+        queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
+        String pkColumnValue = queryableValueOfField.toSQLString();
+        return pkColumnValue;
     }
 
     public String getPrimaryKeyName() {
-//        String pkColumnValue = "";
-//        QueryableDatatype queryableValueOfField;
-        @SuppressWarnings("unchecked")
+        return getPrimaryKeyField().getAnnotation(DBColumn.class).value();
+    }
+
+    private Field getPrimaryKeyField() {
         Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBPrimaryKey.class)) {
-                return field.getAnnotation(DBColumn.class).value();
+                return field;
             }
         }
         throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
@@ -218,8 +192,9 @@ abstract public class DBRow {
     /**
      *
      * @param db
-     * @return true if this DBRow instance has no specified criteria and will create a blank query returning the whole table.
-     * 
+     * @return true if this DBRow instance has no specified criteria and will
+     * create a blank query returning the whole table.
+     *
      */
     public boolean willCreateBlankQuery(DBDatabase db) {
         String whereClause = getWhereClause(db);
