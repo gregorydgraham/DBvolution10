@@ -92,14 +92,20 @@ abstract public class DBRow {
 
     }
 
+    public QueryableDatatype getPrimaryKeyQueryableDatatype(DBDatabase db) {
+        this.setDatabase(db);
+        QueryableDatatype queryableValueOfField;
+        return this.getQueryableValueOfField(getPrimaryKeyField());
+    }
+
     public String getPrimaryKeySQLStringValue(DBDatabase db) {
         this.setDatabase(db);
         QueryableDatatype queryableValueOfField;
         queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
         String pkColumnValue;
-        if (queryableValueOfField.hasChanged()){
+        if (queryableValueOfField.hasChanged()) {
             pkColumnValue = queryableValueOfField.getPreviousValueAsSQL();
-        }else{            
+        } else {
             pkColumnValue = queryableValueOfField.toSQLString();
         }
         return pkColumnValue;

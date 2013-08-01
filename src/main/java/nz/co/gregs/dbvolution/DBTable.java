@@ -607,6 +607,7 @@ public class DBTable<E extends DBRow> {
                     + row.getPrimaryKeySQLStringValue(theDatabase)
                     + theDatabase.endDeleteLine();
             allSQL.add(sql);
+            row.getPrimaryKeyQueryableDatatype(theDatabase).setUnchanged();
         }
 
         return allSQL;
