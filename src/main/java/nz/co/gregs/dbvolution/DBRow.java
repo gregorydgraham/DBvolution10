@@ -35,10 +35,9 @@ abstract public class DBRow {
     private Field primaryKeyField;
 
     public DBRow() {
-        primaryKeyField = getPrimaryKeyField();
     }
 
-    static <T extends DBRow> T getInstance(Class<T> requiredDBRowClass) {
+    static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) {
         try {
             return requiredDBRowClass.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {

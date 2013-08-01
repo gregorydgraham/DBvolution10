@@ -152,7 +152,7 @@ public class DBTable<E extends DBRow> {
 
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
-            E tableRow = (E) DBRow.getInstance(dummy.getClass());
+            E tableRow = (E) DBRow.getDBRow(dummy.getClass());
 
             Field[] fields = tableRow.getClass().getDeclaredFields();
 
