@@ -28,29 +28,32 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  */
 abstract public class DBRow {
 
-    static <T extends DBRow> T getInstance(Class<T> requiredDBTableRowClass) {
-        try {
-            return requiredDBTableRowClass.getConstructor().newInstance();
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (SecurityException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (InstantiationException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException("Unable To Create " + requiredDBTableRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBTableRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        }
-    }
     private DBDatabase database;
     private List<Field> ignoredRelationships = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
     private List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
+    private Field primaryKeyField;
 
     public DBRow() {
+        primaryKeyField = getPrimaryKeyField();
+    }
+
+    static <T extends DBRow> T getInstance(Class<T> requiredDBRowClass) {
+        try {
+            return requiredDBRowClass.getConstructor().newInstance();
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (SecurityException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (InstantiationException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        }
     }
 
     public Long getPrimaryKeyLongValue() {
@@ -94,7 +97,12 @@ abstract public class DBRow {
         this.setDatabase(db);
         QueryableDatatype queryableValueOfField;
         queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
-        String pkColumnValue = queryableValueOfField.toSQLString();
+        String pkColumnValue;
+        if (queryableValueOfField.hasChanged()){
+            pkColumnValue = queryableValueOfField.getPreviousValueAsSQL();
+        }else{            
+            pkColumnValue = queryableValueOfField.toSQLString();
+        }
         return pkColumnValue;
     }
 
@@ -103,14 +111,18 @@ abstract public class DBRow {
     }
 
     private Field getPrimaryKeyField() {
-        Class<? extends DBRow> thisClass = this.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
-                return field;
+        if (primaryKeyField != null) {
+            return primaryKeyField;
+        } else {
+            Class<? extends DBRow> thisClass = this.getClass();
+            Field[] fields = thisClass.getDeclaredFields();
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(DBPrimaryKey.class)) {
+                    return field;
+                }
             }
+            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
         }
-        throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
     }
 
     /**
