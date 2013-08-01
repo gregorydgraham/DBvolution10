@@ -5,7 +5,6 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -73,7 +72,7 @@ public class QueryableDatatype extends Object implements Serializable {
         this.operator = null;
     }
     
-    static <T extends QueryableDatatype> T getInstance(Class<T> requiredQueryableDatatype) {
+    static <T extends QueryableDatatype> T getQueryableDatatype(Class<T> requiredQueryableDatatype) {
         try {
             return requiredQueryableDatatype.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {
@@ -336,7 +335,7 @@ public class QueryableDatatype extends Object implements Serializable {
         if (undefined) {
             undefined = false;
         } else {
-            setChanged(null);
+            changed = true;
         }
     }
     
@@ -368,7 +367,7 @@ public class QueryableDatatype extends Object implements Serializable {
         if (this.isDBNull
                 || (literalValue != null && !newLiteralValue.equals(literalValue))) {
             changed = true;
-            QueryableDatatype newInstance = QueryableDatatype.newInstance(this.getClass());
+            QueryableDatatype newInstance = QueryableDatatype.getQueryableDatatype(this.getClass());
             if (this.isDBNull) {
                 newInstance.isNull();
             } else {

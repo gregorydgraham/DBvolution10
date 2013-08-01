@@ -16,12 +16,32 @@
 package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.*;
 
 public class DBTableUpdateTest extends AbstractTest {
 
+    @Test
+    public void changingPrimarykKey() throws SQLException, UnexpectedNumberOfRowsException {
+        Marque marqueExample = new Marque();
+        marqueExample.getUidMarque().isLiterally(1);
+
+        marques.getRowsByExample(marqueExample);
+        marques.printAllRows();
+        Marque toyota = marques.getOnlyRowByExample(marqueExample);
+        toyota.uidMarque.isLiterally(99999);
+        Assert.assertThat(marques.getSQLForUpdate(toyota).get(0),is("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;"));
+        marques.update(toyota);
+        
+        marqueExample = new Marque();
+        marqueExample.name.isLike("toyota");
+        toyota = marques.getOnlyRowByExample(marqueExample);
+        Assert.assertThat(toyota.name.toString(), is("TOYOTA"));
+    }
+    
     @Test
     public void testInsertRows() throws SQLException {
         Marque myTableRow = new Marque();

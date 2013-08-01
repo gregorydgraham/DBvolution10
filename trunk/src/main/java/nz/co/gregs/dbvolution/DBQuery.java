@@ -113,7 +113,7 @@ public class DBQuery {
                     //tabRow.setDatabase(database);
                     String formattedPK = database.formatTableAndColumnName(tableName, tabRow.getPrimaryKeyName());
                     Class<? extends DBRow> pkClass = fk.value();
-                    DBRow fkReferencesTable = DBRow.getInstance(pkClass);
+                    DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
                     String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
                     if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                         String fkColumnName = fks.get(fk).value();
@@ -157,7 +157,7 @@ public class DBQuery {
         while (resultSet.next()) {
             queryRow = new DBQueryRow();
             for (DBRow tableRow : queryTables) {
-                DBRow newInstance = DBRow.getInstance(tableRow.getClass());
+                DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
                 //newInstance.setDatabase(database);
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
