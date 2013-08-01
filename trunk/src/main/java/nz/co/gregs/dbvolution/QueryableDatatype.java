@@ -164,6 +164,7 @@ public class QueryableDatatype extends Object implements Serializable {
     
     public void setUnchanged() {
         changed = false;
+        previousValueAsQDT = null;
     }
 
 //    @Deprecated

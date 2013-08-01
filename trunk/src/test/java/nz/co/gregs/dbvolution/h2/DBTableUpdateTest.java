@@ -35,6 +35,8 @@ public class DBTableUpdateTest extends AbstractTest {
         toyota.uidMarque.isLiterally(99999);
         Assert.assertThat(marques.getSQLForUpdate(toyota).get(0),is("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;"));
         marques.update(toyota);
+        toyota.name.isLiterally("NOTOYOTA");
+        Assert.assertThat(marques.getSQLForUpdate(toyota).get(0), is("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;"));
         
         marqueExample = new Marque();
         marqueExample.name.isLike("toyota");
