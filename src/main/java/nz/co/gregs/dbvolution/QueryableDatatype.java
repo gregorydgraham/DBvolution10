@@ -69,6 +69,7 @@ public class QueryableDatatype extends Object implements Serializable {
     
     protected void blankQuery() {
         includingNulls = false;
+        isDBNull=false;
         this.operator = null;
     }
     
@@ -167,16 +168,6 @@ public class QueryableDatatype extends Object implements Serializable {
         previousValueAsQDT = null;
     }
 
-//    @Deprecated
-//    public void isLiterally(QueryableDatatype literalValue) {
-//        blankQuery();
-//        if (literalValue == null) {
-//            isNull();
-//        } else {
-//            this.literalValue = literalValue.literalValue;
-//            this.setOperator(new DBEqualsOperator(literalValue));
-//        }
-//    }
     public void isGreaterThan(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
@@ -217,8 +208,16 @@ public class QueryableDatatype extends Object implements Serializable {
         }
     }
     
+    /**
+     *
+     * Sets the value of this column to BDBNull
+     * Also changes the operator to DBIsNullOperator for comparisons
+     * 
+     */
     public final void isNull() {
         blankQuery();
+        this.literalValue = null;
+        this.isDBNull = true;
         this.setOperator(new DBIsNullOperator());
     }
     
