@@ -52,7 +52,7 @@ public class DBTableGetTest extends AbstractTest {
 
     @Test
     public void testGetFirstAndPrimaryKey() throws SQLException {
-        DBTable<Marque> singleMarque = new DBTable<Marque>(myDatabase, new Marque());
+        DBTable<Marque> singleMarque =  DBTable.getInstance(myDatabase, new Marque());
         DBRow row = marqueRows.get(0);
         String primaryKey;
         if (row != null) {
@@ -169,7 +169,7 @@ public class DBTableGetTest extends AbstractTest {
 
     @Test
     public void testDBSelectQuery() throws SQLException {
-        DBTable<MarqueSelectQuery> msq = new DBTable<MarqueSelectQuery>(myDatabase, new MarqueSelectQuery());
+        DBTable<MarqueSelectQuery> msq = DBTable.getInstance(myDatabase, new MarqueSelectQuery());
         msq.getAllRows();
         msq.printAllRows();
 

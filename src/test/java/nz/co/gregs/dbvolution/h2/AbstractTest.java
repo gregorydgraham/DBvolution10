@@ -59,8 +59,8 @@ public class AbstractTest {
         myDatabase.createTable(myCarCompanyRow);
 
         DBTable.setPrintSQLBeforeExecuting(false);
-        marques = new DBTable<Marque>(myDatabase, myMarqueRow);
-        carCompanies = new DBTable<CarCompany>(myDatabase, myCarCompanyRow);
+        marques = DBTable.getInstance(myDatabase, myMarqueRow);
+        carCompanies = DBTable.getInstance(myDatabase, myCarCompanyRow);
         carTableRows.add(new CarCompany("TOYOTA", 1));
         carTableRows.add(new CarCompany("FORD", 2));
         carTableRows.add(new CarCompany("GENERAL MOTORS", 3));

@@ -25,12 +25,12 @@ import nz.co.gregs.dbvolution.QueryableDatatype;
  *
  * @author gregory.graham
  */
-public class DBExistsOperator extends DBOperator {
+public class  DBExistsOperator<E extends DBRow> extends DBOperator {
 
-    DBRow tableRow;
+    E tableRow;
     private final String referencedColumnName;
 
-    public DBExistsOperator(DBRow tableRow, QueryableDatatype qdtOfTheRow) {
+    public DBExistsOperator(E tableRow, QueryableDatatype qdtOfTheRow) {
         this.tableRow = tableRow;
         Field qdtField = tableRow.getFieldOf(qdtOfTheRow);
         if (qdtField == null) {
@@ -43,7 +43,7 @@ public class DBExistsOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
-        DBTable<DBRow> table = new DBTable<DBRow>(database, tableRow);
+        DBTable<E> table = DBTable.getInstance(database, tableRow);
         String subSelect;
         try {
             subSelect = table.getSelectStatementForWhereClause() + table.getWhereClauseWithExampleAndRawSQL(tableRow, " and " + columnName + " = " + referencedColumnName);

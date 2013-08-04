@@ -57,7 +57,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     @Test
     public void testGetAllRows() throws SQLException{
-        DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
+        DBTable<Marque> marq = DBTable.getInstance(myDatabase, new Marque());
         marq.getAllRows();
         for (DBRow row : marq.toList()) {
             System.out.println(row);
@@ -66,18 +66,18 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     @Test
     public void testGetFirstAndPrimaryKey() throws SQLException{
-        DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
+        DBTable<Marque> marq = DBTable.getInstance(myDatabase, new Marque());
         DBRow row = marq.getFirstRow();
         if (row != null) {
             String primaryKey = row.getPrimaryKeySQLStringValue(myDatabase);
-            DBTable<Marque> singleMarque = new DBTable<Marque>(myDatabase, new Marque());
+            DBTable<Marque> singleMarque = DBTable.getInstance(myDatabase, new Marque());
             singleMarque.getRowsByPrimaryKey(primaryKey).printAllRows();
         }
     }
 
     @Test
     public void testRawQuery() throws SQLException {
-        DBTable<Marque> marq = new DBTable<Marque>(myDatabase, new Marque());
+        DBTable<Marque> marq = DBTable.getInstance(myDatabase, new Marque());
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
         marq = marq.getRowsByRawSQL(rawQuery);
         marq.printAllRows();
