@@ -42,7 +42,7 @@ public class DBTableTransactionTest extends AbstractTest {
             @Override
             public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException {
                 Marque myTableRow = new Marque();
-                DBTable<Marque> marques = new DBTable<Marque>(dbDatabase, myTableRow);
+                DBTable<Marque> marques = DBTable.getInstance(dbDatabase, myTableRow);
                 myTableRow.getUidMarque().isLiterally(999);
                 myTableRow.getName().isLiterally("TOYOTA");
                 myTableRow.getNumericCode().isLiterally(10);
@@ -76,7 +76,7 @@ public class DBTableTransactionTest extends AbstractTest {
             @Override
             public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException{
                 Marque myTableRow = new Marque();
-                DBTable<Marque> marques = new DBTable<Marque>(dbDatabase, myTableRow);
+                DBTable<Marque> marques = DBTable.getInstance(dbDatabase, myTableRow);
                 myTableRow.getUidMarque().isLiterally(999);
                 myTableRow.getName().isLiterally("TOYOTA");
                 myTableRow.getNumericCode().isLiterally(10);

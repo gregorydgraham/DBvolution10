@@ -21,17 +21,29 @@ public class DBTable<E extends DBRow> {
 
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
+
+
+    /**
+     *
+     * @param <T>
+     * @return
+     */
+    public static <E extends DBRow> DBTable<E> getInstance(DBDatabase database, E example) {
+        DBTable<E> dbTable = new DBTable<E>(database, example);
+        return dbTable;
+    }
+    
     private DBDatabase theDatabase = null;
     E dummy;
     private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
 
     /**
-     * With a DBDatabase subclass it's easier
+     * 
      *
      * @param myDatabase
      * @param dummyObject
      */
-    public DBTable(DBDatabase myDatabase, E dummyObject) {
+    private DBTable(DBDatabase myDatabase, E dummyObject) {
         this.theDatabase = myDatabase;
         dummy = dummyObject;
     }
