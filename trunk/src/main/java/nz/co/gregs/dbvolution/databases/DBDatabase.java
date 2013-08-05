@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTransaction;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -215,6 +216,16 @@ public abstract class DBDatabase {
      */
     public String getPassword() {
         return password;
+    }
+    
+    /**
+     *
+     * @param <R>
+     * @param example
+     * @return
+     */
+    public <R extends DBRow> DBTable<R> getDBTable(R example){
+        return DBTable.getInstance(this, example);
     }
 
     public void setPrintSQLBeforeExecuting(boolean b) {
