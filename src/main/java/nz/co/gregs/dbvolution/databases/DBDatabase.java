@@ -169,6 +169,25 @@ public abstract class DBDatabase {
         }
         return returnValues;
     }
+    
+    /**
+     * 
+     * Convenience method to simplify switching from READONLY to COMMITTED transaction
+     *
+     * @param <V>
+     * @param dbTransaction
+     * @param commit
+     * @return
+     * @throws SQLException
+     * @throws Exception
+     */
+    synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
+        if (commit){
+            return doTransaction(dbTransaction);
+        }else{
+            return doReadOnlyTransaction(dbTransaction);
+        }
+    }
 
     /**
      * @return the driverName
