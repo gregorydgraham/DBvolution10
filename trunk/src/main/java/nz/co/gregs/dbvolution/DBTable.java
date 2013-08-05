@@ -22,7 +22,6 @@ public class DBTable<E extends DBRow> {
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
 
-
     /**
      *
      * @param <T>
@@ -32,13 +31,12 @@ public class DBTable<E extends DBRow> {
         DBTable<E> dbTable = new DBTable<E>(database, example);
         return dbTable;
     }
-    
     private DBDatabase theDatabase = null;
     E dummy;
     private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
 
     /**
-     * 
+     *
      *
      * @param myDatabase
      * @param dummyObject
@@ -663,5 +661,28 @@ public class DBTable<E extends DBRow> {
             primaryKeys.add(e.getPrimaryKeyStringValue());
         }
         return primaryKeys;
+    }
+
+    /**
+     * Compares 2 tables, presumably from different databases
+     * 
+     * Should be updated to return the varying rows somehow
+     *
+     * @param secondTable
+     */
+    public void compare(DBTable<E> secondTable) {
+        HashMap<Long, E> secondMap = new HashMap<Long, E>();
+        for (E row : secondTable.toList()) {
+            secondMap.put(row.getPrimaryKeyLongValue(), row);
+        }
+        for (E row : this.toList()) {
+            E foundRow = secondMap.get(row.getPrimaryKeyLongValue());
+            if (foundRow == null) {
+                System.out.println("NOT FOUND: " + row);
+            } else if (!row.toString().equals(foundRow.toString())) {
+                System.out.println("DIFFERENT: " + row);
+                System.out.println("         : " + foundRow);
+            }
+        }
     }
 }
