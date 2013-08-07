@@ -7,6 +7,7 @@ package nz.co.gregs.dbvolution;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
  *
@@ -41,12 +42,13 @@ public class DBInteger extends DBNumber {
     }
 
     @Override
-    public void isLiterally(Object someNumber) {
+    public DBOperator isLiterally(Object someNumber) {
         if (someNumber == null||someNumber.toString().isEmpty()) {
             super.isLiterally((Object)null);
         } else {
             super.isLiterally(Long.parseLong(someNumber.toString()));
         }
+        return getOperator();
     }
 
     public void isIn(Integer... inValues) {

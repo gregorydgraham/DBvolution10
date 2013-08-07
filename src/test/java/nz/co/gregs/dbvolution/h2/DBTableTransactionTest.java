@@ -48,7 +48,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 myTableRow.getNumericCode().isLiterally(10);
                 marques.insert(myTableRow);
                 marques.getAllRows();
-                marques.printAllRows();
+                marques.print();
 
                 List<Marque> myTableRows = new ArrayList<Marque>();
                 myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4));
@@ -57,7 +57,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 marques.insert(myTableRows);
 
                 marques.getAllRows();
-                marques.printAllRows();
+                marques.print();
                 return marques;
             }
         });
@@ -90,7 +90,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 marques.insert(myTableRows);
 
                 marques.getAllRows();
-                marques.printAllRows();
+                marques.print();
                 return marques;
             }
 
@@ -99,7 +99,7 @@ public class DBTableTransactionTest extends AbstractTest {
             e.printStackTrace();
         }
         final DBTable<Marque> addedRows = marques.getRowsByExample(new Marque());
-        addedRows.printAllRows();
+        addedRows.print();
         List<Marque> added = addedRows.toList();
         System.out.println("original.toList().size(): " + original.size());
         System.out.println("added.toList().size(): " + added.size());

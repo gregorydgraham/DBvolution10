@@ -39,4 +39,8 @@ abstract public class DBOperator {
     public void invertOperator(Boolean invertOperator) {
         this.invertOperator = invertOperator;
     }
+    
+    public void not(){
+        invertOperator = true;
+    }
 }

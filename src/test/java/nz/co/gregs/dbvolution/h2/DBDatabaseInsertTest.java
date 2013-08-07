@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Test;
 
@@ -26,25 +27,29 @@ import org.junit.Test;
  *
  * @author gregory.graham
  */
-public class DBTableInsertTest extends AbstractTest {
+public class DBDatabaseInsertTest extends AbstractTest{
     
-    Marque myTableRow = new Marque();
+    
+    
     
     @Test
     public void testInsertRows() throws SQLException{
-        myTableRow.getUidMarque().isLiterally(999);
-        myTableRow.getName().isLiterally("TOYOTA");
-        myTableRow.getNumericCode().isLiterally(10);
-        marques.insert(myTableRow);
-        marques.getAllRows();
-        marques.print();
+        Marque newMarque1 = new Marque();
+        newMarque1.getUidMarque().isLiterally(999);
+        newMarque1.getName().isLiterally("TOYOTA");
+        newMarque1.getNumericCode().isLiterally(10);
         
         Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();
-        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4));
+        Marque newMarque2 = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4);
+        myTableRows.add(newMarque1);
+        myTableRows.add(newMarque2);
+        CarCompany carCompany = new CarCompany("TATA", 569);
         
-        marques.insert(myTableRows);
+        myDatabase.insert(myTableRows, carCompany);
         marques.getAllRows();
         marques.print();
+        myDatabase.getDBTable(carCompany).getAllRows().print();
     }
+    
 }

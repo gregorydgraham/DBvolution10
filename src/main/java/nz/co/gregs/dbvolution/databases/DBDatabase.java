@@ -97,6 +97,40 @@ public abstract class DBDatabase {
     }
 
     /**
+     * 
+     * Convenience method to simplify switching from READONLY to COMMITTED transaction
+     *
+     * @param <V>
+     * @param dbTransaction
+     * @param commit
+     * @return
+     * @throws SQLException
+     * @throws Exception
+     */
+    synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
+        if (commit){
+            return doTransaction(dbTransaction);
+        }else{
+            return doReadOnlyTransaction(dbTransaction);
+        }
+    }
+    
+    public void insert(Object... objs) throws SQLException{
+        for(Object obj : objs){
+            if (obj instanceof List ) {
+                List list = (List)obj;
+                if (list.size()>0 && list.get(0) instanceof DBRow){
+                    List<DBRow> rowList = (List<DBRow>)list;
+                    this.getDBTable(rowList.get(0)).insert(rowList);
+                }
+            }else if(obj instanceof DBRow){
+                DBRow row = (DBRow)obj;
+                this.getDBTable(row).insert(row);
+            }
+        }
+    }
+
+    /**
      *
      * @param <V>
      * @param dbTransaction
@@ -171,25 +205,6 @@ public abstract class DBDatabase {
         return returnValues;
     }
     
-    /**
-     * 
-     * Convenience method to simplify switching from READONLY to COMMITTED transaction
-     *
-     * @param <V>
-     * @param dbTransaction
-     * @param commit
-     * @return
-     * @throws SQLException
-     * @throws Exception
-     */
-    synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
-        if (commit){
-            return doTransaction(dbTransaction);
-        }else{
-            return doReadOnlyTransaction(dbTransaction);
-        }
-    }
-
     /**
      * @return the driverName
      */

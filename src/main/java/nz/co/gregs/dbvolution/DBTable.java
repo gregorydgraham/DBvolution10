@@ -191,7 +191,11 @@ public class DBTable<E extends DBRow> {
             case Types.ROWID:
             case Types.SMALLINT:
                 Long aLong = resultSet.getLong(dbColumnName);
-                qdt.isLiterally(aLong);
+                if (resultSet.wasNull()) {
+                    qdt.isNull();
+                } else {
+                    qdt.isLiterally(aLong);
+                }
                 break;
             case Types.DECIMAL:
             case Types.DOUBLE:
@@ -199,7 +203,11 @@ public class DBTable<E extends DBRow> {
             case Types.NUMERIC:
             case Types.REAL:
                 Double aDouble = resultSet.getDouble(dbColumnName);
-                qdt.isLiterally(aDouble);
+                if (resultSet.wasNull()) {
+                    qdt.isNull();
+                } else {
+                    qdt.isLiterally(aDouble);
+                }
                 break;
             case Types.VARCHAR:
             case Types.CHAR:
@@ -210,22 +218,38 @@ public class DBTable<E extends DBRow> {
             case Types.LONGNVARCHAR:
             case Types.LONGVARCHAR:
                 String string = resultSet.getString(dbColumnName);
-                qdt.isLiterally(string);
+                if (resultSet.wasNull()) {
+                    qdt.isNull();
+                } else {
+                    qdt.isLiterally(string);
+                }
                 break;
             case Types.DATE:
             case Types.TIME:
                 Date date = resultSet.getDate(dbColumnName);
-                qdt.isLiterally(date);
+                if (resultSet.wasNull()) {
+                    qdt.isNull();
+                } else {
+                    qdt.isLiterally(date);
+                }
                 break;
             case Types.TIMESTAMP:
                 Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
-                qdt.isLiterally(timestamp);
+                if (resultSet.wasNull()) {
+                    qdt.isNull();
+                } else {
+                    qdt.isLiterally(timestamp);
+                }
                 break;
             case Types.VARBINARY:
             case Types.JAVA_OBJECT:
             case Types.LONGVARBINARY:
                 Object obj = resultSet.getObject(dbColumnName);
-                qdt.isLiterally(obj);
+                if (resultSet.wasNull()) {
+                    qdt.isNull();
+                } else {
+                    qdt.isLiterally(obj);
+                }
                 break;
             default:
                 throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));
@@ -368,22 +392,22 @@ public class DBTable<E extends DBRow> {
 
     /**
      * Convenience method to print all the rows in the current collection
-     * Equivalent to: printRows(System.out)
+     * Equivalent to: print(System.out)
      *
      */
-    public void printAllRows() {
-        printAllRows(System.out);
+    public void print() {
+        print(System.out);
     }
 
     /**
-     * the same as printAllRows but allows you to specify the PrintStream
+     * the same as print() but allows you to specify the PrintStream
      * required
      *
      * myTable.printAllRows(System.err);
      *
      * @param ps
      */
-    public void printAllRows(PrintStream ps) {
+    public void print(PrintStream ps) {
         for (E row : this.listOfRows) {
             ps.println(row);
         }
@@ -665,7 +689,7 @@ public class DBTable<E extends DBRow> {
 
     /**
      * Compares 2 tables, presumably from different databases
-     * 
+     *
      * Should be updated to return the varying rows somehow
      *
      * @param secondTable
