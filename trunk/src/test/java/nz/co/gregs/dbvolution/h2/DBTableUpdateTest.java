@@ -30,7 +30,7 @@ public class DBTableUpdateTest extends AbstractTest {
         marqueExample.getUidMarque().isLiterally(1);
 
         marques.getRowsByExample(marqueExample);
-        marques.printAllRows();
+        marques.print();
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
         toyota.uidMarque.isLiterally(99999);
         Assert.assertThat(marques.getSQLForUpdate(toyota).get(0),is("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;"));
@@ -50,7 +50,7 @@ public class DBTableUpdateTest extends AbstractTest {
         myTableRow.getUidMarque().isLiterally(1);
 
         marques.getRowsByExample(myTableRow);
-        marques.printAllRows();
+        marques.print();
         Marque toyota = marques.toList().get(0);
         System.out.println("===" + toyota.name.toString());
         Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
@@ -62,7 +62,7 @@ public class DBTableUpdateTest extends AbstractTest {
         marques.update(toyota);
         
         marques.getRowsByExample(myTableRow);
-        marques.printAllRows();
+        marques.print();
         toyota = marques.toList().get(0);
         Assert.assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
     }

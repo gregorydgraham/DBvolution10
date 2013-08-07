@@ -71,7 +71,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         if (row != null) {
             String primaryKey = row.getPrimaryKeySQLStringValue(myDatabase);
             DBTable<Marque> singleMarque = DBTable.getInstance(myDatabase, new Marque());
-            singleMarque.getRowsByPrimaryKey(primaryKey).printAllRows();
+            singleMarque.getRowsByPrimaryKey(primaryKey).print();
         }
     }
 
@@ -80,7 +80,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         DBTable<Marque> marq = DBTable.getInstance(myDatabase, new Marque());
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
         marq = marq.getRowsByRawSQL(rawQuery);
-        marq.printAllRows();
+        marq.print();
 
     }
 

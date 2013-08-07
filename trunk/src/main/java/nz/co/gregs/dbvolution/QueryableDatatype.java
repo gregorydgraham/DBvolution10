@@ -100,7 +100,7 @@ public class QueryableDatatype extends Object implements Serializable {
         return getWhereClauseUsingOperators(columnName);
     }
     
-    public String getWhereClauseUsingOperators(String columnName) {
+    private String getWhereClauseUsingOperators(String columnName) {
         String whereClause = "";
         DBOperator op = this.getOperator();
         if (op != null) {
@@ -121,7 +121,7 @@ public class QueryableDatatype extends Object implements Serializable {
     /**
      * @param newLiteralValue the literalValue to set
      */
-    public void isLiterally(Object newLiteralValue) {
+    public DBOperator isLiterally(Object newLiteralValue) {
         preventChangeOfPrimaryKey();
         blankQuery();
         if (newLiteralValue == null) {
@@ -131,12 +131,13 @@ public class QueryableDatatype extends Object implements Serializable {
             this.literalValue = newLiteralValue.toString();
             this.setOperator(new DBEqualsOperator(this));
         }
+        return getOperator();
     }
 
     /**
      * @param newLiteralValue the literalValue to set
      */
-    public void isLiterally(Date newLiteralValue) {
+    public DBOperator isLiterally(Date newLiteralValue) {
         preventChangeOfPrimaryKey();
         blankQuery();
         if (newLiteralValue == null) {
@@ -146,12 +147,13 @@ public class QueryableDatatype extends Object implements Serializable {
             this.literalValue = newLiteralValue;
             this.setOperator(new DBEqualsOperator(new DBDate(newLiteralValue)));
         }
+        return getOperator();
     }
 
     /**
      * @param newLiteralValue the literalValue to set
      */
-    public void isLiterally(Timestamp newLiteralValue) {
+    public DBOperator isLiterally(Timestamp newLiteralValue) {
         preventChangeOfPrimaryKey();
         blankQuery();
         if (newLiteralValue == null) {
@@ -161,6 +163,7 @@ public class QueryableDatatype extends Object implements Serializable {
             this.literalValue = newLiteralValue;
             this.setOperator(new DBEqualsOperator(new DBDate(newLiteralValue)));
         }
+        return getOperator();
     }
     
     public void setUnchanged() {
@@ -168,7 +171,7 @@ public class QueryableDatatype extends Object implements Serializable {
         previousValueAsQDT = null;
     }
 
-    public void isGreaterThan(QueryableDatatype literalValue) {
+    public DBOperator isGreaterThan(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
             isNull();
@@ -176,9 +179,10 @@ public class QueryableDatatype extends Object implements Serializable {
             this.literalValue = literalValue.literalValue;
             this.setOperator(new DBGreaterThanOperator(literalValue));
         }
+        return getOperator();
     }
     
-    public void isGreaterThanOrEqualTo(QueryableDatatype literalValue) {
+    public DBOperator isGreaterThanOrEqualTo(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
             isNull();
@@ -186,9 +190,10 @@ public class QueryableDatatype extends Object implements Serializable {
             this.literalValue = literalValue.literalValue;
             this.setOperator(new DBGreaterThanOrEqualsOperator(literalValue));
         }
+        return getOperator();
     }
     
-    public void isLessThan(QueryableDatatype literalValue) {
+    public DBOperator isLessThan(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
             isNull();
@@ -196,9 +201,10 @@ public class QueryableDatatype extends Object implements Serializable {
             this.literalValue = literalValue.literalValue;
             this.setOperator(new DBLessThanOperator(literalValue));
         }
+        return getOperator();
     }
     
-    public void isLessThanOrEqualTo(QueryableDatatype literalValue) {
+    public DBOperator isLessThanOrEqualTo(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
             isNull();
@@ -206,29 +212,32 @@ public class QueryableDatatype extends Object implements Serializable {
             this.literalValue = literalValue.literalValue;
             this.setOperator(new DBLessThanOrEqualOperator(literalValue));
         }
+        return getOperator();
     }
     
     /**
      *
-     * Sets the value of this column to BDBNull
+     * Sets the value of this column to DBNull
      * Also changes the operator to DBIsNullOperator for comparisons
      * 
      */
-    public final void isNull() {
+    public final DBOperator isNull() {
         blankQuery();
         this.literalValue = null;
         this.isDBNull = true;
         this.setOperator(new DBIsNullOperator());
+        return getOperator();
     }
     
-    public void isLike(Object t) {
+    public DBOperator isLike(Object t) {
         blankQuery();
         this.literalValue = t;
         this.setOperator(new DBLikeOperator(this));
+        return getOperator();
     }
 
     /**
-     * NEEDS TO BE IMPLEMENTED PROPERLY
+     * TODO
      */
     public void includingNulls() {
         this.includingNulls = true;
@@ -240,7 +249,7 @@ public class QueryableDatatype extends Object implements Serializable {
      *
      * @param inValues the inValues to set
      */
-    public void isIn(Object... inValues) {
+    public DBOperator isIn(Object... inValues) {
         blankQuery();
         ArrayList<QueryableDatatype> inVals = new ArrayList<QueryableDatatype>();
         for (Object obj : inValues) {
@@ -248,33 +257,37 @@ public class QueryableDatatype extends Object implements Serializable {
             inVals.add(qdt);
         }
         this.setOperator(new DBInOperator(inVals));
+        return getOperator();
     }
 
     /**
      *
      * @param inValues
      */
-    public void isIn(QueryableDatatype... inValues) {
+    public DBOperator isIn(QueryableDatatype... inValues) {
         blankQuery();
         ArrayList<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
         boolean addAll = arrayList.addAll(Arrays.asList(inValues));
         this.setOperator(new DBInOperator(arrayList));
+        return getOperator();
     }
 
     /**
      * @param lowerBound the lower bound to set
      * @param upperBound the upper bound to set
      */
-    public void isBetween(QueryableDatatype lowerBound, QueryableDatatype upperBound) {
+    public DBOperator isBetween(QueryableDatatype lowerBound, QueryableDatatype upperBound) {
         blankQuery();
         this.setOperator(new DBBetweenOperator(lowerBound, upperBound));
+        return getOperator();
     }
     
-    public void isBetween(Object lowerBound, Object upperBound) {
+    public DBOperator isBetween(Object lowerBound, Object upperBound) {
         blankQuery();
         QueryableDatatype lower = new QueryableDatatype(lowerBound);
         QueryableDatatype upper = new QueryableDatatype(upperBound);
         isBetween(lower, upper);
+        return getOperator();
     }
 
     /**

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
+import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
  *
@@ -75,12 +76,12 @@ public class DBNumber extends QueryableDatatype {
     }
 
     @Override
-    public void isIn(Object... literalOptions) {
+    public DBOperator isIn(Object... literalOptions) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Object str : literalOptions) {
             intOptions.add(new DBNumber(str));
         }
-        isIn(intOptions.toArray(this.inValuesNumber));
+        return isIn(intOptions.toArray(this.inValuesNumber));
     }
 
     /**
@@ -111,9 +112,9 @@ public class DBNumber extends QueryableDatatype {
      *
      * @param inValues
      */
-    public void isIn(DBNumber... inValues) {
+    public DBOperator isIn(DBNumber... inValues) {
         this.inValuesNumber = inValues;
-        super.isIn(inValues);
+        return super.isIn(inValues);
     }
 
     @Override
@@ -131,10 +132,10 @@ public class DBNumber extends QueryableDatatype {
      * @param upper
      */
     @Override
-    public void isBetween(Object lower, Object upper) {
+    public DBOperator isBetween(Object lower, Object upper) {
         this.upperBoundNumber = new DBNumber(upper);
         this.lowerBoundNumber = new DBNumber(lower);
-        super.isBetween(lowerBoundNumber, upperBoundNumber);
+        return super.isBetween(lowerBoundNumber, upperBoundNumber);
     }
 
     /**
@@ -149,13 +150,14 @@ public class DBNumber extends QueryableDatatype {
     }
 
     @Override
-    public void isLiterally(Object literal) {
+    public DBOperator isLiterally(Object literal) {
         if (literal == null||literal.toString().isEmpty()) {
             super.isLiterally(null);
             this.numberValue = null;
         } else {
             this.isLiterally(Double.parseDouble(literal.toString()));
         }
+        return getOperator();
     }
 
 //    @Deprecated
@@ -181,7 +183,7 @@ public class DBNumber extends QueryableDatatype {
      * @param obj
      */
     @Override
-    public void isLike(Object obj) {
+    public DBOperator isLike(Object obj) {
         throw new RuntimeException("LIKE Comparison Cannot Be Used With Numeric Fields: " + obj);
     }
 

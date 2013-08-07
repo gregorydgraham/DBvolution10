@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
+import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
  *
@@ -74,21 +75,23 @@ public class DBDate extends QueryableDatatype {
         return dateValue;
     }
 
-    public void isLiterally(Date date) {
+    public DBOperator isLiterally(Date date) {
         super.isLiterally(date);
         dateValue = date;
+        return getOperator();
     }
 
-    public void isLiterally(String dateStr) {
+    public DBOperator isLiterally(String dateStr) {
         final long dateLong = Date.parse(dateStr);
         Date date = new Date();
         date.setTime(dateLong);
         super.isLiterally(date);
         dateValue = date;
+        return getOperator();
     }
 
     @Override
-    public void isLike(Object obj) {
+    public DBOperator isLike(Object obj) {
         throw new RuntimeException("LIKE Comparison Cannot Be Used With Date Fields: " + obj);
     }
 
@@ -97,22 +100,24 @@ public class DBDate extends QueryableDatatype {
      * @param lower
      * @param upper
      */
-    public void isBetween(Date lower, Date upper) {
+    public DBOperator isBetween(Date lower, Date upper) {
         DBDate lowerDate = new DBDate(lower);
         DBDate upperDate = new DBDate(upper);
         super.isBetween(lowerDate, upperDate);
+        return getOperator();
     }
 
     /**
      *
      * @param dates
      */
-    public void isIn(Date... dates) {
+    public DBOperator isIn(Date... dates) {
         ArrayList<DBDate> dbDates = new ArrayList<DBDate>();
         for (Date date : dates) {
             dbDates.add(new DBDate(date));
         }
         super.isIn(dbDates.toArray(new DBDate[]{}));
+        return getOperator();
     }
 
     @Override
