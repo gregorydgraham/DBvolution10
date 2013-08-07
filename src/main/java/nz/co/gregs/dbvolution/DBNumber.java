@@ -150,7 +150,7 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     public void isLiterally(Object literal) {
-        if (literal == null) {
+        if (literal == null||literal.toString().isEmpty()) {
             super.isLiterally(null);
             this.numberValue = null;
         } else {

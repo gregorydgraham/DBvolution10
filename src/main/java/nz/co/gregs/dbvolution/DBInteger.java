@@ -42,8 +42,8 @@ public class DBInteger extends DBNumber {
 
     @Override
     public void isLiterally(Object someNumber) {
-        if (someNumber == null) {
-            super.isLiterally(someNumber);
+        if (someNumber == null||someNumber.toString().isEmpty()) {
+            super.isLiterally((Object)null);
         } else {
             super.isLiterally(Long.parseLong(someNumber.toString()));
         }
