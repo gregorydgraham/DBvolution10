@@ -618,7 +618,7 @@ public class DBTable<E extends DBRow> {
     public String getSQLForUpdate(E oldRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(oldRow);
-        return getSQLForUpdate(arrayList.get(0));
+        return getSQLForUpdate(arrayList).get(0);
     }
 
     /**
@@ -632,7 +632,6 @@ public class DBTable<E extends DBRow> {
     public List<String> getSQLForUpdate(List<E> oldRows) {
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
-//            row.setDatabase(theDatabase);
             String sql =
                     theDatabase.beginUpdateLine()
                     + theDatabase.formatTableName(row.getTableName())

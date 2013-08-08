@@ -70,11 +70,12 @@ public class DBDate extends QueryableDatatype {
         }
 //        return whereClause.toString();
     }
-    
-    public Date dateValue(){
+
+    public Date dateValue() {
         return dateValue;
     }
 
+    @Override
     public DBOperator isLiterally(Date date) {
         super.isLiterally(date);
         dateValue = date;
@@ -93,6 +94,10 @@ public class DBDate extends QueryableDatatype {
     @Override
     public DBOperator isLike(Object obj) {
         throw new RuntimeException("LIKE Comparison Cannot Be Used With Date Fields: " + obj);
+    }
+
+    public DBOperator isGreaterThan(Date literalValue) {
+        return this.isGreaterThan(new DBDate(literalValue));
     }
 
     /**

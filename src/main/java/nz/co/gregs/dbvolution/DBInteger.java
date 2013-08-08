@@ -43,8 +43,8 @@ public class DBInteger extends DBNumber {
 
     @Override
     public DBOperator isLiterally(Object someNumber) {
-        if (someNumber == null||someNumber.toString().isEmpty()) {
-            super.isLiterally((Object)null);
+        if (someNumber == null || someNumber.toString().isEmpty()) {
+            super.isLiterally((Object) null);
         } else {
             super.isLiterally(Long.parseLong(someNumber.toString()));
         }
@@ -69,6 +69,10 @@ public class DBInteger extends DBNumber {
 
     public void isIn(DBInteger... inValues) {
         super.isIn(inValues);
+    }
+
+    public DBOperator isGreaterThan(Integer literalValue) {
+        return this.isGreaterThan(new DBInteger(literalValue));
     }
 
     @Override
