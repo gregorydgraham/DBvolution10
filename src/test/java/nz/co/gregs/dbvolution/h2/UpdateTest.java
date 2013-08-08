@@ -31,7 +31,7 @@ public class UpdateTest extends AbstractTest {
         marques.insert(myMarqueRow);
         Marque insertedRow = marques.getRowsByPrimaryKey(4).getFirstRow();
         insertedRow.individualAllocationsAllowed.isLiterally("Y");
-        String sqlForUpdate = marques.getSQLForUpdate(insertedRow).get(0);
+        String sqlForUpdate = marques.getSQLForUpdate(insertedRow);
         Assert.assertThat(sqlForUpdate,
                 is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;"));
         marques.update(insertedRow);
@@ -48,9 +48,8 @@ public class UpdateTest extends AbstractTest {
         Marque peugeot = rowsByExample.get(0);
         System.out.println(peugeot);
         peugeot.individualAllocationsAllowed.isLiterally("Y");
-        List<String> sqlForUpdate = marques.getSQLForUpdate(peugeot);
-        Assert.assertThat(sqlForUpdate.size(), is(1));
-        Assert.assertThat(sqlForUpdate.get(0),
+        String sqlForUpdate = marques.getSQLForUpdate(peugeot);
+        Assert.assertThat(sqlForUpdate,
                 is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;"));
         marques.update(peugeot);
         Marque updatePeugeot = marques.getRowsByExample(marque).getFirstRow();

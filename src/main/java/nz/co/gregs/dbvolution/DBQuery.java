@@ -40,17 +40,25 @@ public class DBQuery {
     private List<DBQueryRow> results;
     private Map<Class, Map<String, DBRow>> existingInstances = new HashMap<Class, Map<String, DBRow>>();
 
-    public DBQuery(DBDatabase database) {
+    private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
         this.database = database;
         this.results = null;
     }
 
-    public DBQuery(DBDatabase database, DBRow... examples) {
-        this(database);
+//    private DBQuery(DBDatabase database, DBRow... examples) {
+//        this(database);
+//        for (DBRow example : examples) {
+//            this.add(example);
+//        }
+//    }
+
+    public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
+        DBQuery dbQuery = new DBQuery(database);
         for (DBRow example : examples) {
-            this.add(example);
+            dbQuery.add(example);
         }
+        return dbQuery;
     }
 
     /**
@@ -371,10 +379,9 @@ public class DBQuery {
 
     public boolean willCreateBlankQuery() {
         boolean willCreateBlankQuery = true;
-        for(DBRow table : queryTables){
-            willCreateBlankQuery = willCreateBlankQuery&&table.willCreateBlankQuery(this.database);
+        for (DBRow table : queryTables) {
+            willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
         }
         return willCreateBlankQuery;
     }
-
 }

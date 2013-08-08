@@ -33,7 +33,7 @@ public class DBQueryTest extends AbstractTest {
 
     @Test
     public void testQueryGeneration() throws SQLException {
-        DBQuery dbQuery = new DBQuery(myDatabase);
+        DBQuery dbQuery = myDatabase.getDBQuery();
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
         dbQuery.add(carCompany);
@@ -65,7 +65,7 @@ public class DBQueryTest extends AbstractTest {
 
     @Test
     public void testQueryExecution() throws SQLException {
-        DBQuery dbQuery = new DBQuery(myDatabase);
+        DBQuery dbQuery = myDatabase.getDBQuery();
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
         dbQuery.add(carCompany);
@@ -94,7 +94,7 @@ public class DBQueryTest extends AbstractTest {
 
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
-        DBQuery dbQuery = new DBQuery(myDatabase, carCompany, new Marque());
+        DBQuery dbQuery = myDatabase.getDBQuery(carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.getSQLForQuery());
@@ -119,7 +119,7 @@ public class DBQueryTest extends AbstractTest {
     public void testDBTableRowReuse() throws SQLException {
         CarCompany carCompany = new CarCompany();
         carCompany.name.isLiterally("TOYOTA");
-        DBQuery dbQuery = new DBQuery(myDatabase, carCompany, new Marque());
+        DBQuery dbQuery = myDatabase.getDBQuery(carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.getSQLForQuery());

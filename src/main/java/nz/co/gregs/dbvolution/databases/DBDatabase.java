@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTransaction;
@@ -241,6 +242,15 @@ public abstract class DBDatabase {
      */
     public <R extends DBRow> DBTable<R> getDBTable(R example){
         return DBTable.getInstance(this, example);
+    }
+    
+    /**
+     *
+     * @param examples
+     * @return
+     */
+    public DBQuery getDBQuery(DBRow... examples){
+        return DBQuery.getInstance(this, examples);
     }
 
     public void setPrintSQLBeforeExecuting(boolean b) {

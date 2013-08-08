@@ -615,10 +615,10 @@ public class DBTable<E extends DBRow> {
      * @param oldRow
      * @return
      */
-    public List<String> getSQLForUpdate(E oldRow) {
+    public String getSQLForUpdate(E oldRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(oldRow);
-        return getSQLForUpdate(arrayList);
+        return getSQLForUpdate(arrayList.get(0));
     }
 
     /**
