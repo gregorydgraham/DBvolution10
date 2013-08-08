@@ -117,6 +117,10 @@ public class DBNumber extends QueryableDatatype {
         return super.isIn(inValues);
     }
 
+    public DBOperator isGreaterThan(Number literalValue) {
+        return this.isGreaterThan(new DBNumber(literalValue));
+    }
+
     @Override
     public String getWhereClause(String columnName) {
         if (this.getOperator() instanceof DBLikeOperator) {
@@ -151,7 +155,7 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     public DBOperator isLiterally(Object literal) {
-        if (literal == null||literal.toString().isEmpty()) {
+        if (literal == null || literal.toString().isEmpty()) {
             super.isLiterally(null);
             this.numberValue = null;
         } else {
