@@ -38,7 +38,7 @@ public class AdHocRelationshipTest extends AbstractTest {
 
         marque.addRelationship(marque.name, carCompany, carCompany.name);
 
-        DBQuery query = new DBQuery(myDatabase, carCompany, marque);
+        DBQuery query = myDatabase.getDBQuery(carCompany, marque);
 
         List<DBQueryRow> allRows = query.getAllRows();
         query.printAllRows();
@@ -53,7 +53,7 @@ public class AdHocRelationshipTest extends AbstractTest {
 
         marque.addRelationship(marque.name, carCompany, carCompany.name, new DBLikeOperator(null));
 
-        DBQuery query = new DBQuery(myDatabase, carCompany, marque);
+        DBQuery query = myDatabase.getDBQuery(carCompany, marque);
         List<DBQueryRow> allRows = query.getAllRows();
         query.printAllRows();
 

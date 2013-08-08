@@ -33,10 +33,10 @@ public class DBTableUpdateTest extends AbstractTest {
         marques.print();
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
         toyota.uidMarque.isLiterally(99999);
-        Assert.assertThat(marques.getSQLForUpdate(toyota).get(0),is("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;"));
+        Assert.assertThat(marques.getSQLForUpdate(toyota),is("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;"));
         marques.update(toyota);
         toyota.name.isLiterally("NOTOYOTA");
-        Assert.assertThat(marques.getSQLForUpdate(toyota).get(0), is("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;"));
+        Assert.assertThat(marques.getSQLForUpdate(toyota), is("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;"));
         
         marqueExample = new Marque();
         marqueExample.name.isLike("toyota");
@@ -56,7 +56,7 @@ public class DBTableUpdateTest extends AbstractTest {
         Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
         toyota.name.isLiterally("NOTTOYOTA");
-        String sqlForUpdate = marques.getSQLForUpdate(toyota).get(0);
+        String sqlForUpdate = marques.getSQLForUpdate(toyota);
         Assert.assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;", sqlForUpdate);
 
         marques.update(toyota);
