@@ -11,6 +11,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ abstract public class DBRow {
     private final List<Field> fkFields = new ArrayList<Field>();
     private List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
     private Field primaryKeyField;
+    private HashMap<String, QueryableDatatype> columnsAndQDTs;
 
     public DBRow() {
     }
@@ -172,19 +174,27 @@ abstract public class DBRow {
     }
 
     Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() {
-        HashMap<String, QueryableDatatype> columnsAndQDTs = new HashMap<String, QueryableDatatype>();
-        String columnName;
-        QueryableDatatype qdt;
+        if (columnsAndQDTs == null) {
+            columnsAndQDTs = new HashMap<String, QueryableDatatype>();
+            String columnName;
+            QueryableDatatype qdt;
 
-        Field[] fields = this.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DBColumn.class)) {
-                qdt = this.getQueryableValueOfField(field);
-                columnName = getDBColumnName(field);
-                columnsAndQDTs.put(columnName, qdt);
+            Field[] fields = this.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(DBColumn.class)) {
+                    qdt = this.getQueryableValueOfField(field);
+                    columnName = getDBColumnName(field);
+                    columnsAndQDTs.put(columnName, qdt);
+                }
             }
         }
         return columnsAndQDTs;
+    }
+    
+    public List<QueryableDatatype> getQueryableDatatypes(){
+        List<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
+        arrayList.addAll(getColumnsAndQueryableDatatypes().values());
+        return arrayList;
     }
 
     /**

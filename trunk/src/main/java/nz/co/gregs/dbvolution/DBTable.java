@@ -400,8 +400,7 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * the same as print() but allows you to specify the PrintStream
-     * required
+     * the same as print() but allows you to specify the PrintStream required
      *
      * myTable.printAllRows(System.err);
      *
@@ -582,6 +581,31 @@ public class DBTable<E extends DBRow> {
                     + theDatabase.getEqualsComparator()
                     + row.getPrimaryKeySQLStringValue(theDatabase)
                     + theDatabase.endDeleteLine();
+            allInserts.add(sql);
+        }
+        return allInserts;
+    }
+
+    /**
+     *
+     * @param oldRows
+     * @return
+     */
+    public List<String> getSQLForDeleteWithoutPrimaryKey(List<E> oldRows) {
+        List<String> allInserts = new ArrayList<String>();
+        for (E row : oldRows) {
+            String sql =
+                    theDatabase.beginDeleteLine()
+                    + row.getTableName()
+                    + theDatabase.beginWhereClause();
+            for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
+                sql = sql
+                        + theDatabase.beginAndLine()
+                        + row.getDBColumnName(qdt)
+                        + theDatabase.getEqualsComparator()
+                        + qdt.getSQLValue();
+            }
+            sql = sql + theDatabase.endDeleteLine();
             allInserts.add(sql);
         }
         return allInserts;
