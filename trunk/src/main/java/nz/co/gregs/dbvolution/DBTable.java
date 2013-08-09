@@ -588,6 +588,16 @@ public class DBTable<E extends DBRow> {
 
     /**
      *
+     * @param oldRow
+     * @return
+     */
+    public String getSQLForDeleteWithoutPrimaryKey(E oldRow) {
+        List<E> rows = new ArrayList<E>();
+        rows.add(oldRow);
+        return getSQLForDeleteWithoutPrimaryKey(rows).get(0);
+    }
+    /**
+     *
      * @param oldRows
      * @return
      */
