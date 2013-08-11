@@ -119,8 +119,9 @@ public abstract class DBDatabase {
     public void insert(Object... objs) throws SQLException{
         for(Object obj : objs){
             if (obj instanceof List ) {
-                List list = (List)obj;
+                List<?> list = (List<?>)obj;
                 if (list.size()>0 && list.get(0) instanceof DBRow){
+                    @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>)list;
                     this.getDBTable(rowList.get(0)).insert(rowList);
                 }
@@ -558,5 +559,14 @@ public abstract class DBDatabase {
 
     public String countStarClause() {
         return " COUNT(*) ";
+    }
+
+    /**
+     *
+     * @param rowLimit
+     * @return
+     */
+    public Object getTopClause(Long rowLimit) {
+        return " TOP "+rowLimit+" ";
     }
 }

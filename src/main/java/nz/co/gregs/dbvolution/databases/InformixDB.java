@@ -51,4 +51,9 @@ public class InformixDB extends DBDatabase {
         return "" + tableName + "." + columnName + "";
     }
 
+    @Override
+    public Object getTopClause(Long rowLimit) {
+        return " FIRST "+rowLimit+" ";
+    }
+
 }

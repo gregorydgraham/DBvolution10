@@ -17,6 +17,8 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  */
 public class DBNumber extends QueryableDatatype {
 
+    public static final long serialVersionUID = 1;
+
     protected Number numberValue = null;
     protected DBNumber lowerBoundNumber = null;
     protected DBNumber upperBoundNumber = null;

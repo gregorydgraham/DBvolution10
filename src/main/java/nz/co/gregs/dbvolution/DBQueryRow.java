@@ -25,6 +25,8 @@ import java.util.HashMap;
  */
 public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
+    public static final long serialVersionUID = 1;
+
     /**
      *
      * @param exemplar

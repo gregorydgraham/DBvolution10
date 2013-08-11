@@ -38,7 +38,8 @@ public class DBQuery {
     DBDatabase database;
     private List<DBRow> queryTables;
     private List<DBQueryRow> results;
-    private Map<Class, Map<String, DBRow>> existingInstances = new HashMap<Class, Map<String, DBRow>>();
+    private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
+    private Long rowLimit;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -52,7 +53,6 @@ public class DBQuery {
 //            this.add(example);
 //        }
 //    }
-
     public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
         DBQuery dbQuery = new DBQuery(database);
         for (DBRow example : examples) {
@@ -78,12 +78,16 @@ public class DBQuery {
     }
 
     private String getSQLForQuery(String providedSelectClause) throws SQLException {
-        StringBuilder selectClause = new StringBuilder().append("select ");
-        StringBuilder fromClause = new StringBuilder().append(" from ");
+        StringBuilder selectClause = new StringBuilder().append(database.beginSelectStatement());
+        StringBuilder fromClause = new StringBuilder().append(database.beginFromClause());
         StringBuilder whereClause = new StringBuilder().append(database.beginWhereClause()).append(database.getTrueOperation());
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
 
+        if (rowLimit != null) {
+            selectClause.append(database.getTopClause(rowLimit));
+        }
+        
         String separator = "";
         String colSep = database.getStartingSelectSubClauseSeparator();
         String tableName;
@@ -383,5 +387,13 @@ public class DBQuery {
             willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
         }
         return willCreateBlankQuery;
+    }
+
+    public void setRowLimit(int i) {
+        rowLimit = new Long(i);
+    }
+
+    public void clearRowLimit() {
+        rowLimit = null;
     }
 }
