@@ -19,10 +19,12 @@ import java.sql.SQLException;
 import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.*;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -41,7 +43,7 @@ public class DBQueryTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
 
-        String expectedResult = "select CAR_COMPANY.NAME _1064314813, \n"
+        String expectedResult = " SELECT CAR_COMPANY.NAME _1064314813, \n"
                 + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
                 + "MARQUE.NUMERIC_CODE __570915006, \n"
                 + "MARQUE.UID_MARQUE __768788587, \n"
@@ -54,13 +56,13 @@ public class DBQueryTest extends AbstractTest {
                 + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
                 + "MARQUE.RESERVATIONSALWD __1860726622, \n"
                 + "MARQUE.CREATION_DATE __1712481749, \n"
-                + "MARQUE.FK_CARCOMPANY _1664116480 from car_company, \n"
+                + "MARQUE.FK_CARCOMPANY _1664116480 FROM car_company, \n"
                 + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
                 + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        assertEquals(expectedResult.replaceAll("\\s+", " "), generateSQLString.replaceAll("\\s+", " "));
+        Assert.assertThat(expectedResult.replaceAll("\\s+", " "), is(generateSQLString.replaceAll("\\s+", " ")));
     }
 
     @Test

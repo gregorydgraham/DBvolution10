@@ -85,7 +85,7 @@ public class DBTable<E extends DBRow> {
         return allFields.toString();
     }
 
-    private String getSelectStatement() {
+    private String getSQLForSelectAll() {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation != null) {
@@ -101,7 +101,7 @@ public class DBTable<E extends DBRow> {
         return selectStatement.toString();
     }
 
-    public String getSelectStatementForWhereClause() {
+    public String getSQLForSelect() {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation != null) {
@@ -137,7 +137,7 @@ public class DBTable<E extends DBRow> {
     public DBTable<E> getAllRows() throws SQLException {
         this.listOfRows.clear();
 
-        String selectStatement = this.getSelectStatement();
+        String selectStatement = this.getSQLForSelectAll();
 
         if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
             System.out.println(selectStatement);
@@ -289,7 +289,7 @@ public class DBTable<E extends DBRow> {
 
     private DBTable<E> getRows(String whereClause) throws SQLException {
         this.listOfRows.clear();
-        String selectStatement = this.getSelectStatementForWhereClause() + whereClause + ";";
+        String selectStatement = this.getSQLForSelect() + whereClause + ";";
         if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
             System.out.println(selectStatement);
         }
@@ -418,48 +418,6 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-//    private QueryableDatatype getQueryableDatatypeOfField(DBTableRow tableRow, Field field) {
-//        QueryableDatatype qdt = null;
-//        BeanInfo info = Introspector.getBeanInfo(tableRow.getClass());
-//        PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
-//        String fieldName = field.getName();
-//        for (PropertyDescriptor pd : descriptors) {
-//            String pdName = pd.getName();
-//            if (pdName.equals(fieldName)) {
-//                try {
-//                    Method readMethod = pd.getReadMethod();
-//                    if (readMethod == null) {
-//                        Object possQDT = field.get(tableRow);
-//                        if (possQDT instanceof QueryableDatatype) {
-//                            return (QueryableDatatype) possQDT;
-//                        } else {
-//                            throw new RuntimeException("Unable To Access Read Method for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
-//                        }
-//                    } else {
-//                        Object fieldQDT = readMethod.invoke(tableRow);
-//                        if (fieldQDT instanceof QueryableDatatype) {
-//                            qdt = (QueryableDatatype) fieldQDT;
-//                            qdt.setDatabase(this.theDatabase);
-//                        }
-//                    }
-//                    break;
-//                } catch (IllegalAccessException illacc) {
-//                    throw new RuntimeException("Could Not Access SET Method for " + tableRow.getClass().getSimpleName() + "." + field.getName() + ": Please ensure the SET method is public: " + tableRow.getClass().getSimpleName() + "." + field.getName());
-//                }
-//            }
-//        }
-//
-//        if (qdt == null) {
-//            Object possQDT = field.get(tableRow);
-//            if (possQDT instanceof QueryableDatatype) {
-//                return (QueryableDatatype) possQDT;
-//            } else {
-//                throw new RuntimeException("Unable Access QueryDatatype for \"" + field.getName() + "\" in class " + tableRow.getClass().getSimpleName());
-//            }
-//        }
-//
-//        return qdt;
-//    }
     /**
      *
      * Returns the first row of the table, particularly helpful when you know
@@ -506,6 +464,15 @@ public class DBTable<E extends DBRow> {
         statement.executeBatch();
     }
 
+    /**
+     * 
+     * returns the SQL that will be used to insert the row.
+     * 
+     * Useful for debugging and reversion scripts
+     *
+     * @param newRow
+     * @return
+     */
     public String getSQLForInsert(E newRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(newRow);
@@ -513,6 +480,10 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
+     * 
+     * returns the SQL that will be used to insert the rows.
+     * 
+     * Useful for debugging and reversion scripts
      *
      * @param newRows
      * @return
@@ -520,7 +491,6 @@ public class DBTable<E extends DBRow> {
     public List<String> getSQLForInsert(List<E> newRows) {
         List<String> allInserts = new ArrayList<String>();
         for (E row : newRows) {
-//            row.setDatabase(theDatabase);
             String sql =
                     theDatabase.beginInsertLine()
                     + row.getTableName()
@@ -663,8 +633,9 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * Creates the SQL used to update the rows. Helpful debugging and mollifying
-     * grumpy DBAs
+     * Creates the SQL used to update the rows. 
+     * 
+     * Helpful for debugging and reversion scripts
      *
      *
      * @param oldRows
