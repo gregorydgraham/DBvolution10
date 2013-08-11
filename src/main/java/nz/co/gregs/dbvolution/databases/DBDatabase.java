@@ -98,8 +98,9 @@ public abstract class DBDatabase {
     }
 
     /**
-     * 
-     * Convenience method to simplify switching from READONLY to COMMITTED transaction
+     *
+     * Convenience method to simplify switching from READONLY to COMMITTED
+     * transaction
      *
      * @param <V>
      * @param dbTransaction
@@ -109,24 +110,24 @@ public abstract class DBDatabase {
      * @throws Exception
      */
     synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
-        if (commit){
+        if (commit) {
             return doTransaction(dbTransaction);
-        }else{
+        } else {
             return doReadOnlyTransaction(dbTransaction);
         }
     }
-    
-    public void insert(Object... objs) throws SQLException{
-        for(Object obj : objs){
-            if (obj instanceof List ) {
-                List<?> list = (List<?>)obj;
-                if (list.size()>0 && list.get(0) instanceof DBRow){
+
+    public void insert(Object... objs) throws SQLException {
+        for (Object obj : objs) {
+            if (obj instanceof List) {
+                List<?> list = (List<?>) obj;
+                if (list.size() > 0 && list.get(0) instanceof DBRow) {
                     @SuppressWarnings("unchecked")
-                    List<DBRow> rowList = (List<DBRow>)list;
+                    List<DBRow> rowList = (List<DBRow>) list;
                     this.getDBTable(rowList.get(0)).insert(rowList);
                 }
-            }else if(obj instanceof DBRow){
-                DBRow row = (DBRow)obj;
+            } else if (obj instanceof DBRow) {
+                DBRow row = (DBRow) obj;
                 this.getDBTable(row).insert(row);
             }
         }
@@ -180,11 +181,11 @@ public abstract class DBDatabase {
 
         this.transactionStatement = getDBStatement();
         this.isInATransaction = true;
-        
+
         connection = transactionStatement.getConnection();
         wasReadOnly = connection.isReadOnly();
         wasAutoCommit = connection.getAutoCommit();
-        
+
         connection.setReadOnly(true);
         connection.setAutoCommit(false);
         try {
@@ -206,7 +207,7 @@ public abstract class DBDatabase {
         }
         return returnValues;
     }
-    
+
     /**
      * @return the driverName
      */
@@ -234,23 +235,23 @@ public abstract class DBDatabase {
     public String getPassword() {
         return password;
     }
-    
+
     /**
      *
      * @param <R>
      * @param example
      * @return
      */
-    public <R extends DBRow> DBTable<R> getDBTable(R example){
+    public <R extends DBRow> DBTable<R> getDBTable(R example) {
         return DBTable.getInstance(this, example);
     }
-    
+
     /**
      *
      * @param examples
      * @return
      */
-    public DBQuery getDBQuery(DBRow... examples){
+    public DBQuery getDBQuery(DBRow... examples) {
         return DBQuery.getInstance(this, examples);
     }
 
@@ -387,7 +388,7 @@ public abstract class DBDatabase {
     /**
      *
      * Formats the table and column name pair correctly for this database
-     * 
+     *
      * This should be used for column names in the select query
      *
      * e.g table, column => TABLE.COLUMN
@@ -415,20 +416,21 @@ public abstract class DBDatabase {
      */
     public String formatColumnNameForResultSet(String tableName, String columnName) {
         String formattedName = formatTableAndColumnName(tableName, columnName).replaceAll("\\.", "__");
-        return ("_"+formattedName.hashCode()).replaceAll("-", "_");
+        return ("_" + formattedName.hashCode()).replaceAll("-", "_");
     }
 
     public String formatTableAndColumnNameForSelectClause(String tableName, String columnName) {
-        return formatTableAndColumnName(tableName, columnName)+" "+formatColumnNameForResultSet(tableName, columnName);
+        return formatTableAndColumnName(tableName, columnName) + " " + formatColumnNameForResultSet(tableName, columnName);
     }
+
     public String safeString(String toString) {
         return toString.replaceAll("'", "''");
     }
 
     /**
-     * 
+     *
      * returns the required SQL to begin a line within the Where Clause
-     * 
+     *
      * usually, but not always " and "
      *
      * @return
@@ -525,6 +527,14 @@ public abstract class DBDatabase {
         return ",";
     }
 
+    public String getStartingOrderByClauseSeparator() {
+        return "";
+    }
+
+    public String getSubsequentOrderByClauseSeparator() {
+        return ",";
+    }
+
     public String getFalseOperation() {
         return " 1=0 ";
     }
@@ -567,6 +577,24 @@ public abstract class DBDatabase {
      * @return
      */
     public Object getTopClause(Long rowLimit) {
-        return " TOP "+rowLimit+" ";
+        return " TOP " + rowLimit + " ";
+    }
+
+    public String beginOrderByClause() {
+        return " ORDER BY ";
+    }
+
+    public String endOrderByClause() {
+        return " ";
+    }
+
+    public Object getOrderByDirectionClause(Boolean sortOrder) {
+        if (sortOrder == null) {
+            return "";
+        } else if (sortOrder) {
+            return " ASC ";
+        } else {
+            return " DESC ";
+        }
     }
 }

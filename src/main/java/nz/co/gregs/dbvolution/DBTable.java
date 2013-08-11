@@ -35,6 +35,8 @@ public class DBTable<E extends DBRow> {
     E dummy;
     private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
     private Long rowLimit;
+    private QueryableDatatype[] sortOrder = null;
+    private E sortBase;
 
     /**
      *
@@ -95,12 +97,22 @@ public class DBTable<E extends DBRow> {
             if (rowLimit != null) {
                 selectStatement.append(theDatabase.getTopClause(rowLimit));
             }
-            selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(";");
+            selectStatement.append(getAllFieldsForSelect())
+                    .append(" from ")
+                    .append(dummy.getTableName())
+                    .append(getOrderByClause())
+                    .append(";");
         }
 
         return selectStatement.toString();
     }
 
+    /**
+     *
+     * Retruns the
+     *
+     * @return
+     */
     public String getSQLForSelect() {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
@@ -289,7 +301,7 @@ public class DBTable<E extends DBRow> {
 
     private DBTable<E> getRows(String whereClause) throws SQLException {
         this.listOfRows.clear();
-        String selectStatement = this.getSQLForSelect() + whereClause + ";";
+        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
         if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
             System.out.println(selectStatement);
         }
@@ -465,9 +477,9 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * 
+     *
      * returns the SQL that will be used to insert the row.
-     * 
+     *
      * Useful for debugging and reversion scripts
      *
      * @param newRow
@@ -480,9 +492,9 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * 
+     *
      * returns the SQL that will be used to insert the rows.
-     * 
+     *
      * Useful for debugging and reversion scripts
      *
      * @param newRows
@@ -633,8 +645,8 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * Creates the SQL used to update the rows. 
-     * 
+     * Creates the SQL used to update the rows.
+     *
      * Helpful for debugging and reversion scripts
      *
      *
@@ -727,5 +739,31 @@ public class DBTable<E extends DBRow> {
 
     public void clearRowLimit() {
         rowLimit = null;
+    }
+
+    public void setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
+        sortBase = baseRow;
+        sortOrder = orderColumns;
+    }
+
+    public void clearSortOrder() {
+        sortOrder = null;
+    }
+
+    private String getOrderByClause() {
+        if (sortOrder != null) {
+            StringBuilder orderByClause = new StringBuilder(theDatabase.beginOrderByClause());
+            String sortSeparator = theDatabase.getStartingOrderByClauseSeparator();
+            for (QueryableDatatype qdt : sortOrder) {
+                final String dbColumnName = sortBase.getDBColumnName(qdt);
+                if (dbColumnName != null) {
+                    orderByClause.append(sortSeparator).append(dbColumnName).append(theDatabase.getOrderByDirectionClause(qdt.getSortOrder()));
+                    sortSeparator = theDatabase.getSubsequentOrderByClauseSeparator();
+                }
+            }
+            orderByClause.append(theDatabase.endOrderByClause());
+            return orderByClause.toString();
+        }
+        return "";
     }
 }

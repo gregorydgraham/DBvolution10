@@ -33,6 +33,10 @@ public class QueryableDatatype extends Object implements Serializable {
     private QueryableDatatype previousValueAsQDT = null;
     private boolean isPrimaryKey;
     
+    public final static Boolean SORT_ASCENDING = Boolean.TRUE;
+    public final static Boolean SORT_DESCENDING = Boolean.FALSE;
+    private Boolean sort = SORT_ASCENDING;
+    
     QueryableDatatype() {
     }
     
@@ -393,5 +397,13 @@ public class QueryableDatatype extends Object implements Serializable {
     String getPreviousValueAsSQL() {
         previousValueAsQDT.setDatabase(database);
         return previousValueAsQDT.getSQLValue();
+    }
+    
+    public QueryableDatatype setSortOrder(Boolean order){
+        sort = order;
+        return this;
+    }
+    public Boolean getSortOrder(){
+        return sort;
     }
 }
