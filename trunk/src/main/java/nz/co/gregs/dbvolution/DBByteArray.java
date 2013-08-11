@@ -15,6 +15,8 @@ import java.sql.SQLException;
  */
 public class DBByteArray extends QueryableDatatype {
 
+    public static final long serialVersionUID = 1;
+
     public DBByteArray(Object object) {
         super(object);
 

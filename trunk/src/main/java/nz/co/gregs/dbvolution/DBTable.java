@@ -34,6 +34,7 @@ public class DBTable<E extends DBRow> {
     private DBDatabase theDatabase = null;
     E dummy;
     private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
+    private Long rowLimit;
 
     /**
      *
@@ -90,7 +91,10 @@ public class DBTable<E extends DBRow> {
         if (selectQueryAnnotation != null) {
             selectStatement.append(selectQueryAnnotation.value());
         } else {
-            selectStatement.append("select ");
+            selectStatement.append(theDatabase.beginSelectStatement());
+            if (rowLimit != null) {
+                selectStatement.append(theDatabase.getTopClause(rowLimit));
+            }
             selectStatement.append(getAllFieldsForSelect()).append(" from ").append(dummy.getTableName()).append(";");
         }
 
@@ -107,6 +111,9 @@ public class DBTable<E extends DBRow> {
                     .append(theDatabase.getTrueOperation());
         } else {
             selectStatement.append(theDatabase.beginSelectStatement());
+            if (rowLimit != null) {
+                selectStatement.append(theDatabase.getTopClause(rowLimit));
+            }
 
             selectStatement
                     .append(getAllFieldsForSelect())
@@ -366,7 +373,6 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public String getSQLForExample(E query) {
-//        query.setDatabase(theDatabase);
         return query.getWhereClause(theDatabase);
     }
 
@@ -596,6 +602,7 @@ public class DBTable<E extends DBRow> {
         rows.add(oldRow);
         return getSQLForDeleteWithoutPrimaryKey(rows).get(0);
     }
+
     /**
      *
      * @param oldRows
@@ -741,5 +748,13 @@ public class DBTable<E extends DBRow> {
                 System.out.println("         : " + foundRow);
             }
         }
+    }
+
+    public void setRowLimit(int i) {
+        rowLimit = new Long(i);
+    }
+
+    public void clearRowLimit() {
+        rowLimit = null;
     }
 }

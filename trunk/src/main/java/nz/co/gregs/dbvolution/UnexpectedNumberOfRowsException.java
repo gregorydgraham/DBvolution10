@@ -21,6 +21,7 @@ package nz.co.gregs.dbvolution;
  */
 public class UnexpectedNumberOfRowsException extends Exception {
 
+    public static final long serialVersionUID = 1;
     private int expectedRows;
     private int actualRows;
     public UnexpectedNumberOfRowsException(int expected, int actual, String message, Exception cause) {

@@ -77,10 +77,10 @@ public class DBQueryTest extends AbstractTest {
 
         for (DBQueryRow queryRow : results) {
 
-            CarCompany carCo = (CarCompany) queryRow.get(carCompany);
+            CarCompany carCo = queryRow.get(carCompany);
             String carCoName = carCo.name.toString();
 
-            Marque marque = (Marque) queryRow.get(new Marque());
+            Marque marque = queryRow.get(new Marque());
             Long marqueUID = marque.getUidMarque().longValue();
 
             System.out.println(carCoName + ": " + marqueUID);
@@ -103,10 +103,10 @@ public class DBQueryTest extends AbstractTest {
 
         for (DBQueryRow queryRow : results) {
 
-            CarCompany carCo = (CarCompany) queryRow.get(carCompany);
+            CarCompany carCo = queryRow.get(carCompany);
             String carCoName = carCo.name.toString();
 
-            Marque marque = (Marque) queryRow.get(new Marque());
+            Marque marque = queryRow.get(new Marque());
             Long marqueUID = marque.getUidMarque().longValue();
 
             System.out.println(carCoName + ": " + marqueUID);
@@ -129,8 +129,8 @@ public class DBQueryTest extends AbstractTest {
         DBQueryRow[] rows = new DBQueryRow[2];
         rows = results.toArray(rows);
 
-        CarCompany firstCarCo = (CarCompany) rows[0].get(carCompany);
-        CarCompany secondCarCo = (CarCompany) rows[1].get(carCompany);
+        CarCompany firstCarCo = rows[0].get(carCompany);
+        CarCompany secondCarCo = rows[1].get(carCompany);
         assertTrue(firstCarCo == secondCarCo);
     }
 }

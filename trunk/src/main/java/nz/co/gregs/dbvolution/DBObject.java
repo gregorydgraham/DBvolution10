@@ -27,7 +27,9 @@ import java.sql.SQLException;
  */
 public class DBObject extends QueryableDatatype {
 
-    // NOT YET IMPLEMENTED
+    public static final long serialVersionUID = 1;
+
+    // TODO
     @Override
     public String getSQLDatatype() {
         return "JAVA_OBJECT";

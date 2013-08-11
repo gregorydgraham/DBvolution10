@@ -35,7 +35,7 @@ public class DBExistsOperatorTest extends AbstractTest {
         
         CarCompany carCompany = new CarCompany();
         carCompany.uidCarCompany.isLiterally(3);
-        DBExistsOperator carCompanyExists = new DBExistsOperator(carCompany, carCompany.uidCarCompany);
+        DBExistsOperator<CarCompany> carCompanyExists = new DBExistsOperator<CarCompany>(carCompany, carCompany.uidCarCompany);
 
         Marque marque = new Marque();
         marque.getCarCompany().setOperator(carCompanyExists);
@@ -48,8 +48,7 @@ public class DBExistsOperatorTest extends AbstractTest {
         assertTrue("Incorrect number of marques retreived", rowList.size() == 3);
         
         marque = new Marque();
-//        carCompany.uidCarCompany.isLiterally(3);
-        marque.getCarCompany().setOperator(new DBExistsOperator(carCompany, carCompany.uidCarCompany));
+        marque.getCarCompany().setOperator(new DBExistsOperator<CarCompany>(carCompany, carCompany.uidCarCompany));
         marque.getCarCompany().negateOperator();
         
         marques.getRowsByExample(marque);
