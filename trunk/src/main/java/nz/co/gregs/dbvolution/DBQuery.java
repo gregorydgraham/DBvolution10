@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -40,11 +43,15 @@ public class DBQuery {
     private List<DBQueryRow> results;
     private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private Long rowLimit;
+    private DBRow[] sortBase;
+    private QueryableDatatype[] sortOrder;
+    private String resultSQL;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
         this.database = database;
         this.results = null;
+        this.resultSQL = null;
     }
 
 //    private DBQuery(DBDatabase database, DBRow... examples) {
@@ -70,6 +77,7 @@ public class DBQuery {
     public DBQuery add(DBRow table) {
         queryTables.add(table);
         results = null;
+        resultSQL = null;
         return this;
     }
 
@@ -87,7 +95,7 @@ public class DBQuery {
         if (rowLimit != null) {
             selectClause.append(database.getTopClause(rowLimit));
         }
-        
+
         String separator = "";
         String colSep = database.getStartingSelectSubClauseSeparator();
         String tableName;
@@ -146,7 +154,8 @@ public class DBQuery {
         final String sqlString =
                 selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
-                .append(whereClause)
+                .append(whereClause).append(lineSep)
+                .append(getOrderByClause()).append(lineSep)
                 .append(database.endSQLStatement())
                 .toString();
         if (database.isPrintSQLBeforeExecuting()) {
@@ -157,15 +166,16 @@ public class DBQuery {
     }
 
     public String getSQLForCount() throws SQLException {
-        return getSQLForQuery("select " + database.countStarClause());
+        return getSQLForQuery(database.beginSelectStatement() + database.countStarClause());
     }
 
     public List<DBQueryRow> getAllRows() throws SQLException {
         results = new ArrayList<DBQueryRow>();
+        resultSQL = this.getSQLForQuery();
         DBQueryRow queryRow;
 
         Statement dbStatement = database.getDBStatement();
-        ResultSet resultSet = dbStatement.executeQuery(this.getSQLForQuery());
+        ResultSet resultSet = dbStatement.executeQuery(resultSQL);
         while (resultSet.next()) {
             queryRow = new DBQueryRow();
             for (DBRow tableRow : queryTables) {
@@ -236,21 +246,31 @@ public class DBQuery {
         }
     }
 
+    private boolean needsResults() {
+        try {
+            return results == null
+                    || results.isEmpty()
+                    || resultSQL == null
+                    || !resultSQL.equals(getSQLForQuery());
+        } catch (SQLException ex) {
+            return true;
+        }
+    }
+
     public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
-        HashSet<R> objList = new HashSet<R>();
-        ArrayList<R> arrayList = new ArrayList<R>();
-        if (results == null || results.isEmpty()) {
+        List<R> arrayList = new ArrayList<R>();
+        if (this.needsResults()) {
             getAllRows();
         }
         if (!results.isEmpty()) {
             for (DBQueryRow row : results) {
                 final R found = row.get(exemplar);
                 if (found != null) { // in case there are no items of the exemplar
-                    objList.add(found);
+                    if (!arrayList.contains(found)) {
+                        arrayList.add(found);
+                    }
                 }
             }
-
-            arrayList.addAll(objList);
         }
         return arrayList;
     }
@@ -269,7 +289,7 @@ public class DBQuery {
     public <R extends DBRow> List<DBRow> getAllInstancesOfExemplarAsDBRow(R exemplar) throws SQLException {
         HashSet<DBRow> objList = new HashSet<DBRow>();
         ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
-        if (results.isEmpty()) {
+        if (this.needsResults()) {
             getAllRows();
         }
         if (!results.isEmpty()) {
@@ -290,8 +310,8 @@ public class DBQuery {
      * Equivalent to: printAll(System.out);
      *
      */
-    public void printAllRows() throws SQLException {
-        printAllRows(System.out);
+    public void print() throws SQLException {
+        print(System.out);
     }
 
     /**
@@ -301,8 +321,8 @@ public class DBQuery {
      *
      * @param ps
      */
-    public void printAllRows(PrintStream ps) throws SQLException {
-        if (results == null) {
+    public void print(PrintStream ps) throws SQLException {
+        if (needsResults()) {
             this.getAllRows();
         }
 
@@ -324,7 +344,7 @@ public class DBQuery {
      * @param printStream
      */
     public void printAllDataColumns(PrintStream printStream) throws SQLException {
-        if (results == null) {
+        if (needsResults()) {
             this.getAllRows();
         }
 
@@ -346,7 +366,7 @@ public class DBQuery {
      * @param ps
      */
     public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
-        if (results == null) {
+        if (needsResults()) {
             this.getAllRows();
         }
 
@@ -395,5 +415,32 @@ public class DBQuery {
 
     public void clearRowLimit() {
         rowLimit = null;
+    }
+
+    public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {
+        sortBase = baseRows;
+        sortOrder = baseRowColumns;
+        results = null;
+    }
+
+    public void clearSortOrder() {
+        sortOrder = null;
+    }
+
+    private String getOrderByClause() {
+        if (sortOrder != null) {
+            StringBuilder orderByClause = new StringBuilder(database.beginOrderByClause());
+            String sortSeparator = database.getStartingOrderByClauseSeparator();
+            for (QueryableDatatype qdt : sortOrder) {
+                final String dbColumnName = DBRow.getTableAndColumnName(sortBase, qdt);
+                if (dbColumnName != null) {
+                    orderByClause.append(sortSeparator).append(dbColumnName).append(database.getOrderByDirectionClause(qdt.getSortOrder()));
+                    sortSeparator = database.getSubsequentOrderByClauseSeparator();
+                }
+            }
+            orderByClause.append(database.endOrderByClause());
+            return orderByClause.toString();
+        }
+        return "";
     }
 }

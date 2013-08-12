@@ -41,7 +41,7 @@ public class AdHocRelationshipTest extends AbstractTest {
         DBQuery query = myDatabase.getDBQuery(carCompany, marque);
 
         List<DBQueryRow> allRows = query.getAllRows();
-        query.printAllRows();
+        query.print();
 
         assertTrue("There should only be rows for FORD and TOYOTA", allRows.size() == 2);
     }
@@ -55,7 +55,7 @@ public class AdHocRelationshipTest extends AbstractTest {
 
         DBQuery query = myDatabase.getDBQuery(carCompany, marque);
         List<DBQueryRow> allRows = query.getAllRows();
-        query.printAllRows();
+        query.print();
 
         assertTrue("There should only be rows for FORD and TOYOTA", allRows.size() == 2);
     }

@@ -190,8 +190,8 @@ abstract public class DBRow {
         }
         return columnsAndQDTs;
     }
-    
-    public List<QueryableDatatype> getQueryableDatatypes(){
+
+    public List<QueryableDatatype> getQueryableDatatypes() {
         List<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
         arrayList.addAll(getColumnsAndQueryableDatatypes().values());
         return arrayList;
@@ -386,6 +386,21 @@ abstract public class DBRow {
             }
         }
         return columnName;
+    }
+
+    protected static String getTableAndColumnName(DBRow[] baseRows, QueryableDatatype qdt) {
+        String columnName;
+        String tableName;
+        String fullName = null;
+        for (DBRow row : baseRows) {
+            tableName = row.getTableName();
+            columnName = row.getDBColumnName(qdt);
+            if (columnName != null) {
+                 fullName = row.database.formatTableAndColumnName(tableName, columnName);
+                 return fullName;
+            }
+        }
+        return fullName;
     }
 
     protected Map<DBForeignKey, DBColumn> getForeignKeys() {
