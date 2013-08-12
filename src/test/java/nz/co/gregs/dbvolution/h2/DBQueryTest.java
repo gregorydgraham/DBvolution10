@@ -58,7 +58,7 @@ public class DBQueryTest extends AbstractTest {
                 + "MARQUE.CREATION_DATE __1712481749, \n"
                 + "MARQUE.FK_CARCOMPANY _1664116480 FROM car_company, \n"
                 + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
-                + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
+                + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
@@ -74,7 +74,7 @@ public class DBQueryTest extends AbstractTest {
         dbQuery.add(new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
-        dbQuery.printAllRows();
+        dbQuery.print();
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
@@ -100,7 +100,7 @@ public class DBQueryTest extends AbstractTest {
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.getSQLForQuery());
-        dbQuery.printAllRows();
+        dbQuery.print();
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
@@ -125,7 +125,7 @@ public class DBQueryTest extends AbstractTest {
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.getSQLForQuery());
-        dbQuery.printAllRows();
+        dbQuery.print();
         assertEquals(2, results.size());
 
         DBQueryRow[] rows = new DBQueryRow[2];

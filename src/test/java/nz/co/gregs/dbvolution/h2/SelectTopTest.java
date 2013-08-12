@@ -69,15 +69,15 @@ public class SelectTopTest extends AbstractTest {
         DBQuery query = myDatabase.getDBQuery(carCompany, new Marque());
         query.setRowLimit(2);
         List<DBQueryRow> allRows = query.getAllRows();
-        query.printAllRows();
+        query.print();
         Assert.assertThat(allRows.size(), is(2));
         query.setRowLimit(3);
         allRows = query.getAllRows();
-        query.printAllRows();
+        query.print();
         Assert.assertThat(allRows.size(), is(3));
         query.clearRowLimit();
         allRows = query.getAllRows();
-        query.printAllRows();
+        query.print();
         Assert.assertThat(allRows.size(), is(22));
     }
     

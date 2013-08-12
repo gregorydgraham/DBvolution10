@@ -21,6 +21,12 @@ public class DBTable<E extends DBRow> {
 
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
+    E dummy;
+    private DBDatabase database = null;
+    private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
+    private Long rowLimit;
+    private QueryableDatatype[] sortOrder = null;
+    private E sortBase;
 
     /**
      *
@@ -31,12 +37,6 @@ public class DBTable<E extends DBRow> {
         DBTable<E> dbTable = new DBTable<E>(database, example);
         return dbTable;
     }
-    private DBDatabase theDatabase = null;
-    E dummy;
-    private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
-    private Long rowLimit;
-    private QueryableDatatype[] sortOrder = null;
-    private E sortBase;
 
     /**
      *
@@ -45,7 +45,7 @@ public class DBTable<E extends DBRow> {
      * @param dummyObject
      */
     private DBTable(DBDatabase myDatabase, E dummyObject) {
-        this.theDatabase = myDatabase;
+        this.database = myDatabase;
         dummy = dummyObject;
     }
 
@@ -93,9 +93,9 @@ public class DBTable<E extends DBRow> {
         if (selectQueryAnnotation != null) {
             selectStatement.append(selectQueryAnnotation.value());
         } else {
-            selectStatement.append(theDatabase.beginSelectStatement());
+            selectStatement.append(database.beginSelectStatement());
             if (rowLimit != null) {
-                selectStatement.append(theDatabase.getTopClause(rowLimit));
+                selectStatement.append(database.getTopClause(rowLimit));
             }
             selectStatement.append(getAllFieldsForSelect())
                     .append(" from ")
@@ -119,20 +119,20 @@ public class DBTable<E extends DBRow> {
         if (selectQueryAnnotation != null) {
             selectStatement
                     .append(selectQueryAnnotation.value())
-                    .append(theDatabase.beginWhereClause())
-                    .append(theDatabase.getTrueOperation());
+                    .append(database.beginWhereClause())
+                    .append(database.getTrueOperation());
         } else {
-            selectStatement.append(theDatabase.beginSelectStatement());
+            selectStatement.append(database.beginSelectStatement());
             if (rowLimit != null) {
-                selectStatement.append(theDatabase.getTopClause(rowLimit));
+                selectStatement.append(database.getTopClause(rowLimit));
             }
 
             selectStatement
                     .append(getAllFieldsForSelect())
-                    .append(theDatabase.beginFromClause())
+                    .append(database.beginFromClause())
                     .append(dummy.getTableName())
-                    .append(theDatabase.beginWhereClause())
-                    .append(theDatabase.getTrueOperation());
+                    .append(database.beginWhereClause())
+                    .append(database.getTrueOperation());
         }
         return selectStatement.toString();
     }
@@ -151,22 +151,22 @@ public class DBTable<E extends DBRow> {
 
         String selectStatement = this.getSQLForSelectAll();
 
-        if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
+        if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
             System.out.println(selectStatement);
         }
 
         Statement statement;
         ResultSet resultSet;
-        statement = this.theDatabase.getDBStatement();
+        statement = this.database.getDBStatement();
         try {
             boolean executed = statement.execute(selectStatement);
         } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + theDatabase.getJdbcURL() + " USERNAME=" + theDatabase.getUsername(), noConnection);
+            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + database.getJdbcURL() + " USERNAME=" + database.getUsername(), noConnection);
         }
         try {
             resultSet = statement.getResultSet();
         } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + theDatabase.getJdbcURL() + " USERNAME=" + theDatabase.getUsername(), noConnection);
+            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + database.getJdbcURL() + " USERNAME=" + database.getUsername(), noConnection);
         }
         addAllFields(this, resultSet);
         return this;
@@ -190,7 +190,7 @@ public class DBTable<E extends DBRow> {
             for (Field field : fields) {
                 if (field.isAnnotationPresent(DBColumn.class)) {
                     String dbColumnName = getDBColumnName(field);
-                    int dbColumnIndex = dbColumnNames.get(theDatabase.formatColumnName(dbColumnName));
+                    int dbColumnIndex = dbColumnNames.get(database.formatColumnName(dbColumnName));
 
                     setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
                 }
@@ -302,11 +302,11 @@ public class DBTable<E extends DBRow> {
     private DBTable<E> getRows(String whereClause) throws SQLException {
         this.listOfRows.clear();
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
-        if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
+        if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
             System.out.println(selectStatement);
         }
 
-        Statement statement = theDatabase.getDBStatement();
+        Statement statement = database.getDBStatement();
         boolean executed = statement.execute(selectStatement);
         ResultSet resultSet = statement.getResultSet();
 
@@ -337,7 +337,7 @@ public class DBTable<E extends DBRow> {
     }
 
     public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
-        String whereClause = " and " + getPrimaryKeyColumn() + " = " + this.theDatabase.getDateFormattedForQuery(pkValue) + " ";
+        String whereClause = " and " + getPrimaryKeyColumn() + " = " + this.database.getDateFormattedForQuery(pkValue) + " ";
         this.getRows(whereClause);
         return this;
     }
@@ -385,7 +385,7 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public String getSQLForExample(E query) {
-        return query.getWhereClause(theDatabase);
+        return query.getWhereClause(database);
     }
 
     /**
@@ -465,10 +465,10 @@ public class DBTable<E extends DBRow> {
      * @throws SQLException
      */
     public void insert(List<E> newRows) throws SQLException {
-        Statement statement = theDatabase.getDBStatement();
+        Statement statement = database.getDBStatement();
         List<String> allInserts = getSQLForInsert(newRows);
         for (String sql : allInserts) {
-            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
+            if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                 System.out.println(sql);
             }
             statement.addBatch(sql);
@@ -504,13 +504,13 @@ public class DBTable<E extends DBRow> {
         List<String> allInserts = new ArrayList<String>();
         for (E row : newRows) {
             String sql =
-                    theDatabase.beginInsertLine()
+                    database.beginInsertLine()
                     + row.getTableName()
-                    + theDatabase.beginInsertColumnList()
+                    + database.beginInsertColumnList()
                     + this.getAllFieldsForSelect()
-                    + theDatabase.endInsertColumnList()
-                    + row.getValuesClause(theDatabase)
-                    + theDatabase.endInsertLine();
+                    + database.endInsertColumnList()
+                    + row.getValuesClause(database)
+                    + database.endInsertLine();
             allInserts.add(sql);
         }
         return allInserts;
@@ -528,10 +528,10 @@ public class DBTable<E extends DBRow> {
      * @throws SQLException
      */
     public void delete(List<E> oldRows) throws SQLException {
-        Statement statement = theDatabase.getDBStatement();
+        Statement statement = database.getDBStatement();
         List<String> allSQL = getSQLForDelete(oldRows);
         for (String sql : allSQL) {
-            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
+            if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                 System.out.println(sql);
             }
             statement.addBatch(sql);
@@ -562,13 +562,13 @@ public class DBTable<E extends DBRow> {
         for (E row : oldRows) {
 //            row.setDatabase(theDatabase);
             String sql =
-                    theDatabase.beginDeleteLine()
+                    database.beginDeleteLine()
                     + row.getTableName()
-                    + theDatabase.beginWhereClause()
+                    + database.beginWhereClause()
                     + this.getPrimaryKeyColumn()
-                    + theDatabase.getEqualsComparator()
-                    + row.getPrimaryKeySQLStringValue(theDatabase)
-                    + theDatabase.endDeleteLine();
+                    + database.getEqualsComparator()
+                    + row.getPrimaryKeySQLStringValue(database)
+                    + database.endDeleteLine();
             allInserts.add(sql);
         }
         return allInserts;
@@ -594,17 +594,17 @@ public class DBTable<E extends DBRow> {
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
             String sql =
-                    theDatabase.beginDeleteLine()
+                    database.beginDeleteLine()
                     + row.getTableName()
-                    + theDatabase.beginWhereClause();
+                    + database.beginWhereClause();
             for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
                 sql = sql
-                        + theDatabase.beginAndLine()
+                        + database.beginAndLine()
                         + row.getDBColumnName(qdt)
-                        + theDatabase.getEqualsComparator()
+                        + database.getEqualsComparator()
                         + qdt.getSQLValue();
             }
-            sql = sql + theDatabase.endDeleteLine();
+            sql = sql + database.endDeleteLine();
             allInserts.add(sql);
         }
         return allInserts;
@@ -617,17 +617,17 @@ public class DBTable<E extends DBRow> {
     }
 
     public void update(List<E> oldRows) throws SQLException {
-        Statement statement = theDatabase.getDBStatement();
+        Statement statement = database.getDBStatement();
         List<String> allSQL = getSQLForUpdate(oldRows);
         for (String sql : allSQL) {
-            if (printSQLBeforeExecuting || theDatabase.isPrintSQLBeforeExecuting()) {
+            if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                 System.out.println(sql);
             }
             statement.addBatch(sql);
         }
         statement.executeBatch();
         for (DBRow row : oldRows) {
-            row.getPrimaryKeyQueryableDatatype(theDatabase).setUnchanged();
+            row.getPrimaryKeyQueryableDatatype(database).setUnchanged();
         }
     }
 
@@ -657,15 +657,15 @@ public class DBTable<E extends DBRow> {
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
             String sql =
-                    theDatabase.beginUpdateLine()
-                    + theDatabase.formatTableName(row.getTableName())
-                    + theDatabase.beginSetClause();
-            sql = sql + row.getSetClause(theDatabase);
-            sql = sql + theDatabase.beginWhereClause()
-                    + theDatabase.formatColumnName(this.getPrimaryKeyColumn())
-                    + theDatabase.getEqualsComparator()
-                    + row.getPrimaryKeySQLStringValue(theDatabase)
-                    + theDatabase.endDeleteLine();
+                    database.beginUpdateLine()
+                    + database.formatTableName(row.getTableName())
+                    + database.beginSetClause();
+            sql = sql + row.getSetClause(database);
+            sql = sql + database.beginWhereClause()
+                    + database.formatColumnName(this.getPrimaryKeyColumn())
+                    + database.getEqualsComparator()
+                    + row.getPrimaryKeySQLStringValue(database)
+                    + database.endDeleteLine();
             allSQL.add(sql);
         }
 
@@ -752,16 +752,16 @@ public class DBTable<E extends DBRow> {
 
     private String getOrderByClause() {
         if (sortOrder != null) {
-            StringBuilder orderByClause = new StringBuilder(theDatabase.beginOrderByClause());
-            String sortSeparator = theDatabase.getStartingOrderByClauseSeparator();
+            StringBuilder orderByClause = new StringBuilder(database.beginOrderByClause());
+            String sortSeparator = database.getStartingOrderByClauseSeparator();
             for (QueryableDatatype qdt : sortOrder) {
                 final String dbColumnName = sortBase.getDBColumnName(qdt);
                 if (dbColumnName != null) {
-                    orderByClause.append(sortSeparator).append(dbColumnName).append(theDatabase.getOrderByDirectionClause(qdt.getSortOrder()));
-                    sortSeparator = theDatabase.getSubsequentOrderByClauseSeparator();
+                    orderByClause.append(sortSeparator).append(dbColumnName).append(database.getOrderByDirectionClause(qdt.getSortOrder()));
+                    sortSeparator = database.getSubsequentOrderByClauseSeparator();
                 }
             }
-            orderByClause.append(theDatabase.endOrderByClause());
+            orderByClause.append(database.endOrderByClause());
             return orderByClause.toString();
         }
         return "";

@@ -17,8 +17,11 @@ package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,6 +52,38 @@ public class SortingTest extends AbstractTest {
         marque.name.setSortOrder(QueryableDatatype.SORT_DESCENDING);
         dbTable.getAllRows().print();
         sortedMarques = dbTable.toList();
+        Assert.assertThat(sortedMarques.size(), is(22));
+        Assert.assertThat(sortedMarques.get(0).name.toString(), is("VW"));
+        Assert.assertThat(sortedMarques.get(1).name.toString(), is("VOLVO"));
+        Assert.assertThat(sortedMarques.get(2).name.toString(), is("TOYOTA"));
+        Assert.assertThat(sortedMarques.get(3).name.toString(), is("SUZUKI"));
+    }
+
+    @Test
+    public void sortingDBQuery() throws SQLException {
+        final Marque marque = new Marque();
+        final CarCompany carCo = new CarCompany();
+        DBQuery query = myDatabase.getDBQuery(marque, carCo);
+        query.setSortOrder(new DBRow[]{marque}, marque.carCompany, marque.name);
+        query.print();
+        List<Marque> sortedMarques = query.getAllInstancesOf(marque);
+        Assert.assertThat(sortedMarques.size(), is(22));
+        Assert.assertThat(sortedMarques.get(0).name.toString(), is("HYUNDAI"));
+        Assert.assertThat(sortedMarques.get(1).name.toString(), is("TOYOTA"));
+        Assert.assertThat(sortedMarques.get(2).name.toString(), is("FORD"));
+        Assert.assertThat(sortedMarques.get(3).name.toString(), is("HOLDEN"));
+        query.setSortOrder(new DBRow[]{marque}, marque.name);
+        query.print();
+        sortedMarques = query.getAllInstancesOf(marque);
+        Assert.assertThat(sortedMarques.size(), is(22));
+        Assert.assertThat(sortedMarques.get(0).name.toString(), is("BMW"));
+        Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
+        Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
+        Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
+        marque.name.setSortOrder(QueryableDatatype.SORT_DESCENDING);
+//        query.getAllRows();
+        query.print();
+        sortedMarques = query.getAllInstancesOf(marque);
         Assert.assertThat(sortedMarques.size(), is(22));
         Assert.assertThat(sortedMarques.get(0).name.toString(), is("VW"));
         Assert.assertThat(sortedMarques.get(1).name.toString(), is("VOLVO"));
