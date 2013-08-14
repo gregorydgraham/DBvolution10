@@ -41,7 +41,7 @@ public class DBDatabaseInsertTest extends AbstractTest{
         
         Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();
-        Marque newMarque2 = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4);
+        Marque newMarque2 = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4,null);
         myTableRows.add(newMarque1);
         myTableRows.add(newMarque2);
         CarCompany carCompany = new CarCompany("TATA", 569);

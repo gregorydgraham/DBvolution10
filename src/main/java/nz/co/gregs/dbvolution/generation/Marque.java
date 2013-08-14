@@ -25,4 +25,6 @@ public class Marque extends DBRow {
     public DBString reservationsalwd = new DBString();
     @DBColumn("CREATION_DATE")
     public DBDate creationDate = new DBDate();
+    @DBColumn("ENABLED")
+    public DBBoolean enabled = new DBBoolean();
 }

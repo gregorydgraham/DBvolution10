@@ -28,7 +28,7 @@ public class QueryableDatatypeEditor extends PropertyEditorSupport {
             QueryableDatatype qdt = (QueryableDatatype) value;
             qdt.isLiterally(text);
         } else {
-            QueryableDatatype type = new QueryableDatatype();
+            QueryableDatatype type = QueryableDatatype.getQueryableDatatypeForObject(value);
             type.isLiterally(text);
             setValue(type);
         }

@@ -36,4 +36,9 @@ public class DBByteArray extends QueryableDatatype {
         this.isLiterally(resultSet.getBytes(fullColumnName));
     }
 
+    @Override
+    public String getSQLValue() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

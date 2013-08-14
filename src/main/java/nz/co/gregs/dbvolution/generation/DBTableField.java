@@ -27,5 +27,6 @@ public class DBTableField {
     String referencesClass;
     String referencesField;
     String columnType;
+    int precision;
     
 }
