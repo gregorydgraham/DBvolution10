@@ -117,6 +117,13 @@ public abstract class DBDatabase {
         }
     }
 
+    /**
+     * 
+     * Inserts DBRows and lists of DBRows into the correct tables automatically
+     *
+     * @param objs
+     * @throws SQLException
+     */
     public void insert(Object... objs) throws SQLException {
         for (Object obj : objs) {
             if (obj instanceof List) {
@@ -285,26 +292,26 @@ public abstract class DBDatabase {
     /**
      *
      * @param <TR>
-     * @param marque
+     * @param newTableRow
      * @return
      * @throws SQLException
      */
-    public <TR extends DBRow> void createTable(TR marque) throws SQLException {
+    public <TR extends DBRow> void createTable(TR newTableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
         List<Field> pkFields = new ArrayList<Field>();
         String lineSeparator = System.getProperty("line.separator");
         // table name
 
-        sqlScript.append(getCreateTableStart()).append(marque.getTableName()).append(getCreateTableColumnsStart()).append(lineSeparator);
+        sqlScript.append(getCreateTableStart()).append(newTableRow.getTableName()).append(getCreateTableColumnsStart()).append(lineSeparator);
 
         // columns
         String sep = "";
         String nextSep = getCreateTableColumnsSeparator();
-        Field[] fields = marque.getClass().getDeclaredFields();
+        Field[] fields = newTableRow.getClass().getDeclaredFields();
         for (Field field : fields) {
             DBColumn annotation = field.getAnnotation(DBColumn.class);
             if (annotation != null) {
-                QueryableDatatype qdt = marque.getQueryableValueOfField(field);
+                QueryableDatatype qdt = newTableRow.getQueryableValueOfField(field);
                 String colName = annotation.value();
                 if (colName == null || colName.isEmpty()) {
                     colName = field.getName();

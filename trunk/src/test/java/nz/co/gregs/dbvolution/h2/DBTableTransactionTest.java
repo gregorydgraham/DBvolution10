@@ -51,7 +51,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 marques.print();
 
                 List<Marque> myTableRows = new ArrayList<Marque>();
-                myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4));
+                myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4,null));
 
                 System.out.println("EXPECT A UNIQUE CONSTRAINT VIOLATION EXCEPTION HERE:");
                 marques.insert(myTableRows);
@@ -85,7 +85,7 @@ public class DBTableTransactionTest extends AbstractTest {
 //                marques.printRows();
 
                 List<Marque> myTableRows = new ArrayList<Marque>();
-                myTableRows.add(new Marque(999, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4));
+                myTableRows.add(new Marque(999, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4,null));
 
                 marques.insert(myTableRows);
 

@@ -39,4 +39,9 @@ public class DBObject extends QueryableDatatype {
     protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
         this.isLiterally(resultSet.getObject(fullColumnName));
     }
+
+    @Override
+    public String getSQLValue() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

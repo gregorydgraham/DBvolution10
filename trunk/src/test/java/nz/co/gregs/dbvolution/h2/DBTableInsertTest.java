@@ -41,7 +41,7 @@ public class DBTableInsertTest extends AbstractTest {
         
         Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();
-        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4));
+        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4,null));
         
         marques.insert(myTableRows);
         marques.getAllRows();

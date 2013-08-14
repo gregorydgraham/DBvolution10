@@ -19,8 +19,8 @@ import nz.co.gregs.dbvolution.operators.*;
  *
  * @author gregory.graham
  */
-public class QueryableDatatype extends Object implements Serializable {
-    
+public abstract class QueryableDatatype extends Object implements Serializable {
+
     public static final long serialVersionUID = 1L;
     protected DBDatabase database = null;
     protected Object literalValue = null;
@@ -32,14 +32,13 @@ public class QueryableDatatype extends Object implements Serializable {
     private boolean changed = false;
     private QueryableDatatype previousValueAsQDT = null;
     private boolean isPrimaryKey;
-    
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     private Boolean sort = SORT_ASCENDING;
-    
+
     QueryableDatatype() {
     }
-    
+
     QueryableDatatype(String str) {
         if (str == null) {
             this.isDBNull = true;
@@ -48,7 +47,7 @@ public class QueryableDatatype extends Object implements Serializable {
             this.operator = new DBEqualsOperator(this);
         }
     }
-    
+
     QueryableDatatype(Object str) {
         if (str == null) {
             this.isDBNull = true;
@@ -57,26 +56,26 @@ public class QueryableDatatype extends Object implements Serializable {
             this.operator = new DBEqualsOperator(this);
         }
     }
-    
+
     @Override
     public String toString() {
         return (literalValue == null ? "" : literalValue.toString());
     }
-    
+
     public Long longValue() {
         return (literalValue == null ? null : Long.parseLong(literalValue.toString()));
     }
-    
+
     public Double doubleValue() {
         return (literalValue == null ? null : Double.parseDouble(literalValue.toString()));
     }
-    
+
     protected void blankQuery() {
         includingNulls = false;
-        isDBNull=false;
+        isDBNull = false;
         this.operator = null;
     }
-    
+
     static <T extends QueryableDatatype> T getQueryableDatatype(Class<T> requiredQueryableDatatype) {
         try {
             return requiredQueryableDatatype.getConstructor().newInstance();
@@ -95,6 +94,24 @@ public class QueryableDatatype extends Object implements Serializable {
         }
     }
 
+    static QueryableDatatype getQueryableDatatypeForObject(Object o) {
+        if (o instanceof Integer) {
+            return new DBInteger();
+        } else if (o instanceof Number) {
+            return new DBNumber();
+        } else if (o instanceof String) {
+            return new DBString();
+        } else if (o instanceof Date) {
+            return new DBDate();
+        } else if (o instanceof Byte[]) {
+            return new DBByteArray();
+        } else if (o instanceof Boolean) {
+            return new DBBoolean();
+        } else {
+            return new DBObject();
+        }
+    }
+
     /**
      *
      * @param columnName
@@ -103,7 +120,7 @@ public class QueryableDatatype extends Object implements Serializable {
     public String getWhereClause(String columnName) {
         return getWhereClauseUsingOperators(columnName);
     }
-    
+
     private String getWhereClauseUsingOperators(String columnName) {
         String whereClause = "";
         DBOperator op = this.getOperator();
@@ -112,7 +129,7 @@ public class QueryableDatatype extends Object implements Serializable {
         }
         return whereClause;
     }
-    
+
     public void negateOperator() {
         invertOperator = true;
         if (getOperator() != null) {
@@ -129,7 +146,7 @@ public class QueryableDatatype extends Object implements Serializable {
         preventChangeOfPrimaryKey();
         blankQuery();
         if (newLiteralValue == null) {
-            isNull();
+            return isNull();
         } else {
             setChanged(newLiteralValue);
             this.literalValue = newLiteralValue.toString();
@@ -169,7 +186,7 @@ public class QueryableDatatype extends Object implements Serializable {
         }
         return getOperator();
     }
-    
+
     public void setUnchanged() {
         changed = false;
         previousValueAsQDT = null;
@@ -185,7 +202,7 @@ public class QueryableDatatype extends Object implements Serializable {
         }
         return getOperator();
     }
-    
+
     public DBOperator isGreaterThanOrEqualTo(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
@@ -196,7 +213,7 @@ public class QueryableDatatype extends Object implements Serializable {
         }
         return getOperator();
     }
-    
+
     public DBOperator isLessThan(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
@@ -207,7 +224,7 @@ public class QueryableDatatype extends Object implements Serializable {
         }
         return getOperator();
     }
-    
+
     public DBOperator isLessThanOrEqualTo(QueryableDatatype literalValue) {
         blankQuery();
         if (literalValue == null) {
@@ -218,12 +235,12 @@ public class QueryableDatatype extends Object implements Serializable {
         }
         return getOperator();
     }
-    
+
     /**
      *
-     * Sets the value of this column to DBNull
-     * Also changes the operator to DBIsNullOperator for comparisons
-     * 
+     * Sets the value of this column to DBNull Also changes the operator to
+     * DBIsNullOperator for comparisons
+     *
      */
     public final DBOperator isNull() {
         blankQuery();
@@ -232,7 +249,7 @@ public class QueryableDatatype extends Object implements Serializable {
         this.setOperator(new DBIsNullOperator());
         return getOperator();
     }
-    
+
     public DBOperator isLike(Object t) {
         blankQuery();
         this.literalValue = t;
@@ -257,7 +274,8 @@ public class QueryableDatatype extends Object implements Serializable {
         blankQuery();
         ArrayList<QueryableDatatype> inVals = new ArrayList<QueryableDatatype>();
         for (Object obj : inValues) {
-            QueryableDatatype qdt = new QueryableDatatype(obj);
+            QueryableDatatype qdt = getQueryableDatatypeForObject(obj);
+            qdt.isLiterally(obj);
             inVals.add(qdt);
         }
         this.setOperator(new DBInOperator(inVals));
@@ -285,11 +303,11 @@ public class QueryableDatatype extends Object implements Serializable {
         this.setOperator(new DBBetweenOperator(lowerBound, upperBound));
         return getOperator();
     }
-    
+
     public DBOperator isBetween(Object lowerBound, Object upperBound) {
         blankQuery();
-        QueryableDatatype lower = new QueryableDatatype(lowerBound);
-        QueryableDatatype upper = new QueryableDatatype(upperBound);
+        QueryableDatatype lower = getQueryableDatatypeForObject(lowerBound);
+        QueryableDatatype upper = getQueryableDatatypeForObject(upperBound);
         isBetween(lower, upper);
         return getOperator();
     }
@@ -300,7 +318,7 @@ public class QueryableDatatype extends Object implements Serializable {
      * {yada} => 'yada'
      */
     protected String toSQLString() {
-        if (this.isDBNull) {
+        if (this.isDBNull || literalValue == null) {
             return database.getNull();
         }
         return database.beginStringValue() + this.toString().replace("'", "\'") + database.endStringValue();
@@ -319,23 +337,41 @@ public class QueryableDatatype extends Object implements Serializable {
     public void setDatabase(DBDatabase database) {
         this.database = database;
     }
-    
-    public String getSQLDatatype() {
-        return "VARCHAR(1000)";
-    }
-    
-    public String getSQLValue() {
-        if (this.isDBNull) {
-            return database.getNull();
-        } else {
-            if (literalValue instanceof Date) {
-                return database.getDateFormattedForQuery((Date) literalValue);
-            } else {
-                String unsafeValue = literalValue.toString();
-                return database.beginStringValue() + database.safeString(unsafeValue) + database.endStringValue();
-            }
-        }
-    }
+
+    /**
+     *
+     * Provides the SQL datatype used by default for this type of object
+     *
+     * This should be overridden in each subclass
+     *
+     * @return
+     */
+    public abstract String getSQLDatatype();
+//    {
+//        return "VARCHAR(1000)";
+//    }
+
+    /**
+     *
+     * Returns the value of the object formatted for the database
+     *
+     * This should be overridden in each subclass
+     *
+     * @return
+     */
+    public abstract String getSQLValue();
+//    {
+//        if (this.isDBNull) {
+//            return database.getNull();
+//        } else {
+//            if (literalValue instanceof Date) {
+//                return database.getDateFormattedForQuery((Date) literalValue);
+//            } else {
+//                String unsafeValue = literalValue.toString();
+//                return database.beginStringValue() + database.safeString(unsafeValue) + database.endStringValue();
+//            }
+//        }
+//    }
 
     /**
      * @return the operator
@@ -355,7 +391,7 @@ public class QueryableDatatype extends Object implements Serializable {
             changed = true;
         }
     }
-    
+
     boolean hasChanged() {
         return changed;
     }
@@ -369,17 +405,17 @@ public class QueryableDatatype extends Object implements Serializable {
     protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
         this.isLiterally(resultSet.getString(fullColumnName));
     }
-    
+
     void setIsPrimaryKey(boolean b) {
         this.isPrimaryKey = b;
     }
-    
+
     private void preventChangeOfPrimaryKey() {
         if (this.isPrimaryKey && !this.undefined) {
             throw new RuntimeException("Accidental Change Of Primary Key Stopped: Use the changePrimaryKey() method to change the primary key's value.");
         }
     }
-    
+
     private void setChanged(Object newLiteralValue) {
         if (this.isDBNull
                 || (literalValue != null && !newLiteralValue.equals(literalValue))) {
@@ -393,17 +429,18 @@ public class QueryableDatatype extends Object implements Serializable {
             previousValueAsQDT = newInstance;
         }
     }
-    
+
     String getPreviousValueAsSQL() {
         previousValueAsQDT.setDatabase(database);
         return previousValueAsQDT.getSQLValue();
     }
-    
-    public QueryableDatatype setSortOrder(Boolean order){
+
+    public QueryableDatatype setSortOrder(Boolean order) {
         sort = order;
         return this;
     }
-    public Boolean getSortOrder(){
+
+    public Boolean getSortOrder() {
         return sort;
     }
 }

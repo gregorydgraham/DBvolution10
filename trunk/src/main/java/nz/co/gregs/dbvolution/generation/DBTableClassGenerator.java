@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -139,7 +140,7 @@ public class DBTableClassGenerator {
      * @return
      * @throws SQLException
      */
-    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException{
+    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
         return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "VIEW");
     }
 
@@ -167,7 +168,7 @@ public class DBTableClassGenerator {
         } catch (Exception ex) {
             // NOT USING Java 1.7+ apparently
         }
-        
+
         DatabaseMetaData metaData = connection.getMetaData();
         ResultSet tables = metaData.getTables(catalog, schema, null, dbObjectTypes);
 
@@ -199,7 +200,8 @@ public class DBTableClassGenerator {
                 DBTableField dbTableField = new DBTableField();
                 dbTableField.columnName = columns.getString("COLUMN_NAME");
                 dbTableField.fieldName = toFieldCase(dbTableField.columnName);
-                dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"));
+                dbTableField.precision = columns.getInt("COLUMN_SIZE");
+                dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
                 if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
                     dbTableField.isPrimaryKey = true;
                 }
@@ -257,9 +259,16 @@ public class DBTableClassGenerator {
      * @param columnType
      * @return
      */
-    public static String getQueryableDatatypeNameOfSQLType(int columnType) {
+    public static String getQueryableDatatypeNameOfSQLType(int columnType, int precision) {
         String value = "";
         switch (columnType) {
+            case Types.BIT:
+                if (precision == 1) {
+                    value = "DBBoolean";
+                } else {
+                    value = "DBByteArray";
+                }
+                break;
             case Types.INTEGER:
             case Types.BIGINT:
             case Types.BINARY:
@@ -317,9 +326,8 @@ public class DBTableClassGenerator {
     public static String toClassCase(String s) {
         String classCaseString = "";
         if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
-            classCaseString= s.toUpperCase();
-        }
-        else{
+            classCaseString = s.toUpperCase();
+        } else {
             System.out.println("Splitting: " + s);
             String[] parts = s.split("_");
             for (String part : parts) {

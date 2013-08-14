@@ -42,16 +42,19 @@ public class Marque extends DBRow {
     public DBString reservationsAllowed = new DBString();
     @DBColumn("creation_date")
     public DBDate creationDate = new DBDate();
+    @DBColumn("enabled")
+    public DBBoolean enabled = new DBBoolean();
     
     @DBForeignKey(CarCompany.class)
     @DBColumn("fk_carcompany")
     public DBInteger carCompany = new DBInteger();
+    
 
 
     public Marque(){
     }
     
-    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany) {
+    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
         this.uidMarque.isLiterally(uidMarque);
         this.isUsedForTAFROs.isLiterally(isUsedForTAFROs);
         toyotaStatusClassID.isLiterally(statusClass);
@@ -63,6 +66,7 @@ public class Marque extends DBRow {
         this.reservationsAllowed.isLiterally(reservationsAllowed);
         this.creationDate.isLiterally(creationDate);
         this.carCompany.isLiterally(carCompany);
+        this.enabled.isLiterally(enabled);
     }
 
     /**
@@ -225,5 +229,19 @@ public class Marque extends DBRow {
      */
     public DBInteger getCarCompany() {
         return carCompany;
+    }
+
+    /**
+     * @return the enabled
+     */
+    public DBBoolean getEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled the enabled to set
+     */
+    public void setEnabled(DBBoolean enabled) {
+        this.enabled = enabled;
     }
 }

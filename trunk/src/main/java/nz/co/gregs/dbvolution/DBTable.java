@@ -202,7 +202,27 @@ public class DBTable<E extends DBRow> {
     private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
         QueryableDatatype qdt = tableRow.getQueryableValueOfField(field);
         int columnType = rsMeta.getColumnType(dbColumnIndex);
+        int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {
+            case Types.BIT:
+                if (precision == 1) {
+                    // DBBoolean
+                    boolean aBoolean = resultSet.getBoolean(dbColumnName);
+                    if (resultSet.wasNull()) {
+                        qdt.isNull();
+                    } else {
+                        qdt.isLiterally(aBoolean);
+                    }
+                } else {
+                    // DBByteArray
+                    byte[] bytes = resultSet.getBytes(dbColumnName);
+                    if (resultSet.wasNull()) {
+                        qdt.isNull();
+                    } else {
+                        qdt.isLiterally(bytes);
+                    }
+                }
+                break;
             case Types.INTEGER:
             case Types.BIGINT:
             case Types.BINARY:

@@ -104,7 +104,7 @@ public class DBTableGetTest extends AbstractTest {
         hummerQuery.getName().isIn("PEUGEOT", "HUMMER");
         marques = marques.getRowsByExample(hummerQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 2);
+        Assert.assertThat(marques.toList().size(), is(2));
     }
 
     @Test
