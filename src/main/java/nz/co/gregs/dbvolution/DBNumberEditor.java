@@ -33,7 +33,7 @@ public class DBNumberEditor extends PropertyEditorSupport {
             type = new DBNumber();
         } else {
             type = new DBNumber();
-            type.isLiterally(text);
+            type.useEqualsOperator(text);
         }
         setValue(type);
     }

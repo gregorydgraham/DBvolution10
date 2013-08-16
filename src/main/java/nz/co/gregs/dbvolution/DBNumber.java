@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.operators.DBLikeOperator;
+import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -78,54 +78,54 @@ public class DBNumber extends QueryableDatatype {
     }
 
     @Override
-    public DBOperator isIn(Object... literalOptions) {
+    public DBOperator useInOperator(Object... literalOptions) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Object str : literalOptions) {
             intOptions.add(new DBNumber(str));
         }
-        return isIn(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
     /**
      *
      * @param inValues
      */
-    public void isIn(Number... inValues) {
+    public void useInOperator(Number... inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Number num : inValues) {
             intOptions.add(new DBNumber(num));
         }
-        isIn(intOptions.toArray(this.inValuesNumber));
+        useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
     /**
      *
      * @param inValues
      */
-    public void isIn(List<Number> inValues) {
+    public void useInOperator(List<Number> inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Number num : inValues) {
             intOptions.add(new DBNumber(num));
         }
-        isIn(intOptions.toArray(this.inValuesNumber));
+        useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
     /**
      *
      * @param inValues
      */
-    public DBOperator isIn(DBNumber... inValues) {
+    public DBOperator useInOperator(DBNumber... inValues) {
         this.inValuesNumber = inValues;
-        return super.isIn(inValues);
+        return super.useInOperator(inValues);
     }
 
-    public DBOperator isGreaterThan(Number literalValue) {
-        return this.isGreaterThan(new DBNumber(literalValue));
+    public DBOperator useGreaterThanOperator(Number literalValue) {
+        return this.useGreaterThanOperator(new DBNumber(literalValue));
     }
 
     @Override
     public String getWhereClause(String columnName) {
-        if (this.getOperator() instanceof DBLikeOperator) {
+        if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
         } else {
             return super.getWhereClause(columnName);
@@ -138,10 +138,10 @@ public class DBNumber extends QueryableDatatype {
      * @param upper
      */
     @Override
-    public DBOperator isBetween(Object lower, Object upper) {
+    public DBOperator useBetweenOperator(Object lower, Object upper) {
         this.upperBoundNumber = new DBNumber(upper);
         this.lowerBoundNumber = new DBNumber(lower);
-        return super.isBetween(lowerBoundNumber, upperBoundNumber);
+        return super.useBetweenOperator(lowerBoundNumber, upperBoundNumber);
     }
 
     /**
@@ -149,19 +149,19 @@ public class DBNumber extends QueryableDatatype {
      * @param lower
      * @param upper
      */
-    public void isBetween(Number lower, Number upper) {
+    public void useBetweenOperator(Number lower, Number upper) {
         this.upperBoundNumber = new DBNumber(upper);
         this.lowerBoundNumber = new DBNumber(lower);
-        super.isBetween(lowerBoundNumber, upperBoundNumber);
+        super.useBetweenOperator(lowerBoundNumber, upperBoundNumber);
     }
 
     @Override
-    public DBOperator isLiterally(Object literal) {
+    public DBOperator useEqualsOperator(Object literal) {
         if (literal == null || literal.toString().isEmpty()) {
-            super.isLiterally(null);
+            super.useEqualsOperator(null);
             this.numberValue = null;
         } else {
-            this.isLiterally(Double.parseDouble(literal.toString()));
+            this.useEqualsOperator(Double.parseDouble(literal.toString()));
         }
         return getOperator();
     }
@@ -179,8 +179,8 @@ public class DBNumber extends QueryableDatatype {
      *
      * @param literal
      */
-    public void isLiterally(Number literal) {
-        super.isLiterally(literal);
+    public void useEqualsOperator(Number literal) {
+        super.useEqualsOperator(literal);
         this.numberValue = literal;
     }
 
@@ -189,7 +189,7 @@ public class DBNumber extends QueryableDatatype {
      * @param obj
      */
     @Override
-    public DBOperator isLike(Object obj) {
+    public DBOperator useLikeOperator(Object obj) {
         throw new RuntimeException("LIKE Comparison Cannot Be Used With Numeric Fields: " + obj);
     }
 
@@ -259,6 +259,6 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.isLiterally(resultSet.getBigDecimal(fullColumnName));
+        this.useEqualsOperator(resultSet.getBigDecimal(fullColumnName));
     }
 }

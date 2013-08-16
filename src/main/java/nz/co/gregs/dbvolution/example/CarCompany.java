@@ -36,7 +36,7 @@ public class CarCompany  extends DBRow {
     }
     
     public CarCompany(String anme, int id){
-        this.name.isLiterally(anme);
-        this.uidCarCompany.isLiterally(id);
+        this.name.setValue(anme);
+        this.uidCarCompany.setValue(id);
     }
 }

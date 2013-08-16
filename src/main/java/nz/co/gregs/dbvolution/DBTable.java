@@ -209,17 +209,17 @@ public class DBTable<E extends DBRow> {
                     // DBBoolean
                     boolean aBoolean = resultSet.getBoolean(dbColumnName);
                     if (resultSet.wasNull()) {
-                        qdt.isNull();
+                        qdt.useNullOperator();
                     } else {
-                        qdt.isLiterally(aBoolean);
+                        qdt.useEqualsOperator(aBoolean);
                     }
                 } else {
                     // DBByteArray
                     byte[] bytes = resultSet.getBytes(dbColumnName);
                     if (resultSet.wasNull()) {
-                        qdt.isNull();
+                        qdt.useNullOperator();
                     } else {
-                        qdt.isLiterally(bytes);
+                        qdt.useEqualsOperator(bytes);
                     }
                 }
                 break;
@@ -231,9 +231,9 @@ public class DBTable<E extends DBRow> {
             case Types.SMALLINT:
                 Long aLong = resultSet.getLong(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.isNull();
+                    qdt.useNullOperator();
                 } else {
-                    qdt.isLiterally(aLong);
+                    qdt.useEqualsOperator(aLong);
                 }
                 break;
             case Types.DECIMAL:
@@ -243,9 +243,9 @@ public class DBTable<E extends DBRow> {
             case Types.REAL:
                 Double aDouble = resultSet.getDouble(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.isNull();
+                    qdt.useNullOperator();
                 } else {
-                    qdt.isLiterally(aDouble);
+                    qdt.useEqualsOperator(aDouble);
                 }
                 break;
             case Types.VARCHAR:
@@ -258,26 +258,26 @@ public class DBTable<E extends DBRow> {
             case Types.LONGVARCHAR:
                 String string = resultSet.getString(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.isNull();
+                    qdt.useNullOperator();
                 } else {
-                    qdt.isLiterally(string);
+                    qdt.useEqualsOperator(string);
                 }
                 break;
             case Types.DATE:
             case Types.TIME:
                 Date date = resultSet.getDate(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.isNull();
+                    qdt.useNullOperator();
                 } else {
-                    qdt.isLiterally(date);
+                    qdt.useEqualsOperator(date);
                 }
                 break;
             case Types.TIMESTAMP:
                 Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.isNull();
+                    qdt.useNullOperator();
                 } else {
-                    qdt.isLiterally(timestamp);
+                    qdt.useEqualsOperator(timestamp);
                 }
                 break;
             case Types.VARBINARY:
@@ -285,9 +285,9 @@ public class DBTable<E extends DBRow> {
             case Types.LONGVARBINARY:
                 Object obj = resultSet.getObject(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.isNull();
+                    qdt.useNullOperator();
                 } else {
-                    qdt.isLiterally(obj);
+                    qdt.useEqualsOperator(obj);
                 }
                 break;
             default:

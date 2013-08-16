@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregorygraham
  */
 public class DBEqualsOperator extends DBOperator {
-    private final QueryableDatatype equalTo;
+    protected final QueryableDatatype equalTo;
 
     /**
      *
@@ -50,6 +50,7 @@ public class DBEqualsOperator extends DBOperator {
         }
         return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
     }
+    
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;

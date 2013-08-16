@@ -37,7 +37,7 @@ public class DBObject extends QueryableDatatype {
 
     @Override
     protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.isLiterally(resultSet.getObject(fullColumnName));
+        this.useEqualsOperator(resultSet.getObject(fullColumnName));
     }
 
     @Override

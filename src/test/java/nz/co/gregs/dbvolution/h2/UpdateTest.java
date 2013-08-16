@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,10 +26,10 @@ public class UpdateTest extends AbstractTest {
 
     @Test
     public void updateNewRow() throws SQLException {
-        myMarqueRow.uidMarque.isLiterally(4);
+        myMarqueRow.uidMarque.permittedValues(4);
         marques.insert(myMarqueRow);
         Marque insertedRow = marques.getRowsByPrimaryKey(4).getFirstRow();
-        insertedRow.individualAllocationsAllowed.isLiterally("Y");
+        insertedRow.individualAllocationsAllowed.permittedValues("Y");
         String sqlForUpdate = marques.getSQLForUpdate(insertedRow);
         Assert.assertThat(sqlForUpdate,
                 is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;"));
@@ -42,12 +41,12 @@ public class UpdateTest extends AbstractTest {
     @Test
     public void updateExistingRow() throws SQLException {
         Marque marque = new Marque();
-        marque.name.isLiterally("PEUGEOT");
+        marque.name.permittedValues("PEUGEOT");
         List<Marque> rowsByExample = marques.getRowsByExample(marque).toList();
         Assert.assertThat(rowsByExample.size(), is(1));
         Marque peugeot = rowsByExample.get(0);
         System.out.println(peugeot);
-        peugeot.individualAllocationsAllowed.isLiterally("Y");
+        peugeot.individualAllocationsAllowed.permittedValues("Y");
         String sqlForUpdate = marques.getSQLForUpdate(peugeot);
         Assert.assertThat(sqlForUpdate,
                 is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;"));

@@ -42,37 +42,37 @@ public class DBInteger extends DBNumber {
     }
 
     @Override
-    public DBOperator isLiterally(Object someNumber) {
+    public DBOperator useEqualsOperator(Object someNumber) {
         if (someNumber == null || someNumber.toString().isEmpty()) {
-            super.isLiterally((Object) null);
+            super.useEqualsOperator((Object) null);
         } else {
-            super.isLiterally(Long.parseLong(someNumber.toString()));
+            super.useEqualsOperator(Long.parseLong(someNumber.toString()));
         }
         return getOperator();
     }
 
-    public void isIn(Integer... inValues) {
+    public void useInOperator(Integer... inValues) {
         ArrayList<DBInteger> intOptions = new ArrayList<DBInteger>();
         for (Integer num : inValues) {
             intOptions.add(new DBInteger(num));
         }
-        isIn(intOptions.toArray(this.inValuesNumber));
+        useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
-    public void isIn(Long... inValues) {
+    public void useInOperator(Long... inValues) {
         ArrayList<DBInteger> intOptions = new ArrayList<DBInteger>();
         for (Long num : inValues) {
             intOptions.add(new DBInteger(num));
         }
-        isIn(intOptions.toArray(this.inValuesNumber));
+        useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
-    public void isIn(DBInteger... inValues) {
-        super.isIn(inValues);
+    public void useInOperator(DBInteger... inValues) {
+        super.useInOperator(inValues);
     }
 
-    public DBOperator isGreaterThan(Integer literalValue) {
-        return this.isGreaterThan(new DBInteger(literalValue));
+    public DBOperator useGreaterThanOperator(Integer literalValue) {
+        return this.useGreaterThanOperator(new DBInteger(literalValue));
     }
 
     @Override
@@ -87,6 +87,6 @@ public class DBInteger extends DBNumber {
 
     @Override
     protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.isLiterally(resultSet.getLong(fullColumnName));
+        this.useEqualsOperator(resultSet.getLong(fullColumnName));
     }
 }

@@ -42,7 +42,7 @@ public class DBString extends QueryableDatatype {
         }
     }
 
-    public DBOperator isGreaterThan(String literalValue) {
-        return this.isGreaterThan(new DBString(literalValue));
+    public DBOperator useGreaterThanOperator(String literalValue) {
+        return this.useGreaterThanOperator(new DBString(literalValue));
     }
 }
