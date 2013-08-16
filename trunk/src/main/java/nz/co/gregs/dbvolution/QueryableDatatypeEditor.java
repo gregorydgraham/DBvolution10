@@ -26,10 +26,10 @@ public class QueryableDatatypeEditor extends PropertyEditorSupport {
         Object value = getValue();
         if (value instanceof QueryableDatatype) {
             QueryableDatatype qdt = (QueryableDatatype) value;
-            qdt.isLiterally(text);
+            qdt.useEqualsOperator(text);
         } else {
             QueryableDatatype type = QueryableDatatype.getQueryableDatatypeForObject(value);
-            type.isLiterally(text);
+            type.useEqualsOperator(text);
             setValue(type);
         }
     }

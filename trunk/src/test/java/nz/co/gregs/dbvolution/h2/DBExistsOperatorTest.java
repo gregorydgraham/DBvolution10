@@ -34,7 +34,7 @@ public class DBExistsOperatorTest extends AbstractTest {
     public void testDBExistsOperator() throws SQLException {
         
         CarCompany carCompany = new CarCompany();
-        carCompany.uidCarCompany.isLiterally(3);
+        carCompany.uidCarCompany.permittedValues(3);
         DBExistsOperator<CarCompany> carCompanyExists = new DBExistsOperator<CarCompany>(carCompany, carCompany.uidCarCompany);
 
         Marque marque = new Marque();

@@ -33,7 +33,7 @@ public class DBByteArray extends QueryableDatatype {
     
     @Override
         protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException{
-        this.isLiterally(resultSet.getBytes(fullColumnName));
+        this.useEqualsOperator(resultSet.getBytes(fullColumnName));
     }
 
     @Override

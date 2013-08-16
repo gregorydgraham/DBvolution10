@@ -36,7 +36,7 @@ public class DBStringEditor extends PropertyEditorSupport {
             type = new DBString();
         }
         if (text != null && !text.isEmpty()) {
-            type.isLiterally(text);
+            type.useEqualsOperator(text);
         }
         setValue(type);
     }

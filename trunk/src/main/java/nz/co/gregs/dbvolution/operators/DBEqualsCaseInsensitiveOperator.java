@@ -18,30 +18,25 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
-/**
- *
- * @author gregorygraham
- */
-public class DBCaseSensitiveLikeOperator extends DBOperator {
-    private final QueryableDatatype likeableValue;
+public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
 
-    public DBCaseSensitiveLikeOperator(QueryableDatatype likeableValue) {
-        this.likeableValue = likeableValue;
+    public DBEqualsCaseInsensitiveOperator(QueryableDatatype equalTo) {
+        super(equalTo);
     }
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
-        likeableValue.setDatabase(database);
-        return database.beginAndLine() +(invertOperator?"!(":"(")+ database.formatColumnName(columnName) + getOperator()+likeableValue.getSQLValue()+")";
-    }
-
-    private String getOperator() {
-        return " like ";
-    }
-
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return database.beginAndLine() +(invertOperator?"!(":"(")+ database.formatColumnName(columnName) + getOperator()+otherColumnName+")";
+        equalTo.setDatabase(database);
+        if (equalTo.getSQLValue().equals(database.getNull())) {
+            DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
+            return dbIsNullOperator.generateWhereLine(database, columnName);
+        }
+        return database.beginAndLine() + database.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + database.toLowerCase(equalTo.getSQLValue()) + " ";
     }
     
+        @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        return database.beginAndLine() + database.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + database.toLowerCase(otherColumnName);
+    }
+
 }

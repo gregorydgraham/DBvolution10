@@ -32,9 +32,9 @@ public class DBTableInsertTest extends AbstractTest {
     
     @Test
     public void testInsertRows() throws SQLException{
-        myTableRow.getUidMarque().isLiterally(999);
-        myTableRow.getName().isLiterally("TOYOTA");
-        myTableRow.getNumericCode().isLiterally(10);
+        myTableRow.getUidMarque().permittedValues(999);
+        myTableRow.getName().permittedValues("TOYOTA");
+        myTableRow.getNumericCode().permittedValues(10);
         marques.insert(myTableRow);
         marques.getAllRows();
         marques.print();

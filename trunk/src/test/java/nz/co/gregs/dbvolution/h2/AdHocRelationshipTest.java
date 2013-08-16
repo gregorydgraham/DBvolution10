@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
-import nz.co.gregs.dbvolution.operators.DBLikeOperator;
+import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import org.junit.Test;
 
 /**
@@ -51,7 +51,7 @@ public class AdHocRelationshipTest extends AbstractTest {
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
 
-        marque.addRelationship(marque.name, carCompany, carCompany.name, new DBLikeOperator(null));
+        marque.addRelationship(marque.name, carCompany, carCompany.name, new DBLikeCaseInsensitiveOperator(null));
 
         DBQuery query = myDatabase.getDBQuery(carCompany, marque);
         List<DBQueryRow> allRows = query.getAllRows();

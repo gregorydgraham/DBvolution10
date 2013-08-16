@@ -27,19 +27,19 @@ public class DBTableUpdateTest extends AbstractTest {
     @Test
     public void changingPrimaryKey() throws SQLException, UnexpectedNumberOfRowsException {
         Marque marqueExample = new Marque();
-        marqueExample.getUidMarque().isLiterally(1);
+        marqueExample.getUidMarque().permittedValues(1);
 
         marques.getRowsByExample(marqueExample);
         marques.print();
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
-        toyota.uidMarque.isLiterally(99999);
+        toyota.uidMarque.permittedValues(99999);
         Assert.assertThat(marques.getSQLForUpdate(toyota),is("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;"));
         marques.update(toyota);
-        toyota.name.isLiterally("NOTOYOTA");
+        toyota.name.permittedValues("NOTOYOTA");
         Assert.assertThat(marques.getSQLForUpdate(toyota), is("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;"));
         
         marqueExample = new Marque();
-        marqueExample.name.isLike("toyota");
+        marqueExample.name.permittedValuesCaseInsensitive("toyota");
         toyota = marques.getOnlyRowByExample(marqueExample);
         Assert.assertThat(toyota.name.toString(), is("TOYOTA"));
     }
@@ -47,7 +47,7 @@ public class DBTableUpdateTest extends AbstractTest {
     @Test
     public void testInsertRows() throws SQLException {
         Marque myTableRow = new Marque();
-        myTableRow.getUidMarque().isLiterally(1);
+        myTableRow.getUidMarque().permittedValues(1);
 
         marques.getRowsByExample(myTableRow);
         marques.print();
@@ -55,7 +55,7 @@ public class DBTableUpdateTest extends AbstractTest {
         System.out.println("===" + toyota.name.toString());
         Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
-        toyota.name.isLiterally("NOTTOYOTA");
+        toyota.name.permittedValues("NOTTOYOTA");
         String sqlForUpdate = marques.getSQLForUpdate(toyota);
         Assert.assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;", sqlForUpdate);
 

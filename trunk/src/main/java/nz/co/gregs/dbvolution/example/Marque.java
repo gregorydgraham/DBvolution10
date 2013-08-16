@@ -55,18 +55,18 @@ public class Marque extends DBRow {
     }
     
     public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
-        this.uidMarque.isLiterally(uidMarque);
-        this.isUsedForTAFROs.isLiterally(isUsedForTAFROs);
-        toyotaStatusClassID.isLiterally(statusClass);
-        this.individualAllocationsAllowed.isLiterally(intIndividualAllocationsAllowed);
-        this.updateCount.isLiterally(updateCount);
-        this.auto_created.isLiterally(autoCreated);
-        this.name.isLiterally(name);
-        this.pricingCodePrefix.isLiterally(pricingCodePrefix);
-        this.reservationsAllowed.isLiterally(reservationsAllowed);
-        this.creationDate.isLiterally(creationDate);
-        this.carCompany.isLiterally(carCompany);
-        this.enabled.isLiterally(enabled);
+        this.uidMarque.setValue(uidMarque);
+        this.isUsedForTAFROs.setValue(isUsedForTAFROs);
+        toyotaStatusClassID.setValue(statusClass);
+        this.individualAllocationsAllowed.setValue(intIndividualAllocationsAllowed);
+        this.updateCount.setValue(updateCount);
+        this.auto_created.setValue(autoCreated);
+        this.name.setValue(name);
+        this.pricingCodePrefix.setValue(pricingCodePrefix);
+        this.reservationsAllowed.setValue(reservationsAllowed);
+        this.creationDate.setValue(creationDate);
+        this.carCompany.setValue(carCompany);
+        this.enabled.setValue(enabled);
     }
 
     /**

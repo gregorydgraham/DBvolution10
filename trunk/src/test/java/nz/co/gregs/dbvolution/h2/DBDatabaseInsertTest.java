@@ -35,9 +35,9 @@ public class DBDatabaseInsertTest extends AbstractTest{
     @Test
     public void testInsertRows() throws SQLException{
         Marque newMarque1 = new Marque();
-        newMarque1.getUidMarque().isLiterally(999);
-        newMarque1.getName().isLiterally("TOYOTA");
-        newMarque1.getNumericCode().isLiterally(10);
+        newMarque1.getUidMarque().setValue(999);
+        newMarque1.getName().permittedValues("TOYOTA");
+        newMarque1.getNumericCode().permittedValues(10);
         
         Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();

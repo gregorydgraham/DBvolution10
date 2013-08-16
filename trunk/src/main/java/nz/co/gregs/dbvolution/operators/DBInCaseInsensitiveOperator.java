@@ -19,19 +19,13 @@ import java.util.List;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
-/**
- *
- * @author gregorygraham
- */
-public class DBInOperator extends DBOperator {
 
-    protected final List<QueryableDatatype> listOfPossibleValues;
+public class DBInCaseInsensitiveOperator extends DBInOperator {
 
-    public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
-        super();
-        this.listOfPossibleValues = listOfPossibleValues;
+    public DBInCaseInsensitiveOperator(List<QueryableDatatype> listOfPossibleValues) {
+        super(listOfPossibleValues);
     }
-
+    
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         StringBuilder whereClause = new StringBuilder();
@@ -41,12 +35,12 @@ public class DBInOperator extends DBOperator {
             whereClause.append(database.getFalseOperation());
         } else {
             whereClause.append(invertOperator ? "!(" : "(");
-            whereClause.append(columnName);
+            whereClause.append(database.toLowerCase(columnName));
             whereClause.append(getOperator());
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
                 qdt.setDatabase(database);
-                whereClause.append(sep).append(" ").append(qdt.getSQLValue()).append(" ");
+                whereClause.append(sep).append(" ").append(database.toLowerCase(qdt.getSQLValue())).append(" ");
                 sep = ",";
             }
             whereClause.append("))");
@@ -54,16 +48,8 @@ public class DBInOperator extends DBOperator {
         return whereClause.toString();
     }
 
-    protected String getOperator() {
-        return " in (";
-    }
-
-    protected String getInverse() {
-        return " not in (";
-    }
-
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-                return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName+" ) ";
+                return database.beginAndLine() + database.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + database.toLowerCase(otherColumnName)+" ) ";
     }
 }

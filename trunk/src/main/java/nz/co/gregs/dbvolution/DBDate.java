@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import nz.co.gregs.dbvolution.operators.DBLikeOperator;
+import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -19,7 +19,6 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 public class DBDate extends QueryableDatatype {
 
     private static final long serialVersionUID = 1L;
-    protected Date dateValue = null;
 
     public DBDate() {
         super();
@@ -27,12 +26,6 @@ public class DBDate extends QueryableDatatype {
 
     public DBDate(Date date) {
         super(date);
-        if (date == null) {
-            this.isDBNull = true;
-        } else {
-            dateValue = date;
-        }
-//        this.isLiterally(date);
     }
 
     DBDate(Timestamp timestamp) {
@@ -42,62 +35,57 @@ public class DBDate extends QueryableDatatype {
         } else {
             Date date = new Date();
             date.setTime(timestamp.getTime());
-            dateValue = date;
-//            this.isLiterally(dateValue);
+            literalValue = date;
         }
     }
 
     DBDate(String str) {
         final long dateLong = Date.parse(str);
-        dateValue = new Date();
+        Date dateValue = new Date();
         dateValue.setTime(dateLong);
-        this.isLiterally(dateValue);
-    }
-
-    @Override
-    public void blankQuery() {
-        super.blankQuery();
-        this.dateValue = null;
+        literalValue = dateValue;
     }
 
     @Override
     public String getWhereClause(String columnName) {
-//        if (this.usingLikeComparison) {
-        if (this.getOperator() instanceof DBLikeOperator) {
+        if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
             throw new RuntimeException("DATE COLUMNS CAN'T USE \"LIKE\": " + columnName);
         } else {
             return super.getWhereClause(columnName);
         }
-//        return whereClause.toString();
     }
 
     public Date dateValue() {
-        return dateValue;
+        if (literalValue instanceof Date) {
+            return (Date) literalValue;
+        } else {
+            return null;
+        }
     }
 
-    @Override
-    public DBOperator isLiterally(Date date) {
-        super.isLiterally(date);
-        dateValue = date;
-        return getOperator();
+    public void setValue(Date date) {
+        useEqualsOperator(date);
     }
 
-    public DBOperator isLiterally(String dateStr) {
+    public DBOperator useEqualsOperator(Date date) {
+        return super.useEqualsOperator(date);
+    }
+
+    public DBOperator useEqualsOperator(String dateStr) {
         final long dateLong = Date.parse(dateStr);
         Date date = new Date();
         date.setTime(dateLong);
-        super.isLiterally(date);
-        dateValue = date;
+        super.useEqualsOperator(date);
         return getOperator();
     }
 
     @Override
-    public DBOperator isLike(Object obj) {
+    public DBOperator useLikeOperator(Object obj) {
         throw new RuntimeException("LIKE Comparison Cannot Be Used With Date Fields: " + obj);
     }
 
     public DBOperator isGreaterThan(Date literalValue) {
-        return this.isGreaterThan(new DBDate(literalValue));
+        return this.useGreaterThanOperator(new DBDate(literalValue));
     }
 
     /**
@@ -105,10 +93,10 @@ public class DBDate extends QueryableDatatype {
      * @param lower
      * @param upper
      */
-    public DBOperator isBetween(Date lower, Date upper) {
+    public DBOperator useBetweenOperator(Date lower, Date upper) {
         DBDate lowerDate = new DBDate(lower);
         DBDate upperDate = new DBDate(upper);
-        super.isBetween(lowerDate, upperDate);
+        super.useBetweenOperator(lowerDate, upperDate);
         return getOperator();
     }
 
@@ -116,12 +104,12 @@ public class DBDate extends QueryableDatatype {
      *
      * @param dates
      */
-    public DBOperator isIn(Date... dates) {
+    public DBOperator useInOperator(Date... dates) {
         ArrayList<DBDate> dbDates = new ArrayList<DBDate>();
         for (Date date : dates) {
             dbDates.add(new DBDate(date));
         }
-        super.isIn(dbDates.toArray(new DBDate[]{}));
+        super.useInOperator(dbDates.toArray(new DBDate[]{}));
         return getOperator();
     }
 
@@ -132,27 +120,27 @@ public class DBDate extends QueryableDatatype {
 
     @Override
     public String toString() {
-        if (this.isDBNull || dateValue == null) {
+        if (this.isDBNull || dateValue() == null) {
             return "";
         }
-        return dateValue.toString();
+        return dateValue().toString();
     }
 
     @Override
     public String toSQLString() {
-        if (this.isDBNull || dateValue == null) {
+        if (this.isDBNull || dateValue() == null) {
             return this.database.getNull();
         }
-        return getDatabase().getDateFormattedForQuery(this.dateValue);
+        return getDatabase().getDateFormattedForQuery(dateValue());
     }
 
     @Override
     public String getSQLValue() {
-        return database.getDateFormattedForQuery(dateValue);
+        return database.getDateFormattedForQuery(dateValue());
     }
 
     @Override
     protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.isLiterally(resultSet.getDate(fullColumnName));
+        this.useEqualsOperator(resultSet.getDate(fullColumnName));
     }
 }

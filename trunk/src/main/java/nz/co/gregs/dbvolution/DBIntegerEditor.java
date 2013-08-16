@@ -33,7 +33,7 @@ public class DBIntegerEditor extends PropertyEditorSupport {
             type = new DBInteger();
         } else {
             type = new DBInteger();
-            type.isLiterally(text);
+            type.useEqualsOperator(text);
         }
         setValue(type);
     }
