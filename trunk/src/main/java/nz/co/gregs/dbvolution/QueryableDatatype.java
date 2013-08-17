@@ -84,7 +84,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         this.operator = null;
     }
 
-    static <T extends QueryableDatatype> T getQueryableDatatype(Class<T> requiredQueryableDatatype) {
+    static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
         try {
             return requiredQueryableDatatype.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {
@@ -564,7 +564,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         if (this.isDBNull
                 || (literalValue != null && !newLiteralValue.equals(literalValue))) {
             changed = true;
-            QueryableDatatype newInstance = QueryableDatatype.getQueryableDatatype(this.getClass());
+            QueryableDatatype newInstance = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
             if (this.isDBNull) {
                 newInstance.useNullOperator();
             } else {

@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import net.sourceforge.tedhi.DateRange;
-import nz.co.gregs.dbvolution.DBDate;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.Marque;

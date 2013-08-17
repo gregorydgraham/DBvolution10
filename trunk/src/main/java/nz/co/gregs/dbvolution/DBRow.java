@@ -141,11 +141,12 @@ abstract public class DBRow {
      */
     @SuppressWarnings("unchecked")
     public <Q extends QueryableDatatype> Q getQueryableValueOfField(Field field) {
+        Q qdt;
         BeanInfo info = null;
         try {
             info = Introspector.getBeanInfo(this.getClass());
         } catch (IntrospectionException ex) {
-            throw new RuntimeException("Unable Retrieve Bean Information: Bean Information Not Found For Class: " + this.getClass().getSimpleName());
+            throw new RuntimeException("Unable Retrieve Bean Information: Bean Information Not Found For Class: " + this.getClass().getSimpleName(), ex);
         }
         PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
         for (PropertyDescriptor pd : descriptors) {
@@ -153,7 +154,12 @@ abstract public class DBRow {
                 Method readMethod = pd.getReadMethod();
                 if (readMethod != null) {
                     try {
-                        return (Q) readMethod.invoke(this);
+                        qdt = (Q) readMethod.invoke(this);
+                        if (qdt == null) {
+                            qdt = QueryableDatatype.getQueryableDatatypeInstance((Class<Q>) pd.getPropertyType());
+                            Method setMethod = pd.getWriteMethod();
+                            setMethod.invoke(this, qdt);
+                        }
                     } catch (IllegalAccessException ex) {
                         throw new RuntimeException("GET Method Found But Unable To Access: Please change GET method to public for " + this.getClass().getSimpleName() + "." + field.getName(), ex);
                     } catch (IllegalArgumentException ex) {
@@ -166,11 +172,15 @@ abstract public class DBRow {
         }
         try {
             // no GET method found so try direct method
-            return (Q) field.get(this);
-            //throw new UnsupportedOperationException("No Appropriate Get Method Found In " + this.getClass().getSimpleName() + " for " + field.toGenericString());
+            qdt = (Q) field.get(this);
+            if (qdt == null) {
+                qdt = QueryableDatatype.getQueryableDatatypeInstance((Class<Q>) field.getType());
+                field.set(this, qdt);
+            }
         } catch (IllegalAccessException ex) {
             throw new RuntimeException("Unable To Access Variable Nor GET Method: Please change protection to public for GET method or field " + this.getClass().getSimpleName() + "." + field.getName(), ex);
         }
+        return qdt;
     }
 
     Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() {
@@ -396,8 +406,8 @@ abstract public class DBRow {
             tableName = row.getTableName();
             columnName = row.getDBColumnName(qdt);
             if (columnName != null) {
-                 fullName = row.database.formatTableAndColumnName(tableName, columnName);
-                 return fullName;
+                fullName = row.database.formatTableAndColumnName(tableName, columnName);
+                return fullName;
             }
         }
         return fullName;
@@ -441,6 +451,13 @@ abstract public class DBRow {
         for (Field field : fields) {
             final Object fieldOfThisInstance;
             try {
+                Object testObject = field.get(this);
+                if (testObject == null) {
+                    @SuppressWarnings("unchecked")
+                    final Class<QueryableDatatype> fieldType = (Class<QueryableDatatype>) field.getType();
+                    QueryableDatatype newQdt = QueryableDatatype.getQueryableDatatypeInstance(fieldType);
+                    field.set(this, newQdt);
+                }
                 fieldOfThisInstance = field.get(this);
             } catch (IllegalArgumentException ex) {
                 throw new RuntimeException("Field Found But Somehow The Argument Was Illegal: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.getName() + "  are public.", ex.getCause());
