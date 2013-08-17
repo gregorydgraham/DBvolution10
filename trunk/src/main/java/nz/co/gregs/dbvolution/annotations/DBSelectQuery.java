@@ -21,6 +21,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 
+ * Used to indicate the class references a SQL query rather than a table or view and the query itself
+ * 
+ * @DBSelectQuery("select my_table_id, other_table_fk from my_table")
+ * @DBTableName("my_table")
+ * public class MyTableQuery extends DBRow {
+ * 
+ * This class is provided to help with the 1% of queries that DBvolution is not designed for, use it rarely and carefully.
  *
  * @author gregorygraham
  */
