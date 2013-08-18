@@ -13,9 +13,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.DBSaveBLOB;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
@@ -35,6 +38,8 @@ abstract public class DBRow {
     private List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
     private Field primaryKeyField;
     private HashMap<String, QueryableDatatype> columnsAndQDTs;
+    private Boolean hasBlobs;
+    private List<DBLargeObject> blobColumns = new ArrayList<DBLargeObject>();
 
     public DBRow() {
     }
@@ -327,7 +332,9 @@ abstract public class DBRow {
 
         String separator = " VALUES ( ";
         for (Field field : fields) {
-            if (field.isAnnotationPresent(DBColumn.class)) {
+            final String fieldTypeName = field.getType().getSimpleName();
+            if (field.isAnnotationPresent(DBColumn.class)
+                    && !fieldTypeName.equals(DBLargeObject.class.getSimpleName())) {
                 final QueryableDatatype qdt = getQueryableValueOfField(field);
                 string.append(separator).append(qdt.toSQLString());
                 separator = ",";
@@ -550,5 +557,39 @@ abstract public class DBRow {
             sqlStrings.add(rel.generateSQL(database));
         }
         return sqlStrings;
+    }
+
+    protected boolean hasLargeObjectColumns() {
+        if (hasBlobs == null) {
+            hasBlobs = Boolean.FALSE;
+            Map<String, QueryableDatatype> columnsAndQueryableDatatypes = getColumnsAndQueryableDatatypes();
+            Collection<QueryableDatatype> values = columnsAndQueryableDatatypes.values();
+            for (QueryableDatatype qdt : values) {
+                if (qdt instanceof DBLargeObject) {
+                    blobColumns.add((DBLargeObject) qdt);
+                    hasBlobs = Boolean.TRUE;
+                }
+            }
+        }
+        return hasBlobs;
+    }
+
+    protected boolean hasSetLargeObjectColumns() {
+        if (hasLargeObjectColumns()) {
+            for (DBLargeObject qdt : blobColumns) {
+                if (qdt instanceof QueryableDatatype && ((QueryableDatatype) qdt).hasChanged()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected DBActionList<DBSaveBLOB> getLargeObjectActions() {
+        DBActionList<DBSaveBLOB> actions = new DBActionList<DBSaveBLOB>();
+        for (DBLargeObject blob : blobColumns) {
+            actions.add(new DBSaveBLOB(this, blob));
+        }
+        return actions;
     }
 }

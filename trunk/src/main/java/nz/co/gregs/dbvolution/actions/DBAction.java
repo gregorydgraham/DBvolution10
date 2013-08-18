@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.example;
+package nz.co.gregs.dbvolution.actions;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.annotations.*;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
  * @author gregorygraham
  */
-@DBTableName("car_company")
-public class CarCompany  extends DBRow {
+public abstract class DBAction {
+    protected String sql = "";
     
-    @DBColumn("name")
-    public DBString name =new DBString();
-    
-    @DBPrimaryKey
-    @DBColumn("uid_carcompany")
-    public DBInteger uidCarCompany = new DBInteger();
-    
-    public CarCompany() {
+    public DBAction() {
+        super();
     }
     
-    public CarCompany(String anme, int id){
-        this.name.setValue(anme);
-        this.uidCarCompany.setValue(id);
+    public DBAction(String sql) {
+        this.sql = sql;
     }
+    
+    public String getSQLRepresentation(){
+        return sql;
+    }
+
+    public abstract boolean canBeBatched();
+
+    public abstract void execute(Statement statement) throws SQLException ;
+    
 }

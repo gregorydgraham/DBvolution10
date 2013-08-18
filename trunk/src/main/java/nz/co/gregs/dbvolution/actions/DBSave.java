@@ -13,32 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.example;
+package nz.co.gregs.dbvolution.actions;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.annotations.*;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
  * @author gregorygraham
  */
-@DBTableName("car_company")
-public class CarCompany  extends DBRow {
-    
-    @DBColumn("name")
-    public DBString name =new DBString();
-    
-    @DBPrimaryKey
-    @DBColumn("uid_carcompany")
-    public DBInteger uidCarCompany = new DBInteger();
-    
-    public CarCompany() {
+public class DBSave extends DBAction {
+
+    public DBSave(String sql) {
+        super(sql);
     }
-    
-    public CarCompany(String anme, int id){
-        this.name.setValue(anme);
-        this.uidCarCompany.setValue(id);
+
+    @Override
+    public boolean canBeBatched() {
+        return true;
+    }
+
+    @Override
+    public void execute(Statement statement) throws SQLException{
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
