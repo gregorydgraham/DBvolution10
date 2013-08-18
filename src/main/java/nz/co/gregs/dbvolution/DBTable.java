@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.actions.DBAction;
+import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.DBSave;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -80,6 +83,23 @@ public class DBTable<E extends DBRow> {
         String separator = "";
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBColumn.class)) {
+                allFields.append(separator).append(" ").append(getDBColumnName(field));
+                separator = ",";
+            }
+        }
+        return allFields.toString();
+    }
+
+    private String getAllFieldsForInsert() {
+        StringBuilder allFields = new StringBuilder();
+        @SuppressWarnings("unchecked")
+        Class<E> thisClass = (Class<E>) dummy.getClass();
+        Field[] fields = thisClass.getDeclaredFields();
+        String separator = "";
+        for (Field field : fields) {
+            String fieldTypeName = field.getType().getSimpleName();
+            if (field.isAnnotationPresent(DBColumn.class)
+                    && !fieldTypeName.equals(DBLargeObject.class.getSimpleName())) {
                 allFields.append(separator).append(" ").append(getDBColumnName(field));
                 separator = ",";
             }
@@ -283,6 +303,7 @@ public class DBTable<E extends DBRow> {
             case Types.VARBINARY:
             case Types.JAVA_OBJECT:
             case Types.LONGVARBINARY:
+            case Types.BLOB:
                 Object obj = resultSet.getObject(dbColumnName);
                 if (resultSet.wasNull()) {
                     qdt.useNullOperator();
@@ -486,12 +507,18 @@ public class DBTable<E extends DBRow> {
      */
     public void insert(List<E> newRows) throws SQLException {
         Statement statement = database.getDBStatement();
-        List<String> allInserts = getSQLForInsert(newRows);
-        for (String sql : allInserts) {
+        DBActionList<DBAction> allInserts = getSQLForInsert(newRows);
+        for (DBAction action : allInserts) {
             if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                System.out.println(sql);
+                System.out.println(action.getSQLRepresentation());
             }
-            statement.addBatch(sql);
+            if (action.canBeBatched()) {
+                statement.addBatch(action.getSQLRepresentation());
+            } else {
+                statement.executeBatch();
+                statement.clearBatch();
+                action.execute(statement);
+            }
         }
         statement.executeBatch();
     }
@@ -508,7 +535,7 @@ public class DBTable<E extends DBRow> {
     public String getSQLForInsert(E newRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(newRow);
-        return getSQLForInsert(arrayList).get(0);
+        return getSQLForInsert(arrayList).get(0).getSQLRepresentation();
     }
 
     /**
@@ -520,18 +547,21 @@ public class DBTable<E extends DBRow> {
      * @param newRows
      * @return
      */
-    public List<String> getSQLForInsert(List<E> newRows) {
-        List<String> allInserts = new ArrayList<String>();
+    public DBActionList<DBAction> getSQLForInsert(List<E> newRows) {
+        DBActionList<DBAction> allInserts = new DBActionList<DBAction>();
         for (E row : newRows) {
             String sql =
                     database.beginInsertLine()
                     + row.getTableName()
                     + database.beginInsertColumnList()
-                    + this.getAllFieldsForSelect()
+                    + this.getAllFieldsForInsert()
                     + database.endInsertColumnList()
                     + row.getValuesClause(database)
                     + database.endInsertLine();
-            allInserts.add(sql);
+            allInserts.add(new DBSave(sql));
+            if(row.hasLargeObjectColumns()){
+                allInserts.addAll(row.getLargeObjectActions());
+            }
         }
         return allInserts;
     }

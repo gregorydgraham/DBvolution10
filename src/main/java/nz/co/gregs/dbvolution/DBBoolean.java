@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution;
 
 public class DBBoolean extends QueryableDatatype {
+    private static final long serialVersionUID = 1L;
 
     public DBBoolean() {
     }

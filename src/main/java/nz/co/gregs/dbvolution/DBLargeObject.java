@@ -13,32 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.example;
+package nz.co.gregs.dbvolution;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.annotations.*;
+import java.io.InputStream;
 
 /**
  *
  * @author gregorygraham
  */
-@DBTableName("car_company")
-public class CarCompany  extends DBRow {
-    
-    @DBColumn("name")
-    public DBString name =new DBString();
-    
-    @DBPrimaryKey
-    @DBColumn("uid_carcompany")
-    public DBInteger uidCarCompany = new DBInteger();
-    
-    public CarCompany() {
+public abstract class DBLargeObject extends QueryableDatatype {
+
+    public DBLargeObject() {
+        super();
     }
     
-    public CarCompany(String anme, int id){
-        this.name.setValue(anme);
-        this.uidCarCompany.setValue(id);
+    public DBLargeObject(Object obj){
+        super(obj);
     }
+
+    public abstract InputStream getInputStream() ;
 }
