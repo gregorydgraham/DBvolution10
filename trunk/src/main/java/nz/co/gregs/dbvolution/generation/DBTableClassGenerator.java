@@ -306,6 +306,7 @@ public class DBTableClassGenerator {
                 break;
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
+            case Types.BLOB:
                 value = "DBByteArray";
                 break;
             default:

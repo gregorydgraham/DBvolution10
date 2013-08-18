@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import net.sourceforge.tedhi.FlexibleDateFormat;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
+import nz.co.gregs.dbvolution.DBByteArray;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
@@ -61,7 +62,7 @@ public class AbstractTest {
         DBTable.setPrintSQLBeforeExecuting(false);
         marques = DBTable.getInstance(myDatabase, myMarqueRow);
         carCompanies = DBTable.getInstance(myDatabase, myCarCompanyRow);
-        carTableRows.add(new CarCompany("TOYOTA", 1));
+        carCompanies.insert(new CarCompany("TOYOTA", 1));
         carTableRows.add(new CarCompany("FORD", 2));
         carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
         carTableRows.add(new CarCompany("OTHER", 4));
