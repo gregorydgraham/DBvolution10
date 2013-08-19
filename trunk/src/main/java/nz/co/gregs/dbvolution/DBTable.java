@@ -304,12 +304,14 @@ public class DBTable<E extends DBRow> {
             case Types.JAVA_OBJECT:
             case Types.LONGVARBINARY:
             case Types.BLOB:
-                Object obj = resultSet.getObject(dbColumnName);
-                if (resultSet.wasNull()) {
-                    qdt.useNullOperator();
-                } else {
-                    qdt.useEqualsOperator(obj);
-                }
+                qdt.setFromResultSet(resultSet, dbColumnName);
+//                Object obj = resultSet.getObject(dbColumnName);
+//                if (resultSet.wasNull()) {
+//                    qdt.useNullOperator();
+//                } else {
+//                    qdt.setValue(obj);
+//                    qdt.useEqualsOperator(obj);
+//                }
                 break;
             default:
                 throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));

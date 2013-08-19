@@ -5,12 +5,15 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -51,13 +54,13 @@ public class DBByteArray extends DBLargeObject {
         int totalBytesRead = 0;
         try {
             byte[] resultSetBytes;
-            while (input.available() > 0) {
+            resultSetBytes = new byte[100000];
+            int bytesRead = input.read(resultSetBytes);
+            while (bytesRead > 0) {
+                totalBytesRead = totalBytesRead + bytesRead;
+                byteArrays.add(resultSetBytes);
                 resultSetBytes = new byte[100000];
-                int bytesRead = input.read(resultSetBytes);
-                if (bytesRead > 0) {
-                    totalBytesRead = totalBytesRead + bytesRead;
-                    byteArrays.add(resultSetBytes);
-                }
+                bytesRead = input.read(resultSetBytes);
             }
         } catch (IOException ex) {
             Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
@@ -66,7 +69,7 @@ public class DBByteArray extends DBLargeObject {
         bytes = new byte[totalBytesRead];
         int bytesAdded = 0;
         for (byte[] someBytes : byteArrays) {
-            System.arraycopy(someBytes, 0, bytes, bytesAdded, someBytes.length);
+            System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length));
             bytesAdded += someBytes.length;
         }
 
@@ -110,6 +113,30 @@ public class DBByteArray extends DBLargeObject {
             }
         }
         return bytes;
+    }
+
+    public void writeToFileSystem(String originalFile) throws FileNotFoundException, IOException {
+        File file = new File(originalFile);
+        file.createNewFile();
+        writeToFileSystem(file);
+    }
+
+    public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
+        if (bytes != null && originalFile != null) {
+            System.out.println("FILE: " + originalFile.getAbsolutePath());
+            OutputStream output = null;
+            try {
+                output = new BufferedOutputStream(new FileOutputStream(originalFile));
+                output.write(this.bytes);
+                output.flush();
+                output.close();
+                output = null;
+            } finally {
+                if (output != null) {
+                    output.close();
+                }
+            }
+        }
     }
 
     @Override
