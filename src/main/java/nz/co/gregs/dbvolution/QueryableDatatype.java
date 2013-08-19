@@ -176,6 +176,63 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
+    public void permittedValuesIgnoreCase(String... permitted) {
+        if (permitted == null) {
+            useNullOperator();
+        } else if (permitted.length == 1) {
+            useEqualsCaseInsensitiveOperator(permitted[0]);
+        } else {
+            useInCaseInsensitiveOperator(permitted);
+        }
+    }
+
+    /**
+     *
+     * @param permitted
+     */
+    public void permittedValuesIgnoreCase(List<String> permitted) {
+        if (permitted == null) {
+            useNullOperator();
+        } else if (permitted.size() == 1) {
+            useEqualsCaseInsensitiveOperator(permitted.get(0));
+        } else {
+            useInCaseInsensitiveOperator(permitted.toArray(new String[]{}));
+        }
+    }
+
+    /**
+     *
+     * @param permitted
+     */
+    public void excludedValuesIgnoreCase(String... permitted) {
+        if (permitted == null) {
+            useNullOperator();
+        } else if (permitted.length == 1) {
+            useEqualsCaseInsensitiveOperator(permitted[0]).not();
+        } else {
+            useInCaseInsensitiveOperator(permitted).not();
+        }
+    }
+
+    /**
+     *
+     * @param permitted
+     */
+    public void excludedValuesIgnoreCase(List<String> permitted) {
+        if (permitted == null) {
+            useNullOperator();
+        } else if (permitted.size() == 1) {
+            useEqualsCaseInsensitiveOperator(permitted.get(0)).not();
+        } else {
+            useInCaseInsensitiveOperator(permitted.toArray(new String[]{})).not();
+        }
+    }
+
+    /**
+     *
+     * @param permitted
+     */
+    @Deprecated
     public void permittedValuesCaseInsensitive(String... permitted) {
         if (permitted == null) {
             useNullOperator();
