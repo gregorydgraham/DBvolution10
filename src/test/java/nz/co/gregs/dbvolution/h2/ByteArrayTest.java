@@ -15,18 +15,22 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
+import org.junit.Assert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.*;
 
 /**
  *
  * @author gregorygraham
  */
-public class ByteArrayTests extends AbstractTest {
+public class ByteArrayTest extends AbstractTest {
 
     @Override
     public void setUp() throws Exception {
@@ -45,14 +49,24 @@ public class ByteArrayTests extends AbstractTest {
     
 
     @Test
-    public void createRowWithByteArray() throws FileNotFoundException, IOException, SQLException {
+    public void createRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException {
 
         CompanyLogo companyLogo = new CompanyLogo();
         companyLogo.logoID.setValue(1);
         companyLogo.carCompany.setValue(1);//Toyota
         companyLogo.imageFilename.setValue("toyota_logo.jpg");
         companyLogo.imageBytes.readFromFileSystem("toyota_share_logo.jpg");
-        myDatabase.getDBTable(companyLogo).insert(companyLogo);
+        myDatabase.insert(companyLogo);
+        
+        CarCompany carCompany = new CarCompany();
+        carCompany.name.permittedValuesCaseInsensitive("FORD");
+        CarCompany ford = myDatabase.getDBTable(carCompany).getOnlyRowByExample(carCompany);
+        
+        companyLogo.logoID.setValue(2);
+        companyLogo.carCompany.setValue(ford.uidCarCompany);
+        companyLogo.imageFilename.setValue("ford_logo.jpg");
+        companyLogo.imageBytes.readFromFileSystem("ford_logo.jpg");
+        myDatabase.insert(companyLogo);
     }
 
     @Test
@@ -62,13 +76,18 @@ public class ByteArrayTests extends AbstractTest {
         companyLogo.logoID.setValue(1);
         companyLogo.carCompany.setValue(1);//Toyota
         companyLogo.imageFilename.setValue("toyota_logo.jpg");
-        companyLogo.imageBytes.readFromFileSystem("toyota_share_logo.jpg");
+        File image = new File("toyota_share_logo.jpg");
+        companyLogo.imageBytes.readFromFileSystem(image);
         myDatabase.insert(companyLogo);
 
-        companyLogo = new CompanyLogo();
-        companyLogo.logoID.permittedValues(1);
-        CompanyLogo firstRow = myDatabase.getDBTable(companyLogo).getOnlyRowByExample(companyLogo);
-        System.out.println("" + firstRow.toString());
+        File newFile = new File("found_toyota_logo.jpg");
+        newFile.delete();
         
+        companyLogo = new CompanyLogo();
+        CompanyLogo firstRow = myDatabase.getDBTable(companyLogo).getRowsByPrimaryKey(1).getOnlyRow();
+        System.out.println("" + firstRow.toString());
+        firstRow.imageBytes.writeToFileSystem(newFile.getName());
+        File file = new File("found_toyota_logo.jpg");
+        Assert.assertThat(file.length(), is(image.length()));
     }
 }
