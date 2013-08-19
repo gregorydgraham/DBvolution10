@@ -117,13 +117,15 @@ public class DBByteArray extends DBLargeObject {
 
     public void writeToFileSystem(String originalFile) throws FileNotFoundException, IOException {
         File file = new File(originalFile);
-        file.createNewFile();
         writeToFileSystem(file);
     }
 
     public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
         if (bytes != null && originalFile != null) {
             System.out.println("FILE: " + originalFile.getAbsolutePath());
+            if (!originalFile.exists()){
+                originalFile.createNewFile();
+            }
             OutputStream output = null;
             try {
                 output = new BufferedOutputStream(new FileOutputStream(originalFile));
