@@ -158,6 +158,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param permitted
+     */
     public void permittedValues(List<Object> permitted) {
         if (permitted == null) {
             useNullOperator();
@@ -168,6 +172,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param permitted
+     */
     public void permittedValuesCaseInsensitive(String... permitted) {
         if (permitted == null) {
             useNullOperator();
@@ -178,6 +186,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
+    /**
+     *
+     * @param permitted
+     */
     public void excludedValues(Object... permitted) {
         if (permitted == null) {
             useNullOperator().not();
@@ -263,15 +275,13 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     /**
+     * 
      * @param newLiteralValue the literalValue to set
      */
     public void setValue(Object newLiteralValue) {
         useEqualsOperator(newLiteralValue);
     }
 
-    /**
-     * @param newLiteralValue the literalValue to set
-     */
     protected DBOperator useEqualsOperator(Object newLiteralValue) {
         preventChangeOfPrimaryKey();
         blankQuery();
@@ -308,36 +318,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return getOperator();
     }
 
-    /**
-     * @param newLiteralValue the literalValue to set
-     */
-//    public DBOperator isLiterally(Date newLiteralValue) {
-//        preventChangeOfPrimaryKey();
-//        blankQuery();
-//        if (newLiteralValue == null) {
-//            return isNull();
-//        } else {
-//            setChanged(newLiteralValue);
-//            this.literalValue = newLiteralValue;
-//            this.setOperator(new DBEqualsOperator(new DBDate(newLiteralValue)));
-//        }
-//        return getOperator();
-//    }
-    /**
-     * @param newLiteralValue the literalValue to set
-     */
-//    public DBOperator isLiterally(Timestamp newLiteralValue) {
-//        preventChangeOfPrimaryKey();
-//        blankQuery();
-//        if (newLiteralValue == null) {
-//            isNull();
-//        } else {
-//            setChanged(newLiteralValue);
-//            this.literalValue = newLiteralValue;
-//            this.setOperator(new DBEqualsOperator(new DBDate(newLiteralValue)));
-//        }
-//        return getOperator();
-//    }
     public void setUnchanged() {
         changed = false;
         previousValueAsQDT = null;
