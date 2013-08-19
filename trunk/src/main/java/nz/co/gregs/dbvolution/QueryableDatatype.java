@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.operators.*;
 
@@ -157,6 +158,16 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
+    public void permittedValues(List<Object> permitted) {
+        if (permitted == null) {
+            useNullOperator();
+        } else if (permitted.size() == 1) {
+            useEqualsOperator(permitted.get(0));
+        } else {
+            useInOperator(permitted);
+        }
+    }
+
     public void permittedValuesCaseInsensitive(String... permitted) {
         if (permitted == null) {
             useNullOperator();
@@ -172,6 +183,16 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             useNullOperator().not();
         } else if (permitted.length == 1) {
             useEqualsOperator(permitted[0]).not();
+        } else {
+            useInOperator(permitted).not();
+        }
+    }
+
+    public void excludedValues(List<Object> permitted) {
+        if (permitted == null) {
+            useNullOperator().not();
+        } else if (permitted.size() == 1) {
+            useEqualsOperator(permitted.get(0)).not();
         } else {
             useInOperator(permitted).not();
         }
