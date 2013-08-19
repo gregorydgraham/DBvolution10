@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -168,7 +167,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         } else if (permitted.size() == 1) {
             useEqualsOperator(permitted.get(0));
         } else {
-            useInOperator(permitted);
+            useInOperator(permitted.toArray());
         }
     }
 
@@ -263,7 +262,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         } else if (permitted.size() == 1) {
             useEqualsOperator(permitted.get(0)).not();
         } else {
-            useInOperator(permitted).not();
+            useInOperator(permitted.toArray()).not();
         }
     }
 
