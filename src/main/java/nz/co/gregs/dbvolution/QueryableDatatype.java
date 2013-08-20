@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.operators.*;
 public abstract class QueryableDatatype extends Object implements Serializable {
 
     public static final long serialVersionUID = 1L;
-    protected DBDatabase database = null;
+    protected transient DBDatabase database = null;
     protected Object literalValue = null;
     protected boolean isDBNull = false;
     protected boolean includingNulls = false;

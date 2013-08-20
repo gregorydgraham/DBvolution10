@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  */
 abstract public class DBRow implements Serializable{
 
-    private DBDatabase database;
+    private transient DBDatabase database;
     private List<Field> ignoredRelationships = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
     private List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();

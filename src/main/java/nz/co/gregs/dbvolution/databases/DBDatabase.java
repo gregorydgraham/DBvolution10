@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
  *
  * @author gregory.graham
  */
-public abstract class DBDatabase implements Serializable{
+public abstract class DBDatabase{
 
     private String driverName = "";
     private String jdbcURL = "";
