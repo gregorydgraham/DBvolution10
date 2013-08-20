@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.sql.*;

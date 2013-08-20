@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
 import org.junit.Test;
