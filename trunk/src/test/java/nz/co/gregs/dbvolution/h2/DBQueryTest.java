@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -135,5 +136,25 @@ public class DBQueryTest extends AbstractTest {
         CarCompany firstCarCo = rows[0].get(carCompany);
         CarCompany secondCarCo = rows[1].get(carCompany);
         assertTrue(firstCarCo == secondCarCo);
+    }
+
+    @Test
+    public void thrownExceptionIfTheForeignKeyFieldToBeIgnoredIsNotInTheInstance() throws Exception {
+        Marque wrongMarque = new Marque();
+        Marque marqueQuery = new Marque();
+        marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.longValue());
+
+        DBQuery query = myDatabase.getDBQuery(marqueQuery, new CarCompany());
+        try {
+            marqueQuery.ignoreForeignKey(wrongMarque.carCompany);
+            throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
+        } catch (IncorrectDBRowInstanceSuppliedException wrongDBRowEx) {
+        }
+        marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
+        List<DBQueryRow> rows = query.getAllRows();
+        System.out.println(query.getSQLForQuery());
+
+        System.out.println();
+        System.out.println(rows);
     }
 }

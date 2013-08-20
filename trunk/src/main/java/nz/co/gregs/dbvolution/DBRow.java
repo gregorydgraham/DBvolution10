@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -486,6 +487,9 @@ abstract public class DBRow implements Serializable{
      */
     public void ignoreForeignKey(QueryableDatatype qdt) {
         Field fieldOfFK = getFieldOf(qdt);
+        if (fieldOfFK==null){
+            throw new IncorrectDBRowInstanceSuppliedException();
+        }
         ignoredRelationships.add(fieldOfFK);
     }
 
