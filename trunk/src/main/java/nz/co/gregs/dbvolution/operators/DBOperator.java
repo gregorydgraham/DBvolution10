@@ -15,13 +15,14 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
+import java.io.Serializable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
  * @author gregorygraham
  */
-abstract public class DBOperator {
+abstract public class DBOperator implements Serializable{
 
     Boolean invertOperator = false;
 
