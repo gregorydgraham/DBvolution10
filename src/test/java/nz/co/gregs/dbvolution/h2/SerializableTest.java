@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,21 +45,23 @@ public class SerializableTest extends AbstractTest {
             List<Marque> marqueList = myDatabase.getDBTable(hummerExample).getRowsByExample(hummerExample).toList();
 
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename));
-            for (Object object : marqueList) {
-                oos.writeObject(object);
-            }
+
+            oos.writeObject(marqueList);
             oos.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         try {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename));
-            while (ois.available() > 0) {
-                Object object = ois.readObject();
-                if (object instanceof Marque){
-                    System.out.println(""+((Marque)object));
-                }else{
-                    throw new RuntimeException("Unable to reload the object correctly");
+            ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
+            Object object = ois.readObject();
+            if (object instanceof List) {
+                List list = (List) object;
+                for (Object obj : list) {
+                    if (obj instanceof Marque) {
+                        System.out.println("" + ((Marque) obj));
+                    } else {
+                        throw new RuntimeException("Unable to reload the object correctly");
+                    }
                 }
             }
             ois.close();
