@@ -28,6 +28,8 @@ import nz.co.gregs.dbvolution.annotations.*;
 @DBTableName("marque")
 public class MarqueSelectQuery extends DBRow {
 
+    public static final long serialVersionUID = 1L;
+    
     @DBColumn("uid_marque")
     @DBPrimaryKey
     public DBInteger uidMarque = new DBInteger();

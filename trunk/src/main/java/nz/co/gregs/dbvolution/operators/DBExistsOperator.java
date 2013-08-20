@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.QueryableDatatype;
  * @author gregory.graham
  */
 public class  DBExistsOperator<E extends DBRow> extends DBOperator {
+    public static final long serialVersionUID = 1L;
 
     E tableRow;
     private final String referencedColumnName;

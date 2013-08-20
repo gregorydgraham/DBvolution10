@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class DBGreaterThanOperator extends DBOperator {
 
+    public static final long serialVersionUID = 1L;
     private final QueryableDatatype greaterThanThis;
 
     /**

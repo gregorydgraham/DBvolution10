@@ -19,13 +19,14 @@ import java.util.List;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
-
 public class DBInCaseInsensitiveOperator extends DBInOperator {
+
+    public static final long serialVersionUID = 1L;
 
     public DBInCaseInsensitiveOperator(List<QueryableDatatype> listOfPossibleValues) {
         super(listOfPossibleValues);
     }
-    
+
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         StringBuilder whereClause = new StringBuilder();
@@ -50,6 +51,6 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-                return database.beginAndLine() + database.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + database.toLowerCase(otherColumnName)+" ) ";
+        return database.beginAndLine() + database.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + database.toLowerCase(otherColumnName) + " ) ";
     }
 }

@@ -19,6 +19,8 @@ import nz.co.gregs.dbvolution.QueryableDatatype;
 
 public class DBLessThanOrEqualOperator extends DBLessThanOperator {
 
+    public static final long serialVersionUID = 1L;
+
     public DBLessThanOrEqualOperator(QueryableDatatype lessThanThis) {
         super(lessThanThis);
     }

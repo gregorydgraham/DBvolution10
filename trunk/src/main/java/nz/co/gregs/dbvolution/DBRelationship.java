@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  * @author gregorygraham
  */
 class DBRelationship implements Serializable{
+    public static final long serialVersionUID = 1L;
 
     private String firstTable;
     private String secondTable;
