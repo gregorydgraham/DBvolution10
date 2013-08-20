@@ -23,6 +23,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregorygraham
  */
 public class DBBetweenOperator extends DBOperator{
+    public static final long serialVersionUID = 1L;
+
     private final QueryableDatatype lowValue;
     private final QueryableDatatype highValue;
     

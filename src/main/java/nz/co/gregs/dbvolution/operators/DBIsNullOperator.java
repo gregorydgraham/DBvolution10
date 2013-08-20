@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregorygraham
  */
 public class DBIsNullOperator extends DBOperator {
+    public static final long serialVersionUID = 1L;
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {

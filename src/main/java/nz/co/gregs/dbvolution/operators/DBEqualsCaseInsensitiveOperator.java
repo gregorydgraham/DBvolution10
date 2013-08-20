@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
+    public static final long serialVersionUID = 1L;
 
     public DBEqualsCaseInsensitiveOperator(QueryableDatatype equalTo) {
         super(equalTo);

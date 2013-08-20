@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregorygraham
  */
 public class DBLikeOperator extends DBOperator {
+    public static final long serialVersionUID = 1L;
     private final QueryableDatatype likeableValue;
 
     public DBLikeOperator(QueryableDatatype likeableValue) {

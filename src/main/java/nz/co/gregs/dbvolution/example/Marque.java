@@ -13,6 +13,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
  */
 @DBTableName("marque")
 public class Marque extends DBRow {
+    public static final long serialVersionUID = 1L;
 
     /*
      * create view "mdamgr".marque

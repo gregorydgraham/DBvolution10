@@ -23,6 +23,8 @@ import nz.co.gregs.dbvolution.QueryableDatatype;
  */
 public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
 
+    public static final long serialVersionUID = 1L;
+
     public DBGreaterThanOrEqualsOperator(QueryableDatatype greaterThanThis) {
         super(greaterThanThis);
     }
@@ -36,7 +38,4 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
     public String getInverse() {
         return " < ";
     }
-    
-    
-    
 }

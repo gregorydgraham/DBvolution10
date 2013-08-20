@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class DBInOperator extends DBOperator {
 
+    public static final long serialVersionUID = 1L;
     protected final List<QueryableDatatype> listOfPossibleValues;
 
     public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
@@ -64,6 +65,6 @@ public class DBInOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-                return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName+" ) ";
+        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
     }
 }
