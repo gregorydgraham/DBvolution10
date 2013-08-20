@@ -630,6 +630,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             previousValueAsQDT = newInstance;
         }
     }
+    
+    public boolean isNull(){
+        return isDBNull;
+    }
 
     String getPreviousValueAsSQL() {
         previousValueAsQDT.setDatabase(database);
