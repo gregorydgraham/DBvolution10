@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.io.Serializable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
@@ -23,7 +24,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  *
  * @author gregorygraham
  */
-class DBRelationship {
+class DBRelationship implements Serializable{
 
     private String firstTable;
     private String secondTable;

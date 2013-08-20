@@ -8,10 +8,10 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  *
  * @author gregory.graham
  */
-abstract public class DBRow {
+abstract public class DBRow implements Serializable{
 
     private DBDatabase database;
     private List<Field> ignoredRelationships = new ArrayList<Field>();

@@ -16,10 +16,10 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
  *
  * @author gregory.graham
  */
-public abstract class DBDatabase {
+public abstract class DBDatabase implements Serializable{
 
     private String driverName = "";
     private String jdbcURL = "";
@@ -48,7 +48,6 @@ public abstract class DBDatabase {
     private boolean printSQLBeforeExecuting;
     private boolean isInATransaction;
     private Statement transactionStatement;
-    private PreparedStatement transactionPreparedStatement;
 
     public DBDatabase(DataSource ds) {
         this.dataSource = ds;
