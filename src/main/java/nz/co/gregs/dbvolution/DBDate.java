@@ -140,7 +140,21 @@ public class DBDate extends QueryableDatatype {
     }
 
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.useEqualsOperator(resultSet.getDate(fullColumnName));
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        if (resultSet == null || fullColumnName == null) {
+            this.useNullOperator();
+        } else {
+            java.sql.Date dbValue;
+            try {
+                dbValue = resultSet.getDate(fullColumnName);
+            } catch (SQLException ex) {
+                dbValue = null;
+            }
+            if (dbValue == null) {
+                this.useNullOperator();
+            } else {
+                this.useEqualsOperator(dbValue);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -258,7 +259,21 @@ public class DBNumber extends QueryableDatatype {
      * @throws SQLException
      */
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.useEqualsOperator(resultSet.getBigDecimal(fullColumnName));
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName){
+        if (resultSet == null || fullColumnName == null) {
+            this.useNullOperator();
+        } else {
+            BigDecimal dbValue;
+            try {
+                dbValue = resultSet.getBigDecimal(fullColumnName);
+            } catch (SQLException ex) {
+                dbValue = null;
+            }
+            if (dbValue == null) {
+                this.useNullOperator();
+            } else {
+                this.useEqualsOperator(dbValue);
+            }
+        }
     }
 }

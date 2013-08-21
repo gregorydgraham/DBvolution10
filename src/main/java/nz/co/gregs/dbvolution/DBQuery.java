@@ -178,14 +178,11 @@ public class DBQuery {
             queryRow = new DBQueryRow();
             for (DBRow tableRow : queryTables) {
                 DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
-                //newInstance.setDatabase(database);
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
                     String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
                     qdt.setFromResultSet(resultSet, fullColumnName);
-//                    String stringOfValue = resultSet.getString(fullColumnName);
-//                    qdt.isLiterally(stringOfValue);
                 }
                 Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
                 if (existingInstancesOfThisTableRow == null) {
