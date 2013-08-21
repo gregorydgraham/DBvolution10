@@ -80,7 +80,7 @@ public class DBTableGetTest extends AbstractTest {
     public void testNumberIsBetween() throws SQLException {
         Marque marqueQuery = new Marque();
         marqueQuery.getUidMarque().permittedRange(0, 90000000);
-        //System.out.println(marques.getSQLForExample(marqueQuery));
+
         marques = marques.getRowsByExample(marqueQuery);
         for (Marque row : marques.toList()) {
             System.out.println(row);
