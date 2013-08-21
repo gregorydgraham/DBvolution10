@@ -37,13 +37,14 @@ public class AdHocRelationshipTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
 
         marque.addRelationship(marque.name, carCompany, carCompany.name);
+        marque.ignoreAllForeignKeys();
 
         DBQuery query = myDatabase.getDBQuery(carCompany, marque);
 
         List<DBQueryRow> allRows = query.getAllRows();
         query.print();
 
-        assertTrue("There should only be rows for FORD and TOYOTA", allRows.size() == 2);
+        assertTrue("There should only be a row for TOYOTA", allRows.size() == 1);
     }
 
     @Test
@@ -52,6 +53,7 @@ public class AdHocRelationshipTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
 
         marque.addRelationship(marque.name, carCompany, carCompany.name, new DBLikeCaseInsensitiveOperator(null));
+        marque.ignoreAllForeignKeys();
 
         DBQuery query = myDatabase.getDBQuery(carCompany, marque);
         List<DBQueryRow> allRows = query.getAllRows();
