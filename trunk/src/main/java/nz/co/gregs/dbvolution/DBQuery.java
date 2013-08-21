@@ -16,6 +16,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import java.io.PrintStream;
 import java.sql.ResultSet;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -44,6 +46,7 @@ public class DBQuery {
     private DBRow[] sortBase;
     private QueryableDatatype[] sortOrder;
     private String resultSQL;
+    private boolean cartesianJoinAllowed = false;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -84,6 +87,7 @@ public class DBQuery {
     }
 
     private String getSQLForQuery(String providedSelectClause) throws SQLException {
+        Set<DBRow> connectedTables = new HashSet<DBRow>();
         StringBuilder selectClause = new StringBuilder().append(database.beginSelectStatement());
         StringBuilder fromClause = new StringBuilder().append(database.beginFromClause());
         StringBuilder whereClause = new StringBuilder().append(database.beginWhereClause()).append(database.getTrueOperation());
@@ -128,26 +132,32 @@ public class DBQuery {
             for (DBRow otherTab : otherTables) {
                 Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
                 for (DBForeignKey fk : fks.keySet()) {
-                    //tabRow.setDatabase(database);
-                    String formattedPK = database.formatTableAndColumnName(tableName, tabRow.getPrimaryKeyName());
-                    Class<? extends DBRow> pkClass = fk.value();
-                    DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                    String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
-                    if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
-                        String fkColumnName = fks.get(fk).value();
-                        String formattedFK = database.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
-                        whereClause
-                                .append(lineSep)
-                                .append(database.beginAndLine())
-                                .append(formattedPK)
-                                .append(database.getEqualsComparator())
-                                .append(formattedFK);
+                    final String tabRowPK = tabRow.getPrimaryKeyName();
+                    if (tabRowPK != null) {
+                        String formattedPK = database.formatTableAndColumnName(tableName, tabRowPK);
+                        Class<? extends DBRow> pkClass = fk.value();
+                        DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
+                        String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
+                        if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
+                            String fkColumnName = fks.get(fk).value();
+                            String formattedFK = database.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
+                            whereClause
+                                    .append(lineSep)
+                                    .append(database.beginAndLine())
+                                    .append(formattedPK)
+                                    .append(database.getEqualsComparator())
+                                    .append(formattedFK);
+                            connectedTables.add(otherTab);
+                        }
                     }
                 }
             }
 
             separator = ", " + lineSep;
             otherTables.addAll(queryTables);
+        }
+        if (connectedTables.size()!=queryTables.size()-1&&!cartesianJoinAllowed){
+            throw new AccidentalCartesianJoinException();
         }
         final String sqlString =
                 selectClause.append(lineSep)
@@ -437,5 +447,9 @@ public class DBQuery {
             return orderByClause.toString();
         }
         return "";
+    }
+    
+    public void setCartesianJoinsAllowed(boolean allow){
+        this.cartesianJoinAllowed= allow;
     }
 }

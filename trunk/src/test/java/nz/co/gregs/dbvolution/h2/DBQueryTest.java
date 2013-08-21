@@ -151,6 +151,7 @@ public class DBQueryTest extends AbstractTest {
         } catch (IncorrectDBRowInstanceSuppliedException wrongDBRowEx) {
         }
         marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
+        query.setCartesianJoinsAllowed(true);
         List<DBQueryRow> rows = query.getAllRows();
         System.out.println(query.getSQLForQuery());
 

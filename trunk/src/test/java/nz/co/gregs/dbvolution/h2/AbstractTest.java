@@ -66,7 +66,7 @@ public class AbstractTest {
         carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
         carTableRows.add(new CarCompany("OTHER", 4));
         carCompanies.insert(carTableRows);
-
+        
         Date firstDate = tedhiFormat.parse(firstDateStr).asDate();
         Date secondDate = tedhiFormat.parse(secondDateStr).asDate();
 

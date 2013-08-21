@@ -121,7 +121,12 @@ abstract public class DBRow implements Serializable {
     }
 
     public String getPrimaryKeyName() {
-        return getPrimaryKeyField().getAnnotation(DBColumn.class).value();
+        final Field pkField = getPrimaryKeyField();
+        if (pkField == null) {
+            return null;
+        } else {
+            return pkField.getAnnotation(DBColumn.class).value();
+        }
     }
 
     private Field getPrimaryKeyField() {
@@ -135,7 +140,8 @@ abstract public class DBRow implements Serializable {
                     return field;
                 }
             }
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
+            return null;
+//            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
         }
     }
 
