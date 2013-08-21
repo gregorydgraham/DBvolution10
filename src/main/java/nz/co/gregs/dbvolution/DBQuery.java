@@ -127,6 +127,7 @@ public class DBQuery {
             List<String> adHocRelationshipSQL = tabRow.getAdHocRelationshipSQL();
             for (String sql : adHocRelationshipSQL) {
                 whereClause.append(sql);
+                connectedTables.add(tabRow);
             }
 
             for (DBRow otherTab : otherTables) {
@@ -156,7 +157,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(queryTables);
         }
-        if (connectedTables.size()!=queryTables.size()-1&&!cartesianJoinAllowed){
+        if (connectedTables.size()<queryTables.size()-1&&!cartesianJoinAllowed){
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString =

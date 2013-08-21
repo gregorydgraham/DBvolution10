@@ -62,7 +62,7 @@ public class AbstractTest {
         marques = DBTable.getInstance(myDatabase, myMarqueRow);
         carCompanies = DBTable.getInstance(myDatabase, myCarCompanyRow);
         carCompanies.insert(new CarCompany("TOYOTA", 1));
-        carTableRows.add(new CarCompany("FORD", 2));
+        carTableRows.add(new CarCompany("Ford", 2));
         carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
         carTableRows.add(new CarCompany("OTHER", 4));
         carCompanies.insert(carTableRows);
