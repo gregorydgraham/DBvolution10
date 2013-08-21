@@ -99,6 +99,17 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     @Test
+    public void testMultiplePermittedValues() throws SQLException {
+        Marque literalQuery = new Marque();
+        literalQuery.getUidMarque().permittedValues(4893059,4893090);
+        marques = marques.getRowsByExample(literalQuery);
+        marques.print();
+        Assert.assertEquals(marques.toList().size(), 2);
+        Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKeySQLStringValue(myDatabase));
+        Assert.assertEquals("" + 4893090, marques.toList().get(1).getPrimaryKeySQLStringValue(myDatabase));
+    }
+
+    @Test
     public void testIsIn() throws SQLException {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
