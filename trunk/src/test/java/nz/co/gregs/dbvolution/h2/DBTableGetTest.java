@@ -25,6 +25,7 @@ import java.util.List;
 import net.sourceforge.tedhi.DateRange;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
 import static org.hamcrest.Matchers.*;
@@ -180,7 +181,7 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     @Test
-    public void testIgnoringColumns() throws SQLException {
+    public void testIgnoringColumnsOnTable() throws SQLException {
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         List<Marque> rowsByExample = myDatabase.getDBTable(myMarqueRow).getRowsByExample(myMarqueRow).toList();
         for (Marque marq : rowsByExample) {
@@ -198,9 +199,50 @@ public class DBTableGetTest extends AbstractTest {
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
         }
-
+    }
+    
+    @Test
+    public void testUnignoringColumnsOnTable() throws SQLException {
+        myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
-        rowsByExample = myDatabase.getDBTable(myMarqueRow).getRowsByExample(myMarqueRow).toList();
+        List<Marque> rowsByExample = myDatabase.getDBTable(myMarqueRow).getRowsByExample(myMarqueRow).toList();
+        for (Marque marq : rowsByExample) {
+            System.out.println("" + marq);
+            Assert.assertThat(marq.auto_created.isNull(), is(false));
+            Assert.assertThat(marq.isUsedForTAFROs.isNull(), is(false));
+            Assert.assertThat(marq.reservationsAllowed.isNull(), is(false));
+            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(false));
+            Assert.assertThat(marq.name.isNull(), is(false));
+            Assert.assertThat(marq.uidMarque.isNull(), is(false));
+        }
+    }
+    @Test
+    public void testIgnoringColumnsOnQuery() throws SQLException {
+        myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
+        List<Marque> rowsByExample = myDatabase.getDBQuery(myMarqueRow,new CarCompany()).getAllInstancesOf(myMarqueRow);
+        for (Marque marq : rowsByExample) {
+            System.out.println("" + marq);
+            Assert.assertThat(marq.auto_created.isNull(), is(true));
+            Assert.assertThat(marq.creationDate.isNull(), is(true));
+            Assert.assertThat(marq.enabled.isNull(), is(true));
+            Assert.assertThat(marq.individualAllocationsAllowed.isNull(), is(true));
+            Assert.assertThat(marq.isUsedForTAFROs.isNull(), is(true));
+            Assert.assertThat(marq.numericCode.isNull(), is(true));
+            Assert.assertThat(marq.pricingCodePrefix.isNull(), is(true));
+            Assert.assertThat(marq.reservationsAllowed.isNull(), is(true));
+            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(true));
+
+            Assert.assertThat(marq.name.isNull(), is(false));
+            Assert.assertThat(marq.uidMarque.isNull(), is(false));
+        }
+
+    }
+    
+    @Test
+    public void testUnignoringColumnsOnQuery() throws SQLException {
+        myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
+        myMarqueRow.returnAllFields();
+        List<Marque> rowsByExample = myDatabase.getDBQuery(myMarqueRow,new CarCompany()).getAllInstancesOf(myMarqueRow);
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);
             Assert.assertThat(marq.auto_created.isNull(), is(false));

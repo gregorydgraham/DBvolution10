@@ -4,6 +4,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -86,7 +87,21 @@ public class DBInteger extends DBNumber {
     }
 
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.useEqualsOperator(resultSet.getLong(fullColumnName));
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName){
+        if (resultSet == null || fullColumnName == null) {
+            this.useNullOperator();
+        } else {
+            Long dbValue;
+            try {
+                dbValue = resultSet.getLong(fullColumnName);
+            } catch (SQLException ex) {
+                dbValue = null;
+            }
+            if (dbValue == null) {
+                this.useNullOperator();
+            } else {
+                this.useEqualsOperator(dbValue);
+            }
+        }
     }
 }

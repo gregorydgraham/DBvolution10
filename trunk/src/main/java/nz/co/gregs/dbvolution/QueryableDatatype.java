@@ -331,7 +331,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param newLiteralValue the literalValue to set
      */
     public void setValue(Object newLiteralValue) {
@@ -603,8 +603,22 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param fullColumnName
      * @throws SQLException
      */
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.useEqualsOperator(resultSet.getString(fullColumnName));
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        if (resultSet == null || fullColumnName == null) {
+            this.useNullOperator();
+        } else {
+            String dbValue;
+            try {
+                dbValue = resultSet.getString(fullColumnName);
+            } catch (SQLException ex) {
+                dbValue = null;
+            }
+            if (dbValue == null) {
+                this.useNullOperator();
+            } else {
+                this.useEqualsOperator(dbValue);
+            }
+        }
     }
 
     void setIsPrimaryKey(boolean b) {
@@ -630,9 +644,9 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             previousValueAsQDT = newInstance;
         }
     }
-    
-    public boolean isNull(){
-        return isDBNull||literalValue==null;
+
+    public boolean isNull() {
+        return isDBNull || literalValue == null;
     }
 
     String getPreviousValueAsSQL() {

@@ -36,8 +36,22 @@ public class DBObject extends QueryableDatatype {
     }
 
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        this.useEqualsOperator(resultSet.getObject(fullColumnName));
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        if (resultSet == null || fullColumnName == null) {
+            this.useNullOperator();
+        } else {
+            Object dbValue;
+            try {
+                dbValue = resultSet.getObject(fullColumnName);
+            } catch (SQLException ex) {
+                dbValue = null;
+            }
+            if (dbValue == null) {
+                this.useNullOperator();
+            } else {
+                this.useEqualsOperator(dbValue);
+            }
+        }
     }
 
     @Override

@@ -47,34 +47,49 @@ public class DBByteArray extends DBLargeObject {
     }
 
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) throws SQLException {
-        InputStream input = new BufferedInputStream(resultSet.getBinaryStream(fullColumnName));
-        List<byte[]> byteArrays = new ArrayList<byte[]>();
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        InputStream dbValue;
+        if (resultSet == null || fullColumnName == null) {
+            this.useNullOperator();
+        } else {
 
-        int totalBytesRead = 0;
-        try {
-            byte[] resultSetBytes;
-            resultSetBytes = new byte[100000];
-            int bytesRead = input.read(resultSetBytes);
-            while (bytesRead > 0) {
-                totalBytesRead = totalBytesRead + bytesRead;
-                byteArrays.add(resultSetBytes);
-                resultSetBytes = new byte[100000];
-                bytesRead = input.read(resultSetBytes);
+            try {
+                dbValue = resultSet.getBinaryStream(fullColumnName);
+            } catch (SQLException ex) {
+                dbValue = null;
             }
-        } catch (IOException ex) {
-            Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            if (dbValue == null) {
+                this.useNullOperator();
+            } else {
+                InputStream input = new BufferedInputStream(dbValue);
+                List<byte[]> byteArrays = new ArrayList<byte[]>();
 
-        bytes = new byte[totalBytesRead];
-        int bytesAdded = 0;
-        for (byte[] someBytes : byteArrays) {
-            System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length));
-            bytesAdded += someBytes.length;
-        }
+                int totalBytesRead = 0;
+                try {
+                    byte[] resultSetBytes;
+                    resultSetBytes = new byte[100000];
+                    int bytesRead = input.read(resultSetBytes);
+                    while (bytesRead > 0) {
+                        totalBytesRead = totalBytesRead + bytesRead;
+                        byteArrays.add(resultSetBytes);
+                        resultSetBytes = new byte[100000];
+                        bytesRead = input.read(resultSetBytes);
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-        this.setValue(bytes);
+                bytes = new byte[totalBytesRead];
+                int bytesAdded = 0;
+                for (byte[] someBytes : byteArrays) {
+                    System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length));
+                    bytesAdded += someBytes.length;
+                }
+
+                this.setValue(bytes);
 //        this.useEqualsOperator(resultSet.getBytes(fullColumnName));
+            }
+        }
     }
 
     @Override
@@ -123,7 +138,7 @@ public class DBByteArray extends DBLargeObject {
     public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
         if (bytes != null && originalFile != null) {
             System.out.println("FILE: " + originalFile.getAbsolutePath());
-            if (!originalFile.exists()){
+            if (!originalFile.exists()) {
                 originalFile.createNewFile();
             }
             OutputStream output = null;
