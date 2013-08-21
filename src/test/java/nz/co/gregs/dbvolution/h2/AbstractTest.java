@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import net.sourceforge.tedhi.FlexibleDateFormat;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
-import nz.co.gregs.dbvolution.DBByteArray;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;

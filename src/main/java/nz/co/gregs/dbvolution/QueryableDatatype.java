@@ -632,7 +632,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
     
     public boolean isNull(){
-        return isDBNull;
+        return isDBNull||literalValue==null;
     }
 
     String getPreviousValueAsSQL() {

@@ -31,10 +31,11 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  *
  * @author gregory.graham
  */
-abstract public class DBRow implements Serializable{
+abstract public class DBRow implements Serializable {
 
     private transient DBDatabase database;
     private List<Field> ignoredRelationships = new ArrayList<Field>();
+    private List<Field> returnColumns = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
     private List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
     private Field primaryKeyField;
@@ -379,9 +380,11 @@ abstract public class DBRow implements Serializable{
 
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBColumn.class)) {
-                String dbColumnName = getDBColumnName(field);
-                if (dbColumnName != null) {
-                    columnNames.add(dbColumnName);
+                if (returnColumns == null || returnColumns.isEmpty() || returnColumns.contains(field)) {
+                    String dbColumnName = getDBColumnName(field);
+                    if (dbColumnName != null) {
+                        columnNames.add(dbColumnName);
+                    }
                 }
             }
         }
@@ -487,7 +490,7 @@ abstract public class DBRow implements Serializable{
      */
     public void ignoreForeignKey(QueryableDatatype qdt) {
         Field fieldOfFK = getFieldOf(qdt);
-        if (fieldOfFK==null){
+        if (fieldOfFK == null) {
             throw new IncorrectDBRowInstanceSuppliedException();
         }
         ignoredRelationships.add(fieldOfFK);
@@ -595,5 +598,25 @@ abstract public class DBRow implements Serializable{
             actions.add(new DBSaveBLOB(this, blob));
         }
         return actions;
+    }
+
+    /**
+     *
+     * Requires the field to be from this instance to work
+     *
+     * @param qdt
+     */
+    public void returnFieldsLimitedTo(QueryableDatatype... qdts) {
+        for (QueryableDatatype qdt : qdts) {
+            Field fieldOfColumn = getFieldOf(qdt);
+            if (fieldOfColumn == null) {
+                throw new IncorrectDBRowInstanceSuppliedException();
+            }
+            returnColumns.add(fieldOfColumn);
+        }
+    }
+
+    public void returnAllFields() {
+        returnColumns.clear();
     }
 }

@@ -68,8 +68,7 @@ public class DBTable<E extends DBRow> {
         if (field.isAnnotationPresent(DBColumn.class)) {
             DBColumn annotation = field.getAnnotation(DBColumn.class);
             columnName = annotation.value();
-            if (columnName
-                    == null || columnName.isEmpty()) {
+            if (columnName == null || columnName.isEmpty()) {
                 columnName = field.getName();
             }
         }
@@ -79,15 +78,19 @@ public class DBTable<E extends DBRow> {
     private String getAllFieldsForSelect() {
         StringBuilder allFields = new StringBuilder();
         @SuppressWarnings("unchecked")
-        Class<E> thisClass = (Class<E>) dummy.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
+//        Class<E> thisClass = (Class<E>) dummy.getClass();
+//        Field[] fields = thisClass.getDeclaredFields();
+        List<String> columnNames = dummy.getColumnNames();
         String separator = "";
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DBColumn.class)) {
-                allFields.append(separator).append(" ").append(getDBColumnName(field));
-                separator = ",";
-            }
+//        for (Field field : fields) {
+        for (String column : columnNames) {
+//            if (field.isAnnotationPresent(DBColumn.class)) {
+//                allFields.append(separator).append(" ").append(getDBColumnName(field));
+            allFields.append(separator).append(" ").append(column);
+            separator = ",";
+//        }
         }
+
         return allFields.toString();
     }
 
@@ -99,9 +102,13 @@ public class DBTable<E extends DBRow> {
         String separator = "";
         for (Field field : fields) {
             String fieldTypeName = field.getType().getSimpleName();
+
+
             if (field.isAnnotationPresent(DBColumn.class)
-                    && !fieldTypeName.equals(DBLargeObject.class.getSimpleName())) {
-                allFields.append(separator).append(" ").append(getDBColumnName(field));
+                    && !fieldTypeName.equals(DBLargeObject.class
+                    .getSimpleName())) {
+                allFields.append(separator)
+                        .append(" ").append(getDBColumnName(field));
                 separator = ",";
             }
         }
@@ -111,7 +118,8 @@ public class DBTable<E extends DBRow> {
     private String getSQLForSelectAll() {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
-        if (selectQueryAnnotation != null) {
+        if (selectQueryAnnotation
+                != null) {
             selectStatement.append(selectQueryAnnotation.value());
         } else {
             selectStatement.append(database.beginSelectStatement());
@@ -137,7 +145,8 @@ public class DBTable<E extends DBRow> {
     public String getSQLForSelect() {
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
-        if (selectQueryAnnotation != null) {
+        if (selectQueryAnnotation
+                != null) {
             selectStatement
                     .append(selectQueryAnnotation.value())
                     .append(database.beginWhereClause())
@@ -155,6 +164,7 @@ public class DBTable<E extends DBRow> {
                     .append(database.beginWhereClause())
                     .append(database.getTrueOperation());
         }
+
         return selectStatement.toString();
     }
 
@@ -206,14 +216,14 @@ public class DBTable<E extends DBRow> {
 
             Field[] fields = tableRow.getClass().getDeclaredFields();
 
-
-
             for (Field field : fields) {
                 if (field.isAnnotationPresent(DBColumn.class)) {
                     String dbColumnName = getDBColumnName(field);
-                    int dbColumnIndex = dbColumnNames.get(database.formatColumnName(dbColumnName));
-
-                    setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
+                    String formattedColumnName = database.formatColumnName(dbColumnName);
+                    Integer dbColumnIndex = dbColumnNames.get(formattedColumnName);
+                    if (formattedColumnName != null && dbColumnIndex != null) {
+                        setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
+                    }
                 }
             }
             dbTable.listOfRows.add(tableRow);
@@ -324,6 +334,8 @@ public class DBTable<E extends DBRow> {
         @SuppressWarnings("unchecked")
         Class<E> thisClass = (Class<E>) dummy.getClass();
         Field[] fields = thisClass.getDeclaredFields();
+
+
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBPrimaryKey.class)) {
                 pkColumn = this.getDBColumnName(field);
@@ -343,9 +355,9 @@ public class DBTable<E extends DBRow> {
         return str.replace("'", "''").replace("\\", "\\\\");
     }
 
-    private DBTable<E> getRows(String whereClause) throws SQLException {
+    private DBTable<E> getRows(String selectStatement) throws SQLException {
         this.listOfRows.clear();
-        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
+//        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
         if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
             System.out.println(selectStatement);
         }
@@ -369,20 +381,24 @@ public class DBTable<E extends DBRow> {
      * @throws SQLException
      */
     public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
+
         String whereClause = " and " + getPrimaryKeyColumn() + " = '" + escapeSingleQuotes(pkValue.toString()) + "'";
-        this.getRows(whereClause);
+        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
+        this.getRows(selectStatement);
         return this;
     }
 
     public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         String whereClause = " and " + getPrimaryKeyColumn() + " = " + pkValue + " ";
-        this.getRows(whereClause);
+        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
+        this.getRows(selectStatement);
         return this;
     }
 
     public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         String whereClause = " and " + getPrimaryKeyColumn() + " = " + this.database.getDateFormattedForQuery(pkValue) + " ";
-        this.getRows(whereClause);
+        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
+        this.getRows(selectStatement);
         return this;
     }
 
@@ -401,7 +417,11 @@ public class DBTable<E extends DBRow> {
      * @throws SQLException
      */
     public DBTable<E> getRowsByExample(E queryTemplate) throws SQLException {
-        return getRows(getSQLForExample(queryTemplate));
+        dummy = queryTemplate;
+        String whereClause = getSQLForExample(queryTemplate);
+        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
+
+        return getRows(selectStatement);
     }
 
     public E getOnlyRowByExample(E queryTemplate) throws SQLException, UnexpectedNumberOfRowsException {
@@ -446,9 +466,13 @@ public class DBTable<E extends DBRow> {
      */
     public DBTable<E> getRowsByRawSQL(String sqlWhereClause) throws SQLException {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
-            return getRows(sqlWhereClause.replaceAll("\\s*;\\s*$", ""));
+            String whereClause = sqlWhereClause.replaceAll("\\s*;\\s*$", "");
+            String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
+            return getRows(selectStatement);
         } else {
-            return getRows(" AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", ""));
+            String whereClause = " AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
+            String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
+            return getRows(selectStatement);
         }
     }
 
@@ -562,7 +586,7 @@ public class DBTable<E extends DBRow> {
                     + row.getValuesClause(database)
                     + database.endInsertLine();
             allInserts.add(new DBSave(sql));
-            if(row.hasLargeObjectColumns()){
+            if (row.hasLargeObjectColumns()) {
                 allInserts.addAll(row.getLargeObjectActions());
             }
         }
