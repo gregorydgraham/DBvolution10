@@ -19,7 +19,6 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 public class DBNumber extends QueryableDatatype {
 
     public static final long serialVersionUID = 1;
-
     protected Number numberValue = null;
     protected DBNumber lowerBoundNumber = null;
     protected DBNumber upperBoundNumber = null;
@@ -50,15 +49,27 @@ public class DBNumber extends QueryableDatatype {
      * @param aNumber
      */
     public DBNumber(Object aNumber) {
-        this(aNumber.toString());
+        super(aNumber);
+        initDBNumber(aNumber);
     }
 
     /**
      *
      * @param aNumber
      */
-    public DBNumber(String aNumber) {
-        this(Double.parseDouble(aNumber));
+//    public DBNumber(String aNumber) {
+//        this(Double.parseDouble(aNumber));
+//    }
+    private void initDBNumber(Object aNumber) {
+        if (aNumber == null) {
+            numberValue = null;
+        } else {
+            if (aNumber instanceof Number){
+                numberValue = (Number)aNumber;
+            }else{
+                numberValue = Double.parseDouble(aNumber.toString());
+            }            
+        }
     }
 
     @Override
@@ -259,7 +270,7 @@ public class DBNumber extends QueryableDatatype {
      * @throws SQLException
      */
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName){
+    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
             this.useNullOperator();
         } else {

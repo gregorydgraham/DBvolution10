@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -488,7 +489,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     protected DBOperator useInOperator(QueryableDatatype... inValues) {
         blankQuery();
         ArrayList<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
-//        boolean addAll = arrayList.addAll(Arrays.asList(inValues));
+        arrayList.addAll(Arrays.asList(inValues));
         this.setOperator(new DBInOperator(arrayList));
         return getOperator();
     }
