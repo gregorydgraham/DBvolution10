@@ -54,8 +54,6 @@ public class PrimaryKeyLessTablesTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
         LinkCarCompanyAndLogo link = new LinkCarCompanyAndLogo();
 
-        myDatabase.createTable(new CompanyLogo());
-
         DBQuery dbQuery = myDatabase.getDBQuery(carCompany, link, new CompanyLogo());
         dbQuery.print();
     }
@@ -67,5 +65,12 @@ public class PrimaryKeyLessTablesTest extends AbstractTest {
             throw new Exception("Should have thrown an AccidentalCartesianJoinException here.");
         } catch (AccidentalCartesianJoinException ex) {
         }
+    }
+
+    @Test
+    public void testAdHocRelations() throws SQLException, Exception {
+        final CompanyLogo companyLogo = new CompanyLogo();
+        myMarqueRow.addRelationship(myMarqueRow.carCompany, companyLogo,companyLogo.carCompany);
+        myDatabase.getDBQuery(myMarqueRow, companyLogo).print();
     }
 }
