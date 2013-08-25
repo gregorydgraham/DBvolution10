@@ -650,7 +650,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return isDBNull || literalValue == null;
     }
 
-    String getPreviousValueAsSQL() {
+    String getPreviousSQLValue() {
         previousValueAsQDT.setDatabase(database);
         return previousValueAsQDT.getSQLValue();
     }

@@ -32,22 +32,6 @@ import static org.hamcrest.Matchers.*;
  */
 public class ByteArrayTest extends AbstractTest {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp(); //To change body of generated methods, choose Tools | Templates.
-        CompanyLogo companyLogo = new CompanyLogo();
-        myDatabase.dropTableNoExceptions(companyLogo);
-        myDatabase.createTable(companyLogo);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        myDatabase.dropTableNoExceptions(new CompanyLogo());
-        super.tearDown(); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
-
     @Test
     public void createRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException {
 
@@ -59,7 +43,7 @@ public class ByteArrayTest extends AbstractTest {
         myDatabase.insert(companyLogo);
         
         CarCompany carCompany = new CarCompany();
-        carCompany.name.permittedValuesCaseInsensitive("FORD");
+        carCompany.name.permittedValuesIgnoreCase("FORD");
         CarCompany ford = myDatabase.getDBTable(carCompany).getOnlyRowByExample(carCompany);
         
         companyLogo.logoID.setValue(2);

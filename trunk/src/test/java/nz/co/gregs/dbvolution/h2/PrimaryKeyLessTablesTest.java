@@ -30,15 +30,6 @@ import org.junit.Test;
  */
 public class PrimaryKeyLessTablesTest extends AbstractTest {
 
-    public void SetUp() throws SQLException {
-        myDatabase.dropTableNoExceptions(new LinkCarCompanyAndLogo());
-        myDatabase.createTable(new LinkCarCompanyAndLogo());
-    }
-
-    public void TearDown() throws SQLException {
-        myDatabase.dropTable(new LinkCarCompanyAndLogo());
-    }
-
     @Test
     public void linkIntoTableTest() throws SQLException {
         CarCompany carCompany = new CarCompany();

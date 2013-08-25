@@ -95,7 +95,7 @@ public class DBTableGetTest extends AbstractTest {
         marques = marques.getRowsByExample(literalQuery);
         marques.print();
         Assert.assertEquals(marques.toList().size(), 1);
-        Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKeySQLStringValue(myDatabase));
+        Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKey().getSQLValue());
     }
 
     @Test
@@ -105,8 +105,8 @@ public class DBTableGetTest extends AbstractTest {
         marques = marques.getRowsByExample(literalQuery);
         marques.print();
         Assert.assertEquals(marques.toList().size(), 2);
-        Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKeySQLStringValue(myDatabase));
-        Assert.assertEquals("" + 4893090, marques.toList().get(1).getPrimaryKeySQLStringValue(myDatabase));
+        Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKey().getSQLValue());
+        Assert.assertEquals("" + 4893090, marques.toList().get(1).getPrimaryKey().getSQLValue());
     }
 
     @Test
