@@ -189,6 +189,7 @@ public class DBQuery {
             queryRow = new DBQueryRow();
             for (DBRow tableRow : queryTables) {
                 DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
+                newInstance.setDatabase(database);
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
@@ -200,10 +201,10 @@ public class DBQuery {
                     existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
                     existingInstances.put(tableRow.getClass(), existingInstancesOfThisTableRow);
                 }
-                DBRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKeySQLStringValue(database));
+                DBRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKey().getSQLValue());
                 if (existingInstance == null) {
                     existingInstance = newInstance;
-                    existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKeySQLStringValue(database), existingInstance);
+                    existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKey().getSQLValue(), existingInstance);
                 }
                 queryRow.put(existingInstance.getClass(), existingInstance);
             }
@@ -379,7 +380,8 @@ public class DBQuery {
         for (DBQueryRow row : this.results) {
             for (DBRow tab : this.queryTables) {
                 DBRow rowPart = row.get(tab);
-                String rowPartStr = rowPart.getPrimaryKeySQLStringValue(database);
+                rowPart.setDatabase(database);
+                String rowPartStr = rowPart.getPrimaryKey().getSQLValue();
                 ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
             }
             ps.println();

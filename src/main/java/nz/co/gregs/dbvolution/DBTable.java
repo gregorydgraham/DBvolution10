@@ -15,6 +15,7 @@ import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 
 /**
  *
@@ -213,6 +214,7 @@ public class DBTable<E extends DBRow> {
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
             E tableRow = (E) DBRow.getDBRow(dummy.getClass());
+            tableRow.setDatabase(database);
 
             Field[] fields = tableRow.getClass().getDeclaredFields();
 
@@ -342,7 +344,7 @@ public class DBTable<E extends DBRow> {
             }
         }
         if (pkColumn.isEmpty()) {
-            throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + " using the @DBPrimaryKey annotation.");
+            throw new UndefinedPrimaryKeyException(thisClass);
         } else {
             return pkColumn;
         }
@@ -637,14 +639,14 @@ public class DBTable<E extends DBRow> {
     public List<String> getSQLForDelete(List<E> oldRows) {
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
-//            row.setDatabase(theDatabase);
+            row.setDatabase(database);
             String sql =
                     database.beginDeleteLine()
                     + row.getTableName()
                     + database.beginWhereClause()
                     + this.getPrimaryKeyColumn()
                     + database.getEqualsComparator()
-                    + row.getPrimaryKeySQLStringValue(database)
+                    + row.getPrimaryKey().getSQLValue()
                     + database.endDeleteLine();
             allInserts.add(sql);
         }
@@ -704,7 +706,8 @@ public class DBTable<E extends DBRow> {
         }
         statement.executeBatch();
         for (DBRow row : oldRows) {
-            row.getPrimaryKeyQueryableDatatype(database).setUnchanged();
+            row.setDatabase(database);
+            row.getPrimaryKey().setUnchanged();
         }
     }
 
@@ -733,17 +736,24 @@ public class DBTable<E extends DBRow> {
     public List<String> getSQLForUpdate(List<E> oldRows) {
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
-            String sql =
-                    database.beginUpdateLine()
-                    + database.formatTableName(row.getTableName())
-                    + database.beginSetClause();
-            sql = sql + row.getSetClause(database);
-            sql = sql + database.beginWhereClause()
-                    + database.formatColumnName(this.getPrimaryKeyColumn())
-                    + database.getEqualsComparator()
-                    + row.getPrimaryKeySQLStringValue(database)
-                    + database.endDeleteLine();
-            allSQL.add(sql);
+            row.setDatabase(database);
+            QueryableDatatype primaryKey = row.getPrimaryKey();
+            if (primaryKey == null) {
+                throw new UndefinedPrimaryKeyException(row);
+            }else{
+                String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue() : primaryKey.getSQLValue());
+                String sql =
+                        database.beginUpdateLine()
+                        + database.formatTableName(row.getTableName())
+                        + database.beginSetClause();
+                sql = sql + row.getSetClause(database);
+                sql = sql + database.beginWhereClause()
+                        + database.formatColumnName(this.getPrimaryKeyColumn())
+                        + database.getEqualsComparator()
+                        + pkOriginalValue
+                        + database.endDeleteLine();
+                allSQL.add(sql);
+            }
         }
 
         return allSQL;
@@ -771,10 +781,10 @@ public class DBTable<E extends DBRow> {
         return new java.util.ArrayList<E>(listOfRows);
     }
 
-    public List<Number> getPrimaryKeysAsNumber() {
-        List<Number> primaryKeys = new ArrayList<Number>();
+    public List<Long> getPrimaryKeysAsLong() {
+        List<Long> primaryKeys = new ArrayList<Long>();
         for (E e : listOfRows) {
-            primaryKeys.add(e.getPrimaryKeyLongValue());
+            primaryKeys.add(e.getPrimaryKey().longValue());
         }
         return primaryKeys;
     }
@@ -782,7 +792,7 @@ public class DBTable<E extends DBRow> {
     public List<String> getPrimaryKeysAsString() {
         List<String> primaryKeys = new ArrayList<String>();
         for (E e : listOfRows) {
-            primaryKeys.add(e.getPrimaryKeyStringValue());
+            primaryKeys.add(e.getPrimaryKey().toString());
         }
         return primaryKeys;
     }
@@ -797,10 +807,10 @@ public class DBTable<E extends DBRow> {
     public void compare(DBTable<E> secondTable) {
         HashMap<Long, E> secondMap = new HashMap<Long, E>();
         for (E row : secondTable.toList()) {
-            secondMap.put(row.getPrimaryKeyLongValue(), row);
+            secondMap.put(row.getPrimaryKey().longValue(), row);
         }
         for (E row : this.toList()) {
-            E foundRow = secondMap.get(row.getPrimaryKeyLongValue());
+            E foundRow = secondMap.get(row.getPrimaryKey().longValue());
             if (foundRow == null) {
                 System.out.println("NOT FOUND: " + row);
             } else if (!row.toString().equals(foundRow.toString())) {

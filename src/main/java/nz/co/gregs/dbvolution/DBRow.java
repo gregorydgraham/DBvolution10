@@ -46,7 +46,7 @@ abstract public class DBRow implements Serializable {
     public DBRow() {
     }
 
-    static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) {
+    protected static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) {
         try {
             return requiredDBRowClass.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {
@@ -64,47 +64,9 @@ abstract public class DBRow implements Serializable {
         }
     }
 
-    public Long getPrimaryKeyLongValue() {
-        Long pkColumnValue = -1L;
-        boolean pkFound = false;
-        QueryableDatatype queryableValueOfField;
-        @SuppressWarnings("unchecked")
-        Class<? extends DBRow> thisClass = this.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
-                pkFound = true;
-                queryableValueOfField = this.getQueryableValueOfField(field);
-                pkColumnValue = queryableValueOfField.longValue();
-                break;
-            }
-        }
-        if (pkColumnValue == null) {
-            if (!pkFound) {
-                throw new RuntimeException("Primary Key Field Not Defined: Please define the primary key field of " + this.getClass().getSimpleName() + " using the @DBPrimaryKey annotation.");
-            } else {
-                throw new RuntimeException("Primary Key Field Not Parsable as an Integer type or is Null. Please check the PK values of " + this.getClass().getSimpleName());
-            }
-        } else {
-            return pkColumnValue;
-        }
-
-    }
-
-    public String getPrimaryKeyStringValue() {
-        String pkColumnValue;
-        QueryableDatatype queryableValueOfField;
-        Field field = this.getPrimaryKeyField();
-        queryableValueOfField = this.getQueryableValueOfField(field);
-        pkColumnValue = queryableValueOfField.toString();
-        return pkColumnValue;
-
-    }
-
-    public QueryableDatatype getPrimaryKeyQueryableDatatype(DBDatabase db) {
-        this.setDatabase(db);
-        QueryableDatatype queryableValueOfField;
-        return this.getQueryableValueOfField(getPrimaryKeyField());
+    public QueryableDatatype getPrimaryKey() {
+        QueryableDatatype queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
+        return queryableValueOfField;
     }
 
     public String getPrimaryKeySQLStringValue(DBDatabase db) {
@@ -113,7 +75,7 @@ abstract public class DBRow implements Serializable {
         queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
         String pkColumnValue;
         if (queryableValueOfField.hasChanged()) {
-            pkColumnValue = queryableValueOfField.getPreviousValueAsSQL();
+            pkColumnValue = queryableValueOfField.getPreviousSQLValue();
         } else {
             pkColumnValue = queryableValueOfField.toSQLString();
         }
@@ -154,6 +116,9 @@ abstract public class DBRow implements Serializable {
      */
     @SuppressWarnings("unchecked")
     public <Q extends QueryableDatatype> Q getQueryableValueOfField(Field field) {
+        if (field == null) {
+            return null;
+        }
         Q qdt;
         BeanInfo info = null;
         try {

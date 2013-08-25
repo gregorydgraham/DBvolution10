@@ -39,7 +39,7 @@ public class DBSaveBLOB extends DBAction {
 
     @Override
     public void execute(Statement statement) throws SQLException{
-        String sqlString = "UPDATE "+row.getTableName()+" SET "+row.getDBColumnName(blob)+" = ? WHERE "+row.getPrimaryKeyName() +" = "+row.getPrimaryKeyStringValue()+";";
+        String sqlString = "UPDATE "+row.getTableName()+" SET "+row.getDBColumnName(blob)+" = ? WHERE "+row.getPrimaryKeyName() +" = "+row.getPrimaryKey().getSQLValue()+";";
         PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
         prep.setBinaryStream(1, blob.getInputStream());
         prep.execute();
