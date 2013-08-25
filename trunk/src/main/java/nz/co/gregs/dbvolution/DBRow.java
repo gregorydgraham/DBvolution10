@@ -69,6 +69,7 @@ abstract public class DBRow implements Serializable {
         return queryableValueOfField;
     }
 
+    @Deprecated
     public String getPrimaryKeySQLStringValue(DBDatabase db) {
         this.setDatabase(db);
         QueryableDatatype queryableValueOfField;

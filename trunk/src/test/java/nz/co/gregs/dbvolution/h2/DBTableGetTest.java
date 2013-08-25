@@ -56,7 +56,7 @@ public class DBTableGetTest extends AbstractTest {
         DBRow row = marqueRows.get(0);
         String primaryKey;
         if (row != null) {
-            primaryKey = row.getPrimaryKeySQLStringValue(myDatabase);
+            primaryKey = row.getPrimaryKey().getSQLValue();
             singleMarque.getRowsByPrimaryKey(Long.parseLong(primaryKey));
             singleMarque.print();
         }
