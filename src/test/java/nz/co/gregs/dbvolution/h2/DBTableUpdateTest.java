@@ -39,7 +39,7 @@ public class DBTableUpdateTest extends AbstractTest {
         Assert.assertThat(marques.getSQLForUpdate(toyota), is("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;"));
         
         marqueExample = new Marque();
-        marqueExample.name.permittedValuesCaseInsensitive("toyota");
+        marqueExample.name.permittedValuesIgnoreCase("toyota");
         toyota = marques.getOnlyRowByExample(marqueExample);
         Assert.assertThat(toyota.name.toString(), is("TOYOTA"));
     }
