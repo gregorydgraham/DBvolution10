@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
  * @author gregorygraham
  */
 @DBTableName("lt_carco_logo")
+@SuppressWarnings("serial")
 public class LinkCarCompanyAndLogo extends DBRow {
     
     @DBForeignKey(CarCompany.class)

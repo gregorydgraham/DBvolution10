@@ -19,6 +19,7 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author gregorygraham
  */
+@SuppressWarnings("serial")
 public class AccidentalCartesianJoinException extends RuntimeException {
 
     public AccidentalCartesianJoinException() {

@@ -3,6 +3,7 @@ import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.*;
 @DBTableName("MARQUE") 
 public class Marque extends DBRow {
+    public final static long serialVersionUID = 1L;
     @DBColumn("NUMERIC_CODE")
     public DBNumber numericCode = new DBNumber();
     @DBColumn("UID_MARQUE")

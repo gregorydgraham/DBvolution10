@@ -35,6 +35,7 @@ public class SerializableTest extends AbstractTest {
     String filename = "SerializableTest.obj";
 
     @Test
+    @SuppressWarnings("unchecked")
     public void saveToFile() throws SQLException {
         try {
 
@@ -55,7 +56,7 @@ public class SerializableTest extends AbstractTest {
             ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
             Object object = ois.readObject();
             if (object instanceof List) {
-                List list = (List) object;
+                List<Object> list = (List<Object>) object;
                 for (Object obj : list) {
                     if (obj instanceof Marque) {
                         System.out.println("" + ((Marque) obj));

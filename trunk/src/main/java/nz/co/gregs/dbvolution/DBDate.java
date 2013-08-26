@@ -39,6 +39,7 @@ public class DBDate extends QueryableDatatype {
         }
     }
 
+    @SuppressWarnings("deprecation")
     DBDate(String str) {
         final long dateLong = Date.parse(str);
         Date dateValue = new Date();
@@ -71,6 +72,7 @@ public class DBDate extends QueryableDatatype {
         return super.useEqualsOperator(date);
     }
 
+    @SuppressWarnings("deprecation")
     public DBOperator useEqualsOperator(String dateStr) {
         final long dateLong = Date.parse(dateStr);
         Date date = new Date();

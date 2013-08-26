@@ -30,6 +30,7 @@ public class MySQLDB extends DBDatabase{
     }
 
     @Override
+    @SuppressWarnings("deprecation") 
     public String getDateFormattedForQuery(Date date) {
         //SELECT STR_TO_DATE('01,5,2013','%d,%m,%Y');
         //SELECT STR_TO_DATE('09:30:17','%h:%i:%s');
