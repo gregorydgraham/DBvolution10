@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 greg.
+ * Copyright 2013 gregorygraham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.databases;
+package nz.co.gregs.dbvolution.databases.definitions;
 
-import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-/**
- *
- * @author greg
- */
-public class H2DB extends DBDatabase {
 
-    public H2DB(String jdbcURL, String username, String password) {
-        super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
+public class MSSQLServerDBDefinition extends DBDefinition {
+
+    private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    @Override
+    public String getDateFormattedForQuery(Date date) {
+        return "'" + DATETIME_FORMAT.format(date) + "'";
     }
+    
 }

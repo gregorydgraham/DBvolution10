@@ -50,7 +50,7 @@ class DBRelationship implements Serializable{
 
     public String generateSQL(DBDatabase database) {
         return operation.generateRelationship(database,
-                database.formatTableAndColumnName(firstTable, firstColumn),
-                database.formatTableAndColumnName(secondTable, secondColumn));
+                database.getDefinition().formatTableAndColumnName(firstTable, firstColumn),
+                database.getDefinition().formatTableAndColumnName(secondTable, secondColumn));
     }
 }

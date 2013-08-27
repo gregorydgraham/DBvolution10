@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
@@ -130,15 +131,16 @@ public class DBDate extends QueryableDatatype {
 
     @Override
     public String toSQLString() {
+        DBDefinition defn = database.getDefinition();
         if (this.isDBNull || dateValue() == null) {
-            return this.database.getNull();
+            return defn.getNull();
         }
-        return getDatabase().getDateFormattedForQuery(dateValue());
+        return defn.getDateFormattedForQuery(dateValue());
     }
 
     @Override
     public String getSQLValue() {
-        return database.getDateFormattedForQuery(dateValue());
+        return database.getDefinition().getDateFormattedForQuery(dateValue());
     }
 
     @Override

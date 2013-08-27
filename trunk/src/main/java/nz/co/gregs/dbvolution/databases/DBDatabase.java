@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.io.PrintStream;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,6 +32,7 @@ import nz.co.gregs.dbvolution.DBTransaction;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -48,12 +48,28 @@ public abstract class DBDatabase{
     private boolean printSQLBeforeExecuting;
     private boolean isInATransaction;
     private Statement transactionStatement;
+    private final DBDefinition definition;
 
-    public DBDatabase(DataSource ds) {
+    /**
+     *
+     * @param definition
+     * @param ds
+     */
+    public DBDatabase(DBDefinition definition, DataSource ds) {
+        this.definition = definition;
         this.dataSource = ds;
     }
 
-    public DBDatabase(String driverName, String jdbcURL, String username, String password) {
+    /**
+     *
+     * @param definition
+     * @param driverName
+     * @param jdbcURL
+     * @param username
+     * @param password
+     */
+    public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+        this.definition = definition;
         this.driverName = driverName;
         this.jdbcURL = jdbcURL;
         this.password = password;
@@ -137,6 +153,52 @@ public abstract class DBDatabase{
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
                 this.getDBTable(row).insert(row);
+            }
+        }
+    }
+
+    /**
+     * 
+     * Deletes DBRows and lists of DBRows from the correct tables automatically
+     *
+     * @param objs
+     * @throws SQLException
+     */
+    public void delete(Object... objs) throws SQLException {
+        for (Object obj : objs) {
+            if (obj instanceof List) {
+                List<?> list = (List<?>) obj;
+                if (list.size() > 0 && list.get(0) instanceof DBRow) {
+                    @SuppressWarnings("unchecked")
+                    List<DBRow> rowList = (List<DBRow>) list;
+                    this.getDBTable(rowList.get(0)).delete(rowList);
+                }
+            } else if (obj instanceof DBRow) {
+                DBRow row = (DBRow) obj;
+                this.getDBTable(row).delete(row);
+            }
+        }
+    }
+
+    /**
+     * 
+     * Updates DBRows and lists of DBRows in the correct tables automatically
+     *
+     * @param objs
+     * @throws SQLException
+     */
+    public void update(Object... objs) throws SQLException {
+        for (Object obj : objs) {
+            if (obj instanceof List) {
+                List<?> list = (List<?>) obj;
+                if (list.size() > 0 && list.get(0) instanceof DBRow) {
+                    @SuppressWarnings("unchecked")
+                    List<DBRow> rowList = (List<DBRow>) list;
+                    this.getDBTable(rowList.get(0)).update(rowList);
+                }
+            } else if (obj instanceof DBRow) {
+                DBRow row = (DBRow) obj;
+                this.getDBTable(row).update(row);
             }
         }
     }
@@ -284,12 +346,6 @@ public abstract class DBDatabase{
         }
     }
 
-    public abstract String getDateFormattedForQuery(Date date);
-
-    public String formatColumnName(String columnName) {
-        return columnName;
-    }
-
     /**
      *
      * @param <TR>
@@ -303,11 +359,11 @@ public abstract class DBDatabase{
         String lineSeparator = System.getProperty("line.separator");
         // table name
 
-        sqlScript.append(getCreateTableStart()).append(newTableRow.getTableName()).append(getCreateTableColumnsStart()).append(lineSeparator);
+        sqlScript.append(definition.getCreateTableStart()).append(newTableRow.getTableName()).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
 
         // columns
         String sep = "";
-        String nextSep = getCreateTableColumnsSeparator();
+        String nextSep = definition.getCreateTableColumnsSeparator();
         Field[] fields = newTableRow.getClass().getDeclaredFields();
         for (Field field : fields) {
             DBColumn annotation = field.getAnnotation(DBColumn.class);
@@ -317,7 +373,7 @@ public abstract class DBDatabase{
                 if (colName == null || colName.isEmpty()) {
                     colName = field.getName();
                 }
-                sqlScript.append(sep).append(colName).append(getCreateTableColumnsNameAndTypeSeparator()).append(qdt.getSQLDatatype());
+                sqlScript.append(sep).append(colName).append(definition.getCreateTableColumnsNameAndTypeSeparator()).append(qdt.getSQLDatatype());
                 sep = nextSep + lineSeparator;
 
                 DBPrimaryKey pkAnno = field.getAnnotation(DBPrimaryKey.class);
@@ -328,9 +384,9 @@ public abstract class DBDatabase{
         }
 
         // primary keys
-        String pkStart = lineSeparator + getCreateTablePrimaryKeyClauseStart();
-        String pkMiddle = getCreateTablePrimaryKeyClauseMiddle();
-        String pkEnd = getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
+        String pkStart = lineSeparator + definition.getCreateTablePrimaryKeyClauseStart();
+        String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
+        String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
         String pkSep = pkStart;
         for (Field field : pkFields) {
             DBColumn annotation = field.getAnnotation(DBColumn.class);
@@ -346,7 +402,7 @@ public abstract class DBDatabase{
         }
 
         //finish
-        sqlScript.append(getCreateTableColumnsEnd()).append(lineSeparator);
+        sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator);
         String sqlString = sqlScript.toString();
         printSQLIfRequested(sqlString);
         getDBStatement().execute(sqlString);
@@ -355,26 +411,10 @@ public abstract class DBDatabase{
     public <TR extends DBRow> void dropTable(TR tableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
 
-        sqlScript.append(getDropTableStart()).append(tableRow.getTableName());
+        sqlScript.append(definition.getDropTableStart()).append(tableRow.getTableName());
         String sqlString = sqlScript.toString();
         printSQLIfRequested(sqlString);
         getDBStatement().execute(sqlString);
-    }
-
-    public String beginStringValue() {
-        return "'";
-    }
-
-    public String endStringValue() {
-        return "'";
-    }
-
-    public String beginNumberValue() {
-        return "";
-    }
-
-    public String endNumberValue() {
-        return "";
     }
 
     /**
@@ -393,216 +433,7 @@ public abstract class DBDatabase{
         }
     }
 
-    /**
-     *
-     * Formats the table and column name pair correctly for this database
-     *
-     * This should be used for column names in the select query
-     *
-     * e.g table, column => TABLE.COLUMN
-     *
-     * @param tableName
-     * @param columnName
-     * @return
-     */
-    public String formatTableAndColumnName(String tableName, String columnName) {
-        return formatTableName(tableName) + "." + formatColumnName(columnName);
-    }
-
-    public String formatTableName(String tableName) {
-        return tableName;
-    }
-
-    /**
-     *
-     * Specifies the column alias used within the JDBC ResultSet to identify the
-     * column.
-     *
-     * @param tableName
-     * @param columnName
-     * @return
-     */
-    public String formatColumnNameForResultSet(String tableName, String columnName) {
-        String formattedName = formatTableAndColumnName(tableName, columnName).replaceAll("\\.", "__");
-        return ("_" + formattedName.hashCode()).replaceAll("-", "_");
-    }
-
-    public String formatTableAndColumnNameForSelectClause(String tableName, String columnName) {
-        return formatTableAndColumnName(tableName, columnName) + " " + formatColumnNameForResultSet(tableName, columnName);
-    }
-
-    public String safeString(String toString) {
-        return toString.replaceAll("'", "''");
-    }
-
-    /**
-     *
-     * returns the required SQL to begin a line within the Where Clause
-     *
-     * usually, but not always " and "
-     *
-     * @return
-     */
-    public String beginAndLine() {
-        return " and ";
-    }
-
-    public String getDropTableStart() {
-        return "DROP TABLE ";
-    }
-
-    public String getCreateTablePrimaryKeyClauseStart() {
-        return ",PRIMARY KEY (";
-    }
-
-    private String getCreateTablePrimaryKeyClauseMiddle() {
-        return ", ";
-    }
-
-    private String getCreateTablePrimaryKeyClauseEnd() {
-        return ")";
-    }
-
-    private String getCreateTableStart() {
-        return "CREATE TABLE ";
-    }
-
-    private String getCreateTableColumnsStart() {
-        return "(";
-    }
-
-    private String getCreateTableColumnsSeparator() {
-        return ", ";
-    }
-
-    private String getCreateTableColumnsNameAndTypeSeparator() {
-        return " ";
-    }
-
-    private Object getCreateTableColumnsEnd() {
-        return ")";
-    }
-
-    public String toLowerCase(String string) {
-        return " lower(" + string + ")";
-    }
-
-    public String beginInsertLine() {
-        return "INSERT INTO ";
-    }
-
-    public String endInsertLine() {
-        return ";";
-    }
-
-    public String beginInsertColumnList() {
-        return "(";
-    }
-
-    public String endInsertColumnList() {
-        return ") ";
-    }
-
-    public String beginDeleteLine() {
-        return "DELETE FROM ";
-    }
-
-    public String endDeleteLine() {
-        return ";";
-    }
-
-    public String getEqualsComparator() {
-        return " = ";
-    }
-
-    public String beginWhereClause() {
-        return " WHERE ";
-    }
-
-    public String beginUpdateLine() {
-        return "UPDATE ";
-    }
-
-    public String beginSetClause() {
-        return " SET ";
-    }
-
-    public String getStartingSetSubClauseSeparator() {
-        return "";
-    }
-
-    public String getSubsequentSetSubClauseSeparator() {
-        return ",";
-    }
-
-    public String getStartingOrderByClauseSeparator() {
-        return "";
-    }
-
-    public String getSubsequentOrderByClauseSeparator() {
-        return ",";
-    }
-
-    public String getFalseOperation() {
-        return " 1=0 ";
-    }
-
-    public String getTrueOperation() {
-        return " 1=1 ";
-    }
-
-    public String getNull() {
-        return " NULL ";
-    }
-
-    public String beginSelectStatement() {
-        return " SELECT ";
-    }
-
-    public String beginFromClause() {
-        return " FROM ";
-    }
-
-    public Object endSQLStatement() {
-        return ";";
-    }
-
-    public String getStartingSelectSubClauseSeparator() {
-        return "";
-    }
-
-    public String getSubsequentSelectSubClauseSeparator() {
-        return ", ";
-    }
-
-    public String countStarClause() {
-        return " COUNT(*) ";
-    }
-
-    /**
-     *
-     * @param rowLimit
-     * @return
-     */
-    public Object getTopClause(Long rowLimit) {
-        return " TOP " + rowLimit + " ";
-    }
-
-    public String beginOrderByClause() {
-        return " ORDER BY ";
-    }
-
-    public String endOrderByClause() {
-        return " ";
-    }
-
-    public Object getOrderByDirectionClause(Boolean sortOrder) {
-        if (sortOrder == null) {
-            return "";
-        } else if (sortOrder) {
-            return " ASC ";
-        } else {
-            return " DESC ";
-        }
+    public DBDefinition getDefinition() {
+        return definition;
     }
 }

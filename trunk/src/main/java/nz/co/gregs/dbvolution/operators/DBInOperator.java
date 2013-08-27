@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import java.util.List;
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -35,11 +36,12 @@ public class DBInOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
+        DBDefinition defn = database.getDefinition();
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append(database.beginAndLine());
+        whereClause.append(defn.beginAndLine());
         if (listOfPossibleValues.isEmpty()) {
             // prevent any rows from returning as an empty list means no rows can match
-            whereClause.append(database.getFalseOperation());
+            whereClause.append(defn.getFalseOperation());
         } else {
             whereClause.append(invertOperator ? "!(" : "(");
             whereClause.append(columnName);
@@ -65,6 +67,7 @@ public class DBInOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
+        DBDefinition defn = database.getDefinition();
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
     }
 }

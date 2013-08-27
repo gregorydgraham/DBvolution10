@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
@@ -64,11 +65,11 @@ public class DBNumber extends QueryableDatatype {
         if (aNumber == null) {
             numberValue = null;
         } else {
-            if (aNumber instanceof Number){
-                numberValue = (Number)aNumber;
-            }else{
+            if (aNumber instanceof Number) {
+                numberValue = (Number) aNumber;
+            } else {
                 numberValue = Double.parseDouble(aNumber.toString());
-            }            
+            }
         }
     }
 
@@ -223,7 +224,7 @@ public class DBNumber extends QueryableDatatype {
     @Override
     protected String toSQLString() {
         if (this.isDBNull || this.numberValue == null) {
-            return database.getNull();
+            return database.getDefinition().getNull();
         }
         return this.numberValue.toString();
     }
@@ -234,7 +235,8 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     public String getSQLValue() {
-        return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
+        DBDefinition defn = database.getDefinition();
+        return defn.beginNumberValue() + numberValue.toString() + defn.endNumberValue();
     }
 
     /**

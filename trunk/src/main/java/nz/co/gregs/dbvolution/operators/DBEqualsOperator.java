@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -46,15 +47,17 @@ public class DBEqualsOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         equalTo.setDatabase(database);
-        if (equalTo.getSQLValue().equals(database.getNull())) {
+        DBDefinition defn = database.getDefinition();
+        if (equalTo.getSQLValue().equals(defn.getNull())) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             return dbIsNullOperator.generateWhereLine(database, columnName);
         }
-        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
     }
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+        DBDefinition defn = database.getDefinition();
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
     }
 }
