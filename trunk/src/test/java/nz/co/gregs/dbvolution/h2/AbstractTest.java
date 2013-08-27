@@ -36,7 +36,7 @@ import org.junit.Before;
  */
 public class AbstractTest {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionTest", "", "");
+    DBDatabase myDatabase = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
     Marque myMarqueRow = new Marque();
     CarCompany myCarCompanyRow = new CarCompany();
     DBTable<Marque> marques;
