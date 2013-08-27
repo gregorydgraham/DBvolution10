@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -33,7 +34,8 @@ public class DBLikeOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         likeableValue.setDatabase(database);
-        return database.beginAndLine() +(invertOperator?"!(":"(")+ database.formatColumnName(columnName) + getOperator()+likeableValue.getSQLValue()+")";
+        DBDefinition defn = database.getDefinition();
+        return defn.beginAndLine() +(invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+likeableValue.getSQLValue()+")";
     }
 
     private String getOperator() {
@@ -42,7 +44,8 @@ public class DBLikeOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return database.beginAndLine() +(invertOperator?"!(":"(")+ database.formatColumnName(columnName) + getOperator()+otherColumnName+")";
+        DBDefinition defn = database.getDefinition();
+        return defn.beginAndLine() +(invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+otherColumnName+")";
     }
     
 }

@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 
 /**
  * Add this to the Maven pom to use:
@@ -35,24 +36,19 @@ import javax.sql.DataSource;
  * @author Gregory Graham
  */
 public class MSSQLServerDB extends DBDatabase {
-    private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     public final static String SQLSERVERDRIVERNAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
 
     public MSSQLServerDB(DataSource ds) {
-        super(ds);
+        super(new MSSQLServerDBDefinition(), ds);
     }
 
     public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
-        super(driverName, jdbcURL, username, password);
+        super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
     }
     
     public MSSQLServerDB(String jdbcURL, String username, String password) {
-        super(SQLSERVERDRIVERNAME, jdbcURL, username, password);
+        super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
     }
 
-    @Override
-    public String getDateFormattedForQuery(Date date) {
-        return "'" + DATETIME_FORMAT.format(date) + "'";
-    }
 }

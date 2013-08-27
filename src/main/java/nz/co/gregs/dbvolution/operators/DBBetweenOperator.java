@@ -40,7 +40,7 @@ public class DBBetweenOperator extends DBOperator{
         String lowerSQLValue = lowValue.getSQLValue();
         highValue.setDatabase(database);
         String upperSQLValue = highValue.getSQLValue();
-        String beginWhereLine = database.beginAndLine();
+        String beginWhereLine = database.getDefinition().beginAndLine();
         return beginWhereLine + (invertOperator?"!(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
     }
 

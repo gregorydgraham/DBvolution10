@@ -46,11 +46,11 @@ public class DBLessThanOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         lessThanThis.setDatabase(database);
-        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + lessThanThis.getSQLValue() + " ";
+        return database.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + lessThanThis.getSQLValue() + " ";
     }
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+        return database.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
     }
 }

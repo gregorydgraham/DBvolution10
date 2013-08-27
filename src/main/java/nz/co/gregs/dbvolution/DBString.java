@@ -5,6 +5,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -22,8 +23,8 @@ public class DBString extends QueryableDatatype {
     public DBString() {
         super();
     }
-    
-    public void setValue(String str){
+
+    public void setValue(String str) {
         super.setValue(str);
     }
 
@@ -34,14 +35,15 @@ public class DBString extends QueryableDatatype {
 
     @Override
     public String getSQLValue() {
-        if (this.isDBNull||literalValue==null) {
-            return database.getNull();
+        DBDefinition defn = database.getDefinition();
+        if (this.isDBNull || literalValue == null) {
+            return defn.getNull();
         } else {
             if (literalValue instanceof Date) {
-                return database.getDateFormattedForQuery((Date) literalValue);
+                return defn.getDateFormattedForQuery((Date) literalValue);
             } else {
                 String unsafeValue = literalValue.toString();
-                return database.beginStringValue() + database.safeString(unsafeValue) + database.endStringValue();
+                return defn.beginStringValue() + defn.safeString(unsafeValue) + defn.endStringValue();
             }
         }
     }

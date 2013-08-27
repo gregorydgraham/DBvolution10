@@ -31,6 +31,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -87,19 +88,20 @@ public class DBQuery {
     }
 
     private String getSQLForQuery(String providedSelectClause) throws SQLException {
+        DBDefinition defn = database.getDefinition();
         Set<DBRow> connectedTables = new HashSet<DBRow>();
-        StringBuilder selectClause = new StringBuilder().append(database.beginSelectStatement());
-        StringBuilder fromClause = new StringBuilder().append(database.beginFromClause());
-        StringBuilder whereClause = new StringBuilder().append(database.beginWhereClause()).append(database.getTrueOperation());
+        StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
+        StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
+        StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getTrueOperation());
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
 
         if (rowLimit != null) {
-            selectClause.append(database.getTopClause(rowLimit));
+            selectClause.append(defn.getTopClause(rowLimit));
         }
 
         String separator = "";
-        String colSep = database.getStartingSelectSubClauseSeparator();
+        String colSep = defn.getStartingSelectSubClauseSeparator();
         String tableName;
 
         for (DBRow tabRow : queryTables) {
@@ -111,9 +113,9 @@ public class DBQuery {
             if (providedSelectClause == null) {
                 List<String> columnNames = tabRow.getColumnNames();
                 for (String columnName : columnNames) {
-                    String formattedColumnName = database.formatTableAndColumnNameForSelectClause(tableName, columnName);
+                    String formattedColumnName = defn.formatTableAndColumnNameForSelectClause(tableName, columnName);
                     selectClause.append(colSep).append(formattedColumnName);
-                    colSep = database.getSubsequentSelectSubClauseSeparator() + lineSep;
+                    colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
                 }
             } else {
                 selectClause = new StringBuilder(providedSelectClause);
@@ -135,18 +137,18 @@ public class DBQuery {
                 for (DBForeignKey fk : fks.keySet()) {
                     final String tabRowPK = tabRow.getPrimaryKeyName();
                     if (tabRowPK != null) {
-                        String formattedPK = database.formatTableAndColumnName(tableName, tabRowPK);
+                        String formattedPK = defn.formatTableAndColumnName(tableName, tabRowPK);
                         Class<? extends DBRow> pkClass = fk.value();
                         DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                        String fkReferencesColumn = database.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
+                        String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
                         if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                             String fkColumnName = fks.get(fk).value();
-                            String formattedFK = database.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
+                            String formattedFK = defn.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
                             whereClause
                                     .append(lineSep)
-                                    .append(database.beginAndLine())
+                                    .append(defn.beginAndLine())
                                     .append(formattedPK)
-                                    .append(database.getEqualsComparator())
+                                    .append(defn.getEqualsComparator())
                                     .append(formattedFK);
                             connectedTables.add(otherTab);
                         }
@@ -157,7 +159,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(queryTables);
         }
-        if (connectedTables.size()<queryTables.size()-1&&!cartesianJoinAllowed){
+        if (connectedTables.size() < queryTables.size() - 1 && !cartesianJoinAllowed) {
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString =
@@ -165,7 +167,7 @@ public class DBQuery {
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
-                .append(database.endSQLStatement())
+                .append(defn.endSQLStatement())
                 .toString();
         if (database.isPrintSQLBeforeExecuting()) {
             System.out.println(sqlString);
@@ -175,7 +177,8 @@ public class DBQuery {
     }
 
     public String getSQLForCount() throws SQLException {
-        return getSQLForQuery(database.beginSelectStatement() + database.countStarClause());
+        DBDefinition defn = database.getDefinition();
+        return getSQLForQuery(defn.beginSelectStatement() + defn.countStarClause());
     }
 
     public List<DBQueryRow> getAllRows() throws SQLException {
@@ -190,10 +193,11 @@ public class DBQuery {
             for (DBRow tableRow : queryTables) {
                 DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
                 newInstance.setDatabase(database);
+                DBDefinition defn = database.getDefinition();
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
                     QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
-                    String fullColumnName = database.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
+                    String fullColumnName = defn.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
                     qdt.setFromResultSet(resultSet, fullColumnName);
                 }
                 Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
@@ -436,23 +440,24 @@ public class DBQuery {
     }
 
     private String getOrderByClause() {
+        DBDefinition defn = database.getDefinition();
         if (sortOrder != null) {
-            StringBuilder orderByClause = new StringBuilder(database.beginOrderByClause());
-            String sortSeparator = database.getStartingOrderByClauseSeparator();
+            StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
+            String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (QueryableDatatype qdt : sortOrder) {
                 final String dbColumnName = DBRow.getTableAndColumnName(sortBase, qdt);
                 if (dbColumnName != null) {
-                    orderByClause.append(sortSeparator).append(dbColumnName).append(database.getOrderByDirectionClause(qdt.getSortOrder()));
-                    sortSeparator = database.getSubsequentOrderByClauseSeparator();
+                    orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+                    sortSeparator = defn.getSubsequentOrderByClauseSeparator();
                 }
             }
-            orderByClause.append(database.endOrderByClause());
+            orderByClause.append(defn.endOrderByClause());
             return orderByClause.toString();
         }
         return "";
     }
-    
-    public void setCartesianJoinsAllowed(boolean allow){
-        this.cartesianJoinAllowed= allow;
+
+    public void setCartesianJoinsAllowed(boolean allow) {
+        this.cartesianJoinAllowed = allow;
     }
 }

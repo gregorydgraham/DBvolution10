@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -45,7 +46,8 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
         } else if (getOperator() == null) {
             throw new RuntimeException("Get Operator Returns NULL: the getOperator() method returned null when it should return a String of the database's operator.");
         } else {
-            return database.beginAndLine() + (invertOperator ? "!(" : "(") + database.toLowerCase(database.formatColumnName(columnName)) + getOperator() + " " + database.toLowerCase(likeableValue.getSQLValue()) + ")";
+            DBDefinition defn = database.getDefinition();
+            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(likeableValue.getSQLValue()) + ")";
         }
     }
 
@@ -55,6 +57,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return database.beginAndLine() + (invertOperator ? "!(" : "(") + database.toLowerCase(database.formatColumnName(columnName)) + getOperator() + " " + database.toLowerCase(otherColumnName) + ")";
+        DBDefinition defn = database.getDefinition();
+        return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(otherColumnName) + ")";
     }
 }

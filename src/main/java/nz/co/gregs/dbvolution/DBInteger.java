@@ -4,10 +4,10 @@
  */
 package nz.co.gregs.dbvolution;
 
-import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -83,7 +83,8 @@ public class DBInteger extends DBNumber {
 
     @Override
     public String getSQLValue() {
-        return database.beginNumberValue() + numberValue.toString() + database.endNumberValue();
+        DBDefinition defn = database.getDefinition();
+        return defn.beginNumberValue() + numberValue.toString() + defn.endNumberValue();
     }
 
     @Override

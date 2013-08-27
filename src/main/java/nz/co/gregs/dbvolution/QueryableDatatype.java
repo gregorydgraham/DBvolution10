@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.*;
 
 /**
@@ -520,10 +521,11 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * {yada} => 'yada'
      */
     protected String toSQLString() {
+        DBDefinition def = database.getDefinition();
         if (this.isDBNull || literalValue == null) {
-            return database.getNull();
+            return def.getNull();
         }
-        return database.beginStringValue() + this.toString().replace("'", "\'") + database.endStringValue();
+        return def.beginStringValue() + this.toString().replace("'", "\'") + def.endStringValue();
     }
 
     /**

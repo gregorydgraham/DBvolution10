@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 
 /**
  *
@@ -26,34 +27,8 @@ import java.util.Date;
 public class InformixDB extends DBDatabase {
 
     public final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
-    private SimpleDateFormat dateFormat;
-    private String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
-    //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
 
     public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
-        super(INFORMIXDRIVERNAME, jdbcURL, username, password);
-        this.dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        super(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
     }
-
-    @Override
-    public String getDateFormattedForQuery(Date date) {
-        return "TO_DATE('" + dateFormat.format(date) + "','%Y-%m-%d %H:%M:%S')";
-    }
-
-    /**
-     *
-     * @param tableName
-     * @param columnName
-     * @return
-     */
-    @Override
-    public String formatTableAndColumnName(String tableName, String columnName) {
-        return "" + tableName + "." + columnName + "";
-    }
-
-    @Override
-    public Object getTopClause(Long rowLimit) {
-        return " FIRST "+rowLimit+" ";
-    }
-
 }

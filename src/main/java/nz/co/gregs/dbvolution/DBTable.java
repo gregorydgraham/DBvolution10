@@ -15,6 +15,7 @@ import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 
 /**
@@ -117,15 +118,16 @@ public class DBTable<E extends DBRow> {
     }
 
     private String getSQLForSelectAll() {
+        DBDefinition defn = database.getDefinition();
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation
                 != null) {
             selectStatement.append(selectQueryAnnotation.value());
         } else {
-            selectStatement.append(database.beginSelectStatement());
+            selectStatement.append(defn.beginSelectStatement());
             if (rowLimit != null) {
-                selectStatement.append(database.getTopClause(rowLimit));
+                selectStatement.append(defn.getTopClause(rowLimit));
             }
             selectStatement.append(getAllFieldsForSelect())
                     .append(" from ")
@@ -144,26 +146,27 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public String getSQLForSelect() {
+        DBDefinition defn = database.getDefinition();
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation
                 != null) {
             selectStatement
                     .append(selectQueryAnnotation.value())
-                    .append(database.beginWhereClause())
-                    .append(database.getTrueOperation());
+                    .append(defn.beginWhereClause())
+                    .append(defn.getTrueOperation());
         } else {
-            selectStatement.append(database.beginSelectStatement());
+            selectStatement.append(defn.beginSelectStatement());
             if (rowLimit != null) {
-                selectStatement.append(database.getTopClause(rowLimit));
+                selectStatement.append(defn.getTopClause(rowLimit));
             }
 
             selectStatement
                     .append(getAllFieldsForSelect())
-                    .append(database.beginFromClause())
+                    .append(defn.beginFromClause())
                     .append(dummy.getTableName())
-                    .append(database.beginWhereClause())
-                    .append(database.getTrueOperation());
+                    .append(defn.beginWhereClause())
+                    .append(defn.getTrueOperation());
         }
 
         return selectStatement.toString();
@@ -205,6 +208,7 @@ public class DBTable<E extends DBRow> {
     }
 
     private void addAllFields(DBTable<E> dbTable, ResultSet resultSet) throws SQLException {
+        DBDefinition defn = database.getDefinition();
         ResultSetMetaData rsMeta = resultSet.getMetaData();
         Map<String, Integer> dbColumnNames = new HashMap<String, Integer>();
         for (int k = 1; k <= rsMeta.getColumnCount(); k++) {
@@ -221,7 +225,7 @@ public class DBTable<E extends DBRow> {
             for (Field field : fields) {
                 if (field.isAnnotationPresent(DBColumn.class)) {
                     String dbColumnName = getDBColumnName(field);
-                    String formattedColumnName = database.formatColumnName(dbColumnName);
+                    String formattedColumnName = defn.formatColumnName(dbColumnName);
                     Integer dbColumnIndex = dbColumnNames.get(formattedColumnName);
                     if (formattedColumnName != null && dbColumnIndex != null) {
                         setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
@@ -384,21 +388,24 @@ public class DBTable<E extends DBRow> {
      */
     public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
 
-        String whereClause = " and " + getPrimaryKeyColumn() + " = '" + escapeSingleQuotes(pkValue.toString()) + "'";
+        DBDefinition defn = database.getDefinition();
+        String whereClause = defn.beginAndLine() + getPrimaryKeyColumn() + defn.getEqualsComparator()+" '" + escapeSingleQuotes(pkValue.toString()) + "'";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
         this.getRows(selectStatement);
         return this;
     }
 
     public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
-        String whereClause = " and " + getPrimaryKeyColumn() + " = " + pkValue + " ";
+        DBDefinition defn = database.getDefinition();
+        String whereClause = defn.beginAndLine() + getPrimaryKeyColumn() + defn.getEqualsComparator() + pkValue + " ";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
         this.getRows(selectStatement);
         return this;
     }
 
     public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
-        String whereClause = " and " + getPrimaryKeyColumn() + " = " + this.database.getDateFormattedForQuery(pkValue) + " ";
+        DBDefinition defn = database.getDefinition();
+        String whereClause = defn.beginAndLine() + getPrimaryKeyColumn() + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
         this.getRows(selectStatement);
         return this;
@@ -577,16 +584,17 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public DBActionList<DBAction> getSQLForInsert(List<E> newRows) {
+        DBDefinition defn = database.getDefinition();
         DBActionList<DBAction> allInserts = new DBActionList<DBAction>();
         for (E row : newRows) {
             String sql =
-                    database.beginInsertLine()
+                    defn.beginInsertLine()
                     + row.getTableName()
-                    + database.beginInsertColumnList()
+                    + defn.beginInsertColumnList()
                     + this.getAllFieldsForInsert()
-                    + database.endInsertColumnList()
+                    + defn.endInsertColumnList()
                     + row.getValuesClause(database)
-                    + database.endInsertLine();
+                    + defn.endInsertLine();
             allInserts.add(new DBSave(sql));
             if (row.hasLargeObjectColumns()) {
                 allInserts.addAll(row.getLargeObjectActions());
@@ -637,17 +645,18 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public List<String> getSQLForDelete(List<E> oldRows) {
+        DBDefinition defn = database.getDefinition();
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
             row.setDatabase(database);
             String sql =
-                    database.beginDeleteLine()
+                    defn.beginDeleteLine()
                     + row.getTableName()
-                    + database.beginWhereClause()
+                    + defn.beginWhereClause()
                     + this.getPrimaryKeyColumn()
-                    + database.getEqualsComparator()
+                    + defn.getEqualsComparator()
                     + row.getPrimaryKey().getSQLValue()
-                    + database.endDeleteLine();
+                    + defn.endDeleteLine();
             allInserts.add(sql);
         }
         return allInserts;
@@ -670,20 +679,21 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public List<String> getSQLForDeleteWithoutPrimaryKey(List<E> oldRows) {
+        DBDefinition defn = database.getDefinition();
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
             String sql =
-                    database.beginDeleteLine()
+                    defn.beginDeleteLine()
                     + row.getTableName()
-                    + database.beginWhereClause();
+                    + defn.beginWhereClause();
             for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
                 sql = sql
-                        + database.beginAndLine()
+                        + defn.beginAndLine()
                         + row.getDBColumnName(qdt)
-                        + database.getEqualsComparator()
+                        + defn.getEqualsComparator()
                         + qdt.getSQLValue();
             }
-            sql = sql + database.endDeleteLine();
+            sql = sql + defn.endDeleteLine();
             allInserts.add(sql);
         }
         return allInserts;
@@ -734,24 +744,25 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public List<String> getSQLForUpdate(List<E> oldRows) {
+        DBDefinition defn = database.getDefinition();
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
             row.setDatabase(database);
             QueryableDatatype primaryKey = row.getPrimaryKey();
             if (primaryKey == null) {
                 throw new UndefinedPrimaryKeyException(row);
-            }else{
+            } else {
                 String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue() : primaryKey.getSQLValue());
                 String sql =
-                        database.beginUpdateLine()
-                        + database.formatTableName(row.getTableName())
-                        + database.beginSetClause();
+                        defn.beginUpdateLine()
+                        + defn.formatTableName(row.getTableName())
+                        + defn.beginSetClause();
                 sql = sql + row.getSetClause(database);
-                sql = sql + database.beginWhereClause()
-                        + database.formatColumnName(this.getPrimaryKeyColumn())
-                        + database.getEqualsComparator()
+                sql = sql + defn.beginWhereClause()
+                        + defn.formatColumnName(this.getPrimaryKeyColumn())
+                        + defn.getEqualsComparator()
                         + pkOriginalValue
-                        + database.endDeleteLine();
+                        + defn.endDeleteLine();
                 allSQL.add(sql);
             }
         }
@@ -838,17 +849,18 @@ public class DBTable<E extends DBRow> {
     }
 
     private String getOrderByClause() {
+        DBDefinition defn = database.getDefinition();
         if (sortOrder != null) {
-            StringBuilder orderByClause = new StringBuilder(database.beginOrderByClause());
-            String sortSeparator = database.getStartingOrderByClauseSeparator();
+            StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
+            String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (QueryableDatatype qdt : sortOrder) {
                 final String dbColumnName = sortBase.getDBColumnName(qdt);
                 if (dbColumnName != null) {
-                    orderByClause.append(sortSeparator).append(dbColumnName).append(database.getOrderByDirectionClause(qdt.getSortOrder()));
-                    sortSeparator = database.getSubsequentOrderByClauseSeparator();
+                    orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+                    sortSeparator = defn.getSubsequentOrderByClauseSeparator();
                 }
             }
-            orderByClause.append(database.endOrderByClause());
+            orderByClause.append(defn.endOrderByClause());
             return orderByClause.toString();
         }
         return "";

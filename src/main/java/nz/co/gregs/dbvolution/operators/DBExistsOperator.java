@@ -52,7 +52,7 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }
 
-        return database.beginAndLine() + (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
+        return database.getDefinition().beginAndLine() + (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
     }
 
     @Override

@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
@@ -193,13 +194,14 @@ abstract public class DBRow implements Serializable {
      */
     public String getWhereClause(DBDatabase db) {
         this.setDatabase(db);
+        DBDefinition defn = database.getDefinition();
         StringBuilder whereClause = new StringBuilder();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBColumn.class)) {
                 QueryableDatatype qdt = this.getQueryableValueOfField(field);
                 qdt.setDatabase(this.database);
-                whereClause.append(qdt.getWhereClause(this.database.formatTableAndColumnName(this.getTableName(), getDBColumnName(field))));
+                whereClause.append(qdt.getWhereClause(defn.formatTableAndColumnName(this.getTableName(), getDBColumnName(field))));
             }
         }
         return whereClause.toString();
@@ -319,22 +321,23 @@ abstract public class DBRow implements Serializable {
 
     protected String getSetClause(DBDatabase db) {
         this.setDatabase(db);
+        DBDefinition defn = database.getDefinition();
         StringBuilder sql = new StringBuilder();
         Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
 
-        String separator = database.getStartingSetSubClauseSeparator();
+        String separator = defn.getStartingSetSubClauseSeparator();
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBColumn.class)) {
                 final QueryableDatatype qdt = getQueryableValueOfField(field);
                 if (qdt.hasChanged()) {
                     String columnName = getDBColumnName(field);
                     sql.append(separator)
-                            .append(database.formatColumnName(columnName))
-                            .append(database.getEqualsComparator())
+                            .append(defn.formatColumnName(columnName))
+                            .append(defn.getEqualsComparator())
                             .append(qdt
                             .toSQLString());
-                    separator = database.getSubsequentSetSubClauseSeparator();
+                    separator = defn.getSubsequentSetSubClauseSeparator();
                 }
             }
         }
@@ -389,7 +392,7 @@ abstract public class DBRow implements Serializable {
             tableName = row.getTableName();
             columnName = row.getDBColumnName(qdt);
             if (columnName != null) {
-                fullName = row.database.formatTableAndColumnName(tableName, columnName);
+                fullName = row.database.getDefinition().formatTableAndColumnName(tableName, columnName);
                 return fullName;
             }
         }

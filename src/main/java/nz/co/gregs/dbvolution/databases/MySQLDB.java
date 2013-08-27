@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 
 /**
  *
@@ -26,24 +27,6 @@ public class MySQLDB extends DBDatabase{
     public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
     
     public MySQLDB(String jdbcURL, String username, String password){
-        super(MYSQLDRIVERNAME, jdbcURL, username, password);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation") 
-    public String getDateFormattedForQuery(Date date) {
-        //SELECT STR_TO_DATE('01,5,2013','%d,%m,%Y');
-        //SELECT STR_TO_DATE('09:30:17','%h:%i:%s');
-        
-        return " STR_TO_DATE('"
-                +date.getDate()+","
-                +(date.getMonth()+1)+","
-                +(date.getYear()+1900)+" "
-                +date.getHours()+":"
-                +date.getMinutes()+":"
-                +date.getSeconds()
-                +"', '%d,%m,%Y %H:%i:%s') ";
-        
-    }
-    
+        super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);
+    }    
 }
