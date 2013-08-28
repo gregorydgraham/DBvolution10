@@ -26,10 +26,11 @@ import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTransaction;
-import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -201,6 +202,30 @@ public abstract class DBDatabase{
                 this.getDBTable(row).update(row);
             }
         }
+    }
+
+    /**
+     * 
+     * creates a query and fetches the rows automatically
+     *
+     * @param rows
+     * @throws SQLException
+     */
+    public <R extends DBRow> List<R> get(R row) throws SQLException {
+        DBTable<R> dbTable = getDBTable(row);
+        return dbTable.getRowsByExample(row).toList();
+    }
+
+    /**
+     * 
+     * creates a query and fetches the rows automatically
+     *
+     * @param rows
+     * @throws SQLException
+     */
+    public List<DBQueryRow> get(DBRow... rows) throws SQLException {
+        DBQuery dbQuery = getDBQuery(rows);
+        return dbQuery.getAllRows();
     }
 
     /**
@@ -435,5 +460,9 @@ public abstract class DBDatabase{
 
     public DBDefinition getDefinition() {
         return definition;
+    }
+    
+    public boolean willCreateBlankQuery(DBRow row){
+        return row.willCreateBlankQuery(this);
     }
 }

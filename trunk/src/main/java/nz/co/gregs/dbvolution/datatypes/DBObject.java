@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,7 +36,7 @@ public class DBObject extends QueryableDatatype {
     }
 
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+    public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
             this.useNullOperator();
         } else {

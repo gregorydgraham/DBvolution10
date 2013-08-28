@@ -40,17 +40,17 @@ public class ByteArrayTest extends AbstractTest {
         companyLogo.carCompany.setValue(1);//Toyota
         companyLogo.imageFilename.setValue("toyota_logo.jpg");
         companyLogo.imageBytes.readFromFileSystem("toyota_share_logo.jpg");
-        myDatabase.insert(companyLogo);
+        database.insert(companyLogo);
         
         CarCompany carCompany = new CarCompany();
         carCompany.name.permittedValuesIgnoreCase("FORD");
-        CarCompany ford = myDatabase.getDBTable(carCompany).getOnlyRowByExample(carCompany);
+        CarCompany ford = database.getDBTable(carCompany).getOnlyRowByExample(carCompany);
         
         companyLogo.logoID.setValue(2);
         companyLogo.carCompany.setValue(ford.uidCarCompany);
         companyLogo.imageFilename.setValue("ford_logo.jpg");
         companyLogo.imageBytes.readFromFileSystem("ford_logo.jpg");
-        myDatabase.insert(companyLogo);
+        database.insert(companyLogo);
     }
 
     @Test
@@ -62,13 +62,13 @@ public class ByteArrayTest extends AbstractTest {
         companyLogo.imageFilename.setValue("toyota_logo.jpg");
         File image = new File("toyota_share_logo.jpg");
         companyLogo.imageBytes.readFromFileSystem(image);
-        myDatabase.insert(companyLogo);
+        database.insert(companyLogo);
 
         File newFile = new File("found_toyota_logo.jpg");
         newFile.delete();
         
         companyLogo = new CompanyLogo();
-        CompanyLogo firstRow = myDatabase.getDBTable(companyLogo).getRowsByPrimaryKey(1).getOnlyRow();
+        CompanyLogo firstRow = database.getDBTable(companyLogo).getRowsByPrimaryKey(1).getOnlyRow();
         System.out.println("" + firstRow.toString());
         firstRow.imageBytes.writeToFileSystem(newFile.getName());
         File file = new File("found_toyota_logo.jpg");

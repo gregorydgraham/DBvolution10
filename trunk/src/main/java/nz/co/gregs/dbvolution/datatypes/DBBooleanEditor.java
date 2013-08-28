@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import java.beans.PropertyEditorSupport;
 
 /**

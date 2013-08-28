@@ -16,6 +16,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import java.io.PrintStream;

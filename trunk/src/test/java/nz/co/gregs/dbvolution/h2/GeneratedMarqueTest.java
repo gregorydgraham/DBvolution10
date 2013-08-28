@@ -40,7 +40,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     @Test
     public void testGetSchema() throws SQLException{
         List<DBTableClass> generateSchema;
-        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+        generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.javaSource);
         }
@@ -49,7 +49,7 @@ public class GeneratedMarqueTest extends AbstractTest {
     @Test
     public void testGetSchemaWithRecognisor() throws SQLException{
         List<DBTableClass> generateSchema;
-        generateSchema = DBTableClassGenerator.generateClassesOfTables(myDatabase, "nz.co.gregs.dbvolution.generation", new UIDBasedPKRecognisor(), new FKBasedFKRecognisor());
+        generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new UIDBasedPKRecognisor(), new FKBasedFKRecognisor());
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.javaSource);
         }
@@ -57,7 +57,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     @Test
     public void testGetAllRows() throws SQLException{
-        DBTable<Marque> marq = DBTable.getInstance(myDatabase, new Marque());
+        DBTable<Marque> marq = DBTable.getInstance(database, new Marque());
         marq.getAllRows();
         for (DBRow row : marq.toList()) {
             System.out.println(row);
@@ -66,18 +66,18 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     @Test
     public void testGetFirstAndPrimaryKey() throws SQLException{
-        DBTable<Marque> marq = DBTable.getInstance(myDatabase, new Marque());
+        DBTable<Marque> marq = DBTable.getInstance(database, new Marque());
         DBRow row = marq.getFirstRow();
         if (row != null) {
             String primaryKey = row.getPrimaryKey().getSQLValue();
-            DBTable<Marque> singleMarque = DBTable.getInstance(myDatabase, new Marque());
+            DBTable<Marque> singleMarque = DBTable.getInstance(database, new Marque());
             singleMarque.getRowsByPrimaryKey(primaryKey).print();
         }
     }
 
     @Test
     public void testRawQuery() throws SQLException {
-        DBTable<Marque> marq = DBTable.getInstance(myDatabase, new Marque());
+        DBTable<Marque> marq = DBTable.getInstance(database, new Marque());
         String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
         marq = marq.getRowsByRawSQL(rawQuery);
         marq.print();

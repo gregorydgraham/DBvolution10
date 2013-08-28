@@ -15,10 +15,10 @@
  */
 package nz.co.gregs.dbvolution.example;
 
-import nz.co.gregs.dbvolution.DBByteArray;
-import nz.co.gregs.dbvolution.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBByteArray;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;

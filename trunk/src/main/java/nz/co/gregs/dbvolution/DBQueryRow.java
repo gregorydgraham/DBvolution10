@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.PrintStream;
 import java.util.HashMap;
 

@@ -20,7 +20,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
@@ -32,7 +32,7 @@ public class SortingTest extends AbstractTest {
     @Test
     public void sortingATable() throws SQLException {
         final Marque marque = new Marque();
-        DBTable<Marque> dbTable = myDatabase.getDBTable(marque);
+        DBTable<Marque> dbTable = database.getDBTable(marque);
         dbTable.setSortOrder(marque, marque.carCompany, marque.name);
         dbTable.getAllRows().print();
         List<Marque> sortedMarques = dbTable.toList();
@@ -63,7 +63,7 @@ public class SortingTest extends AbstractTest {
     public void sortingDBQuery() throws SQLException {
         final Marque marque = new Marque();
         final CarCompany carCo = new CarCompany();
-        DBQuery query = myDatabase.getDBQuery(marque, carCo);
+        DBQuery query = database.getDBQuery(marque, carCo);
         query.setSortOrder(new DBRow[]{marque}, marque.carCompany, marque.name);
         query.print();
         List<Marque> sortedMarques = query.getAllInstancesOf(marque);

@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.actions;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import nz.co.gregs.dbvolution.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.DBRow;
 
 

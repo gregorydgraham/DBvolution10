@@ -34,26 +34,26 @@ public class IgnoreForeignKeyTest extends AbstractTest {
     public void testIgnoreForeignKey() throws SQLException{
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
-        DBQuery dbQuery = myDatabase.getDBQuery(carCompany, marque);
+        DBQuery dbQuery = database.getDBQuery(carCompany, marque);
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         dbQuery.print();
         Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 
         marque.ignoreForeignKey(marque.getCarCompany());
-        dbQuery = myDatabase.getDBQuery(carCompany, marque);
+        dbQuery = database.getDBQuery(carCompany, marque);
         dbQuery.setCartesianJoinsAllowed(true);
         allRows = dbQuery.getAllRows();
         dbQuery.print();
         Assert.assertTrue("Number of rows should be 88", allRows.size() == 88);
 
         marque.useAllForeignKeys();
-        dbQuery = myDatabase.getDBQuery(carCompany, marque);
+        dbQuery = database.getDBQuery(carCompany, marque);
         allRows = dbQuery.getAllRows();
         dbQuery.print();
         Assert.assertTrue("Number of rows should be 88", allRows.size() == 22);
 
         marque.ignoreAllForeignKeys();
-        dbQuery = myDatabase.getDBQuery(carCompany, marque);
+        dbQuery = database.getDBQuery(carCompany, marque);
         dbQuery.setCartesianJoinsAllowed(true);
         allRows = dbQuery.getAllRows();
         dbQuery.print();

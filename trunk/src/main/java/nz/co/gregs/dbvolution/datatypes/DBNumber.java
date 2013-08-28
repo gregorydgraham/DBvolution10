@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.datatypes;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -222,7 +222,7 @@ public class DBNumber extends QueryableDatatype {
      *
      */
     @Override
-    protected String toSQLString() {
+    public String toSQLString() {
         if (this.isDBNull || this.numberValue == null) {
             return database.getDefinition().getNull();
         }
@@ -272,7 +272,7 @@ public class DBNumber extends QueryableDatatype {
      * @throws SQLException
      */
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+    public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
             this.useNullOperator();
         } else {

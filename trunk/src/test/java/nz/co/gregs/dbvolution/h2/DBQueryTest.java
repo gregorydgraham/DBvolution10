@@ -36,7 +36,7 @@ public class DBQueryTest extends AbstractTest {
 
     @Test
     public void testQueryGeneration() throws SQLException {
-        DBQuery dbQuery = myDatabase.getDBQuery();
+        DBQuery dbQuery = database.getDBQuery();
         CarCompany carCompany = new CarCompany();
         carCompany.name.permittedValues("TOYOTA");
         dbQuery.add(carCompany);
@@ -69,7 +69,7 @@ public class DBQueryTest extends AbstractTest {
 
     @Test
     public void testQueryExecution() throws SQLException {
-        DBQuery dbQuery = myDatabase.getDBQuery();
+        DBQuery dbQuery = database.getDBQuery();
         CarCompany carCompany = new CarCompany();
         carCompany.name.permittedValues("TOYOTA");
         dbQuery.add(carCompany);
@@ -98,7 +98,7 @@ public class DBQueryTest extends AbstractTest {
 
         CarCompany carCompany = new CarCompany();
         carCompany.name.permittedValues("TOYOTA");
-        DBQuery dbQuery = myDatabase.getDBQuery(carCompany, new Marque());
+        DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.getSQLForQuery());
@@ -123,7 +123,7 @@ public class DBQueryTest extends AbstractTest {
     public void testDBTableRowReuse() throws SQLException {
         CarCompany carCompany = new CarCompany();
         carCompany.name.permittedValues("TOYOTA");
-        DBQuery dbQuery = myDatabase.getDBQuery(carCompany, new Marque());
+        DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
         System.out.println(dbQuery.getSQLForQuery());
@@ -144,7 +144,7 @@ public class DBQueryTest extends AbstractTest {
         Marque marqueQuery = new Marque();
         marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.longValue());
 
-        DBQuery query = myDatabase.getDBQuery(marqueQuery, new CarCompany());
+        DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
         try {
             marqueQuery.ignoreForeignKey(wrongMarque.carCompany);
             throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");

@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.example;
 
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.*;
 

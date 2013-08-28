@@ -2,8 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBObject;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBByteArray;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
@@ -86,7 +93,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         this.operator = null;
     }
 
-    static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
+    public static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
         try {
             return requiredQueryableDatatype.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {
@@ -431,7 +438,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * DBIsNullOperator for comparisons
      *
      */
-    public final DBOperator useNullOperator() {
+    protected final DBOperator useNullOperator() {
         blankQuery();
         this.literalValue = null;
         this.isDBNull = true;
@@ -520,7 +527,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @return the literal value as it would appear in an SQL statement i.e.
      * {yada} => 'yada'
      */
-    protected String toSQLString() {
+    public String toSQLString() {
         DBDefinition def = database.getDefinition();
         if (this.isDBNull || literalValue == null) {
             return def.getNull();
@@ -596,7 +603,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
-    boolean hasChanged() {
+    public boolean hasChanged() {
         return changed;
     }
 
@@ -606,7 +613,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param fullColumnName
      * @throws SQLException
      */
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+    public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
             this.useNullOperator();
         } else {
@@ -652,7 +659,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return isDBNull || literalValue == null;
     }
 
-    String getPreviousSQLValue() {
+    public String getPreviousSQLValue() {
         previousValueAsQDT.setDatabase(database);
         return previousValueAsQDT.getSQLValue();
     }

@@ -1,5 +1,7 @@
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
@@ -244,20 +246,18 @@ public class DBTable<E extends DBRow> {
             case Types.BIT:
                 if (precision == 1) {
                     // DBBoolean
-                    boolean aBoolean = resultSet.getBoolean(dbColumnName);
+                    Boolean aBoolean = resultSet.getBoolean(dbColumnName);
                     if (resultSet.wasNull()) {
-                        qdt.useNullOperator();
-                    } else {
-                        qdt.useEqualsOperator(aBoolean);
+                        aBoolean = null;
                     }
+                    qdt.setValue(aBoolean);
                 } else {
                     // DBByteArray
                     byte[] bytes = resultSet.getBytes(dbColumnName);
                     if (resultSet.wasNull()) {
-                        qdt.useNullOperator();
-                    } else {
-                        qdt.useEqualsOperator(bytes);
+                        bytes = null;
                     }
+                    qdt.setValue(bytes);
                 }
                 break;
             case Types.INTEGER:
@@ -268,10 +268,9 @@ public class DBTable<E extends DBRow> {
             case Types.SMALLINT:
                 Long aLong = resultSet.getLong(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.useNullOperator();
-                } else {
-                    qdt.useEqualsOperator(aLong);
+                    aLong = null;
                 }
+                qdt.setValue(aLong);
                 break;
             case Types.DECIMAL:
             case Types.DOUBLE:
@@ -280,10 +279,9 @@ public class DBTable<E extends DBRow> {
             case Types.REAL:
                 Double aDouble = resultSet.getDouble(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.useNullOperator();
-                } else {
-                    qdt.useEqualsOperator(aDouble);
+                    aDouble = null;
                 }
+                qdt.setValue(aDouble);
                 break;
             case Types.VARCHAR:
             case Types.CHAR:
@@ -295,27 +293,24 @@ public class DBTable<E extends DBRow> {
             case Types.LONGVARCHAR:
                 String string = resultSet.getString(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.useNullOperator();
-                } else {
-                    qdt.useEqualsOperator(string);
+                    string = null;
                 }
+                qdt.setValue(string);
                 break;
             case Types.DATE:
             case Types.TIME:
                 Date date = resultSet.getDate(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.useNullOperator();
-                } else {
-                    qdt.useEqualsOperator(date);
+                    date = null;
                 }
+                qdt.setValue(date);
                 break;
             case Types.TIMESTAMP:
                 Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
                 if (resultSet.wasNull()) {
-                    qdt.useNullOperator();
-                } else {
-                    qdt.useEqualsOperator(timestamp);
+                    timestamp = null;
                 }
+                qdt.setValue(timestamp);
                 break;
             case Types.VARBINARY:
             case Types.JAVA_OBJECT:
@@ -389,7 +384,7 @@ public class DBTable<E extends DBRow> {
     public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
 
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginAndLine() + getPrimaryKeyColumn() + defn.getEqualsComparator()+" '" + escapeSingleQuotes(pkValue.toString()) + "'";
+        String whereClause = defn.beginAndLine() + getPrimaryKeyColumn() + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + ";";
         this.getRows(selectStatement);
         return this;
