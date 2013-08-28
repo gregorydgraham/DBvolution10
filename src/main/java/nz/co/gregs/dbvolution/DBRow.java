@@ -4,6 +4,8 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;

@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.example;
 
-import nz.co.gregs.dbvolution.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;

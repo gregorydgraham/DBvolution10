@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -88,7 +88,7 @@ public class DBInteger extends DBNumber {
     }
 
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName){
+    public void setFromResultSet(ResultSet resultSet, String fullColumnName){
         if (resultSet == null || fullColumnName == null) {
             this.useNullOperator();
         } else {

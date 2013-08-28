@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -47,7 +47,7 @@ public class DBByteArray extends DBLargeObject {
     }
 
     @Override
-    protected void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+    public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         InputStream dbValue;
         if (resultSet == null || fullColumnName == null) {
             this.useNullOperator();

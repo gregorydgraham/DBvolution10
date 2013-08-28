@@ -46,10 +46,10 @@ public class DBDatabaseInsertTest extends AbstractTest{
         myTableRows.add(newMarque2);
         CarCompany carCompany = new CarCompany("TATA", 569);
         
-        myDatabase.insert(myTableRows, carCompany);
+        database.insert(myTableRows, carCompany);
         marques.getAllRows();
         marques.print();
-        myDatabase.getDBTable(carCompany).getAllRows().print();
+        database.getDBTable(carCompany).getAllRows().print();
     }
     
 }

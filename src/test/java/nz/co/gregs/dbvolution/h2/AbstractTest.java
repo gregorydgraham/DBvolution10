@@ -36,7 +36,7 @@ import org.junit.Before;
  */
 public class AbstractTest {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
+    DBDatabase database = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
     Marque myMarqueRow = new Marque();
     CarCompany myCarCompanyRow = new CarCompany();
     DBTable<Marque> marques;
@@ -52,16 +52,16 @@ public class AbstractTest {
     @SuppressWarnings("empty-statement")
     public void setUp() throws Exception {
 
-        myDatabase.setPrintSQLBeforeExecuting(false);
-        myDatabase.dropTableNoExceptions(new Marque());
-        myDatabase.createTable(myMarqueRow);
+        database.setPrintSQLBeforeExecuting(false);
+        database.dropTableNoExceptions(new Marque());
+        database.createTable(myMarqueRow);
 
-        myDatabase.dropTableNoExceptions(myCarCompanyRow);
-        myDatabase.createTable(myCarCompanyRow);
+        database.dropTableNoExceptions(myCarCompanyRow);
+        database.createTable(myCarCompanyRow);
 
         DBTable.setPrintSQLBeforeExecuting(false);
-        marques = DBTable.getInstance(myDatabase, myMarqueRow);
-        carCompanies = DBTable.getInstance(myDatabase, myCarCompanyRow);
+        marques = DBTable.getInstance(database, myMarqueRow);
+        carCompanies = DBTable.getInstance(database, myCarCompanyRow);
         carCompanies.insert(new CarCompany("TOYOTA", 1));
         carTableRows.add(new CarCompany("Ford", 2));
         carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
@@ -97,24 +97,24 @@ public class AbstractTest {
 
         marques.insert(marqueRows);
 
-        myDatabase.dropTableNoExceptions(new CompanyLogo());
-        myDatabase.createTable(new CompanyLogo());
+        database.dropTableNoExceptions(new CompanyLogo());
+        database.createTable(new CompanyLogo());
 
-        myDatabase.dropTableNoExceptions(new LinkCarCompanyAndLogo());
-        myDatabase.createTable(new LinkCarCompanyAndLogo());
+        database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
+        database.createTable(new LinkCarCompanyAndLogo());
 
 
         DBTable.setPrintSQLBeforeExecuting(true);
-        myDatabase.setPrintSQLBeforeExecuting(true);
+        database.setPrintSQLBeforeExecuting(true);
 
     }
 
     @After
     public void tearDown() throws Exception {
-        myDatabase.setPrintSQLBeforeExecuting(false);
-        myDatabase.dropTable(new LinkCarCompanyAndLogo());
-        myDatabase.dropTable(new CompanyLogo());
-        myDatabase.dropTable(myMarqueRow);
-        myDatabase.dropTable(myCarCompanyRow);
+        database.setPrintSQLBeforeExecuting(false);
+        database.dropTable(new LinkCarCompanyAndLogo());
+        database.dropTable(new CompanyLogo());
+        database.dropTable(myMarqueRow);
+        database.dropTable(myCarCompanyRow);
     }
 }

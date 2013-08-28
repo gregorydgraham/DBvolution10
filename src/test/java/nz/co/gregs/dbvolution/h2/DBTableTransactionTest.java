@@ -38,7 +38,7 @@ public class DBTableTransactionTest extends AbstractTest {
     public void testInsertRowsSucceeds() throws SQLException, Exception{
         List<Marque> original = marques.getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
-        DBTable<Marque> transacted = myDatabase.doTransaction(new DBTransaction<DBTable<Marque>>() {
+        DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
             @Override
             public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException {
                 Marque myTableRow = new Marque();
@@ -72,7 +72,7 @@ public class DBTableTransactionTest extends AbstractTest {
         List<Marque> original = marques.getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
         try{
-        DBTable<Marque> transacted = myDatabase.doTransaction(new DBTransaction<DBTable<Marque>>() {
+        DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
             @Override
             public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException{
                 Marque myTableRow = new Marque();
