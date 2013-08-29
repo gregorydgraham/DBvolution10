@@ -16,8 +16,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 
 /**

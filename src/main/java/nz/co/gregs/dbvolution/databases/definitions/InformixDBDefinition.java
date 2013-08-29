@@ -24,6 +24,7 @@ public class InformixDBDefinition extends DBDefinition {
     private SimpleDateFormat dateFormat;
     private String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
     //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
+    public String informixDateFormat = "%Y-%m-%d %H:%M:%S";
 
     public InformixDBDefinition(){
         
@@ -32,7 +33,7 @@ public class InformixDBDefinition extends DBDefinition {
 
     @Override
     public String getDateFormattedForQuery(Date date) {
-        return "TO_DATE('" + dateFormat.format(date) + "','%Y-%m-%d %H:%M:%S')";
+        return "TO_DATE('" + dateFormat.format(date) + "','"+informixDateFormat+"')";
     }
 
     /**

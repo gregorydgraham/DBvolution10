@@ -22,7 +22,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBQuery;
@@ -34,6 +33,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 
 /**
  *
@@ -206,7 +206,7 @@ public abstract class DBDatabase{
 
     /**
      * 
-     * creates a query and fetches the rows automatically
+     * Automatically selects the correct table and returns the selected rows as a list
      *
      * @param rows
      * @throws SQLException
@@ -214,6 +214,25 @@ public abstract class DBDatabase{
     public <R extends DBRow> List<R> get(R row) throws SQLException {
         DBTable<R> dbTable = getDBTable(row);
         return dbTable.getRowsByExample(row).toList();
+    }
+    
+    /**
+     * 
+     * Automatically selects the correct table and returns the selected rows as a list
+     *
+     * @param <R>
+     * @param expectedNumberOfRows
+     * @param row
+     * @return
+     * @throws SQLException
+     * @throws UnexpectedNumberOfRowsException
+     */
+    public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R row) throws SQLException, UnexpectedNumberOfRowsException {
+        if (expectedNumberOfRows==null){
+            return get(row);
+        }else{
+            return getDBTable(row).getRowsByExample(row, expectedNumberOfRows.intValue()).toList();
+        }
     }
 
     /**
@@ -227,6 +246,24 @@ public abstract class DBDatabase{
         DBQuery dbQuery = getDBQuery(rows);
         return dbQuery.getAllRows();
     }
+    
+
+    /**
+     * 
+     * creates a query and fetches the rows automatically
+     *
+     * @param rows
+     * @throws SQLException
+     */
+    public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
+        if (expectedNumberOfRows==null){
+            return get(rows);
+        }else{
+            return getDBQuery(rows).getAllRows(expectedNumberOfRows);
+        }
+    }
+    
+    
 
     /**
      *
@@ -246,6 +283,7 @@ public abstract class DBDatabase{
         try {
             returnValues = dbTransaction.doTransaction(this);
             connection.commit();
+            System.err.println("Transaction Successful: Commit Performed");
             connection.setAutoCommit(true);
             this.isInATransaction = false;
             transactionStatement = null;
@@ -286,7 +324,7 @@ public abstract class DBDatabase{
         try {
             returnValues = dbTransaction.doTransaction(this);
             connection.rollback();
-            System.err.println("Transaction Ended: ROLLBACK Performed");
+            System.err.println("Transaction Successful: ROLLBACK Performed");
             connection.setAutoCommit(wasAutoCommit);
             connection.setReadOnly(wasReadOnly);
             this.isInATransaction = false;
