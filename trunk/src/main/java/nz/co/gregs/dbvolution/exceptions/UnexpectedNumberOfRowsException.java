@@ -35,6 +35,11 @@ public class UnexpectedNumberOfRowsException extends Exception {
         
     }
 
+    public UnexpectedNumberOfRowsException(int expected, int actual) {
+        this(expected,actual,"Unexpected Number Of Rows Found: expected "+expected+ " but found "+actual,null);
+        
+    }
+
     /**
      * @return the expectedRows
      */

@@ -461,4 +461,13 @@ public class DBQuery {
     public void setCartesianJoinsAllowed(boolean allow) {
         this.cartesianJoinAllowed = allow;
     }
+
+    public List<DBQueryRow> getAllRows(Long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
+        List<DBQueryRow> allRows = getAllRows();
+        if (allRows.size()!=expectedRows){
+            throw new UnexpectedNumberOfRowsException(expectedRows.intValue(), allRows.size());
+        }else{
+            return allRows;
+        }
+    }
 }
