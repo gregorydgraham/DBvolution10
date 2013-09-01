@@ -60,5 +60,16 @@ public class TableNameResolver {
 		return simpleClassName;
 	}
 	
+	/**
+	 * Gets the fully qualified unique class name allocated to the table.
+	 * @param tableName
+	 * @return the fully qualified class name
+	 */
+	public String getQualifiedClassNameFor(String tableName) {
+		String simpleClassName = getClassNameFor(tableName);
+		String className = ((packageName == null) ? "" : packageName+".") + simpleClassName;
+		return className;
+	}
+	
 	
 }

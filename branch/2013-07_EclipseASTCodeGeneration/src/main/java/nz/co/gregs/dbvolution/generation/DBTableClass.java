@@ -31,8 +31,40 @@ public class DBTableClass {
     List<DBTableField> fields = new ArrayList<DBTableField>();
     String lineSeparator = System.getProperty("line.separator");
     String conceptBreak = lineSeparator + lineSeparator;
+    
+    public String getPackageName() {
+		return packageName;
+	}
 
-    public String generateJavaSource() {
+    public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public List<DBTableField> getFields() {
+		return fields;
+	}
+
+	public void setFields(List<DBTableField> fields) {
+		this.fields = fields;
+	}
+
+	public String generateJavaSource() {
         StringBuilder javaSrc = new StringBuilder();
         if (this.packageName != null) {
             javaSrc.append("package ").append(this.packageName).append(";");

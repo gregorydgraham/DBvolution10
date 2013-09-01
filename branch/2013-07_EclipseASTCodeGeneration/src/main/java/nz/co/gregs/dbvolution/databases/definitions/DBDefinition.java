@@ -15,7 +15,17 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import java.sql.Types;
 import java.util.Date;
+
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBByteArray;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBObject;
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  *
@@ -257,4 +267,58 @@ public abstract class DBDefinition {
             return " DESC ";
         }
     }
+    
+    /**
+    *
+    * Returns a class of the appropriate QueryableDatatype for the specified
+    * SQLType
+    *
+    * @param columnType
+    * @return
+    */
+   public Class<? extends QueryableDatatype> getQueryableDatatypeOfSQLType(int columnType, int precision) {
+       switch (columnType) {
+           case Types.BIT:
+               if (precision == 1) {
+                   return DBBoolean.class;
+               } else {
+                   return DBByteArray.class;
+               }
+           case Types.INTEGER:
+           case Types.BIGINT:
+           case Types.BINARY:
+           case Types.BOOLEAN:
+           case Types.ROWID:
+           case Types.SMALLINT:
+               return DBInteger.class;
+           case Types.DECIMAL:
+           case Types.DOUBLE:
+           case Types.FLOAT:
+           case Types.NUMERIC:
+           case Types.REAL:
+               return DBNumber.class;
+           case Types.VARCHAR:
+           case Types.CHAR:
+           case Types.NCHAR:
+           case Types.NVARCHAR:
+           case Types.CLOB:
+           case Types.NCLOB:
+           case Types.LONGNVARCHAR:
+           case Types.LONGVARCHAR:
+               return DBString.class;
+           case Types.DATE:
+           case Types.TIME:
+               return DBDate.class;
+           case Types.TIMESTAMP:
+               return DBDate.class;
+           case Types.JAVA_OBJECT:
+               return DBObject.class;
+           case Types.VARBINARY:
+           case Types.LONGVARBINARY:
+           case Types.BLOB:
+               return DBByteArray.class;
+           default:
+               throw new IllegalArgumentException("Unknown Java SQL Type: " + columnType);
+       }
+   }
 }

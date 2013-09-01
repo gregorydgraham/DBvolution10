@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  *
@@ -201,7 +203,7 @@ public class DBTableClassGenerator {
                 dbTableField.columnName = columns.getString("COLUMN_NAME");
                 dbTableField.fieldName = toFieldCase(dbTableField.columnName);
                 dbTableField.precision = columns.getInt("COLUMN_SIZE");
-                dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
+                dbTableField.columnType = database.getDefinition().getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
                 if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
                     dbTableField.isPrimaryKey = true;
                 }
@@ -249,70 +251,6 @@ public class DBTableClassGenerator {
             dbt.generateJavaSource();
             System.out.println(dbt.javaSource);
         }
-    }
-
-    /**
-     *
-     * Returns a string of the appropriate QueryableDatatype for the specified
-     * SQLType
-     *
-     * @param columnType
-     * @return
-     */
-    public static String getQueryableDatatypeNameOfSQLType(int columnType, int precision) {
-        String value = "";
-        switch (columnType) {
-            case Types.BIT:
-                if (precision == 1) {
-                    value = "DBBoolean";
-                } else {
-                    value = "DBByteArray";
-                }
-                break;
-            case Types.INTEGER:
-            case Types.BIGINT:
-            case Types.BINARY:
-            case Types.BOOLEAN:
-            case Types.ROWID:
-            case Types.SMALLINT:
-                value = "DBInteger";
-                break;
-            case Types.DECIMAL:
-            case Types.DOUBLE:
-            case Types.FLOAT:
-            case Types.NUMERIC:
-            case Types.REAL:
-                value = "DBNumber";
-                break;
-            case Types.VARCHAR:
-            case Types.CHAR:
-            case Types.NCHAR:
-            case Types.NVARCHAR:
-            case Types.CLOB:
-            case Types.NCLOB:
-            case Types.LONGNVARCHAR:
-            case Types.LONGVARCHAR:
-                value = "DBString";
-                break;
-            case Types.DATE:
-            case Types.TIME:
-                value = "DBDate";
-                break;
-            case Types.TIMESTAMP:
-                value = "DBDate";
-                break;
-            case Types.JAVA_OBJECT:
-                value = "DBObject";
-                break;
-            case Types.VARBINARY:
-            case Types.LONGVARBINARY:
-            case Types.BLOB:
-                value = "DBByteArray";
-                break;
-            default:
-                throw new RuntimeException("Unknown Java SQL Type: " + columnType);
-        }
-        return value;
     }
 
     /**

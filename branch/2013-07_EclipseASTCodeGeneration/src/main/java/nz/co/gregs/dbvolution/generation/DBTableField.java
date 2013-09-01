@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+
 /**
  *
  * @author gregory.graham
@@ -26,7 +28,71 @@ public class DBTableField {
     boolean isForeignKey = false;
     String referencesClass;
     String referencesField;
-    String columnType;
+    Class<? extends QueryableDatatype> columnType;
     int precision;
+    
+	public String getFieldName() {
+		return fieldName;
+	}
+
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+
+	public String getColumnName() {
+		return columnName;
+	}
+
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
+	}
+
+	public boolean isPrimaryKey() {
+		return isPrimaryKey;
+	}
+
+	public void setPrimaryKey(boolean isPrimaryKey) {
+		this.isPrimaryKey = isPrimaryKey;
+	}
+
+	public boolean isForeignKey() {
+		return isForeignKey;
+	}
+
+	public void setForeignKey(boolean isForeignKey) {
+		this.isForeignKey = isForeignKey;
+	}
+
+	public String getReferencesClass() {
+		return referencesClass;
+	}
+
+	public void setReferencesClass(String referencesClass) {
+		this.referencesClass = referencesClass;
+	}
+
+	public String getReferencesField() {
+		return referencesField;
+	}
+
+	public void setReferencesField(String referencesField) {
+		this.referencesField = referencesField;
+	}
+
+	public Class<? extends QueryableDatatype> getColumnType() {
+		return columnType;
+	}
+
+	public void setColumnType(Class<? extends QueryableDatatype> columnType) {
+		this.columnType = columnType;
+	}
+
+	public int getPrecision() {
+		return precision;
+	}
+
+	public void setPrecision(int precision) {
+		this.precision = precision;
+	}
     
 }
