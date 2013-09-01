@@ -15,15 +15,14 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import static junit.framework.TestCase.assertTrue;
-import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.operators.DBExistsOperator;
+import org.junit.Test;
 
 /**
  *
@@ -31,34 +30,30 @@ import nz.co.gregs.dbvolution.operators.DBExistsOperator;
  */
 public class DBExistsOperatorTest extends AbstractTest {
 
-    public DBExistsOperatorTest(String name) {
-        super(name);
-    }
-
-    public void testDBExistsOperator() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    @Test
+    public void testDBExistsOperator() throws SQLException {
         
         CarCompany carCompany = new CarCompany();
-        carCompany.uidCarCompany.isLiterally(3);
-        DBExistsOperator carCompanyExists = new DBExistsOperator(carCompany, carCompany.uidCarCompany);
+        carCompany.uidCarCompany.permittedValues(3);
+        DBExistsOperator<CarCompany> carCompanyExists = new DBExistsOperator<CarCompany>(carCompany, carCompany.uidCarCompany);
 
         Marque marque = new Marque();
         marque.getCarCompany().setOperator(carCompanyExists);
         
-        marques.getByExample(marque);
-        ArrayList<Marque> rowList = marques.toList();
-        for (DBTableRow row : rowList) {
+        marques.getRowsByExample(marque);
+        List<Marque> rowList = marques.toList();
+        for (DBRow row : rowList) {
             System.out.println(row);
         }
         assertTrue("Incorrect number of marques retreived", rowList.size() == 3);
         
         marque = new Marque();
-        carCompany.uidCarCompany.isLiterally(3);
-        marque.getCarCompany().setOperator(new DBExistsOperator(carCompany, carCompany.uidCarCompany));
-        marque.getCarCompany().invertOperator();
+        marque.getCarCompany().setOperator(new DBExistsOperator<CarCompany>(carCompany, carCompany.uidCarCompany));
+        marque.getCarCompany().negateOperator();
         
-        marques.getByExample(marque);
+        marques.getRowsByExample(marque);
         rowList = marques.toList();
-        for (DBTableRow row : rowList) {
+        for (DBRow row : rowList) {
             System.out.println(row);
         }
         assertTrue("Incorrect number of marques retreived", rowList.size() == 19);

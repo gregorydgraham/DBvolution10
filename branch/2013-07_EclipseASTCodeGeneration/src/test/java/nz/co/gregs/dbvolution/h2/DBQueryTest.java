@@ -15,16 +15,18 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.*;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
@@ -32,58 +34,57 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class DBQueryTest extends AbstractTest {
 
-    public DBQueryTest(String name) {
-        super(name);
-    }
-
-    public void testQueryGeneration() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
-        DBQuery dbQuery = new DBQuery(myDatabase);
+    @Test
+    public void testQueryGeneration() throws SQLException {
+        DBQuery dbQuery = database.getDBQuery();
         CarCompany carCompany = new CarCompany();
-        carCompany.name.isLiterally("TOYOTA");
+        carCompany.name.permittedValues("TOYOTA");
         dbQuery.add(carCompany);
         dbQuery.add(new Marque());
-        final String generateSQLString = dbQuery.generateSQLString().replaceAll(" +", " ");
+        final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
 
-        String expectedResult = "select CAR_COMPANY.NAME, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY, \n"
-                + "MARQUE.NUMERIC_CODE, \n"
-                + "MARQUE.UID_MARQUE, \n"
-                + "MARQUE.ISUSEDFORTAFROS, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS, \n"
-                + "MARQUE.INTINDALLOCALLOWED, \n"
-                + "MARQUE.UPD_COUNT, \n"
-                + "MARQUE.AUTO_CREATED, \n"
-                + "MARQUE.NAME, \n"
-                + "MARQUE.PRICINGCODEPREFIX, \n"
-                + "MARQUE.RESERVATIONSALWD, \n"
-                + "MARQUE.CREATION_DATE, \n"
-                + "MARQUE.FK_CARCOMPANY from car_company, \n"
-                + "marque where 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
-                + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY;";
+        String expectedResult = " SELECT CAR_COMPANY.NAME _1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
+                + "MARQUE.NUMERIC_CODE __570915006, \n"
+                + "MARQUE.UID_MARQUE __768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
+                + "MARQUE.UPD_COUNT _1497912790, \n"
+                + "MARQUE.AUTO_CREATED _332721019, \n"
+                + "MARQUE.NAME __1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
+                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
+                + "MARQUE.CREATION_DATE __1712481749, \n"
+                + "MARQUE.ENABLED __637053442, \n"
+                + "MARQUE.FK_CARCOMPANY _1664116480 FROM car_company, \n"
+                + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
+                + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        assertEquals(expectedResult.replaceAll("\\s+", " "), generateSQLString.replaceAll("\\s+", " "));
+        Assert.assertThat(expectedResult.replaceAll("\\s+", " "), is(generateSQLString.replaceAll("\\s+", " ")));
     }
 
-    public void testQueryExecution() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
-        DBQuery dbQuery = new DBQuery(myDatabase);
+    @Test
+    public void testQueryExecution() throws SQLException {
+        DBQuery dbQuery = database.getDBQuery();
         CarCompany carCompany = new CarCompany();
-        carCompany.name.isLiterally("TOYOTA");
+        carCompany.name.permittedValues("TOYOTA");
         dbQuery.add(carCompany);
         dbQuery.add(new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
-        dbQuery.printRows();
+        dbQuery.print();
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
-            
-            CarCompany carCo = (CarCompany) queryRow.get(carCompany);
+
+            CarCompany carCo = queryRow.get(carCompany);
             String carCoName = carCo.name.toString();
 
-            Marque marque = (Marque) queryRow.get(new Marque());
+            Marque marque = queryRow.get(new Marque());
             Long marqueUID = marque.getUidMarque().longValue();
 
             System.out.println(carCoName + ": " + marqueUID);
@@ -92,23 +93,24 @@ public class DBQueryTest extends AbstractTest {
         }
     }
 
-    public void testQuickQueryCreation() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    @Test
+    public void quickQueryCreation() throws SQLException {
 
         CarCompany carCompany = new CarCompany();
-        carCompany.name.isLiterally("TOYOTA");
-        DBQuery dbQuery = new DBQuery(myDatabase, carCompany, new Marque());
+        carCompany.name.permittedValues("TOYOTA");
+        DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
-        System.out.println(dbQuery.generateSQLString());
-        dbQuery.printRows();
+        System.out.println(dbQuery.getSQLForQuery());
+        dbQuery.print();
         assertEquals(2, results.size());
 
         for (DBQueryRow queryRow : results) {
-            
-            CarCompany carCo = (CarCompany) queryRow.get(carCompany);
+
+            CarCompany carCo = queryRow.get(carCompany);
             String carCoName = carCo.name.toString();
 
-            Marque marque = (Marque) queryRow.get(new Marque());
+            Marque marque = queryRow.get(new Marque());
             Long marqueUID = marque.getUidMarque().longValue();
 
             System.out.println(carCoName + ": " + marqueUID);
@@ -117,22 +119,43 @@ public class DBQueryTest extends AbstractTest {
         }
     }
 
-    public void testDBTableRowReuse() throws IntrospectionException, IllegalArgumentException, InvocationTargetException, IllegalAccessException, SQLException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
-
+    @Test
+    public void testDBTableRowReuse() throws SQLException {
         CarCompany carCompany = new CarCompany();
-        carCompany.name.isLiterally("TOYOTA");
-        DBQuery dbQuery = new DBQuery(myDatabase, carCompany, new Marque());
+        carCompany.name.permittedValues("TOYOTA");
+        DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
 
         List<DBQueryRow> results = dbQuery.getAllRows();
-        System.out.println(dbQuery.generateSQLString());
-        dbQuery.printRows();
+        System.out.println(dbQuery.getSQLForQuery());
+        dbQuery.print();
         assertEquals(2, results.size());
 
         DBQueryRow[] rows = new DBQueryRow[2];
         rows = results.toArray(rows);
 
-        CarCompany firstCarCo = (CarCompany) rows[0].get(carCompany);
-        CarCompany secondCarCo = (CarCompany) rows[1].get(carCompany);
+        CarCompany firstCarCo = rows[0].get(carCompany);
+        CarCompany secondCarCo = rows[1].get(carCompany);
         assertTrue(firstCarCo == secondCarCo);
+    }
+
+    @Test
+    public void thrownExceptionIfTheForeignKeyFieldToBeIgnoredIsNotInTheInstance() throws Exception {
+        Marque wrongMarque = new Marque();
+        Marque marqueQuery = new Marque();
+        marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.longValue());
+
+        DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
+        try {
+            marqueQuery.ignoreForeignKey(wrongMarque.carCompany);
+            throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
+        } catch (IncorrectDBRowInstanceSuppliedException wrongDBRowEx) {
+        }
+        marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
+        query.setCartesianJoinsAllowed(true);
+        List<DBQueryRow> rows = query.getAllRows();
+        System.out.println(query.getSQLForQuery());
+
+        System.out.println();
+        System.out.println(rows);
     }
 }

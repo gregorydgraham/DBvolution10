@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import nz.co.gregs.dbvolution.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.generation.ast.ColumnNameResolver;
 import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
 import nz.co.gregs.dbvolution.generation.ast.ParsedField;

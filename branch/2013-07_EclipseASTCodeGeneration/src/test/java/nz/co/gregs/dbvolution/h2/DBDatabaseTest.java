@@ -15,39 +15,34 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import junit.framework.TestCase;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBDatabaseTest extends TestCase {
+public class DBDatabaseTest {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionDBTest", "", "");
+    DBDatabase myDatabase = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
 
-    public DBDatabaseTest(String testName) {
-        super(testName);
+    @Before
+    public void setUp() throws Exception {
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
     }
     // TODO add test methods here. The name must begin with 'test'. For example:
     // public void testHello() {}
 
-    public void testCreateTable() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException {
+    @Test
+    public void testCreateTable() throws SQLException {
 
         try {
             myDatabase.dropTable(new Marque());
@@ -60,6 +55,7 @@ public class DBDatabaseTest extends TestCase {
 
     }
 
+    @Test
     public void testDropTable() throws SQLException {
         try {
             myDatabase.createTable(new Marque());

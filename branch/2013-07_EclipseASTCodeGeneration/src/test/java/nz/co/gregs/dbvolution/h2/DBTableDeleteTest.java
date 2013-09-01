@@ -15,11 +15,13 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
+import static org.hamcrest.Matchers.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  *
@@ -27,13 +29,10 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class DBTableDeleteTest extends AbstractTest {
 
-    public DBTableDeleteTest(String testName) {
-        super(testName);
-    }
-
-    public void testDeleteListOfRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
+    @Test
+    public void testDeleteListOfRows() throws SQLException {
         marques.getAllRows();
-        ArrayList<Marque> rowList = marques.toList();
+        List<Marque> rowList = marques.toList();
         int originalSize = rowList.size();
         System.out.println("rowList.size()==" + rowList.size());
         ArrayList<Marque> deleteList = new ArrayList<Marque>();
@@ -45,6 +44,8 @@ public class DBTableDeleteTest extends AbstractTest {
         marques.delete(deleteList);
         marques.getAllRows();
         System.out.println("rowList.size()==" + marques.toList().size());
-        assertTrue("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
+        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
+        Assert.assertThat(originalSize - deleteList.size(), is(marques.toList().size()));
+        
     }
 }

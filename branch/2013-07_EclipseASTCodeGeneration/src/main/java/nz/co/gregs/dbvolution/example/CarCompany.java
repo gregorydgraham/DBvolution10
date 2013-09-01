@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.example;
 
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.*;
 
@@ -23,20 +25,21 @@ import nz.co.gregs.dbvolution.annotations.*;
  * @author gregorygraham
  */
 @DBTableName("car_company")
-public class CarCompany  extends DBTableRow {
-    
-    @DBTableColumn("name")
-    public DBString name =new DBString();
-    
-    @DBTablePrimaryKey
-    @DBTableColumn("uid_carcompany")
+public class CarCompany extends DBRow {
+
+    public static final long serialVersionUID = 1L;
+
+    @DBColumn("name")
+    public DBString name = new DBString();
+    @DBPrimaryKey
+    @DBColumn("uid_carcompany")
     public DBInteger uidCarCompany = new DBInteger();
-    
+
     public CarCompany() {
     }
-    
-    public CarCompany(String anme, int id){
-        this.name.isLiterally(anme);
-        this.uidCarCompany.isLiterally(id);
+
+    public CarCompany(String anme, int id) {
+        this.name.setValue(anme);
+        this.uidCarCompany.setValue(id);
     }
 }

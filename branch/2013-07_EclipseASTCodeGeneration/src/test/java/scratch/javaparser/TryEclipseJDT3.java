@@ -2,7 +2,7 @@ package scratch.javaparser;
 
 import java.io.File;
 
-import nz.co.gregs.dbvolution.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.generation.ast.ColumnNameResolver;
 import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
 import nz.co.gregs.dbvolution.generation.ast.ParsedField;

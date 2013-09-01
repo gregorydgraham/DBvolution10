@@ -2,7 +2,7 @@ package nz.co.gregs.dbvolution.generation.ast;
 
 import java.util.List;
 
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -60,7 +60,7 @@ public class ParsedAnnotation {
 	 * Indicates whether this annotation is {@link nz.co.gregs.dbvolution.annotations.DBTableColumn}.
 	 */
 	public boolean isDBTableColumn() {
-		return typeContext.isDeclarationOfType(DBTableColumn.class, getDeclaredTypeName());
+		return typeContext.isDeclarationOfType(DBColumn.class, getDeclaredTypeName());
 	}
 	
 	/**

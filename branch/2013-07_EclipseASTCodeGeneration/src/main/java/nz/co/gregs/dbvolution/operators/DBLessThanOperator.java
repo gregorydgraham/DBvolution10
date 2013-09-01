@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class DBLessThanOperator extends DBOperator {
 
+    public static final long serialVersionUID = 1L;
     private final QueryableDatatype lessThanThis;
 
     /**
@@ -45,6 +46,11 @@ public class DBLessThanOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         lessThanThis.setDatabase(database);
-        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + lessThanThis.getSQLValue() + " ";
+        return database.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + lessThanThis.getSQLValue() + " ";
+    }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        return database.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
     }
 }

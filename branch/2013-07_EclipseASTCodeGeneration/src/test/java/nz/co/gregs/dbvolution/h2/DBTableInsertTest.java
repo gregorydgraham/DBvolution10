@@ -15,12 +15,12 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Test;
 
 /**
  *
@@ -30,23 +30,21 @@ public class DBTableInsertTest extends AbstractTest {
     
     Marque myTableRow = new Marque();
     
-    public DBTableInsertTest(String testName) {
-        super(testName);
-    }
-
-    public void testInsertRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException {
-        myTableRow.getUidMarque().isLiterally(999);
-        myTableRow.getName().isLiterally("TOYOTA");
-        myTableRow.getNumericCode().isLiterally(10);
+    @Test
+    public void testInsertRows() throws SQLException{
+        myTableRow.getUidMarque().permittedValues(999);
+        myTableRow.getName().permittedValues("TOYOTA");
+        myTableRow.getNumericCode().permittedValues(10);
         marques.insert(myTableRow);
         marques.getAllRows();
-        marques.printRows();
+        marques.print();
         
+        Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();
-        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",4));
+        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4,null));
         
         marques.insert(myTableRows);
         marques.getAllRows();
-        marques.printRows();
+        marques.print();
     }
 }

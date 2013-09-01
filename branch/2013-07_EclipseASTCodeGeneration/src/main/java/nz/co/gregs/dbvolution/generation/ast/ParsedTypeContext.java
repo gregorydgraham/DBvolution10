@@ -2,11 +2,11 @@ package nz.co.gregs.dbvolution.generation.ast;
 
 import java.util.List;
 
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -19,8 +19,8 @@ import org.eclipse.jdt.core.dom.PackageDeclaration;
  */
 public class ParsedTypeContext {
 	private static final Class<?>[] KNOWN_IMPORTABLE_TYPES = {
-		DBSelectQuery.class, DBTableColumn.class, DBTableForeignKey.class,
-		DBTableName.class, DBTablePrimaryKey.class}; // TODO: ideally pick this up somehow automatically
+		DBSelectQuery.class, DBColumn.class, DBForeignKey.class,
+		DBTableName.class, DBPrimaryKey.class}; // TODO: ideally pick this up somehow automatically
 	private CompilationUnit unit;
 	
 	public static ParsedTypeContext newInstance(String packageName) {

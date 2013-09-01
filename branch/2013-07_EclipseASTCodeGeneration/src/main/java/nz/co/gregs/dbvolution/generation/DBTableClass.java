@@ -45,17 +45,17 @@ public class DBTableClass {
 
         javaSrc.append("@DBTableName(\"").append(this.tableName).append("\") ");
         javaSrc.append(lineSeparator);
-        javaSrc.append("public class ").append(this.className).append(" extends DBTableRow {");
+        javaSrc.append("public class ").append(this.className).append(" extends DBRow {");
         javaSrc.append(conceptBreak);
 
         for (DBTableField field : fields) {
-            javaSrc.append("    @DBTableColumn(\"").append(field.columnName).append("\")");
+            javaSrc.append("    @DBColumn(\"").append(field.columnName).append("\")");
             javaSrc.append(lineSeparator);
             if (field.isPrimaryKey) {
-                javaSrc.append("    @DBTablePrimaryKey").append(lineSeparator);
+                javaSrc.append("    @DBPrimaryKey").append(lineSeparator);
             }
             if (field.isForeignKey) {
-                javaSrc.append("    @DBTableForeignKey(").append(field.referencesClass).append(".class)");
+                javaSrc.append("    @DBForeignKey(").append(field.referencesClass).append(".class)");
                 javaSrc.append(lineSeparator);
             }
             javaSrc.append("    public ").append(field.columnType).append(" ").append(field.fieldName).append(" = new ").append(field.columnType).append("();");

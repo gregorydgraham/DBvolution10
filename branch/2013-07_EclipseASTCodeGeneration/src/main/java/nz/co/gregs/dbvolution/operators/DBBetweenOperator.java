@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
@@ -23,6 +23,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregorygraham
  */
 public class DBBetweenOperator extends DBOperator{
+    public static final long serialVersionUID = 1L;
+
     private final QueryableDatatype lowValue;
     private final QueryableDatatype highValue;
     
@@ -38,7 +40,13 @@ public class DBBetweenOperator extends DBOperator{
         String lowerSQLValue = lowValue.getSQLValue();
         highValue.setDatabase(database);
         String upperSQLValue = highValue.getSQLValue();
-        String beginWhereLine = database.beginAndLine();
+        String beginWhereLine = database.getDefinition().beginAndLine();
         return beginWhereLine + (invertOperator?"!(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
     }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

@@ -15,15 +15,18 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
  * @author gregorygraham
  */
 public class DBEqualsOperator extends DBOperator {
-    private final QueryableDatatype equalTo;
+
+    public static final long serialVersionUID = 1L;
+    protected final QueryableDatatype equalTo;
 
     /**
      *
@@ -44,6 +47,17 @@ public class DBEqualsOperator extends DBOperator {
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         equalTo.setDatabase(database);
-        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
+        DBDefinition defn = database.getDefinition();
+        if (equalTo.getSQLValue().equals(defn.getNull())) {
+            DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
+            return dbIsNullOperator.generateWhereLine(database, columnName);
+        }
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
+    }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        DBDefinition defn = database.getDefinition();
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
     }
 }

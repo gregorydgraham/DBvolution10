@@ -15,22 +15,33 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author gregorygraham
+ *
  */
-public class DBQueryRow<Class, E extends DBTableRow> extends HashMap<Class, E>{
-    
+public class DBQueryRow extends HashMap<Class<?>, DBRow> {
+
+    public static final long serialVersionUID = 1;
+
     /**
      *
      * @param exemplar
      * @return
      */
-    public E get(E exemplar){
-        return (E)get(exemplar.getClass());
+    @SuppressWarnings("unchecked")
+    public <E extends DBRow> E get(E exemplar) {
+        return (E) get(exemplar.getClass());
     }
-    
+
+    public void print(PrintStream ps, QueryableDatatype... columns) {
+        for (QueryableDatatype qdt : columns) {
+            ps.print("" + qdt + " ");
+        }
+        ps.println();
+    }
 }

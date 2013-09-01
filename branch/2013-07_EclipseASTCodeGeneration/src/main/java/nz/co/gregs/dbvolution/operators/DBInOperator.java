@@ -16,8 +16,9 @@
 package nz.co.gregs.dbvolution.operators;
 
 import java.util.List;
-import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -25,7 +26,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class DBInOperator extends DBOperator {
 
-    private final List<QueryableDatatype> listOfPossibleValues;
+    public static final long serialVersionUID = 1L;
+    protected final List<QueryableDatatype> listOfPossibleValues;
 
     public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
         super();
@@ -34,22 +36,38 @@ public class DBInOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
+        DBDefinition defn = database.getDefinition();
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append(database.beginAndLine());
-        whereClause.append(invertOperator ? "!(" : "(");
-        whereClause.append(columnName);
-        whereClause.append(getOperator());
-        String sep = "";
-        for (QueryableDatatype qdt : listOfPossibleValues) {
-            qdt.setDatabase(database);
-            whereClause.append(sep).append(" ").append(qdt.getSQLValue()).append(" ");
-            sep = ",";
+        whereClause.append(defn.beginAndLine());
+        if (listOfPossibleValues.isEmpty()) {
+            // prevent any rows from returning as an empty list means no rows can match
+            whereClause.append(defn.getFalseOperation());
+        } else {
+            whereClause.append(invertOperator ? "!(" : "(");
+            whereClause.append(columnName);
+            whereClause.append(getOperator());
+            String sep = "";
+            for (QueryableDatatype qdt : listOfPossibleValues) {
+                qdt.setDatabase(database);
+                whereClause.append(sep).append(" ").append(qdt.getSQLValue()).append(" ");
+                sep = ",";
+            }
+            whereClause.append("))");
         }
-        whereClause.append("))");
         return whereClause.toString();
     }
 
-    private String getOperator() {
+    protected String getOperator() {
         return " in (";
+    }
+
+    protected String getInverse() {
+        return " not in (";
+    }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        DBDefinition defn = database.getDefinition();
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
     }
 }

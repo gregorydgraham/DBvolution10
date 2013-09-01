@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import nz.co.gregs.dbvolution.DBTableRow;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 
 import org.eclipse.jdt.core.JavaCore;
@@ -157,7 +157,7 @@ public class ParsedClass {
 		TypeDeclaration typeDeclaration = parsedClass.astNode();
 		
 		// super type
-		parsedClass.setSuperType(ParsedTypeRef.newClassInstance(typeContext, DBTableRow.class));
+		parsedClass.setSuperType(ParsedTypeRef.newClassInstance(typeContext, DBRow.class));
 
 		// add @DBTableName
 		ParsedTypeRef dbTableNameType = ParsedTypeRef.newClassInstance(typeContext, DBTableName.class);

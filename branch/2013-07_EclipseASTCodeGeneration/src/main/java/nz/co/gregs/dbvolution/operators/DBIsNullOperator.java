@@ -21,10 +21,11 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregorygraham
  */
 public class DBIsNullOperator extends DBOperator {
+    public static final long serialVersionUID = 1L;
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
-        return database.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator());
+        return database.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator());
     }
 
     private String getOperator() {
@@ -33,6 +34,11 @@ public class DBIsNullOperator extends DBOperator {
     
     private String getInverse() {
         return " is not null ";
+    }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        throw new UnsupportedOperationException("The DB IS NULL Operator Cannot Be Used To Specify a Relationship"); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

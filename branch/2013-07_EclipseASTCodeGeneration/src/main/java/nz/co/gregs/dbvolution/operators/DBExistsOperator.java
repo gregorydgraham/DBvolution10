@@ -15,27 +15,23 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.DBTableRow;
-import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBExistsOperator extends DBOperator {
+public class  DBExistsOperator<E extends DBRow> extends DBOperator {
+    public static final long serialVersionUID = 1L;
 
-    DBTableRow tableRow;
+    E tableRow;
     private final String referencedColumnName;
 
-    public DBExistsOperator(DBTableRow tableRow, QueryableDatatype qdtOfTheRow) throws IllegalArgumentException, IllegalAccessException {
+    public DBExistsOperator(E tableRow, QueryableDatatype qdtOfTheRow) {
         this.tableRow = tableRow;
         Field qdtField = tableRow.getFieldOf(qdtOfTheRow);
         if (qdtField == null) {
@@ -48,28 +44,19 @@ public class DBExistsOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
-        DBTable<DBTableRow> table = new DBTable<DBTableRow>(database, tableRow);
+        DBTable<E> table = DBTable.getInstance(database, tableRow);
         String subSelect;
         try {
-            subSelect = table.getSelectStatementForWhereClause() + table.getWhereClauseWithExampleAndRawSQL(tableRow, " and " + columnName + " = " + referencedColumnName);
+            subSelect = table.getSQLForSelect() + table.getWhereClauseWithExampleAndRawSQL(tableRow, " and " + columnName + " = " + referencedColumnName);
         } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (InstantiationException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (ClassNotFoundException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        } catch (IntrospectionException ex) {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }
 
-        return database.beginAndLine() + (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
+        return database.getDefinition().beginAndLine() + (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
+    }
+
+    @Override
+    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+        throw new UnsupportedOperationException("The SQL EXISTS Operator Can Not Be Used To Specify A Relationship"); //To change body of generated methods, choose Tools | Templates.
     }
 }

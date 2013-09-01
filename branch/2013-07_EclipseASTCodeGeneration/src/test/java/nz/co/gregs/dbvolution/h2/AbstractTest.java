@@ -16,92 +16,105 @@
 package nz.co.gregs.dbvolution.h2;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import junit.framework.TestCase;
+import net.sourceforge.tedhi.FlexibleDateFormat;
+import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.example.CompanyLogo;
+import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  *
  * @author gregorygraham
  */
-public class AbstractTest extends TestCase {
+public class AbstractTest {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:~/dbvolutionTest", "", "");
+    DBDatabase database = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
     Marque myMarqueRow = new Marque();
     CarCompany myCarCompanyRow = new CarCompany();
     DBTable<Marque> marques;
     DBTable<CarCompany> carCompanies;
-    public List<Marque> marqueRows;
-    public List<CarCompany> carTableRows;
-    
-    public AbstractTest(String name){
-        super(name);
-        carTableRows = new ArrayList<CarCompany>();
-        marqueRows = new ArrayList<Marque>();
-    }
+    public List<Marque> marqueRows = new ArrayList<Marque>();
+    public List<CarCompany> carTableRows = new ArrayList<CarCompany>();
+    static final FlexibleDateFormat tedhiFormat = FlexibleDateFormat.getPatternInstance("dd/M/yyyy");
+    static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getPatternInstance("dd/M/yyyy");
+    public String firstDateStr = "23 March 2013";
+    public String secondDateStr = "2 April 2013";
 
-    @Override
+    @Before
     @SuppressWarnings("empty-statement")
-    protected void setUp() throws Exception {
-        super.setUp();
+    public void setUp() throws Exception {
 
-        myDatabase.setPrintSQLBeforeExecuting(false);
-        myDatabase.dropTableNoExceptions(new Marque());
-        myDatabase.createTable(myMarqueRow);
+        database.setPrintSQLBeforeExecuting(false);
+        database.dropTableNoExceptions(new Marque());
+        database.createTable(myMarqueRow);
 
-        myDatabase.dropTableNoExceptions(myCarCompanyRow);
-        myDatabase.createTable(myCarCompanyRow);
+        database.dropTableNoExceptions(myCarCompanyRow);
+        database.createTable(myCarCompanyRow);
 
         DBTable.setPrintSQLBeforeExecuting(false);
-        marques = new DBTable<Marque>(myDatabase, myMarqueRow);
-        carCompanies = new DBTable<CarCompany>(myDatabase, myCarCompanyRow);
-        carTableRows.add(new CarCompany("TOYOTA", 1));
-        carTableRows.add(new CarCompany("FORD", 2));
+        marques = DBTable.getInstance(database, myMarqueRow);
+        carCompanies = DBTable.getInstance(database, myCarCompanyRow);
+        carCompanies.insert(new CarCompany("TOYOTA", 1));
+        carTableRows.add(new CarCompany("Ford", 2));
         carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
         carTableRows.add(new CarCompany("OTHER", 4));
         carCompanies.insert(carTableRows);
-        
-        marqueRows.add(new Marque(4893059, "True", 1246974, "", 3, "UV", "PEUGEOT", "", "Y", 4));
-        marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", 2));
-        marqueRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", 3));
-        marqueRows.add(new Marque(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y", 4));
-        marqueRows.add(new Marque(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y", 4));
-        marqueRows.add(new Marque(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y", 4));
-        marqueRows.add(new Marque(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y", 4));
-        marqueRows.add(new Marque(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y", 4));
-        marqueRows.add(new Marque(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y", 4));
-        marqueRows.add(new Marque(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y", 4));
-        marqueRows.add(new Marque(4896300, "False", 1246974, "", 2, "UV", "HYUNDAI", "", "Y", 1));
-        marqueRows.add(new Marque(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y", 3));
-        marqueRows.add(new Marque(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y", 4));
-        marqueRows.add(new Marque(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y", 4));
-        marqueRows.add(new Marque(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y", 4));
-        marqueRows.add(new Marque(8376505, "False", 1246974, "", 0, "", "ISUZU", "", "Y", 4));
-        marqueRows.add(new Marque(8587147, "False", 1246974, "", 0, "", "DAEWOO", "", "Y", 4));
-        marqueRows.add(new Marque(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y", 4));
-        marqueRows.add(new Marque(13224369, "False", 1246974, "", 0, "", "VW", "", "Y", 4));
-        marqueRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y", 4));
-        marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", 1));
-        marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", 3));
+
+        Date firstDate = tedhiFormat.parse(firstDateStr).asDate();
+        Date secondDate = tedhiFormat.parse(secondDateStr).asDate();
+
+
+        marqueRows.add(new Marque(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, null));
+        marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", firstDate, 2, null));
+        marqueRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", firstDate, 3, null));
+        marqueRows.add(new Marque(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(4896300, "False", 1246974, null, 2, "UV", "HYUNDAI", null, "Y", firstDate, 1, null));
+        marqueRows.add(new Marque(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y", firstDate, 3, null));
+        marqueRows.add(new Marque(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(8376505, "False", 1246974, "", 0, "", "ISUZU", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(8587147, "False", 1246974, "", 0, "", "DAEWOO", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y", firstDate, 4, null));
+        marqueRows.add(new Marque(13224369, "False", 1246974, "", 0, "", "VW", "", "Y", secondDate, 4, null));
+        marqueRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y", secondDate, 4, null));
+        marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, null));
+        marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
         marques.insert(marqueRows);
+
+        database.dropTableNoExceptions(new CompanyLogo());
+        database.createTable(new CompanyLogo());
+
+        database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
+        database.createTable(new LinkCarCompanyAndLogo());
+
+
         DBTable.setPrintSQLBeforeExecuting(true);
+        database.setPrintSQLBeforeExecuting(true);
 
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        myDatabase.dropTable(myMarqueRow);
-        myDatabase.dropTable(myCarCompanyRow);
-
-
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
+        database.setPrintSQLBeforeExecuting(false);
+        database.dropTable(new LinkCarCompanyAndLogo());
+        database.dropTable(new CompanyLogo());
+        database.dropTable(myMarqueRow);
+        database.dropTable(myCarCompanyRow);
     }
-    
-        public void testCreateTable() {
-        }
 }

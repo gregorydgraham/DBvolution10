@@ -15,34 +15,55 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import static junit.framework.TestCase.assertEquals;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Assert;
+import org.junit.Test;
+import static org.hamcrest.Matchers.*;
 
 public class DBTableUpdateTest extends AbstractTest {
 
-    public DBTableUpdateTest(String name) {
-        super(name);
+    @Test
+    public void changingPrimaryKey() throws SQLException, UnexpectedNumberOfRowsException {
+        Marque marqueExample = new Marque();
+        marqueExample.getUidMarque().permittedValues(1);
+
+        marques.getRowsByExample(marqueExample);
+        marques.print();
+        Marque toyota = marques.getOnlyRowByExample(marqueExample);
+        toyota.uidMarque.permittedValues(99999);
+        Assert.assertThat(marques.getSQLForUpdate(toyota),is("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;"));
+        marques.update(toyota);
+        toyota.name.permittedValues("NOTOYOTA");
+        Assert.assertThat(marques.getSQLForUpdate(toyota), is("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;"));
+        
+        marqueExample = new Marque();
+        marqueExample.name.permittedValuesIgnoreCase("toyota");
+        toyota = marques.getOnlyRowByExample(marqueExample);
+        Assert.assertThat(toyota.name.toString(), is("TOYOTA"));
     }
-
-    public void testInsertRows() throws IllegalArgumentException, IllegalAccessException, IntrospectionException, InvocationTargetException, SQLException, InstantiationException, NoSuchMethodException, ClassNotFoundException {
+    
+    @Test
+    public void testInsertRows() throws SQLException {
         Marque myTableRow = new Marque();
-        myTableRow.getUidMarque().isLiterally(1);
+        myTableRow.getUidMarque().permittedValues(1);
 
-        marques.getByExample(myTableRow);
-        marques.printRows();
+        marques.getRowsByExample(myTableRow);
+        marques.print();
         Marque toyota = marques.toList().get(0);
         System.out.println("===" + toyota.name.toString());
-        assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
+        Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
-        toyota.name.isLiterally("NOTTOYOTA");
+        toyota.name.permittedValues("NOTTOYOTA");
+        String sqlForUpdate = marques.getSQLForUpdate(toyota);
+        Assert.assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;", sqlForUpdate);
+
         marques.update(toyota);
-
-        marques.getByExample(myTableRow);
-        marques.printRows();
+        
+        marques.getRowsByExample(myTableRow);
+        marques.print();
         toyota = marques.toList().get(0);
-        assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
+        Assert.assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
     }
 }

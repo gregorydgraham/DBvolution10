@@ -15,13 +15,15 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  *
  * @author gregory.graham
  */
 public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
+
+    public static final long serialVersionUID = 1L;
 
     public DBGreaterThanOrEqualsOperator(QueryableDatatype greaterThanThis) {
         super(greaterThanThis);
@@ -36,7 +38,4 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
     public String getInverse() {
         return " < ";
     }
-    
-    
-    
 }

@@ -1,69 +1,78 @@
 package nz.co.gregs.dbvolution.example;
 
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import java.util.Date;
 import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTableForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
-import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 /**
  *
  * @author gregory.graham
  */
 @DBTableName("marque")
-public class Marque extends DBTableRow {
+public class Marque extends DBRow {
+    public static final long serialVersionUID = 1L;
 
     /*
      * create view "mdamgr".marque
      * (numeric_code,uidMarque,isusedfortafros,fk_toystatusclass,intindallocallowed,upd_count,auto_created,name,pricingcodeprefix,reservationsalwd)
      * as
      */
-    @DBTableColumn("numeric_code")
+    @DBColumn("numeric_code")
     public DBNumber numericCode = new DBNumber();
-    @DBTableColumn("uid_marque")
-    @DBTablePrimaryKey
+    @DBColumn("uid_marque")
+    @DBPrimaryKey
     public DBInteger uidMarque = new DBInteger();
-    @DBTableColumn("isusedfortafros")
+    @DBColumn("isusedfortafros")
     public DBString isUsedForTAFROs = new DBString();
-    @DBTableColumn("fk_toystatusclass")
-//    @DBTableForeignKey("\"mdamgr\".toystatusclass")
+    @DBColumn("fk_toystatusclass")
     public DBNumber toyotaStatusClassID = new DBNumber();
-    @DBTableColumn("intindallocallowed")
-    public DBString intIndividualAllocationsAllowed = new DBString();
-    @DBTableColumn("upd_count")
+    @DBColumn("intindallocallowed")
+    public DBString individualAllocationsAllowed = new DBString();
+    @DBColumn("upd_count")
     public DBInteger updateCount = new DBInteger();
-    @DBTableColumn
+    @DBColumn
     public DBString auto_created = new DBString();
-    @DBTableColumn
+    @DBColumn
     public DBString name = new DBString();
-    @DBTableColumn("pricingcodeprefix")
+    @DBColumn("pricingcodeprefix")
     public DBString pricingCodePrefix = new DBString();
-    @DBTableColumn("reservationsalwd")
+    @DBColumn("reservationsalwd")
     public DBString reservationsAllowed = new DBString();
-    @DBTableColumn("creation_date")
+    @DBColumn("creation_date")
     public DBDate creationDate = new DBDate();
+    @DBColumn("enabled")
+    public DBBoolean enabled = new DBBoolean();
     
-//    @DBTableForeignKey("CAR_COMPANY.UID_CARCOMPANY")
-    @DBTableForeignKey(CarCompany.class)
-    @DBTableColumn("fk_carcompany")
+    @DBForeignKey(CarCompany.class)
+    @DBColumn("fk_carcompany")
     public DBInteger carCompany = new DBInteger();
+    
 
 
     public Marque(){
     }
     
-    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, int carCompany) {
-        this.uidMarque.isLiterally(uidMarque);
-        this.isUsedForTAFROs.isLiterally(isUsedForTAFROs);
-        toyotaStatusClassID.isLiterally(statusClass);
-        this.intIndividualAllocationsAllowed.isLiterally(intIndividualAllocationsAllowed);
-        this.updateCount.isLiterally(updateCount);
-        this.auto_created.isLiterally(autoCreated);
-        this.name.isLiterally(name);
-        this.pricingCodePrefix.isLiterally(pricingCodePrefix);
-        this.reservationsAllowed.isLiterally(reservationsAllowed);
-        this.carCompany.isLiterally(carCompany);
+    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
+        this.uidMarque.setValue(uidMarque);
+        this.isUsedForTAFROs.setValue(isUsedForTAFROs);
+        toyotaStatusClassID.setValue(statusClass);
+        this.individualAllocationsAllowed.setValue(intIndividualAllocationsAllowed);
+        this.updateCount.setValue(updateCount);
+        this.auto_created.setValue(autoCreated);
+        this.name.setValue(name);
+        this.pricingCodePrefix.setValue(pricingCodePrefix);
+        this.reservationsAllowed.setValue(reservationsAllowed);
+        this.creationDate.setValue(creationDate);
+        this.carCompany.setValue(carCompany);
+        this.enabled.setValue(enabled);
     }
 
     /**
@@ -126,7 +135,7 @@ public class Marque extends DBTableRow {
      * @return the intIndividualAllocationsAllowed
      */
     public DBString getIntIndividualAllocationsAllowed() {
-        return intIndividualAllocationsAllowed;
+        return individualAllocationsAllowed;
     }
 
     /**
@@ -134,7 +143,7 @@ public class Marque extends DBTableRow {
      * intIndividualAllocationsAllowed to set
      */
     public void setIntIndividualAllocationsAllowed(DBString intIndividualAllocationsAllowed) {
-        this.intIndividualAllocationsAllowed = intIndividualAllocationsAllowed;
+        this.individualAllocationsAllowed = intIndividualAllocationsAllowed;
     }
 
     /**
@@ -226,5 +235,19 @@ public class Marque extends DBTableRow {
      */
     public DBInteger getCarCompany() {
         return carCompany;
+    }
+
+    /**
+     * @return the enabled
+     */
+    public DBBoolean getEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled the enabled to set
+     */
+    public void setEnabled(DBBoolean enabled) {
+        this.enabled = enabled;
     }
 }

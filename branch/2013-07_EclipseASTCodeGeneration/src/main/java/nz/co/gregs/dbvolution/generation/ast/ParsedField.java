@@ -5,8 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.gregs.dbvolution.annotations.DBTableColumn;
-import nz.co.gregs.dbvolution.annotations.DBTablePrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -50,8 +50,8 @@ public class ParsedField {
 		
 		// add imports
 		boolean fieldTypeImported = typeContext.ensureImport(fieldType);
-		boolean dbTableColumnImported = typeContext.ensureImport(DBTableColumn.class);
-		boolean dbTablePrimaryKeyImported = typeContext.ensureImport(DBTablePrimaryKey.class);
+		boolean dbTableColumnImported = typeContext.ensureImport(DBColumn.class);
+		boolean dbTablePrimaryKeyImported = typeContext.ensureImport(DBPrimaryKey.class);
 		
 		// add field
 		VariableDeclarationFragment variable = ast.newVariableDeclarationFragment();
@@ -64,14 +64,14 @@ public class ParsedField {
 		if (isPrimaryKey) {
 			MarkerAnnotation annotation = ast.newMarkerAnnotation();
 			annotation.setTypeName(ast.newSimpleName(
-					nameOf(DBTablePrimaryKey.class, dbTablePrimaryKeyImported)));
+					nameOf(DBPrimaryKey.class, dbTablePrimaryKeyImported)));
 			field.modifiers().add(annotation);
 		}
 		StringLiteral annotationValue = ast.newStringLiteral();
 		annotationValue.setLiteralValue(columnName);
 		SingleMemberAnnotation annotation = ast.newSingleMemberAnnotation();
 		annotation.setTypeName(ast.newSimpleName(
-					nameOf(DBTableColumn.class, dbTableColumnImported)));
+					nameOf(DBColumn.class, dbTableColumnImported)));
 		annotation.setValue(annotationValue);
 		field.modifiers().add(annotation);
 		

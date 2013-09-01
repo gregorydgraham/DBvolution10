@@ -15,13 +15,14 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
+import java.io.Serializable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
  * @author gregorygraham
  */
-abstract public class DBOperator {
+abstract public class DBOperator implements Serializable{
 
     Boolean invertOperator = false;
 
@@ -34,8 +35,13 @@ abstract public class DBOperator {
      * @return
      */
     abstract public String generateWhereLine(DBDatabase database, String columnName);
+    abstract public String generateRelationship(DBDatabase database, String columnName, String otherColumnName);
 
     public void invertOperator(Boolean invertOperator) {
         this.invertOperator = invertOperator;
+    }
+    
+    public void not(){
+        invertOperator = true;
     }
 }

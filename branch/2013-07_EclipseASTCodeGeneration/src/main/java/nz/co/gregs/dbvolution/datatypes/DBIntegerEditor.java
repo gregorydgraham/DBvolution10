@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.datatypes;
 
 import java.beans.PropertyEditorSupport;
 
@@ -10,7 +10,7 @@ import java.beans.PropertyEditorSupport;
  *
  * @author gregory.graham
  */
-public class DBNumberEditor extends PropertyEditorSupport {
+public class DBIntegerEditor extends PropertyEditorSupport {
 
     private String format;
 
@@ -21,14 +21,20 @@ public class DBNumberEditor extends PropertyEditorSupport {
     public void setFormat(String format) {
         this.format = format;
     }
-    
+
     /**
      *
      * @param text
      */
     @Override
     public void setAsText(String text) {
-        DBNumber type = new DBNumber(text);
+        DBInteger type;
+        if (text == null || text.isEmpty()) {
+            type = new DBInteger();
+        } else {
+            type = new DBInteger();
+            type.useEqualsOperator(text);
+        }
         setValue(type);
     }
 }
