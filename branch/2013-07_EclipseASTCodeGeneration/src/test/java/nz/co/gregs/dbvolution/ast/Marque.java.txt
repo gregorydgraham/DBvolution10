@@ -1,4 +1,4 @@
-package scratch.javaparser;
+package nz.co.gregs.dbvolution.ast;
 
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.DBTableColumn;

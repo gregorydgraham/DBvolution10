@@ -1,4 +1,4 @@
-package scratch.javaparser;
+package nz.co.gregs.dbvolution.ast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,13 +14,38 @@ import nz.co.gregs.dbvolution.generation.ast.ParsedMethod;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.text.edits.MalformedTreeException;
+import org.junit.Test;
 
 /**
  * @see http://help.eclipse.org/helios/index.jsp?topic=%2Forg.eclipse.jdt.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fjdt%2Fcore%2Fdom%2FASTParser.html
  * @author Malcolm Lett
  */
-public class TryEclipseJDT2 {
-	public static void main(String[] args) throws MalformedTreeException, BadLocationException {
+public class LowLevelGenerationTests {
+	@Test
+	public void generatesWhenUsingLowLevelMethods() throws MalformedTreeException, BadLocationException {
+		
+		ParsedClass javatype = ParsedClass.newDBTableInstance(
+				LowLevelGenerationTests.class.getName()+"_Marque",
+				"t_3");
+		System.out.println(javatype.toString());
+		
+		ColumnNameResolver columnNameResolver = new ColumnNameResolver();
+		ParsedField newField = ParsedField.newDBTableColumnInstance(javatype.getTypeContext(),
+				columnNameResolver.getPropertyNameFor("c_2"), DBInteger.class, false, "c_2");
+		System.out.println(newField);
+		javatype.addFieldAfter(null, newField);
+		
+		ParsedMethod newMethod = ParsedMethod.newFieldGetterInstance(javatype.getTypeContext(), newField);
+		System.out.println(newMethod);
+		javatype.addMethodAfter(null, newMethod);
+		
+		File srcFolder = new File("target/test-output");
+		srcFolder.mkdirs();
+		javatype.writeToSourceFolder(srcFolder);
+	}
+
+	@Test
+	public void updatesWhenUsingLowLevelMethods() throws MalformedTreeException, BadLocationException {
 		ParsedClass javatype = ParsedClass.of(getSource());
 		System.out.println(javatype.toString());
 		
@@ -43,8 +68,7 @@ public class TryEclipseJDT2 {
 		BufferedReader reader = null;
 		try {
 			StringBuilder buf = new StringBuilder();
-			//InputStream is = TryEclipseJDT.class.getResourceAsStream("SampleSimpleJava.txt");
-			InputStream is = TryEclipseJDT2.class.getResourceAsStream("Marque.java.txt");
+			InputStream is = LowLevelGenerationTests.class.getResourceAsStream("Marque.java.txt");
 			reader = new BufferedReader(new InputStreamReader(is));
 			String line;
 			while ((line = reader.readLine()) != null) {
