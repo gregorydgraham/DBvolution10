@@ -102,7 +102,7 @@
                 <version>2.14.1</version>
                 <configuration>
                     <includes>
-                        <include>**/*Test.java</include>
+                        <include>**/*.java</include>
                     </includes>
                 </configuration>
             </plugin>
