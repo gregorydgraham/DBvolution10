@@ -596,4 +596,11 @@ abstract public class DBRow implements Serializable {
     public void returnAllFields() {
         returnColumns.clear();
     }
+
+    /**
+     * @return the adHocRelationships
+     */
+    public List<DBRelationship> getAdHocRelationships() {
+        return adHocRelationships;
+    }
 }

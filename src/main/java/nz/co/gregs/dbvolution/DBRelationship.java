@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
@@ -28,18 +29,18 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 class DBRelationship implements Serializable{
     public static final long serialVersionUID = 1L;
 
-    private String firstTable;
-    private String secondTable;
-    private String firstColumn;
-    private String secondColumn;
+    private DBRow firstTable;
+    private DBRow secondTable;
+    private QueryableDatatype firstColumn;
+    private QueryableDatatype secondColumn;
     private DBOperator operation;
 
     public DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
 
-        firstTable = thisTable.getTableName();
-        firstColumn = thisTable.getDBColumnName(thisTableField);
-        secondTable = otherTable.getTableName();
-        secondColumn = otherTable.getDBColumnName(otherTableField);
+        firstTable = thisTable;
+        firstColumn = thisTableField;
+        secondTable = otherTable;
+        secondColumn = otherTableField;
         operation = new DBEqualsOperator(thisTableField);
     }
 
@@ -50,8 +51,23 @@ class DBRelationship implements Serializable{
     }
 
     public String generateSQL(DBDatabase database) {
+        final DBDefinition definition = database.getDefinition();
         return operation.generateRelationship(database,
-                database.getDefinition().formatTableAndColumnName(firstTable, firstColumn),
-                database.getDefinition().formatTableAndColumnName(secondTable, secondColumn));
+                definition.formatTableAndColumnName(firstTable.getTableName(), firstTable.getDBColumnName(firstColumn)),
+                definition.formatTableAndColumnName(secondTable.getTableName(), secondTable.getDBColumnName(secondColumn)));
+    }
+
+    /**
+     * @return the firstTable
+     */
+    public DBRow getFirstTable() {
+        return firstTable;
+    }
+
+    /**
+     * @return the secondTable
+     */
+    public DBRow getSecondTable() {
+        return secondTable;
     }
 }

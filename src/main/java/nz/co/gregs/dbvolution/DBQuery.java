@@ -127,11 +127,19 @@ public class DBQuery {
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
             }
-            List<String> adHocRelationshipSQL = tabRow.getAdHocRelationshipSQL();
-            for (String sql : adHocRelationshipSQL) {
-                whereClause.append(sql);
-                connectedTables.add(tabRow);
+            
+            for (DBRelationship rel : tabRow.getAdHocRelationships()){
+                whereClause.append(rel.generateSQL(database));
+                connectedTables.add(rel.getFirstTable());
+                connectedTables.add(rel.getSecondTable());
             }
+            
+//            List<String> adHocRelationshipSQL = tabRow.getAdHocRelationshipSQL();
+//            for (String sql : adHocRelationshipSQL) {
+//                whereClause.append(sql);
+//                connectedTables.add(tabRow);
+//                connectedTables.add(tabRow);
+//            }
 
             for (DBRow otherTab : otherTables) {
                 Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
@@ -152,6 +160,7 @@ public class DBQuery {
                                     .append(defn.getEqualsComparator())
                                     .append(formattedFK);
                             connectedTables.add(otherTab);
+                            connectedTables.add(tabRow);
                         }
                     }
                 }
@@ -160,7 +169,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(queryTables);
         }
-        if (connectedTables.size() < queryTables.size() - 1 && !cartesianJoinAllowed) {
+        if (connectedTables.size() < queryTables.size() && !cartesianJoinAllowed) {
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString =
