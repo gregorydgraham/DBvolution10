@@ -644,15 +644,20 @@ public class DBTable<E extends DBRow> {
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
             row.setDatabase(database);
-            String sql =
-                    defn.beginDeleteLine()
-                    + row.getTableName()
-                    + defn.beginWhereClause()
-                    + this.getPrimaryKeyColumn()
-                    + defn.getEqualsComparator()
-                    + row.getPrimaryKey().getSQLValue()
-                    + defn.endDeleteLine();
-            allInserts.add(sql);
+            final QueryableDatatype primaryKey = row.getPrimaryKey();
+            if (primaryKey==null) {
+                allInserts.add(getSQLForDeleteWithoutPrimaryKey(row));
+            } else {
+                String sql =
+                        defn.beginDeleteLine()
+                        + row.getTableName()
+                        + defn.beginWhereClause()
+                        + this.getPrimaryKeyColumn()
+                        + defn.getEqualsComparator()
+                        + primaryKey.getSQLValue()
+                        + defn.endDeleteLine();
+                allInserts.add(sql);
+            }
         }
         return allInserts;
     }
@@ -680,7 +685,8 @@ public class DBTable<E extends DBRow> {
             String sql =
                     defn.beginDeleteLine()
                     + row.getTableName()
-                    + defn.beginWhereClause();
+                    + defn.beginWhereClause()
+                    + defn.getTrueOperation();
             for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
                 sql = sql
                         + defn.beginAndLine()
