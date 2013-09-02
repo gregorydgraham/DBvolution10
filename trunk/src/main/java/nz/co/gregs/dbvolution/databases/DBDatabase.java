@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
  *
  * @author gregory.graham
  */
-public abstract class DBDatabase{
+public abstract class DBDatabase {
 
     private String driverName = "";
     private String jdbcURL = "";
@@ -136,7 +136,7 @@ public abstract class DBDatabase{
     }
 
     /**
-     * 
+     *
      * Inserts DBRows and lists of DBRows into the correct tables automatically
      *
      * @param objs
@@ -149,7 +149,9 @@ public abstract class DBDatabase{
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
-                    this.getDBTable(rowList.get(0)).insert(rowList);
+                    for (DBRow row : rowList) {
+                        this.getDBTable(row).insert(row);
+                    }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
@@ -159,7 +161,7 @@ public abstract class DBDatabase{
     }
 
     /**
-     * 
+     *
      * Deletes DBRows and lists of DBRows from the correct tables automatically
      *
      * @param objs
@@ -182,7 +184,7 @@ public abstract class DBDatabase{
     }
 
     /**
-     * 
+     *
      * Updates DBRows and lists of DBRows in the correct tables automatically
      *
      * @param objs
@@ -205,8 +207,9 @@ public abstract class DBDatabase{
     }
 
     /**
-     * 
-     * Automatically selects the correct table and returns the selected rows as a list
+     *
+     * Automatically selects the correct table and returns the selected rows as
+     * a list
      *
      * @param rows
      * @throws SQLException
@@ -215,10 +218,11 @@ public abstract class DBDatabase{
         DBTable<R> dbTable = getDBTable(row);
         return dbTable.getRowsByExample(row).toList();
     }
-    
+
     /**
-     * 
-     * Automatically selects the correct table and returns the selected rows as a list
+     *
+     * Automatically selects the correct table and returns the selected rows as
+     * a list
      *
      * @param <R>
      * @param expectedNumberOfRows
@@ -228,15 +232,15 @@ public abstract class DBDatabase{
      * @throws UnexpectedNumberOfRowsException
      */
     public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R row) throws SQLException, UnexpectedNumberOfRowsException {
-        if (expectedNumberOfRows==null){
+        if (expectedNumberOfRows == null) {
             return get(row);
-        }else{
+        } else {
             return getDBTable(row).getRowsByExample(row, expectedNumberOfRows.intValue()).toList();
         }
     }
 
     /**
-     * 
+     *
      * creates a query and fetches the rows automatically
      *
      * @param rows
@@ -246,24 +250,21 @@ public abstract class DBDatabase{
         DBQuery dbQuery = getDBQuery(rows);
         return dbQuery.getAllRows();
     }
-    
 
     /**
-     * 
+     *
      * creates a query and fetches the rows automatically
      *
      * @param rows
      * @throws SQLException
      */
     public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
-        if (expectedNumberOfRows==null){
+        if (expectedNumberOfRows == null) {
             return get(rows);
-        }else{
+        } else {
             return getDBQuery(rows).getAllRows(expectedNumberOfRows);
         }
     }
-    
-    
 
     /**
      *
@@ -499,8 +500,8 @@ public abstract class DBDatabase{
     public DBDefinition getDefinition() {
         return definition;
     }
-    
-    public boolean willCreateBlankQuery(DBRow row){
+
+    public boolean willCreateBlankQuery(DBRow row) {
         return row.willCreateBlankQuery(this);
     }
 }
