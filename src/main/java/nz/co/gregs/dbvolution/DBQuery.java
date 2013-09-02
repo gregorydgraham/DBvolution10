@@ -127,13 +127,13 @@ public class DBQuery {
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
             }
-            
-            for (DBRelationship rel : tabRow.getAdHocRelationships()){
+
+            for (DBRelationship rel : tabRow.getAdHocRelationships()) {
                 whereClause.append(rel.generateSQL(database));
                 connectedTables.add(rel.getFirstTable());
                 connectedTables.add(rel.getSecondTable());
             }
-            
+
 //            List<String> adHocRelationshipSQL = tabRow.getAdHocRelationshipSQL();
 //            for (String sql : adHocRelationshipSQL) {
 //                whereClause.append(sql);
@@ -215,10 +215,14 @@ public class DBQuery {
                     existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
                     existingInstances.put(tableRow.getClass(), existingInstancesOfThisTableRow);
                 }
-                DBRow existingInstance = existingInstancesOfThisTableRow.get(newInstance.getPrimaryKey().getSQLValue());
-                if (existingInstance == null) {
-                    existingInstance = newInstance;
-                    existingInstancesOfThisTableRow.put(existingInstance.getPrimaryKey().getSQLValue(), existingInstance);
+                DBRow existingInstance = newInstance;
+                final QueryableDatatype primaryKey = newInstance.getPrimaryKey();
+                if (primaryKey != null) {
+                    existingInstance = existingInstancesOfThisTableRow.get(primaryKey.getSQLValue());
+                    if (existingInstance == null) {
+                        existingInstance = newInstance;
+                        existingInstancesOfThisTableRow.put(primaryKey.getSQLValue(), existingInstance);
+                    }
                 }
                 queryRow.put(existingInstance.getClass(), existingInstance);
             }
@@ -473,9 +477,9 @@ public class DBQuery {
 
     public List<DBQueryRow> getAllRows(Long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
         List<DBQueryRow> allRows = getAllRows();
-        if (allRows.size()!=expectedRows){
+        if (allRows.size() != expectedRows) {
             throw new UnexpectedNumberOfRowsException(expectedRows.intValue(), allRows.size());
-        }else{
+        } else {
             return allRows;
         }
     }
