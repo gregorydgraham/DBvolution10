@@ -44,4 +44,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
         }
         ps.println();
     }
+    public void print(PrintStream ps) {
+        for (DBRow row : values()) {
+            ps.print("" + row);
+        }
+    }
 }
