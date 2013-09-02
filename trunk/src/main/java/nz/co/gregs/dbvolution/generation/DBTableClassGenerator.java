@@ -48,7 +48,7 @@ public class DBTableClassGenerator {
      * defined by the package name supplied.
      *
      * convenience method which calls
-     * generateClassesFromJDBCURLToDirectory(jdbcURL,username,password,packageName,baseDirectory,new
+     * generateClasses(jdbcURL,username,password,packageName,baseDirectory,new
      * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
      *
      * @param database
@@ -58,11 +58,31 @@ public class DBTableClassGenerator {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void generateClassesFromJDBCURLToDirectory(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
-        generateClassesFromJDBCURLToDirectory(database, packageName, baseDirectory, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+    public static void generateClasses(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
+        generateClasses(database, packageName, baseDirectory, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
     }
 
-    public static void generateClassesFromJDBCURLToDirectory(DBDatabase database, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, FileNotFoundException, IOException {
+    /**
+     * 
+     * Creates DBTableRow classes corresponding to all the tables and views
+     * accessible to the user specified in the database supplied.
+     *
+     * Classes are placed in the correct subdirectory of the base directory as
+     * defined by the package name supplied.
+     * 
+     * Primary keys and foreign keys are created based on the definitions within
+     * the database and the results from the PK and FK recognisors.
+     *
+     * @param database
+     * @param packageName
+     * @param baseDirectory
+     * @param pkRecog
+     * @param fkRecog
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, FileNotFoundException, IOException {
         String viewsPackage = packageName + ".views";
         String viewsPath = viewsPackage.replaceAll("[.]", "/");
         List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, pkRecog, fkRecog);
