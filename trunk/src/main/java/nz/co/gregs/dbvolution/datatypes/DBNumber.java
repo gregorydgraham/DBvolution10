@@ -261,6 +261,7 @@ public class DBNumber extends QueryableDatatype {
      *
      * @return
      */
+    @Override
     public Integer intValue() {
         return numberValue == null ? null : numberValue.intValue();
     }

@@ -68,6 +68,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return (literalValue == null ? null : Long.parseLong(literalValue.toString()));
     }
 
+    public Integer intValue() {
+        return (literalValue == null ? null : Integer.parseInt(literalValue.toString()));
+    }
+
     public Double doubleValue() {
         if (isDBNull || literalValue == null) {
             return null;
