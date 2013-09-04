@@ -4,13 +4,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.DBObject;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBByteArray;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
@@ -671,5 +664,9 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     public Boolean getSortOrder() {
         return sort;
+    }
+
+    public void clear() {
+        blankQuery();
     }
 }
