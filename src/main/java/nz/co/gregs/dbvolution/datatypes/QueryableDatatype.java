@@ -154,6 +154,12 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of objects
+     *
+     * @param permitted
+     */
     public void permittedValues(Object... permitted) {
         if (permitted == null) {
             useNullOperator();
@@ -301,6 +307,9 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
+     * excludes the object, Set, List, Array, or vararg of objects
+     * 
+     * 
      * @param excluded
      */
     public void excludedValues(Object... excluded) {
@@ -321,25 +330,25 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
-    public void excludedValues(List<Object> excluded) {
-        if (excluded == null) {
-            useNullOperator().not();
-//        } else if (permitted.size() == 1) {
-//            useEqualsOperator(permitted.get(0)).not();
-        } else {
-            useInOperator(excluded.toArray()).not();
-        }
-    }
+//    public void excludedValues(List<Object> excluded) {
+//        if (excluded == null) {
+//            useNullOperator().not();
+////        } else if (permitted.size() == 1) {
+////            useEqualsOperator(permitted.get(0)).not();
+//        } else {
+//            useInOperator(excluded.toArray()).not();
+//        }
+//    }
 
-    public void excludedValues(Set<Object> excluded) {
-        if (excluded == null) {
-            useNullOperator().not();
-//        } else if (permitted.size() == 1) {
-//            useEqualsOperator(permitted.get(0)).not();
-        } else {
-            useInOperator(excluded.toArray()).not();
-        }
-    }
+//    public void excludedValues(Set<Object> excluded) {
+//        if (excluded == null) {
+//            useNullOperator().not();
+////        } else if (permitted.size() == 1) {
+////            useEqualsOperator(permitted.get(0)).not();
+//        } else {
+//            useInOperator(excluded.toArray()).not();
+//        }
+//    }
 
     public void permittedRange(Object lowerBound, Object upperBound) {
         if (lowerBound != null && upperBound != null) {
