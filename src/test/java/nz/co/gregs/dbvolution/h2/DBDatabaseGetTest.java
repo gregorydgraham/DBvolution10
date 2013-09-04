@@ -129,6 +129,37 @@ public class DBDatabaseGetTest extends AbstractTest {
     }
 
     @Test
+    public void testIsInWithList() throws SQLException {
+        Marque hummerQuery = new Marque();
+        hummerQuery.getUidMarque().blankQuery();
+        List<String> permittedMarques = new ArrayList<String>();
+        permittedMarques.add("PEUGEOT");
+        permittedMarques.add("HUMMER");
+        hummerQuery.getName().permittedValues(permittedMarques);
+        List<Marque> gotMarques = database.get(hummerQuery);
+        for (Marque row : gotMarques) {
+            System.out.println(row);
+        }
+        Assert.assertThat(gotMarques.size(), is(2));
+    }
+
+    @Test
+    public void testIsExcludedWithList() throws SQLException {
+        Marque hummerQuery = new Marque();
+        hummerQuery.getUidMarque().blankQuery();
+        List<Marque> allMarques = database.get(hummerQuery);
+        List<String> permittedMarques = new ArrayList<String>();
+        permittedMarques.add("PEUGEOT");
+        permittedMarques.add("HUMMER");
+        hummerQuery.getName().excludedValues(permittedMarques);
+        List<Marque> gotMarques = database.get(hummerQuery);
+        for (Marque row : gotMarques) {
+            System.out.println(row);
+        }
+        Assert.assertThat(gotMarques.size(), is(allMarques.size()-2));
+    }
+
+    @Test
     public void testDateIsBetween() throws SQLException, ParseException {
 
         Date afterAllTheDates = tedhiFormat.parse("July 2013").asDate();

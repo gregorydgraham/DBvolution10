@@ -43,8 +43,9 @@ public class DBInOperator extends DBOperator {
             // prevent any rows from returning as an empty list means no rows can match
             whereClause.append(defn.getFalseOperation());
         } else {
-            whereClause.append(invertOperator ? "!(" : "(");
+            whereClause.append("(");
             whereClause.append(columnName);
+            whereClause.append(invertOperator ? " not " : "");
             whereClause.append(getOperator());
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
