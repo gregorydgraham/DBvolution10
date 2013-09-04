@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.h2;
 import static org.hamcrest.Matchers.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
@@ -46,6 +47,54 @@ public class DBTableDeleteTest extends AbstractTest {
         System.out.println("rowList.size()==" + marques.toList().size());
         //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
         Assert.assertThat(originalSize - deleteList.size(), is(marques.toList().size()));
-        
+
+    }
+
+    @Test
+    public void testDeleteByExample() throws SQLException {
+        List<Marque> beforeList = marques.getAllRows().toList();
+        System.out.println("rowList.size()==" + marques.toList().size());
+        Marque marq = new Marque();
+        marq.name.permittedValues("PEUGEOT", "HUMMER");
+        marques.delete(marq);
+        List<Marque> afterList = marques.getAllRows().toList();
+        System.out.println("rowList.size()==" + marques.toList().size());
+        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
+        Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+
+    }
+
+    @Test
+    public void testDeleteByExampleUsingList() throws SQLException {
+        List<Marque> beforeList = marques.getAllRows().toList();
+        System.out.println("rowList.size()==" + marques.toList().size());
+        Marque marq = new Marque();
+        ArrayList<String> arrayList = new ArrayList<String>();
+        arrayList.add("PEUGEOT");
+        arrayList.add("HUMMER");
+        marq.name.permittedValues(arrayList);
+        marques.delete(marq);
+        List<Marque> afterList = marques.getAllRows().toList();
+        System.out.println("rowList.size()==" + marques.toList().size());
+        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
+        Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+
+    }
+
+    @Test
+    public void testDeleteByExampleUsingSet() throws SQLException {
+        List<Marque> beforeList = marques.getAllRows().toList();
+        System.out.println("rowList.size()==" + marques.toList().size());
+        Marque marq = new Marque();
+        HashSet<String> hashSet = new HashSet<String>();
+        hashSet.add("PEUGEOT");
+        hashSet.add("HUMMER");
+        marq.name.permittedValues(hashSet);
+        marques.delete(marq);
+        List<Marque> afterList = marques.getAllRows().toList();
+        System.out.println("rowList.size()==" + marques.toList().size());
+        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marques.toList().size());
+        Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+
     }
 }
