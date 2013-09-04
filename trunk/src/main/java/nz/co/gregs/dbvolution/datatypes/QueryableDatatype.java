@@ -11,8 +11,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.*;
@@ -167,11 +167,11 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
-    public void permittedValues(List<Object> permitted) {
+    public void permittedValues(Collection<Object> permitted) {
         if (permitted == null) {
             useNullOperator();
-        } else if (permitted.size() == 1) {
-            useEqualsOperator(permitted.get(0));
+//        } else if (permitted.size() == 1) {
+//            useEqualsOperator(permitted.get(0));
         } else {
             useInOperator(permitted.toArray());
         }
@@ -195,11 +195,11 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
-    public void permittedValuesIgnoreCase(List<String> permitted) {
+    public void permittedValuesIgnoreCase(Collection<String> permitted) {
         if (permitted == null) {
             useNullOperator();
-        } else if (permitted.size() == 1) {
-            useEqualsCaseInsensitiveOperator(permitted.get(0));
+//        } else if (permitted.size() == 1) {
+//            useEqualsCaseInsensitiveOperator(permitted.get(0));
         } else {
             useInCaseInsensitiveOperator(permitted.toArray(new String[]{}));
         }
@@ -223,11 +223,11 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
-    public void excludedValuesIgnoreCase(List<String> permitted) {
+    public void excludedValuesIgnoreCase(Collection<String> permitted) {
         if (permitted == null) {
             useNullOperator();
-        } else if (permitted.size() == 1) {
-            useEqualsCaseInsensitiveOperator(permitted.get(0)).not();
+//        } else if (permitted.size() == 1) {
+//            useEqualsCaseInsensitiveOperator(permitted.get(0)).not();
         } else {
             useInCaseInsensitiveOperator(permitted.toArray(new String[]{})).not();
         }
@@ -262,11 +262,11 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
-    public void excludedValues(List<Object> permitted) {
+    public void excludedValues(Collection<Object> permitted) {
         if (permitted == null) {
             useNullOperator().not();
-        } else if (permitted.size() == 1) {
-            useEqualsOperator(permitted.get(0)).not();
+//        } else if (permitted.size() == 1) {
+//            useEqualsOperator(permitted.get(0)).not();
         } else {
             useInOperator(permitted.toArray()).not();
         }
