@@ -66,6 +66,13 @@ abstract public class DBRow implements Serializable {
             throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         }
     }
+    
+    public void clear(){
+        List<QueryableDatatype> qdts = getQueryableDatatypes();
+        for(QueryableDatatype qdt: qdts){
+            qdt.clear();
+        }
+    }
 
     public QueryableDatatype getPrimaryKey() {
         QueryableDatatype queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
