@@ -174,7 +174,9 @@ public abstract class DBDatabase {
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
-                    this.getDBTable(rowList.get(0)).delete(rowList);
+                    for (DBRow row : rowList) {
+                        this.getDBTable(row).delete(row);
+                    }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
@@ -197,7 +199,9 @@ public abstract class DBDatabase {
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
-                    this.getDBTable(rowList.get(0)).update(rowList);
+                    for (DBRow row : rowList) {
+                        this.getDBTable(row).update(row);
+                    }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
