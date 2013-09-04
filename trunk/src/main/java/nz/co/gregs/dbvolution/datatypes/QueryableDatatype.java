@@ -11,8 +11,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.*;
@@ -157,7 +158,15 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         if (permitted == null) {
             useNullOperator();
         } else if (permitted.length == 1) {
-            useEqualsOperator(permitted[0]);
+            if (permitted[0] instanceof List) {
+                List<?> myList = (List) permitted[0];
+                permittedValues(myList.toArray());
+            } else if (permitted[0] instanceof Set) {
+                Set<?> mySet = (Set) permitted[0];
+                permittedValues(mySet.toArray());
+            } else {
+                useEqualsOperator(permitted[0]);
+            }
         } else {
             useInOperator(permitted);
         }
@@ -167,15 +176,29 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
-    public void permittedValues(Collection<Object> permitted) {
-        if (permitted == null) {
-            useNullOperator();
+//    public void permittedValues(List<Object> permitted) {
+//        if (permitted == null) {
+//            useNullOperator();
 //        } else if (permitted.size() == 1) {
 //            useEqualsOperator(permitted.get(0));
-        } else {
-            useInOperator(permitted.toArray());
-        }
-    }
+//        } else {
+//            useInOperator(permitted.toArray());
+//        }
+//    }
+
+    /**
+     *
+     * @param permitted
+     */
+//    public void permittedValues(Set<Object> permitted) {
+//        if (permitted == null) {
+//            useNullOperator();
+////        } else if (permitted.size() == 1) {
+////            useEqualsOperator(permitted.get(0));
+//        } else {
+//            useInOperator(permitted.toArray());
+//        }
+//    }
 
     /**
      *
@@ -195,7 +218,21 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
-    public void permittedValuesIgnoreCase(Collection<String> permitted) {
+    public void permittedValuesIgnoreCase(List<String> permitted) {
+        if (permitted == null) {
+            useNullOperator();
+        } else if (permitted.size() == 1) {
+            useEqualsCaseInsensitiveOperator(permitted.get(0));
+        } else {
+            useInCaseInsensitiveOperator(permitted.toArray(new String[]{}));
+        }
+    }
+
+    /**
+     *
+     * @param permitted
+     */
+    public void permittedValuesIgnoreCase(Set<String> permitted) {
         if (permitted == null) {
             useNullOperator();
 //        } else if (permitted.size() == 1) {
@@ -223,13 +260,27 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
-    public void excludedValuesIgnoreCase(Collection<String> permitted) {
+    public void excludedValuesIgnoreCase(List<String> permitted) {
         if (permitted == null) {
+            useNullOperator();
+        } else if (permitted.size() == 1) {
+            useEqualsCaseInsensitiveOperator(permitted.get(0)).not();
+        } else {
+            useInCaseInsensitiveOperator(permitted.toArray(new String[]{})).not();
+        }
+    }
+
+    /**
+     *
+     * @param excluded
+     */
+    public void excludedValuesIgnoreCase(Set<String> excluded) {
+        if (excluded == null) {
             useNullOperator();
 //        } else if (permitted.size() == 1) {
 //            useEqualsCaseInsensitiveOperator(permitted.get(0)).not();
         } else {
-            useInCaseInsensitiveOperator(permitted.toArray(new String[]{})).not();
+            useInCaseInsensitiveOperator(excluded.toArray(new String[]{})).not();
         }
     }
 
@@ -250,25 +301,43 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
-     * @param permitted
+     * @param excluded
      */
-    public void excludedValues(Object... permitted) {
-        if (permitted == null) {
+    public void excludedValues(Object... excluded) {
+        if (excluded == null) {
             useNullOperator().not();
-        } else if (permitted.length == 1) {
-            useEqualsOperator(permitted[0]).not();
+        } else if (excluded.length == 1) {
+            if (excluded[0] instanceof List) {
+                List<?> myList = (List) excluded[0];
+                excludedValues(myList.toArray());
+            } else if (excluded[0] instanceof Set) {
+                Set<?> mySet = (Set) excluded[0];
+                excludedValues(mySet.toArray());
+            } else {
+                useEqualsOperator(excluded[0]).not();
+            }
         } else {
-            useInOperator(permitted).not();
+            useInOperator(excluded).not();
         }
     }
 
-    public void excludedValues(Collection<Object> permitted) {
-        if (permitted == null) {
+    public void excludedValues(List<Object> excluded) {
+        if (excluded == null) {
             useNullOperator().not();
 //        } else if (permitted.size() == 1) {
 //            useEqualsOperator(permitted.get(0)).not();
         } else {
-            useInOperator(permitted.toArray()).not();
+            useInOperator(excluded.toArray()).not();
+        }
+    }
+
+    public void excludedValues(Set<Object> excluded) {
+        if (excluded == null) {
+            useNullOperator().not();
+//        } else if (permitted.size() == 1) {
+//            useEqualsOperator(permitted.get(0)).not();
+        } else {
+            useInOperator(excluded.toArray()).not();
         }
     }
 
