@@ -37,6 +37,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 abstract public class DBRow implements Serializable {
 
     private transient DBDatabase database;
+    private boolean isDefined = false;
     private List<Field> ignoredRelationships = new ArrayList<Field>();
     private List<Field> returnColumns = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
@@ -77,6 +78,26 @@ abstract public class DBRow implements Serializable {
     public QueryableDatatype getPrimaryKey() {
         QueryableDatatype queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
         return queryableValueOfField;
+    }
+    
+    /**
+     * 
+     * indicates that the DBRow is defined in the database
+     *
+     * @param newValue
+     */
+    protected void setDefined(boolean newValue){
+        isDefined = newValue;
+    }
+
+    /**
+     * 
+     * indicates if the DBRow is defined in the database
+     *
+     * @param newValue
+     */
+    public boolean getDefined(){
+        return isDefined;
     }
 
     @Deprecated

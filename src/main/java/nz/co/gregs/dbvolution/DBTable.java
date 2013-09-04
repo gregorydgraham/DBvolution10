@@ -234,6 +234,7 @@ public class DBTable<E extends DBRow> {
                     }
                 }
             }
+            tableRow.setDefined(true);
             dbTable.listOfRows.add(tableRow);
         }
     }
@@ -641,25 +642,37 @@ public class DBTable<E extends DBRow> {
      */
     public List<String> getSQLForDelete(List<E> oldRows) {
         DBDefinition defn = database.getDefinition();
-        List<String> allInserts = new ArrayList<String>();
+        List<String> allDeletes = new ArrayList<String>();
         for (E row : oldRows) {
             row.setDatabase(database);
-            final QueryableDatatype primaryKey = row.getPrimaryKey();
-            if (primaryKey==null) {
-                allInserts.add(getSQLForDeleteWithoutPrimaryKey(row));
+            if (row.getDefined()) {
+                final QueryableDatatype primaryKey = row.getPrimaryKey();
+                if (primaryKey == null) {
+                    allDeletes.add(getSQLForDeleteWithoutPrimaryKey(row));
+                } else {
+                    String sql =
+                            defn.beginDeleteLine()
+                            + row.getTableName()
+                            + defn.beginWhereClause()
+                            + this.getPrimaryKeyColumn()
+                            + defn.getEqualsComparator()
+                            + primaryKey.getSQLValue()
+                            + defn.endDeleteLine();
+                    allDeletes.add(sql);
+                }
             } else {
+                // Delete by example
                 String sql =
                         defn.beginDeleteLine()
                         + row.getTableName()
                         + defn.beginWhereClause()
-                        + this.getPrimaryKeyColumn()
-                        + defn.getEqualsComparator()
-                        + primaryKey.getSQLValue()
+                        + defn.getTrueOperation()
+                        + getSQLForExample(row)
                         + defn.endDeleteLine();
-                allInserts.add(sql);
+                allDeletes.add(sql);
             }
         }
-        return allInserts;
+        return allDeletes;
     }
 
     /**
