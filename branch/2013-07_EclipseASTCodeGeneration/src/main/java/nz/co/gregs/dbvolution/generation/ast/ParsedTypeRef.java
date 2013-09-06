@@ -52,7 +52,35 @@ public class ParsedTypeRef {
 	public String toString() {
 		return astNode.toString();
 	}
-	
+
+	/**
+	 * Hashcode based on string representation of referenced type.
+	 */
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	/**
+	 * Equality based on string representation of referenced type.
+	 * Only an approximate concept of equality that is suitable for use within
+	 * the same source file.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ParsedTypeRef)) {
+			return false;
+		}
+		ParsedTypeRef other = (ParsedTypeRef) obj;
+		return this.toString().equals(other.toString());
+	}
+
 	public Type astNode() {
 		return astNode;
 	}
@@ -79,8 +107,10 @@ public class ParsedTypeRef {
 	 * generic parameter.
 	 * For recursive arrays, this can be any number of values.
 	 * The resultant list can be used for constructing imports etc.
+	 * @deprecated not working yet
 	 * @return
 	 */
+	@Deprecated
 	public List<Class<?>> getReferencedTypes() {
 		return javaTypesOf(astNode);
 	}

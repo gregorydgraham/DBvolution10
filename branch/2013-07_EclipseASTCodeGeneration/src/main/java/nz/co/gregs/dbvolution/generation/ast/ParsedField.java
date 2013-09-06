@@ -128,7 +128,7 @@ public class ParsedField {
 		}
 		buf.append("field "+getName());
 		buf.append(";");
-		if (isDBTableColumn()) {
+		if (isDBColumn()) {
 			buf.append(" // columnName="+getColumnNameIfSet());
 		}
 		return buf.toString();
@@ -149,8 +149,10 @@ public class ParsedField {
 	 * generic parameter.
 	 * For recursive arrays, this can be any number of values.
 	 * The resultant list can be used for constructing imports etc.
+	 * @deprecated not working yet
 	 * @return
 	 */
+	@Deprecated
 	public List<Class<?>> getReferencedTypes() {
 		return getType().getReferencedTypes();
 	}
@@ -164,10 +166,11 @@ public class ParsedField {
 	}
 	
 	/**
-	 * Indicates whether this annotation is {@link nz.co.gregs.dbvolution.annotations.DBTableColumn}.
+	 * Indicates whether this field is declared with a
+	 * {@link nz.co.gregs.dbvolution.annotations.DBTableColumn} annotation.
 	 */
-	public boolean isDBTableColumn() {
-		return parsedFieldDeclaration.isDBTableColumn();
+	public boolean isDBColumn() {
+		return parsedFieldDeclaration.isDBColumn();
 	}
 	
 	/**
@@ -178,7 +181,7 @@ public class ParsedField {
 	 */
 	public String getColumnNameIfSet() {
 		for (ParsedAnnotation annotation: getAnnotations()) {
-			if (annotation.isDBTableColumn()) {
+			if (annotation.isDBColumn()) {
 				String columnName = annotation.getColumnNameIfSet();
 				if (columnName == null) {
 					columnName = getName();
@@ -255,7 +258,7 @@ public class ParsedField {
 			}
 			buf.append("field "+joinNamesOf(getFields(), ", "));
 			buf.append(";");
-			if (isDBTableColumn()) {
+			if (isDBColumn()) {
 				buf.append(" // columnNames="+join(getColumnNamesIfSet(),","));
 			}
 			return buf.toString();
@@ -278,11 +281,13 @@ public class ParsedField {
 		}
 		
 		/**
-		 * Indicates whether this annotation is {@link nz.co.gregs.dbvolution.annotations.DBTableColumn}.
+		 * Indicates whether this field is declared with a
+		 * {@link nz.co.gregs.dbvolution.annotations.DBColumn}
+		 * annotation.
 		 */
-		public boolean isDBTableColumn() {
+		public boolean isDBColumn() {
 			for (ParsedAnnotation annotation: getAnnotations()) {
-				if (annotation.isDBTableColumn()) {
+				if (annotation.isDBColumn()) {
 					return true;
 				}
 			}

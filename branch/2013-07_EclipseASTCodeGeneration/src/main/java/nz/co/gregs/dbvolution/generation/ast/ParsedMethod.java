@@ -10,6 +10,7 @@ import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.ReturnStatement;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.Type;
@@ -20,6 +21,8 @@ import org.eclipse.jdt.core.dom.Type;
  */
 public class ParsedMethod {
 	private ParsedTypeContext typeContext;
+	private ParsedTypeRef returnType;
+	private List<ParsedTypeRef> argumentTypes;
 	private MethodDeclaration astNode;
 	private List<ParsedAnnotation> annotations;
 	
@@ -73,6 +76,15 @@ public class ParsedMethod {
 		this.typeContext = typeContext;
 		this.astNode = astNode;
 		
+		// return type
+		this.returnType = new ParsedTypeRef(typeContext, astNode.getReturnType2());
+		
+		// argument types
+		this.argumentTypes = new ArrayList<ParsedTypeRef>();
+		for (SingleVariableDeclaration varDecl: (List<SingleVariableDeclaration>)astNode.parameters()) {
+			argumentTypes.add(new ParsedTypeRef(typeContext, varDecl.getType()));
+		}
+		
     	// method annotations
 		this.annotations = new ArrayList<ParsedAnnotation>();
     	for(IExtendedModifier modifier: (List<IExtendedModifier>)astNode.modifiers()) {
@@ -97,8 +109,12 @@ public class ParsedMethod {
 		return astNode;
 	}
 	
-	public Type getType() {
-		return astNode.getReturnType2();
+	public ParsedTypeRef getReturnType() {
+		return returnType;
+	}
+	
+	public List<ParsedTypeRef> getArgumentTypes() {
+		return argumentTypes;
 	}
 	
 	public String getName() {
@@ -107,5 +123,37 @@ public class ParsedMethod {
 	
 	public List<ParsedAnnotation> getAnnotations() {
 		return annotations;
+	}
+	
+	/**
+	 * Indicates whether this method is declared with a
+	 * {@link nz.co.gregs.dbvolution.annotations.DBColumn} annotation.
+	 */
+	public boolean isDBColumn() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBColumn()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Gets the table name, as specified via the {@code DBTableColumn} annotation
+	 * or defaulted based on the field name, if it has a {@code DBTableColumn}
+	 * annotation.
+	 * @return {@code null} if not applicable
+	 */
+	public String getColumnNameIfSet() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBColumn()) {
+				String columnName = annotation.getColumnNameIfSet();
+				if (columnName == null) {
+					columnName = JavaRules.propertyNameOf(this); // default based on property name
+				}
+				return columnName;
+			}
+		}
+		return null;
 	}
 }

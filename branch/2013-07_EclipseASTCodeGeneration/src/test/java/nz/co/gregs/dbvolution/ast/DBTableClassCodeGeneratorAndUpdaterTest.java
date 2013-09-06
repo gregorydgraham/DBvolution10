@@ -10,7 +10,7 @@ import nz.co.gregs.dbvolution.generation.ast.TableNameResolver;
 
 import org.junit.Test;
 
-public class DBTableClassCodeGeneratorAndUpdaterTest {
+public class DBTableClassCodeGeneratorAndUpdaterTest extends AbstractASTTest {
 	@Test
 	public void generateFromMetaData() {
 		TableNameResolver resolver = new TableNameResolver(DBTableClassCodeGeneratorAndUpdaterTest.class.getPackage().getName());

@@ -59,7 +59,7 @@ public class ParsedAnnotation {
 	/**
 	 * Indicates whether this annotation is {@link nz.co.gregs.dbvolution.annotations.DBTableColumn}.
 	 */
-	public boolean isDBTableColumn() {
+	public boolean isDBColumn() {
 		return typeContext.isDeclarationOfType(DBColumn.class, getDeclaredTypeName());
 	}
 	
@@ -69,7 +69,7 @@ public class ParsedAnnotation {
 	 * @return {@code null} if not applicable
 	 */
 	public String getColumnNameIfSet() {
-		if (!isDBTableColumn()) {
+		if (!isDBColumn()) {
 			return null;
 		}
 		

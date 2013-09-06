@@ -1,10 +1,6 @@
 package nz.co.gregs.dbvolution.ast;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.generation.ast.ColumnNameResolver;
@@ -20,7 +16,7 @@ import org.junit.Test;
  * @see http://help.eclipse.org/helios/index.jsp?topic=%2Forg.eclipse.jdt.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fjdt%2Fcore%2Fdom%2FASTParser.html
  * @author Malcolm Lett
  */
-public class LowLevelGenerationTests {
+public class LowLevelGenerationTests extends AbstractASTTest {
 	@Test
 	public void generatesWhenUsingLowLevelMethods() throws MalformedTreeException, BadLocationException {
 		
@@ -46,7 +42,7 @@ public class LowLevelGenerationTests {
 
 	@Test
 	public void updatesWhenUsingLowLevelMethods() throws MalformedTreeException, BadLocationException {
-		ParsedClass javatype = ParsedClass.of(getSource());
+		ParsedClass javatype = ParsedClass.of(getMarqueSource());
 		System.out.println(javatype.toString());
 		
 		ColumnNameResolver columnNameResolver = new ColumnNameResolver();
@@ -64,23 +60,4 @@ public class LowLevelGenerationTests {
 		javatype.writeToSourceFolder(srcFolder);
 	}
 	
-	private static String getSource() {
-		BufferedReader reader = null;
-		try {
-			StringBuilder buf = new StringBuilder();
-			InputStream is = LowLevelGenerationTests.class.getResourceAsStream("Marque.java.txt");
-			reader = new BufferedReader(new InputStreamReader(is));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				buf.append(line).append("\n");
-			}
-			return buf.toString();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				reader.close();
-			} catch (IOException dropped) {} // assume caused by earlier exception
-		}
-	}
 }

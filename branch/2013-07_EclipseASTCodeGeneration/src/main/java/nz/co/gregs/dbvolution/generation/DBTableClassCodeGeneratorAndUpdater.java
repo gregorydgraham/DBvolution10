@@ -78,6 +78,20 @@ public class DBTableClassCodeGeneratorAndUpdater {
 		}
 	}
 	
+	/**
+	 * For each column that is:
+	 * <ul>
+	 * <li> missing on the target source file: add the standard property structure (field, getters/setters, etc.)
+	 * <li> extra in the target source file: delete the associated field and getter/setters, regardless of modifications to them.
+	 * </ul>
+	 * where:
+	 * <ul>
+	 * <li> a property is identified by having a field or getter or setter with the appropriate annotation, and
+	 * <li> fields and getter/setters are associated by property name as per standard bean specification
+	 *      (ie: doesn't have to parse the methods).
+	 * </ul>
+	 * @param dbTableClass
+	 */
 	protected void ensureFieldsFor(DBTableClass dbTableClass) {
 		SetMatcher<ParsedField, DBTableField> matches = new SetMatcher<ParsedField, DBTableField>(
 				parsedClass.getFields(), dbTableClass.fields,

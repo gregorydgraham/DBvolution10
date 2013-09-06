@@ -426,6 +426,36 @@ public class ParsedClass {
 	public List<ParsedMethod> getMethods() {
 		return methods;
 	}
+
+	/**
+	 * Gets the field by name, if it exists.
+	 * Note: if more than one field exist with the same name, returns only the first one.
+	 * @param name
+	 * @return the identified field or null if not found
+	 */
+	public ParsedField getField(String name) {
+		for (ParsedField field: getFields()) {
+			if (name.equals(field.getName())) {
+				return field;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the method by name, if it exists.
+	 * Note: if more than one method exist with the same name, returns only the first one.
+	 * @param name
+	 * @return the identified method or null if not found
+	 */
+	public ParsedMethod getMethod(String name) {
+		for (ParsedMethod method: getMethods()) {
+			if (name.equals(method.getName())) {
+				return method;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * Indents all lines within the source string by the indent string.
