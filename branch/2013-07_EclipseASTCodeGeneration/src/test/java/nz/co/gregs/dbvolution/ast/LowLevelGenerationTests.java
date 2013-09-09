@@ -31,9 +31,13 @@ public class LowLevelGenerationTests extends AbstractASTTest {
 		System.out.println(newField);
 		javatype.addFieldAfter(null, newField);
 		
-		ParsedMethod newMethod = ParsedMethod.newFieldGetterInstance(javatype.getTypeContext(), newField);
-		System.out.println(newMethod);
-		javatype.addMethodAfter(null, newMethod);
+		ParsedMethod newGetterMethod = ParsedMethod.newGetterInstance(javatype.getTypeContext(), newField);
+		System.out.println(newGetterMethod);
+		javatype.addMethodAfter(null, newGetterMethod);
+
+		ParsedMethod newSetterMethod = ParsedMethod.newSetterInstance(javatype.getTypeContext(), newField);
+		System.out.println(newSetterMethod);
+		javatype.addMethodAfter(null, newSetterMethod);
 		
 		File srcFolder = new File("target/test-output");
 		srcFolder.mkdirs();
@@ -51,7 +55,7 @@ public class LowLevelGenerationTests extends AbstractASTTest {
 		System.out.println(newField);
 		javatype.addFieldAfter(null, newField);
 		
-		ParsedMethod newMethod = ParsedMethod.newFieldGetterInstance(javatype.getTypeContext(), newField);
+		ParsedMethod newMethod = ParsedMethod.newGetterInstance(javatype.getTypeContext(), newField);
 		System.out.println(newMethod);
 		javatype.addMethodAfter(null, newMethod);
 		

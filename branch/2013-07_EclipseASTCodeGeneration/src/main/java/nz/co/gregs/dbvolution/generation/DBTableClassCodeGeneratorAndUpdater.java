@@ -3,13 +3,9 @@ package nz.co.gregs.dbvolution.generation;
 import java.io.File;
 import java.util.Comparator;
 
-import nz.co.gregs.dbvolution.ast.LowLevelGenerationTests;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generation.ast.ColumnNameResolver;
+import nz.co.gregs.dbvolution.generation.ast.ParsedBeanProperty;
 import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
-import nz.co.gregs.dbvolution.generation.ast.ParsedField;
 import nz.co.gregs.dbvolution.generation.ast.TableNameResolver;
 
 /**
@@ -46,7 +42,7 @@ public class DBTableClassCodeGeneratorAndUpdater {
 	 */
 	public void ensureAs(DBTableClass dbTableClass) {
 		ensureClassFor(dbTableClass);
-		ensureFieldsFor(dbTableClass);
+		ensurePropertiesFor(dbTableClass);
 		
 		File srcFolder = new File("target/test-output"); // TODO: this needs to be specified somewhere
 		srcFolder.mkdirs();
@@ -92,17 +88,17 @@ public class DBTableClassCodeGeneratorAndUpdater {
 	 * </ul>
 	 * @param dbTableClass
 	 */
-	protected void ensureFieldsFor(DBTableClass dbTableClass) {
-		SetMatcher<ParsedField, DBTableField> matches = new SetMatcher<ParsedField, DBTableField>(
-				parsedClass.getFields(), dbTableClass.fields,
+	protected void ensurePropertiesFor(DBTableClass dbTableClass) {
+		SetMatcher<ParsedBeanProperty, DBTableField> matches = new SetMatcher<ParsedBeanProperty, DBTableField>(
+				parsedClass.getDBColumnProperties(), dbTableClass.fields,
 				new Comparator<Object>(){
 					@Override
 					public int compare(Object o1, Object o2) {
-						ParsedField parsedField = (ParsedField) o1;
+						ParsedBeanProperty parsedProperty = (ParsedBeanProperty) o1;
 						DBTableField tableField = (DBTableField) o2;
 						
 						// TODO: need to use equals/equalsIgnoreCase depending on database definition.
-						String parsedColumnName = parsedField.getColumnNameIfSet();
+						String parsedColumnName = parsedProperty.getColumnNameIfSet();
 						boolean equals = (parsedColumnName != null) && parsedColumnName.equalsIgnoreCase(tableField.getColumnName());
 						return equals ? 0 : 1;
 					}
@@ -110,15 +106,18 @@ public class DBTableClassCodeGeneratorAndUpdater {
 		
 		ColumnNameResolver columnNameResolver = new ColumnNameResolver();
 		
-		// add missing fields
+		// add missing properties
+		// TODO need to include handling of field/method name collisions
 		for (DBTableField tableField: matches.getOnlyInB()) {
-			ParsedField newField = ParsedField.newDBTableColumnInstance(parsedClass.getTypeContext(),
+			ParsedBeanProperty newProperty = ParsedBeanProperty.newDBTableColumnInstance(parsedClass.getTypeContext(),
 					columnNameResolver.getPropertyNameFor(tableField.getColumnName()),
 					tableField.getColumnType(), tableField.isPrimaryKey(), tableField.getColumnName());
-			parsedClass.addFieldAfter(null, newField);
-			
-			// TODO: generate getter/setter methods too
+			parsedClass.addFieldAfter(null, newProperty.field());
+			parsedClass.addMethodAfter(null, newProperty.getter());
+			parsedClass.addMethodAfter(null, newProperty.setter());
 		}
+		
+		// TODO - remove extra properties
 		
 	}
 }

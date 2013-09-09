@@ -52,7 +52,7 @@ public class ColumnNameResolver {
 			return propertyName;
 		}
 		
-		propertyName = DBTableClassGenerator.toClassCase(columnName);
+		propertyName = DBTableClassGenerator.toFieldCase(columnName);
 		addClass(propertyName, columnName);
 		return propertyName;
 	}

@@ -3,6 +3,8 @@ package nz.co.gregs.dbvolution.generation.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.Name;
@@ -18,6 +20,7 @@ import org.eclipse.jdt.core.dom.WildcardType;
  * A reference to a type.
  * Models the type of a field, getter/setter method, type passed
  * to an annotation, or an annotation type itself.
+ * At present excludes some AST types which are handled differently: imports
  */
 public class ParsedTypeRef {
 	private static final Class<?> UNRECOGNISED_JAVA_TYPE = ParsedTypeRef.class; // marker value
@@ -90,9 +93,57 @@ public class ParsedTypeRef {
 	}
 	
 	/**
+	 * Gets the name qualified to the level as it is declared.
+	 * For complex types such as arrays and generic types, returns only
+	 * the main referenced type.
+	 */
+	public String getDeclaredTypeName() {
+		return fullyQualifiedDeclaredTypeNameOf(astNode);
+	}
+
+	/**
+	 * Gets the simple name.
+	 * For complex types such as arrays and generic types, returns only
+	 * the main referenced type.
+	 */
+	public String getSimpleTypeName() {
+		String name = fullyQualifiedDeclaredTypeNameOf(astNode);
+		if (name.contains(".")) {
+			return name.substring(name.lastIndexOf(".")+1);
+		}
+		return name;
+	}
+	
+	/**
+	 * Gets the (inferred) fully qualified name.
+	 * For complex types such as arrays and generic types, returns only
+	 * the main referenced type.
+	 * This value returned by this method is inferred where possible,
+	 * and left as the declared name when not possible due to ambiguous wildcard imports.
+	 */
+	public String getQualifiedTypeName() {
+		return typeContext.getFullyQualifiedNameOf(
+				fullyQualifiedDeclaredTypeNameOf(astNode));
+	}
+	
+	/**
+	 * Checks whether the referenced type is the specified java type
+	 * object.
+	 * Currently not aware of distinctions of array and parameterized
+	 * types vs. simple types.
+	 * @param type
+	 * @return
+	 */
+	public boolean isJavaType(Class<?> type) {
+		return typeContext.isDeclarationOfType(DBColumn.class, getDeclaredTypeName());
+	}
+	
+	/**
 	 * Gets the java type, if recognised.
 	 * @return the type, if recognised, {@code null} otherwise.
+	 * @deprecated not working yet
 	 */
+	@Deprecated
 	public Class<?> getJavaTypeIfKnown() {
 		if (javaType == null) {
 			// TODO: calculate its value, use UNRECOGNISED_JAVA_TYPE if don't recognise it
@@ -113,6 +164,64 @@ public class ParsedTypeRef {
 	@Deprecated
 	public List<Class<?>> getReferencedTypes() {
 		return javaTypesOf(astNode);
+	}
+	
+	/**
+	 * Gets a string representing the declared type as it is declared,
+	 * without frills such as array or parameterization indications.
+	 * The returned string is qualified to the level that it is qualified
+	 * in the source.
+	 * @param type
+	 * @return
+	 */
+	protected String fullyQualifiedDeclaredTypeNameOf(Type type) {
+		Type rootType = rootTypeOf(type);
+		if (rootType instanceof SimpleType) {
+			return ((SimpleType) rootType).getName().getFullyQualifiedName();
+		}
+		else if (rootType instanceof PrimitiveType) {
+			return ((PrimitiveType) rootType).getPrimitiveTypeCode().toString();
+		}
+		else if (rootType instanceof QualifiedType) {
+			String qualifierName = fullyQualifiedDeclaredTypeNameOf(((QualifiedType) rootType).getQualifier());
+			String simpleName = ((QualifiedType) rootType).getName().getFullyQualifiedName();
+			if (qualifierName != null && !qualifierName.isEmpty()) {
+				return qualifierName+"."+simpleName;
+			}
+			return simpleName;
+		}
+		throw new IllegalStateException("not prepared for "+astNode.getClass().getSimpleName()+" types");
+	}
+	
+	/**
+	 * Gets the single most important simple, primitive or qualified type.
+	 * Handled as per:
+	 * <ul>
+	 * <li> simple type - the simple type reference
+	 * <li> primitive type - the primitive type reference
+	 * <li> array - the underlying element type (Integer[][] -&gt; Integer)
+	 * <li> qualified type - the simple type without the qualifier (java.lang.Integer -&gt; Integer)
+	 * <li> parameterized type - the simple type without its parameters (List<String> -&gt; List)
+	 * </ul>
+	 * @return
+	 */
+	protected Type rootTypeOf(Type type) {
+		if (astNode instanceof SimpleType) {
+			return (SimpleType) astNode;
+		}
+		else if (astNode instanceof ArrayType) {
+			return rootTypeOf(((ArrayType) astNode).getElementType());
+		}
+		else if (astNode instanceof ParameterizedType) {
+			return rootTypeOf(((ParameterizedType) astNode).getType());
+		}
+		else if (astNode instanceof PrimitiveType) {
+			return astNode;
+		}
+		else if (astNode instanceof QualifiedType) {
+			return astNode;
+		}
+		throw new IllegalStateException("not prepared for "+astNode.getClass().getSimpleName()+" types");
 	}
 	
 	// TODO: this will never actually do anything useful because the handling 

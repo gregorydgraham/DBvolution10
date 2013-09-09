@@ -13,6 +13,29 @@ public class ParsedBeanProperty {
 	private ParsedMethod getter = null;
 	private ParsedMethod setter = null;
 	
+	/**
+	 * Creates a new property with a field and accessor methods.
+	 * Updates the imports in the type context.
+	 * 
+	 * <p> Note: field name and method name duplication avoidance must be done outside of this method.
+	 * @param typeContext
+	 * @param propertyName
+	 * @param propertyType
+	 * @param isPrimaryKey
+	 * @param columnName
+	 * @return
+	 */
+	public static ParsedBeanProperty newDBTableColumnInstance(ParsedTypeContext typeContext, String propertyName, Class<?> propertyType, boolean isPrimaryKey, String columnName) {
+		ParsedField field = ParsedField.newDBTableColumnInstance(typeContext,
+				propertyName, propertyType, isPrimaryKey, columnName);
+		
+		ParsedMethod getter = ParsedMethod.newGetterInstance(typeContext, field);
+		
+		ParsedMethod setter = ParsedMethod.newSetterInstance(typeContext, field);
+		
+		return new ParsedBeanProperty(field, getter, setter);
+	}
+	
 	public ParsedBeanProperty(ParsedField field, ParsedMethod getter, ParsedMethod setter) {
 		this.field = field;
 		this.getter = getter;

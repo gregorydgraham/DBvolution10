@@ -7,8 +7,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
@@ -270,6 +272,179 @@ public class ParsedClass {
 	public String getDBTableNameIfSet() {
 		throw new UnsupportedOperationException();
 	}
+
+	public String getPackage() {
+		if (unit.getPackage() != null) {
+			return unit.getPackage().getName().getFullyQualifiedName();
+		}
+		return null;
+	}
+
+	public String getSimpleName() {
+		String name = getDeclaredName();
+		if (name.contains(".")) {
+			return name.substring(name.lastIndexOf(".")+1);
+		}
+		return name;
+	}
+	
+	public String getDeclaredName() {
+		return astNode.getName().getFullyQualifiedName();
+	}
+	
+	public String getFullyQualifiedName() {
+		return ((getPackage() == null) ? "" : getPackage()+".")+getDeclaredName();
+	}
+	
+	public List<ParsedField> getFields() {
+		return fields;
+	}
+	
+	public List<ParsedMethod> getMethods() {
+		return methods;
+	}
+
+	/**
+	 * Gets the field by name, if it exists.
+	 * Note: if more than one field exist with the same name, returns only the first one.
+	 * @param name
+	 * @return the identified field or null if not found
+	 */
+	public ParsedField getField(String name) {
+		for (ParsedField field: getFields()) {
+			if (name.equals(field.getName())) {
+				return field;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the method by name, if it exists.
+	 * Note: if more than one method exist with the same name, returns only the first one.
+	 * @param name
+	 * @return the identified method or null if not found
+	 */
+	public ParsedMethod getMethod(String name) {
+		for (ParsedMethod method: getMethods()) {
+			if (name.equals(method.getName())) {
+				return method;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the getter method for the given field, if it is available.
+	 * @param field must be a field within this class or supertype.
+	 * @return the identified method or null if not found
+	 */
+	public ParsedMethod getGetterMethodFor(ParsedField field) {
+		return ParsedMethod.findGetterFor(field, this);
+	}
+
+	/**
+	 * Gets the setter method for the given field, if it is available.
+	 * @param field must be a field within this class or supertype.
+	 * @return the identified method or null if not found
+	 */
+	public ParsedMethod getSetterMethodFor(ParsedField field) {
+		return ParsedMethod.findSetterFor(field, this);
+	}
+	
+	/**
+	 * Gets the list of all properties that are annotated DB columns.
+	 * Scans for both fields and methods with the appropriate
+	 * annotation.
+	 * @return non-null list, empty if none found
+	 */
+	// note: in order to handle cases where annotations exist on both fields
+	// and methods, the logic here avoids consuming anything more than once.
+	public List<ParsedBeanProperty> getDBColumnProperties() {
+		List<ParsedBeanProperty> properties = new ArrayList<ParsedBeanProperty>();
+		Set<ParsedField> consumedFields = new HashSet<ParsedField>();
+		Set<ParsedMethod> consumedMethods = new HashSet<ParsedMethod>();
+		
+		// scan fields
+		for (ParsedField field: getFields()) {
+			if (field.isDBColumn()) {
+				// attempt to find accessor methods
+				ParsedMethod getter = getGetterMethodFor(field);
+				ParsedMethod setter = getSetterMethodFor(field);
+				
+				// check and update duplicate handling
+				if (consumedMethods.contains(getter)) {
+					getter = null;
+				}
+				if (consumedMethods.contains(setter)) {
+					setter = null;
+				}
+				if (getter != null) {
+					consumedMethods.add(getter);
+				}
+				if (setter != null) {
+					consumedMethods.add(setter);
+				}
+
+				// add property
+				properties.add(new ParsedBeanProperty(field, getter, setter));
+			}
+		}
+		
+		// scan methods
+		// (avoid checking methods already consumed)
+		for (ParsedMethod method: getMethods()) {
+			if (method.isDBColumn()) {
+				// attempt to find other accessor and field
+				ParsedField field = null;
+				ParsedMethod getter = null;
+				ParsedMethod setter = null;
+				if (method.isGetter()) {
+					getter = method;
+					
+					String propertyName = JavaRules.propertyNameOf(method);
+					setter = ParsedMethod.findSetterFor(getter, this);
+					field = getField(propertyName);
+				}
+				else if (method.isSetter()) {
+					setter = method;
+					
+					String propertyName = JavaRules.propertyNameOf(method);
+					getter = ParsedMethod.findGetterFor(getter, this);
+					field = getField(propertyName);
+				}
+				else {
+					// error: not expecting annotation on non-accessor method
+					// FIXME what to do here?
+				}
+				
+				// check and update duplicate handling
+				if (consumedFields.contains(field)) {
+					field = null;
+				}
+				if (consumedMethods.contains(getter)) {
+					getter = null;
+				}
+				if (consumedMethods.contains(setter)) {
+					setter = null;
+				}
+				if (field != null) {
+					consumedFields.add(field);
+				}
+				if (getter != null) {
+					consumedMethods.add(getter);
+				}
+				if (setter != null) {
+					consumedMethods.add(setter);
+				}
+
+				// add property
+				properties.add(new ParsedBeanProperty(field, getter, setter));
+			}
+		}
+		
+		return properties;
+	}
 	
 	/**
 	 * Adds a new field after the specified reference field.
@@ -394,67 +569,6 @@ public class ParsedClass {
 				}
 			} catch (IOException dropped) {} // assume caused by earlier exception
 		}
-	}
-	
-	public String getPackage() {
-		if (unit.getPackage() != null) {
-			return unit.getPackage().getName().getFullyQualifiedName();
-		}
-		return null;
-	}
-
-	public String getSimpleName() {
-		String name = getDeclaredName();
-		if (name.contains(".")) {
-			return name.substring(name.lastIndexOf(".")+1);
-		}
-		return name;
-	}
-	
-	public String getDeclaredName() {
-		return astNode.getName().getFullyQualifiedName();
-	}
-	
-	public String getFullyQualifiedName() {
-		return ((getPackage() == null) ? "" : getPackage()+".")+getDeclaredName();
-	}
-	
-	public List<ParsedField> getFields() {
-		return fields;
-	}
-	
-	public List<ParsedMethod> getMethods() {
-		return methods;
-	}
-
-	/**
-	 * Gets the field by name, if it exists.
-	 * Note: if more than one field exist with the same name, returns only the first one.
-	 * @param name
-	 * @return the identified field or null if not found
-	 */
-	public ParsedField getField(String name) {
-		for (ParsedField field: getFields()) {
-			if (name.equals(field.getName())) {
-				return field;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Gets the method by name, if it exists.
-	 * Note: if more than one method exist with the same name, returns only the first one.
-	 * @param name
-	 * @return the identified method or null if not found
-	 */
-	public ParsedMethod getMethod(String name) {
-		for (ParsedMethod method: getMethods()) {
-			if (name.equals(method.getName())) {
-				return method;
-			}
-		}
-		return null;
 	}
 	
 	/**
