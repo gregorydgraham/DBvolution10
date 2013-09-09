@@ -107,6 +107,7 @@ public class DBTableClassCodeGeneratorAndUpdater {
 		ColumnNameResolver columnNameResolver = new ColumnNameResolver();
 		
 		// add missing properties
+		// TODO need to insert new fields/methods in position within existing that matches order of columns
 		// TODO need to include handling of field/method name collisions
 		for (DBTableField tableField: matches.getOnlyInB()) {
 			ParsedBeanProperty newProperty = ParsedBeanProperty.newDBTableColumnInstance(parsedClass.getTypeContext(),
