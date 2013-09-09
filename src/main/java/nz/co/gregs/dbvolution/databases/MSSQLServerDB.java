@@ -15,9 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 
