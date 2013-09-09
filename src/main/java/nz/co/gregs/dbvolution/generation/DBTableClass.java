@@ -40,6 +40,8 @@ public class DBTableClass {
         }
         javaSrc.append("import nz.co.gregs.dbvolution.*;");
         javaSrc.append(lineSeparator);
+        javaSrc.append("import nz.co.gregs.dbvolution.datatypes.*;");
+        javaSrc.append(lineSeparator);
         javaSrc.append("import nz.co.gregs.dbvolution.annotations.*;");
         javaSrc.append(conceptBreak);
 
