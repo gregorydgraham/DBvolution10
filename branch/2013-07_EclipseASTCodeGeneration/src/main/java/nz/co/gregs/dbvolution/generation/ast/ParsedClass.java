@@ -161,30 +161,15 @@ public class ParsedClass {
 		// super type
 		parsedClass.setSuperType(ParsedTypeRef.newClassInstance(typeContext, DBRow.class));
 
-		// add @DBTableName
-		ParsedTypeRef dbTableNameType = ParsedTypeRef.newClassInstance(typeContext, DBTableName.class);
-		
-		StringLiteral annotationValue = ast.newStringLiteral();
-		annotationValue.setLiteralValue(tableName);
-		SingleMemberAnnotation annotation = ast.newSingleMemberAnnotation();
-		annotation.setTypeName((Name) ASTNode.copySubtree(ast, dbTableNameType.nameAstNode()));
-		annotation.setValue(annotationValue);
-		typeDeclaration.modifiers().add(0, annotation); // add before visibility modifiers
+		// add annotations
+		// (add before visibility modifiers)
+		typeDeclaration.modifiers().add(0,
+				ParsedAnnotation.newDBTableInstance(typeContext, tableName).astNode());
 		
 		// add javadoc
-		TextElement javadocText1 = ast.newTextElement();
-		javadocText1.setText("Auto-generated code. Modify at leisure.");
-		TagElement javadocTag1 = ast.newTagElement();
-		javadocTag1.fragments().add(javadocText1);
-
-		TextElement javadocText2 = ast.newTextElement();
-		javadocText2.setText("Subsequent auto-generations will retain modified code wherever possible.");
-		TagElement javadocTag2 = ast.newTagElement();
-		javadocTag2.fragments().add(javadocText2);
-		
-		typeDeclaration.setJavadoc(ast.newJavadoc());
-		typeDeclaration.getJavadoc().tags().add(javadocTag1);
-		typeDeclaration.getJavadoc().tags().add(javadocTag2);
+		typeDeclaration.setJavadoc(ParsedJavadoc.astClassInstance(typeContext,
+				"Auto-generated code. Modify at leisure.\n"+
+				"Subsequent auto-generations will retain modified code wherever possible."));
 		
 		return parsedClass;
 	}

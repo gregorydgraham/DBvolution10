@@ -11,7 +11,9 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.Type;
 
 /**
  * Information available to types, fields, members within a java source file.
@@ -69,16 +71,76 @@ public class ParsedTypeContext {
 	}
 	
 	/**
-	 * Attempts to add the import if it is missing.
-	 * If the import can't be added because an import already exists with the
-	 * same unqualified name, then the full type reference must be used inline.
-	 * 
-	 * <p> Imports are added according to standard ordering.
-	 * @param type
-	 * @return {@code true} if import included afterwards, {@code false} if can't add due to duplicate name
+	 * Gets the type name that can be used as a declaration of the
+	 * given type in generated code.
+	 * To avoid using fully qualified names, call {@link #ensureImport(Class)}
+	 * prior to calling this method.
+	 * @param type type to reference
+	 * @return fully qualified or simple name, depending on whether the type is imported
 	 */
-	public boolean ensureImport(Class<?> type) {
-		String typeSimpleName = type.getSimpleName();
+	public Name declarableTypeNameOf(Class<?> type) {
+		return declarableTypeNameOf(type, false);
+	}
+	
+	/**
+	 * Gets the type name that can be used as a declaration of the
+	 * given type in generated code.
+	 * To avoid using fully qualified names, call {@link #ensureImport(Class)}
+	 * prior to calling this method.
+	 * @param type type to reference
+	 * @return fully qualified or simple name, depending on whether the type is imported
+	 */
+	public Type declarableTypeOf(Class<?> type) {
+		return declarableTypeOf(type, false);
+	}
+
+	/**
+	 * Gets the type name that can be used as a declaration of the
+	 * given type in generated code.
+	 * If requested, attempts to add the type to the imports section
+	 * if not already present.
+	 * 
+	 * <p> Note: this does not support complex type references
+	 * or primitive types.
+	 * @param type type to reference
+	 * @param addImport whether or not to add imports
+	 * @return fully qualified or simple name, depending on whether the type is imported
+	 */
+	public Name declarableTypeNameOf(Class<?> type, boolean addImport) {
+		if (addImport) {
+			ensureImport(type);
+		}
+		return getAST().newSimpleName(
+				isImported(type) ? type.getSimpleName() : type.getName());
+	}
+	
+	/**
+	 * Gets the type name that can be used as a declaration of the
+	 * given type in generated code.
+	 * If requested, attempts to add the type to the imports section
+	 * if not already present.
+	 * 
+	 * <p> Note: this does not support complex type references
+	 * or primitive types.
+	 * @param type type to reference
+	 * @param addImport whether or not to add imports
+	 * @return fully qualified or simple name, depending on whether the type is imported
+	 */
+	public Type declarableTypeOf(Class<?> type, boolean addImport) {
+		if (addImport) {
+			ensureImport(type);
+		}
+		return getAST().newSimpleType(
+			getAST().newSimpleName(
+				isImported(type) ? type.getSimpleName() : type.getName()));
+	}
+	
+	/**
+	 * Indicates whether or not the type has been imported.
+	 * @param type
+	 * @return
+	 */
+	public boolean isImported(Class<?> type) {
 		for (ImportDeclaration importDecl: (List<ImportDeclaration>)unit.imports()) {
 			if (!importDecl.isStatic()) {
 				if (!importDecl.isOnDemand() &&
@@ -91,7 +153,31 @@ public class ParsedTypeContext {
 					// package wildcard already present
 					return true;
 				}
-				else if (!importDecl.isOnDemand() &&
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Attempts to add the import if it is missing.
+	 * If the import can't be added because an import already exists with the
+	 * same unqualified name, then the full type reference must be used inline.
+	 * 
+	 * <p> Imports are added according to standard ordering.
+	 * @param type
+	 * @return {@code true} if import included afterwards, {@code false} if can't add due to duplicate name
+	 */
+	public boolean ensureImport(Class<?> type) {
+		// check if already imported
+		if (isImported(type)) {
+			return true;
+		}
+
+		// check if contains conflicting imports
+		String typeSimpleName = type.getSimpleName();
+		for (ImportDeclaration importDecl: (List<ImportDeclaration>)unit.imports()) {
+			if (!importDecl.isStatic()) {
+				if (!importDecl.isOnDemand() &&
 						(importDecl.getName().getFullyQualifiedName().endsWith("."+typeSimpleName) ||
 								importDecl.getName().getFullyQualifiedName().equals(typeSimpleName))) {
 					// already contains a conflicting simple name

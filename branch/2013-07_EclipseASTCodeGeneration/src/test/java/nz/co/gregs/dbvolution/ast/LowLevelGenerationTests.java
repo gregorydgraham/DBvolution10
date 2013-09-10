@@ -26,7 +26,7 @@ public class LowLevelGenerationTests extends AbstractASTTest {
 		System.out.println(javatype.toString());
 		
 		ColumnNameResolver columnNameResolver = new ColumnNameResolver();
-		ParsedField newField = ParsedField.newDBTableColumnInstance(javatype.getTypeContext(),
+		ParsedField newField = ParsedField.newDBColumnInstance(javatype.getTypeContext(),
 				columnNameResolver.getPropertyNameFor("c_2"), DBInteger.class, false, "c_2");
 		System.out.println(newField);
 		javatype.addFieldAfter(null, newField);
@@ -50,7 +50,7 @@ public class LowLevelGenerationTests extends AbstractASTTest {
 		System.out.println(javatype.toString());
 		
 		ColumnNameResolver columnNameResolver = new ColumnNameResolver();
-		ParsedField newField = ParsedField.newDBTableColumnInstance(javatype.getTypeContext(),
+		ParsedField newField = ParsedField.newDBColumnInstance(javatype.getTypeContext(),
 				columnNameResolver.getPropertyNameFor("c_2"), DBInteger.class, false, "c_2");
 		System.out.println(newField);
 		javatype.addFieldAfter(null, newField);

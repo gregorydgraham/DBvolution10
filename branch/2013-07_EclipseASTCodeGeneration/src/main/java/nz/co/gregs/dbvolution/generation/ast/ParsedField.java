@@ -5,18 +5,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
-import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 /**
@@ -26,7 +22,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * while only specifying the type once, and the annotations once.
  * This type transparently handles that and exposes the variables and independent
  * fields.
- * @author Malcolm Lett
  */
 public class ParsedField {
 	private ParsedFieldDeclaration parsedFieldDeclaration;
@@ -44,44 +39,29 @@ public class ParsedField {
 	 * @param columnName
 	 * @return
 	 */
-	// TODO: use ParsedTypeRef instead of manually managing this
-	public static ParsedField newDBTableColumnInstance(ParsedTypeContext typeContext, String fieldName, Class<?> fieldType, boolean isPrimaryKey, String columnName) {
+	public static ParsedField newDBColumnInstance(ParsedTypeContext typeContext, String fieldName, Class<?> fieldType, boolean isPrimaryKey, String columnName) {
 		AST ast = typeContext.getAST();
-		
-		// add imports
-		boolean fieldTypeImported = typeContext.ensureImport(fieldType);
-		boolean dbTableColumnImported = typeContext.ensureImport(DBColumn.class);
-		boolean dbTablePrimaryKeyImported = typeContext.ensureImport(DBPrimaryKey.class);
 		
 		// add field
 		VariableDeclarationFragment variable = ast.newVariableDeclarationFragment();
 		variable.setName(ast.newSimpleName(fieldName));
 		FieldDeclaration field = ast.newFieldDeclaration(variable);
-		field.setType(ast.newSimpleType(ast.newName(
-				nameOf(fieldType, fieldTypeImported))));
+		field.setType(typeContext.declarableTypeOf(fieldType, true));
 
 		// add annotations
 		if (isPrimaryKey) {
-			MarkerAnnotation annotation = ast.newMarkerAnnotation();
-			annotation.setTypeName(ast.newSimpleName(
-					nameOf(DBPrimaryKey.class, dbTablePrimaryKeyImported)));
-			field.modifiers().add(annotation);
+			field.modifiers().add(
+					ParsedAnnotation.newDBPrimaryKeyInstance(typeContext).astNode());
 		}
-		StringLiteral annotationValue = ast.newStringLiteral();
-		annotationValue.setLiteralValue(columnName);
-		SingleMemberAnnotation annotation = ast.newSingleMemberAnnotation();
-		annotation.setTypeName(ast.newSimpleName(
-					nameOf(DBColumn.class, dbTableColumnImported)));
-		annotation.setValue(annotationValue);
-		field.modifiers().add(annotation);
+		field.modifiers().add(
+				ParsedAnnotation.newDBColumnInstance(typeContext, columnName).astNode());
 		
 		// set visibility modifiers
 		field.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
 		
 		// add initialisation section
 		ClassInstanceCreation initializer = ast.newClassInstanceCreation();
-		initializer.setType(ast.newSimpleType(ast.newName(
-				nameOf(fieldType, fieldTypeImported))));
+		initializer.setType((Type) ASTNode.copySubtree(ast, field.getType()));
 		variable.setInitializer(initializer);
 		
 		// wrap with domain-specific types
@@ -94,12 +74,7 @@ public class ParsedField {
 		}
 		return parsedFieldDeclaration.getFields().get(0);
 	}
-	
-	/** Fully qualified or simple name, depending on whether imported */
-	private static String nameOf(Class<?> type, boolean imported) {
-		return imported ? type.getSimpleName() : type.getName();
-	}
-	
+
 	/**
 	 * Construct new instances for each field variable declared by the field declaration.
 	 * @param typeContext
@@ -126,7 +101,7 @@ public class ParsedField {
 		for (ParsedAnnotation annotation: getAnnotations()) {
 			buf.append(annotation).append("\n");
 		}
-		buf.append("field "+getName());
+		buf.append("field "+getType()+" "+getName());
 		buf.append(";");
 		if (isDBColumn()) {
 			buf.append(" // columnName="+getColumnNameIfSet());

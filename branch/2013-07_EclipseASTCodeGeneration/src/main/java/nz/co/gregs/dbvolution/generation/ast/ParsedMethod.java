@@ -15,8 +15,6 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TagElement;
-import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.Type;
 
 /**
@@ -60,14 +58,8 @@ public class ParsedMethod {
 		method.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
 		
 		// add javadoc
-		TextElement javadocText = ast.newTextElement();
-		javadocText.setText("the "+field.getName());
-		TagElement javadocTag = ast.newTagElement();
-		javadocTag.setTagName("@return");
-		javadocTag.fragments().add(javadocText);
-		method.setJavadoc(ast.newJavadoc());
-		method.getJavadoc().tags().add(javadocTag);
-		
+		method.setJavadoc(ParsedJavadoc.astMethodInstance(typeContext, null, null, "the "+field.getName()));
+				
 		return new ParsedMethod(typeContext, method);
 	}
 
@@ -111,14 +103,12 @@ public class ParsedMethod {
 		method.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
 		
 		// add javadoc
-		TextElement javadocParamDescriptionText = ast.newTextElement();
-		javadocParamDescriptionText.setText("the "+parameter.getName().getFullyQualifiedName()+" to set");
-		TagElement javadocTag = ast.newTagElement();
-		javadocTag.setTagName("@param");
-		javadocTag.fragments().add(ast.newSimpleName(parameter.getName().getFullyQualifiedName()));
-		javadocTag.fragments().add(javadocParamDescriptionText);
-		method.setJavadoc(ast.newJavadoc());
-		method.getJavadoc().tags().add(javadocTag);
+		method.setJavadoc(ParsedJavadoc.astMethodInstance(typeContext, null,
+				new String[][] {
+					new String[]{parameter.getName().getFullyQualifiedName(),
+							"the "+parameter.getName().getFullyQualifiedName()+" to set"}
+				},
+				null));
 		
 		return new ParsedMethod(typeContext, method);
 	}
@@ -252,14 +242,33 @@ public class ParsedMethod {
     	}
 	}
 
+	/**
+	 * Returns a nominal representation of a method, without body.
+	 */
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		for (ParsedAnnotation annotation: annotations) {
 			buf.append(annotation).append("\n");
 		}
-		buf.append("method "+getName());
-		buf.append("();");
+		buf.append("method ");
+		if (getReturnType() == null) {
+			buf.append("void ");
+		}
+		else {
+			buf.append(getReturnType().toString()).append(" ");
+		}
+		buf.append(getName());
+		buf.append("(");
+		if (getArgumentTypes() != null) {
+			boolean first = true;
+			for (ParsedTypeRef argType: getArgumentTypes()) {
+				if (!first) buf.append(",");
+				buf.append(argType.toString());
+				first = false;
+			}
+		}
+		buf.append(");");
 		return buf.toString();
 	}
 	

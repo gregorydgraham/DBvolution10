@@ -107,10 +107,11 @@ public class DBTableClassCodeGeneratorAndUpdater {
 		ColumnNameResolver columnNameResolver = new ColumnNameResolver();
 		
 		// add missing properties
+		// TODO (Config) do this if configured to do so (default = true)
 		// TODO need to insert new fields/methods in position within existing that matches order of columns
 		// TODO need to include handling of field/method name collisions
 		for (DBTableField tableField: matches.getOnlyInB()) {
-			ParsedBeanProperty newProperty = ParsedBeanProperty.newDBTableColumnInstance(parsedClass.getTypeContext(),
+			ParsedBeanProperty newProperty = ParsedBeanProperty.newDBColumnInstance(parsedClass.getTypeContext(),
 					columnNameResolver.getPropertyNameFor(tableField.getColumnName()),
 					tableField.getColumnType(), tableField.isPrimaryKey(), tableField.getColumnName());
 			parsedClass.addFieldAfter(null, newProperty.field());
@@ -119,6 +120,7 @@ public class DBTableClassCodeGeneratorAndUpdater {
 		}
 		
 		// TODO - remove extra properties
+		// TODO (Config) do this if configured to do so (default = true)
 		
 	}
 }
