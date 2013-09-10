@@ -19,7 +19,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
 public class MSSQLServerDBDefinition extends DBDefinition {
 
     private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -28,5 +27,16 @@ public class MSSQLServerDBDefinition extends DBDefinition {
     public String getDateFormattedForQuery(Date date) {
         return "'" + DATETIME_FORMAT.format(date) + "'";
     }
+
+    @Override
+    public String formatTableName(String tableName) {
+        return "["+tableName+"]";
+    }
+
+    @Override
+    public Object endSQLStatement() {
+        return "";
+    }
+    
     
 }
