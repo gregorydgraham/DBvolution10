@@ -37,16 +37,15 @@ class DBRelationship implements Serializable{
 
     public DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
 
-        firstTable = thisTable;
-        firstColumn = thisTableField;
-        secondTable = otherTable;
-        secondColumn = otherTableField;
-        operation = new DBEqualsOperator(thisTableField);
+        this(thisTable, thisTableField, otherTable, otherTableField, new DBEqualsOperator(thisTableField));
     }
 
     public DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField, DBOperator operator) {
 
-        this(thisTable, thisTableField, otherTable, otherTableField);
+        firstTable = thisTable;
+        firstColumn = thisTableField;
+        secondTable = otherTable;
+        secondColumn = otherTableField;
         this.operation = operator;
     }
 
