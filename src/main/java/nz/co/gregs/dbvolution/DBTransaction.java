@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 /**
  *
  * @author gregorygraham
+ * @param <V>
  */
 public interface DBTransaction<V>{
     
