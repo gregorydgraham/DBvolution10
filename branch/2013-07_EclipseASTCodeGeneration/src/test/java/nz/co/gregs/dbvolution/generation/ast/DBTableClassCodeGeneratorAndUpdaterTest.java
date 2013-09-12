@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.ast;
+package nz.co.gregs.dbvolution.generation.ast;
 
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;

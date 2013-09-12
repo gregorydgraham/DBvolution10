@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.ast;
+package nz.co.gregs.dbvolution.generation.ast;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
