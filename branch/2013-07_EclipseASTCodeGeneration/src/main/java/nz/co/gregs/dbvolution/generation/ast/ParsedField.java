@@ -42,27 +42,52 @@ public class ParsedField {
 	public static ParsedField newDBColumnInstance(ParsedTypeContext typeContext, String fieldName, Class<?> fieldType, boolean isPrimaryKey, String columnName) {
 		AST ast = typeContext.getAST();
 		
+		ParsedField field = newInstance(typeContext, fieldName, fieldType, true);
+		FieldDeclaration fieldDecl = field.astNode();
+		VariableDeclarationFragment variable = (VariableDeclarationFragment) fieldDecl.fragments().get(0);
+		
+		// add annotations (to top, in reverse order)
+		fieldDecl.modifiers().add(0,
+				ParsedAnnotation.newDBColumnInstance(typeContext, columnName).astNode());
+		if (isPrimaryKey) {
+			fieldDecl.modifiers().add(0,
+					ParsedAnnotation.newDBPrimaryKeyInstance(typeContext).astNode());
+		}
+
+		// add initialisation section
+		ClassInstanceCreation initializer = ast.newClassInstanceCreation();
+		initializer.setType((Type) ASTNode.copySubtree(ast, fieldDecl.getType()));
+		variable.setInitializer(initializer);
+		
+		return field;
+	}
+	
+	/**
+	 * Creates a new field and prepares the type context for addition of the field.
+	 * Updates the imports in the type context.
+	 * <p> Note: field name duplication avoidance must be done outside of this method.
+	 * @param typeContext
+	 * @param fieldName
+	 * @param fieldType
+	 * @param isPublic whether to make the field public, else private
+	 * @return
+	 */
+	public static ParsedField newInstance(ParsedTypeContext typeContext, String fieldName, Class<?> fieldType, boolean isPublic) {
+		AST ast = typeContext.getAST();
+		
 		// add field
 		VariableDeclarationFragment variable = ast.newVariableDeclarationFragment();
 		variable.setName(ast.newSimpleName(fieldName));
 		FieldDeclaration field = ast.newFieldDeclaration(variable);
 		field.setType(typeContext.declarableTypeOf(fieldType, true));
-
-		// add annotations
-		if (isPrimaryKey) {
-			field.modifiers().add(
-					ParsedAnnotation.newDBPrimaryKeyInstance(typeContext).astNode());
-		}
-		field.modifiers().add(
-				ParsedAnnotation.newDBColumnInstance(typeContext, columnName).astNode());
 		
 		// set visibility modifiers
-		field.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
-		
-		// add initialisation section
-		ClassInstanceCreation initializer = ast.newClassInstanceCreation();
-		initializer.setType((Type) ASTNode.copySubtree(ast, field.getType()));
-		variable.setInitializer(initializer);
+		if (isPublic) {
+			field.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));
+		}
+		else {
+			field.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PRIVATE_KEYWORD));
+		}
 		
 		// wrap with domain-specific types
 		ParsedFieldDeclaration parsedFieldDeclaration = new ParsedFieldDeclaration(typeContext, field);
@@ -138,6 +163,15 @@ public class ParsedField {
 	
 	public List<ParsedAnnotation> getAnnotations() {
 		return parsedFieldDeclaration.getAnnotations();
+	}
+	
+	/**
+	 * Adds the annotation to the end of the list of annotations
+	 * that are shown on the line before the method starts.
+	 * @param annotation the annotation to add
+	 */
+	public void addAnnotation(ParsedAnnotation annotation) {
+		parsedFieldDeclaration.addAnnotation(annotation);
 	}
 	
 	/**
@@ -253,6 +287,24 @@ public class ParsedField {
 		
 		public List<ParsedField> getFields() {
 			return fields;
+		}
+		
+		/**
+		 * Adds the annotation to the end of the list of annotations
+		 * that are shown on the line before the method starts.
+		 * @param annotation the annotation to add
+		 */
+		public void addAnnotation(ParsedAnnotation annotation) {
+			int i = 0, target = 0;
+	    	for(IExtendedModifier modifier: (List<IExtendedModifier>)astNode.modifiers()) {
+	    		if (modifier.isAnnotation()) {
+	    			target=i+1;
+	    		}
+	    		i++;
+	    	}
+	    	
+	    	astNode.modifiers().add(target, annotation.astNode());
+	    	annotations.add(annotation);
 		}
 		
 		/**

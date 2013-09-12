@@ -14,6 +14,7 @@ import java.util.Set;
 
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.generation.CodeGenerationConfiguration;
 
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
@@ -76,7 +77,7 @@ public class ParsedClass {
 	 * @param fullyQualifiedName
 	 * @return
 	 */
-	public static ParsedClass newInstance(String fullyQualifiedName) {
+	public static ParsedClass newInstance(CodeGenerationConfiguration config, String fullyQualifiedName) {
 		String packageName = null;
 		String simpleName = fullyQualifiedName;
 		if (fullyQualifiedName.contains(".")) {
@@ -85,7 +86,7 @@ public class ParsedClass {
 		if (fullyQualifiedName.contains(".")) {
 			packageName = fullyQualifiedName.substring(0, fullyQualifiedName.lastIndexOf("."));
 		}
-		return newInstance(packageName, simpleName);
+		return newInstance(config, packageName, simpleName);
 	}
 	
 	/**
@@ -94,7 +95,7 @@ public class ParsedClass {
 	 * @param simpleName
 	 * @return
 	 */
-	public static ParsedClass newInstance(String packageName, String simpleName) {
+	public static ParsedClass newInstance(CodeGenerationConfiguration config, String packageName, String simpleName) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		// In order to parse 1.5 code, some compiler options need to be set to 1.5
 		Map<?,?> options = JavaCore.getOptions();
@@ -123,7 +124,9 @@ public class ParsedClass {
 			unit.setPackage(packageDeclaration);
 		}
 		
-		return new ParsedClass(parser, document, unit);
+		ParsedClass parsedClass = new ParsedClass(parser, document, unit);
+		parsedClass.getTypeContext().setConfig(config);
+		return parsedClass;
 	}
 
 	/**
@@ -132,7 +135,7 @@ public class ParsedClass {
 	 * @param tableName
 	 * @return
 	 */
-	public static ParsedClass newDBTableInstance(String fullyQualifiedClassName, String tableName) {
+	public static ParsedClass newDBTableInstance(CodeGenerationConfiguration config, String fullyQualifiedClassName, String tableName) {
 		String packageName = null;
 		String simpleClassName = fullyQualifiedClassName;
 		if (fullyQualifiedClassName.contains(".")) {
@@ -141,7 +144,7 @@ public class ParsedClass {
 		if (fullyQualifiedClassName.contains(".")) {
 			packageName = fullyQualifiedClassName.substring(0, fullyQualifiedClassName.lastIndexOf("."));
 		}
-		return newDBTableInstance(packageName, simpleClassName, tableName);
+		return newDBTableInstance(config, packageName, simpleClassName, tableName);
 	}
 	
 	/**
@@ -151,8 +154,8 @@ public class ParsedClass {
 	 * @param tableName
 	 * @return
 	 */
-	public static ParsedClass newDBTableInstance(String packageName, String simpleClassName, String tableName) {
-		ParsedClass parsedClass = newInstance(packageName, simpleClassName);
+	public static ParsedClass newDBTableInstance(CodeGenerationConfiguration config, String packageName, String simpleClassName, String tableName) {
+		ParsedClass parsedClass = newInstance(config, packageName, simpleClassName);
 		
 		ParsedTypeContext typeContext = parsedClass.getTypeContext();
 		AST ast = typeContext.getAST();
@@ -193,15 +196,15 @@ public class ParsedClass {
 	        	astNode = (TypeDeclaration)type;
 	        }
 	    }
-	    if (astNode == null) {
-	    	AST ast = unit.getAST();
-			TypeDeclaration typeDeclaration = ast.newTypeDeclaration();
-			typeDeclaration.setName(ast.newSimpleName("Name"));
-			unit.types().add(typeDeclaration);
-	    	astNode = typeDeclaration;
-	    	
-	    	//throw new RuntimeException("found no type");
-	    }
+//	    if (astNode == null) {
+//	    	AST ast = unit.getAST();
+//			TypeDeclaration typeDeclaration = ast.newTypeDeclaration();
+//			typeDeclaration.setName(ast.newSimpleName("Name"));
+//			unit.types().add(typeDeclaration);
+//	    	astNode = typeDeclaration;
+//	    	
+//	    	//throw new RuntimeException("found no type");
+//	    }
 	    
 	    // inheritance
 	    this.superType = (astNode.getSuperclassType() == null) ? null :

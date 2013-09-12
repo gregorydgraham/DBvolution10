@@ -9,6 +9,9 @@ import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 /**
  * Helps to resolve database table names to class names,
  * and vice-versa, while avoiding duplications of names.
+ * 
+ * <p> Requires you to create an instance for each package
+ * that you wish to manage.
  * @author Malcolm Lett
  */
 // TODO: consider moving into nz.co.gregs.dbvolution.generation package

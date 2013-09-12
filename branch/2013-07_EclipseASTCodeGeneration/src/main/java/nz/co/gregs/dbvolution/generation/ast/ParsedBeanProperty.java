@@ -31,12 +31,28 @@ public class ParsedBeanProperty {
 	 * @return
 	 */
 	public static ParsedBeanProperty newDBColumnInstance(ParsedTypeContext typeContext, String propertyName, Class<?> propertyType, boolean isPrimaryKey, String columnName) {
-		ParsedField field = ParsedField.newDBColumnInstance(typeContext,
-				propertyName, propertyType, isPrimaryKey, columnName);
+		ParsedField field;
+		if (typeContext.getConfig().isAnnotateFields()) {
+			field = ParsedField.newDBColumnInstance(typeContext,
+					propertyName, propertyType, isPrimaryKey, columnName);
+		}
+		else {
+			field = ParsedField.newInstance(typeContext, propertyName, propertyType, false);
+		}
 		
-		ParsedMethod getter = ParsedMethod.newGetterInstance(typeContext, field);
-		
-		ParsedMethod setter = ParsedMethod.newSetterInstance(typeContext, field);
+		ParsedMethod getter = null;
+		ParsedMethod setter = null;
+		if (typeContext.getConfig().isGenerateAccessorMethods()) {
+			getter = ParsedMethod.newGetterInstance(typeContext, field);
+			setter = ParsedMethod.newSetterInstance(typeContext, field);
+			
+			if (!typeContext.getConfig().isAnnotateFields()) {
+				getter.addAnnotation(ParsedAnnotation.newDBColumnInstance(typeContext, columnName));
+				if (isPrimaryKey) {
+					getter.addAnnotation(ParsedAnnotation.newDBPrimaryKeyInstance(typeContext));
+				}
+			}
+		}
 		
 		return new ParsedBeanProperty(field, getter, setter);
 	}
@@ -83,6 +99,26 @@ public class ParsedBeanProperty {
 	 * @return the type, or null if 
 	 */
 	public ParsedTypeRef getType() {
+		// get type from one marked with @DBColumn first
+		if (field != null && field.isDBColumn()) {
+			return field.getType();
+		}
+		if (getter != null && getter.isDBColumn()) {
+			ParsedTypeRef type = getter.getReturnType();
+			if (type != null) {
+				return type;
+			}
+		}
+		if (setter != null && setter.isDBColumn()) {
+			if (setter.getArgumentTypes().size() == 1) {
+				ParsedTypeRef type = setter.getArgumentTypes().get(0);
+				if (type != null) {
+					return type;
+				}
+			}
+		}
+		
+		// get first type found
 		if (field != null) {
 			return field.getType();
 		}
@@ -104,25 +140,22 @@ public class ParsedBeanProperty {
 	}
 	
 	/**
-	 * Gets all types that are referenced by the field declaration.
-	 * For simple types, this is one value.
-	 * For types with generics, this is one value plus one for each
-	 * generic parameter.
-	 * For recursive arrays, this can be any number of values.
-	 * The resultant list can be used for constructing imports etc.
-	 * @deprecated not working yet
-	 * @return
-	 */
-	@Deprecated
-	public List<Class<?>> getReferencedTypes() {
-		return getType().getReferencedTypes();
-	}
-	
-	/**
 	 * Gets the name of the bean property, in camelCase.
 	 * @return
 	 */
 	public String getName() {
+		// get type from one marked with @DBColumn first
+		if (field != null && field.isDBColumn()) {
+			return field.getName();
+		}
+		if (getter != null && getter.isDBColumn()) {
+			return JavaRules.propertyNameOf(getter);
+		}
+		if (setter != null && setter.isDBColumn()) {
+			return JavaRules.propertyNameOf(setter);
+		}
+		
+		// get first name found
 		if (field != null) {
 			return field.getName();
 		}
@@ -171,9 +204,6 @@ public class ParsedBeanProperty {
 	 * annotation.
 	 * @return {@code null} if not applicable
 	 */
-	// TODO need to be lenient if get annotations mixed up on field and accessors,
-	// but not sure exactly what should be done.
-	// TODO: arguably for case-insensitive databases, this should be using equalsIgnoreCase()
 	public String getColumnNameIfSet() {
 		if (field != null) {
 			String columnName = field.getColumnNameIfSet();
@@ -183,18 +213,12 @@ public class ParsedBeanProperty {
 		}
 		if (getter != null) {
 			String columnName = getter.getColumnNameIfSet();
-//			if (col != null && columnName != null && !col.equals(columnName)) {
-//				throw new IllegalArgumentException("Property "+getName()+" disagrees on column ("+columnName+" vs. "+col+")");
-//			}
 			if (columnName != null) {
 				return columnName;
 			}
 		}
 		if (setter != null) {
 			String columnName = setter.getColumnNameIfSet();
-//			if (col != null && columnName != null && !col.equals(columnName)) {
-//				throw new IllegalArgumentException("Property "+getName()+" disagrees on column ("+columnName+" vs. "+col+")");
-//			}
 			if (columnName != null) {
 				return columnName;
 			}

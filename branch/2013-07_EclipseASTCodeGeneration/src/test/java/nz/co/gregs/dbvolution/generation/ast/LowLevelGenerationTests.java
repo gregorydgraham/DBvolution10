@@ -3,6 +3,7 @@ package nz.co.gregs.dbvolution.generation.ast;
 import java.io.File;
 
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.generation.CodeGenerationConfiguration;
 import nz.co.gregs.dbvolution.generation.ast.ColumnNameResolver;
 import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
 import nz.co.gregs.dbvolution.generation.ast.ParsedField;
@@ -19,8 +20,9 @@ import org.junit.Test;
 public class LowLevelGenerationTests extends AbstractASTTest {
 	@Test
 	public void generatesWhenUsingLowLevelMethods() throws MalformedTreeException, BadLocationException {
+		CodeGenerationConfiguration config = new CodeGenerationConfiguration();
 		
-		ParsedClass javatype = ParsedClass.newDBTableInstance(
+		ParsedClass javatype = ParsedClass.newDBTableInstance(config,
 				LowLevelGenerationTests.class.getName()+"_Marque",
 				"t_3");
 		System.out.println(javatype.toString());

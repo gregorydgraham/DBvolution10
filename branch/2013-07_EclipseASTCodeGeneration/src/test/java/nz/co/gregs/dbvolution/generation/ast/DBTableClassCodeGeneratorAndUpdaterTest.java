@@ -3,18 +3,22 @@ package nz.co.gregs.dbvolution.generation.ast;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.generation.CodeGenerationConfiguration;
 import nz.co.gregs.dbvolution.generation.DBTableClass;
 import nz.co.gregs.dbvolution.generation.DBTableClassCodeGeneratorAndUpdater;
 import nz.co.gregs.dbvolution.generation.DBTableField;
-import nz.co.gregs.dbvolution.generation.ast.TableNameResolver;
 
 import org.junit.Test;
 
 public class DBTableClassCodeGeneratorAndUpdaterTest extends AbstractASTTest {
 	@Test
 	public void generateFromMetaData() {
+		CodeGenerationConfiguration config = new CodeGenerationConfiguration();
+		//config.setAnnotateFields(false);
+		config.setGenerateAccessorMethods(false);
+		
 		TableNameResolver resolver = new TableNameResolver(DBTableClassCodeGeneratorAndUpdaterTest.class.getPackage().getName());
-		DBTableClassCodeGeneratorAndUpdater updater = new DBTableClassCodeGeneratorAndUpdater(resolver);
+		DBTableClassCodeGeneratorAndUpdater updater = new DBTableClassCodeGeneratorAndUpdater(config, resolver);
 		
 		DBTableClass tableClass = new DBTableClass();
 		tableClass.setTableName(DBTableClassCodeGeneratorAndUpdaterTest.class.getSimpleName()+"_1");

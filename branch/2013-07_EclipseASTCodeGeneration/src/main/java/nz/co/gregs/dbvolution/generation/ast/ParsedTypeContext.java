@@ -7,6 +7,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.generation.CodeGenerationConfiguration;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -23,6 +24,7 @@ public class ParsedTypeContext {
 	private static final Class<?>[] KNOWN_IMPORTABLE_TYPES = {
 		DBSelectQuery.class, DBColumn.class, DBForeignKey.class,
 		DBTableName.class, DBPrimaryKey.class}; // TODO: ideally pick this up somehow automatically
+	private CodeGenerationConfiguration config = new CodeGenerationConfiguration();
 	private CompilationUnit unit;
 	
 	public static ParsedTypeContext newInstance(String packageName) {
@@ -40,6 +42,20 @@ public class ParsedTypeContext {
 		return unit.getAST();
 	}
 	
+	/**
+	 * @return the config
+	 */
+	public CodeGenerationConfiguration getConfig() {
+		return config;
+	}
+
+	/**
+	 * @param config the config to set
+	 */
+	public void setConfig(CodeGenerationConfiguration config) {
+		this.config = config;
+	}
+
 	public CompilationUnit unitAstNode() {
 		return unit;
 	}

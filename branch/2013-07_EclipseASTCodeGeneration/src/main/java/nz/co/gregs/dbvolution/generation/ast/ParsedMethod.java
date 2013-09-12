@@ -294,6 +294,24 @@ public class ParsedMethod {
 	}
 	
 	/**
+	 * Adds the annotation to the end of the list of annotations
+	 * that are shown on the line before the method starts.
+	 * @param annotation the annotation to add
+	 */
+	public void addAnnotation(ParsedAnnotation annotation) {
+		int i = 0, target = 0;
+    	for(IExtendedModifier modifier: (List<IExtendedModifier>)astNode.modifiers()) {
+    		if (modifier.isAnnotation()) {
+    			target=i+1;
+    		}
+    		i++;
+    	}
+    	
+    	astNode.modifiers().add(target, annotation.astNode());
+    	annotations.add(annotation);
+	}
+	
+	/**
 	 * Indicates whether this is a standard getter method.
 	 * Requires that it takes no arguments and returns
 	 * a type.

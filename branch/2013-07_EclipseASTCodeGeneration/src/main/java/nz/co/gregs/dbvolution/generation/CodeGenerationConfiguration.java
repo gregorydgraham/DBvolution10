@@ -29,6 +29,119 @@ public class CodeGenerationConfiguration {
 	 */
 	private boolean stopOnErrors = false;
 	
+	/**
+	 * Causes generated annotations to be placed on the fields,
+	 * and for the fields to be set public, instead of annotating
+	 * the accessor methods.
+	 * Note: if false, {@link #generateAccessorMethods} must be true.
+	 */
+	private boolean annotateFields = true;
+	
+	/**
+	 * Whether to generate accessor methods or fields alone.
+	 * Must be true if {@link #annotateFields} is false.
+	 */
+	private boolean generateAccessorMethods = true;
+
 	// TODO nice to have: removeNonCustomisedExtraClasses
 	// TODO nice to have: removeNonCustomisedExtraProperties
+	
+	/**
+	 * @return the addMissingClasses
+	 */
+	public boolean isAddMissingClasses() {
+		return addMissingClasses;
+	}
+
+	/**
+	 * @param addMissingClasses the addMissingClasses to set
+	 */
+	public void setAddMissingClasses(boolean addMissingClasses) {
+		this.addMissingClasses = addMissingClasses;
+	}
+
+	/**
+	 * @return the addMissingProperties
+	 */
+	public boolean isAddMissingProperties() {
+		return addMissingProperties;
+	}
+
+	/**
+	 * @param addMissingProperties the addMissingProperties to set
+	 */
+	public void setAddMissingProperties(boolean addMissingProperties) {
+		this.addMissingProperties = addMissingProperties;
+	}
+
+	/**
+	 * @return the removeExtraClasses
+	 */
+	public boolean isRemoveExtraClasses() {
+		return removeExtraClasses;
+	}
+
+	/**
+	 * @param removeExtraClasses the removeExtraClasses to set
+	 */
+	public void setRemoveExtraClasses(boolean removeExtraClasses) {
+		this.removeExtraClasses = removeExtraClasses;
+	}
+
+	/**
+	 * @return the removeExtraProperties
+	 */
+	public boolean isRemoveExtraProperties() {
+		return removeExtraProperties;
+	}
+
+	/**
+	 * @param removeExtraProperties the removeExtraProperties to set
+	 */
+	public void setRemoveExtraProperties(boolean removeExtraProperties) {
+		this.removeExtraProperties = removeExtraProperties;
+	}
+
+	/**
+	 * @return the stopOnErrors
+	 */
+	public boolean isStopOnErrors() {
+		return stopOnErrors;
+	}
+
+	/**
+	 * @param stopOnErrors the stopOnErrors to set
+	 */
+	public void setStopOnErrors(boolean stopOnErrors) {
+		this.stopOnErrors = stopOnErrors;
+	}
+
+	/**
+	 * @return the annotateFields
+	 */
+	public boolean isAnnotateFields() {
+		return annotateFields;
+	}
+
+	/**
+	 * @param annotateFields the annotateFields to set
+	 */
+	public void setAnnotateFields(boolean annotateFields) {
+		this.annotateFields = annotateFields;
+	}
+
+	/**
+	 * @return the generateAccessorMethods
+	 */
+	public boolean isGenerateAccessorMethods() {
+		return generateAccessorMethods;
+	}
+
+	/**
+	 * @param generateAccessorMethods the generateAccessorMethods to set
+	 */
+	public void setGenerateAccessorMethods(boolean generateAccessorMethods) {
+		this.generateAccessorMethods = generateAccessorMethods;
+	}
+	
 }

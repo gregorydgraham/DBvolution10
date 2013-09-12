@@ -267,7 +267,6 @@ public class DBTableClassGenerator {
         if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
             classCaseString = s.toUpperCase();
         } else {
-            System.out.println("Splitting: " + s);
             String[] parts = s.split("_");
             for (String part : parts) {
                 classCaseString = classCaseString + toProperCase(part);

@@ -15,14 +15,16 @@ import nz.co.gregs.dbvolution.generation.ast.TableNameResolver;
 // TODO: name this better, so far named weirldy to avoid conflict with existing classes
 public class DBTableClassCodeGeneratorAndUpdater {
 	//private DBDefinition dbDefinition;
+	private CodeGenerationConfiguration config;
 	private TableNameResolver tableNameResolver;
 	private ParsedClass parsedClass;
 	
 	/**
 	 * Prepares for creating a brand new java file.
 	 */
-	public DBTableClassCodeGeneratorAndUpdater(TableNameResolver tableNameResolver) {
+	public DBTableClassCodeGeneratorAndUpdater(CodeGenerationConfiguration config, TableNameResolver tableNameResolver) {
 		//this.dbDefinition = dbDefinition;
+		this.config = config;
 		this.tableNameResolver = tableNameResolver;
 		this.parsedClass = null;
 	}
@@ -30,10 +32,14 @@ public class DBTableClassCodeGeneratorAndUpdater {
 	/**
 	 * Prepare for updating an existing java file.
 	 */
-	public DBTableClassCodeGeneratorAndUpdater(TableNameResolver tableNameResolver, ParsedClass parsedClass) {
+	public DBTableClassCodeGeneratorAndUpdater(CodeGenerationConfiguration config, TableNameResolver tableNameResolver, ParsedClass parsedClass) {
 		//this.dbDefinition = dbDefinition;
+		this.config = config;
 		this.tableNameResolver = tableNameResolver;
 		this.parsedClass = parsedClass;
+		if (parsedClass != null) {
+			parsedClass.getTypeContext().setConfig(config);
+		}
 	}
 	
 	/**
@@ -70,7 +76,7 @@ public class DBTableClassCodeGeneratorAndUpdater {
 		// generate original file if not already exists
 		if (parsedClass == null) {
 			String className = tableNameResolver.getQualifiedClassNameFor(dbTableClass.getTableName());
-			parsedClass = ParsedClass.newDBTableInstance(className, dbTableClass.getTableName());
+			parsedClass = ParsedClass.newDBTableInstance(config, className, dbTableClass.getTableName());
 		}
 	}
 	
@@ -114,9 +120,17 @@ public class DBTableClassCodeGeneratorAndUpdater {
 			ParsedBeanProperty newProperty = ParsedBeanProperty.newDBColumnInstance(parsedClass.getTypeContext(),
 					columnNameResolver.getPropertyNameFor(tableField.getColumnName()),
 					tableField.getColumnType(), tableField.isPrimaryKey(), tableField.getColumnName());
-			parsedClass.addFieldAfter(null, newProperty.field());
-			parsedClass.addMethodAfter(null, newProperty.getter());
-			parsedClass.addMethodAfter(null, newProperty.setter());
+			if (newProperty.field() != null) {
+				parsedClass.addFieldAfter(null, newProperty.field());
+			}
+			
+			if (newProperty.getter() != null) {
+				parsedClass.addMethodAfter(null, newProperty.getter());
+			}
+			
+			if (newProperty.setter() != null) {
+				parsedClass.addMethodAfter(null, newProperty.setter());
+			}
 		}
 		
 		// TODO - remove extra properties
