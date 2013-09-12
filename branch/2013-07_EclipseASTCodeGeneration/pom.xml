@@ -112,6 +112,11 @@
   
     <dependencies>
         <dependency>
+            <groupId>nz.co.gregs</groupId>
+            <artifactId>nz.co.gregs.dbvolution.eclipse</artifactId>
+            <version>3.8.3.1-SNAPSHOT</version>
+        </dependency>		
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
