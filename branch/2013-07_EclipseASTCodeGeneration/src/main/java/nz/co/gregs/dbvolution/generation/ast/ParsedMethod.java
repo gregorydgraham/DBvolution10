@@ -225,7 +225,8 @@ public class ParsedMethod {
 		this.astNode = astNode;
 		
 		// return type
-		this.returnType = new ParsedTypeRef(typeContext, astNode.getReturnType2());
+		this.returnType = (astNode.getReturnType2() == null) ? null :
+			new ParsedTypeRef(typeContext, astNode.getReturnType2());
 		
 		// argument types
 		this.argumentTypes = new ArrayList<ParsedTypeRef>();
