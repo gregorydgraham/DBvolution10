@@ -38,7 +38,9 @@ public class DBTable<E extends DBRow> {
 
     /**
      *
-     * @param <T>
+     * @param <E>
+     * @param database
+     * @param example
      * @return
      */
     public static <E extends DBRow> DBTable<E> getInstance(DBDatabase database, E example) {
