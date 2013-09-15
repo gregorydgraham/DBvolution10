@@ -28,6 +28,10 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
         super(listOfPossibleValues);
     }
 
+    public DBInCaseInsensitiveOperator() {
+        super();
+    }
+
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
                 DBDefinition defn = database.getDefinition();

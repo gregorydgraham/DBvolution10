@@ -28,7 +28,13 @@ public class DBLikeOperator extends DBOperator {
     private final QueryableDatatype likeableValue;
 
     public DBLikeOperator(QueryableDatatype likeableValue) {
+        super();
         this.likeableValue = likeableValue;
+    }
+
+    public DBLikeOperator() {
+        super();
+        this.likeableValue = null;
     }
 
     @Override

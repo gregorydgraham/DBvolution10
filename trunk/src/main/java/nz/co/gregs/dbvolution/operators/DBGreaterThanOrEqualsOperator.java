@@ -25,6 +25,10 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
 
     public static final long serialVersionUID = 1L;
 
+    public DBGreaterThanOrEqualsOperator() {
+        super();
+    }
+
     public DBGreaterThanOrEqualsOperator(QueryableDatatype greaterThanThis) {
         super(greaterThanThis);
     }

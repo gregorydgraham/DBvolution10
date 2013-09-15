@@ -29,7 +29,13 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
     private final QueryableDatatype likeableValue;
 
     public DBLikeCaseInsensitiveOperator(QueryableDatatype likeableValue) {
+        super();
         this.likeableValue = likeableValue;
+    }
+
+    public DBLikeCaseInsensitiveOperator() {
+        super();
+        this.likeableValue = null;
     }
 
     @Override

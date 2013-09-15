@@ -29,10 +29,16 @@ public class DBLessThanOperator extends DBOperator {
 
     /**
      *
+     * @param lessThanThis
      */
     public DBLessThanOperator(QueryableDatatype lessThanThis) {
         super();
         this.lessThanThis = lessThanThis;
+    }
+
+    public DBLessThanOperator() {
+        super();
+        this.lessThanThis = null;
     }
 
     public String getInverse() {

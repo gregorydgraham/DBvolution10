@@ -31,6 +31,11 @@ public class DBGreaterThanOperator extends DBOperator {
     /**
      *
      */
+    public DBGreaterThanOperator() {
+        super();
+        this.greaterThanThis = null;
+    }
+
     public DBGreaterThanOperator(QueryableDatatype greaterThanThis) {
         super();
         this.greaterThanThis = greaterThanThis;

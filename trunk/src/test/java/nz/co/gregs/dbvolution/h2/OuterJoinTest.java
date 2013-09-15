@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.h2;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.operators.DBEqualsCaseInsensitiveOperator;
+import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -46,16 +47,21 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println(""+carCo.getRelationshipsAsSQL(mrq));
         
         
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY"+lineSep +
-" and  lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)"));
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)"+lineSep +
-" and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY"+lineSep +" and  lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)"));
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)"+lineSep +" and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
         
         mrq.ignoreAllForeignKeys();
         System.out.println(""+mrq.getRelationshipsAsSQL(carCo));
         System.out.println(""+carCo.getRelationshipsAsSQL(mrq));
         Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)"));
         Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)"));
+        
+        mrq.addRelationship(mrq.name, carCo, carCo.name, new DBGreaterThanOperator());
+        System.out.println(""+mrq.getRelationshipsAsSQL(carCo));
+        System.out.println(""+carCo.getRelationshipsAsSQL(mrq));
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)" +lineSep+" and MARQUE.NAME > CAR_COMPANY.NAME"));
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)"+lineSep +" and CAR_COMPANY.NAME <= MARQUE.NAME"));
+        
     }
     
 }
