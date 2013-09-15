@@ -4,7 +4,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import java.beans.BeanInfo;
@@ -41,14 +40,14 @@ abstract public class DBRow implements Serializable {
     private transient DBDatabase database;
     private boolean isDefined = false;
     private HashMap<DBForeignKey, DBColumn> foreignKeys = null;
-    private List<Field> ignoredForeignKeys = new ArrayList<Field>();
-    private List<Field> returnColumns = new ArrayList<Field>();
+    private final List<Field> ignoredForeignKeys = new ArrayList<Field>();
+    private final List<Field> returnColumns = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
-    private List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
+    private final List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
     private Field primaryKeyField;
     private HashMap<String, QueryableDatatype> columnsAndQDTs;
     private Boolean hasBlobs;
-    private List<DBLargeObject> blobColumns = new ArrayList<DBLargeObject>();
+    private final List<DBLargeObject> blobColumns = new ArrayList<DBLargeObject>();
 
     public DBRow() {
     }
@@ -97,7 +96,7 @@ abstract public class DBRow implements Serializable {
      *
      * indicates if the DBRow is defined in the database
      *
-     * @param newValue
+     * @return true if the row is defined within the database, false otherwise
      */
     public boolean getDefined() {
         return isDefined;
