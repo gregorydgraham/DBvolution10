@@ -27,6 +27,7 @@ public class OuterJoinTest extends AbstractTest {
     
     @Test
     public void testANSIJoinClauseCreation(){
+        String lineSep = System.getProperty("line.separator");
         Marque mrq = new Marque();
         mrq.setDatabase(database);
         CarCompany carCo = new CarCompany();
@@ -45,12 +46,16 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println(""+carCo.getRelationshipsAsSQL(mrq));
         
         
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY\n" +
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY"+lineSep +
 " and  lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)"));
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)\n" +
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)"+lineSep +
 " and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
         
-
+        mrq.ignoreAllForeignKeys();
+        System.out.println(""+mrq.getRelationshipsAsSQL(carCo));
+        System.out.println(""+carCo.getRelationshipsAsSQL(mrq));
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)"));
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)"));
     }
     
 }
