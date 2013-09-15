@@ -36,7 +36,7 @@ public class DBTableClassCodeGeneratorAndUpdaterTest extends AbstractASTTest {
 		DBTableField field = new DBTableField();
 		field.setColumnName(columnName);
 		field.setColumnType(columnType);
-		field.setPrimaryKey(isPrimaryKey);
+		field.setIsPrimaryKey(isPrimaryKey);
 		return field;
 	}
 }

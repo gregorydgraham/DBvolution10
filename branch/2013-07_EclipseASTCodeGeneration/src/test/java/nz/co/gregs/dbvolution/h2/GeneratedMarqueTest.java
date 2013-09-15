@@ -42,7 +42,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         List<DBTableClass> generateSchema;
         generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
-            System.out.print("" + dbcl.javaSource);
+            System.out.print("" + dbcl.getJavaSource());
         }
     }
 
@@ -51,7 +51,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         List<DBTableClass> generateSchema;
         generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new UIDBasedPKRecognisor(), new FKBasedFKRecognisor());
         for (DBTableClass dbcl : generateSchema) {
-            System.out.print("" + dbcl.javaSource);
+            System.out.print("" + dbcl.getJavaSource());
         }
     }
 

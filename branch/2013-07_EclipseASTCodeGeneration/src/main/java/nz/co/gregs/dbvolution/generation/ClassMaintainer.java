@@ -107,7 +107,7 @@ public class ClassMaintainer {
 	 */
 	protected void ensurePropertiesFor(DBTableClass dbTableClass) {
 		SetMatcher<ParsedBeanProperty, DBTableField> matches = new SetMatcher<ParsedBeanProperty, DBTableField>(
-				parsedClass.getDBColumnProperties(), dbTableClass.fields,
+				parsedClass.getDBColumnProperties(), dbTableClass.getFields(),
 				new Comparator<Object>(){
 					@Override
 					public int compare(Object o1, Object o2) {

@@ -36,13 +36,12 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
- *
- * @author gregorygraham
+ * Top level code generator.
+ * Generates code based on database schema.
  */
 public class DBTableClassGenerator {
 
     /**
-     *
      * Creates DBTableRow classes corresponding to all the tables and views
      * accessible to the user specified in the database supplied.
      *
@@ -113,12 +112,12 @@ public class DBTableClassGenerator {
             File file;
             FileOutputStream fileOutputStream;
             for (DBTableClass clazz : generatedClasses) {
-                System.out.println(clazz.className + " => " + classDirectory.getAbsolutePath() + "/" + clazz.className + ".java");
-                file = new File(classDirectory, clazz.className + ".java");
+                System.out.println(clazz.getClassName() + " => " + classDirectory.getAbsolutePath() + "/" + clazz.getClassName() + ".java");
+                file = new File(classDirectory, clazz.getClassName() + ".java");
                 fileOutputStream = new FileOutputStream(file);
-                System.out.println(clazz.javaSource);
+                System.out.println(clazz.getJavaSource());
                 System.out.println("");
-                fileOutputStream.write(clazz.javaSource.getBytes());
+                fileOutputStream.write(clazz.getJavaSource().getBytes());
                 fileOutputStream.close();
             }
         }
@@ -176,19 +175,19 @@ public class DBTableClassGenerator {
 
         while (tables.next()) {
             DBTableClass dbTableClass = new DBTableClass();
-            dbTableClass.packageName = packageName;
-            dbTableClass.tableName = tables.getString("TABLE_NAME");
-            System.out.println(dbTableClass.tableName);
-            dbTableClass.className = toClassCase(dbTableClass.tableName);
+            dbTableClass.setPackageName(packageName);
+            dbTableClass.setTableName(tables.getString("TABLE_NAME"));
+            System.out.println(dbTableClass.getTableName());
+            dbTableClass.setClassName(toClassCase(dbTableClass.getTableName()));
 
-            ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.tableName);
+            ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
             List<String> pkNames = new ArrayList<String>();
             while (primaryKeysRS.next()) {
                 String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
                 pkNames.add(pkColumnName);
             }
 
-            ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.tableName);
+            ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.getTableName());
             Map<String, String[]> fkNames = new HashMap<String, String[]>();
             while (foreignKeysRS.next()) {
                 String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
@@ -197,27 +196,27 @@ public class DBTableClassGenerator {
                 fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
             }
 
-            ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.tableName, null);
+            ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null);
             while (columns.next()) {
                 DBTableField dbTableField = new DBTableField();
-                dbTableField.columnName = columns.getString("COLUMN_NAME");
-                dbTableField.fieldName = toFieldCase(dbTableField.columnName);
-                dbTableField.precision = columns.getInt("COLUMN_SIZE");
-                dbTableField.columnType = database.getDefinition().getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
-                if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
-                    dbTableField.isPrimaryKey = true;
+                dbTableField.setColumnName(columns.getString("COLUMN_NAME"));
+                dbTableField.setFieldName(toFieldCase(dbTableField.getColumnName()));
+                dbTableField.setPrecision(columns.getInt("COLUMN_SIZE"));
+                dbTableField.setColumnType(database.getDefinition().getQueryableDatatypeOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.getPrecision()));
+                if (pkNames.contains(dbTableField.getColumnName()) || pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.getColumnName())) {
+                    dbTableField.setIsPrimaryKey(true);
                 }
-                String[] pkData = fkNames.get(dbTableField.columnName);
+                String[] pkData = fkNames.get(dbTableField.getColumnName());
                 if (pkData != null && pkData.length == 2) {
-                    dbTableField.isForeignKey = true;
-                    dbTableField.referencesClass = toClassCase(pkData[0]);
-                    dbTableField.referencesField = pkData[1];
-                } else if (fkRecog.isForeignKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
-                    dbTableField.isForeignKey = true;
-                    dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.tableName, dbTableField.columnName);
-                    dbTableField.referencesClass = fkRecog.getReferencedTable(dbTableClass.tableName, dbTableField.columnName);
+                    dbTableField.setIsForeignKey(true);
+                    dbTableField.setReferencesClass(toClassCase(pkData[0]));
+                    dbTableField.setReferencesField(pkData[1]);
+                } else if (fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.getColumnName())) {
+                    dbTableField.setIsForeignKey(true);
+                    dbTableField.setReferencesField(fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.getColumnName()));
+                    dbTableField.setReferencesClass(fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.getColumnName()));
                 }
-                dbTableClass.fields.add(dbTableField);
+                dbTableClass.getFields().add(dbTableField);
             }
             dbTableClasses.add(dbTableClass);
         }
@@ -229,27 +228,27 @@ public class DBTableClassGenerator {
         List<String> dbTableClassNames = new ArrayList<String>();
 
         for (DBTableClass dbt : dbTableClasses) {
-            dbTableClassNames.add(dbt.className);
+            dbTableClassNames.add(dbt.getClassName());
         }
         for (DBTableClass dbt : dbTableClasses) {
-            for (DBTableField dbf : dbt.fields) {
-                if (dbf.isForeignKey) {
-                    if (!dbTableClassNames.contains(dbf.referencesClass)) {
+            for (DBTableField dbf : dbt.getFields()) {
+                if (dbf.isForeignKey()) {
+                    if (!dbTableClassNames.contains(dbf.getReferencesClass())) {
                         List<String> matchingNames = new ArrayList<String>();
                         for (String name : dbTableClassNames) {
-                            if (name.toLowerCase().startsWith(dbf.referencesClass.toLowerCase())) {
+                            if (name.toLowerCase().startsWith(dbf.getReferencesClass().toLowerCase())) {
                                 matchingNames.add(name);
                             }
                         }
                         if (matchingNames.size() == 1) {
                             String properClassname = matchingNames.get(0);
-                            dbf.referencesClass = properClassname;
+                            dbf.setReferencesClass(properClassname);
                         }
                     }
                 }
             }
             dbt.generateJavaSource();
-            System.out.println(dbt.javaSource);
+            System.out.println(dbt.getJavaSource());
         }
     }
 

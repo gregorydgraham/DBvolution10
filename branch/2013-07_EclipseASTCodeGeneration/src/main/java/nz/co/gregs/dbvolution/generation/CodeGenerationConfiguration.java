@@ -62,6 +62,16 @@ public class CodeGenerationConfiguration {
 	// TODO nice to have: removeNonCustomisedExtraProperties
 	
 	/**
+	 * Package path for generated classes that map to database tables.
+	 */
+	private String packageForTables;
+	
+	/**
+	 * Package path for generated classes that map to database views.
+	 */
+	private String packageForViews;
+	
+	/**
 	 * @return the addMissingClasses
 	 */
 	public boolean isAddMissingClasses() {
@@ -157,6 +167,56 @@ public class CodeGenerationConfiguration {
 	 */
 	public void setGenerateAccessorMethods(boolean generateAccessorMethods) {
 		this.generateAccessorMethods = generateAccessorMethods;
+	}
+
+	/**
+	 * Gets the code generation package for tables and views.
+	 * Convenience property for when it is desired that the tables and views are generated in the same package.
+	 * @return the package if both tables and views set the same, null otherwise
+	 */
+	public String getPackage() {
+		if (packageForTables != null && packageForViews != null && packageForTables.equals(packageForViews)) {
+			return packageForTables; // both the same
+		}
+		return null;
+	}
+
+	/**
+	 * Sets the code generation package for both tables and views.
+	 * Convenience property for when it is desired that the tables and views are generated in the same package.
+	 * @param package the package to set
+	 */
+	public void setPackage(String packageName) {
+		this.setPackageForTables(packageName);
+		this.setPackageForViews(packageName);
+	}
+	
+	/**
+	 * @return the packageForTables
+	 */
+	public String getPackageForTables() {
+		return packageForTables;
+	}
+
+	/**
+	 * @param packageForTables the packageForTables to set
+	 */
+	public void setPackageForTables(String packageForTables) {
+		this.packageForTables = packageForTables;
+	}
+
+	/**
+	 * @return the packageForViews
+	 */
+	public String getPackageForViews() {
+		return packageForViews;
+	}
+
+	/**
+	 * @param packageForViews the packageForViews to set
+	 */
+	public void setPackageForViews(String packageForViews) {
+		this.packageForViews = packageForViews;
 	}
 	
 }

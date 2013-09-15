@@ -19,18 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author gregory.graham
+ * Represents the requirement for a code generated class that maps
+ * to a database table.
  */
 public class DBTableClass {
-
-    String packageName;
-    String className;
-    String tableName;
-    public String javaSource;
-    List<DBTableField> fields = new ArrayList<DBTableField>();
-    String lineSeparator = System.getProperty("line.separator");
-    String conceptBreak = lineSeparator + lineSeparator;
+    private String packageName;
+    private String className;
+    private String tableName;
+    private String javaSource;
+    private List<DBTableField> fields = new ArrayList<DBTableField>();
+    private String lineSeparator = System.getProperty("line.separator");
+    private String conceptBreak = lineSeparator + lineSeparator;
     
     public String getPackageName() {
 		return packageName;
@@ -63,6 +62,14 @@ public class DBTableClass {
 	public void setFields(List<DBTableField> fields) {
 		this.fields = fields;
 	}
+	
+	public String getJavaSource() {
+		return javaSource;
+	}
+
+	public void setJavaSource(String javaSource) {
+		this.javaSource = javaSource;
+	}
 
 	public String generateJavaSource() {
         StringBuilder javaSrc = new StringBuilder();
@@ -81,16 +88,16 @@ public class DBTableClass {
         javaSrc.append(conceptBreak);
 
         for (DBTableField field : fields) {
-            javaSrc.append("    @DBColumn(\"").append(field.columnName).append("\")");
+            javaSrc.append("    @DBColumn(\"").append(field.getColumnName()).append("\")");
             javaSrc.append(lineSeparator);
-            if (field.isPrimaryKey) {
+            if (field.isPrimaryKey()) {
                 javaSrc.append("    @DBPrimaryKey").append(lineSeparator);
             }
-            if (field.isForeignKey) {
-                javaSrc.append("    @DBForeignKey(").append(field.referencesClass).append(".class)");
+            if (field.isForeignKey()) {
+                javaSrc.append("    @DBForeignKey(").append(field.getReferencesClass()).append(".class)");
                 javaSrc.append(lineSeparator);
             }
-            javaSrc.append("    public ").append(field.columnType).append(" ").append(field.fieldName).append(" = new ").append(field.columnType).append("();");
+            javaSrc.append("    public ").append(field.getColumnType()).append(" ").append(field.getFieldName()).append(" = new ").append(field.getColumnType()).append("();");
             javaSrc.append(conceptBreak);
         }
         javaSrc.append("}");

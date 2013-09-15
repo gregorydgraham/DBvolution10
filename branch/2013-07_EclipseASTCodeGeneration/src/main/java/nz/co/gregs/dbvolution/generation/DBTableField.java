@@ -18,18 +18,19 @@ package nz.co.gregs.dbvolution.generation;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
- *
- * @author gregory.graham
+ * Represents the requirement for a code generated property that maps to a column.
+ * The generated code will be a member field or getter/setter property, depending
+ * on configuration.
  */
 public class DBTableField {
-    String fieldName;
-    String columnName;
-    boolean isPrimaryKey = false;
-    boolean isForeignKey = false;
-    String referencesClass;
-    String referencesField;
-    Class<? extends QueryableDatatype> columnType;
-    int precision;
+    private String fieldName;
+    private String columnName;
+    private boolean isPrimaryKey = false;
+    private boolean isForeignKey = false;
+    private String referencesClass;
+    private String referencesField; // TODO: what is this?
+    private Class<? extends QueryableDatatype> columnType;
+    private int precision;
     
 	public String getFieldName() {
 		return fieldName;
@@ -51,7 +52,7 @@ public class DBTableField {
 		return isPrimaryKey;
 	}
 
-	public void setPrimaryKey(boolean isPrimaryKey) {
+	public void setIsPrimaryKey(boolean isPrimaryKey) {
 		this.isPrimaryKey = isPrimaryKey;
 	}
 
@@ -59,7 +60,7 @@ public class DBTableField {
 		return isForeignKey;
 	}
 
-	public void setForeignKey(boolean isForeignKey) {
+	public void setIsForeignKey(boolean isForeignKey) {
 		this.isForeignKey = isForeignKey;
 	}
 
