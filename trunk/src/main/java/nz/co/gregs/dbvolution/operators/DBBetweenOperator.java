@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 
 /**
  *
@@ -46,7 +47,12 @@ public class DBBetweenOperator extends DBOperator{
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new InappropriateRelationshipOperator(this);
+    }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        throw new InappropriateRelationshipOperator(this);
     }
     
 }

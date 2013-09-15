@@ -38,4 +38,9 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
     public String getInverse() {
         return " < ";
     }
+    
+    @Override
+    public DBOperator getInverseOperator() {
+        return new DBLessThanOperator(greaterThanThis);
+    }
 }

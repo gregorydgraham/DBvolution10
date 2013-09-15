@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 public class DBLessThanOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    private final QueryableDatatype lessThanThis;
+    protected final QueryableDatatype lessThanThis;
 
     /**
      *
@@ -52,5 +52,10 @@ public class DBLessThanOperator extends DBOperator {
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+    }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        return new DBGreaterThanOrEqualsOperator(lessThanThis);
     }
 }

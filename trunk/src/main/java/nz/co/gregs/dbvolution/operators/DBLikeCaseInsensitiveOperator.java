@@ -60,4 +60,11 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
         DBDefinition defn = database.getDefinition();
         return (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(otherColumnName) + ")";
     }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        return this;
+    }
+    
+    
 }

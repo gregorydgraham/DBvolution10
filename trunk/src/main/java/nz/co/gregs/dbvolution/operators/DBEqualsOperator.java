@@ -31,6 +31,11 @@ public class DBEqualsOperator extends DBOperator {
     /**
      *
      */
+    public DBEqualsOperator() {
+        super();
+        equalTo = null;
+    }
+
     public DBEqualsOperator(QueryableDatatype equalTo) {
         super();
         this.equalTo = equalTo;
@@ -59,5 +64,10 @@ public class DBEqualsOperator extends DBOperator {
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+    }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        return this;
     }
 }
