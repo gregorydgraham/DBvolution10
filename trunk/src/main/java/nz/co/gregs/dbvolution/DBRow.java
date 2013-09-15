@@ -4,6 +4,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import java.beans.BeanInfo;
@@ -19,6 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBSaveBLOB;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -38,7 +40,8 @@ abstract public class DBRow implements Serializable {
 
     private transient DBDatabase database;
     private boolean isDefined = false;
-    private List<Field> ignoredRelationships = new ArrayList<Field>();
+    private HashMap<DBForeignKey, DBColumn> foreignKeys = null;
+    private List<Field> ignoredForeignKeys = new ArrayList<Field>();
     private List<Field> returnColumns = new ArrayList<Field>();
     private final List<Field> fkFields = new ArrayList<Field>();
     private List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
@@ -67,10 +70,10 @@ abstract public class DBRow implements Serializable {
             throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         }
     }
-    
-    public void clear(){
+
+    public void clear() {
         List<QueryableDatatype> qdts = getQueryableDatatypes();
-        for(QueryableDatatype qdt: qdts){
+        for (QueryableDatatype qdt : qdts) {
             qdt.clear();
         }
     }
@@ -79,24 +82,24 @@ abstract public class DBRow implements Serializable {
         QueryableDatatype queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
         return queryableValueOfField;
     }
-    
+
     /**
-     * 
+     *
      * indicates that the DBRow is defined in the database
      *
      * @param newValue
      */
-    protected void setDefined(boolean newValue){
+    protected void setDefined(boolean newValue) {
         isDefined = newValue;
     }
 
     /**
-     * 
+     *
      * indicates if the DBRow is defined in the database
      *
      * @param newValue
      */
-    public boolean getDefined(){
+    public boolean getDefined() {
         return isDefined;
     }
 
@@ -320,7 +323,7 @@ abstract public class DBRow implements Serializable {
     /**
      * @param database the database to set
      */
-    protected void setDatabase(DBDatabase theDatabase) {
+    public void setDatabase(DBDatabase theDatabase) {
         this.database = theDatabase;
 
         for (Field field : this.getClass().getDeclaredFields()) {
@@ -430,16 +433,17 @@ abstract public class DBRow implements Serializable {
     }
 
     protected Map<DBForeignKey, DBColumn> getForeignKeys() {
-        HashMap<DBForeignKey, DBColumn> foreignKeys;
-        foreignKeys = new HashMap<DBForeignKey, DBColumn>();
+        if (foreignKeys == null) {
+            foreignKeys = new HashMap<DBForeignKey, DBColumn>();
 //        Class<? extends DBRow> thisClass = this.getClass();
-        List<Field> fields = this.getForeignKeyFields();
+            List<Field> fields = this.getForeignKeyFields();
 
-        for (Field field : fields) {
-            if (!ignoredRelationships.contains(field)) {
-                DBForeignKey annotation = field.getAnnotation(DBForeignKey.class);
-                DBColumn columnName = field.getAnnotation(DBColumn.class);
-                foreignKeys.put(annotation, columnName);
+            for (Field field : fields) {
+                if (!ignoredForeignKeys.contains(field)) {
+                    DBForeignKey annotation = field.getAnnotation(DBForeignKey.class);
+                    DBColumn columnName = field.getAnnotation(DBColumn.class);
+                    foreignKeys.put(annotation, columnName);
+                }
             }
         }
         return foreignKeys;
@@ -498,15 +502,18 @@ abstract public class DBRow implements Serializable {
         if (fieldOfFK == null) {
             throw new IncorrectDBRowInstanceSuppliedException();
         }
-        ignoredRelationships.add(fieldOfFK);
+        ignoredForeignKeys.add(fieldOfFK);
+        foreignKeys = null;
     }
 
     public void useAllForeignKeys() {
-        ignoredRelationships.clear();
+        ignoredForeignKeys.clear();
+        foreignKeys = null;
     }
 
     public void ignoreAllForeignKeys() {
-        ignoredRelationships.addAll(this.getForeignKeyFields());
+        ignoredForeignKeys.addAll(this.getForeignKeyFields());
+        foreignKeys = null;
     }
 
     /**
@@ -565,8 +572,9 @@ abstract public class DBRow implements Serializable {
 
     List<String> getAdHocRelationshipSQL() {
         List<String> sqlStrings = new ArrayList<String>();
+        DBDefinition defn = database.getDefinition();
         for (DBRelationship rel : adHocRelationships) {
-            sqlStrings.add(rel.generateSQL(database));
+            sqlStrings.add(defn.beginAndLine() + rel.generateSQL(database));
         }
         return sqlStrings;
     }
@@ -630,5 +638,92 @@ abstract public class DBRow implements Serializable {
      */
     public List<DBRelationship> getAdHocRelationships() {
         return adHocRelationships;
+    }
+
+    /**
+     * the foreign keys and adhoc relationships as an SQL String or a null
+     * pointer
+     *
+     * @return the foreign keys and adhoc relationships as an SQL String or a
+     * null pointer
+     */
+    public String getRelationshipsAsSQL(DBRow newTable) {
+        StringBuilder rels = new StringBuilder();
+        DBDefinition defn = database.getDefinition();
+        final String lineSeparator = System.getProperty("line.separator");
+
+        Map<DBForeignKey, DBColumn> fks = getForeignKeys();
+        String joinSeparator = "";
+        for (Entry<DBForeignKey, DBColumn> fk : fks.entrySet()) {
+            Class<? extends DBRow> value = fk.getKey().value();
+
+            if (newTable.getClass().equals(value)) {
+
+                String fkColumnName = fk.getValue().value();
+                String formattedForeignKey = defn.formatTableAndColumnName(
+                        this.getTableName(),
+                        fkColumnName);
+
+                String formattedPrimaryKey = defn.formatTableAndColumnName(
+                        newTable.getTableName(),
+                        newTable.getPrimaryKeyName());
+
+                rels.append(lineSeparator)
+                        .append(joinSeparator)
+                        .append(formattedForeignKey)
+                        .append(defn.getEqualsComparator())
+                        .append(formattedPrimaryKey);
+
+                joinSeparator = defn.beginAndLine();
+            }
+        }
+        List<DBRelationship> adHocs = getAdHocRelationships();
+        for (DBRelationship adhoc : adHocs) {
+            DBRow firstTable = adhoc.getFirstTable();
+            DBRow secondTable = adhoc.getSecondTable();
+            DBRow leftTable = firstTable;
+            DBRow rightTable = secondTable;
+            QueryableDatatype leftColumn = adhoc.getFirstColumn();
+            QueryableDatatype rightColumn = adhoc.getSecondColumn();
+
+            if (rightTable.getClass().equals(this.getClass())) {
+                leftTable = secondTable;
+                rightTable = firstTable;
+                leftColumn=adhoc.getSecondColumn();
+                rightColumn=adhoc.getFirstColumn();
+            }
+            
+            
+            
+                
+        }
+
+
+
+        fks = newTable.getForeignKeys();
+        for (Entry<DBForeignKey, DBColumn> fk : fks.entrySet()) {
+            Class<? extends DBRow> value = fk.getKey().value();
+
+            if (this.getClass().equals(value)) {
+
+                String fkColumnName = fk.getValue().value();
+                String formattedForeignKey = defn.formatTableAndColumnName(
+                        newTable.getTableName(),
+                        fkColumnName);
+
+                String formattedPrimaryKey = defn.formatTableAndColumnName(
+                        this.getTableName(),
+                        this.getPrimaryKeyName());
+
+                rels.append(lineSeparator)
+                        .append(joinSeparator)
+                        .append(formattedPrimaryKey)
+                        .append(defn.getEqualsComparator())
+                        .append(formattedForeignKey);
+
+                joinSeparator = defn.beginAndLine();
+            }
+        }
+        return rels.toString();
     }
 }

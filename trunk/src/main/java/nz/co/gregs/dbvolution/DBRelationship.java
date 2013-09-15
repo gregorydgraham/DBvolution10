@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  *
  * @author gregorygraham
  */
-class DBRelationship implements Serializable{
+public class DBRelationship implements Serializable{
     public static final long serialVersionUID = 1L;
 
     private DBRow firstTable;
@@ -51,9 +51,9 @@ class DBRelationship implements Serializable{
 
     public String generateSQL(DBDatabase database) {
         final DBDefinition definition = database.getDefinition();
-        return operation.generateRelationship(database,
-                definition.formatTableAndColumnName(firstTable.getTableName(), firstTable.getDBColumnName(firstColumn)),
-                definition.formatTableAndColumnName(secondTable.getTableName(), secondTable.getDBColumnName(secondColumn)));
+        return getOperation().generateRelationship(database,
+                definition.formatTableAndColumnName(firstTable.getTableName(), firstTable.getDBColumnName(getFirstColumn())),
+                definition.formatTableAndColumnName(secondTable.getTableName(), secondTable.getDBColumnName(getSecondColumn())));
     }
 
     /**
@@ -68,5 +68,26 @@ class DBRelationship implements Serializable{
      */
     public DBRow getSecondTable() {
         return secondTable;
+    }
+
+    /**
+     * @return the firstColumn
+     */
+    public QueryableDatatype getFirstColumn() {
+        return firstColumn;
+    }
+
+    /**
+     * @return the secondColumn
+     */
+    public QueryableDatatype getSecondColumn() {
+        return secondColumn;
+    }
+
+    /**
+     * @return the operation
+     */
+    public DBOperator getOperation() {
+        return operation;
     }
 }

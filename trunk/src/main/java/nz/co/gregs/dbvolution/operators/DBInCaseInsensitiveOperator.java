@@ -54,6 +54,6 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
-        return defn.beginAndLine() + defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName) + " ) ";
+        return defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName) + " ) ";
     }
 }

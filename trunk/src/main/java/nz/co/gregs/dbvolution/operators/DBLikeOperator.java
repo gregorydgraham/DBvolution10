@@ -45,7 +45,7 @@ public class DBLikeOperator extends DBOperator {
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
-        return defn.beginAndLine() +(invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+otherColumnName+")";
+        return (invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+otherColumnName+")";
     }
     
 }

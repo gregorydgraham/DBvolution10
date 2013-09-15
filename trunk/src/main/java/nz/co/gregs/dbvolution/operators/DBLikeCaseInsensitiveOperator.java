@@ -58,6 +58,6 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
-        return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(otherColumnName) + ")";
+        return (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(otherColumnName) + ")";
     }
 }

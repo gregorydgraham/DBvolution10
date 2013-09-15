@@ -257,4 +257,32 @@ public abstract class DBDefinition {
             return " DESC ";
         }
     }
+
+    public String getStartingJoinOperationSeparator() {
+        return "";
+    }
+
+    public String getSubsequentJoinOperationSeparator() {
+        return beginAndLine();
+    }
+
+    public String beginLeftOuterJoin() {
+        return " LEFT OUTER JOIN ";
+    }
+
+    public String beginFullOuterJoin() {
+        return " FULL OUTER JOIN ";
+    }
+
+    public String beginOnClause() {
+        return " ON( ";
+    }
+
+    public String endOnClause() {
+        return " ) ";
+    }
+
+    public String beginInnerJoin() {
+        return " INNER JOIN ";
+    }
 }

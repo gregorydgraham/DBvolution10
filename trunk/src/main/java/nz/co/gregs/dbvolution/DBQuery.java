@@ -42,6 +42,8 @@ public class DBQuery {
 
     DBDatabase database;
     private List<DBRow> queryTables;
+    private List<DBRow> optionalQueryTables;
+    private List<DBRow> allQueryTables;
     private List<DBQueryRow> results;
     private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private Long rowLimit;
@@ -49,9 +51,15 @@ public class DBQuery {
     private QueryableDatatype[] sortOrder;
     private String resultSQL;
     private boolean cartesianJoinAllowed = false;
+    private final int INNER_JOIN = 0;
+    private final int LEFT_JOIN = 1;
+    private final int RIGHT_JOIN = 2;
+    private final int FULL_OUTER_JOIN = 4;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
+        this.optionalQueryTables = new ArrayList<DBRow>();
+        this.allQueryTables = new ArrayList<DBRow>();
         this.database = database;
         this.results = null;
         this.resultSQL = null;
@@ -79,6 +87,15 @@ public class DBQuery {
      */
     public DBQuery add(DBRow table) {
         queryTables.add(table);
+        allQueryTables.add(table);
+        results = null;
+        resultSQL = null;
+        return this;
+    }
+
+    public DBQuery addOptionalTable(DBRow table) {
+        optionalQueryTables.add(table);
+        allQueryTables.add(table);
         results = null;
         resultSQL = null;
         return this;
@@ -86,6 +103,143 @@ public class DBQuery {
 
     public String getSQLForQuery() throws SQLException {
         return getSQLForQuery(null);
+    }
+
+    private String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables) {
+        List<String> joinClauses = new ArrayList<String>();
+        DBDefinition defn = database.getDefinition();
+        boolean isLeftOuterJoin = false;
+        boolean isFullOuterJoin = false;
+        if (optionalQueryTables.contains(newTable)) {
+            isLeftOuterJoin = true;
+        }
+        for (DBRow otherTable : previousTables) {
+            String join = otherTable.getRelationshipsAsSQL(newTable);
+            if (join != null) {
+                if (optionalQueryTables.contains(otherTable) && isLeftOuterJoin) {
+                    isFullOuterJoin = true;
+                }
+                joinClauses.add(join);
+            }
+        }
+        String sqlToReturn;
+        if (previousTables.isEmpty()) {
+            sqlToReturn = " " + newTable.getTableName() + " ";
+        } else {
+            if (isFullOuterJoin) {
+                sqlToReturn = defn.beginFullOuterJoin();
+            } else if (isLeftOuterJoin) {
+                sqlToReturn = defn.beginLeftOuterJoin();
+            } else {
+                sqlToReturn = defn.beginInnerJoin();
+            }
+            sqlToReturn += newTable.getTableName() + defn.beginOnClause();
+            String separator = "";
+            for (String join : joinClauses) {
+                sqlToReturn += separator + join;
+                separator = defn.beginAndLine();
+            }
+            sqlToReturn += defn.endOnClause();
+        }
+        return sqlToReturn;
+    }
+
+    private String getANSISQLForQuery(String providedSelectClause) throws SQLException {
+        DBDefinition defn = database.getDefinition();
+        Set<DBRow> connectedTables = new HashSet<DBRow>();
+        StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
+        StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
+        StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getTrueOperation());
+        ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
+        String lineSep = System.getProperty("line.separator");
+
+        if (rowLimit != null) {
+            selectClause.append(defn.getTopClause(rowLimit));
+        }
+
+        String separator = "";
+        String colSep = defn.getStartingSelectSubClauseSeparator();
+        String tableName;
+
+        otherTables.clear();
+        otherTables.addAll(allQueryTables);
+        for (DBRow tabRow : allQueryTables) {
+            int joinType = INNER_JOIN;
+            StringBuilder joinClause = new StringBuilder();
+            otherTables.remove(tabRow);
+            tableName = tabRow.getTableName();
+
+            if (providedSelectClause == null) {
+                List<String> columnNames = tabRow.getColumnNames();
+                for (String columnName : columnNames) {
+                    String formattedColumnName = defn.formatTableAndColumnNameForSelectClause(tableName, columnName);
+                    selectClause.append(colSep).append(formattedColumnName);
+                    colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+                }
+            } else {
+                selectClause = new StringBuilder(providedSelectClause);
+            }
+            fromClause.append(separator).append(tableName);
+
+            String tabRowCriteria = tabRow.getWhereClause(database);
+            if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
+                whereClause.append(lineSep).append(tabRowCriteria);
+            }
+
+            String joinOpSeparator = defn.getStartingJoinOperationSeparator();
+            for (DBRelationship rel : tabRow.getAdHocRelationships()) {
+                joinClause.append(joinOpSeparator).append(rel.generateSQL(database));
+                joinOpSeparator = defn.getSubsequentJoinOperationSeparator();
+
+                final DBRow leftTable = rel.getFirstTable();
+                final DBRow rightTable = rel.getSecondTable();
+                connectedTables.add(leftTable);
+                connectedTables.add(rightTable);
+
+                final boolean optionalLeft = optionalQueryTables.contains(leftTable);
+                final boolean optionalRight = optionalQueryTables.contains(rightTable);
+
+                if (optionalLeft && optionalRight) {
+                    joinType = FULL_OUTER_JOIN;
+                } else if (optionalLeft) {
+                    if (joinType == RIGHT_JOIN) {
+                        joinType = FULL_OUTER_JOIN;
+                    } else {
+                        joinType = LEFT_JOIN;
+                    }
+                } else if (optionalRight) {
+                    if (joinType == LEFT_JOIN) {
+                        joinType = FULL_OUTER_JOIN;
+                    } else {
+                        joinType = RIGHT_JOIN;
+                    }
+                }
+            }
+
+
+
+
+
+
+
+            otherTables.add(tabRow);
+        }
+
+        if (connectedTables.size() < queryTables.size() && !cartesianJoinAllowed) {
+            throw new AccidentalCartesianJoinException();
+        }
+        final String sqlString =
+                selectClause.append(lineSep)
+                .append(fromClause).append(lineSep)
+                .append(whereClause).append(lineSep)
+                .append(getOrderByClause()).append(lineSep)
+                .append(defn.endSQLStatement())
+                .toString();
+        if (database.isPrintSQLBeforeExecuting()) {
+            System.out.println(sqlString);
+        }
+
+        return sqlString;
     }
 
     private String getSQLForQuery(String providedSelectClause) throws SQLException {
@@ -129,17 +283,10 @@ public class DBQuery {
             }
 
             for (DBRelationship rel : tabRow.getAdHocRelationships()) {
-                whereClause.append(rel.generateSQL(database));
+                whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
                 connectedTables.add(rel.getFirstTable());
                 connectedTables.add(rel.getSecondTable());
             }
-
-//            List<String> adHocRelationshipSQL = tabRow.getAdHocRelationshipSQL();
-//            for (String sql : adHocRelationshipSQL) {
-//                whereClause.append(sql);
-//                connectedTables.add(tabRow);
-//                connectedTables.add(tabRow);
-//            }
 
             for (DBRow otherTab : otherTables) {
                 Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
@@ -352,10 +499,12 @@ public class DBQuery {
         }
 
         for (DBQueryRow row : this.results) {
-            for (DBRow tab : this.queryTables) {
+            for (DBRow tab : this.allQueryTables) {
                 DBRow rowPart = row.get(tab);
-                String rowPartStr = rowPart.toString();
-                ps.print(rowPartStr);
+                if (rowPart != null) {
+                    String rowPartStr = rowPart.toString();
+                    ps.print(rowPartStr);
+                }
             }
             ps.println();
         }
@@ -374,11 +523,14 @@ public class DBQuery {
         }
 
         for (DBQueryRow row : this.results) {
-            for (DBRow tab : this.queryTables) {
+            for (DBRow tab : this.allQueryTables) {
                 DBRow rowPart = row.get(tab);
-                String rowPartStr = rowPart.toStringMinusFKs();
-                printStream.print(rowPartStr);
+                if (rowPart != null) {
+                    String rowPartStr = rowPart.toString();
+                    printStream.print(rowPartStr);
+                }
             }
+
             printStream.println();
         }
     }
@@ -396,18 +548,22 @@ public class DBQuery {
         }
 
         for (DBQueryRow row : this.results) {
-            for (DBRow tab : this.queryTables) {
+            for (DBRow tab : this.allQueryTables) {
                 DBRow rowPart = row.get(tab);
-                rowPart.setDatabase(database);
-                String rowPartStr = rowPart.getPrimaryKey().getSQLValue();
-                ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
+                if (rowPart != null) {
+                    String rowPartStr = rowPart.getPrimaryKey().getSQLValue();
+                    ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
+                }
             }
+
             ps.println();
         }
     }
 
     public DBQuery clear() {
         this.queryTables.clear();
+        this.optionalQueryTables.clear();
+        this.allQueryTables.clear();
         results = null;
         return this;
     }
@@ -429,7 +585,7 @@ public class DBQuery {
 
     public boolean willCreateBlankQuery() {
         boolean willCreateBlankQuery = true;
-        for (DBRow table : queryTables) {
+        for (DBRow table : allQueryTables) {
             willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
         }
         return willCreateBlankQuery;

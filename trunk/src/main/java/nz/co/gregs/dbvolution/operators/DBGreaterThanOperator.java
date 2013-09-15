@@ -54,6 +54,6 @@ public class DBGreaterThanOperator extends DBOperator {
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
-        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ";
+        return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ";
     }
 }
