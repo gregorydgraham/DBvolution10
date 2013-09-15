@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
+
     public static final long serialVersionUID = 1L;
 
     public DBEqualsCaseInsensitiveOperator(QueryableDatatype equalTo) {
@@ -36,11 +37,10 @@ public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
         }
         return defn.beginAndLine() + defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(equalTo.getSQLValue()) + " ";
     }
-    
-        @Override
+
+    @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
-        return defn.beginAndLine() + defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName);
+        return defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName);
     }
-
 }
