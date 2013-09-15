@@ -31,6 +31,7 @@ abstract public class DBOperator implements Serializable{
 
     /**
      *
+     * @param database
      * @param columnName
      * @return
      */

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
+import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -32,6 +33,11 @@ public class DBInOperator extends DBOperator {
     public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
         super();
         this.listOfPossibleValues = listOfPossibleValues;
+    }
+
+    public DBInOperator() {
+        super();
+        this.listOfPossibleValues = new ArrayList<QueryableDatatype>();
     }
 
     @Override

@@ -25,6 +25,10 @@ public class DBLessThanOrEqualOperator extends DBLessThanOperator {
         super(lessThanThis);
     }
 
+    public DBLessThanOrEqualOperator() {
+        super();
+    }
+
     @Override
     public String getInverse() {
         return " > ";
