@@ -1,19 +1,30 @@
+/*
+ * Copyright 2013 gregory.graham.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package nz.co.gregs.dbvolution.generation;
 
 import java.io.File;
 import java.util.Comparator;
 
-import nz.co.gregs.dbvolution.generation.ast.ColumnNameResolver;
 import nz.co.gregs.dbvolution.generation.ast.ParsedBeanProperty;
 import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
-import nz.co.gregs.dbvolution.generation.ast.TableNameResolver;
 
 /**
- * Used to generate brand new classes and to synchronise existing ones with schema
- * meta-data.
+ * Maintains new and existing classes according to database schema information.
  */
-// TODO: name this better, so far named weirldy to avoid conflict with existing classes
-public class DBTableClassCodeGeneratorAndUpdater {
+public class ClassMaintainer {
 	//private DBDefinition dbDefinition;
 	private CodeGenerationConfiguration config;
 	private TableNameResolver tableNameResolver;
@@ -22,7 +33,7 @@ public class DBTableClassCodeGeneratorAndUpdater {
 	/**
 	 * Prepares for creating a brand new java file.
 	 */
-	public DBTableClassCodeGeneratorAndUpdater(CodeGenerationConfiguration config, TableNameResolver tableNameResolver) {
+	public ClassMaintainer(CodeGenerationConfiguration config, TableNameResolver tableNameResolver) {
 		//this.dbDefinition = dbDefinition;
 		this.config = config;
 		this.tableNameResolver = tableNameResolver;
@@ -32,7 +43,7 @@ public class DBTableClassCodeGeneratorAndUpdater {
 	/**
 	 * Prepare for updating an existing java file.
 	 */
-	public DBTableClassCodeGeneratorAndUpdater(CodeGenerationConfiguration config, TableNameResolver tableNameResolver, ParsedClass parsedClass) {
+	public ClassMaintainer(CodeGenerationConfiguration config, TableNameResolver tableNameResolver, ParsedClass parsedClass) {
 		//this.dbDefinition = dbDefinition;
 		this.config = config;
 		this.tableNameResolver = tableNameResolver;
