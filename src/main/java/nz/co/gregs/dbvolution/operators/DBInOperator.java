@@ -71,4 +71,9 @@ public class DBInOperator extends DBOperator {
         DBDefinition defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
     }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        return this;
+    }
 }

@@ -685,17 +685,47 @@ abstract public class DBRow implements Serializable {
             DBRow rightTable = secondTable;
             QueryableDatatype leftColumn = adhoc.getFirstColumn();
             QueryableDatatype rightColumn = adhoc.getSecondColumn();
+            DBOperator operator = adhoc.getOperation();
 
             if (rightTable.getClass().equals(this.getClass())) {
                 leftTable = secondTable;
                 rightTable = firstTable;
-                leftColumn=adhoc.getSecondColumn();
-                rightColumn=adhoc.getFirstColumn();
+                leftColumn = adhoc.getSecondColumn();
+                rightColumn = adhoc.getFirstColumn();
+                operator = operator.getInverseOperator();
             }
-            
-            
-            
-                
+
+            rels.append(lineSeparator)
+                    .append(joinSeparator)
+                    .append(DBRelationship.generateSQL(database, leftTable, leftColumn, operator, rightTable, rightColumn));
+
+            joinSeparator = defn.beginAndLine();
+        }
+
+
+        adHocs = newTable.getAdHocRelationships();
+        for (DBRelationship adhoc : adHocs) {
+            DBRow firstTable = adhoc.getFirstTable();
+            DBRow secondTable = adhoc.getSecondTable();
+            DBRow leftTable = firstTable;
+            DBRow rightTable = secondTable;
+            QueryableDatatype leftColumn = adhoc.getFirstColumn();
+            QueryableDatatype rightColumn = adhoc.getSecondColumn();
+            DBOperator operator = adhoc.getOperation();
+
+            if (rightTable.getClass().equals(this.getClass())) {
+                leftTable = secondTable;
+                rightTable = firstTable;
+                leftColumn = adhoc.getSecondColumn();
+                rightColumn = adhoc.getFirstColumn();
+                operator = operator.getInverseOperator();
+            }
+
+            rels.append(lineSeparator)
+                    .append(joinSeparator)
+                    .append(DBRelationship.generateSQL(database, leftTable, leftColumn, operator, rightTable, rightColumn));
+
+            joinSeparator = defn.beginAndLine();
         }
 
 

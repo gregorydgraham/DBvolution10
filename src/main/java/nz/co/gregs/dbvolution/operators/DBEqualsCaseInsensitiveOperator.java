@@ -23,6 +23,10 @@ public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
 
     public static final long serialVersionUID = 1L;
 
+    public DBEqualsCaseInsensitiveOperator() {
+        super();
+    }
+
     public DBEqualsCaseInsensitiveOperator(QueryableDatatype equalTo) {
         super(equalTo);
     }
@@ -43,4 +47,6 @@ public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
         DBDefinition defn = database.getDefinition();
         return defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName);
     }
+    
+    
 }

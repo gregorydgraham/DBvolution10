@@ -21,7 +21,7 @@ import java.util.Date;
 
 public class DBDateOnly extends DBDate {
     
-    public final long serialVersionUID = 1L;
+    public static final long serialVersionUID = 1L;
 
     public DBDateOnly() {
     }
@@ -44,6 +44,7 @@ public class DBDateOnly extends DBDate {
     }
     
     @Override
+    @SuppressWarnings("deprecation")
     public Date dateValue(){
         Date dateValue = super.dateValue();
         dateValue.setHours(0);

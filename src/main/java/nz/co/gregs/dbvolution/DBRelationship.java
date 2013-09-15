@@ -56,6 +56,13 @@ public class DBRelationship implements Serializable{
                 definition.formatTableAndColumnName(secondTable.getTableName(), secondTable.getDBColumnName(getSecondColumn())));
     }
 
+    static public String generateSQL(DBDatabase database, DBRow firstTable, QueryableDatatype firstColumn, DBOperator operation, DBRow secondTable, QueryableDatatype secondColumn) {
+        final DBDefinition definition = database.getDefinition();
+        return operation.generateRelationship(database,
+                definition.formatTableAndColumnName(firstTable.getTableName(), firstTable.getDBColumnName(firstColumn)),
+                definition.formatTableAndColumnName(secondTable.getTableName(), secondTable.getDBColumnName(secondColumn)));
+    }
+
     /**
      * @return the firstTable
      */

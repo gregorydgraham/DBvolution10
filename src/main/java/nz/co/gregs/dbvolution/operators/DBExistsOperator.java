@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 
 /**
  *
@@ -57,6 +58,11 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        throw new UnsupportedOperationException("The SQL EXISTS Operator Can Not Be Used To Specify A Relationship"); //To change body of generated methods, choose Tools | Templates.
+        throw new InappropriateRelationshipOperator(this);
+    }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        throw new InappropriateRelationshipOperator(this);
     }
 }

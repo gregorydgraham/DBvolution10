@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBGreaterThanOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    private final QueryableDatatype greaterThanThis;
+    protected final QueryableDatatype greaterThanThis;
 
     /**
      *
@@ -55,5 +55,10 @@ public class DBGreaterThanOperator extends DBOperator {
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ";
+    }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        return new DBLessThanOrEqualOperator(greaterThanThis);
     }
 }

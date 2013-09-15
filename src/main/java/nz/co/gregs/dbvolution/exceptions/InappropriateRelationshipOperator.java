@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.operators;
+package nz.co.gregs.dbvolution.exceptions;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.operators.DBOperator;
 
-public class DBLessThanOrEqualOperator extends DBLessThanOperator {
-
+/**
+ *
+ * @author Gregory Graham
+ */
+public class InappropriateRelationshipOperator extends RuntimeException{
+    
     public static final long serialVersionUID = 1L;
-
-    public DBLessThanOrEqualOperator(QueryableDatatype lessThanThis) {
-        super(lessThanThis);
-    }
-
-    @Override
-    public String getInverse() {
-        return " > ";
-    }
-
-    @Override
-    public String getOperator() {
-        return " <= ";
+    
+    public InappropriateRelationshipOperator(DBOperator op){
+        super("The Operator "+op.getClass().getSimpleName()+" Can Not Be Used To Specify A Relationship");
     }
     
-        @Override
-    public DBOperator getInverseOperator() {
-        return new DBGreaterThanOperator(lessThanThis);
-    }
-
 }

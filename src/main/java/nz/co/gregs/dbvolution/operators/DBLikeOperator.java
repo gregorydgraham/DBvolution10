@@ -47,5 +47,10 @@ public class DBLikeOperator extends DBOperator {
         DBDefinition defn = database.getDefinition();
         return (invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+otherColumnName+")";
     }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        return this;
+    }
     
 }

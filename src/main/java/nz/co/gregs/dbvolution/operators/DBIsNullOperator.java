@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 /**
  *
  * @author gregorygraham
@@ -38,7 +39,12 @@ public class DBIsNullOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        throw new UnsupportedOperationException("The DB IS NULL Operator Cannot Be Used To Specify a Relationship"); //To change body of generated methods, choose Tools | Templates.
+        throw new InappropriateRelationshipOperator(this);
+    }
+
+    @Override
+    public DBOperator getInverseOperator() {
+        throw new InappropriateRelationshipOperator(this);
     }
     
 }

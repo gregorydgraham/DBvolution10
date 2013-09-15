@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.h2;
 
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.operators.DBEqualsCaseInsensitiveOperator;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -37,6 +38,18 @@ public class OuterJoinTest extends AbstractTest {
         Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY"));
         //CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY
         Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
+        
+//        mrq.ignoreAllForeignKeys();
+        mrq.addRelationship(mrq.name, carCo, carCo.name, new DBEqualsCaseInsensitiveOperator());
+        System.out.println(""+mrq.getRelationshipsAsSQL(carCo));
+        System.out.println(""+carCo.getRelationshipsAsSQL(mrq));
+        
+        
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY\n" +
+" and  lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)"));
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)\n" +
+" and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
+        
 
     }
     
