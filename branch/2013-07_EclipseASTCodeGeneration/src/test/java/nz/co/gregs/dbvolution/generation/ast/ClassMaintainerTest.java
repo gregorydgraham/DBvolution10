@@ -11,18 +11,18 @@ import nz.co.gregs.dbvolution.generation.TableNameResolver;
 
 import org.junit.Test;
 
-public class DBTableClassCodeGeneratorAndUpdaterTest extends AbstractASTTest {
+public class ClassMaintainerTest extends AbstractASTTest {
 	@Test
 	public void generateFromMetaData() {
 		CodeGenerationConfiguration config = new CodeGenerationConfiguration();
 		//config.setAnnotateFields(false);
 		config.setGenerateAccessorMethods(false);
 		
-		TableNameResolver resolver = new TableNameResolver(DBTableClassCodeGeneratorAndUpdaterTest.class.getPackage().getName());
+		TableNameResolver resolver = new TableNameResolver(ClassMaintainerTest.class.getPackage().getName());
 		ClassMaintainer updater = new ClassMaintainer(config, resolver);
 		
 		DBTableClass tableClass = new DBTableClass();
-		tableClass.setTableName(DBTableClassCodeGeneratorAndUpdaterTest.class.getSimpleName()+"_1");
+		tableClass.setTableName(ClassMaintainerTest.class.getSimpleName()+"_1");
 		
 		tableClass.getFields().add(field("uid", DBNumber.class, true));
 		tableClass.getFields().add(field("name", DBString.class, false));
