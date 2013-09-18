@@ -105,7 +105,7 @@ public class DBQuery {
         return getSQLForQuery(null);
     }
 
-    private String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables) {
+    public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables) {
         List<String> joinClauses = new ArrayList<String>();
         DBDefinition defn = database.getDefinition();
         boolean isLeftOuterJoin = false;

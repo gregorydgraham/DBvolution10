@@ -15,6 +15,10 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
+import java.util.ArrayList;
+import java.util.List;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.operators.DBEqualsCaseInsensitiveOperator;
@@ -61,6 +65,20 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println(""+carCo.getRelationshipsAsSQL(mrq));
         Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)" +lineSep+" and MARQUE.NAME > CAR_COMPANY.NAME"));
         Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)"+lineSep +" and CAR_COMPANY.NAME <= MARQUE.NAME"));
+        
+    }
+    
+    @Test
+    public void testANSIJoinQueryCreation(){
+        Marque mrq = new Marque();
+        mrq.setDatabase(database);
+        CarCompany carCo = new CarCompany();
+        carCo.setDatabase(database);
+        DBQuery dbQuery = database.getDBQuery(mrq);
+        List<DBRow> tables = new ArrayList<DBRow>();
+        System.out.println(dbQuery.getANSIJoinClause(carCo,tables));
+        tables.add(carCo);
+        System.out.println(dbQuery.getANSIJoinClause(mrq,tables));
         
     }
     
