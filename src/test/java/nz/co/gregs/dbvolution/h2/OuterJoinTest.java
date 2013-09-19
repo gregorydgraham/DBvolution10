@@ -162,8 +162,9 @@ public class OuterJoinTest extends AbstractTest {
                 is(expected2TableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
         Assert.assertThat(dbQuery.count(), is(22L));
         dbQuery.printAllDataColumns(System.out);
+        LinkCarCompanyAndLogo linkCoAndLogo = new LinkCarCompanyAndLogo();
 
-        dbQuery.add(new LinkCarCompanyAndLogo());
+        dbQuery.add(linkCoAndLogo);
         sqlForQuery = dbQuery.getSQLForQuery();
         String expected3TableQuery =
                 " SELECT CAR_COMPANY.NAME _1064314813, \n"
@@ -196,8 +197,8 @@ public class OuterJoinTest extends AbstractTest {
         Assert.assertThat(dbQuery.count(), is(0L));
         dbQuery.printAllDataColumns(System.out);
 
-        dbQuery.remove(new LinkCarCompanyAndLogo());
-        dbQuery.addOptionalTable(new LinkCarCompanyAndLogo());
+        dbQuery.remove(linkCoAndLogo);
+        dbQuery.addOptional(linkCoAndLogo);
         sqlForQuery = dbQuery.getSQLForQuery();
         String expected1OptionalTableQuery =
                 " SELECT CAR_COMPANY.NAME _1064314813, \n"
@@ -230,5 +231,94 @@ public class OuterJoinTest extends AbstractTest {
         dbQuery.print(System.out);
         Assert.assertThat(dbQuery.count(), is(22L));
 
+        dbQuery.addOptional(new CompanyLogo());
+        sqlForQuery = dbQuery.getSQLForQuery();
+        String expected2OptionalTableQuery =
+                " SELECT CAR_COMPANY.NAME _1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
+                + "MARQUE.NUMERIC_CODE __570915006, \n"
+                + "MARQUE.UID_MARQUE __768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
+                + "MARQUE.UPD_COUNT _1497912790, \n"
+                + "MARQUE.AUTO_CREATED _332721019, \n"
+                + "MARQUE.NAME __1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
+                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
+                + "MARQUE.CREATION_DATE __1712481749, \n"
+                + "MARQUE.ENABLED __637053442, \n"
+                + "MARQUE.FK_CARCOMPANY _1664116480, \n"
+                + "LT_CARCO_LOGO.FK_CAR_COMPANY __1988359495, \n"
+                + "LT_CARCO_LOGO.FK_COMPANY_LOGO _1707036998, \n"
+                + "COMPANYLOGO.LOGO_ID _1189023175, \n"
+                + "COMPANYLOGO.CAR_COMPANY_FK _1247307962, \n"
+                + "COMPANYLOGO.IMAGE_FILE _402667880, \n"
+                + "COMPANYLOGO.IMAGE_NAME _402898551\n"
+                + " FROM  car_company  INNER JOIN marque ON( \n"
+                + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  LEFT OUTER JOIN lt_carco_logo ON( \n"
+                + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY )  LEFT OUTER JOIN CompanyLogo ON( \n"
+                + "CAR_COMPANY.UID_CARCOMPANY = COMPANYLOGO.CAR_COMPANY_FK and \n"
+                + "LT_CARCO_LOGO.FK_COMPANY_LOGO = COMPANYLOGO.LOGO_ID ) \n"
+                + " WHERE  1=1 \n"
+                + "\n"
+                + ";";
+        System.out.println(sqlForQuery);
+        Assert.assertThat(
+                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
+                is(expected2OptionalTableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+        dbQuery.print(System.out);
+        Assert.assertThat(dbQuery.count(), is(22L));
+
+
+
+    }
+
+    @Test
+    public void testANSIFullOuterQueryCreation() throws SQLException {
+        DBQuery dbQuery = database.getDBQuery();
+        dbQuery.setUseANSISyntax(true);
+        dbQuery.addOptional(new Marque());
+        dbQuery.addOptional(new CarCompany());
+        dbQuery.addOptional(new LinkCarCompanyAndLogo());
+        dbQuery.addOptional(new CompanyLogo());
+        String sqlForQuery = dbQuery.getSQLForQuery();
+        System.out.println(sqlForQuery);
+        String expectedFullOuterQuery =
+                " SELECT MARQUE.NUMERIC_CODE __570915006, \n"
+                + "MARQUE.UID_MARQUE __768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
+                + "MARQUE.UPD_COUNT _1497912790, \n"
+                + "MARQUE.AUTO_CREATED _332721019, \n"
+                + "MARQUE.NAME __1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
+                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
+                + "MARQUE.CREATION_DATE __1712481749, \n"
+                + "MARQUE.ENABLED __637053442, \n"
+                + "MARQUE.FK_CARCOMPANY _1664116480, \n"
+                + "CAR_COMPANY.NAME _1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
+                + "LT_CARCO_LOGO.FK_CAR_COMPANY __1988359495, \n"
+                + "LT_CARCO_LOGO.FK_COMPANY_LOGO _1707036998, \n"
+                + "COMPANYLOGO.LOGO_ID _1189023175, \n"
+                + "COMPANYLOGO.CAR_COMPANY_FK _1247307962, \n"
+                + "COMPANYLOGO.IMAGE_FILE _402667880, \n"
+                + "COMPANYLOGO.IMAGE_NAME _402898551\n"
+                + " FROM  marque  FULL OUTER JOIN car_company ON( \n"
+                + "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY )  FULL OUTER JOIN lt_carco_logo ON( \n"
+                + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY )  FULL OUTER JOIN CompanyLogo ON( \n"
+                + "CAR_COMPANY.UID_CARCOMPANY = COMPANYLOGO.CAR_COMPANY_FK and \n"
+                + "LT_CARCO_LOGO.FK_COMPANY_LOGO = COMPANYLOGO.LOGO_ID ) \n"
+                + " WHERE  1=1 \n"
+                + "\n"
+                + ";";
+        Assert.assertThat(
+                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
+                is(expectedFullOuterQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+        dbQuery.print(System.out);
+        // FULL OUTER JOIN not supported by H2
+//        Assert.assertThat(dbQuery.count(), is(22L));
     }
 }
