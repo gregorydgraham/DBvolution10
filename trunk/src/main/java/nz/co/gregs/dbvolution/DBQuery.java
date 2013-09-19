@@ -42,7 +42,7 @@ public class DBQuery {
 
     DBDatabase database;
     private List<DBRow> queryTables;
-    private List<DBRow> optionalQueryTables;
+    private List<Class<? extends DBRow>> optionalQueryTables;
     private List<DBRow> allQueryTables;
     private List<DBQueryRow> results;
     private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
@@ -55,10 +55,11 @@ public class DBQuery {
     private final int LEFT_JOIN = 1;
     private final int RIGHT_JOIN = 2;
     private final int FULL_OUTER_JOIN = 4;
+    private boolean useANSISyntax;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
-        this.optionalQueryTables = new ArrayList<DBRow>();
+        this.optionalQueryTables = new ArrayList<Class<? extends DBRow>>();
         this.allQueryTables = new ArrayList<DBRow>();
         this.database = database;
         this.results = null;
@@ -93,9 +94,41 @@ public class DBQuery {
         return this;
     }
 
+    /**
+     *
+     * Remove a table to the query
+     *
+     * @param table
+     */
+    public DBQuery remove(DBRow table) {
+        queryTables.remove(table);
+        allQueryTables.remove(table);
+        results = null;
+        resultSQL = null;
+        return this;
+    }
+
+    /**
+     *
+     * @param table
+     * @return
+     */
     public DBQuery addOptionalTable(DBRow table) {
-        optionalQueryTables.add(table);
+        optionalQueryTables.add(table.getClass());
         allQueryTables.add(table);
+        results = null;
+        resultSQL = null;
+        return this;
+    }
+
+    /**
+     *
+     * @param table
+     * @return
+     */
+    public DBQuery removeOptionalTable(DBRow table) {
+        optionalQueryTables.remove(table.getClass());
+        allQueryTables.remove(table);
         results = null;
         resultSQL = null;
         return this;
@@ -105,21 +138,25 @@ public class DBQuery {
         return getSQLForQuery(null);
     }
 
-    public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables) {
+    public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables, Set<DBRow> connectedTables) {
+        newTable.setDatabase(database);
         List<String> joinClauses = new ArrayList<String>();
         DBDefinition defn = database.getDefinition();
         boolean isLeftOuterJoin = false;
         boolean isFullOuterJoin = false;
-        if (optionalQueryTables.contains(newTable)) {
+        if (optionalQueryTables.contains(newTable.getClass())) {
             isLeftOuterJoin = true;
         }
         for (DBRow otherTable : previousTables) {
+            otherTable.setDatabase(database);
             String join = otherTable.getRelationshipsAsSQL(newTable);
-            if (join != null) {
-                if (optionalQueryTables.contains(otherTable) && isLeftOuterJoin) {
+            if (join != null && !join.isEmpty()) {
+                if (optionalQueryTables.contains(otherTable.getClass()) && isLeftOuterJoin) {
                     isFullOuterJoin = true;
                 }
                 joinClauses.add(join);
+                connectedTables.add(newTable);
+                connectedTables.add(otherTable);
             }
         }
         String sqlToReturn;
@@ -247,6 +284,7 @@ public class DBQuery {
         Set<DBRow> connectedTables = new HashSet<DBRow>();
         StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
         StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
+        List<DBRow> joinedTables = new ArrayList<DBRow>();
         StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getTrueOperation());
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
@@ -275,39 +313,46 @@ public class DBQuery {
             } else {
                 selectClause = new StringBuilder(providedSelectClause);
             }
-            fromClause.append(separator).append(tableName);
+            if (!useANSISyntax) {
+                fromClause.append(separator).append(tableName);
+            } else {
+                fromClause.append(getANSIJoinClause(tabRow, joinedTables, connectedTables));
+                joinedTables.add(tabRow);
+            }
 //            tabRow.setDatabase(database);
             String tabRowCriteria = tabRow.getWhereClause(database);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
             }
 
-            for (DBRelationship rel : tabRow.getAdHocRelationships()) {
-                whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
-                connectedTables.add(rel.getFirstTable());
-                connectedTables.add(rel.getSecondTable());
-            }
+            if (!useANSISyntax) {
+                for (DBRelationship rel : tabRow.getAdHocRelationships()) {
+                    whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
+                    connectedTables.add(rel.getFirstTable());
+                    connectedTables.add(rel.getSecondTable());
+                }
 
-            for (DBRow otherTab : otherTables) {
-                Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
-                for (DBForeignKey fk : fks.keySet()) {
-                    final String tabRowPK = tabRow.getPrimaryKeyName();
-                    if (tabRowPK != null) {
-                        String formattedPK = defn.formatTableAndColumnName(tableName, tabRowPK);
-                        Class<? extends DBRow> pkClass = fk.value();
-                        DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                        String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
-                        if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
-                            String fkColumnName = fks.get(fk).value();
-                            String formattedFK = defn.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
-                            whereClause
-                                    .append(lineSep)
-                                    .append(defn.beginAndLine())
-                                    .append(formattedPK)
-                                    .append(defn.getEqualsComparator())
-                                    .append(formattedFK);
-                            connectedTables.add(otherTab);
-                            connectedTables.add(tabRow);
+                for (DBRow otherTab : otherTables) {
+                    Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
+                    for (DBForeignKey fk : fks.keySet()) {
+                        final String tabRowPK = tabRow.getPrimaryKeyName();
+                        if (tabRowPK != null) {
+                            String formattedPK = defn.formatTableAndColumnName(tableName, tabRowPK);
+                            Class<? extends DBRow> pkClass = fk.value();
+                            DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
+                            String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
+                            if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
+                                String fkColumnName = fks.get(fk).value();
+                                String formattedFK = defn.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
+                                whereClause
+                                        .append(lineSep)
+                                        .append(defn.beginAndLine())
+                                        .append(formattedPK)
+                                        .append(defn.getEqualsComparator())
+                                        .append(formattedFK);
+                                connectedTables.add(otherTab);
+                                connectedTables.add(tabRow);
+                            }
                         }
                     }
                 }
@@ -316,7 +361,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(queryTables);
         }
-        if (connectedTables.size() < queryTables.size() && !cartesianJoinAllowed) {
+        if (queryTables.size() > 1 && connectedTables.size() < queryTables.size() && !cartesianJoinAllowed) {
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString =
@@ -638,5 +683,19 @@ public class DBQuery {
         } else {
             return allRows;
         }
+    }
+
+    /**
+     * @return the useANSISyntax
+     */
+    public boolean isUseANSISyntax() {
+        return useANSISyntax;
+    }
+
+    /**
+     * @param useANSISyntax the useANSISyntax to set
+     */
+    public void setUseANSISyntax(boolean useANSISyntax) {
+        this.useANSISyntax = useANSISyntax;
     }
 }
