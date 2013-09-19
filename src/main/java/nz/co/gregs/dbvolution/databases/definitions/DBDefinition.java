@@ -22,7 +22,7 @@ import java.util.Date;
  * @author gregorygraham
  */
 public abstract class DBDefinition {
-    
+
     public abstract String getDateFormattedForQuery(Date date);
 
     public String formatColumnName(String columnName) {
@@ -266,6 +266,10 @@ public abstract class DBDefinition {
         return beginAndLine();
     }
 
+    public String beginInnerJoin() {
+        return " INNER JOIN ";
+    }
+
     public String beginLeftOuterJoin() {
         return " LEFT OUTER JOIN ";
     }
@@ -280,9 +284,5 @@ public abstract class DBDefinition {
 
     public String endOnClause() {
         return " ) ";
-    }
-
-    public String beginInnerJoin() {
-        return " INNER JOIN ";
     }
 }
