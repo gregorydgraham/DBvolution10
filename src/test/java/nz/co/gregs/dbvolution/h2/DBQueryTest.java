@@ -61,6 +61,29 @@ public class DBQueryTest extends AbstractTest {
                 + "MARQUE.FK_CARCOMPANY _1664116480 FROM car_company, \n"
                 + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
                 + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ;";
+        if (dbQuery.isUseANSISyntax()) {
+            expectedResult = " SELECT CAR_COMPANY.NAME _1064314813, \n"
+                    + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
+                    + "MARQUE.NUMERIC_CODE __570915006, \n"
+                    + "MARQUE.UID_MARQUE __768788587, \n"
+                    + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
+                    + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
+                    + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
+                    + "MARQUE.UPD_COUNT _1497912790, \n"
+                    + "MARQUE.AUTO_CREATED _332721019, \n"
+                    + "MARQUE.NAME __1359288114, \n"
+                    + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
+                    + "MARQUE.RESERVATIONSALWD __1860726622, \n"
+                    + "MARQUE.CREATION_DATE __1712481749, \n"
+                    + "MARQUE.ENABLED __637053442, \n"
+                    + "MARQUE.FK_CARCOMPANY _1664116480\n"
+                    + " FROM  car_company  INNER JOIN marque ON( \n"
+                    + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ) \n"
+                    + " WHERE  1=1 \n"
+                    + " and CAR_COMPANY.NAME = 'TOYOTA' \n"
+                    + "\n"
+                    + ";";
+        }
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);

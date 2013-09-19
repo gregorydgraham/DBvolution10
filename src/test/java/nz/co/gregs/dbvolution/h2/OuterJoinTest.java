@@ -317,8 +317,8 @@ public class OuterJoinTest extends AbstractTest {
         Assert.assertThat(
                 sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
                 is(expectedFullOuterQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
-        dbQuery.print(System.out);
         // FULL OUTER JOIN not supported by H2
+//        dbQuery.print(System.out);
 //        Assert.assertThat(dbQuery.count(), is(22L));
     }
 }
