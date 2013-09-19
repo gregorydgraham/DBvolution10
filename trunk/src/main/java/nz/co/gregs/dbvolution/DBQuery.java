@@ -55,7 +55,7 @@ public class DBQuery {
     private final int LEFT_JOIN = 1;
     private final int RIGHT_JOIN = 2;
     private final int FULL_OUTER_JOIN = 4;
-    private boolean useANSISyntax;
+    private boolean useANSISyntax = true;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -169,113 +169,18 @@ public class DBQuery {
             } else {
                 sqlToReturn = defn.beginInnerJoin();
             }
-            sqlToReturn += newTable.getTableName() + defn.beginOnClause();
-            String separator = "";
-            for (String join : joinClauses) {
-                sqlToReturn += separator + join;
-                separator = defn.beginAndLine();
+            sqlToReturn += newTable.getTableName();
+            if (!joinClauses.isEmpty()) {
+                sqlToReturn += defn.beginOnClause();
+                String separator = "";
+                for (String join : joinClauses) {
+                    sqlToReturn += separator + join;
+                    separator = defn.beginAndLine();
+                }
+                sqlToReturn += defn.endOnClause();
             }
-            sqlToReturn += defn.endOnClause();
         }
         return sqlToReturn;
-    }
-
-    private String getANSISQLForQuery(String providedSelectClause) throws SQLException {
-        DBDefinition defn = database.getDefinition();
-        Set<DBRow> connectedTables = new HashSet<DBRow>();
-        StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
-        StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
-        StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getTrueOperation());
-        ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
-        String lineSep = System.getProperty("line.separator");
-
-        if (rowLimit != null) {
-            selectClause.append(defn.getTopClause(rowLimit));
-        }
-
-        String separator = "";
-        String colSep = defn.getStartingSelectSubClauseSeparator();
-        String tableName;
-
-        otherTables.clear();
-        otherTables.addAll(allQueryTables);
-        for (DBRow tabRow : allQueryTables) {
-            int joinType = INNER_JOIN;
-            StringBuilder joinClause = new StringBuilder();
-            otherTables.remove(tabRow);
-            tableName = tabRow.getTableName();
-
-            if (providedSelectClause == null) {
-                List<String> columnNames = tabRow.getColumnNames();
-                for (String columnName : columnNames) {
-                    String formattedColumnName = defn.formatTableAndColumnNameForSelectClause(tableName, columnName);
-                    selectClause.append(colSep).append(formattedColumnName);
-                    colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-                }
-            } else {
-                selectClause = new StringBuilder(providedSelectClause);
-            }
-            fromClause.append(separator).append(tableName);
-
-            String tabRowCriteria = tabRow.getWhereClause(database);
-            if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
-                whereClause.append(lineSep).append(tabRowCriteria);
-            }
-
-            String joinOpSeparator = defn.getStartingJoinOperationSeparator();
-            for (DBRelationship rel : tabRow.getAdHocRelationships()) {
-                joinClause.append(joinOpSeparator).append(rel.generateSQL(database));
-                joinOpSeparator = defn.getSubsequentJoinOperationSeparator();
-
-                final DBRow leftTable = rel.getFirstTable();
-                final DBRow rightTable = rel.getSecondTable();
-                connectedTables.add(leftTable);
-                connectedTables.add(rightTable);
-
-                final boolean optionalLeft = optionalQueryTables.contains(leftTable);
-                final boolean optionalRight = optionalQueryTables.contains(rightTable);
-
-                if (optionalLeft && optionalRight) {
-                    joinType = FULL_OUTER_JOIN;
-                } else if (optionalLeft) {
-                    if (joinType == RIGHT_JOIN) {
-                        joinType = FULL_OUTER_JOIN;
-                    } else {
-                        joinType = LEFT_JOIN;
-                    }
-                } else if (optionalRight) {
-                    if (joinType == LEFT_JOIN) {
-                        joinType = FULL_OUTER_JOIN;
-                    } else {
-                        joinType = RIGHT_JOIN;
-                    }
-                }
-            }
-
-
-
-
-
-
-
-            otherTables.add(tabRow);
-        }
-
-        if (connectedTables.size() < queryTables.size() && !cartesianJoinAllowed) {
-            throw new AccidentalCartesianJoinException();
-        }
-        final String sqlString =
-                selectClause.append(lineSep)
-                .append(fromClause).append(lineSep)
-                .append(whereClause).append(lineSep)
-                .append(getOrderByClause()).append(lineSep)
-                .append(defn.endSQLStatement())
-                .toString();
-        if (database.isPrintSQLBeforeExecuting()) {
-            System.out.println(sqlString);
-        }
-
-        return sqlString;
     }
 
     private String getSQLForQuery(String providedSelectClause) throws SQLException {
@@ -487,36 +392,6 @@ public class DBQuery {
                     }
                 }
             }
-        }
-        return arrayList;
-    }
-
-    /**
-     *
-     * What is this for????
-     *
-     * @param <R>
-     * @param exemplar
-     * @return
-     * @throws SQLException
-     * @deprecated
-     */
-    @Deprecated
-    public <R extends DBRow> List<DBRow> getAllInstancesOfExemplarAsDBRow(R exemplar) throws SQLException {
-        HashSet<DBRow> objList = new HashSet<DBRow>();
-        ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
-        if (this.needsResults()) {
-            getAllRows();
-        }
-        if (!results.isEmpty()) {
-            for (DBQueryRow row : results) {
-                final DBRow found = row.get(exemplar);
-                if (found != null) { // in case there are no items of the exemplar
-                    objList.add(found);
-                }
-            }
-
-            arrayList.addAll(objList);
         }
         return arrayList;
     }
