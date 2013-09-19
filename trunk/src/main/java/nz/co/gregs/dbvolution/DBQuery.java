@@ -113,7 +113,7 @@ public class DBQuery {
      * @param table
      * @return
      */
-    public DBQuery addOptionalTable(DBRow table) {
+    public DBQuery addOptional(DBRow table) {
         optionalQueryTables.add(table.getClass());
         allQueryTables.add(table);
         results = null;
@@ -144,16 +144,15 @@ public class DBQuery {
         DBDefinition defn = database.getDefinition();
         boolean isLeftOuterJoin = false;
         boolean isFullOuterJoin = false;
-        if (optionalQueryTables.contains(newTable.getClass())) {
+        if (queryTables.isEmpty() && optionalQueryTables.size() == allQueryTables.size()) {
+            isFullOuterJoin = true;
+        } else if (optionalQueryTables.contains(newTable.getClass())) {
             isLeftOuterJoin = true;
         }
         for (DBRow otherTable : previousTables) {
             otherTable.setDatabase(database);
             String join = otherTable.getRelationshipsAsSQL(newTable);
             if (join != null && !join.isEmpty()) {
-                if (optionalQueryTables.contains(otherTable.getClass()) && isLeftOuterJoin) {
-                    isFullOuterJoin = true;
-                }
                 joinClauses.add(join);
                 connectedTables.add(newTable);
                 connectedTables.add(otherTable);
@@ -297,9 +296,9 @@ public class DBQuery {
         String colSep = defn.getStartingSelectSubClauseSeparator();
         String tableName;
 
-        for (DBRow tabRow : queryTables) {
+        for (DBRow tabRow : allQueryTables) {
             otherTables.clear();
-            otherTables.addAll(queryTables);
+            otherTables.addAll(allQueryTables);
             otherTables.remove(tabRow);
             tableName = tabRow.getTableName();
 
@@ -359,9 +358,9 @@ public class DBQuery {
             }
 
             separator = ", " + lineSep;
-            otherTables.addAll(queryTables);
+            otherTables.addAll(allQueryTables);
         }
-        if (queryTables.size() > 1 && connectedTables.size() < queryTables.size() && !cartesianJoinAllowed) {
+        if (allQueryTables.size() > 1 && connectedTables.size() < allQueryTables.size() && !cartesianJoinAllowed) {
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString =
@@ -392,7 +391,7 @@ public class DBQuery {
         ResultSet resultSet = dbStatement.executeQuery(resultSQL);
         while (resultSet.next()) {
             queryRow = new DBQueryRow();
-            for (DBRow tableRow : queryTables) {
+            for (DBRow tableRow : allQueryTables) {
                 DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
                 newInstance.setDatabase(database);
                 DBDefinition defn = database.getDefinition();
