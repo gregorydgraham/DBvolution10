@@ -23,23 +23,24 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Top level code generator.
  * Generates code based on database schema.
  */
 public class DBTableClassGenerator {
+	private static final Logger log = LoggerFactory.getLogger(DBTableClassGenerator.class);
 
     /**
      * Creates DBTableRow classes corresponding to all the tables and views
@@ -112,11 +113,11 @@ public class DBTableClassGenerator {
             File file;
             FileOutputStream fileOutputStream;
             for (DBTableClass clazz : generatedClasses) {
-                System.out.println(clazz.getClassName() + " => " + classDirectory.getAbsolutePath() + "/" + clazz.getClassName() + ".java");
+                log.info(clazz.getClassName() + " => " + classDirectory.getAbsolutePath() + "/" + clazz.getClassName() + ".java");
                 file = new File(classDirectory, clazz.getClassName() + ".java");
                 fileOutputStream = new FileOutputStream(file);
-                System.out.println(clazz.getJavaSource());
-                System.out.println("");
+                log.info(clazz.getJavaSource());
+                log.info("");
                 fileOutputStream.write(clazz.getJavaSource().getBytes());
                 fileOutputStream.close();
             }
@@ -177,7 +178,7 @@ public class DBTableClassGenerator {
             DBTableClass dbTableClass = new DBTableClass();
             dbTableClass.setPackageName(packageName);
             dbTableClass.setTableName(tables.getString("TABLE_NAME"));
-            System.out.println(dbTableClass.getTableName());
+            log.info(dbTableClass.getTableName());
             dbTableClass.setClassName(toClassCase(dbTableClass.getTableName()));
 
             ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
@@ -248,7 +249,7 @@ public class DBTableClassGenerator {
                 }
             }
             dbt.generateJavaSource();
-            System.out.println(dbt.getJavaSource());
+            log.info(dbt.getJavaSource());
         }
     }
 

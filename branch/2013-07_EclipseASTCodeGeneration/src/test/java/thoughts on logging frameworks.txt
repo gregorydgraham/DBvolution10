@@ -1,0 +1,96 @@
+A collection of thoughts on the use of logging within the development of libraries.
+Much of the text below is copy-pasted from various sites.
+
+Common Logging Frameworks
+--------------------------
+* java.util.logging (JUL) - the FINE, FINER, FINEST levels aren't as intuitive as the others' use of INFO, DEBUG and TRACE; it's configuration is badly designed; and nobody really uses this much.
+* log4j - a long time the default logging framework, frequency of maintenance reduced significantly over the years
+* logback - an attempt at a new version of log4j with a number of improvements, struggling to gain popularity
+* Apache/Jakarta Commons Logging (JCL) - A logging facade: wraps any one of the other logging frameworks.
+* SLF4J - Another Logging facade. Defaults to no output when no configuration and/or no implementation are provided.  
+
+
+Why should you use a Facade?
+-----------------------------
+Using a logging facade like SLF4J or Commons Logging gives you flexibility without burdening your users with
+a particular logging framework. Authors of widely-distributed components and libraries may code against
+the SLF4J interface in order to avoid imposing an logging framework on the end-user of the component or
+library. Thus, the end-user may choose the desired logging framework at deployment time by inserting
+the corresponding slf4j binding on the classpath, which may be changed later by replacing an existing
+binding with another on the class path and restarting the application. This approach has proven to be
+simple and very robust.
+[http://programmers.stackexchange.com/questions/145078/should-you-log-from-library-code]
+
+In summary, if you're writing a library, you should not use log4j or JUL.
+You really must use Commons Logging or SLF4J.
+
+
+Commons Logging or SLF4J
+--------------------------
+Commons Logging uses a dynamic classpath inspection approach for discovering the
+logging implementation. This is problematic in an app server runtime and has caused a lot
+of consternation for people.
+
+So, static binding is oferred now in slf4j.
+[http://programmers.stackexchange.com/questions/145078/should-you-log-from-library-code]
+[http://java.dzone.com/articles/shouldn%E2%80%99t-we-standardize-java]
+
+
+Is Performance an Issue?
+------------------------
+SLF4J is probably better than any other logging framework in terms of overall performance.
+If used correctly, it is safe to leave in DEBUG logging statements even in Production code.
+
+The following two lines will yield the exact same output. However, the second form will outperform the first form by a factor of at least 30, in case of a disabled logging statement.
+    logger.debug("The new entry is "+entry+".");
+    logger.debug("The new entry is {}.", entry);
+[http://programmers.stackexchange.com/questions/145078/should-you-log-from-library-code]
+
+The trick is that SLF4J doesn't do the string concatenation, or even call Object.toString() on
+'entry' until AFTER it has done the "...isLogLevelEnabled(level)" test. So it saves on a lot of
+unnecessary computation which is usually the cause of poor performance due to logging.
+
+For those cases where more complex string construction is required, use the following approach:
+    if(logger.isDebugEnabled()){
+    	String msg = ....; // complex string construction
+        logger.debug(msg);
+    }
+[http://javarevisited.blogspot.co.nz/2011/05/top-10-tips-on-logging-in-java.html]
+
+
+How does SLF4J work?
+--------------------
+SLF4J logging is always "over" some other logging framework.
+If using slf4j over log4j, you're dependencies are:
+* slf4j-api (thin API that does no actuall logging. On it's own, you'll get no logging at all),
+* slf4j-log4j-impl (used by the slf4j-api to route log entries to log4j)
+* log4j
+
+Additionally, you'll include the following configuration files:
+* log4j.properties or log4j.xml (my personal preference)
+
+Within your code, you use the slf4j api and it's the static classpath inclusion of slf4j-log4j-impl that
+causes log4j to be used for the actual output.
+
+The code that you release publicly, on the other hand, should export only the following dependencies:
+* slf4j-api
+And it should not export any logging configuration files.
+
+This allows the end-user to use whatever logging they like.
+If they want to get access to your logging, then they need to do the following:
+1) include slf4j-***-impl for whatever logging framework they're using,
+2) include the logging framework dependency,
+3) include the logging framework's configuration file(s), and
+4) configure their logging framework's logging levels appropriately.
+
+
+Conclusion
+----------
+The conclusion is in a few parts:
+1) Use SLF4J. Specifically:
+	* include the slf4j-api as a runtime dependency, and
+	* include your desired slf4j-impl with concrete logging framework library as test dependencies.
+	This is so that the only dependencies picked up by the end-user is the slf4j-api, which won't
+	break any of their code.
+2) Use log4j or logback as the concrete implementation (again as a "test" dependency).
+	* I'm undecided about which should be used, the truth is that log4j is still more popular.

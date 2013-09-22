@@ -23,6 +23,8 @@ import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
 
 /**
  * Maintains new and existing classes according to database schema information.
+ * One instance of this is required for each target package as it uses
+ * a single {@link TableNameResolver} which is itself linked to one package.
  */
 public class ClassMaintainer {
 	//private DBDefinition dbDefinition;
@@ -54,7 +56,7 @@ public class ClassMaintainer {
 	}
 	
 	/**
-	 * Update/generate java source to match database meta-data.
+	 * Update/generate java source to match database meta-data for table.
 	 * @param dbTableClass meta-data to sync to
 	 */
 	public void ensureAs(DBTableClass dbTableClass) {

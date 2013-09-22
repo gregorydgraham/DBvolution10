@@ -62,6 +62,19 @@ public class CodeGenerationConfiguration {
 	// TODO nice to have: removeNonCustomisedExtraProperties
 	
 	/**
+	 * Sets the root output directory for generated code packages.
+	 * If null, the current working directory is used.
+	 */
+	private String outputDirectory = null;
+	
+	/**
+	 * Package name for generated classes that map to database taes and views.
+	 * Can be overriden individually for tables or views
+	 * by {@link #packageForTables} and {@link #packageForViews}.
+	 */
+	private String packageName;
+	
+	/**
 	 * Package path for generated classes that map to database tables.
 	 */
 	private String packageForTables;
@@ -171,31 +184,27 @@ public class CodeGenerationConfiguration {
 
 	/**
 	 * Gets the code generation package for tables and views.
-	 * Convenience property for when it is desired that the tables and views are generated in the same package.
-	 * @return the package if both tables and views set the same, null otherwise
+	 * @return the package name for tables and views
 	 */
-	public String getPackage() {
-		if (packageForTables != null && packageForViews != null && packageForTables.equals(packageForViews)) {
-			return packageForTables; // both the same
-		}
-		return null;
+	public String getPackageName() {
+		return packageName;
 	}
 
 	/**
 	 * Sets the code generation package for both tables and views.
-	 * Convenience property for when it is desired that the tables and views are generated in the same package.
+	 * Can be overridden individually by {@link #setPackageForTables(String)} ande
+	 * {@link #setPackageForViews(String)}.
 	 * @param package the package to set
 	 */
-	public void setPackage(String packageName) {
-		this.setPackageForTables(packageName);
-		this.setPackageForViews(packageName);
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
 	}
 	
 	/**
 	 * @return the packageForTables
 	 */
 	public String getPackageForTables() {
-		return packageForTables;
+		return (packageForTables == null) ? packageName : packageForTables;
 	}
 
 	/**
@@ -209,7 +218,7 @@ public class CodeGenerationConfiguration {
 	 * @return the packageForViews
 	 */
 	public String getPackageForViews() {
-		return packageForViews;
+		return (packageForViews == null) ? packageName : packageForViews;
 	}
 
 	/**
@@ -218,5 +227,18 @@ public class CodeGenerationConfiguration {
 	public void setPackageForViews(String packageForViews) {
 		this.packageForViews = packageForViews;
 	}
-	
+
+	/**
+	 * @return the outputDirectory
+	 */
+	public String getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	/**
+	 * @param outputDirectory the outputDirectory to set
+	 */
+	public void setOutputDirectory(String outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
 }
