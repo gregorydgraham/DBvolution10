@@ -27,6 +27,7 @@ public class DBEqualsOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
     protected final QueryableDatatype equalTo;
+    protected DBDefinition defn;
 
     /**
      *
@@ -42,17 +43,23 @@ public class DBEqualsOperator extends DBOperator {
     }
 
     public String getInverse() {
+        if (defn!=null){
+            return defn.getNotEqualsComparator();
+        }
         return " <> ";
     }
 
     public String getOperator() {
+        if (defn!=null){
+            return defn.getEqualsComparator();
+        }
         return " = ";
     }
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         equalTo.setDatabase(database);
-        DBDefinition defn = database.getDefinition();
+        defn = database.getDefinition();
         if (equalTo.getSQLValue().equals(defn.getNull())) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             return dbIsNullOperator.generateWhereLine(database, columnName);
@@ -62,7 +69,7 @@ public class DBEqualsOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
+        defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
     }
 

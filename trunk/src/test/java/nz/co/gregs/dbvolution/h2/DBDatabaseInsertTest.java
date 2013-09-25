@@ -28,6 +28,10 @@ import org.junit.Test;
  * @author gregory.graham
  */
 public class DBDatabaseInsertTest extends AbstractTest{
+
+    public DBDatabaseInsertTest(Object db) {
+        super(db);
+    }
     
     
     

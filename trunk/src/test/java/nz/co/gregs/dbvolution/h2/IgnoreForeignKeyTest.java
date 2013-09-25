@@ -30,6 +30,10 @@ import org.junit.Test;
  */
 public class IgnoreForeignKeyTest extends AbstractTest {
 
+    public IgnoreForeignKeyTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void testIgnoreForeignKey() throws SQLException{
         Marque marque = new Marque();

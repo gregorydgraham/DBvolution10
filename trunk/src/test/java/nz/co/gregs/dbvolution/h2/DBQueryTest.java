@@ -34,6 +34,10 @@ import org.junit.Test;
  */
 public class DBQueryTest extends AbstractTest {
 
+    public DBQueryTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void testQueryGeneration() throws SQLException {
         DBQuery dbQuery = database.getDBQuery();
@@ -87,7 +91,8 @@ public class DBQueryTest extends AbstractTest {
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        Assert.assertThat(expectedResult.replaceAll("\\s+", " "), is(generateSQLString.replaceAll("\\s+", " ")));
+        Assert.assertThat(expectedResult.replaceAll("\\s+", " ").replaceAll("_+[0-9]+", "").toLowerCase(), 
+                is(generateSQLString.replaceAll("\\s+", " ").replaceAll("_+[0-9]+", "").toLowerCase()));
     }
 
     @Test

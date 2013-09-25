@@ -30,6 +30,10 @@ import org.junit.Test;
  */
 public class DBExistsOperatorTest extends AbstractTest {
 
+    public DBExistsOperatorTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void testDBExistsOperator() throws SQLException {
         

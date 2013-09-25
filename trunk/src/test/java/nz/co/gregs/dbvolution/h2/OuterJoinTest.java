@@ -21,19 +21,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.H2DB;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.operators.DBEqualsCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class OuterJoinTest extends AbstractTest {
 
+    public OuterJoinTest(Object db) {
+        super(db);
+    }
+
     @Test
-    public void testANSIJoinClauseCreation() {
+    public void testANSIJoinClauseCreation() throws Exception {
         String lineSep = System.getProperty("line.separator");
         Marque mrq = new Marque();
         mrq.setDatabase(database);
@@ -42,36 +50,41 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("" + mrq.getRelationshipsAsSQL(carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
 
-        //MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY"));
-        //CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
+        String expectedString = "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY";
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        expectedString = "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY";
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
 
 //        mrq.ignoreAllForeignKeys();
         mrq.addRelationship(mrq.name, carCo, carCo.name, new DBEqualsCaseInsensitiveOperator());
         System.out.println("" + mrq.getRelationshipsAsSQL(carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
 
-
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY" + lineSep + " and  lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)"));
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
+        expectedString = "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY" + lineSep + " and  lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)";
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY";
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
 
         mrq.ignoreAllForeignKeys();
         System.out.println("" + mrq.getRelationshipsAsSQL(carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)"));
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)"));
+        expectedString = "lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)";
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)";
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
 
         mrq.addRelationship(mrq.name, carCo, carCo.name, new DBGreaterThanOperator());
         System.out.println("" + mrq.getRelationshipsAsSQL(carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim(), is("lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)" + lineSep + " and MARQUE.NAME > CAR_COMPANY.NAME"));
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim(), is("lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.NAME <= MARQUE.NAME"));
+        expectedString = "lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)" + lineSep + " and MARQUE.NAME > CAR_COMPANY.NAME";
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.NAME <= MARQUE.NAME";
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
 
     }
 
     @Test
-    public void testANSIInnerJoinQueryCreation() {
+    public void testANSIInnerJoinQueryCreation() throws Exception {
         Marque mrq = new Marque();
         CarCompany carCo = new CarCompany();
         LinkCarCompanyAndLogo link = new LinkCarCompanyAndLogo();
@@ -131,7 +144,7 @@ public class OuterJoinTest extends AbstractTest {
     }
 
     @Test
-    public void testANSIQueryCreation() throws SQLException {
+    public void testANSIQueryCreation() throws SQLException, Exception {
         DBQuery dbQuery = database.getDBQuery(new CarCompany(), new Marque());
         dbQuery.setUseANSISyntax(true);
         String sqlForQuery = dbQuery.getSQLForQuery();
@@ -158,8 +171,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
-                is(expected2TableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
+                is(expected2TableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
         Assert.assertThat(dbQuery.count(), is(22L));
         dbQuery.printAllDataColumns(System.out);
         LinkCarCompanyAndLogo linkCoAndLogo = new LinkCarCompanyAndLogo();
@@ -192,8 +205,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
-                is(expected3TableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
+                is(expected3TableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
         Assert.assertThat(dbQuery.count(), is(0L));
         dbQuery.printAllDataColumns(System.out);
 
@@ -226,8 +239,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
-                is(expected1OptionalTableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
+                is(expected1OptionalTableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
         dbQuery.print(System.out);
         Assert.assertThat(dbQuery.count(), is(22L));
 
@@ -265,8 +278,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
-                is(expected2OptionalTableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
+                is(expected2OptionalTableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
         dbQuery.print(System.out);
         Assert.assertThat(dbQuery.count(), is(22L));
 
@@ -275,7 +288,7 @@ public class OuterJoinTest extends AbstractTest {
     }
 
     @Test
-    public void testANSIFullOuterQueryCreation() throws SQLException {
+    public void testANSIFullOuterQueryCreation() throws Exception {
         DBQuery dbQuery = database.getDBQuery();
         dbQuery.setUseANSISyntax(true);
         dbQuery.addOptional(new Marque());
@@ -315,10 +328,14 @@ public class OuterJoinTest extends AbstractTest {
                 + "\n"
                 + ";";
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
-                is(expectedFullOuterQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
-        // FULL OUTER JOIN not supported by H2
-//        dbQuery.print(System.out);
-//        Assert.assertThat(dbQuery.count(), is(22L));
+                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
+                is(expectedFullOuterQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
+        // FULL OUTER JOIN not supported by H2 or MySqldb
+        if (!
+                ((database instanceof H2DB) || (database instanceof MySQLDB))
+                ) {
+            dbQuery.print(System.out);
+            Assert.assertThat(dbQuery.count(), is(22L));
+        }
     }
 }

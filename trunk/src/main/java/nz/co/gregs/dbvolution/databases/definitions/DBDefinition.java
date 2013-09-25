@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  *
@@ -167,6 +168,10 @@ public abstract class DBDefinition {
         return " = ";
     }
 
+    public String getNotEqualsComparator() {
+        return " <> ";
+    }
+
     public String beginWhereClause() {
         return " WHERE ";
     }
@@ -236,7 +241,7 @@ public abstract class DBDefinition {
      * @param rowLimit
      * @return
      */
-    public Object getTopClause(Long rowLimit) {
+    public Object getStartingLimitRowsSubClause(Long rowLimit) {
         return " TOP " + rowLimit + " ";
     }
 
@@ -284,5 +289,13 @@ public abstract class DBDefinition {
 
     public String endOnClause() {
         return " ) ";
+    }
+
+    public Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+        return qdt.getSQLDatatype();
+    }
+
+    public Object getEndLimitRowsSubClause(Long rowLimit) {
+        return "";
     }
 }

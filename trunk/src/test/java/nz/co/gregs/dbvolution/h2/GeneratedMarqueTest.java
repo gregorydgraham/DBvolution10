@@ -37,6 +37,10 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     nz.co.gregs.dbvolution.example.Marque myTableRow = new nz.co.gregs.dbvolution.example.Marque();
 
+    public GeneratedMarqueTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void testGetSchema() throws SQLException{
         List<DBTableClass> generateSchema;

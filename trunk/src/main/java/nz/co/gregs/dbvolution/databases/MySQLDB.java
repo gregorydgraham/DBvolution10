@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.util.Date;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 
 /**

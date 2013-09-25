@@ -30,6 +30,10 @@ import org.junit.Test;
  */
 public class PrimaryKeyLessTablesTest extends AbstractTest {
 
+    public PrimaryKeyLessTablesTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void linkIntoTableTest() throws SQLException {
         CarCompany carCompany = new CarCompany();

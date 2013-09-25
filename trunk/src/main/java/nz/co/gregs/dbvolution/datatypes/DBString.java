@@ -48,6 +48,7 @@ public class DBString extends QueryableDatatype {
         }
     }
 
+    @Deprecated
     public DBOperator useGreaterThanOperator(String literalValue) {
         return this.useGreaterThanOperator(new DBString(literalValue));
     }

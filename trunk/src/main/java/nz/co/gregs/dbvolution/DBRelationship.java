@@ -26,9 +26,9 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  *
  * @author gregorygraham
  */
-public class DBRelationship implements Serializable{
-    public static final long serialVersionUID = 1L;
+public class DBRelationship implements Serializable {
 
+    public static final long serialVersionUID = 1L;
     private DBRow firstTable;
     private DBRow secondTable;
     private QueryableDatatype firstColumn;
@@ -36,7 +36,6 @@ public class DBRelationship implements Serializable{
     private DBOperator operation;
 
     public DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
-
         this(thisTable, thisTableField, otherTable, otherTableField, new DBEqualsOperator(thisTableField));
     }
 

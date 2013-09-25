@@ -324,21 +324,21 @@ public abstract class DBDatabase {
         wasReadOnly = connection.isReadOnly();
         wasAutoCommit = connection.getAutoCommit();
 
-        connection.setReadOnly(true);
+//        connection.setReadOnly(true);
         connection.setAutoCommit(false);
         try {
             returnValues = dbTransaction.doTransaction(this);
             connection.rollback();
             System.err.println("Transaction Successful: ROLLBACK Performed");
             connection.setAutoCommit(wasAutoCommit);
-            connection.setReadOnly(wasReadOnly);
+//            connection.setReadOnly(wasReadOnly);
             this.isInATransaction = false;
             transactionStatement = null;
         } catch (Exception ex) {
             connection.rollback();
             System.err.println("Exception Occurred: ROLLBACK Performed");
             connection.setAutoCommit(wasAutoCommit);
-            connection.setReadOnly(wasReadOnly);
+//            connection.setReadOnly(wasReadOnly);
             this.isInATransaction = false;
             transactionStatement = null;
             throw ex;
@@ -441,7 +441,11 @@ public abstract class DBDatabase {
                 if (colName == null || colName.isEmpty()) {
                     colName = field.getName();
                 }
-                sqlScript.append(sep).append(colName).append(definition.getCreateTableColumnsNameAndTypeSeparator()).append(qdt.getSQLDatatype());
+                sqlScript
+                        .append(sep)
+                        .append(colName)
+                        .append(definition.getCreateTableColumnsNameAndTypeSeparator())
+                        .append(definition.getSQLTypeOfDBDatatype(qdt));
                 sep = nextSep + lineSeparator;
 
                 DBPrimaryKey pkAnno = field.getAnnotation(DBPrimaryKey.class);

@@ -34,6 +34,10 @@ public class SerializableTest extends AbstractTest {
 
     String filename = "SerializableTest.obj";
 
+    public SerializableTest(Object db) {
+        super(db);
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     public void saveToFile() throws SQLException {
