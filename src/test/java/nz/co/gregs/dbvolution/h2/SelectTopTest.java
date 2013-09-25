@@ -28,6 +28,10 @@ import static org.hamcrest.Matchers.*;
 
 
 public class SelectTopTest extends AbstractTest {
+
+    public SelectTopTest(Object db) {
+        super(db);
+    }
     
     @Test
     public void selectTop2CarCompanies() throws SQLException {

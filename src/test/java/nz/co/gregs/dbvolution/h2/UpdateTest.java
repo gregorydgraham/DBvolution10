@@ -24,6 +24,10 @@ import static org.hamcrest.Matchers.*;
 
 public class UpdateTest extends AbstractTest {
 
+    public UpdateTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void updateNewRow() throws SQLException {
         myMarqueRow.uidMarque.permittedValues(4);
@@ -31,8 +35,8 @@ public class UpdateTest extends AbstractTest {
         Marque insertedRow = marques.getRowsByPrimaryKey(4).getFirstRow();
         insertedRow.individualAllocationsAllowed.permittedValues("Y");
         String sqlForUpdate = marques.getSQLForUpdate(insertedRow);
-        Assert.assertThat(sqlForUpdate,
-                is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;"));
+        Assert.assertThat(sqlForUpdate.toLowerCase(),
+                is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;".toLowerCase()));
         marques.update(insertedRow);
         insertedRow = marques.getRowsByPrimaryKey(4).getFirstRow();
         Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
@@ -48,8 +52,8 @@ public class UpdateTest extends AbstractTest {
         System.out.println(peugeot);
         peugeot.individualAllocationsAllowed.permittedValues("Y");
         String sqlForUpdate = marques.getSQLForUpdate(peugeot);
-        Assert.assertThat(sqlForUpdate,
-                is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;"));
+        Assert.assertThat(sqlForUpdate.toLowerCase(),
+                is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;".toLowerCase()));
         marques.update(peugeot);
         Marque updatePeugeot = marques.getRowsByExample(marque).getFirstRow();
         Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));

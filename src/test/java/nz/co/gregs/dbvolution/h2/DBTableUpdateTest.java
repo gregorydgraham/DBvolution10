@@ -24,6 +24,10 @@ import static org.hamcrest.Matchers.*;
 
 public class DBTableUpdateTest extends AbstractTest {
 
+    public DBTableUpdateTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void changingPrimaryKey() throws SQLException, UnexpectedNumberOfRowsException {
         Marque marqueExample = new Marque();
@@ -33,10 +37,12 @@ public class DBTableUpdateTest extends AbstractTest {
         marques.print();
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
         toyota.uidMarque.permittedValues(99999);
-        Assert.assertThat(marques.getSQLForUpdate(toyota),is("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;"));
+        Assert.assertThat(marques.getSQLForUpdate(toyota).toLowerCase(),
+                is(("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;").toLowerCase()));
         marques.update(toyota);
         toyota.name.permittedValues("NOTOYOTA");
-        Assert.assertThat(marques.getSQLForUpdate(toyota), is("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;"));
+        Assert.assertThat(marques.getSQLForUpdate(toyota).toLowerCase(), 
+                is(("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;").toLowerCase()));
         
         marqueExample = new Marque();
         marqueExample.name.permittedValuesIgnoreCase("toyota");
@@ -57,7 +63,7 @@ public class DBTableUpdateTest extends AbstractTest {
 
         toyota.name.permittedValues("NOTTOYOTA");
         String sqlForUpdate = marques.getSQLForUpdate(toyota);
-        Assert.assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;", sqlForUpdate);
+        Assert.assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;".toLowerCase(), sqlForUpdate.toLowerCase());
 
         marques.update(toyota);
         

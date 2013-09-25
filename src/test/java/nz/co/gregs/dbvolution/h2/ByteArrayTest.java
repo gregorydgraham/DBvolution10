@@ -32,6 +32,10 @@ import static org.hamcrest.Matchers.*;
  */
 public class ByteArrayTest extends AbstractTest {
 
+    public ByteArrayTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void createRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException {
 

@@ -34,6 +34,10 @@ public class DBTableTransactionTest extends AbstractTest {
 
     Marque myTableRow = new Marque();
 
+    public DBTableTransactionTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void testInsertRowsSucceeds() throws SQLException, Exception{
         List<Marque> original = marques.getRowsByExample(new Marque()).toList();

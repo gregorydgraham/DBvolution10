@@ -29,6 +29,10 @@ import static org.hamcrest.Matchers.*;
 
 public class SortingTest extends AbstractTest {
 
+    public SortingTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void sortingATable() throws SQLException {
         final Marque marque = new Marque();

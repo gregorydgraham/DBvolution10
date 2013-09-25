@@ -25,39 +25,44 @@ import static org.hamcrest.Matchers.nullValue;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 public class RawSQLTransactionTest extends AbstractTest {
-    
+
+    public RawSQLTransactionTest(Object db) {
+        super(db);
+    }
+
     @Test
-    public void testRawSQLTransactionRollback() throws Exception{
+    public void testRawSQLTransactionRollback() throws Exception {
         DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'; ");
         Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.FALSE);
         Assert.assertThat(doneTrans, is(true));
         Marque mrq = new Marque();
         mrq.name.permittedValues("PEUGEOT");
         Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
-        System.out.println(""+peugeot);
+        System.out.println("" + peugeot);
         Assert.assertThat(peugeot, is(not(nullValue())));
     }
-    
+
     @Test
-    public void testRawSQLTransactionCommit() throws Exception{
+    public void testRawSQLTransactionCommit() throws Exception {
         DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'; ");
         Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
         Assert.assertThat(doneTrans, is(true));
         Marque mrq = new Marque();
         mrq.name.permittedValues("Peugeot");
         Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
-        System.out.println(""+peugeot);
+        System.out.println("" + peugeot);
         Assert.assertThat(peugeot, is(not(nullValue())));
     }
-    
+
     @Test
-    public void testRawSQLTransactionWithManyStatements() throws Exception{
+    public void testRawSQLTransactionWithManyStatements() throws Exception {
         DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction(
-                "update marque set name = 'Peugeot' where name = 'PEUGEOT'; "
-                + "update marque set name = 'Toyota' where name = 'TOYOTA'; ");
+                "update marque set name = 'Peugeot' where name = 'PEUGEOT'; ");
         Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
+        sqlTrans = new DBRawSQLTransaction(
+                "update marque set name = 'Toyota' where name = 'TOYOTA'; ");
+         doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
         Assert.assertThat(doneTrans, is(true));
         Marque mrq = new Marque();
         mrq.name.permittedValues("Peugeot", "Toyota");
@@ -66,5 +71,4 @@ public class RawSQLTransactionTest extends AbstractTest {
         Assert.assertThat(rows.toList(), is(not(Matchers.empty())));
         Assert.assertThat(rows.toList().size(), is(2));
     }
-    
 }

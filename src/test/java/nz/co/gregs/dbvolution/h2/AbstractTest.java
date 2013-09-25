@@ -15,7 +15,9 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import net.sourceforge.tedhi.FlexibleDateFormat;
@@ -23,17 +25,23 @@ import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
  * @author gregorygraham
  */
+@RunWith(Parameterized.class)
 public class AbstractTest {
 
     DBDatabase database = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
@@ -43,15 +51,34 @@ public class AbstractTest {
     DBTable<CarCompany> carCompanies;
     public List<Marque> marqueRows = new ArrayList<Marque>();
     public List<CarCompany> carTableRows = new ArrayList<CarCompany>();
-    static final FlexibleDateFormat tedhiFormat = FlexibleDateFormat.getPatternInstance("dd/M/yyyy");
-    static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getPatternInstance("dd/M/yyyy");
-    public String firstDateStr = "23 March 2013";
-    public String secondDateStr = "2 April 2013";
+    static final FlexibleDateFormat tedhiFormat = FlexibleDateFormat.getDefaultInstance();//getPatternInstance("dd/M/yyyy H:m:s");
+    static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getDefaultInstance();//getPatternInstance("dd/M/yyyy H:m:s");
+    public String firstDateStr = "23/March/2013";
+    public String secondDateStr = "2/April/2013";
+
+    @Parameters
+    public static List<Object[]> data() {
+        Object[][] data = new Object[][]{
+            {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
+                //, {new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
+        };
+        return Arrays.asList(data);
+    }
+
+    public AbstractTest(Object db) {
+        if (db instanceof DBDatabase) {
+            this.database = (DBDatabase) db;
+            database.setPrintSQLBeforeExecuting(true);
+        }
+    }
 
     @Before
     @SuppressWarnings("empty-statement")
     public void setUp() throws Exception {
+        setup(database);
+    }
 
+    public void setup(DBDatabase database) throws Exception {
         database.setPrintSQLBeforeExecuting(false);
         database.dropTableNoExceptions(new Marque());
         database.createTable(myMarqueRow);
@@ -106,15 +133,27 @@ public class AbstractTest {
 
         DBTable.setPrintSQLBeforeExecuting(true);
         database.setPrintSQLBeforeExecuting(true);
+    }
 
+    @Test
+    public void fakeTest() {
+        ;
     }
 
     @After
     public void tearDown() throws Exception {
-        database.setPrintSQLBeforeExecuting(false);
-        database.dropTable(new LinkCarCompanyAndLogo());
-        database.dropTable(new CompanyLogo());
-        database.dropTable(myMarqueRow);
-        database.dropTable(myCarCompanyRow);
+        tearDown(database);
+    }
+
+    public void tearDown(DBDatabase database) throws Exception {
+        try {
+            database.setPrintSQLBeforeExecuting(false);
+            database.dropTable(new LinkCarCompanyAndLogo());
+            database.dropTable(new CompanyLogo());
+            database.dropTable(myMarqueRow);
+            database.dropTable(myCarCompanyRow);
+        } catch (SQLException sqle) {
+            throw new Exception(sqle);
+        }
     }
 }

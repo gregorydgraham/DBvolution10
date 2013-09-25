@@ -41,6 +41,10 @@ public class DBTableGetTest extends AbstractTest {
     Marque myTableRow = new Marque();
     List<Marque> myTableRows = new ArrayList<Marque>();
 
+    public DBTableGetTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void testGetAllRows() throws SQLException {
         marques.getAllRows();

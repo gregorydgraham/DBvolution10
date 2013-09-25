@@ -29,6 +29,10 @@ import org.junit.Test;
 public class DBTableInsertTest extends AbstractTest {
     
     Marque myTableRow = new Marque();
+
+    public DBTableInsertTest(Object db) {
+        super(db);
+    }
     
     @Test
     public void testInsertRows() throws SQLException{

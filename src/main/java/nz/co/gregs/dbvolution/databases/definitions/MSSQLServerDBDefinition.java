@@ -37,6 +37,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
     public Object endSQLStatement() {
         return "";
     }
-    
-    
+
+
 }

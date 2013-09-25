@@ -194,7 +194,7 @@ public class DBQuery {
         String lineSep = System.getProperty("line.separator");
 
         if (rowLimit != null) {
-            selectClause.append(defn.getTopClause(rowLimit));
+            selectClause.append(defn.getStartingLimitRowsSubClause(rowLimit));
         }
 
         String separator = "";
@@ -273,6 +273,7 @@ public class DBQuery {
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
+                .append(defn.getEndLimitRowsSubClause(rowLimit))
                 .append(defn.endSQLStatement())
                 .toString();
         if (database.isPrintSQLBeforeExecuting()) {
@@ -512,10 +513,13 @@ public class DBQuery {
 
     public void setRowLimit(int i) {
         rowLimit = new Long(i);
+        results = null;
+
     }
 
     public void clearRowLimit() {
         rowLimit = null;
+        results = null;
     }
 
     public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {

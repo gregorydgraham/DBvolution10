@@ -30,6 +30,10 @@ import org.junit.Test;
  */
 public class DBTableDeleteTest extends AbstractTest {
 
+    public DBTableDeleteTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void testDeleteListOfRows() throws SQLException {
         marques.getAllRows();

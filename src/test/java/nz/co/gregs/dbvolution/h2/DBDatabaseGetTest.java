@@ -40,11 +40,15 @@ public class DBDatabaseGetTest extends AbstractTest {
     Marque myTableRow = new Marque();
     List<Marque> myTableRows = new ArrayList<Marque>();
 
+    public DBDatabaseGetTest(Object db) {
+        super(db);
+    }
+
     @Test
     public void testGetAllRows() throws SQLException {
         List<Marque> allMarques = database.get(new Marque());
         for (DBRow row : allMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertTrue("Incorrect number of marques retreived", allMarques.size() == marqueRows.size());
     }
@@ -61,7 +65,7 @@ public class DBDatabaseGetTest extends AbstractTest {
             marque.uidMarque.permittedValues(primaryKey);
             singleMarque = database.get(marque);
             for (Marque mrq : singleMarque) {
-                System.out.println("" + mrq);
+//                System.out.println("" + mrq);
             }
         }
         Assert.assertTrue("Incorrect number of marques retreived", singleMarque.size() == 1);
@@ -86,7 +90,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         marqueQuery.getUidMarque().permittedRange(0, 90000000);
         List<Marque> gotMarques = database.get(marqueQuery);
         for (Marque row : gotMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertTrue("Incorrect number of marques retreived", gotMarques.size() == marqueRows.size());
     }
@@ -97,7 +101,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         literalQuery.getUidMarque().permittedValues(4893059);
         List<Marque> gotMarques = database.get(literalQuery);
         for (Marque row : gotMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertEquals(gotMarques.size(), 1);
         Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().getSQLValue());
@@ -109,7 +113,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         literalQuery.getUidMarque().permittedValues(4893059, 4893090);
         List<Marque> gotMarques = database.get(literalQuery);
         for (Marque row : gotMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertEquals(gotMarques.size(), 2);
         Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().getSQLValue());
@@ -138,7 +142,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         hummerQuery.getName().permittedValues(permittedMarques);
         List<Marque> gotMarques = database.get(hummerQuery);
         for (Marque row : gotMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertThat(gotMarques.size(), is(2));
     }
@@ -154,7 +158,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         hummerQuery.getName().excludedValues(permittedMarques);
         List<Marque> gotMarques = database.get(hummerQuery);
         for (Marque row : gotMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertThat(gotMarques.size(), is(allMarques.size()-2));
     }
@@ -169,14 +173,14 @@ public class DBDatabaseGetTest extends AbstractTest {
         oldQuery.getCreationDate().permittedRange(new Date(0L), afterAllTheDates);
         List<Marque> gotMarques = database.get(oldQuery);
         for (Marque row : gotMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 
         oldQuery.getCreationDate().permittedRange(coversFirstDate.getStart(), coversFirstDate.getEnd());
         gotMarques = database.get(oldQuery);
         for (Marque row : gotMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertThat(gotMarques.size(), is(18));
     }
@@ -190,7 +194,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         oldQuery.getCreationDate().permittedRange(null, future);
         List<Marque> gotMarques = database.get(oldQuery);
         for (Marque row : gotMarques) {
-            System.out.println(row);
+//            System.out.println(row);
         }
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
         oldQuery.getCreationDate().permittedRange(future, null);
