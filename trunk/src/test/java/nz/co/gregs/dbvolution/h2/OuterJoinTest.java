@@ -65,6 +65,9 @@ public class OuterJoinTest extends AbstractTest {
         expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY";
         Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
 
+        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().replaceAll("[ \\r\\n]+", " "), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY and lower(MARQUE.NAME) = lower(CAR_COMPANY.NAME)"));
+        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().replaceAll("[ \\r\\n]+", " "), is("lower(CAR_COMPANY.NAME) = lower(MARQUE.NAME) and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
+
         mrq.ignoreAllForeignKeys();
         System.out.println("" + mrq.getRelationshipsAsSQL(carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
@@ -288,7 +291,7 @@ public class OuterJoinTest extends AbstractTest {
     }
 
     @Test
-    public void testANSIFullOuterQueryCreation() throws Exception {
+    public void testANSIFullOuterQueryCreation() throws SQLException {
         DBQuery dbQuery = database.getDBQuery();
         dbQuery.setUseANSISyntax(true);
         dbQuery.addOptional(new Marque());

@@ -170,7 +170,9 @@ public class DBQuery {
                 sqlToReturn = defn.beginInnerJoin();
             }
             sqlToReturn += newTable.getTableName();
-            if (!joinClauses.isEmpty()) {
+            if (joinClauses.isEmpty()) {
+                sqlToReturn += defn.beginOnClause() + defn.getTrueOperation() + defn.endOnClause();
+            } else {
                 sqlToReturn += defn.beginOnClause();
                 String separator = "";
                 for (String join : joinClauses) {
@@ -268,8 +270,8 @@ public class DBQuery {
         if (allQueryTables.size() > 1 && connectedTables.size() < allQueryTables.size() && !cartesianJoinAllowed) {
             throw new AccidentalCartesianJoinException();
         }
-        final String sqlString =
-                selectClause.append(lineSep)
+        final String sqlString
+                = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
