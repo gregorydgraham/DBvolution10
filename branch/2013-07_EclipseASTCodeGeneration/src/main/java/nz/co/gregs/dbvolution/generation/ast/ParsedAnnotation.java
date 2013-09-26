@@ -101,6 +101,12 @@ public class ParsedAnnotation {
 	 * however any referenced types are added to the imports section of the 
 	 * type context.
 	 * 
+	 * <p> Generates annotations of one of the following forms:
+	 * <ul>
+	 * <li> <code>@DBForeignKey(className.class)</code>
+	 * <li> <code>@DBForeignKey(value=className.class, column="columnName")</code>
+	 * </ul>
+	 * 
 	 * <p> Note: this method supports foreign keys to non-primary columns
 	 * on target tables. At present the actual DBvolution annotation doesn't
 	 * support this. It is included here for the rare cases where a database
@@ -130,6 +136,11 @@ public class ParsedAnnotation {
 		
 		// annotation with two values
 		else {
+			String columnName = referencedField.getColumnNameIfSet();
+			if (columnName == null) {
+				throw new IllegalArgumentException("ReferencedField doesn't indicate its column name: "+referencedField);
+			}
+			
 			NormalAnnotation normalAnnotation = ast.newNormalAnnotation();
 			normalAnnotation.setTypeName(typeContext.declarableTypeNameOf(DBForeignKey.class, true));
 			annotation = normalAnnotation;
@@ -142,8 +153,8 @@ public class ParsedAnnotation {
 			
 			MemberValuePair pair2 = ast.newMemberValuePair();
 			StringLiteral value2 = ast.newStringLiteral();
-			value2.setEscapedValue(referencedField.getName());
-			pair2.setName(ast.newSimpleName("value"));
+			value2.setEscapedValue(columnName);
+			pair2.setName(ast.newSimpleName("column"));
 			pair2.setValue(value2);
 			
 			normalAnnotation.values().add(pair1);
