@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.example;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
@@ -35,26 +36,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
      */
     @Override
     public boolean isForeignKeyColumn(String tableName, String columnName) {
-        return columnName.toLowerCase().startsWith("fk_");
-    }
-
-    /**
-     *
-     * @param tableName
-     * @param columnName
-     * @return
-     */
-    @Override
-    public String getReferencedColumn(String tableName, String columnName) {
-        if (isForeignKeyColumn(tableName, columnName)) {
-            String strippedOfFK = "";
-
-            strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_").replaceAll("^(uid_[a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
-
-            return strippedOfFK;
-        } else {
-            return null;
-        }
+        return columnName.toLowerCase().startsWith("fk_") ||
+        		columnName.toLowerCase().endsWith("_fk");
     }
 
     /**
@@ -65,15 +48,45 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
      */
     @Override
     public String getReferencedTable(String tableName, String columnName) {
-        if (isForeignKeyColumn(tableName, columnName)) {
-            String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("");
-            if (strippedOfFK.matches("^[0-9_]+$")) {
-                return "T_" + strippedOfFK.replaceAll("^([a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
-            } else {
-                return DBTableClassGenerator.toClassCase(strippedOfFK.replaceAll("_[0-9]+$", ""));
-            }
+        String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("");
+        if (strippedOfFK.matches("^[0-9_]+$")) {
+        	strippedOfFK = "T_" + strippedOfFK.replaceAll("^([a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
         } else {
-            return null;
+        	strippedOfFK = strippedOfFK.replaceAll("_[0-9]+$", "");
         }
+        return strippedOfFK;
     }
+
+    @Override
+    public String getReferencedTable(String tableName, String columnName, Set<String> tables) {
+        String strippedOfFK = getReferencedTable(tableName, columnName);
+        if (tables.contains(strippedOfFK)) {
+        	return strippedOfFK;
+        }
+        
+        String normalisedRef = strippedOfFK.replace("_", "").toUpperCase();
+        for (String table: tables) {
+        	String normalisedTable = table.replace("_", "").toUpperCase();
+        	if (normalisedTable.equals(normalisedRef)) {
+        		return table;
+        	}
+        }
+        return null;
+    }
+    
+    /**
+    *
+    * @param tableName
+    * @param columnName
+    * @return
+    */
+   @Override
+   public String getReferencedColumn(String tableName, String columnName) {
+//       String strippedOfFK = "";
+//
+//       strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_").replaceAll("^(uid_[a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
+//
+//       return strippedOfFK;
+	   return null;
+   }
 }

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +24,14 @@ import java.util.List;
  * to a database table.
  */
 public class DBTableClass {
-    private String packageName;
-    private String className;
+    private File javaFile; // existing java source file
     private String tableName;
-    private String javaSource;
+    private String packageName; // TODO: remove
+    private String className; // resolved simpleName, TODO: make fully qualified
+    private String javaSource; // TODO: remove
     private List<DBTableField> fields = new ArrayList<DBTableField>();
-    private String lineSeparator = System.getProperty("line.separator");
-    private String conceptBreak = lineSeparator + lineSeparator;
+    private static final String lineSeparator = System.getProperty("line.separator"); // TODO remove
+    private static final String conceptBreak = lineSeparator + lineSeparator; // TODO remove
     
     public String getPackageName() {
 		return packageName;
@@ -63,6 +65,39 @@ public class DBTableClass {
 		this.fields = fields;
 	}
 	
+	/**
+	 * Gets the field that maps to the given column name.
+	 * Note: if multiple fields map to the same column, this
+	 * method returns the first found.
+	 * @param columnName
+	 * @return the field or null if not found
+	 */
+	public DBTableField getFieldByColumnName(String columnName) {
+		if (fields != null) {
+			for (DBTableField field: fields) {
+				// TODO: need to use ignoreCase/caseSensitive depending on database definition
+				if (field.getColumnName().equalsIgnoreCase(columnName)) {
+					return field;
+				}
+			}
+		}
+		return null; // not found
+	}
+
+	/**
+	 * @return the javaFile
+	 */
+	public File getJavaFile() {
+		return javaFile;
+	}
+
+	/**
+	 * @param javaFile the javaFile to set
+	 */
+	public void setJavaFile(File javaFile) {
+		this.javaFile = javaFile;
+	}
+	
 	public String getJavaSource() {
 		return javaSource;
 	}
@@ -70,7 +105,7 @@ public class DBTableClass {
 	public void setJavaSource(String javaSource) {
 		this.javaSource = javaSource;
 	}
-
+	
 	public String generateJavaSource() {
         StringBuilder javaSrc = new StringBuilder();
         if (this.packageName != null) {
@@ -94,7 +129,8 @@ public class DBTableClass {
                 javaSrc.append("    @DBPrimaryKey").append(lineSeparator);
             }
             if (field.isForeignKey()) {
-                javaSrc.append("    @DBForeignKey(").append(field.getReferencesClass()).append(".class)");
+            	String className = (field.getReferencedClass() == null) ? "null" : field.getReferencedClass().getClassName();
+                javaSrc.append("    @DBForeignKey(").append(className).append(".class)");
                 javaSrc.append(lineSeparator);
             }
             javaSrc.append("    public ").append(field.getColumnType()).append(" ").append(field.getFieldName()).append(" = new ").append(field.getColumnType()).append("();");
@@ -106,5 +142,6 @@ public class DBTableClass {
 
         this.javaSource = javaSrc.toString();
         return this.javaSource;
+        //return javaSrc.toString();
     }
 }

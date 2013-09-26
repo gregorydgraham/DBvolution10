@@ -87,6 +87,7 @@ public class ClassMaintainer {
 		}
 		
 		// generate original file if not already exists
+		// TODO: should name resolution be done here or when reading schema?
 		if (parsedClass == null) {
 			String className = tableNameResolver.getQualifiedClassNameFor(dbTableClass.getTableName());
 			parsedClass = ParsedClass.newDBTableInstance(config, className, dbTableClass.getTableName());

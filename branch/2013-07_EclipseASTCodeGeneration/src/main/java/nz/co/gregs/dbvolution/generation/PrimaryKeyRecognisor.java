@@ -1,6 +1,5 @@
 /*
- * Copyright Error: on line 4, column 29 in Templates/Licenses/license-apache20.txt
- Expecting a date here, found: 15/06/2013 gregorygraham.
+ * Copyright 2013 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

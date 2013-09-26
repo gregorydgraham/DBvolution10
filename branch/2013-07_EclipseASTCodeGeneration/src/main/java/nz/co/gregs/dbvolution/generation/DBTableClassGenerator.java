@@ -27,8 +27,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
@@ -160,26 +162,40 @@ public class DBTableClassGenerator {
         Statement dbStatement = database.getDBStatement();
         Connection connection = dbStatement.getConnection();
         String catalog = connection.getCatalog();
-        String schema = null;
+        String schema;
         try {
             Method method = connection.getClass().getMethod("getSchema");
             schema = (String) method.invoke(connection);
             //schema = connection.getSchema();
         } catch (java.lang.AbstractMethodError exp) {
             // NOT USING Java 1.7+ apparently
+        	schema = null; // fall-back to doing it without the schema name
         } catch (Exception ex) {
             // NOT USING Java 1.7+ apparently
+        	schema = null; // fall-back to doing it without the schema name
         }
 
+        // fetch names of all tables
+        List<String> tableNames = new ArrayList<String>();
         DatabaseMetaData metaData = connection.getMetaData();
         ResultSet tables = metaData.getTables(catalog, schema, null, dbObjectTypes);
-
         while (tables.next()) {
+        	tableNames.add(tables.getString("TABLE_NAME"));
+        }
+        
+        // TODO: fetch existing tables and columns with their class names and field names
+        TableNameResolver tableNameResolver = new TableNameResolver(packageName);
+
+        // fetch schema for all tables
+        for (String tableName: tableNames) {
             DBTableClass dbTableClass = new DBTableClass();
             dbTableClass.setPackageName(packageName);
-            dbTableClass.setTableName(tables.getString("TABLE_NAME"));
-            log.info(dbTableClass.getTableName());
-            dbTableClass.setClassName(toClassCase(dbTableClass.getTableName()));
+            dbTableClass.setTableName(tableName);
+            log.info("Retrieving details for table "+dbTableClass.getTableName());
+            dbTableClass.setClassName(tableNameResolver.getSimpleClassNameFor(dbTableClass.getTableName()));
+            dbTableClasses.add(dbTableClass);
+            
+            // TODO: initialise ColumnNameResolver with existing columns on this table
 
             ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
             List<String> pkNames = new ArrayList<String>();
@@ -197,6 +213,7 @@ public class DBTableClassGenerator {
                 fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
             }
 
+            // populate initial column info
             ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null);
             while (columns.next()) {
                 DBTableField dbTableField = new DBTableField();
@@ -207,47 +224,125 @@ public class DBTableClassGenerator {
                 if (pkNames.contains(dbTableField.getColumnName()) || pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.getColumnName())) {
                     dbTableField.setIsPrimaryKey(true);
                 }
+                dbTableClass.getFields().add(dbTableField);
+                
+                // identify foreign key columns by constraint
+                // (foreign keys are additionally identified by recogniser
+                //  once all tables and columns are known about)
                 String[] pkData = fkNames.get(dbTableField.getColumnName());
                 if (pkData != null && pkData.length == 2) {
                     dbTableField.setIsForeignKey(true);
-                    dbTableField.setReferencesClass(toClassCase(pkData[0]));
-                    dbTableField.setReferencesField(pkData[1]);
-                } else if (fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.getColumnName())) {
-                    dbTableField.setIsForeignKey(true);
-                    dbTableField.setReferencesField(fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.getColumnName()));
-                    dbTableField.setReferencesClass(fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.getColumnName()));
+                    dbTableField.setReferencedTable(pkData[0]);
+                    dbTableField.setReferencedColumn(pkData[1]);
                 }
-                dbTableClass.getFields().add(dbTableField);
             }
-            dbTableClasses.add(dbTableClass);
         }
+        
+        populateForeignKeys(dbTableClasses, fkRecog);
         generateAllJavaSource(dbTableClasses);
         return dbTableClasses;
     }
 
-    static void generateAllJavaSource(List<DBTableClass> dbTableClasses) {
-        List<String> dbTableClassNames = new ArrayList<String>();
-
+    /**
+     * Populates references to foreign key classes and fields from
+     * known table and column names.
+     * 
+     * <p> This has to be done after all tables are loaded from the schema
+     * so that all tables are known about.
+     * @param dbTableClasses
+     */
+    static void populateForeignKeys(List<DBTableClass> dbTableClasses, ForeignKeyRecognisor fkRecog) {
+    	// prepare lookups
+    	Map<String,DBTableClass> classesByTableName = new HashMap<String, DBTableClass>();
         for (DBTableClass dbt : dbTableClasses) {
-            dbTableClassNames.add(dbt.getClassName());
+            classesByTableName.put(dbt.getTableName(), dbt);
         }
+        Set<String> allTableNames = classesByTableName.keySet();
+        
+        // identify foreign key columns by recogniser
+        // (Match up foreign keys to their target generated class and field
+        //  via the foreign key recogniser)
+        // (note: skip over columns already marked as foreign key by constraint)
+        for (DBTableClass dbTableClass: dbTableClasses) {
+	        for (DBTableField dbTableField: dbTableClass.getFields()) {
+	        	if (!dbTableField.isForeignKey()) {
+	                if (fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.getColumnName())) {
+	                    //dbTableField.setIsForeignKey(true);
+	                    
+	                    // identify referenced table and class
+	                	String table = fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.getColumnName(), allTableNames);
+	                	dbTableField.setReferencedTable(table);
+	                	if (table == null) {
+	                		log.warn("dropping foreign key from column "+dbTableClass.getTableName()+"."+dbTableField.getColumnName()+" - referenced table could not be inferred from column name");
+	                	}
+	                	// FIXME: what to do if table is null?
+	                	
+	                	DBTableClass referencedClass = null;
+	                	if (table != null) {
+		                	referencedClass = classesByTableName.get(table);
+		                	dbTableField.setReferencedClass(referencedClass);
+		                	if (referencedClass == null) {
+		                		log.warn("dropping foreign key from column "+dbTableClass.getTableName()+"."+dbTableField.getColumnName()+" - referenced table '"+table+"' does not exist");
+		                	}
+		                	// FIXME: what to do if referencedClass is null?
+	                	}
+	                	
+	                	if (referencedClass != null) {
+	                		dbTableField.setIsForeignKey(true);
+	                	}
+		                
+	                	// identify referenced column and field
+	                	if (referencedClass != null) {
+		                	Set<String> allColumnNames = new HashSet<String>();
+		                	for (DBTableField field: dbTableClass.getFields()) {
+		                		allColumnNames.add(field.getColumnName());
+		                	}
+		                	
+		                	String column = fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.getColumnName(), allColumnNames);
+		                	dbTableField.setReferencedColumn(column);
+		                	// null is ok here, causes default to primary key
+		                	
+		                	if (column != null) {
+	                    		DBTableField referencedField = referencedClass.getFieldByColumnName(column);
+	                    		dbTableField.setReferencedField(referencedField);
+	                    		if (referencedField == null) {
+	                    			log.warn("dropping foreign key target column from foreign key on "+dbTableClass.getTableName()+"."+dbTableField.getColumnName()+" - referenced column '"+column+"' does not exist");
+	                    		}
+	                    		// FIXME: what to do if referencedField is null?
+		                	}
+	                	}
+	                }
+	        	}
+	        }
+        }
+        
+    	// match up foreign keys to class and field where not already done
+        // (still need to do this for those foreign keys that were found
+        //  by foreign key constraint)
+        // TODO: this is a confusing bit of code duplication, see if there's
+        //       some way to reduce this code duplication.
         for (DBTableClass dbt : dbTableClasses) {
             for (DBTableField dbf : dbt.getFields()) {
-                if (dbf.isForeignKey()) {
-                    if (!dbTableClassNames.contains(dbf.getReferencesClass())) {
-                        List<String> matchingNames = new ArrayList<String>();
-                        for (String name : dbTableClassNames) {
-                            if (name.toLowerCase().startsWith(dbf.getReferencesClass().toLowerCase())) {
-                                matchingNames.add(name);
-                            }
-                        }
-                        if (matchingNames.size() == 1) {
-                            String properClassname = matchingNames.get(0);
-                            dbf.setReferencesClass(properClassname);
-                        }
-                    }
+                if (dbf.isForeignKey() && dbf.getReferencedTable() != null) {
+                	DBTableClass referencedClass = classesByTableName.get(dbf.getReferencedTable());
+                	dbf.setReferencedClass(referencedClass);
+            		// FIXME: what to do if null now?
+                	
+                	if (referencedClass != null) {
+                    	if (dbf.getReferencedColumn() != null) {
+                    		DBTableField referencedField = referencedClass.getFieldByColumnName(dbf.getReferencedColumn());
+                    		dbf.setReferencedField(referencedField);
+                    		// FIXME: what to do if null now?
+                    	}
+                	}
                 }
             }
+        }
+    }
+
+    // populates all java sources
+    static void generateAllJavaSource(List<DBTableClass> dbTableClasses) {
+        for (DBTableClass dbt : dbTableClasses) {
             dbt.generateJavaSource();
             log.info(dbt.getJavaSource());
         }

@@ -24,14 +24,25 @@ import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
 /**
  * Helps to resolve database table names to class names,
  * and vice-versa, while avoiding duplications of names.
+ *
+ * <p> The collection handling mechanism is:
+ * <ul>
+ * <li> initially try the default formatted class name, then
+ * <li> if there is a collision, try incrementing values from 1 upwards
+ * and format the classname as: <code>"packagePath.className&lt;count&gt"<code>.
+ * </ul>
  * 
  * <p> Requires you to create an instance for each package
  * that you wish to manage.
  */
-// TODO: implement smarts
+// TODO: change packageName to a modifiable path that is added to each newly
+//       resolved class names with the value at the time the class name is resolved.
+//       And use qualified class names everywhere. Then only one instance is needed
+//       across all packages.
 public class TableNameResolver {
 	// maps table-name to fully-qualified-class-name
 	// maps to null to represent that table/class name is known of, but has no mapping as yet
+	// (class names are stored in their simple name form)
 	private Map<String,String> tableNameToClassNameMap = new HashMap<String, String>();
 	private Map<String,String> classNameToTableNameMap = new HashMap<String, String>();
 	private Map<String,ParsedClass> classNameToClassMap = new HashMap<String, ParsedClass>();
@@ -41,6 +52,10 @@ public class TableNameResolver {
 		this.packageName = packageName;
 	}
 	
+	/**
+	 * Adds 
+	 * @param tableName
+	 */
 	public void addTable(String tableName) {
 		// don't overwrite if already have map from databaseName to class
 		if (!tableNameToClassNameMap.containsKey(tableName)) {
@@ -48,6 +63,11 @@ public class TableNameResolver {
 		}
 	}
 
+	/**
+	 * 
+	 * @param className simple name of class only
+	 * @param tableName
+	 */
 	public void addClass(String className, String tableName) {
 		classNameToTableNameMap.put(className, tableName);
 	}
@@ -63,17 +83,13 @@ public class TableNameResolver {
 	 * @param tableName
 	 * @return the simple class name
 	 */
-	// TODO: actually implement duplication avoidance logic
-	public String getClassNameFor(String tableName) {
-		String className = tableNameToClassNameMap.get(tableName);
-		if (className != null) {
-			return className;
+	public String getSimpleClassNameFor(String tableName) {
+		String className = getQualifiedClassNameFor(tableName);
+		int dotIndex = className.indexOf('.');
+		if (dotIndex >= 0) {
+			return className.substring(dotIndex+1);
 		}
-		
-		String simpleClassName = DBTableClassGenerator.toClassCase(tableName);
-		className = ((packageName == null) ? "" : packageName+".") + simpleClassName;
-		addClass(className, tableName);
-		return simpleClassName;
+		return className;
 	}
 	
 	/**
@@ -81,9 +97,25 @@ public class TableNameResolver {
 	 * @param tableName
 	 * @return the fully qualified class name
 	 */
+	// TODO: actually implement duplication avoidance logic
 	public String getQualifiedClassNameFor(String tableName) {
-		String simpleClassName = getClassNameFor(tableName);
-		String className = ((packageName == null) ? "" : packageName+".") + simpleClassName;
+		String className = tableNameToClassNameMap.get(tableName);
+		if (className != null) {
+			return className;
+		}
+		
+		String simpleClassName = DBTableClassGenerator.toClassCase(tableName);
+		className = (packageName == null) ? simpleClassName : packageName+"."+simpleClassName;
+		
+		// apply collision avoidance
+		int postfix = 1;
+		String proposedClassName = className;
+		while(classNameToTableNameMap.containsKey(proposedClassName)) {
+			proposedClassName = className+postfix;
+			postfix++;
+		}
+		
+		addClass(className, tableName);
 		return className;
 	}
 	

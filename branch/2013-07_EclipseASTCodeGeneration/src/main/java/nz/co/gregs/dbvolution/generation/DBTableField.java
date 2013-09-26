@@ -27,8 +27,10 @@ public class DBTableField {
     private String columnName;
     private boolean isPrimaryKey = false;
     private boolean isForeignKey = false;
-    private String referencesClass;
-    private String referencesField; // TODO: what is this?
+    private String referencedTable;
+    private String referencedColumn;
+    private DBTableClass referencedClass;
+    private DBTableField referencedField;
     private Class<? extends QueryableDatatype> columnType;
     private int precision;
     
@@ -64,20 +66,48 @@ public class DBTableField {
 		this.isForeignKey = isForeignKey;
 	}
 
-	public String getReferencesClass() {
-		return referencesClass;
+	/**
+	 * @return the referencedTable
+	 */
+	public String getReferencedTable() {
+		return referencedTable;
 	}
 
-	public void setReferencesClass(String referencesClass) {
-		this.referencesClass = referencesClass;
+	/**
+	 * @param referencedTable the referencedTable to set
+	 */
+	public void setReferencedTable(String referencedTable) {
+		this.referencedTable = referencedTable;
 	}
 
-	public String getReferencesField() {
-		return referencesField;
+	/**
+	 * @return the referencedColumn
+	 */
+	public String getReferencedColumn() {
+		return referencedColumn;
 	}
 
-	public void setReferencesField(String referencesField) {
-		this.referencesField = referencesField;
+	/**
+	 * @param referencedColumn the referencedColumn to set
+	 */
+	public void setReferencedColumn(String referencedColumn) {
+		this.referencedColumn = referencedColumn;
+	}
+
+	public DBTableClass getReferencedClass() {
+		return referencedClass;
+	}
+
+	public void setReferencedClass(DBTableClass referencesClass) {
+		this.referencedClass = referencesClass;
+	}
+
+	public DBTableField getReferencedField() {
+		return referencedField;
+	}
+
+	public void setReferencedField(DBTableField referencesField) {
+		this.referencedField = referencesField;
 	}
 
 	public Class<? extends QueryableDatatype> getColumnType() {
