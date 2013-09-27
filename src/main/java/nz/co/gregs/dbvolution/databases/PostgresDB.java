@@ -35,4 +35,8 @@ public class PostgresDB extends DBDatabase {
         super(new PostgresDBDefinition(), "org.postgresql.Driver", jdbcURL, username, password);
     }
     
+    public PostgresDB(String hostname, String port, String databaseName, String username, String password) {
+        super(new PostgresDBDefinition(), "org.postgresql.Driver", "jdbc:postgresql://"+hostname+":"+port+"/"+databaseName, username, password);
+    }
+    
 }

@@ -37,5 +37,7 @@ public class MySQLDBInitialisationTest {
         database.dropTableNoExceptions(carCompany);
         database.createTable(marque);
         database.createTable(carCompany);
+        database.dropTableNoExceptions(marque);
+        database.dropTableNoExceptions(carCompany);
     }
 }
