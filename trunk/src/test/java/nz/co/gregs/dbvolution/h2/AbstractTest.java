@@ -25,7 +25,7 @@ import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
+import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo;
@@ -60,7 +60,8 @@ public class AbstractTest {
     public static List<Object[]> data() {
         Object[][] data = new Object[][]{
             {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
-                //, {new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
+        //,{new PostgresDB("ec2-23-21-104-121.compute-1.amazonaws.com","5432","", "postgres", "postgres")}
+        //,{new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
         };
         return Arrays.asList(data);
     }
