@@ -48,7 +48,7 @@ public class LowLevelGenerationTests extends AbstractASTTest {
 
 	@Test
 	public void updatesWhenUsingLowLevelMethods() throws MalformedTreeException, BadLocationException {
-		ParsedClass javatype = ParsedClass.of(getMarqueSource());
+		ParsedClass javatype = ParsedClass.parseContents(getMarqueSource());
 		System.out.println(javatype.toString());
 		
 		ColumnNameResolver columnNameResolver = new ColumnNameResolver();

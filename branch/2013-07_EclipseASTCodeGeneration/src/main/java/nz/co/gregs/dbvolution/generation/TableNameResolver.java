@@ -73,7 +73,7 @@ public class TableNameResolver {
 	}
 	
 	public void addClass(ParsedClass parsedClass) {
-		String tableName = parsedClass.getDBTableNameIfSet(); // may be null
+		String tableName = parsedClass.getTableNameIfSet(); // may be null
 		classNameToTableNameMap.put(parsedClass.getFullyQualifiedName(), tableName);
 		classNameToClassMap.put(parsedClass.getFullyQualifiedName(), parsedClass);
 	}
@@ -85,7 +85,7 @@ public class TableNameResolver {
 	 */
 	public String getSimpleClassNameFor(String tableName) {
 		String className = getQualifiedClassNameFor(tableName);
-		int dotIndex = className.indexOf('.');
+		int dotIndex = className.lastIndexOf('.');
 		if (dotIndex >= 0) {
 			return className.substring(dotIndex+1);
 		}

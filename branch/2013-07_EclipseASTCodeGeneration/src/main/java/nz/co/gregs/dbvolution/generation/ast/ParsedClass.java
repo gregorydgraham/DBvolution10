@@ -3,9 +3,11 @@ package nz.co.gregs.dbvolution.generation.ast;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.generation.CodeGenerationConfiguration;
 
 import org.eclipse.jdt.core.JavaCore;
@@ -21,17 +22,14 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
-import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
-import org.eclipse.jdt.core.dom.StringLiteral;
-import org.eclipse.jdt.core.dom.TagElement;
-import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -45,19 +43,64 @@ import org.eclipse.text.edits.TextEdit;
 // TODO: consider making this type transparently expose a single instance of a type
 // within a multi-type compilation unit, in the same way as planned for ParsedFields.s
 public class ParsedClass {
+	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+	
 	private final ASTParser parser;
 	private final Document document;
+	private File file; // original file, if known
 	private final CompilationUnit unit;
 	private final ParsedTypeContext typeContext;
 	private TypeDeclaration astNode;
 	private ParsedTypeRef superType;
+	private List<ParsedAnnotation> annotations;
 	private List<ParsedField> fields;
 	private List<ParsedMethod> methods;
+
+	/**
+	 * Parses the full contents of an existing source file.
+	 * @throws IOException on any I/O error while reading the file
+	 */
+	public static ParsedClass parseFile(File file) throws IOException {
+		return parseFile(file, true);
+	}
+
+	/**
+	 * Parses the class-level information of an existing source file.
+	 * Only the class name, package name, and class-level annotations are parsed.
+	 * @throws IOException on any I/O error while reading the file
+	 */
+	public static ParsedClass parseFileMinimally(File file) throws IOException {
+		return parseFile(file, false);
+	}
+
+	/**
+	 * Parses an existing source file.
+	 * Only the class name, package name, and class-level annotations are parsed,
+	 * unless {@code fullContents} is {@code true}.
+	 * @param fullContents whether to parse the full contents or just the top level information.
+	 * @throws IOException on any I/O error while reading the file
+	 */
+	private static ParsedClass parseFile(File file, boolean fullContents) throws IOException {
+		ParsedClass parsedClass = parseContents(readFileToString(file), fullContents);
+		parsedClass.file = file;
+		return parsedClass;
+	}
+	
+	/**
+	 * Parses the full contents of an existing source file.
+	 */
+	public static ParsedClass parseContents(String contents) {
+		return parseContents(contents, true);
+	}
 	
 	/**
 	 * Parses an existing source file.
+	 * Only the class name, package name, and class-level annotations are parsed,
+	 * unless {@code fullContents} is {@code true}.
+	 * @param fullContents whether to parse the full contents or just the top level information.
 	 */
-	public static ParsedClass of(String contents) {
+	// TODO: actually do a minimal parse when asked to
+	public static ParsedClass parseContents(String contents, boolean fullContents) {
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
 		// In order to parse 1.5 code, some compiler options need to be set to 1.5
 		Map<?,?> options = JavaCore.getOptions();
@@ -210,6 +253,14 @@ public class ParsedClass {
 	    this.superType = (astNode.getSuperclassType() == null) ? null :
 	    	new ParsedTypeRef(typeContext, astNode.getSuperclassType());
 
+    	// annotations
+		this.annotations = new ArrayList<ParsedAnnotation>();
+    	for(IExtendedModifier modifier: (List<IExtendedModifier>)astNode.modifiers()) {
+    		if (modifier.isAnnotation()) {
+    			annotations.add(new ParsedAnnotation(typeContext, (Annotation)modifier));
+    		}
+    	}		
+	    
 	    // fields
 		this.fields = new ArrayList<ParsedField>();
 		for (BodyDeclaration body: (List<BodyDeclaration>)astNode.bodyDeclarations()) {
@@ -244,6 +295,13 @@ public class ParsedClass {
 		return buf.toString();
 	}
 	
+	/**
+	 * @return the file
+	 */
+	public File getFile() {
+		return file;
+	}
+
 	public TypeDeclaration astNode() {
 		return astNode;
 	}
@@ -257,10 +315,30 @@ public class ParsedClass {
 		this.superType = superType;
 	}
 	
-	public String getDBTableNameIfSet() {
-		throw new UnsupportedOperationException();
+	public List<ParsedAnnotation> getAnnotations() {
+		return annotations;
 	}
-
+	
+	/**
+	 * Gets the table name, as specified via the {@code DBTableName} annotation
+	 * or defaulted based on the class name, if it has a {@code DBTableName}
+	 * annotation.
+	 * @return {@code null} if not applicable
+	 */
+	public String getTableNameIfSet() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBTableName()) {
+				String columnName = annotation.asDBTableName().getTableNameIfSet();
+				if (columnName == null) {
+					// defaulting mechanism
+					columnName = getDeclaredName();
+				}
+				return columnName;
+			}
+		}
+		return null;
+	}
+	
 	public String getPackage() {
 		if (unit.getPackage() != null) {
 			return unit.getPackage().getName().getFullyQualifiedName();
@@ -504,9 +582,15 @@ public class ParsedClass {
 	/**
 	 * Writes the file to the appropriate sub-folder and filename within the specified
 	 * source folder.
+	 * This method first applies all pending changes to the
+	 * underlying source document (in memory), and then writes
+	 * its contents to the appropriate file under the given source root.
+	 * 
+	 * <p> Note: this method does not correctly handle inner classes.
 	 * @param sourceRoot root of source tree
+	 * @return the file created/overwritten
 	 */
-	public void writeToSourceFolder(File sourceRoot) {
+	public File writeToSourceFolder(File sourceRoot) {
 		if (!sourceRoot.exists()) {
 			throw new IllegalArgumentException("Source folder does not exist: "+sourceRoot);
 		}
@@ -530,8 +614,38 @@ public class ParsedClass {
 		
 		File outputFile = new File(packageFolder, getSimpleName()+".java");
 		writeTo(outputFile);
+		
+		return outputFile;
 	}
-	
+
+	/**
+	 * Gets the modified source as as string.
+	 * This method first applies all pending changes to the
+	 * underlying source document (in memory), and then returns
+	 * its contents as a string.
+	 * @return modified source contents
+	 */
+	public String writeToString() {
+	    // to save the changed file
+	    TextEdit edits = unit.rewrite(document, null);
+	    try {
+			edits.apply(document);
+		} catch (MalformedTreeException e) {
+			throw new RuntimeException(e);
+		} catch (BadLocationException e) {
+			throw new RuntimeException(e);
+		}
+
+		return document.get();
+	}
+
+	/**
+	 * Saves the modified source to file.
+	 * This method first applies all pending changes to the
+	 * underlying source document (in memory), and then writes
+	 * its contents to the specified file.
+	 * @param file
+	 */
 	// TODO: ensure it retains the same line endings as the original file
 	public void writeTo(File file) {
 	    // to save the changed file
@@ -556,6 +670,32 @@ public class ParsedClass {
 					writer.close();
 				}
 			} catch (IOException dropped) {} // assume caused by earlier exception
+		}
+	}
+	
+	/**
+	 * Reads whole contents of file to string.
+	 * Newline characters are retained in their original OS-dependent form.
+	 * @param file file to read
+	 * @return file contents
+	 * @throws IOException on any I/O error while reading the file
+	 */
+	private static String readFileToString(File file) throws IOException {
+		FileReader reader = new FileReader(file);
+		try {
+			StringWriter sw = new StringWriter();
+			char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+	        int n = 0;
+	        while (-1 != (n = reader.read(buffer))) {
+	            sw.write(buffer, 0, n);
+	        }
+			return sw.toString();
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException dropped) {
+				// assume caused by earlier exception
+			}
 		}
 	}
 	

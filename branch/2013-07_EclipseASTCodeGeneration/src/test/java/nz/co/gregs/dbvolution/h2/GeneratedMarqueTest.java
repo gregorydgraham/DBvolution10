@@ -15,18 +15,20 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBTable;
+
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
-import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.DBTableClass;
-import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
+import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.Marque;
-import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
+
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -34,13 +36,18 @@ import org.junit.Test;
  * @author gregorygraham
  */
 public class GeneratedMarqueTest extends AbstractTest {
+	private static final File OUTPUT_DIR = new File("target/test-output"); 
 
-    nz.co.gregs.dbvolution.example.Marque myTableRow = new nz.co.gregs.dbvolution.example.Marque();
-
+    @BeforeClass
+    public static void setupDirs() {
+    	OUTPUT_DIR.mkdirs();
+    }
+    
     @Test
     public void testGetSchema() throws SQLException{
-        List<DBTableClass> generateSchema;
-        generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+        DBTableClassGenerator classGenerator = new DBTableClassGenerator(OUTPUT_DIR, "nz.co.gregs.dbvolution.generation");
+        
+        List<DBTableClass> generateSchema = classGenerator.generateClassesOfTables(database);
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.getJavaSource());
         }
@@ -48,8 +55,11 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     @Test
     public void testGetSchemaWithRecognisor() throws SQLException{
-        List<DBTableClass> generateSchema;
-        generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new UIDBasedPKRecognisor(), new FKBasedFKRecognisor());
+        DBTableClassGenerator classGenerator = new DBTableClassGenerator(OUTPUT_DIR, "nz.co.gregs.dbvolution.generation");
+        classGenerator.setPrimaryKeyRecogniser(new UIDBasedPKRecognisor());
+        classGenerator.setForeignKeyRecogniser(new FKBasedFKRecognisor());
+        
+        List<DBTableClass> generateSchema = classGenerator.generateClassesOfTables(database);
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.getJavaSource());
         }

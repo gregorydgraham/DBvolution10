@@ -181,18 +181,35 @@ public class ParsedField {
 	public boolean isDBColumn() {
 		return parsedFieldDeclaration.isDBColumn();
 	}
+
+	/**
+	 * Indicates whether this field is declared with a
+	 * {@link nz.co.gregs.dbvolution.annotations.DBTableColumn} annotation.
+	 */
+	public boolean isDBPrimaryKey() {
+		return parsedFieldDeclaration.isDBPrimaryKey();
+	}
+
+	/**
+	 * Indicates whether this field is declared with a
+	 * {@link nz.co.gregs.dbvolution.annotations.DBTableColumn} annotation.
+	 */
+	public boolean isDBForeignKey() {
+		return parsedFieldDeclaration.isDBForeignKey();
+	}
 	
 	/**
-	 * Gets the table name, as specified via the {@code DBTableColumn} annotation
-	 * or defaulted based on the field name, if it has a {@code DBTableColumn}
+	 * Gets the column name, as specified via the {@code DBColumn} annotation
+	 * or defaulted based on the field name, if it has a {@code DBColumn}
 	 * annotation.
 	 * @return {@code null} if not applicable
 	 */
 	public String getColumnNameIfSet() {
 		for (ParsedAnnotation annotation: getAnnotations()) {
 			if (annotation.isDBColumn()) {
-				String columnName = annotation.getColumnNameIfSet();
+				String columnName = annotation.asDBColumn().getColumnNameIfSet();
 				if (columnName == null) {
+					// defaulting mechanism
 					columnName = getName();
 				}
 				return columnName;
@@ -201,6 +218,33 @@ public class ParsedField {
 		return null;
 	}
 
+	/**
+	 * Gets the foreign key's referenced class, as specified via the {@code DBForeignKey} annotation.
+	 * @return {@code null} if not applicable
+	 */
+	public ParsedTypeRef getForeignTypeIfSet() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBForeignKey()) {
+				return annotation.asDBForeignKey().getReferencedClassIfSet();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the foreign key's referenced column, as specified via the {@code DBForeignKey} annotation.
+	 * @return {@code null} if not applicable
+	 */
+	public String getForeignColumnNameIfSet() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBForeignKey()) {
+				return annotation.asDBForeignKey().getReferencedColumnNameIfSet();
+			}
+		}
+		return null;
+	}
+	
+	// used by toString() method only
 	private static String joinNamesOf(List<ParsedField> fields, String delimiter) {
 		StringBuilder buf = new StringBuilder();
 		boolean first = true;
@@ -213,6 +257,7 @@ public class ParsedField {
 		return buf.toString();
 	}
 	
+	// used by toString() method only
 	private static String join(List<String> strings, String delimiter) {
 		StringBuilder buf = new StringBuilder();
 		boolean first = true;
@@ -320,10 +365,38 @@ public class ParsedField {
 			}
 			return false;
 		}
+
+		/**
+		 * Indicates whether this field is declared with a
+		 * {@link nz.co.gregs.dbvolution.annotations.DBPrimaryKey}
+		 * annotation.
+		 */
+		public boolean isDBPrimaryKey() {
+			for (ParsedAnnotation annotation: getAnnotations()) {
+				if (annotation.isDBPrimaryKey()) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/**
+		 * Indicates whether this field is declared with a
+		 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey}
+		 * annotation.
+		 */
+		public boolean isDBForeignKey() {
+			for (ParsedAnnotation annotation: getAnnotations()) {
+				if (annotation.isDBForeignKey()) {
+					return true;
+				}
+			}
+			return false;
+		}
 		
 		/**
-		 * Gets the table names, as specified via the {@code DBTableColumn} annotation
-		 * or defaulted based on the field names, if it has a {@code DBTableColumn}
+		 * Gets the column names, as specified via the {@code DBColumn} annotation
+		 * or defaulted based on the field names, if it has a {@code DBColumn}
 		 * annotation.
 		 * Really just here for use by the {@link #toString()} method.
 		 * @return {@code null} if not applicable

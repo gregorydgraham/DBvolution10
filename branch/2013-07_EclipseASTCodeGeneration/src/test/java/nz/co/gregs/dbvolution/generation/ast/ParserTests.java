@@ -12,7 +12,7 @@ import org.junit.Test;
 public class ParserTests extends AbstractASTTest {
 	@Test
 	public void getProperties() throws MalformedTreeException, BadLocationException {
-		ParsedClass javatype = ParsedClass.of(getMarqueSource());
+		ParsedClass javatype = ParsedClass.parseContents(getMarqueSource());
 		
 		List<ParsedBeanProperty> properties = javatype.getDBColumnProperties();
 		for (ParsedBeanProperty property: properties) {

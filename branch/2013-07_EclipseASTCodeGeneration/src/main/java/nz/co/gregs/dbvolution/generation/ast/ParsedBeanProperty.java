@@ -197,6 +197,28 @@ public class ParsedBeanProperty {
 			   (getter != null && getter.isDBColumn()) ||
 			   (setter != null && setter.isDBColumn());
 	}
+
+	/**
+	 * Indicates whether this property is declared with a
+	 * {@link nz.co.gregs.dbvolution.annotations.DBColumn} annotation
+	 * on any of its field or getter/setter methods.
+	 */
+	public boolean isDBPrimaryKey() {
+		return (field != null && field.isDBPrimaryKey()) ||
+			   (getter != null && getter.isDBPrimaryKey()) ||
+			   (setter != null && setter.isDBPrimaryKey());
+	}
+
+	/**
+	 * Indicates whether this property is declared with a
+	 * {@link nz.co.gregs.dbvolution.annotations.DBColumn} annotation
+	 * on any of its field or getter/setter methods.
+	 */
+	public boolean isDBForeignKey() {
+		return (field != null && field.isDBForeignKey()) ||
+			   (getter != null && getter.isDBForeignKey()) ||
+			   (setter != null && setter.isDBForeignKey());
+	}
 	
 	/**
 	 * Gets the table name, as specified via the {@code DBTableColumn} annotation
@@ -219,6 +241,62 @@ public class ParsedBeanProperty {
 		}
 		if (setter != null) {
 			String columnName = setter.getColumnNameIfSet();
+			if (columnName != null) {
+				return columnName;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the table name, as specified via the {@code DBTableColumn} annotation
+	 * or defaulted based on the property name, if it has a {@code DBTableColumn}
+	 * annotation.
+	 * @return {@code null} if not applicable
+	 */
+	public ParsedTypeRef getForeignTypeIfSet() {
+		if (field != null) {
+			ParsedTypeRef type = field.getForeignTypeIfSet();
+			if (type != null) {
+				return type;
+			}
+		}
+		if (getter != null) {
+			ParsedTypeRef type = getter.getForeignTypeIfSet();
+			if (type != null) {
+				return type;
+			}
+		}
+		if (setter != null) {
+			ParsedTypeRef type = setter.getForeignTypeIfSet();
+			if (type != null) {
+				return type;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the table name, as specified via the {@code DBTableColumn} annotation
+	 * or defaulted based on the property name, if it has a {@code DBTableColumn}
+	 * annotation.
+	 * @return {@code null} if not applicable
+	 */
+	public String getForeignColumnNameIfSet() {
+		if (field != null) {
+			String columnName = field.getForeignColumnNameIfSet();
+			if (columnName != null) {
+				return columnName;
+			}
+		}
+		if (getter != null) {
+			String columnName = getter.getForeignColumnNameIfSet();
+			if (columnName != null) {
+				return columnName;
+			}
+		}
+		if (setter != null) {
+			String columnName = setter.getForeignColumnNameIfSet();
 			if (columnName != null) {
 				return columnName;
 			}

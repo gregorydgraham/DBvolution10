@@ -19,12 +19,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
+
 /**
  * Represents the requirement for a code generated class that maps
  * to a database table.
  */
 public class DBTableClass {
     private File javaFile; // existing java source file
+    private ParsedClass parsedClass; // existing java source AST
     private String tableName;
     private String packageName; // TODO: remove
     private String className; // resolved simpleName, TODO: make fully qualified
@@ -98,6 +101,20 @@ public class DBTableClass {
 		this.javaFile = javaFile;
 	}
 	
+	/**
+	 * @return the parsedClass
+	 */
+	public ParsedClass getParsedClass() {
+		return parsedClass;
+	}
+
+	/**
+	 * @param parsedClass the parsedClass to set
+	 */
+	public void setParsedClass(ParsedClass parsedClass) {
+		this.parsedClass = parsedClass;
+	}
+
 	public String getJavaSource() {
 		return javaSource;
 	}

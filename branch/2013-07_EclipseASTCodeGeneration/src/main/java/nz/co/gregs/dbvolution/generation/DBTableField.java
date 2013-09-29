@@ -25,14 +25,15 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 public class DBTableField {
     private String fieldName;
     private String columnName;
-    private boolean isPrimaryKey = false;
-    private boolean isForeignKey = false;
-    private String referencedTable;
-    private String referencedColumn;
-    private DBTableClass referencedClass;
-    private DBTableField referencedField;
     private Class<? extends QueryableDatatype> columnType;
     private int precision;
+    private boolean isPrimaryKey = false;
+    private boolean isForeignKey = false;
+    private String referencedTable; // set from schema and from existing source file foreign key mapping
+    private String referencedColumn; // set from schema and from existing source file
+    private DBTableClass referencedClass; // set during foreign key mapping
+    private DBTableField referencedField; // set during foreign key mapping
+    private String referencedClassName; // set from parsing existing source files
     
 	public String getFieldName() {
 		return fieldName;
@@ -125,5 +126,19 @@ public class DBTableField {
 	public void setPrecision(int precision) {
 		this.precision = precision;
 	}
-    
+
+	/**
+	 * @return the referencedClassName
+	 */
+	public String getReferencedClassName() {
+		return referencedClassName;
+	}
+
+	/**
+	 * @param referencedClassName the referencedClassName to set
+	 */
+	public void setReferencedClassName(String referencedClassName) {
+		this.referencedClassName = referencedClassName;
+	}
+   
 }

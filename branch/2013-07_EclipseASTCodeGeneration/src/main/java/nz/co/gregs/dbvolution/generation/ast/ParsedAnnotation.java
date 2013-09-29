@@ -3,7 +3,6 @@ package nz.co.gregs.dbvolution.generation.ast;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 
@@ -11,11 +10,13 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.StringLiteral;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 
 /**
@@ -37,18 +38,7 @@ public class ParsedAnnotation {
 	 * @return the newly constructed instance
 	 */
 	public static ParsedAnnotation newDBTableInstance(ParsedTypeContext typeContext, String tableName) {
-		AST ast = typeContext.getAST();
-
-		SingleMemberAnnotation annotation = ast.newSingleMemberAnnotation();
-		annotation.setTypeName(typeContext.declarableTypeNameOf(DBTableName.class, true));
-		
-		if (tableName != null) {
-			StringLiteral annotationValue = ast.newStringLiteral();
-			annotationValue.setLiteralValue(tableName);
-			annotation.setValue(annotationValue);
-		}
-
-		return new ParsedAnnotation(typeContext, annotation);
+		return ParsedDBTableNameAnnotation.newInstance(typeContext, tableName);
 	}
 
 	/**
@@ -62,18 +52,7 @@ public class ParsedAnnotation {
 	 * @return the newly constructed instance
 	 */
 	public static ParsedAnnotation newDBColumnInstance(ParsedTypeContext typeContext, String columnName) {
-		AST ast = typeContext.getAST();
-		
-		SingleMemberAnnotation annotation = ast.newSingleMemberAnnotation();
-		annotation.setTypeName(typeContext.declarableTypeNameOf(DBColumn.class, true));
-		
-		if (columnName != null) {
-			StringLiteral annotationValue = ast.newStringLiteral();
-			annotationValue.setLiteralValue(columnName);
-			annotation.setValue(annotationValue);
-		}
-		
-		return new ParsedAnnotation(typeContext, annotation);
+		return ParsedDBColumnAnnotation.newInstance(typeContext, columnName);
 	}
 	
 	/**
@@ -86,12 +65,7 @@ public class ParsedAnnotation {
 	 * @return the newly constructed instance
 	 */
 	public static ParsedAnnotation newDBPrimaryKeyInstance(ParsedTypeContext typeContext) {
-		AST ast = typeContext.getAST();
-		
-		MarkerAnnotation annotation = ast.newMarkerAnnotation();
-		annotation.setTypeName(typeContext.declarableTypeNameOf(DBPrimaryKey.class, true));
-		
-		return new ParsedAnnotation(typeContext, annotation);
+		return ParsedDBPrimaryKeyAnnotation.newInstance(typeContext);
 	}
 
 	/**
@@ -100,12 +74,6 @@ public class ParsedAnnotation {
 	 * The annotation is not added to the AST and must be added by the caller;
 	 * however any referenced types are added to the imports section of the 
 	 * type context.
-	 * 
-	 * <p> Generates annotations of one of the following forms:
-	 * <ul>
-	 * <li> <code>@DBForeignKey(className.class)</code>
-	 * <li> <code>@DBForeignKey(value=className.class, column="columnName")</code>
-	 * </ul>
 	 * 
 	 * <p> Note: this method supports foreign keys to non-primary columns
 	 * on target tables. At present the actual DBvolution annotation doesn't
@@ -120,48 +88,7 @@ public class ParsedAnnotation {
 	 */
 	public static ParsedAnnotation newDBForeignKeyInstance(ParsedTypeContext typeContext,
 			ParsedClass referencedClass, ParsedField referencedField) {
-		AST ast = typeContext.getAST();
-		Annotation annotation;
-		
-		// annotation with default value only
-		if (referencedField == null) {
-			SingleMemberAnnotation smAnnotation = ast.newSingleMemberAnnotation();
-			smAnnotation.setTypeName(typeContext.declarableTypeNameOf(DBForeignKey.class, true));
-			annotation = smAnnotation;
-
-			TypeLiteral value = ast.newTypeLiteral();
-			value.setType(ast.newSimpleType(ast.newSimpleName(referencedClass.getDeclaredName())));
-			smAnnotation.setValue(value);
-		}
-		
-		// annotation with two values
-		else {
-			String columnName = referencedField.getColumnNameIfSet();
-			if (columnName == null) {
-				throw new IllegalArgumentException("ReferencedField doesn't indicate its column name: "+referencedField);
-			}
-			
-			NormalAnnotation normalAnnotation = ast.newNormalAnnotation();
-			normalAnnotation.setTypeName(typeContext.declarableTypeNameOf(DBForeignKey.class, true));
-			annotation = normalAnnotation;
-			
-			MemberValuePair pair1 = ast.newMemberValuePair();
-			TypeLiteral value1 = ast.newTypeLiteral();
-			value1.setType(ast.newSimpleType(ast.newSimpleName(referencedClass.getDeclaredName())));
-			pair1.setName(ast.newSimpleName("value"));
-			pair1.setValue(value1);
-			
-			MemberValuePair pair2 = ast.newMemberValuePair();
-			StringLiteral value2 = ast.newStringLiteral();
-			value2.setEscapedValue(columnName);
-			pair2.setName(ast.newSimpleName("column"));
-			pair2.setValue(value2);
-			
-			normalAnnotation.values().add(pair1);
-			normalAnnotation.values().add(pair2);
-		}
-		
-		return new ParsedAnnotation(typeContext, annotation);
+		return ParsedDBForeignKeyAnnotation.newInstance(typeContext, referencedClass, referencedField);
 	}
 	
 	public ParsedAnnotation(ParsedTypeContext typeContext, Annotation astNode) {
@@ -179,6 +106,10 @@ public class ParsedAnnotation {
 	
 	public Annotation astNode() {
 		return astNode;
+	}
+	
+	public ParsedTypeContext typeContext() {
+		return typeContext;
 	}
 	
 	/**
@@ -209,43 +140,174 @@ public class ParsedAnnotation {
 	}
 	
 	/**
-	 * Indicates whether this annotation is {@link nz.co.gregs.dbvolution.annotations.DBTableColumn}.
+	 * Indicates whether this annotation is of the specified type.
+	 * @param annotationType
+	 * @return true if of the specified type, false if not the type or not known
 	 */
-	public boolean isDBColumn() {
-		return typeContext.isDeclarationOfType(DBColumn.class, getDeclaredTypeName());
+	public boolean isType(Class<?> annotationType) {
+		return typeContext.isDeclarationOfType(annotationType, getDeclaredTypeName());
 	}
 	
 	/**
-	 * Gets the table name, as specified via the {@code DBTableColumn} annotation,
-	 * if set.
-	 * @return {@code null} if not applicable
+	 * Gets the Expression AST node for the specified attribute.
+	 * Recognises the different types of annotations, and that
+	 * {@code "value"} attributes can be specified without name in
+	 * single member annotations.
+	 * @param attributeName
+	 * @return
 	 */
-	public String getColumnNameIfSet() {
-		if (!isDBColumn()) {
-			return null;
+	public Expression getAttributeExpressionIfSet(String attributeName) {
+		if (attributeName.equals("value") && astNode() instanceof SingleMemberAnnotation) {
+			return ((SingleMemberAnnotation) astNode()).getValue();
 		}
-		
-		Expression expr = null;
-		if (astNode instanceof SingleMemberAnnotation) {
-			expr = ((SingleMemberAnnotation) astNode).getValue();
-		}
-		else if (astNode instanceof NormalAnnotation) {
-			for (MemberValuePair pair: (List<MemberValuePair>)((NormalAnnotation) astNode).values()) {
-				if (pair.getName().getFullyQualifiedName().equals("value")) {
-					expr = pair.getValue();
-					break;
+		else if (astNode() instanceof NormalAnnotation) {
+			for (MemberValuePair pair: (List<MemberValuePair>)((NormalAnnotation) astNode()).values()) {
+				if (pair.getName().getFullyQualifiedName().equals(attributeName)) {
+					return pair.getValue();
 				}
 			}
 		}
-
+		return null; // not found
+	}
+	
+	/**
+	 * Gets the string value for the specified attribute.
+	 * Recognises the different types of annotations, and that
+	 * {@code "value"} attributes can be specified without name in
+	 * single member annotations.
+	 * 
+	 * <p> If the attribute is available, but the wrong type, it throws
+	 * an {@link OperationUnsupportedException}.
+	 * @param attributeName
+	 * @return
+	 * @throws OperationUnsupportedException
+	 */
+	public String getStringAttributeIfSet(String attributeName) {
+		Expression expr = getAttributeExpressionIfSet(attributeName);
+		
+		// FIXME: this needs to be able to handle references to constants
 		if (expr != null) {
 			if (expr.getNodeType() == ASTNode.STRING_LITERAL) {
 				return ((StringLiteral)expr).getLiteralValue();
 			}
 			else {
-				throw new UnsupportedOperationException("Unable to handle @DBTableColumn with values set via "+expr.getClass().getSimpleName());
+				throw new UnsupportedOperationException("Unable to handle @"+getDeclaredTypeName()+
+						" with values set via "+expr.getClass().getSimpleName());
 			}
 		}
+		
 		return null;
+	}
+
+	/**
+	 * Gets the type value for the specified attribute.
+	 * Recognises the different types of annotations, and that
+	 * {@code "value"} attributes can be specified without name in
+	 * single member annotations.
+	 * 
+	 * <p> If the attribute is available, but the wrong type, it throws
+	 * an {@link OperationUnsupportedException}.
+	 * @param attributeName
+	 * @return
+	 * @throws OperationUnsupportedException
+	 */
+	public Type getTypeAttributeIfSet(String attributeName) {
+		Expression expr = getAttributeExpressionIfSet(attributeName);
+		
+		// FIXME: this needs to be able to handle references to constants
+		if (expr != null) {
+			if (expr.getNodeType() == ASTNode.TYPE_LITERAL) {
+				return ((TypeLiteral)expr).getType();
+			}
+			else {
+				throw new UnsupportedOperationException("Unable to handle @"+getDeclaredTypeName()+
+						" with values set via "+expr.getClass().getSimpleName());
+			}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Indicates whether this is a <code>@DBTableName</code> annotation.
+	 */
+	public boolean isDBTableName() {
+		return ParsedDBTableNameAnnotation.isTypeOf(this);
+	}
+	
+	/**
+	 * Indicates whether this is a <code>@DBColumn</code> annotation.
+	 */
+	public boolean isDBColumn() {
+		return ParsedDBColumnAnnotation.isTypeOf(this);
+	}
+	
+	/**
+	 * Indicates whether this is a <code>@DBPrimaryKey</code> annotation.
+	 */
+	public boolean isDBPrimaryKey() {
+		return ParsedDBPrimaryKeyAnnotation.isTypeOf(this);
+	}
+
+	/**
+	 * Indicates whether this is a <code>@DBForeignKey</code> annotation.
+	 */
+	public boolean isDBForeignKey() {
+		return ParsedDBForeignKeyAnnotation.isTypeOf(this);
+	}
+	
+	/**
+	 * Decorates this annotation as if it's an instance of
+	 * <code>@DBTableName</code>, regardless of whether or not it actually
+	 * is one.
+	 * Use {@link #isDBTableName()} beforehand to test its actual type.
+	 * @return
+	 */
+	public ParsedDBTableNameAnnotation asDBTableName() {
+		return new ParsedDBTableNameAnnotation(this);
+	}
+
+	/**
+	 * Decorates this annotation as if it's an instance of
+	 * <code>@DBColumn</code>, regardless of whether or not it actually
+	 * is one.
+	 * Use {@link #isDBColumn()} beforehand to test its actual type.
+	 * @return
+	 */
+	public ParsedDBColumnAnnotation asDBColumn() {
+		return new ParsedDBColumnAnnotation(this);
+	}
+
+	/**
+	 * Decorates this annotation as if it's an instance of
+	 * <code>@DBPrimaryKey</code>, regardless of whether or not it actually
+	 * is one.
+	 * Use {@link #isDBPrimaryKey()} beforehand to test its actual type.
+	 * @return
+	 */
+	public ParsedDBPrimaryKeyAnnotation asDBPrimaryKey() {
+		return new ParsedDBPrimaryKeyAnnotation(this);
+	}
+
+	/**
+	 * Decorates this annotation as if it's an instance of
+	 * <code>@DBForeignKey</code>, regardless of whether or not it actually
+	 * is one.
+	 * Use {@link #isDBForeignKey()} beforehand to test its actual type.
+	 * @return
+	 */
+	public ParsedDBForeignKeyAnnotation asDBForeignKey() {
+		return new ParsedDBForeignKeyAnnotation(this);
+	}
+
+	/**
+	 * Gets the table name, as specified via the {@code DBTableColumn} annotation,
+	 * if set.
+	 * @return {@code null} if not applicable
+	 * @deprecated to be replaced by a {@code asDBColumn()} or similar method
+	 */
+	@Deprecated
+	public String getColumnNameIfSet() {
+		return new ParsedDBColumnAnnotation(this).getColumnNameIfSet();
 	}
 }

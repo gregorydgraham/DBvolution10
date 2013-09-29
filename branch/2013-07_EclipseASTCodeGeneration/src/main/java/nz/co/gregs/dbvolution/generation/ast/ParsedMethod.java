@@ -372,6 +372,32 @@ public class ParsedMethod {
 		}
 		return false;
 	}
+
+	/**
+	 * Indicates whether this method is declared with a
+	 * {@link nz.co.gregs.dbvolution.annotations.DBPrimaryKey} annotation.
+	 */
+	public boolean isDBPrimaryKey() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBPrimaryKey()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Indicates whether this method is declared with a
+	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey} annotation.
+	 */
+	public boolean isDBForeignKey() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBForeignKey()) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * Gets the table name, as specified via the {@code DBTableColumn} annotation
@@ -382,7 +408,7 @@ public class ParsedMethod {
 	public String getColumnNameIfSet() {
 		for (ParsedAnnotation annotation: getAnnotations()) {
 			if (annotation.isDBColumn()) {
-				String columnName = annotation.getColumnNameIfSet();
+				String columnName = annotation.asDBColumn().getColumnNameIfSet();
 				if (columnName == null) {
 					columnName = JavaRules.propertyNameOf(this); // default based on property name
 				}
@@ -391,4 +417,31 @@ public class ParsedMethod {
 		}
 		return null;
 	}
+	
+	/**
+	 * Gets the foreign key's referenced class, as specified via the {@code DBForeignKey} annotation.
+	 * @return {@code null} if not applicable
+	 */
+	public ParsedTypeRef getForeignTypeIfSet() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBForeignKey()) {
+				return annotation.asDBForeignKey().getReferencedClassIfSet();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the foreign key's referenced column, as specified via the {@code DBForeignKey} annotation.
+	 * @return {@code null} if not applicable
+	 */
+	public String getForeignColumnNameIfSet() {
+		for (ParsedAnnotation annotation: getAnnotations()) {
+			if (annotation.isDBForeignKey()) {
+				return annotation.asDBForeignKey().getReferencedColumnNameIfSet();
+			}
+		}
+		return null;
+	}
+	
 }

@@ -12,7 +12,7 @@ import org.junit.Test;
 public class ParsedBeanPropertyTest extends AbstractASTTest {
 	@Test
 	public void fieldAndGetterAndSetterExistOnStandardTestProperty() {
-		ParsedClass javatype = ParsedClass.of(getMarqueSource());
+		ParsedClass javatype = ParsedClass.parseContents(getMarqueSource());
 		ParsedBeanProperty property = new ParsedBeanProperty(
 				javatype.getField("numericCode"),
 				javatype.getMethod("getNumericCode"),
@@ -24,7 +24,7 @@ public class ParsedBeanPropertyTest extends AbstractASTTest {
 
 	@Test
 	public void propertyNameRetrievedGivenValidFieldAndGetterSetters() {
-		ParsedClass javatype = ParsedClass.of(getMarqueSource());
+		ParsedClass javatype = ParsedClass.parseContents(getMarqueSource());
 		ParsedBeanProperty property = new ParsedBeanProperty(
 				javatype.getField("numericCode"),
 				javatype.getMethod("getNumericCode"),
@@ -35,7 +35,7 @@ public class ParsedBeanPropertyTest extends AbstractASTTest {
 	
 	@Test
 	public void columnNameRetrievedGivenValidFieldAndGetterSetters() {
-		ParsedClass javatype = ParsedClass.of(getMarqueSource());
+		ParsedClass javatype = ParsedClass.parseContents(getMarqueSource());
 		ParsedBeanProperty property = new ParsedBeanProperty(
 				javatype.getField("numericCode"),
 				javatype.getMethod("getNumericCode"),
@@ -46,7 +46,7 @@ public class ParsedBeanPropertyTest extends AbstractASTTest {
 
 	@Test
 	public void propertyTypeRetrievedGivenValidFieldAndGetterSetters() {
-		ParsedClass javatype = ParsedClass.of(getMarqueSource());
+		ParsedClass javatype = ParsedClass.parseContents(getMarqueSource());
 		ParsedBeanProperty property = new ParsedBeanProperty(
 				javatype.getField("numericCode"),
 				javatype.getMethod("getNumericCode"),

@@ -63,15 +63,23 @@ public class ClassMaintainer {
 		ensureClassFor(dbTableClass);
 		ensurePropertiesFor(dbTableClass);
 		
-		File srcFolder = new File("target/test-output"); // TODO: this needs to be specified somewhere
-		srcFolder.mkdirs();
-		parsedClass.writeToSourceFolder(srcFolder);
+//		File srcFolder = new File("target/test-output"); // TODO: this needs to be specified somewhere
+//		srcFolder.mkdirs();
+//		parsedClass.writeToSourceFolder(srcFolder);
+	}
+	
+	public void writeToSourceFolder(File sourceRoot) {
+		parsedClass.writeToSourceFolder(sourceRoot);
+	}
+	
+	public String writeToString() {
+		return parsedClass.writeToString();
 	}
 	
 	protected void ensureClassFor(DBTableClass dbTableClass) {
 		// validate table name matches if java file already exists
 		if (parsedClass != null) {
-			String tableName = parsedClass.getDBTableNameIfSet();
+			String tableName = parsedClass.getTableNameIfSet();
 			if (tableName == null) {
 				// TODO: need to check that the defaulting mechanism is in place for
 				// inferring the table name from the class name so long as @DBTable is included
@@ -145,10 +153,19 @@ public class ClassMaintainer {
 			if (newProperty.setter() != null) {
 				parsedClass.addMethodAfter(null, newProperty.setter());
 			}
+			
+			// set as primary key
+			if (tableField.isPrimaryKey()) {
+				//newProperty.addAnnotation(ParsedDBPrimaryKeyAnnotation.newInstance());
+			}
+			
+			// add foreign keys
+			// TODO
 		}
+		
+		// TODO - update existing properties
 		
 		// TODO - remove extra properties
 		// TODO (Config) do this if configured to do so (default = true)
-		
 	}
 }
