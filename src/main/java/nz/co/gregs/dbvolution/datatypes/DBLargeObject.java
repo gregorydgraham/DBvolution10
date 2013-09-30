@@ -32,4 +32,10 @@ public abstract class DBLargeObject extends QueryableDatatype {
     }
 
     public abstract InputStream getInputStream() ;
+
+    @Override
+    public String toString(){
+        return "/*BINARY DATA*/";
+    }
+    
 }

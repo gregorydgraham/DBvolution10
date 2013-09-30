@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBTransaction;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -257,6 +258,22 @@ public abstract class DBDatabase {
 
     /**
      *
+     * Convenience method to print the rows from get(DBRow...)
+     *
+     * @param rows
+     */
+    public void print(List<?> rows) {
+        for (Object row : rows) {
+            if (row instanceof DBRow) {
+                System.out.println(((DBRow) row).toString());
+            } else if (row instanceof DBQueryRow) {
+                System.out.println(((DBQueryRow) row).toString());
+            }
+        }
+    }
+
+    /**
+     *
      * creates a query and fetches the rows automatically
      *
      * @param rows
@@ -344,6 +361,33 @@ public abstract class DBDatabase {
             throw ex;
         }
         return returnValues;
+    }
+    
+    /**
+     * Convenience method to run a DBScript on this database
+     * 
+     * equivalent to script.implement(this);
+     *
+     * @param script
+     * @return
+     * @throws Exception
+     */
+    public List<String> implement(DBScript script) throws Exception{
+        return script.implement(this);
+    }
+
+    /**
+     * 
+     * Convenience method to test a DBScript on this database
+     * 
+     * equivalent to script.test(this);
+     *
+     * @param script
+     * @return
+     * @throws Exception
+     */
+    public List<String> test(DBScript script) throws Exception{
+        return script.test(this);
     }
 
     /**
