@@ -82,7 +82,7 @@ public class DBByteArray extends DBLargeObject {
                 bytes = new byte[totalBytesRead];
                 int bytesAdded = 0;
                 for (byte[] someBytes : byteArrays) {
-                    System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length));
+                    System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length-bytesAdded));
                     bytesAdded += someBytes.length;
                 }
 
@@ -133,6 +133,10 @@ public class DBByteArray extends DBLargeObject {
     public void writeToFileSystem(String originalFile) throws FileNotFoundException, IOException {
         File file = new File(originalFile);
         writeToFileSystem(file);
+    }
+
+    public void writeToFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
+        writeToFileSystem(originalFile.toString());
     }
 
     public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
