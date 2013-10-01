@@ -32,7 +32,7 @@ public class MySQLDBInitialisationTest {
     public void createMySQLInstance() throws SQLException{
         final Marque marque = new Marque();
         final CarCompany carCompany = new CarCompany();
-        DBDatabase database = new MySQLDB("jdbc:mysql:mxj://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "");
+        DBDatabase database = new MySQLDB("jdbc:mysql://mysql3.openhost.net.nz:3306/dbvolution-test", "dbvtest", "testpass");
         database.dropTableNoExceptions(marque);
         database.dropTableNoExceptions(carCompany);
         database.createTable(marque);
