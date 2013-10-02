@@ -63,12 +63,12 @@ public class MySQLDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getStartingLimitRowsSubClause(Long rowLimit) {
+    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
         return "";
     }
 
     @Override
-    public Object getEndLimitRowsSubClause(Long rowLimit) {
+    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
         if (rowLimit != null) {
             return " Limit  " + rowLimit + " ";
         }else

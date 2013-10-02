@@ -34,5 +34,16 @@ public class OracleDBDefinition extends DBDefinition {
         return " TO_DATE('" + javaToStringFormatter.format(date) + "','" + oracleDateFormatStr + "') ";
         //return "'"+strToDateFormat.format(date)+"'";
     }
+
+    @Override
+    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
+        return "/*+ FIRST_ROWS("+rowLimit+") */"; //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+        return "";
+    }
+    
     
 }

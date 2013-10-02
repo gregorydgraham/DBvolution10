@@ -196,7 +196,7 @@ public class DBQuery {
         String lineSep = System.getProperty("line.separator");
 
         if (rowLimit != null) {
-            selectClause.append(defn.getStartingLimitRowsSubClause(rowLimit));
+            selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
         }
 
         String separator = "";
@@ -275,7 +275,7 @@ public class DBQuery {
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
-                .append(defn.getEndLimitRowsSubClause(rowLimit))
+                .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
                 .append(defn.endSQLStatement())
                 .toString();
         if (database.isPrintSQLBeforeExecuting()) {

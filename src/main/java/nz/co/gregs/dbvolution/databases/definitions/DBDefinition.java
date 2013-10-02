@@ -237,13 +237,22 @@ public abstract class DBDefinition {
     }
 
     /**
-     *
+     * Provides an opportunity for the definition to insert a row limiting statement before the query
+     * 
+     * for example H2DB uses SELECT TOP 10 ... FROM ... WHERE ... ;
+     * 
+     * Based on the example for H2DB this method should return " TOP 10 "
+     * 
+     * If the database does not support row limiting 
+     * this method should throw an exception when rowLimit is not null
+     * 
+     * If the database does not limit rows during the select clause 
+     * this method should return ""
+     * 
      * @param rowLimit
      * @return
      */
-    public Object getStartingLimitRowsSubClause(Long rowLimit) {
-        return " TOP " + rowLimit + " ";
-    }
+    abstract public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit);
 
     public String beginOrderByClause() {
         return " ORDER BY ";
@@ -295,7 +304,21 @@ public abstract class DBDefinition {
         return qdt.getSQLDatatype();
     }
 
-    public Object getEndLimitRowsSubClause(Long rowLimit) {
-        return "";
-    }
+    /**
+     * Provides an opportunity for the definition to insert a row limiting statement after the query
+     * 
+     * for example MySQL/MariaDB use SELECT ... FROM ... WHERE ... LIMIT 10 ;
+     * 
+     * Based on the example for MySQL/MariaDB this method should return " LIMIT 10 "
+     * 
+     * If the database does not support row limiting 
+     * this method should throw an exception when rowLimit is not null
+     * 
+     * If the database does not limit rows after the where clause 
+     * this method should return ""
+     * 
+     * @param rowLimit
+     * @return
+     */
+    abstract public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit);
 }

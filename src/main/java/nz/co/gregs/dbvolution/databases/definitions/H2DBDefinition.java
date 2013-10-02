@@ -45,5 +45,15 @@ public class H2DBDefinition extends DBDefinition {
     public String formatColumnName(String columnName) {
         return columnName.toUpperCase();
     }
+
+    @Override
+    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
+        return " TOP " + rowLimit + " ";
+    }
+
+    @Override
+    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+        return "";
+    }
     
 }

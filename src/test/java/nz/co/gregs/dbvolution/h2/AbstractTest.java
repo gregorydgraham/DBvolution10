@@ -23,13 +23,8 @@ import java.util.List;
 import net.sourceforge.tedhi.FlexibleDateFormat;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.databases.PostgresDB;
-import nz.co.gregs.dbvolution.example.CarCompany;
-import nz.co.gregs.dbvolution.example.CompanyLogo;
-import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo;
-import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.databases.*;
+import nz.co.gregs.dbvolution.example.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +55,7 @@ public class AbstractTest {
     public static List<Object[]> data() {
         Object[][] data = new Object[][]{
             {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
+//            {new OracleDB("localhost", 1521, "XE", "oracle","oracle")}
 //            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
         //{new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
         };

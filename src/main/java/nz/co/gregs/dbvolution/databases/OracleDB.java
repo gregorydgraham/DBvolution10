@@ -29,4 +29,8 @@ public class OracleDB extends DBDatabase {
         super(new OracleDBDefinition(), driverName, jdbcURL, username, password);
     }
     
+    public OracleDB(String host, int port, String serviceName, String username, String password) {
+        super(new OracleDBDefinition(), "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@//"+host+":"+port+":"+serviceName, username, password);
+    }
+    
 }

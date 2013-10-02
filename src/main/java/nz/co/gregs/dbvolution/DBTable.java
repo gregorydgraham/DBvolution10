@@ -125,13 +125,13 @@ public class DBTable<E extends DBRow> {
         } else {
             selectStatement.append(defn.beginSelectStatement());
             if (rowLimit != null) {
-                selectStatement.append(defn.getStartingLimitRowsSubClause(rowLimit));
+                selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
             }
             selectStatement.append(getAllFieldsForSelect())
                     .append(" from ")
                     .append(defn.formatTableName(dummy.getTableName()))
                     .append(getOrderByClause())
-                    .append(defn.getEndLimitRowsSubClause(rowLimit))
+                    .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
                     .append(defn.endSQLStatement());
         }
 
@@ -156,7 +156,7 @@ public class DBTable<E extends DBRow> {
         } else {
             selectStatement.append(defn.beginSelectStatement());
             if (rowLimit != null) {
-                selectStatement.append(defn.getStartingLimitRowsSubClause(rowLimit));
+                selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
             }
 
             selectStatement
