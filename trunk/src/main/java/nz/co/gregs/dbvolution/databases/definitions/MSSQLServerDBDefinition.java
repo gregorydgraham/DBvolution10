@@ -38,5 +38,15 @@ public class MSSQLServerDBDefinition extends DBDefinition {
         return "";
     }
 
+    @Override
+    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
+        return " TOP("+rowLimit+") "; //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+        return "";
+    }
+
 
 }

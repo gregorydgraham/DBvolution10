@@ -48,7 +48,14 @@ public class InformixDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getStartingLimitRowsSubClause(Long rowLimit) {
+    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
         return " FIRST "+rowLimit+" ";
     }    
+
+    @Override
+    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+        return "";
+    }
+    
+    
 }
