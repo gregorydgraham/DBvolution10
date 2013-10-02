@@ -320,12 +320,15 @@ public class DBTableClassGenerator {
             case Types.TIMESTAMP:
                 value = "DBDate";
                 break;
+            case Types.OTHER:
             case Types.JAVA_OBJECT:
                 value = "DBObject";
                 break;
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
             case Types.BLOB:
+            case Types.ARRAY:
+            case Types.SQLXML:
                 value = "DBByteArray";
                 break;
             default:

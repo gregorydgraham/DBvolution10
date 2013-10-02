@@ -18,7 +18,9 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import nz.co.gregs.dbvolution.datatypes.DBByteArray;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 public class PostgresDBDefinition extends DBDefinition {
 
@@ -28,5 +30,30 @@ public class PostgresDBDefinition extends DBDefinition {
     public String getDateFormattedForQuery(Date date) {
         return "'" + DATETIME_FORMAT.format(date) + "'";
     }
+
+    @Override
+    public Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+        if (qdt instanceof DBByteArray) {
+            return " BYTEA ";
+        } else if (qdt instanceof DBLargeObject) {
+            return " BYTEA ";
+        } else {
+            return qdt.getSQLDatatype();
+        }
+    }
+
+    @Override
+    public Object getStartingLimitRowsSubClause(Long rowLimit) {
+        return "";
+    }
+
+    @Override
+    public Object getEndLimitRowsSubClause(Long rowLimit) {
+        if (rowLimit != null) {
+            return " Limit  " + rowLimit + " ";
+        }else
+            return "";
+    }
+    
     
 }

@@ -259,7 +259,6 @@ public class DBTable<E extends DBRow> {
                 break;
             case Types.INTEGER:
             case Types.BIGINT:
-            case Types.BINARY:
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
@@ -280,14 +279,14 @@ public class DBTable<E extends DBRow> {
                 }
                 qdt.setValue(aDouble);
                 break;
-            case Types.VARCHAR:
             case Types.CHAR:
             case Types.NCHAR:
             case Types.NVARCHAR:
-            case Types.CLOB:
-            case Types.NCLOB:
+            case Types.VARCHAR:
             case Types.LONGNVARCHAR:
             case Types.LONGVARCHAR:
+            case Types.CLOB:
+            case Types.NCLOB:
                 String string = resultSet.getString(dbColumnName);
                 if (resultSet.wasNull()) {
                     string = null;
@@ -309,10 +308,12 @@ public class DBTable<E extends DBRow> {
                 }
                 qdt.setValue(timestamp);
                 break;
+            case Types.BINARY:
             case Types.VARBINARY:
             case Types.JAVA_OBJECT:
             case Types.LONGVARBINARY:
             case Types.BLOB:
+            case Types.OTHER:
                 qdt.setFromResultSet(resultSet, dbColumnName);
 //                Object obj = resultSet.getObject(dbColumnName);
 //                if (resultSet.wasNull()) {

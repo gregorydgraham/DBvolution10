@@ -51,9 +51,9 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
 
         String expectedString = "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY";
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(carCo)), is(testableSQL(expectedString)));
         expectedString = "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY";
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(mrq)), is(testableSQL(expectedString)));
 
 //        mrq.ignoreAllForeignKeys();
         mrq.addRelationship(mrq.name, carCo, carCo.name, new DBEqualsCaseInsensitiveOperator());
@@ -61,28 +61,28 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
 
         expectedString = "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY" + lineSep + " and  lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)";
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(carCo)), is(testableSQL(expectedString)));
         expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY";
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(mrq)), is(testableSQL(expectedString)));
 
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().replaceAll("[ \\r\\n]+", " "), is("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY and lower(MARQUE.NAME) = lower(CAR_COMPANY.NAME)"));
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().replaceAll("[ \\r\\n]+", " "), is("lower(CAR_COMPANY.NAME) = lower(MARQUE.NAME) and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY"));
+        Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(carCo)), is(testableSQL("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY and lower(MARQUE.NAME) = lower(CAR_COMPANY.NAME)")));
+        Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(mrq)), is(testableSQL("lower(CAR_COMPANY.NAME) = lower(MARQUE.NAME) and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY")));
 
         mrq.ignoreAllForeignKeys();
         System.out.println("" + mrq.getRelationshipsAsSQL(carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
         expectedString = "lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)";
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(carCo)), is(testableSQL(expectedString)));
         expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)";
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(mrq)), is(testableSQL(expectedString)));
 
         mrq.addRelationship(mrq.name, carCo, carCo.name, new DBGreaterThanOperator());
         System.out.println("" + mrq.getRelationshipsAsSQL(carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(mrq));
         expectedString = "lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)" + lineSep + " and MARQUE.NAME > CAR_COMPANY.NAME";
-        Assert.assertThat(mrq.getRelationshipsAsSQL(carCo).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(carCo)), is(testableSQL(expectedString)));
         expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.NAME <= MARQUE.NAME";
-        Assert.assertThat(carCo.getRelationshipsAsSQL(mrq).trim().toLowerCase(), is(expectedString.toLowerCase()));
+        Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(mrq)), is(testableSQL(expectedString)));
 
     }
 
