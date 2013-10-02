@@ -82,7 +82,7 @@ public class DBByteArray extends DBLargeObject {
                 bytes = new byte[totalBytesRead];
                 int bytesAdded = 0;
                 for (byte[] someBytes : byteArrays) {
-                    System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length-bytesAdded));
+                    System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
                     bytesAdded += someBytes.length;
                 }
 
@@ -163,5 +163,10 @@ public class DBByteArray extends DBLargeObject {
     @Override
     public InputStream getInputStream() {
         return new BufferedInputStream(new ByteArrayInputStream(bytes));
+    }
+
+    @Override
+    public int getSize() {
+        return bytes.length;
     }
 }

@@ -104,6 +104,8 @@
                     <includes>
                         <include>**/*.java</include>
                     </includes>
+                    <threadCount>1</threadCount>
+                    <forkCount>1</forkCount>
                 </configuration>
             </plugin>
         </plugins>

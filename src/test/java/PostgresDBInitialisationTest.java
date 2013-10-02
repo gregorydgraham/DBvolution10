@@ -29,11 +29,11 @@ public class PostgresDBInitialisationTest {
     public void createMySQLInstance() throws SQLException {
         final Marque marque = new Marque();
         final CarCompany carCompany = new CarCompany();
-        PostgresDB database = new PostgresDB("ec2-23-21-104-121.compute-1.amazonaws.com", "5432", "", "postgres", "postgres");
+        PostgresDB database = new PostgresDB("localhost", "5432", "", "postgres", "postgres");
         database.dropTableNoExceptions(marque);
         database.dropTableNoExceptions(carCompany);
         database.createTable(marque);
-        database.createTable(carCompany);
+        database.createTable(carCompany); 
         database.dropTableNoExceptions(marque);
         database.dropTableNoExceptions(carCompany);
     }

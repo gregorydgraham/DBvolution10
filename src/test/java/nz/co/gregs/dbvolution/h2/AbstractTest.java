@@ -44,7 +44,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class AbstractTest {
 
-    DBDatabase database = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
+    DBDatabase database;// = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
     Marque myMarqueRow = new Marque();
     CarCompany myCarCompanyRow = new CarCompany();
     DBTable<Marque> marques;
@@ -60,8 +60,8 @@ public class AbstractTest {
     public static List<Object[]> data() {
         Object[][] data = new Object[][]{
             {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
-        //,{new PostgresDB("ec2-23-21-104-121.compute-1.amazonaws.com","5432","", "postgres", "postgres")}
-        //,{new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
+//            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
+        //{new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
         };
         return Arrays.asList(data);
     }
@@ -70,6 +70,14 @@ public class AbstractTest {
         if (db instanceof DBDatabase) {
             this.database = (DBDatabase) db;
             database.setPrintSQLBeforeExecuting(true);
+        }
+    }
+
+    public String testableSQL(String str) {
+        if (str != null) {
+            return str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
+        } else {
+            return str;
         }
     }
 
