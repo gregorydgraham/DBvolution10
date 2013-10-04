@@ -210,7 +210,7 @@ public class DBTable<E extends DBRow> {
         ResultSetMetaData rsMeta = resultSet.getMetaData();
         Map<String, Integer> dbColumnNames = new HashMap<String, Integer>();
         for (int k = 1; k <= rsMeta.getColumnCount(); k++) {
-            dbColumnNames.put(rsMeta.getColumnName(k), k);
+            dbColumnNames.put(defn.formatColumnName(rsMeta.getColumnName(k)), k);
         }
 
         while (resultSet.next()) {
@@ -241,43 +241,46 @@ public class DBTable<E extends DBRow> {
         int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {
             case Types.BIT:
-                if (precision == 1) {
-                    // DBBoolean
-                    Boolean aBoolean = resultSet.getBoolean(dbColumnName);
-                    if (resultSet.wasNull()) {
-                        aBoolean = null;
-                    }
-                    qdt.setValue(aBoolean);
-                } else {
-                    // DBByteArray
-                    byte[] bytes = resultSet.getBytes(dbColumnName);
-                    if (resultSet.wasNull()) {
-                        bytes = null;
-                    }
-                    qdt.setValue(bytes);
-                }
+//                if (precision == 1) {
+//                    // DBBoolean
+//                    Boolean aBoolean = resultSet.getBoolean(dbColumnName);
+//                    if (resultSet.wasNull()) {
+//                        aBoolean = null;
+//                    }
+//                    qdt.setValue(aBoolean);
+//                } else {
+//                    // DBByteArray
+//                    byte[] bytes = resultSet.getBytes(dbColumnName);
+//                    if (resultSet.wasNull()) {
+//                        bytes = null;
+//                    }
+//                    qdt.setValue(bytes);
+//                }
+                qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.INTEGER:
             case Types.BIGINT:
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
-                Long aLong = resultSet.getLong(dbColumnName);
-                if (resultSet.wasNull()) {
-                    aLong = null;
-                }
-                qdt.setValue(aLong);
+//                Long aLong = resultSet.getLong(dbColumnName);
+//                if (resultSet.wasNull()) {
+//                    aLong = null;
+//                }
+//                qdt.setValue(aLong);
+                qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.NUMERIC:
             case Types.REAL:
-                Double aDouble = resultSet.getDouble(dbColumnName);
-                if (resultSet.wasNull()) {
-                    aDouble = null;
-                }
-                qdt.setValue(aDouble);
+//                Double aDouble = resultSet.getDouble(dbColumnName);
+//                if (resultSet.wasNull()) {
+//                    aDouble = null;
+//                }
+//                qdt.setValue(aDouble);
+                qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.CHAR:
             case Types.NCHAR:
@@ -287,26 +290,29 @@ public class DBTable<E extends DBRow> {
             case Types.LONGVARCHAR:
             case Types.CLOB:
             case Types.NCLOB:
-                String string = resultSet.getString(dbColumnName);
-                if (resultSet.wasNull()) {
-                    string = null;
-                }
-                qdt.setValue(string);
+//                String string = resultSet.getString(dbColumnName);
+//                if (resultSet.wasNull()) {
+//                    string = null;
+//                }
+//                qdt.setValue(string);
+                qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.DATE:
             case Types.TIME:
-                Date date = resultSet.getDate(dbColumnName);
-                if (resultSet.wasNull()) {
-                    date = null;
-                }
-                qdt.setValue(date);
+//                Date date = resultSet.getDate(dbColumnName);
+//                if (resultSet.wasNull()) {
+//                    date = null;
+//                }
+//                qdt.setValue(date);
+                qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.TIMESTAMP:
-                Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
-                if (resultSet.wasNull()) {
-                    timestamp = null;
-                }
-                qdt.setValue(timestamp);
+//                Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
+//                if (resultSet.wasNull()) {
+//                    timestamp = null;
+//                }
+//                qdt.setValue(timestamp);
+                qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.BINARY:
             case Types.VARBINARY:
@@ -535,7 +541,7 @@ public class DBTable<E extends DBRow> {
      */
     public void insert(List<E> newRows) throws SQLException {
         Statement statement = database.getDBStatement();
-        DBActionList<DBAction> allInserts = getSQLForInsert(newRows);
+        DBActionList allInserts = getSQLForInsert(newRows);
         for (DBAction action : allInserts) {
             if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                 System.out.println(action.getSQLRepresentation());
@@ -575,9 +581,9 @@ public class DBTable<E extends DBRow> {
      * @param newRows
      * @return
      */
-    public DBActionList<DBAction> getSQLForInsert(List<E> newRows) {
+    public DBActionList getSQLForInsert(List<E> newRows) {
         DBDefinition defn = database.getDefinition();
-        DBActionList<DBAction> allInserts = new DBActionList<DBAction>();
+        DBActionList allInserts = new DBActionList();
         for (E row : newRows) {
             String sql =
                     defn.beginInsertLine()
@@ -587,7 +593,7 @@ public class DBTable<E extends DBRow> {
                     + defn.endInsertColumnList()
                     + row.getValuesClause(database)
                     + defn.endInsertLine();
-            allInserts.add(new DBSave(sql));
+            allInserts.add(new DBSave(database, sql));
             if (row.hasLargeObjectColumns()) {
                 allInserts.addAll(row.getLargeObjectActions());
             }
@@ -866,7 +872,7 @@ public class DBTable<E extends DBRow> {
             for (QueryableDatatype qdt : sortOrder) {
                 final String dbColumnName = sortBase.getDBColumnName(qdt);
                 if (dbColumnName != null) {
-                    orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+                    orderByClause.append(sortSeparator).append(defn.formatColumnName(dbColumnName)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();
                 }
             }

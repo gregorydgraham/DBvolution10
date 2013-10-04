@@ -31,11 +31,19 @@ public class DBInteger extends DBNumber {
     }
 
     public DBInteger(long aLong) {
-        super(Long.valueOf(aLong));
+        this(Long.valueOf(aLong));
     }
 
     public DBInteger(Long aLong) {
         super(aLong);
+    }
+
+    public DBInteger(double aDouble) {
+        this(new Double(aDouble));
+    }
+
+    public DBInteger(Double aDouble) {
+        this(aDouble.longValue());
     }
 
     public DBInteger() {
@@ -46,6 +54,9 @@ public class DBInteger extends DBNumber {
     public DBOperator useEqualsOperator(Object someNumber) {
         if (someNumber == null || someNumber.toString().isEmpty()) {
             super.useEqualsOperator((Object) null);
+        } else if (someNumber instanceof Number) {
+            Number aNumber = (Number)someNumber;
+            super.useEqualsOperator(aNumber.longValue());
         } else {
             super.useEqualsOperator(Long.parseLong(someNumber.toString()));
         }
@@ -88,7 +99,7 @@ public class DBInteger extends DBNumber {
     }
 
     @Override
-    public void setFromResultSet(ResultSet resultSet, String fullColumnName){
+    public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
             this.useNullOperator();
         } else {

@@ -69,6 +69,7 @@ public class SortingTest extends AbstractTest {
         final CarCompany carCo = new CarCompany();
         DBQuery query = database.getDBQuery(marque, carCo);
         query.setSortOrder(new DBRow[]{marque}, marque.carCompany, marque.name);
+        query.setBlankQueryAllowed(true);
         query.print();
         List<Marque> sortedMarques = query.getAllInstancesOf(marque);
         Assert.assertThat(sortedMarques.size(), is(22));

@@ -71,6 +71,7 @@ public class SelectTopTest extends AbstractTest {
     public void queryTopTest() throws SQLException {
         CarCompany carCompany = new CarCompany();
         DBQuery query = database.getDBQuery(carCompany, new Marque());
+        query.setBlankQueryAllowed(true);
         query.setRowLimit(2);
         List<DBQueryRow> allRows = query.getAllRows();
         query.print();

@@ -77,7 +77,7 @@ public abstract class DBDefinition {
      */
     public String formatColumnNameForResultSet(String tableName, String columnName) {
         String formattedName = formatTableAndColumnName(tableName, columnName).replaceAll("\\.", "__");
-        return ("_" + formattedName.hashCode()).replaceAll("-", "_");
+        return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
     }
 
     public String formatTableAndColumnNameForSelectClause(String tableName, String columnName) {
@@ -321,4 +321,14 @@ public abstract class DBDefinition {
      * @return
      */
     abstract public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit);
+
+    /**
+     *
+     * The place holder for variables inserted into a prepared statement, usually " ? "
+     * 
+     * @return 
+     */
+    public String getPreparedVariableSymbol() {
+        return " ? ";
+    }
 }

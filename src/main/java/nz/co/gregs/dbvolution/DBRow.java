@@ -604,10 +604,10 @@ abstract public class DBRow implements Serializable {
         return false;
     }
 
-    protected DBActionList<DBSaveBLOB> getLargeObjectActions() {
-        DBActionList<DBSaveBLOB> actions = new DBActionList<DBSaveBLOB>();
+    protected DBActionList getLargeObjectActions() {
+        DBActionList actions = new DBActionList();
         for (DBLargeObject blob : blobColumns) {
-            actions.add(new DBSaveBLOB(this, blob));
+            actions.add(new DBSaveBLOB(database, this, blob));
         }
         return actions;
     }

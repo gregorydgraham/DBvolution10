@@ -44,6 +44,7 @@ public class AdHocRelationshipTest extends AbstractTest {
         marque.ignoreAllForeignKeys();
 
         DBQuery query = database.getDBQuery(carCompany, marque);
+        query.setBlankQueryAllowed(true);
 
         List<DBQueryRow> allRows = query.getAllRows();
         query.print();

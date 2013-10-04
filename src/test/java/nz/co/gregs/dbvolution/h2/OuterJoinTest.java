@@ -102,8 +102,8 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println(ansiJoinClause);
         System.out.println("=============");
         String expectedCarCoJoin = "car_company";
-        Assert.assertThat(ansiJoinClause.toString().trim().toLowerCase(),
-                is(expectedCarCoJoin.trim().toLowerCase()));
+        Assert.assertThat(testableSQL(ansiJoinClause.toString()),
+                is(testableSQL(expectedCarCoJoin)));
 
         tables.add(carCo);
         ansiJoinClause.append(dbQuery.getANSIJoinClause(mrq, tables, connectedTables));
@@ -113,8 +113,8 @@ public class OuterJoinTest extends AbstractTest {
         String expectedMarqueJoin = "car_company  INNER JOIN marque ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ) ";
         Assert.assertThat(
-                ansiJoinClause.toString().trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
-                is(expectedMarqueJoin.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+                testableSQL(ansiJoinClause.toString()),
+                is(testableSQL(expectedMarqueJoin)));
 
 
         tables.add(mrq);
@@ -126,8 +126,8 @@ public class OuterJoinTest extends AbstractTest {
                 + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  INNER JOIN lt_carco_logo ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY ) ";
         Assert.assertThat(
-                ansiJoinClause.toString().trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
-                is(expectedLinkJoin.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+                testableSQL(ansiJoinClause.toString()),
+                is(testableSQL(expectedLinkJoin)));
 
 
 
@@ -142,31 +142,32 @@ public class OuterJoinTest extends AbstractTest {
                 + "CAR_COMPANY.UID_CARCOMPANY = COMPANYLOGO.CAR_COMPANY_FK and \n"
                 + "LT_CARCO_LOGO.FK_COMPANY_LOGO = COMPANYLOGO.LOGO_ID ) ";
         Assert.assertThat(
-                ansiJoinClause.toString().trim().toLowerCase().replaceAll("[ \\r\\n]+", " "),
-                is(expectedLogoJoin.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ")));
+                testableSQL(ansiJoinClause.toString()),
+                is(testableSQL(expectedLogoJoin)));
     }
 
     @Test
     public void testANSIQueryCreation() throws SQLException, Exception {
         DBQuery dbQuery = database.getDBQuery(new CarCompany(), new Marque());
         dbQuery.setUseANSISyntax(true);
+        dbQuery.setBlankQueryAllowed(true);
         String sqlForQuery = dbQuery.getSQLForQuery();
         String expected2TableQuery =
-                " SELECT CAR_COMPANY.NAME _1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
-                + "MARQUE.NUMERIC_CODE __570915006, \n"
-                + "MARQUE.UID_MARQUE __768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
-                + "MARQUE.UPD_COUNT _1497912790, \n"
-                + "MARQUE.AUTO_CREATED _332721019, \n"
-                + "MARQUE.NAME __1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
-                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
-                + "MARQUE.CREATION_DATE __1712481749, \n"
-                + "MARQUE.ENABLED __637053442, \n"
-                + "MARQUE.FK_CARCOMPANY _1664116480\n"
+                " SELECT CAR_COMPANY.NAME DB1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
+                + "MARQUE.NUMERIC_CODE DB_570915006, \n"
+                + "MARQUE.UID_MARQUE DB_768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
+                + "MARQUE.UPD_COUNT DB1497912790, \n"
+                + "MARQUE.AUTO_CREATED DB332721019, \n"
+                + "MARQUE.NAME DB_1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
+                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
+                + "MARQUE.CREATION_DATE DB_1712481749, \n"
+                + "MARQUE.ENABLED DB_637053442, \n"
+                + "MARQUE.FK_CARCOMPANY DB1664116480\n"
                 + " FROM  car_company  INNER JOIN marque ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ) \n"
                 + " WHERE  1=1 \n"
@@ -174,8 +175,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
-                is(expected2TableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
+                testableSQL(sqlForQuery),
+                is(testableSQL(expected2TableQuery)));
         Assert.assertThat(dbQuery.count(), is(22L));
         dbQuery.printAllDataColumns(System.out);
         LinkCarCompanyAndLogo linkCoAndLogo = new LinkCarCompanyAndLogo();
@@ -183,23 +184,23 @@ public class OuterJoinTest extends AbstractTest {
         dbQuery.add(linkCoAndLogo);
         sqlForQuery = dbQuery.getSQLForQuery();
         String expected3TableQuery =
-                " SELECT CAR_COMPANY.NAME _1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
-                + "MARQUE.NUMERIC_CODE __570915006, \n"
-                + "MARQUE.UID_MARQUE __768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
-                + "MARQUE.UPD_COUNT _1497912790, \n"
-                + "MARQUE.AUTO_CREATED _332721019, \n"
-                + "MARQUE.NAME __1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
-                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
-                + "MARQUE.CREATION_DATE __1712481749, \n"
-                + "MARQUE.ENABLED __637053442, \n"
-                + "MARQUE.FK_CARCOMPANY _1664116480, \n"
-                + "LT_CARCO_LOGO.FK_CAR_COMPANY __1988359495, \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO _1707036998\n"
+                " SELECT CAR_COMPANY.NAME DB1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
+                + "MARQUE.NUMERIC_CODE DB_570915006, \n"
+                + "MARQUE.UID_MARQUE DB_768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
+                + "MARQUE.UPD_COUNT DB1497912790, \n"
+                + "MARQUE.AUTO_CREATED DB332721019, \n"
+                + "MARQUE.NAME DB_1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
+                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
+                + "MARQUE.CREATION_DATE DB_1712481749, \n"
+                + "MARQUE.ENABLED DB_637053442, \n"
+                + "MARQUE.FK_CARCOMPANY DB1664116480, \n"
+                + "LT_CARCO_LOGO.FK_CAR_COMPANY DB_1988359495, \n"
+                + "LT_CARCO_LOGO.FK_COMPANY_LOGO DB1707036998\n"
                 + " FROM  car_company  INNER JOIN marque ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  INNER JOIN lt_carco_logo ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY ) \n"
@@ -208,8 +209,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
-                is(expected3TableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
+                testableSQL(sqlForQuery),
+                is(testableSQL(expected3TableQuery)));
         Assert.assertThat(dbQuery.count(), is(0L));
         dbQuery.printAllDataColumns(System.out);
 
@@ -217,23 +218,23 @@ public class OuterJoinTest extends AbstractTest {
         dbQuery.addOptional(linkCoAndLogo);
         sqlForQuery = dbQuery.getSQLForQuery();
         String expected1OptionalTableQuery =
-                " SELECT CAR_COMPANY.NAME _1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
-                + "MARQUE.NUMERIC_CODE __570915006, \n"
-                + "MARQUE.UID_MARQUE __768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
-                + "MARQUE.UPD_COUNT _1497912790, \n"
-                + "MARQUE.AUTO_CREATED _332721019, \n"
-                + "MARQUE.NAME __1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
-                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
-                + "MARQUE.CREATION_DATE __1712481749, \n"
-                + "MARQUE.ENABLED __637053442, \n"
-                + "MARQUE.FK_CARCOMPANY _1664116480, \n"
-                + "LT_CARCO_LOGO.FK_CAR_COMPANY __1988359495, \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO _1707036998\n"
+                " SELECT CAR_COMPANY.NAME DB1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
+                + "MARQUE.NUMERIC_CODE DB_570915006, \n"
+                + "MARQUE.UID_MARQUE DB_768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
+                + "MARQUE.UPD_COUNT DB1497912790, \n"
+                + "MARQUE.AUTO_CREATED DB332721019, \n"
+                + "MARQUE.NAME DB_1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
+                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
+                + "MARQUE.CREATION_DATE DB_1712481749, \n"
+                + "MARQUE.ENABLED DB_637053442, \n"
+                + "MARQUE.FK_CARCOMPANY DB1664116480, \n"
+                + "LT_CARCO_LOGO.FK_CAR_COMPANY DB_1988359495, \n"
+                + "LT_CARCO_LOGO.FK_COMPANY_LOGO DB1707036998\n"
                 + " FROM  car_company  INNER JOIN marque ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  LEFT OUTER JOIN lt_carco_logo ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY ) \n"
@@ -242,35 +243,35 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
-                is(expected1OptionalTableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
+                testableSQL(sqlForQuery),
+                is(testableSQL(expected1OptionalTableQuery)));
         dbQuery.print(System.out);
         Assert.assertThat(dbQuery.count(), is(22L));
 
         dbQuery.addOptional(new CompanyLogo());
         sqlForQuery = dbQuery.getSQLForQuery();
         String expected2OptionalTableQuery =
-                " SELECT CAR_COMPANY.NAME _1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
-                + "MARQUE.NUMERIC_CODE __570915006, \n"
-                + "MARQUE.UID_MARQUE __768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
-                + "MARQUE.UPD_COUNT _1497912790, \n"
-                + "MARQUE.AUTO_CREATED _332721019, \n"
-                + "MARQUE.NAME __1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
-                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
-                + "MARQUE.CREATION_DATE __1712481749, \n"
-                + "MARQUE.ENABLED __637053442, \n"
-                + "MARQUE.FK_CARCOMPANY _1664116480, \n"
-                + "LT_CARCO_LOGO.FK_CAR_COMPANY __1988359495, \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO _1707036998, \n"
-                + "COMPANYLOGO.LOGO_ID _1189023175, \n"
-                + "COMPANYLOGO.CAR_COMPANY_FK _1247307962, \n"
-                + "COMPANYLOGO.IMAGE_FILE _402667880, \n"
-                + "COMPANYLOGO.IMAGE_NAME _402898551\n"
+                " SELECT CAR_COMPANY.NAME DB1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
+                + "MARQUE.NUMERIC_CODE DB_570915006, \n"
+                + "MARQUE.UID_MARQUE DB_768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
+                + "MARQUE.UPD_COUNT DB1497912790, \n"
+                + "MARQUE.AUTO_CREATED DB332721019, \n"
+                + "MARQUE.NAME DB_1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
+                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
+                + "MARQUE.CREATION_DATE DB_1712481749, \n"
+                + "MARQUE.ENABLED DB_637053442, \n"
+                + "MARQUE.FK_CARCOMPANY DB1664116480, \n"
+                + "LT_CARCO_LOGO.FK_CAR_COMPANY DB_1988359495, \n"
+                + "LT_CARCO_LOGO.FK_COMPANY_LOGO DB1707036998, \n"
+                + "COMPANYLOGO.LOGO_ID DB1189023175, \n"
+                + "COMPANYLOGO.CAR_COMPANY_FK DB1247307962, \n"
+                + "COMPANYLOGO.IMAGE_FILE DB402667880, \n"
+                + "COMPANYLOGO.IMAGE_NAME DB402898551\n"
                 + " FROM  car_company  INNER JOIN marque ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  LEFT OUTER JOIN lt_carco_logo ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY )  LEFT OUTER JOIN CompanyLogo ON( \n"
@@ -281,8 +282,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
-                is(expected2OptionalTableQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
+                testableSQL(sqlForQuery),
+                is(testableSQL(expected2OptionalTableQuery)));
         dbQuery.print(System.out);
         Assert.assertThat(dbQuery.count(), is(22L));
 
@@ -298,30 +299,31 @@ public class OuterJoinTest extends AbstractTest {
         dbQuery.addOptional(new CarCompany());
         dbQuery.addOptional(new LinkCarCompanyAndLogo());
         dbQuery.addOptional(new CompanyLogo());
+        dbQuery.setBlankQueryAllowed(true);
         String sqlForQuery = dbQuery.getSQLForQuery();
         System.out.println(sqlForQuery);
         String expectedFullOuterQuery =
-                " SELECT MARQUE.NUMERIC_CODE __570915006, \n"
-                + "MARQUE.UID_MARQUE __768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
-                + "MARQUE.UPD_COUNT _1497912790, \n"
-                + "MARQUE.AUTO_CREATED _332721019, \n"
-                + "MARQUE.NAME __1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
-                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
-                + "MARQUE.CREATION_DATE __1712481749, \n"
-                + "MARQUE.ENABLED __637053442, \n"
-                + "MARQUE.FK_CARCOMPANY _1664116480, \n"
-                + "CAR_COMPANY.NAME _1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
-                + "LT_CARCO_LOGO.FK_CAR_COMPANY __1988359495, \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO _1707036998, \n"
-                + "COMPANYLOGO.LOGO_ID _1189023175, \n"
-                + "COMPANYLOGO.CAR_COMPANY_FK _1247307962, \n"
-                + "COMPANYLOGO.IMAGE_FILE _402667880, \n"
-                + "COMPANYLOGO.IMAGE_NAME _402898551\n"
+                " SELECT MARQUE.NUMERIC_CODE DB_570915006, \n"
+                + "MARQUE.UID_MARQUE DB_768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
+                + "MARQUE.UPD_COUNT DB1497912790, \n"
+                + "MARQUE.AUTO_CREATED DB332721019, \n"
+                + "MARQUE.NAME DB_1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
+                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
+                + "MARQUE.CREATION_DATE DB_1712481749, \n"
+                + "MARQUE.ENABLED DB_637053442, \n"
+                + "MARQUE.FK_CARCOMPANY DB1664116480, \n"
+                + "CAR_COMPANY.NAME DB1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
+                + "LT_CARCO_LOGO.FK_CAR_COMPANY DB_1988359495, \n"
+                + "LT_CARCO_LOGO.FK_COMPANY_LOGO DB1707036998, \n"
+                + "COMPANYLOGO.LOGO_ID DB1189023175, \n"
+                + "COMPANYLOGO.CAR_COMPANY_FK DB1247307962, \n"
+                + "COMPANYLOGO.IMAGE_FILE DB402667880, \n"
+                + "COMPANYLOGO.IMAGE_NAME DB402898551\n"
                 + " FROM  marque  FULL OUTER JOIN car_company ON( \n"
                 + "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY )  FULL OUTER JOIN lt_carco_logo ON( \n"
                 + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY )  FULL OUTER JOIN CompanyLogo ON( \n"
@@ -331,8 +333,8 @@ public class OuterJoinTest extends AbstractTest {
                 + "\n"
                 + ";";
         Assert.assertThat(
-                sqlForQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", ""),
-                is(expectedFullOuterQuery.trim().toLowerCase().replaceAll("[ \\r\\n]+", " ").replaceAll("_+[0-9]+", "")));
+                testableSQL(sqlForQuery),
+                is(testableSQL(expectedFullOuterQuery)));
         // FULL OUTER JOIN not supported by H2 or MySqldb
         if (!
                 ((database instanceof H2DB) || (database instanceof MySQLDB))

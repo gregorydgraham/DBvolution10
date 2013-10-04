@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import net.sourceforge.tedhi.DateRange;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -271,7 +272,9 @@ public class DBDatabaseGetTest extends AbstractTest {
     @Test
     public void testIgnoringColumnsOnQuery() throws SQLException {
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
-        List<DBQueryRow> rowsByExample = database.get(myMarqueRow, new CarCompany());
+        DBQuery dbQuery = database.getDBQuery(myMarqueRow, new CarCompany());
+        dbQuery.setBlankQueryAllowed(true);
+        List<DBQueryRow> rowsByExample = dbQuery.getAllRows();
         for (DBQueryRow row : rowsByExample) {
             Marque marq = row.get(new Marque());
             System.out.println("" + marq);
@@ -295,7 +298,9 @@ public class DBDatabaseGetTest extends AbstractTest {
     public void testUnignoringColumnsOnQuery() throws SQLException {
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
-        List<DBQueryRow> rowsByExample = database.get(myMarqueRow, new CarCompany());
+        DBQuery dbQuery = database.getDBQuery(myMarqueRow, new CarCompany());
+        dbQuery.setBlankQueryAllowed(true);
+        List<DBQueryRow> rowsByExample = dbQuery.getAllRows();
         for (DBQueryRow row : rowsByExample) {
             Marque marq = row.get(new Marque());
             System.out.println("" + marq);
