@@ -16,6 +16,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
@@ -50,12 +51,13 @@ public class DBQuery {
     private DBRow[] sortBase;
     private QueryableDatatype[] sortOrder;
     private String resultSQL;
-    private boolean cartesianJoinAllowed = false;
     private final int INNER_JOIN = 0;
     private final int LEFT_JOIN = 1;
     private final int RIGHT_JOIN = 2;
     private final int FULL_OUTER_JOIN = 4;
     private boolean useANSISyntax = true;
+    private boolean cartesianJoinAllowed = false;
+    private boolean blankQueryAllowed =false;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -186,6 +188,11 @@ public class DBQuery {
     }
 
     private String getSQLForQuery(String providedSelectClause) throws SQLException {
+
+        if (!blankQueryAllowed && willCreateBlankQuery()){
+            throw new AccidentalBlankQueryException();
+        }
+        
         DBDefinition defn = database.getDefinition();
         Set<DBRow> connectedTables = new HashSet<DBRow>();
         StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
@@ -550,6 +557,10 @@ public class DBQuery {
             return orderByClause.toString();
         }
         return "";
+    }
+
+    public void setBlankQueryAllowed(boolean allow) {
+        this.blankQueryAllowed = allow;
     }
 
     public void setCartesianJoinsAllowed(boolean allow) {

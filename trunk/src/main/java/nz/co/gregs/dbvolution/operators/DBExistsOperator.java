@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 
@@ -45,10 +46,11 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
+        DBDefinition defn = database.getDefinition();
         DBTable<E> table = DBTable.getInstance(database, tableRow);
         String subSelect;
         try {
-            subSelect = table.getSQLForSelect() + table.getWhereClauseWithExampleAndRawSQL(tableRow, " and " + columnName + " = " + referencedColumnName);
+            subSelect = table.getSQLForSelect() + table.getWhereClauseWithExampleAndRawSQL(tableRow, defn.beginAndLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }

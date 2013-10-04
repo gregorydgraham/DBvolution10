@@ -39,8 +39,10 @@ public class PrimaryKeyLessTablesTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
         LinkCarCompanyAndLogo link = new LinkCarCompanyAndLogo();
         DBQuery dbQuery = database.getDBQuery(carCompany, link);
+        dbQuery.setBlankQueryAllowed(true);
         dbQuery.print();
         dbQuery = database.getDBQuery(new CompanyLogo(), link);
+        dbQuery.setBlankQueryAllowed(true);
         dbQuery.print();
     }
 
@@ -50,13 +52,16 @@ public class PrimaryKeyLessTablesTest extends AbstractTest {
         LinkCarCompanyAndLogo link = new LinkCarCompanyAndLogo();
 
         DBQuery dbQuery = database.getDBQuery(carCompany, link, new CompanyLogo());
+        dbQuery.setBlankQueryAllowed(true);
         dbQuery.print();
     }
 
     @Test
     public void testCartesianJoinProtection() throws SQLException, Exception {
         try {
-            database.getDBQuery(new Marque(), new CompanyLogo()).print();
+            DBQuery dbQuery = database.getDBQuery(new Marque(), new CompanyLogo());
+            dbQuery.setBlankQueryAllowed(true);
+            dbQuery.print();
             throw new Exception("Should have thrown an AccidentalCartesianJoinException here.");
         } catch (AccidentalCartesianJoinException ex) {
         }
@@ -66,6 +71,8 @@ public class PrimaryKeyLessTablesTest extends AbstractTest {
     public void testAdHocRelations() throws SQLException, Exception {
         final CompanyLogo companyLogo = new CompanyLogo();
         myMarqueRow.addRelationship(myMarqueRow.carCompany, companyLogo,companyLogo.carCompany);
-        database.getDBQuery(myMarqueRow, companyLogo).print();
+        DBQuery dbQuery = database.getDBQuery(myMarqueRow, companyLogo);
+        dbQuery.setBlankQueryAllowed(true);
+        dbQuery.print();
     }
 }

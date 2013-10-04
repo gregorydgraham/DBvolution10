@@ -54,9 +54,9 @@ public class AbstractTest {
     @Parameters
     public static List<Object[]> data() {
         Object[][] data = new Object[][]{
-            {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
-//            {new OracleDB("localhost", 1521, "XE", "oracle","oracle")}
-//            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
+                        {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
+//            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")} 
+        //            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
         //{new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
         };
         return Arrays.asList(data);
@@ -71,7 +71,12 @@ public class AbstractTest {
 
     public String testableSQL(String str) {
         if (str != null) {
-            return str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
+            String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
+            if (database instanceof OracleDB) {
+                return trimStr.replaceAll("\"", "").replaceAll(" *; *$", "");
+            } else {
+                return trimStr;
+            }
         } else {
             return str;
         }
@@ -91,7 +96,7 @@ public class AbstractTest {
         database.dropTableNoExceptions(myCarCompanyRow);
         database.createTable(myCarCompanyRow);
 
-        DBTable.setPrintSQLBeforeExecuting(false);
+        DBTable.setPrintSQLBeforeExecuting(true);
         marques = DBTable.getInstance(database, myMarqueRow);
         carCompanies = DBTable.getInstance(database, myCarCompanyRow);
         carCompanies.insert(new CarCompany("TOYOTA", 1));

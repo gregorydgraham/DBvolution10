@@ -37,12 +37,12 @@ public class DBTableUpdateTest extends AbstractTest {
         marques.print();
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
         toyota.uidMarque.permittedValues(99999);
-        Assert.assertThat(marques.getSQLForUpdate(toyota).toLowerCase(),
-                is(("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;").toLowerCase()));
+        Assert.assertThat(testableSQL(marques.getSQLForUpdate(toyota)),
+                is(testableSQL("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;")));
         marques.update(toyota);
         toyota.name.permittedValues("NOTOYOTA");
-        Assert.assertThat(marques.getSQLForUpdate(toyota).toLowerCase(), 
-                is(("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;").toLowerCase()));
+        Assert.assertThat(testableSQL(marques.getSQLForUpdate(toyota)), 
+                is(testableSQL("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;")));
         
         marqueExample = new Marque();
         marqueExample.name.permittedValuesIgnoreCase("toyota");
@@ -63,7 +63,7 @@ public class DBTableUpdateTest extends AbstractTest {
 
         toyota.name.permittedValues("NOTTOYOTA");
         String sqlForUpdate = marques.getSQLForUpdate(toyota);
-        Assert.assertEquals("Update statement doesn't look right:", "UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;".toLowerCase(), sqlForUpdate.toLowerCase());
+        Assert.assertEquals("Update statement doesn't look right:", testableSQL("UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;"), testableSQL(sqlForUpdate));
 
         marques.update(toyota);
         

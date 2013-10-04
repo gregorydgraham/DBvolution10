@@ -23,8 +23,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import net.sourceforge.tedhi.DateRange;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.OracleDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
@@ -105,7 +107,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testMultiplePermittedValues() throws SQLException {
         Marque literalQuery = new Marque();
-        literalQuery.getUidMarque().permittedValues(4893059,4893090);
+        literalQuery.getUidMarque().permittedValues(4893059, 4893090);
         marques = marques.getRowsByExample(literalQuery);
         marques.print();
         Assert.assertEquals(marques.toList().size(), 2);
@@ -178,6 +180,9 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testRawQuery() throws SQLException {
         String rawQuery = "and lower(name) in ('peugeot','hummer')  ";
+        if (database instanceof OracleDB) {
+            rawQuery = "and lower(\"name\") in ('peugeot','hummer')  ";
+        }
         marques = marques.getRowsByRawSQL(rawQuery);
         marques.print();
         Assert.assertEquals(marques.toList().size(), 2);
@@ -215,7 +220,7 @@ public class DBTableGetTest extends AbstractTest {
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
         }
     }
-    
+
     @Test
     public void testUnignoringColumnsOnTable() throws SQLException {
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
@@ -231,10 +236,13 @@ public class DBTableGetTest extends AbstractTest {
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
         }
     }
+
     @Test
     public void testIgnoringColumnsOnQuery() throws SQLException {
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
-        List<Marque> rowsByExample = database.getDBQuery(myMarqueRow,new CarCompany()).getAllInstancesOf(myMarqueRow);
+        DBQuery dbQuery = database.getDBQuery(myMarqueRow, new CarCompany());
+        dbQuery.setBlankQueryAllowed(true);
+        List<Marque> rowsByExample = dbQuery.getAllInstancesOf(myMarqueRow);
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);
             Assert.assertThat(marq.auto_created.isNull(), is(true));
@@ -252,12 +260,14 @@ public class DBTableGetTest extends AbstractTest {
         }
 
     }
-    
+
     @Test
     public void testUnignoringColumnsOnQuery() throws SQLException {
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
-        List<Marque> rowsByExample = database.getDBQuery(myMarqueRow,new CarCompany()).getAllInstancesOf(myMarqueRow);
+        DBQuery dbQuery = database.getDBQuery(myMarqueRow, new CarCompany());
+        dbQuery.setBlankQueryAllowed(true);
+        List<Marque> rowsByExample = dbQuery.getAllInstancesOf(myMarqueRow);
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);
             Assert.assertThat(marq.auto_created.isNull(), is(false));

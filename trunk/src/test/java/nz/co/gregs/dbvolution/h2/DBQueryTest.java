@@ -48,39 +48,39 @@ public class DBQueryTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
 
-        String expectedResult = " SELECT CAR_COMPANY.NAME _1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
-                + "MARQUE.NUMERIC_CODE __570915006, \n"
-                + "MARQUE.UID_MARQUE __768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
-                + "MARQUE.UPD_COUNT _1497912790, \n"
-                + "MARQUE.AUTO_CREATED _332721019, \n"
-                + "MARQUE.NAME __1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
-                + "MARQUE.RESERVATIONSALWD __1860726622, \n"
-                + "MARQUE.CREATION_DATE __1712481749, \n"
-                + "MARQUE.ENABLED __637053442, \n"
-                + "MARQUE.FK_CARCOMPANY _1664116480 FROM car_company, \n"
+        String expectedResult = " SELECT CAR_COMPANY.NAME DB1064314813, \n"
+                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
+                + "MARQUE.NUMERIC_CODE DB570915006, \n"
+                + "MARQUE.UID_MARQUE DB768788587, \n"
+                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
+                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
+                + "MARQUE.INTINDALLOCALLOWED DB1405397146, \n"
+                + "MARQUE.UPD_COUNT DB1497912790, \n"
+                + "MARQUE.AUTO_CREATED DB332721019, \n"
+                + "MARQUE.NAME DB1359288114, \n"
+                + "MARQUE.PRICINGCODEPREFIX DB443037310, \n"
+                + "MARQUE.RESERVATIONSALWD DB1860726622, \n"
+                + "MARQUE.CREATION_DATE DB1712481749, \n"
+                + "MARQUE.ENABLED DB637053442, \n"
+                + "MARQUE.FK_CARCOMPANY DB1664116480 FROM car_company, \n"
                 + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
                 + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ;";
         if (dbQuery.isUseANSISyntax()) {
-            expectedResult = " SELECT CAR_COMPANY.NAME _1064314813, \n"
-                    + "CAR_COMPANY.UID_CARCOMPANY _819159114, \n"
-                    + "MARQUE.NUMERIC_CODE __570915006, \n"
-                    + "MARQUE.UID_MARQUE __768788587, \n"
-                    + "MARQUE.ISUSEDFORTAFROS _1658455900, \n"
-                    + "MARQUE.FK_TOYSTATUSCLASS _551644671, \n"
-                    + "MARQUE.INTINDALLOCALLOWED __1405397146, \n"
-                    + "MARQUE.UPD_COUNT _1497912790, \n"
-                    + "MARQUE.AUTO_CREATED _332721019, \n"
-                    + "MARQUE.NAME __1359288114, \n"
-                    + "MARQUE.PRICINGCODEPREFIX __443037310, \n"
-                    + "MARQUE.RESERVATIONSALWD __1860726622, \n"
-                    + "MARQUE.CREATION_DATE __1712481749, \n"
-                    + "MARQUE.ENABLED __637053442, \n"
-                    + "MARQUE.FK_CARCOMPANY _1664116480\n"
+            expectedResult = " SELECT CAR_COMPANY.NAME DB1064314813, \n"
+                    + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
+                    + "MARQUE.NUMERIC_CODE DB_570915006, \n"
+                    + "MARQUE.UID_MARQUE DB_768788587, \n"
+                    + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
+                    + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
+                    + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
+                    + "MARQUE.UPD_COUNT DB1497912790, \n"
+                    + "MARQUE.AUTO_CREATED DB332721019, \n"
+                    + "MARQUE.NAME DB_1359288114, \n"
+                    + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
+                    + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
+                    + "MARQUE.CREATION_DATE DB_1712481749, \n"
+                    + "MARQUE.ENABLED DB_637053442, \n"
+                    + "MARQUE.FK_CARCOMPANY DB1664116480\n"
                     + " FROM  car_company  INNER JOIN marque ON( \n"
                     + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ) \n"
                     + " WHERE  1=1 \n"
@@ -91,8 +91,8 @@ public class DBQueryTest extends AbstractTest {
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        Assert.assertThat(expectedResult.replaceAll("\\s+", " ").replaceAll("_+[0-9]+", "").toLowerCase(), 
-                is(generateSQLString.replaceAll("\\s+", " ").replaceAll("_+[0-9]+", "").toLowerCase()));
+        Assert.assertThat(testableSQL(expectedResult), 
+                is(testableSQL(generateSQLString)));
     }
 
     @Test

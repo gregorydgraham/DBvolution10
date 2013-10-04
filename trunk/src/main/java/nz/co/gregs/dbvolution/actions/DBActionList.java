@@ -16,12 +16,23 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
  * @author gregorygraham
  */
-public class DBActionList<DBAction> extends ArrayList<DBAction>{
+public class DBActionList extends ArrayList<DBAction>{
     private static final long serialVersionUID = 1L;
+    
+    public List<String> getSQL(){
+        List<String> sqlList = new ArrayList<String>();
+        for (Iterator<DBAction> it = this.iterator(); it.hasNext();) {
+            DBAction act = it.next();
+            sqlList.add(act.getSQLRepresentation());
+        }
+        return sqlList;
+    }
         
 }

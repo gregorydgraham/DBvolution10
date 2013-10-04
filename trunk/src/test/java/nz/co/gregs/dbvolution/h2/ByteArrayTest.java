@@ -51,7 +51,7 @@ public class ByteArrayTest extends AbstractTest {
         CarCompany ford = database.getDBTable(carCompany).getOnlyRowByExample(carCompany);
         
         companyLogo.logoID.setValue(2);
-        companyLogo.carCompany.setValue(ford.uidCarCompany);
+        companyLogo.carCompany.setValue(ford.uidCarCompany.longValue());
         companyLogo.imageFilename.setValue("ford_logo.jpg");
         companyLogo.imageBytes.readFromFileSystem("ford_logo.jpg");
         database.insert(companyLogo);
@@ -75,7 +75,7 @@ public class ByteArrayTest extends AbstractTest {
         CompanyLogo firstRow = database.getDBTable(companyLogo).getRowsByPrimaryKey(1).getOnlyRow();
         System.out.println("" + firstRow.toString());
         firstRow.imageBytes.writeToFileSystem(newFile.getName());
-        File file = new File("found_toyota_logo.jpg");
-        Assert.assertThat(file.length(), is(image.length()));
+        newFile = new File(newFile.getName());
+        Assert.assertThat(newFile.length(), is(image.length()));
     }
 }

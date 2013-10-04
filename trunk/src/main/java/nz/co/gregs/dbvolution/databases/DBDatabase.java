@@ -448,7 +448,7 @@ public abstract class DBDatabase {
         return printSQLBeforeExecuting;
     }
 
-    protected void printSQLIfRequested(String sqlString) {
+    public void printSQLIfRequested(String sqlString) {
         printSQLIfRequested(sqlString, System.out);
     }
 
@@ -471,7 +471,7 @@ public abstract class DBDatabase {
         String lineSeparator = System.getProperty("line.separator");
         // table name
 
-        sqlScript.append(definition.getCreateTableStart()).append(newTableRow.getTableName()).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
+        sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow.getTableName())).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
 
         // columns
         String sep = "";
@@ -487,7 +487,7 @@ public abstract class DBDatabase {
                 }
                 sqlScript
                         .append(sep)
-                        .append(colName)
+                        .append(definition.formatColumnName(colName))
                         .append(definition.getCreateTableColumnsNameAndTypeSeparator())
                         .append(definition.getSQLTypeOfDBDatatype(qdt));
                 sep = nextSep + lineSeparator;
@@ -510,7 +510,7 @@ public abstract class DBDatabase {
             if (colName == null || colName.isEmpty()) {
                 colName = field.getName();
             }
-            sqlScript.append(pkSep).append(colName);
+            sqlScript.append(pkSep).append(definition.formatColumnName(colName));
             pkSep = pkMiddle;
         }
         if (!pkSep.equalsIgnoreCase(pkStart)) {
@@ -518,7 +518,7 @@ public abstract class DBDatabase {
         }
 
         //finish
-        sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator);
+        sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
         String sqlString = sqlScript.toString();
         printSQLIfRequested(sqlString);
         getDBStatement().execute(sqlString);
@@ -527,7 +527,7 @@ public abstract class DBDatabase {
     public <TR extends DBRow> void dropTable(TR tableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
 
-        sqlScript.append(definition.getDropTableStart()).append(tableRow.getTableName());
+        sqlScript.append(definition.getDropTableStart()).append(definition.formatTableName(tableRow.getTableName())).append(definition.endSQLStatement());
         String sqlString = sqlScript.toString();
         printSQLIfRequested(sqlString);
         getDBStatement().execute(sqlString);

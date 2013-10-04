@@ -33,7 +33,7 @@ public class RawSQLTransactionTest extends AbstractTest {
 
     @Test
     public void testRawSQLTransactionRollback() throws Exception {
-        DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'; ");
+        DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
         Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.FALSE);
         Assert.assertThat(doneTrans, is(true));
         Marque mrq = new Marque();
@@ -45,7 +45,7 @@ public class RawSQLTransactionTest extends AbstractTest {
 
     @Test
     public void testRawSQLTransactionCommit() throws Exception {
-        DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'; ");
+        DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
         Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
         Assert.assertThat(doneTrans, is(true));
         Marque mrq = new Marque();
@@ -58,10 +58,10 @@ public class RawSQLTransactionTest extends AbstractTest {
     @Test
     public void testRawSQLTransactionWithManyStatements() throws Exception {
         DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction(
-                "update marque set name = 'Peugeot' where name = 'PEUGEOT'; ");
+                "update marque set name = 'Peugeot' where name = 'PEUGEOT'");
         Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
         sqlTrans = new DBRawSQLTransaction(
-                "update marque set name = 'Toyota' where name = 'TOYOTA'; ");
+                "update marque set name = 'Toyota' where name = 'TOYOTA'");
          doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
         Assert.assertThat(doneTrans, is(true));
         Marque mrq = new Marque();

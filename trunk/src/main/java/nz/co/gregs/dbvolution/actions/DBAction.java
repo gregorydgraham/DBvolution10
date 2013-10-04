@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
@@ -24,13 +25,17 @@ import java.sql.Statement;
  */
 public abstract class DBAction {
     protected String sql = "";
+    protected final DBDatabase database;
     
-    public DBAction() {
+    public DBAction(DBDatabase database) {
         super();
+        this.database = database;
     }
     
-    public DBAction(String sql) {
+    public DBAction(DBDatabase database, String sql) {
+        super();
         this.sql = sql;
+        this.database = database;
     }
     
     public String getSQLRepresentation(){
