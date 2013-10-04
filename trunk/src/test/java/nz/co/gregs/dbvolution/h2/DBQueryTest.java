@@ -91,8 +91,8 @@ public class DBQueryTest extends AbstractTest {
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        Assert.assertThat(testableSQL(expectedResult), 
-                is(testableSQL(generateSQLString)));
+        Assert.assertThat(testableSQL(expectedResult).replaceAll(" DB[_0-9]+, ", ","), 
+                is(testableSQL(generateSQLString).replaceAll(" DB[_0-9]+, ", ",")));
     }
 
     @Test

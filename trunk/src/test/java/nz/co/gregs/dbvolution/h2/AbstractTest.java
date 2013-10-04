@@ -54,8 +54,8 @@ public class AbstractTest {
     @Parameters
     public static List<Object[]> data() {
         Object[][] data = new Object[][]{
-                        {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
-//            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")} 
+//                        {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
+            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")} 
         //            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
         //{new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
         };
