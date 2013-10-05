@@ -17,19 +17,10 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBQueryRow;
-import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.DBScript;
-import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.DBTransaction;
+import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -51,6 +42,7 @@ public abstract class DBDatabase {
     private boolean isInATransaction;
     private Statement transactionStatement;
     private final DBDefinition definition;
+    private String databaseName;
 
     /**
      *
@@ -555,5 +547,17 @@ public abstract class DBDatabase {
 
     public boolean willCreateBlankQuery(DBRow row) {
         return row.willCreateBlankQuery(this);
+    }
+
+    public void dropDatabase() throws Exception{
+        ;
+    }
+
+    public String getDatabaseName() {
+        return databaseName;
+    }
+
+    protected String setDatabaseName(String databaseName) {
+        return this.databaseName = databaseName;
     }
 }

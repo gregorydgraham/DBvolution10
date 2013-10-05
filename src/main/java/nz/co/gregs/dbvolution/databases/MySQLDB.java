@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
+import nz.co.gregs.dbvolution.DBRawSQLTransaction;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 
 /**
@@ -24,8 +26,37 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 public class MySQLDB extends DBDatabase{
     
     public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
+    protected String databaseName;
     
     public MySQLDB(String jdbcURL, String username, String password){
         super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);
     }    
+    
+    public MySQLDB(String server, long port, String databaseName, String username, String password){
+        super(new MySQLDBDefinition(), 
+                MYSQLDRIVERNAME,  
+                "jdbc:mysql://"+server+":" + port + "/" + databaseName,
+                username, 
+                password);
+        this.databaseName = databaseName;
+    }
+
+    @Override
+    public void dropDatabase() {
+        String dropStr = "DROP DATABASE IF EXISTS "+getDatabaseName()+";";
+        printSQLIfRequested(dropStr);
+        try {
+            this.doTransaction(new DBRawSQLTransaction(dropStr));
+        } catch (SQLException ex) {
+            ;
+        } catch (Exception ex) {
+            
+        }
+                
+    }
+
+    @Override
+    public String getDatabaseName() {
+        return databaseName; //To change body of generated methods, choose Tools | Templates.
+    }
 }

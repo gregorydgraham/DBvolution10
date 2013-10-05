@@ -25,6 +25,7 @@ import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.example.*;
+import nz.co.gregs.dbvolution.mysql.MySQLMXJDBInitialisationTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,10 +55,11 @@ public class AbstractTest {
     @Parameters
     public static List<Object[]> data() {
         Object[][] data = new Object[][]{
-                        {new H2DB("jdbc:h2:mem:dbvolutionTest", "", "")}
-//            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")} 
-//            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
-//            {new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
+            //            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")} 
+            //            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
+            //            {new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
+            {MySQLMXJDBInitialisationTest.getMySQLDBInstance()},
+            {new H2MemoryDB("dbvolutionTest","","", false)}//"jdbc:h2:mem:dbvolutionTest", "", "")}
         };
         return Arrays.asList(data);
     }
@@ -74,6 +76,25 @@ public class AbstractTest {
             String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
             if (database instanceof OracleDB) {
                 return trimStr.replaceAll("\"", "").replaceAll(" *; *$", "");
+            } else {
+                return trimStr;
+            }
+        } else {
+            return str;
+        }
+    }
+
+    public String testableSQLWithoutColumnAliases(String str) {
+        if (str != null) {
+            String trimStr = str
+                    .trim()
+                    .replaceAll(" DB[_0-9]+", "")
+                    .replaceAll("[ \\r\\n]+", " ")
+                    .toLowerCase();
+            if (database instanceof OracleDB) {
+                return trimStr
+                        .replaceAll("\"", "")
+                        .replaceAll(" *; *$", "");
             } else {
                 return trimStr;
             }
@@ -161,5 +182,6 @@ public class AbstractTest {
         database.dropTableNoExceptions(new CompanyLogo());
         database.dropTableNoExceptions(myMarqueRow);
         database.dropTableNoExceptions(myCarCompanyRow);
+        database.dropDatabase();
     }
 }

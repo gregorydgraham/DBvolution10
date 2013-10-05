@@ -28,9 +28,9 @@ import org.junit.Test;
  *
  * @author gregorygraham
  */
-public class PrimaryKeyLessTablesTest extends AbstractTest {
+public class PrimaryKeylessTableTest extends AbstractTest {
 
-    public PrimaryKeyLessTablesTest(Object db) {
+    public PrimaryKeylessTableTest(Object db) {
         super(db);
     }
 
