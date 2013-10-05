@@ -32,7 +32,7 @@ public class MySQLMXJDBInitialisationTest {
 
     private static int nextPort  = 43215;
 
-    @Test
+//    @Test
     public void testInstance() throws SQLException {
         DBDatabase database = getMySQLDBInstance();
         database.setPrintSQLBeforeExecuting(true);
