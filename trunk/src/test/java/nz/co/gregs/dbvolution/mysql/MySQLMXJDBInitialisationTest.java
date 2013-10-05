@@ -29,7 +29,7 @@ import org.junit.Test;
  * @author gregorygraham
  */
 public class MySQLMXJDBInitialisationTest {
-    
+
     private static int nextPort  = 43215;
 
     @Test
@@ -48,19 +48,15 @@ public class MySQLMXJDBInitialisationTest {
     }
 
     public synchronized static MySQLDB getMySQLDBInstance() {
-        //long random = Math.round(Math.random()*59000)+5000; //range between 5000 and 640000 for port numbers
-        long random = nextPort;
-        nextPort++;
+            //long random = Math.round(Math.random()*59000)+5000; //range between 5000 and 640000 for port numbers
+            long random = nextPort;
+            nextPort++;
 
-        File ourAppDir = new File(System.getProperty("java.io.tmpdir"));
-        long port = random; //Integer.parseInt(System.getProperty("c-mxj_test_port", "3336"));
+            File ourAppDir = new File(System.getProperty("java.io.tmpdir"));
+            long port = random; //Integer.parseInt(System.getProperty("c-mxj_test_port", "3336"));
         File databaseDir = new File(ourAppDir, "test-mxj"+random);
         String databaseName = "dbvolutiontest"+random;
-        
-//        String url = "jdbc:mysql:mxj://localhost:" + port + "/" + databaseName
-//                + "?" + "server.basedir=" + databaseDir
-//                + "&" + "createDatabaseIfNotExist=true"
-//                + "&" + "server.initialize-user=true";
+
 
         MySQLDB database = new MySQLMXJDB("localhost", port, databaseName, databaseDir.toString(), "dbvtest", "testpass");
         return database;

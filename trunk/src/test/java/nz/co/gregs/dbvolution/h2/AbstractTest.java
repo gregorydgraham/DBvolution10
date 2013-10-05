@@ -58,8 +58,8 @@ public class AbstractTest {
             //            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")} 
             //            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
             //            {new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
-            {MySQLMXJDBInitialisationTest.getMySQLDBInstance()},
-            {new H2MemoryDB("dbvolutionTest","","", false)}//"jdbc:h2:mem:dbvolutionTest", "", "")}
+//            {MySQLMXJDBInitialisationTest.getMySQLDBInstance()},
+            {new H2MemoryDB("dbvolutionTest","","", false)}
         };
         return Arrays.asList(data);
     }
