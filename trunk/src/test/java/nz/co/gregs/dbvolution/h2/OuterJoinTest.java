@@ -175,8 +175,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                testableSQL(sqlForQuery),
-                is(testableSQL(expected2TableQuery)));
+                testableSQLWithoutColumnAliases(sqlForQuery),
+                is(testableSQLWithoutColumnAliases(expected2TableQuery)));
         Assert.assertThat(dbQuery.count(), is(22L));
         dbQuery.printAllDataColumns(System.out);
         LinkCarCompanyAndLogo linkCoAndLogo = new LinkCarCompanyAndLogo();
@@ -209,8 +209,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                testableSQL(sqlForQuery),
-                is(testableSQL(expected3TableQuery)));
+                testableSQLWithoutColumnAliases(sqlForQuery),
+                is(testableSQLWithoutColumnAliases(expected3TableQuery)));
         Assert.assertThat(dbQuery.count(), is(0L));
         dbQuery.printAllDataColumns(System.out);
 
@@ -243,8 +243,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                testableSQL(sqlForQuery),
-                is(testableSQL(expected1OptionalTableQuery)));
+                testableSQLWithoutColumnAliases(sqlForQuery),
+                is(testableSQLWithoutColumnAliases(expected1OptionalTableQuery)));
         dbQuery.print(System.out);
         Assert.assertThat(dbQuery.count(), is(22L));
 
@@ -282,8 +282,8 @@ public class OuterJoinTest extends AbstractTest {
                 + ";";
         System.out.println(sqlForQuery);
         Assert.assertThat(
-                testableSQL(sqlForQuery),
-                is(testableSQL(expected2OptionalTableQuery)));
+                testableSQLWithoutColumnAliases(sqlForQuery),
+                is(testableSQLWithoutColumnAliases(expected2OptionalTableQuery)));
         dbQuery.print(System.out);
         Assert.assertThat(dbQuery.count(), is(22L));
 
@@ -332,9 +332,11 @@ public class OuterJoinTest extends AbstractTest {
                 + " WHERE  1=1 \n"
                 + "\n"
                 + ";";
+        System.out.println(testableSQLWithoutColumnAliases(sqlForQuery));
+        System.out.println(testableSQLWithoutColumnAliases(expectedFullOuterQuery));
         Assert.assertThat(
-                testableSQL(sqlForQuery),
-                is(testableSQL(expectedFullOuterQuery)));
+                testableSQLWithoutColumnAliases(sqlForQuery),
+                is(testableSQLWithoutColumnAliases(expectedFullOuterQuery)));
         // FULL OUTER JOIN not supported by H2 or MySqldb
         if (!
                 ((database instanceof H2DB) || (database instanceof MySQLDB))
