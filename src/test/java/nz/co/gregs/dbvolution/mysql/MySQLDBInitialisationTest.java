@@ -1,3 +1,5 @@
+package nz.co.gregs.dbvolution.mysql;
+
 
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
