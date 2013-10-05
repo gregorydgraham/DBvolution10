@@ -54,6 +54,5 @@ public class PostgresDBDefinition extends DBDefinition {
         }else
             return "";
     }
-    
-    
+
 }
