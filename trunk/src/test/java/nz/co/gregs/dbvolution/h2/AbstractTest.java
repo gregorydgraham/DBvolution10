@@ -117,7 +117,6 @@ public class AbstractTest {
         database.dropTableNoExceptions(myCarCompanyRow);
         database.createTable(myCarCompanyRow);
 
-        DBTable.setPrintSQLBeforeExecuting(true);
         marques = DBTable.getInstance(database, myMarqueRow);
         carCompanies = DBTable.getInstance(database, myCarCompanyRow);
         carCompanies.insert(new CarCompany("TOYOTA", 1));
@@ -161,8 +160,6 @@ public class AbstractTest {
         database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
         database.createTable(new LinkCarCompanyAndLogo());
 
-
-        DBTable.setPrintSQLBeforeExecuting(true);
         database.setPrintSQLBeforeExecuting(true);
     }
 
