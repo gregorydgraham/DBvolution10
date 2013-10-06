@@ -1,13 +1,9 @@
 package nz.co.gregs.dbvolution.generation.ast;
 
-import java.util.List;
-
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
-import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;

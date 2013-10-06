@@ -5,7 +5,6 @@ import java.util.List;
 
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.ParameterizedType;
@@ -216,8 +215,8 @@ public class ParsedTypeRef {
 		throw new IllegalStateException("not prepared for "+astNode.getClass().getSimpleName()+" types");
 	}
 	
-	// TODO: this will never actually do anything useful because the handling 
-	// of SimpleType is relied upon by every other type.
+	// TODO: this never actually does anything useful at the moment because the handling 
+	// of SimpleType is relied upon by every other type and SimpleType is implemented.
 	private List<Class<?>> javaTypesOf(Type type) {
 		if (type.isArrayType()) {
 			return javaTypesOf(((ArrayType) type).getComponentType());

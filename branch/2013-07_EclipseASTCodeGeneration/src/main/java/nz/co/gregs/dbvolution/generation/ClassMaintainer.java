@@ -20,6 +20,8 @@ import java.util.Comparator;
 
 import nz.co.gregs.dbvolution.generation.ast.ParsedBeanProperty;
 import nz.co.gregs.dbvolution.generation.ast.ParsedClass;
+import nz.co.gregs.dbvolution.generation.ast.ParsedDBForeignKeyAnnotation;
+import nz.co.gregs.dbvolution.generation.ast.ParsedDBPrimaryKeyAnnotation;
 
 /**
  * Maintains new and existing classes according to database schema information.
@@ -81,8 +83,6 @@ public class ClassMaintainer {
 		if (parsedClass != null) {
 			String tableName = parsedClass.getTableNameIfSet();
 			if (tableName == null) {
-				// TODO: need to check that the defaulting mechanism is in place for
-				// inferring the table name from the class name so long as @DBTable is included
 				throw new IllegalArgumentException("Class "+parsedClass.getFullyQualifiedName()+
 						" does not have a DB Table name");
 			}
@@ -135,37 +135,49 @@ public class ClassMaintainer {
 		ColumnNameResolver columnNameResolver = new ColumnNameResolver();
 		
 		// add missing properties
-		// TODO (Config) do this if configured to do so (default = true)
 		// TODO need to insert new fields/methods in position within existing that matches order of columns
 		// TODO need to include handling of field/method name collisions
-		for (DBTableField tableField: matches.getOnlyInB()) {
-			ParsedBeanProperty newProperty = ParsedBeanProperty.newDBColumnInstance(parsedClass.getTypeContext(),
-					columnNameResolver.getPropertyNameFor(tableField.getColumnName()),
-					tableField.getColumnType(), tableField.isPrimaryKey(), tableField.getColumnName());
-			if (newProperty.field() != null) {
-				parsedClass.addFieldAfter(null, newProperty.field());
+		if (config.isAddMissingProperties()) {
+			for (DBTableField tableField: matches.getOnlyInB()) {
+				ParsedBeanProperty newProperty = ParsedBeanProperty.newDBColumnInstance(parsedClass.getTypeContext(),
+						columnNameResolver.getPropertyNameFor(tableField.getColumnName()),
+						tableField.getColumnType(), tableField.isPrimaryKey(), tableField.getColumnName());
+				if (newProperty.field() != null) {
+					parsedClass.addFieldAfter(null, newProperty.field());
+				}
+				
+				if (newProperty.getter() != null) {
+					parsedClass.addMethodAfter(null, newProperty.getter());
+				}
+				
+				if (newProperty.setter() != null) {
+					parsedClass.addMethodAfter(null, newProperty.setter());
+				}
+				
+				ensurePropertyCorrect(dbTableClass, tableField, newProperty);
 			}
-			
-			if (newProperty.getter() != null) {
-				parsedClass.addMethodAfter(null, newProperty.getter());
-			}
-			
-			if (newProperty.setter() != null) {
-				parsedClass.addMethodAfter(null, newProperty.setter());
-			}
-			
-			// set as primary key
-			if (tableField.isPrimaryKey()) {
-				//newProperty.addAnnotation(ParsedDBPrimaryKeyAnnotation.newInstance());
-			}
-			
-			// add foreign keys
-			// TODO
 		}
 		
 		// TODO - update existing properties
 		
 		// TODO - remove extra properties
-		// TODO (Config) do this if configured to do so (default = true)
+		if (config.isRemoveExtraProperties()) {
+			// TODO ....
+		}
+	}
+	
+	protected void ensurePropertyCorrect(DBTableClass tableClass, DBTableField tableField, ParsedBeanProperty property) {
+		// set as primary key
+		if (tableField.isPrimaryKey() && !property.isDBPrimaryKey()) {
+			property.addAnnotation(ParsedDBPrimaryKeyAnnotation.newInstance(property.getTypeContext()));
+		}
+		
+		// add foreign keys
+		if (tableField.isForeignKey() && !property.isDBForeignKey()) {
+			// FIXME: need to check the details of the foreign key already, by linking up via the referenced class etc.
+			//property.addAnnotation(ParsedDBForeignKeyAnnotation.newInstance(typeContext, tableField., referencedField))
+			
+		}
+		// TODO
 	}
 }

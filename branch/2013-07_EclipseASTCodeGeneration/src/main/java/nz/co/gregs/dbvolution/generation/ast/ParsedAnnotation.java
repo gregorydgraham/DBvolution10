@@ -3,15 +3,13 @@ package nz.co.gregs.dbvolution.generation.ast;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
@@ -24,6 +22,12 @@ import org.eclipse.jdt.core.dom.TypeLiteral;
  * source file component.
  */
 public class ParsedAnnotation {
+	/** Known DBvolution annotation types */
+	public static final Class<?>[] DBVOLUTION_ANNOTATION_TYPES = new Class<?>[] {
+			DBTableName.class, DBColumn.class, DBPrimaryKey.class,
+			DBForeignKey.class
+		};
+	
 	private ParsedTypeContext typeContext;
 	private Annotation astNode;
 

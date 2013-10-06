@@ -3,6 +3,8 @@ package nz.co.gregs.dbvolution.generation.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import nz.co.gregs.dbvolution.generation.ast.ParsedBeanProperty.ParsedPropertyMember;
+
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -21,7 +23,7 @@ import org.eclipse.jdt.core.dom.Type;
  * The parsed details of a member method within a class.
  * @author Malcolm Lett
  */
-public class ParsedMethod {
+public class ParsedMethod implements ParsedPropertyMember {
 	private ParsedTypeContext typeContext;
 	private ParsedTypeRef returnType;
 	private List<ParsedTypeRef> argumentTypes;
@@ -39,14 +41,14 @@ public class ParsedMethod {
 		
 		String methodName = JavaRules.getterMethodNameForField(field);
 		
-		// add imports: TODO
+		// add imports: TODO - only needed in very rare circumstances
 		// (field may not be actually defined in this class, so still need to check imports)
-		//boolean fieldTypeImported = typeContext.ensureImport(field.); // TODO: need ParsedField.getType() to work for this
+		//boolean fieldTypeImported = typeContext.ensureImport(field.); // TODO: need ParsedField.getType().getJavaType() to work for this
 		
 		// add method
 		MethodDeclaration method = ast.newMethodDeclaration();
 		method.setName(ast.newSimpleName(methodName));
-		method.setReturnType2((Type) ASTNode.copySubtree(ast, field.astNode().getType()));
+		method.setReturnType2((Type) ASTNode.copySubtree(ast, field.getType().astNode()));
 		
 		// add body
 		ReturnStatement returnStatement = ast.newReturnStatement();
@@ -74,16 +76,16 @@ public class ParsedMethod {
 		
 		String methodName = JavaRules.setterMethodNameForField(field);
 
-		// add imports: TODO
+		// add imports: TODO - only needed in very rare circumstances
 		// (field may not be actually defined in this class, so still need to check imports)
-		//boolean fieldTypeImported = typeContext.ensureImport(field.); // TODO: need ParsedField.getType() to work for this
+		//boolean fieldTypeImported = typeContext.ensureImport(field.); // TODO: need ParsedField.getType().getJavaType() to work for this
 		
 		// add method
 		MethodDeclaration method = ast.newMethodDeclaration();
 		method.setName(ast.newSimpleName(methodName));
 		method.setReturnType2(ast.newPrimitiveType(PrimitiveType.VOID));
 		SingleVariableDeclaration parameter = ast.newSingleVariableDeclaration();
-		parameter.setType((Type) ASTNode.copySubtree(ast, field.astNode().getType()));
+		parameter.setType((Type) ASTNode.copySubtree(ast, field.getType().astNode()));
 		parameter.setName(ast.newSimpleName(field.getName()));
 		method.parameters().add(parameter);
 		
@@ -140,22 +142,6 @@ public class ParsedMethod {
 	}
 
 	/**
-	 * Gets the setter method for the given field, if it is available.
-	 * @param field must be a field within this class or supertype.
-	 * @return the identified method or null if not found
-	 */
-	public static ParsedMethod findSetterFor(ParsedField field, ParsedClass parsedClass) {
-		// phase 1: direct bean property
-		ParsedMethod method = parsedClass.getMethod(JavaRules.setterMethodNameForField(field));
-		if (method != null && method.isSetter()) {
-			return method;
-		}
-		
-		// TODO - phase 2: case-insensitive match?
-		return null;
-	}
-
-	/**
 	 * Gets the getter method that matches the given setter method, if it is available.
 	 * Finds the getter method using a basic name match or via the field.
 	 * @param setter
@@ -192,6 +178,22 @@ public class ParsedMethod {
 		return null;
 	}
 	
+	/**
+	 * Gets the setter method for the given field, if it is available.
+	 * @param field must be a field within this class or supertype.
+	 * @return the identified method or null if not found
+	 */
+	public static ParsedMethod findSetterFor(ParsedField field, ParsedClass parsedClass) {
+		// phase 1: direct bean property
+		ParsedMethod method = parsedClass.getMethod(JavaRules.setterMethodNameForField(field));
+		if (method != null && method.isSetter()) {
+			return method;
+		}
+		
+		// TODO - phase 2: case-insensitive match?
+		return null;
+	}
+
 	/**
 	 * Gets the setter method that matches the given getter method, if it is available.
 	 * Finds the setter method using a basic name match or via the field.
@@ -277,6 +279,10 @@ public class ParsedMethod {
 		return astNode;
 	}
 	
+	public ParsedTypeContext getTypeContext() {
+		return typeContext;
+	}
+	
 	public ParsedTypeRef getReturnType() {
 		return returnType;
 	}
@@ -317,6 +323,7 @@ public class ParsedMethod {
 	 * a type.
 	 * @return
 	 */
+	// TODO: split this out into two methods: isValidGetter(), isGetter()
 	public boolean isGetter() {
 		String name = getName();
 		if (name.startsWith("get") && name.length() > "get".length()) {
@@ -345,6 +352,7 @@ public class ParsedMethod {
 	 * Return type is ignored.
 	 * @return
 	 */
+	// TODO: split this out into two methods: isValidSetter(), isSetter()
 	public boolean isSetter() {
 		String name = getName();
 		if (name.startsWith("set") && name.length() > "set".length()) {

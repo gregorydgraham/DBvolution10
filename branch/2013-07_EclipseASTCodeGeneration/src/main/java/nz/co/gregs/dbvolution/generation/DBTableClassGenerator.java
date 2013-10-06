@@ -19,7 +19,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -489,7 +488,7 @@ public class DBTableClassGenerator {
     }
 
     /**
-     * Full parses the given java source file and populates
+     * Fully parses the given java source file and populates
      * the <code>ParsedClass</code> object into the returned
      * instance.
      * 
@@ -516,9 +515,10 @@ public class DBTableClassGenerator {
     		dbTableField.setIsPrimaryKey(parsedProperty.isDBPrimaryKey());
     		
     		// foreign key
-    		// note: referencedClassName will either be something that matches
-    		//       nicely against the set of known classes, or it won't be
-    		//       recognised (and may be some really arcane type reference)
+    		// note: referencedClassName will either match a known class,
+    		//       in which case it should be linked to that class;
+    		//       or it will not be recognised,
+    		//       in which case we don't need to worry about it.
     		if (parsedProperty.isDBForeignKey()) {
     			ParsedTypeRef referencedType = parsedProperty.getForeignTypeIfSet();
 	    		dbTableField.setIsForeignKey(true);

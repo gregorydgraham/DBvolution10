@@ -5,6 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.gregs.dbvolution.generation.ast.ParsedBeanProperty.ParsedPropertyMember;
+
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Annotation;
@@ -23,7 +25,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  * This type transparently handles that and exposes the variables and independent
  * fields.
  */
-public class ParsedField {
+public class ParsedField implements ParsedPropertyMember {
 	private ParsedFieldDeclaration parsedFieldDeclaration;
 	private String name;
 	
@@ -136,6 +138,10 @@ public class ParsedField {
 	
 	public FieldDeclaration astNode() {
 		return parsedFieldDeclaration.astNode();
+	}
+	
+	public ParsedTypeContext getTypeContext() {
+		return parsedFieldDeclaration.typeContext;
 	}
 	
 	public ParsedTypeRef getType() {

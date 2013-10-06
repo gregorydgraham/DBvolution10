@@ -30,10 +30,13 @@ public class JavaRules {
 	 * @return
 	 */
 	public static String getterMethodNameForField(ParsedField field) {
-		Class<?> fieldType = null;
-		if (field.getType().isJavaType(boolean.class)) {
+		// fieldType: only care whether it's boolean or not
+		Class<?> fieldType = null; // unknown
+		if (field.getType().astNode().isPrimitiveType() && field.getType().isJavaType(Boolean.class)) {
 			fieldType = boolean.class;
 		}
+		
+		// determine name using fudged field type
 		return getterMethodNameForField(field.getName(), fieldType);		
 	}
 
@@ -43,7 +46,14 @@ public class JavaRules {
 	 * @return
 	 */
 	public static String setterMethodNameForField(ParsedField field) {
-		return setterMethodNameForField(field.getName(), field.getType().getJavaTypeIfKnown());		
+		// fieldType: only care whether it's boolean or not
+		Class<?> fieldType = null; // unknown
+		if (field.getType().astNode().isPrimitiveType() && field.getType().isJavaType(Boolean.class)) {
+			fieldType = boolean.class;
+		}
+		
+		// determine name using fudged field type
+		return setterMethodNameForField(field.getName(), fieldType);
 	}
 
 	/**

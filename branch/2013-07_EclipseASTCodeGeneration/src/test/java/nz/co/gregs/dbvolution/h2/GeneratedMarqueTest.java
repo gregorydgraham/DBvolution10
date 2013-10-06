@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.h2;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -36,7 +37,8 @@ import org.junit.Test;
  * @author gregorygraham
  */
 public class GeneratedMarqueTest extends AbstractTest {
-	private static final File OUTPUT_DIR = new File("target/test-output"); 
+	private static final File OUTPUT_DIR = new File("target/test-output");
+	private static final String PACKAGE_NAME = "nz.co.gregs.dbvolution.generation."+GeneratedMarqueTest.class.getSimpleName().toLowerCase();
 
     @BeforeClass
     public static void setupDirs() {
@@ -44,18 +46,19 @@ public class GeneratedMarqueTest extends AbstractTest {
     }
     
     @Test
-    public void testGetSchema() throws SQLException{
-        DBTableClassGenerator classGenerator = new DBTableClassGenerator(OUTPUT_DIR, "nz.co.gregs.dbvolution.generation");
+    public void testGetSchema() throws SQLException, IOException {
+        DBTableClassGenerator classGenerator = new DBTableClassGenerator(OUTPUT_DIR, PACKAGE_NAME);
         
         List<DBTableClass> generateSchema = classGenerator.generateClassesOfTables(database);
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.getJavaSource());
         }
+        classGenerator.generateClassesFromJDBCURLToDirectory(database);
     }
 
     @Test
-    public void testGetSchemaWithRecognisor() throws SQLException{
-        DBTableClassGenerator classGenerator = new DBTableClassGenerator(OUTPUT_DIR, "nz.co.gregs.dbvolution.generation");
+    public void testGetSchemaWithRecognisor() throws SQLException, IOException{
+        DBTableClassGenerator classGenerator = new DBTableClassGenerator(OUTPUT_DIR, PACKAGE_NAME);
         classGenerator.setPrimaryKeyRecogniser(new UIDBasedPKRecognisor());
         classGenerator.setForeignKeyRecogniser(new FKBasedFKRecognisor());
         
@@ -63,6 +66,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         for (DBTableClass dbcl : generateSchema) {
             System.out.print("" + dbcl.getJavaSource());
         }
+        classGenerator.generateClassesFromJDBCURLToDirectory(database);
     }
 
     @Test
