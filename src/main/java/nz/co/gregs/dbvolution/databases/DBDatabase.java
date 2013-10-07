@@ -43,6 +43,7 @@ public abstract class DBDatabase {
     private Statement transactionStatement;
     private final DBDefinition definition;
     private String databaseName;
+    private boolean batchIfPossible = true;
 
     /**
      *
@@ -559,5 +560,13 @@ public abstract class DBDatabase {
 
     protected String setDatabaseName(String databaseName) {
         return this.databaseName = databaseName;
+    }
+
+    public boolean getBatchSQLStatementsWhenPossible() {
+        return batchIfPossible;
+    }
+
+    public void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
+        batchIfPossible = batchSQLStatementsWhenPossible;
     }
 }
