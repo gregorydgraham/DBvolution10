@@ -546,7 +546,7 @@ public class DBTable<E extends DBRow> {
             if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                 System.out.println(action.getSQLRepresentation());
             }
-            if (action.canBeBatched()) {
+            if (action.canBeBatched() && database.getBatchSQLStatementsWhenPossible()) {
                 statement.addBatch(action.getSQLRepresentation());
             } else {
                 statement.executeBatch();
@@ -615,13 +615,20 @@ public class DBTable<E extends DBRow> {
     public void delete(List<E> oldRows) throws SQLException {
         Statement statement = database.getDBStatement();
         List<String> allSQL = getSQLForDelete(oldRows);
-        for (String sql : allSQL) {
-            if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                System.out.println(sql);
+        if (database.getBatchSQLStatementsWhenPossible()) {
+            for (String sql : allSQL) {
+                if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
+                    System.out.println(sql);
+                }
+                statement.addBatch(sql);
             }
-            statement.addBatch(sql);
+            statement.executeBatch();
+        } else {
+            for (String sql : allSQL) {
+                database.printSQLIfRequested(sql);
+                statement.execute(sql);
+            }
         }
-        statement.executeBatch();
     }
 
     /**
@@ -724,13 +731,19 @@ public class DBTable<E extends DBRow> {
     public void update(List<E> oldRows) throws SQLException {
         Statement statement = database.getDBStatement();
         List<String> allSQL = getSQLForUpdate(oldRows);
-        for (String sql : allSQL) {
-            if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                System.out.println(sql);
+        if (database.getBatchSQLStatementsWhenPossible()) {
+            for (String sql : allSQL) {
+                if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
+                    System.out.println(sql);
+                }
+                statement.addBatch(sql);
             }
-            statement.addBatch(sql);
+            statement.executeBatch();
+        } else {
+            for (String sql : allSQL) {
+                statement.execute(sql);
+            }
         }
-        statement.executeBatch();
         for (DBRow row : oldRows) {
             row.setDatabase(database);
             row.getPrimaryKey().setUnchanged();

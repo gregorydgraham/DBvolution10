@@ -36,6 +36,6 @@ public class DBSave extends DBAction {
 
     @Override
     public void execute(Statement statement) throws SQLException{
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        statement.execute(sql);
     }
 }
