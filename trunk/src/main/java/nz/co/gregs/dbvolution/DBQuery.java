@@ -316,6 +316,7 @@ public class DBQuery {
                     String fullColumnName = defn.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
                     qdt.setFromResultSet(resultSet, fullColumnName);
                 }
+                newInstance.setDefined(true); // Actually came from the database so it is a defined row.
                 Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
                 if (existingInstancesOfThisTableRow == null) {
                     existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
