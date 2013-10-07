@@ -27,26 +27,26 @@ import org.junit.Test;
  * @author gregory.graham
  */
 public class DBTableInsertTest extends AbstractTest {
-    
+
     Marque myTableRow = new Marque();
 
     public DBTableInsertTest(Object db) {
         super(db);
     }
-    
+
     @Test
-    public void testInsertRows() throws SQLException{
+    public void testInsertRows() throws SQLException {
         myTableRow.getUidMarque().permittedValues(999);
         myTableRow.getName().permittedValues("TOYOTA");
         myTableRow.getNumericCode().permittedValues(10);
         marques.insert(myTableRow);
         marques.getAllRows();
         marques.print();
-        
+
         Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();
-        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4,null));
-        
+        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", creationDate, 4, null));
+
         marques.insert(myTableRows);
         marques.getAllRows();
         marques.print();

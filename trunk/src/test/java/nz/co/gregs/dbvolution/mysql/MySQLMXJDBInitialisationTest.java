@@ -1,6 +1,8 @@
 package nz.co.gregs.dbvolution.mysql;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
@@ -30,10 +32,10 @@ import org.junit.Test;
  */
 public class MySQLMXJDBInitialisationTest {
 
-    private static int nextPort  = 43215;
+    private static int nextPort = 43215;
 
 //    @Test
-    public void testInstance() throws SQLException {
+    public void testInstance() throws SQLException, IOException {
         DBDatabase database = getMySQLDBInstance();
         database.setPrintSQLBeforeExecuting(true);
         final Marque marque = new Marque();
@@ -47,15 +49,14 @@ public class MySQLMXJDBInitialisationTest {
         database.dropTableNoExceptions(carCompany);
     }
 
-    public synchronized static MySQLDB getMySQLDBInstance() {
-            //long random = Math.round(Math.random()*59000)+5000; //range between 5000 and 640000 for port numbers
-            long random = nextPort;
-            nextPort++;
+    public synchronized static MySQLDB getMySQLDBInstance() throws IOException {
+//        long random = Math.round(Math.random()*59000)+5000; //range between 5000 and 640000 for port numbers
 
-            File ourAppDir = new File(System.getProperty("java.io.tmpdir"));
-            long port = random; //Integer.parseInt(System.getProperty("c-mxj_test_port", "3336"));
-        File databaseDir = new File(ourAppDir, "test-mxj"+random);
-        String databaseName = "dbvolutiontest"+random;
+        int port = Integer.parseInt(System.getProperty("c-mxj_test_port", "3336"));
+        
+        File ourAppDir = new File(System.getProperty("java.io.tmpdir"));
+        File databaseDir = new File(ourAppDir, "test-mxj" + port);
+        String databaseName = "dbvolutiontest";
 
 
         MySQLDB database = new MySQLMXJDB("localhost", port, databaseName, databaseDir.toString(), "dbvtest", "testpass");

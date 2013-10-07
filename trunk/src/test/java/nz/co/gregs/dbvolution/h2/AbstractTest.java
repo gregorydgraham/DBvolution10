@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -40,7 +40,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class AbstractTest {
 
-    DBDatabase database;// = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
+    DBDatabase database;
     Marque myMarqueRow = new Marque();
     CarCompany myCarCompanyRow = new CarCompany();
     DBTable<Marque> marques;
@@ -53,12 +53,12 @@ public class AbstractTest {
     public String secondDateStr = "2/April/2013";
 
     @Parameters
-    public static List<Object[]> data() {
+    public static List<Object[]> data() throws IOException {
         Object[][] data = new Object[][]{
-            //            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")} 
-            //            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
-            //            {new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
-//            {MySQLMXJDBInitialisationTest.getMySQLDBInstance()},
+//            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")}
+//            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
+//            {new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
+//            {MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
             {new H2MemoryDB("dbvolutionTest","","", false)}
         };
         return Arrays.asList(data);

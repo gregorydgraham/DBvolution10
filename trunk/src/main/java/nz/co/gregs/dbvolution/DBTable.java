@@ -2,7 +2,7 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.exceptions.*;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.sql.*;
@@ -171,13 +171,15 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
+     * Gets All Rows of the table from the database
+     *
      * Use this carefully as it does what it says on the label: Gets All Rows of
      * the table from the database.
      *
-     * If your database has umpteen gazillion rows in VeryBig table and you call
-     * this, don't come crying to me.
+     * throws AccidentalBlankQueryException if you haven't specifically allowed
+     * blank queries with setBlankQueryAllowed(boolean)
      *
-     * @throws SQLException
+     * @throws SQLException, AccidentalBlankQueryException
      */
     public DBTable<E> getAllRows() throws SQLException {
         this.listOfRows.clear();
@@ -838,11 +840,12 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * Compares 2 tables, presumably from different databases
+     * Compares 2 tables, presumably from different criteria or databases prints
+     * the differences to System.out
      *
      * Should be updated to return the varying rows somehow
      *
-     * @param secondTable
+     * @param secondTable : a comparable table
      */
     public void compare(DBTable<E> secondTable) {
         HashMap<Long, E> secondMap = new HashMap<Long, E>();
