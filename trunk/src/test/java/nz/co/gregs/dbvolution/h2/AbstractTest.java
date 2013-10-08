@@ -25,7 +25,6 @@ import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.example.*;
-import nz.co.gregs.dbvolution.mysql.MySQLMXJDBInitialisationTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

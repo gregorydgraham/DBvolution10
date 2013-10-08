@@ -288,6 +288,7 @@ public class DBTableClassGenerator {
                     value = "DBByteArray";
                 }
                 break;
+            case Types.TINYINT:
             case Types.INTEGER:
             case Types.BIGINT:
             case Types.BINARY:
