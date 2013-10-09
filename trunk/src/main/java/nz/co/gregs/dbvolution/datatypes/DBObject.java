@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
@@ -55,7 +56,7 @@ public class DBObject extends QueryableDatatype {
     }
 
     @Override
-    public String getSQLValue() {
+    public String getSQLValue(DBDatabase db) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

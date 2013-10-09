@@ -218,7 +218,7 @@ public class DBTable<E extends DBRow> {
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
             E tableRow = (E) DBRow.getDBRow(dummy.getClass());
-            tableRow.setDatabase(database);
+//            tableRow.setDatabase(database);
 
             Field[] fields = tableRow.getClass().getDeclaredFields();
 
@@ -553,7 +553,7 @@ public class DBTable<E extends DBRow> {
             } else {
                 statement.executeBatch();
                 statement.clearBatch();
-                action.execute(statement);
+                action.execute(database, statement);
             }
         }
         statement.executeBatch();
@@ -595,9 +595,9 @@ public class DBTable<E extends DBRow> {
                     + defn.endInsertColumnList()
                     + row.getValuesClause(database)
                     + defn.endInsertLine();
-            allInserts.add(new DBSave(database, sql));
+            allInserts.add(new DBSave(sql));
             if (row.hasLargeObjectColumns()) {
-                allInserts.addAll(row.getLargeObjectActions());
+                allInserts.addAll(row.getLargeObjectActions(database));
             }
         }
         return allInserts;
@@ -655,7 +655,7 @@ public class DBTable<E extends DBRow> {
         DBDefinition defn = database.getDefinition();
         List<String> allDeletes = new ArrayList<String>();
         for (E row : oldRows) {
-            row.setDatabase(database);
+//            row.setDatabase(database);
             if (row.getDefined()) {
                 final QueryableDatatype primaryKey = row.getPrimaryKey();
                 if (primaryKey == null) {
@@ -667,7 +667,7 @@ public class DBTable<E extends DBRow> {
                             + defn.beginWhereClause()
                             + defn.formatColumnName(this.getPrimaryKeyColumn())
                             + defn.getEqualsComparator()
-                            + primaryKey.getSQLValue()
+                            + primaryKey.getSQLValue(database)
                             + defn.endDeleteLine();
                     allDeletes.add(sql);
                 }
@@ -716,7 +716,7 @@ public class DBTable<E extends DBRow> {
                         + defn.beginAndLine()
                         + row.getDBColumnName(qdt)
                         + defn.getEqualsComparator()
-                        + qdt.getSQLValue();
+                        + qdt.getSQLValue(database);
             }
             sql = sql + defn.endDeleteLine();
             allInserts.add(sql);
@@ -747,7 +747,7 @@ public class DBTable<E extends DBRow> {
             }
         }
         for (DBRow row : oldRows) {
-            row.setDatabase(database);
+//            row.setDatabase(database);
             row.getPrimaryKey().setUnchanged();
         }
     }
@@ -778,12 +778,12 @@ public class DBTable<E extends DBRow> {
         DBDefinition defn = database.getDefinition();
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
-            row.setDatabase(database);
+//            row.setDatabase(database);
             QueryableDatatype primaryKey = row.getPrimaryKey();
             if (primaryKey == null) {
                 throw new UndefinedPrimaryKeyException(row);
             } else {
-                String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue() : primaryKey.getSQLValue());
+                String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.getSQLValue(database));
                 String sql =
                         defn.beginUpdateLine()
                         + defn.formatTableName(row.getTableName())

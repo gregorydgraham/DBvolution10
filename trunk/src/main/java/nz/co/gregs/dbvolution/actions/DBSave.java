@@ -25,8 +25,8 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public class DBSave extends DBAction {
 
-    public DBSave(DBDatabase database, String sql) {
-        super(database, sql);
+    public DBSave(String sql) {
+        super(sql);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class DBSave extends DBAction {
     }
 
     @Override
-    public void execute(Statement statement) throws SQLException{
+    public void execute(DBDatabase db, Statement statement) throws SQLException{
         statement.execute(sql);
     }
 }

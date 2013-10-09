@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.operators.*;
 public abstract class QueryableDatatype extends Object implements Serializable {
 
     public static final long serialVersionUID = 1L;
-    protected transient DBDatabase database = null;
+//    protected transient DBDatabase database = null;
     protected Object literalValue = null;
     protected boolean isDBNull = false;
     protected boolean includingNulls = false;
@@ -132,15 +132,15 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param columnName
      * @return
      */
-    public String getWhereClause(String columnName) {
-        return getWhereClauseUsingOperators(columnName);
+    public String getWhereClause(DBDatabase db, String columnName) {
+        return getWhereClauseUsingOperators(db, columnName);
     }
 
-    private String getWhereClauseUsingOperators(String columnName) {
+    private String getWhereClauseUsingOperators(DBDatabase db, String columnName) {
         String whereClause = "";
         DBOperator op = this.getOperator();
         if (op != null) {
-            whereClause = op.generateWhereLine(database, columnName);
+            whereClause = op.generateWhereLine(db, columnName);
         }
         return whereClause;
     }
@@ -602,8 +602,8 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @return the literal value as it would appear in an SQL statement i.e.
      * {yada} => 'yada'
      */
-    public String toSQLString() {
-        DBDefinition def = database.getDefinition();
+    public String toSQLString(DBDatabase db) {
+        DBDefinition def = db.getDefinition();
         if (this.isDBNull || literalValue == null) {
             return def.getNull();
         }
@@ -613,16 +613,16 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     /**
      * @return the database
      */
-    protected DBDatabase getDatabase() {
-        return database;
-    }
+//    protected DBDatabase getDatabase() {
+//        return database;
+//    }
 
     /**
      * @param database the database to set
      */
-    public void setDatabase(DBDatabase database) {
-        this.database = database;
-    }
+//    public void setDatabase(DBDatabase database) {
+//        this.database = database;
+//    }
 
     /**
      *
@@ -645,7 +645,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @return
      */
-    public abstract String getSQLValue();
+    public abstract String getSQLValue(DBDatabase db);
 //    {
 //        if (this.isDBNull) {
 //            return database.getNull();
@@ -734,9 +734,9 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return isDBNull || literalValue == null;
     }
 
-    public String getPreviousSQLValue() {
-        previousValueAsQDT.setDatabase(database);
-        return previousValueAsQDT.getSQLValue();
+    public String getPreviousSQLValue(DBDatabase db) {
+//        previousValueAsQDT.setDatabase(database);
+        return previousValueAsQDT.getSQLValue(db);
     }
 
     public QueryableDatatype setSortOrder(Boolean order) {

@@ -36,12 +36,12 @@ public class DBBetweenOperator extends DBOperator{
     }
     
     @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-        lowValue.setDatabase(database);
-        String lowerSQLValue = lowValue.getSQLValue();
-        highValue.setDatabase(database);
-        String upperSQLValue = highValue.getSQLValue();
-        String beginWhereLine = database.getDefinition().beginAndLine();
+    public String generateWhereLine(DBDatabase db, String columnName) {
+//        lowValue.setDatabase(database);
+        String lowerSQLValue = lowValue.getSQLValue(db);
+//        highValue.setDatabase(db);
+        String upperSQLValue = highValue.getSQLValue(db);
+        String beginWhereLine = db.getDefinition().beginAndLine();
         return beginWhereLine + (invertOperator?"!(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
     }
 

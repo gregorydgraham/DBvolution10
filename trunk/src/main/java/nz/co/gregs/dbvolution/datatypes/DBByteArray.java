@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
@@ -93,7 +94,7 @@ public class DBByteArray extends DBLargeObject {
     }
 
     @Override
-    public String getSQLValue() {
+    public String getSQLValue(DBDatabase db) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

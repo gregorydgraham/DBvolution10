@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
@@ -137,11 +138,11 @@ public class DBNumber extends QueryableDatatype {
     }
 
     @Override
-    public String getWhereClause(String columnName) {
+    public String getWhereClause(DBDatabase db, String columnName) {
         if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
         } else {
-            return super.getWhereClause(columnName);
+            return super.getWhereClause(db, columnName);
         }
     }
 
@@ -222,9 +223,9 @@ public class DBNumber extends QueryableDatatype {
      *
      */
     @Override
-    public String toSQLString() {
+    public String toSQLString(DBDatabase db) {
         if (this.isDBNull || this.numberValue == null) {
-            return database.getDefinition().getNull();
+            return db.getDefinition().getNull();
         }
         return this.numberValue.toString();
     }
@@ -234,8 +235,8 @@ public class DBNumber extends QueryableDatatype {
      * @return
      */
     @Override
-    public String getSQLValue() {
-        DBDefinition defn = database.getDefinition();
+    public String getSQLValue(DBDatabase db) {
+        DBDefinition defn = db.getDefinition();
         return defn.beginNumberValue() + numberValue.toString() + defn.endNumberValue();
     }
 
