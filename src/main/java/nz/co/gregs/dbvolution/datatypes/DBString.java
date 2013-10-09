@@ -5,6 +5,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
@@ -34,8 +35,8 @@ public class DBString extends QueryableDatatype {
     }
 
     @Override
-    public String getSQLValue() {
-        DBDefinition defn = database.getDefinition();
+    public String getSQLValue(DBDatabase db) {
+        DBDefinition defn = db.getDefinition();
         if (this.isDBNull || literalValue == null) {
             return defn.getNull();
         } else {

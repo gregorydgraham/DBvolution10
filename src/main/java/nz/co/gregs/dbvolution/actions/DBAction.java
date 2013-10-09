@@ -25,17 +25,17 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  */
 public abstract class DBAction {
     protected String sql = "";
-    protected final DBDatabase database;
+//    protected final DBDatabase database;
     
-    public DBAction(DBDatabase database) {
+    public DBAction() {
         super();
-        this.database = database;
+//        this.database = database;
     }
     
-    public DBAction(DBDatabase database, String sql) {
+    public DBAction(String sql) {
         super();
         this.sql = sql;
-        this.database = database;
+//        this.database = database;
     }
     
     public String getSQLRepresentation(){
@@ -44,6 +44,6 @@ public abstract class DBAction {
 
     public abstract boolean canBeBatched();
 
-    public abstract void execute(Statement statement) throws SQLException ;
+    public abstract void execute(DBDatabase db, Statement statement) throws SQLException ;
     
 }

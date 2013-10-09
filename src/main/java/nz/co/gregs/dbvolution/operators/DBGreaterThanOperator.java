@@ -50,10 +50,10 @@ public class DBGreaterThanOperator extends DBOperator {
     }
 
     @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-        greaterThanThis.setDatabase(database);
-        DBDefinition defn = database.getDefinition();
-        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + greaterThanThis.getSQLValue() + " ";
+    public String generateWhereLine(DBDatabase db, String columnName) {
+//        greaterThanThis.setDatabase(database);
+        DBDefinition defn = db.getDefinition();
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + greaterThanThis.getSQLValue(db) + " ";
     }
 
     @Override

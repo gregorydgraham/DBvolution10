@@ -33,8 +33,8 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
     }
 
     @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-                DBDefinition defn = database.getDefinition();
+    public String generateWhereLine(DBDatabase db, String columnName) {
+                DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
         whereClause.append(defn.beginAndLine());
         if (listOfPossibleValues.isEmpty()) {
@@ -46,8 +46,8 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
             whereClause.append(getOperator());
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
-                qdt.setDatabase(database);
-                whereClause.append(sep).append(" ").append(qdt.getSQLValue().toLowerCase()).append(" ");
+//                qdt.setDatabase(db);
+                whereClause.append(sep).append(" ").append(qdt.getSQLValue(db).toLowerCase()).append(" ");
                 sep = ",";
             }
             whereClause.append("))");

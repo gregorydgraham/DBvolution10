@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+
 
 /**
  * 
@@ -30,7 +32,7 @@ public class DBUnknownDatatype extends QueryableDatatype {
     }
 
     @Override
-    public String getSQLValue() {
+    public String getSQLValue(DBDatabase db) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

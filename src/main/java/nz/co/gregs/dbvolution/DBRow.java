@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  */
 abstract public class DBRow implements Serializable {
 
-    private transient DBDatabase database;
+//    private transient DBDatabase database;
     private boolean isDefined = false;
     private HashMap<DBForeignKey, DBColumn> foreignKeys = null;
     private final List<Field> ignoredForeignKeys = new ArrayList<Field>();
@@ -104,14 +104,14 @@ abstract public class DBRow implements Serializable {
 
     @Deprecated
     public String getPrimaryKeySQLStringValue(DBDatabase db) {
-        this.setDatabase(db);
+//        this.setDatabase(db);
         QueryableDatatype queryableValueOfField;
         queryableValueOfField = this.getQueryableValueOfField(getPrimaryKeyField());
         String pkColumnValue;
         if (queryableValueOfField.hasChanged()) {
-            pkColumnValue = queryableValueOfField.getPreviousSQLValue();
+            pkColumnValue = queryableValueOfField.getPreviousSQLValue(db);
         } else {
-            pkColumnValue = queryableValueOfField.toSQLString();
+            pkColumnValue = queryableValueOfField.toSQLString(db);
         }
         return pkColumnValue;
     }
@@ -225,15 +225,15 @@ abstract public class DBRow implements Serializable {
      *
      */
     public String getWhereClause(DBDatabase db) {
-        this.setDatabase(db);
-        DBDefinition defn = database.getDefinition();
+//        this.setDatabase(db);
+        DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBColumn.class)) {
                 QueryableDatatype qdt = this.getQueryableValueOfField(field);
-                qdt.setDatabase(this.database);
-                whereClause.append(qdt.getWhereClause(defn.formatTableAndColumnName(this.getTableName(), getDBColumnName(field))));
+//                qdt.setDatabase(db);
+                whereClause.append(qdt.getWhereClause(db, defn.formatTableAndColumnName(this.getTableName(), getDBColumnName(field))));
             }
         }
         return whereClause.toString();
@@ -322,18 +322,18 @@ abstract public class DBRow implements Serializable {
     /**
      * @param database the database to set
      */
-    public void setDatabase(DBDatabase theDatabase) {
-        this.database = theDatabase;
-
-        for (Field field : this.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(DBColumn.class)) {
-                getQueryableValueOfField(field).setDatabase(database);
-            }
-        }
-    }
+//    public void setDatabase(DBDatabase db) {
+////        this.database = theDatabase;
+//
+//        for (Field field : this.getClass().getDeclaredFields()) {
+//            if (field.isAnnotationPresent(DBColumn.class)) {
+//                getQueryableValueOfField(field).setDatabase(database);
+//            }
+//        }
+//    }
 
     protected String getValuesClause(DBDatabase db) {
-        this.setDatabase(db);
+//        this.setDatabase(db);
         StringBuilder string = new StringBuilder();
         Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
@@ -344,7 +344,7 @@ abstract public class DBRow implements Serializable {
             if (field.isAnnotationPresent(DBColumn.class)
                     && !fieldTypeName.equals(DBLargeObject.class.getSimpleName())) {
                 final QueryableDatatype qdt = getQueryableValueOfField(field);
-                string.append(separator).append(qdt.toSQLString());
+                string.append(separator).append(qdt.toSQLString(db));
                 separator = ",";
             }
         }
@@ -352,8 +352,8 @@ abstract public class DBRow implements Serializable {
     }
 
     protected String getSetClause(DBDatabase db) {
-        this.setDatabase(db);
-        DBDefinition defn = database.getDefinition();
+//        this.setDatabase(db);
+        DBDefinition defn = db.getDefinition();
         StringBuilder sql = new StringBuilder();
         Class<? extends DBRow> thisClass = this.getClass();
         Field[] fields = thisClass.getDeclaredFields();
@@ -368,7 +368,7 @@ abstract public class DBRow implements Serializable {
                             .append(defn.formatColumnName(columnName))
                             .append(defn.getEqualsComparator())
                             .append(qdt
-                            .toSQLString());
+                            .toSQLString(db));
                     separator = defn.getSubsequentSetSubClauseSeparator();
                 }
             }
@@ -416,15 +416,16 @@ abstract public class DBRow implements Serializable {
         return columnName;
     }
 
-    protected static String getTableAndColumnName(DBRow[] baseRows, QueryableDatatype qdt) {
+    protected static String getTableAndColumnName(DBDatabase db, DBRow[] baseRows, QueryableDatatype qdt) {
         String columnName;
         String tableName;
         String fullName = null;
+        DBDefinition defn = db.getDefinition();
         for (DBRow row : baseRows) {
             tableName = row.getTableName();
             columnName = row.getDBColumnName(qdt);
             if (columnName != null) {
-                fullName = row.database.getDefinition().formatTableAndColumnName(tableName, columnName);
+                fullName = defn.formatTableAndColumnName(tableName, columnName);
                 return fullName;
             }
         }
@@ -569,11 +570,11 @@ abstract public class DBRow implements Serializable {
         this.adHocRelationships.clear();
     }
 
-    List<String> getAdHocRelationshipSQL() {
+    List<String> getAdHocRelationshipSQL(DBDatabase db) {
         List<String> sqlStrings = new ArrayList<String>();
-        DBDefinition defn = database.getDefinition();
+        DBDefinition defn = db.getDefinition();
         for (DBRelationship rel : adHocRelationships) {
-            sqlStrings.add(defn.beginAndLine() + rel.generateSQL(database));
+            sqlStrings.add(defn.beginAndLine() + rel.generateSQL(db));
         }
         return sqlStrings;
     }
@@ -604,10 +605,10 @@ abstract public class DBRow implements Serializable {
         return false;
     }
 
-    protected DBActionList getLargeObjectActions() {
+    protected DBActionList getLargeObjectActions(DBDatabase db) {
         DBActionList actions = new DBActionList();
         for (DBLargeObject blob : blobColumns) {
-            actions.add(new DBSaveBLOB(database, this, blob));
+            actions.add(new DBSaveBLOB(this, blob));
         }
         return actions;
     }
@@ -646,9 +647,9 @@ abstract public class DBRow implements Serializable {
      * @return the foreign keys and adhoc relationships as an SQL String or a
      * null pointer
      */
-    public String getRelationshipsAsSQL(DBRow newTable) {
+    public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable) {
         StringBuilder rels = new StringBuilder();
-        DBDefinition defn = database.getDefinition();
+        DBDefinition defn = db.getDefinition();
         final String lineSeparator = System.getProperty("line.separator");
 
         Map<DBForeignKey, DBColumn> fks = getForeignKeys();
@@ -696,7 +697,7 @@ abstract public class DBRow implements Serializable {
 
             rels.append(lineSeparator)
                     .append(joinSeparator)
-                    .append(DBRelationship.generateSQL(database, leftTable, leftColumn, operator, rightTable, rightColumn));
+                    .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
             joinSeparator = defn.beginAndLine();
         }
@@ -722,7 +723,7 @@ abstract public class DBRow implements Serializable {
 
             rels.append(lineSeparator)
                     .append(joinSeparator)
-                    .append(DBRelationship.generateSQL(database, leftTable, leftColumn, operator, rightTable, rightColumn));
+                    .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
             joinSeparator = defn.beginAndLine();
         }

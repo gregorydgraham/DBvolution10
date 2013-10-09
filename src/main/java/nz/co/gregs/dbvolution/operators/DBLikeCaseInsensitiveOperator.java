@@ -39,11 +39,11 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
     }
 
     @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-        likeableValue.setDatabase(database);
-        if (database == null) {
+    public String generateWhereLine(DBDatabase db, String columnName) {
+//        likeableValue.setDatabase(db);
+        if (db == null) {
             throw new RuntimeException("Database Cannot Be NULL: Please supply a proper DBDatabase instance.");
-        } else if (likeableValue.getSQLValue() == null) {
+        } else if (likeableValue.getSQLValue(db) == null) {
             throw new RuntimeException("Actual Comparison Is Required: please supply an actual object to compare against");
         } else if (columnName == null) {
             throw new RuntimeException("MalFormed DBRow: please supply a column name using the DBColumn annotation");
@@ -52,8 +52,8 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
         } else if (getOperator() == null) {
             throw new RuntimeException("Get Operator Returns NULL: the getOperator() method returned null when it should return a String of the database's operator.");
         } else {
-            DBDefinition defn = database.getDefinition();
-            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(likeableValue.getSQLValue()) + ")";
+            DBDefinition defn = db.getDefinition();
+            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(likeableValue.getSQLValue(db)) + ")";
         }
     }
 

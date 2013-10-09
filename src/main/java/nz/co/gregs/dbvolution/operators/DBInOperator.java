@@ -41,8 +41,8 @@ public class DBInOperator extends DBOperator {
     }
 
     @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-        DBDefinition defn = database.getDefinition();
+    public String generateWhereLine(DBDatabase db, String columnName) {
+        DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
         whereClause.append(defn.beginAndLine());
         if (listOfPossibleValues.isEmpty()) {
@@ -55,8 +55,8 @@ public class DBInOperator extends DBOperator {
             whereClause.append(getOperator());
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
-                qdt.setDatabase(database);
-                whereClause.append(sep).append(" ").append(qdt.getSQLValue()).append(" ");
+//                qdt.setDatabase(database);
+                whereClause.append(sep).append(" ").append(qdt.getSQLValue(db)).append(" ");
                 sep = ",";
             }
             whereClause.append("))");

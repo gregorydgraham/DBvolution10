@@ -57,14 +57,14 @@ public class DBEqualsOperator extends DBOperator {
     }
 
     @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-        equalTo.setDatabase(database);
-        defn = database.getDefinition();
-        if (equalTo.getSQLValue().equals(defn.getNull())) {
+    public String generateWhereLine(DBDatabase db, String columnName) {
+//        equalTo.setDatabase(database);
+        defn = db.getDefinition();
+        if (equalTo.getSQLValue(db).equals(defn.getNull())) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-            return dbIsNullOperator.generateWhereLine(database, columnName);
+            return dbIsNullOperator.generateWhereLine(db, columnName);
         }
-        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue() + " ";
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.getSQLValue(db) + " ";
     }
 
     @Override

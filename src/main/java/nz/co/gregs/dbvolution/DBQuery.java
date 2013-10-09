@@ -141,7 +141,6 @@ public class DBQuery {
     }
 
     public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables, Set<DBRow> connectedTables) {
-        newTable.setDatabase(database);
         List<String> joinClauses = new ArrayList<String>();
         DBDefinition defn = database.getDefinition();
         boolean isLeftOuterJoin = false;
@@ -152,8 +151,7 @@ public class DBQuery {
             isLeftOuterJoin = true;
         }
         for (DBRow otherTable : previousTables) {
-            otherTable.setDatabase(database);
-            String join = otherTable.getRelationshipsAsSQL(newTable);
+            String join = otherTable.getRelationshipsAsSQL(this.database, newTable);
             if (join != null && !join.isEmpty()) {
                 joinClauses.add(join);
                 connectedTables.add(newTable);
@@ -308,7 +306,7 @@ public class DBQuery {
             queryRow = new DBQueryRow();
             for (DBRow tableRow : allQueryTables) {
                 DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
-                newInstance.setDatabase(database);
+                
                 DBDefinition defn = database.getDefinition();
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {
@@ -325,10 +323,10 @@ public class DBQuery {
                 DBRow existingInstance = newInstance;
                 final QueryableDatatype primaryKey = newInstance.getPrimaryKey();
                 if (primaryKey != null) {
-                    existingInstance = existingInstancesOfThisTableRow.get(primaryKey.getSQLValue());
+                    existingInstance = existingInstancesOfThisTableRow.get(primaryKey.getSQLValue(this.database));
                     if (existingInstance == null) {
                         existingInstance = newInstance;
-                        existingInstancesOfThisTableRow.put(primaryKey.getSQLValue(), existingInstance);
+                        existingInstancesOfThisTableRow.put(primaryKey.getSQLValue(this.database), existingInstance);
                     }
                 }
                 queryRow.put(existingInstance.getClass(), existingInstance);
@@ -481,7 +479,7 @@ public class DBQuery {
             for (DBRow tab : this.allQueryTables) {
                 DBRow rowPart = row.get(tab);
                 if (rowPart != null) {
-                    String rowPartStr = rowPart.getPrimaryKey().getSQLValue();
+                    String rowPartStr = rowPart.getPrimaryKey().getSQLValue(this.database);
                     ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
                 }
             }
@@ -548,7 +546,7 @@ public class DBQuery {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (QueryableDatatype qdt : sortOrder) {
-                final String dbColumnName = DBRow.getTableAndColumnName(sortBase, qdt);
+                final String dbColumnName = DBRow.getTableAndColumnName(this.database, sortBase, qdt);
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();

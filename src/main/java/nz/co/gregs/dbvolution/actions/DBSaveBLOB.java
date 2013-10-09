@@ -28,8 +28,7 @@ public class DBSaveBLOB extends DBAction {
     private DBRow row = null;
     private DBLargeObject blob = null;
 
-    public DBSaveBLOB(DBDatabase database, DBRow row, DBLargeObject blob) {
-        super(database);
+    public DBSaveBLOB(DBRow row, DBLargeObject blob) {
         this.row = row;
         this.blob = blob;
     }
@@ -40,8 +39,8 @@ public class DBSaveBLOB extends DBAction {
     }
 
     @Override
-    public void execute(Statement statement) throws SQLException{
-        DBDefinition defn  = database.getDefinition(); 
+    public void execute(DBDatabase db, Statement statement) throws SQLException{
+        DBDefinition defn  = db.getDefinition(); 
         String sqlString = defn.beginUpdateLine()
                 +defn.formatTableName(row.getTableName())
                 +defn.beginSetClause()
@@ -51,9 +50,9 @@ public class DBSaveBLOB extends DBAction {
                 +defn.beginWhereClause()
                 +defn.formatColumnName(row.getPrimaryKeyName()) 
                 +defn.getEqualsComparator()
-                +row.getPrimaryKey().getSQLValue()
+                +row.getPrimaryKey().getSQLValue(db)
                 +defn.endSQLStatement();
-        database.printSQLIfRequested(sqlString);
+        db.printSQLIfRequested(sqlString);
         PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
         prep.setBinaryStream(1, blob.getInputStream(), blob.getSize());
         prep.execute();

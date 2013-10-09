@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
@@ -49,11 +50,11 @@ public class DBDate extends QueryableDatatype {
     }
 
     @Override
-    public String getWhereClause(String columnName) {
+    public String getWhereClause(DBDatabase db, String columnName) {
         if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
             throw new RuntimeException("DATE COLUMNS CAN'T USE \"LIKE\": " + columnName);
         } else {
-            return super.getWhereClause(columnName);
+            return super.getWhereClause(db, columnName);
         }
     }
 
@@ -130,8 +131,8 @@ public class DBDate extends QueryableDatatype {
     }
 
     @Override
-    public String toSQLString() {
-        DBDefinition defn = database.getDefinition();
+    public String toSQLString(DBDatabase db) {
+        DBDefinition defn = db.getDefinition();
         if (this.isDBNull || dateValue() == null) {
             return defn.getNull();
         }
@@ -139,8 +140,8 @@ public class DBDate extends QueryableDatatype {
     }
 
     @Override
-    public String getSQLValue() {
-        return database.getDefinition().getDateFormattedForQuery(dateValue());
+    public String getSQLValue(DBDatabase db) {
+        return db.getDefinition().getDateFormattedForQuery(dateValue());
     }
 
     @Override
