@@ -52,7 +52,26 @@ public class Property {
 		this.typeAdaptor = null;
 		// TODO: handle all annotations, including type adaptor
 	}
+
+	/**
+	 * Gets the name of the java property.
+	 * Mainly used within error messages.
+	 * @return
+	 */
+	public String name() {
+		return adaptee.name();
+	}
 	
+	/**
+	 * Gets the DBvolution-centric type of the property.
+	 * If a type adaptor is present, then this is the type after conversion
+	 * from the target object's actual property type.
+	 * @return
+	 */
+	public Class<? extends QueryableDataType> type() {
+		throw new UnsupportedOperationException("todo");
+	}
+
 	/**
 	 * Gets the DBvolution-centric value of the property.
 	 * The value returned may have undergone type conversion from the target object's
@@ -78,16 +97,6 @@ public class Property {
 	 * @throws IllegalStateException if not writable, this exception indicates a bug within DBvolution
 	 */
 	public void setValue(Object value) {
-		throw new UnsupportedOperationException("todo");
-	}
-	
-	/**
-	 * Gets the DBvolution-centric type of the property.
-	 * If a type adaptor is present, then this is the type after conversion
-	 * from the target object's actual property type.
-	 * @return
-	 */
-	public Class<? extends QueryableDataType> type() {
 		throw new UnsupportedOperationException("todo");
 	}
 	
