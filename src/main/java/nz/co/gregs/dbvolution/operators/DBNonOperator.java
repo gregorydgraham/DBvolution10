@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBDatabase;
 
 public class DBNonOperator extends DBOperator {
 

@@ -5,7 +5,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.util.Date;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 

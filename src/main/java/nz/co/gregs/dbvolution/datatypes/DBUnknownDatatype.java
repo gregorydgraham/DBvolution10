@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBDatabase;
 
 
 /**
@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregory.graham
  */
 public class DBUnknownDatatype extends QueryableDatatype {
+    public static final long serialVersionUID = 1L;
 
     @Override
     public String getSQLDatatype() {

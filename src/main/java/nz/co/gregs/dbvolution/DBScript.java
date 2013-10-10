@@ -15,8 +15,8 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import java.util.List;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  * A convenient method of implement a database script in DBvolution

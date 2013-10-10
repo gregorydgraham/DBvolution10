@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.Serializable;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;

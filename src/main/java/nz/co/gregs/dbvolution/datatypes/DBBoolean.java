@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 public class DBBoolean extends QueryableDatatype {

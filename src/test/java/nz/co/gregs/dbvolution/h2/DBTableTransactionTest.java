@@ -15,13 +15,13 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import nz.co.gregs.dbvolution.DBTransaction;
+import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
 import org.junit.Test;

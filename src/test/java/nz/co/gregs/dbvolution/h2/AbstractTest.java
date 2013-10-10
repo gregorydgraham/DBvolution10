@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
