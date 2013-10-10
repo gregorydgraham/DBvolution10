@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.h2;
 
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.After;

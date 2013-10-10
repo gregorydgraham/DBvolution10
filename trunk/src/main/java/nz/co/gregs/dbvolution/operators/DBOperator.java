@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import java.io.Serializable;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBDatabase;
 
 /**
  *

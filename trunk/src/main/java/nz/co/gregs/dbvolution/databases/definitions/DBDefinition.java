@@ -331,4 +331,8 @@ public abstract class DBDefinition {
     public String getPreparedVariableSymbol() {
         return " ? ";
     }
+
+    public boolean isColumnNamesCaseSensitive() {
+		return false;
+    }
 }

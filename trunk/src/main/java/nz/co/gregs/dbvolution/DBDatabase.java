@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.databases;
+package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;

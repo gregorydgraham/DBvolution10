@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 

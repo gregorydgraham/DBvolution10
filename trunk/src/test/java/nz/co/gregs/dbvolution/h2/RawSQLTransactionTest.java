@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
-import nz.co.gregs.dbvolution.DBRawSQLTransaction;
+import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.hamcrest.Matchers;

@@ -15,8 +15,9 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.DBRawSQLTransaction;
+import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 
 /**
