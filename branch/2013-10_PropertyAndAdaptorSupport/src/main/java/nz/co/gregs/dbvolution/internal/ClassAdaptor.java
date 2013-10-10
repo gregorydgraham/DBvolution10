@@ -72,6 +72,10 @@ public class ClassAdaptor {
 		}
 	}
 	
+	public ObjectAdaptor objectAdaptorFor(Object target) {
+		return new ObjectAdaptor(this, target);
+	}
+	
 	/**
 	 * Checks all the annotations etc. and errors.
 	 * @throws Exception if has any errors

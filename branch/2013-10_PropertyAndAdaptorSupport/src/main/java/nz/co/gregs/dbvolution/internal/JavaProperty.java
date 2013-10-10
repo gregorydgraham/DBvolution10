@@ -27,6 +27,12 @@ interface JavaProperty {
 	public String name();
 	
 	/**
+	 * Gets the property type.
+	 * @return
+	 */
+	public Class<?> type();
+	
+	/**
 	 * Get the property's value on the given target object.
 	 * Use {@link #isReadable()} to determine if the property is readable,
 	 * prior to calling this method.
@@ -106,6 +112,11 @@ interface JavaProperty {
 		public String name() {
 			return field.getName();
 		}
+		
+		@Override
+		public Class<?> type() {
+			return field.getType();
+		}
 
 		private String qualifiedName() {
 			return field.getDeclaringClass().getName()+"."+field.getName();
@@ -182,11 +193,13 @@ interface JavaProperty {
 	 */
 	public class JavaBeanProperty implements JavaProperty {
 		private String name;
+		private Class<?> type;
 		private Method getter;
 		private Method setter;
 		
 		public JavaBeanProperty(PropertyDescriptor descriptor) {
 			this.name = descriptor.getName();
+			this.type = descriptor.getPropertyType();
 			this.getter = descriptor.getReadMethod();
 			this.setter = descriptor.getWriteMethod();
 		}
@@ -194,6 +207,11 @@ interface JavaProperty {
 		@Override
 		public String name() {
 			return name;
+		}
+		
+		@Override
+		public Class<?> type() {
+			return type;
 		}
 		
 		private String qualifiedName() {

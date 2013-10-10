@@ -1,10 +1,11 @@
 package nz.co.gregs.dbvolution.internal;
 
-import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.QueryableDataType;
+import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 /**
  * Adapts a single field or bean property within a class.
@@ -34,7 +35,23 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
  * <p> The current implementations assume that only {@code DBColumn} properties are
  * actually wrapped as instances of {@code Property}.
  */
-public interface Property {
+// TODO: consider renaming this to DBProperty
+public class Property {
+	private final JavaProperty adaptee;
+	private final String columnName;
+	private final Class<?> referencedClass;
+	private final String referencedColumn;
+	private final DBTypeAdaptor typeAdaptor; // null if no annotation
+	private final DBColumn columnAnnotation;
+	private final DBPrimaryKey primaryKeyAnnotation;
+	private final DBForeignKey foreignKeyAnnotation;
+	private final DBAdaptType adaptTypeAnnotation;
+	
+	public Property(JavaProperty javaProperty) {
+		this.adaptee = javaProperty;
+		this.typeAdaptor = null;
+		// TODO: handle all annotations, including type adaptor
+	}
 	
 	/**
 	 * Gets the DBvolution-centric value of the property.
@@ -46,7 +63,9 @@ public interface Property {
 	 * @return
 	 * @throws IllegalStateException if not readable; this exception indicates a bug within DBvolution
 	 */
-	public Object value();
+	public Object value() {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Sets the DBvolution-centric value of the property.
@@ -58,7 +77,9 @@ public interface Property {
 	 * @param value
 	 * @throws IllegalStateException if not writable, this exception indicates a bug within DBvolution
 	 */
-	public void setValue(Object value);
+	public void setValue(Object value) {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Gets the DBvolution-centric type of the property.
@@ -66,7 +87,9 @@ public interface Property {
 	 * from the target object's actual property type.
 	 * @return
 	 */
-	public Class<? extends QueryableDataType> type();
+	public Class<? extends QueryableDataType> type() {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Gets the annotated column name.
@@ -78,20 +101,26 @@ public interface Property {
 	 * <p> Use {@link #getDBColumnAnnotation} for low level access.
 	 * @return the column name, if specified explicitly or implicitly
 	 */
-	public String columnName();
+	public String columnName() {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Indicates whether this property is a foreign key.
 	 * @return {@code true} if this property is a foreign key
 	 */
-	public boolean isForeignKey();
+	public boolean isForeignKey() {
+		throw new UnsupportedOperationException("todo");
+	}
 
 	/**
 	 * Gets the class referenced by this property, if this property
 	 * is a foreign key.
 	 * @return the referenced class or null if not applicable
 	 */
-	public Class<?> foreignClass();
+	public Class<?> foreignClass() {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Gets the column name in the foreign table referenced by this property,
@@ -102,25 +131,33 @@ public interface Property {
 	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
 	 * @return the referenced column, or null if not specified or not applicable
 	 */
-	public String foreignColumnName();
+	public String foreignColumnName() {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Gets the {@link DBColumn} annotation on the property, if it exists.
 	 * @return the annotation or null
 	 */
-	public DBColumn getDBColumnAnnotation();
+	public DBColumn getDBColumnAnnotation() {
+		throw new UnsupportedOperationException("todo");
+	}
 
 	/**
 	 * Gets the {@link DBForeignKey} annotation on the property, if it exists.
 	 * @return the annotation or null
 	 */
-	public DBForeignKey getDBForeignKeyAnnotation();
+	public DBForeignKey getDBForeignKeyAnnotation() {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Gets the {@link DBTypeAdaptor} annotation on the property, if it exists.
 	 * @return the annotation or null
 	 */
-	public DBTypeAdaptor getDBTypeAdaptorAnnotation();
+	public DBTypeAdaptor getDBTypeAdaptorAnnotation() {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Indicates whether the value of the property can be retrieved.
@@ -128,7 +165,9 @@ public interface Property {
 	 * but may be able to be set.
 	 * @return
 	 */
-	public boolean isReadable();
+	public boolean isReadable() {
+		return adaptee.isReadable();
+	}
 
 	/**
 	 * Indicates whether the value of the property can be modified.
@@ -136,7 +175,9 @@ public interface Property {
 	 * but may be able to be read.
 	 * @return
 	 */
-	public boolean isWritable();
+	public boolean isWritable() {
+		return adaptee.isWritable();
+	}
 
 	/**
 	 * Gets the value of the declared property in the end-user's target object,
@@ -147,7 +188,16 @@ public interface Property {
 	 * @return value
 	 * @throws IllegalStateException if not readable
 	 */
-	public Object getRawValue();
+	public Object getRawValue() {
+		// hmm, does this class work on the object or the type?
+		// Think: Property - object
+		//        ClassProperty - class
+		// or should Property be on the class and have no object version?
+		// Then DBv internals supplies the object each time.....it's actually more efficient,
+		// but it's not so nice within the rest of DBv code.
+		//return adaptee.get(what object goes here?);
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Set the value of the declared property in the end-user's target object,
@@ -158,12 +208,16 @@ public interface Property {
 	 * @param value new value
 	 * @throws IllegalStateException if not writable
 	 */
-	public void setRawValue(Object value);
+	public void setRawValue(Object value) {
+		throw new UnsupportedOperationException("todo");
+	}
 	
 	/**
 	 * Gets the declared type of the property in the end-user's target object,
 	 * prior to type conversion to the DBvolution-centric type.
 	 * @return
 	 */
-	public Class<?> getRawType();
+	public Class<?> getRawType() {
+		return adaptee.type();
+	}
 }
