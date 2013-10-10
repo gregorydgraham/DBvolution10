@@ -64,24 +64,24 @@ public class DBInteger extends DBNumber {
         return getOperator();
     }
 
-    public void useInOperator(Integer... inValues) {
+    public DBOperator useInOperator(Integer... inValues) {
         ArrayList<DBInteger> intOptions = new ArrayList<DBInteger>();
         for (Integer num : inValues) {
             intOptions.add(new DBInteger(num));
         }
-        useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
-    public void useInOperator(Long... inValues) {
+    public DBOperator useInOperator(Long... inValues) {
         ArrayList<DBInteger> intOptions = new ArrayList<DBInteger>();
         for (Long num : inValues) {
             intOptions.add(new DBInteger(num));
         }
-        useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
-    public void useInOperator(DBInteger... inValues) {
-        super.useInOperator(inValues);
+    public DBOperator useInOperator(DBInteger... inValues) {
+        return super.useInOperator(inValues);
     }
 
     public DBOperator useGreaterThanOperator(Integer literalValue) {
