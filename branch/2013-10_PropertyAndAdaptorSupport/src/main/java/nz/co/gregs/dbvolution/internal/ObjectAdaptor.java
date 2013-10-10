@@ -18,6 +18,6 @@ public class ObjectAdaptor {
 	}
 	
 	public Property getPropertyByColumn(String columnName) {
-		return clazz.getPropertyByColumn(adaptee, columnName);
+		return clazz.getPropertyByColumn(columnName);
 	}
 }

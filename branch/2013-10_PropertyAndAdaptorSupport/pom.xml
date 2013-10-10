@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nz.co.gregs</groupId>
-    <artifactId>propertyAndAdapterProposal</artifactId>
+    <artifactId>dbvolution-propertyandadapter-support</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     
-    <name>PropertyAndAdapterProposal</name>
+    <name>DBvolution - Property And Adapter Support</name>
     <description>Advanced Library to Remove Object Relational Impedance</description>
     <url>https://sourceforge.net/projects/dbvolution/</url>
     <licenses>
@@ -33,6 +33,15 @@
             </roles>
             <timezone>+12</timezone>
             <organizationUrl>http://www.gregs.co.nz</organizationUrl>
+        </developer>
+        <developer>
+            <name>Malcolm Lett</name>
+            <email>malcolm.lett@gmail.com</email>
+            <roles>
+                <role>developer</role>
+                <role>software engineer</role>
+            </roles>
+            <timezone>+12</timezone>
         </developer>
     </developers>
     
@@ -111,11 +120,6 @@
     </build>
   
     <dependencies>
-        <dependency>
-            <groupId>nz.co.gregs</groupId>
-            <artifactId>dbvolution-eclipse</artifactId>
-            <version>3.8.3.2</version>
-        </dependency>		
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
