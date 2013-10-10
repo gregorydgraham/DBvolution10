@@ -104,24 +104,24 @@ public class DBNumber extends QueryableDatatype {
      *
      * @param inValues
      */
-    public void useInOperator(Number... inValues) {
+    public DBOperator useInOperator(Number... inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Number num : inValues) {
             intOptions.add(new DBNumber(num));
         }
-        useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
     /**
      *
      * @param inValues
      */
-    public void useInOperator(List<Number> inValues) {
+    public DBOperator useInOperator(List<Number> inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Number num : inValues) {
             intOptions.add(new DBNumber(num));
         }
-        useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(this.inValuesNumber));
     }
 
     /**
@@ -163,10 +163,10 @@ public class DBNumber extends QueryableDatatype {
      * @param lower
      * @param upper
      */
-    public void useBetweenOperator(Number lower, Number upper) {
+    public DBOperator useBetweenOperator(Number lower, Number upper) {
         this.upperBoundNumber = new DBNumber(upper);
         this.lowerBoundNumber = new DBNumber(lower);
-        super.useBetweenOperator(lowerBoundNumber, upperBoundNumber);
+        return super.useBetweenOperator(lowerBoundNumber, upperBoundNumber);
     }
 
     @Override
@@ -193,9 +193,10 @@ public class DBNumber extends QueryableDatatype {
      *
      * @param literal
      */
-    public void useEqualsOperator(Number literal) {
-        super.useEqualsOperator(literal);
+    public DBOperator useEqualsOperator(Number literal) {
+        DBOperator useEqualsOperator = super.useEqualsOperator(literal);
         this.numberValue = literal;
+        return useEqualsOperator;
     }
 
     /**

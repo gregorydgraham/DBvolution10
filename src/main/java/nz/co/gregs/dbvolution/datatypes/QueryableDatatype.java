@@ -65,12 +65,36 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return (literalValue == null ? "" : literalValue.toString());
     }
 
+    public String stringValue() {
+        return (literalValue == null ? null : literalValue.toString());
+    }
+
     public Long longValue() {
-        return (literalValue == null ? null : Long.parseLong(literalValue.toString()));
+//        return (literalValue == null ? null : Long.parseLong(literalValue.toString()));
+        if (isDBNull || literalValue == null) {
+            return null;
+        } else if (literalValue instanceof Long) {
+            return (Long) literalValue;
+        } else if (literalValue instanceof Number) {
+            return ((Number) literalValue).longValue();
+        } else {
+            return Long.parseLong(literalValue.toString());
+        }
+
     }
 
     public Integer intValue() {
-        return (literalValue == null ? null : Integer.parseInt(literalValue.toString()));
+//        return (literalValue == null ? null : Integer.parseInt(literalValue.toString()));
+        if (isDBNull || literalValue == null) {
+            return null;
+        } else if (literalValue instanceof Integer) {
+            return (Integer) literalValue;
+        } else if (literalValue instanceof Number) {
+            return ((Number) literalValue).intValue();
+        } else {
+            return Integer.parseInt(literalValue.toString());
+        }
+
     }
 
     public Double doubleValue() {
@@ -156,7 +180,8 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
-     * reduces the rows to only the object, Set, List, Array, or vararg of objects
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
      *
      * @param permitted
      */
@@ -191,7 +216,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 //            useInOperator(permitted.toArray());
 //        }
 //    }
-
     /**
      *
      * @param permitted
@@ -205,7 +229,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 //            useInOperator(permitted.toArray());
 //        }
 //    }
-
     /**
      *
      * @param permitted
@@ -308,8 +331,8 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     /**
      *
      * excludes the object, Set, List, Array, or vararg of objects
-     * 
-     * 
+     *
+     *
      * @param excluded
      */
     public void excludedValues(Object... excluded) {
@@ -339,7 +362,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 //            useInOperator(excluded.toArray()).not();
 //        }
 //    }
-
 //    public void excludedValues(Set<Object> excluded) {
 //        if (excluded == null) {
 //            useNullOperator().not();
@@ -349,7 +371,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 //            useInOperator(excluded.toArray()).not();
 //        }
 //    }
-
     public void permittedRange(Object lowerBound, Object upperBound) {
         if (lowerBound != null && upperBound != null) {
             useBetweenOperator(lowerBound, upperBound);
@@ -616,14 +637,12 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 //    protected DBDatabase getDatabase() {
 //        return database;
 //    }
-
     /**
      * @param database the database to set
      */
 //    public void setDatabase(DBDatabase database) {
 //        this.database = database;
 //    }
-
     /**
      *
      * Provides the SQL datatype used by default for this type of object
