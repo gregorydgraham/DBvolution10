@@ -173,7 +173,7 @@ public class ClassDBProperty {
 	 * @throws IllegalStateException if not readable (you should have called isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public Object value(Object target) {
+	public QueryableDatatype value(Object target) {
 		return typeHandler.getDBvValue(target);
 	}
 	
