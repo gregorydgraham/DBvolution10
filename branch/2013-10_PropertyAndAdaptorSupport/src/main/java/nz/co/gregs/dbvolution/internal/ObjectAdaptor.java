@@ -116,7 +116,7 @@ public class ObjectAdaptor {
 	 * @param columnName
 	 * @return
 	 */
-	public DBProperty getPropertyByColumn(String columnName) {
+	public ClassDBProperty getPropertyByColumn(String columnName) {
 		return classAdaptor.getPropertyByColumn(dbDefn, columnName);
 	}
 
@@ -127,7 +127,7 @@ public class ObjectAdaptor {
 	 * @param propertyName
 	 * @return
 	 */
-	public DBProperty getPropertyByName(String propertyName) {
+	public ClassDBProperty getPropertyByName(String propertyName) {
 		return classAdaptor.getPropertyByName(propertyName);
 	}
 	
@@ -135,7 +135,7 @@ public class ObjectAdaptor {
 	 * Gets all properties annotated with {@code DBColumn}.
 	 * @return
 	 */
-	public List<DBProperty> getProperties() {
+	public List<ClassDBProperty> getProperties() {
 		return classAdaptor.getProperties();
 	}
 }

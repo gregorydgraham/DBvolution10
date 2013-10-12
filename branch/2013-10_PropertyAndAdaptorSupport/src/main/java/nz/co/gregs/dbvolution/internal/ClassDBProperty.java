@@ -36,14 +36,14 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * actually wrapped as instances of {@code DBProperty}.
  */
 // TODO: improve description above
-public class DBProperty {
+public class ClassDBProperty {
 	private final JavaProperty adaptee;
 	
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
 	
-	public DBProperty(JavaProperty javaProperty) {
+	public ClassDBProperty(JavaProperty javaProperty) {
 		this.adaptee = javaProperty;
 		
 		// handlers

@@ -17,7 +17,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * and type conversion of the property's underlying type.
  * 
  * <p> This class handles the majority of the type support logic that is
- * exposed by the {@link DBProperty} class, which just delegates to this class.
+ * exposed by the {@link ClassDBProperty} class, which just delegates to this class.
  * 
  * <p> This class behaves correctly when no {@link DBAdaptType} property is present.
  * @author Malcolm Lett
