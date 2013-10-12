@@ -4,19 +4,14 @@ import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
- * Abstracts a java field or bean-property as a DBvolution-centric
+ * Abstracts a java field or bean-property on a target object as a DBvolution-centric
  * property, which contains values from a specific column in a database table.
  * Transparently handles all annotations associated with the property,
  * including type adaption.
  * 
  * <p> Provides access to the meta-data defined on a single java property of a class,
  * and provides methods for reading and writing the value of the property
- * on target objects.
- * Instances of this class are not bound specific target objects, nor are they
- * bound to specific database definitions.
- * 
- * <p> For binding to specific target objects and database definitions,
- * use the {@link DBProperty} class.
+ * on a single bound object, given a specified database definition.
  * 
  * <p> DB properties can be seen to have the types and values in the table that follows.
  * This class provides a virtual view over the property whereby the DBv-centric type
@@ -28,24 +23,21 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * <li> databaseType/databaseValue - the type and value of the database column itself (this class doesn't deal with these) 
  * </ul>
  * 
- * <p> Note: instances of this class are expensive to create and should be cached.
+ * <p> Note: instances of this class cheap to create and do not need to be cached.
  * 
  * <p> This class is <i>thread-safe</i>.
  */
-public class ClassDBProperty {
-	private final JavaProperty adaptee;
+public class DBProperty {
+	private final ClassDBProperty classProperty;
+	private final Object target;
 	
-	private final ColumnHandler columnHandler;
-	private final PropertyTypeHandler typeHandler;
-	private final ForeignKeyHandler foreignKeyHandler;
-	
-	public ClassDBProperty(JavaProperty javaProperty) {
-		this.adaptee = javaProperty;
-		
-		// handlers
-		this.columnHandler = new ColumnHandler(javaProperty);
-		this.typeHandler = new PropertyTypeHandler(javaProperty);
-		this.foreignKeyHandler = new ForeignKeyHandler(javaProperty);
+	/**
+	 * @param classProperty the class-level wrapper
+	 * @param target the target object containing the given property
+	 */
+	public DBProperty(ClassDBProperty classProperty, Object target) {
+		this.classProperty = classProperty;
+		this.target = target;
 	}
 	
 	/**
@@ -56,7 +48,7 @@ public class ClassDBProperty {
 	 * @return
 	 */
 	public String name() {
-		return adaptee.name();
+		return classProperty.name();
 	}
 
 	/**
@@ -69,7 +61,7 @@ public class ClassDBProperty {
 	 * @return
 	 */
 	public Class<? extends QueryableDatatype> type() {
-		return typeHandler.getType();
+		return classProperty.type();
 	}
 	
 	/**
@@ -83,7 +75,7 @@ public class ClassDBProperty {
 	 * @return the column name, if specified explicitly or implicitly
 	 */
 	public String columnName() {
-		return columnHandler.getColumnName();
+		return classProperty.columnName();
 	}
 
 	/**
@@ -91,7 +83,7 @@ public class ClassDBProperty {
 	 * @return {@code true} if this property is a column
 	 */
 	public boolean isColumn() {
-		return columnHandler.isColumn();
+		return classProperty.isColumn();
 	}
 	
 	/**
@@ -99,7 +91,7 @@ public class ClassDBProperty {
 	 * @return {@code true} if this property is a primary key
 	 */
 	public boolean isPrimaryKey() {
-		return columnHandler.isPrimaryKey();
+		return classProperty.isPrimaryKey();
 	}
 	
 	/**
@@ -107,7 +99,7 @@ public class ClassDBProperty {
 	 * @return {@code true} if this property is a foreign key
 	 */
 	public boolean isForeignKey() {
-		return foreignKeyHandler.isForeignKey();
+		return classProperty.isForeignKey();
 	}
 
 	/**
@@ -116,7 +108,7 @@ public class ClassDBProperty {
 	 * @return the referenced class or null if not applicable
 	 */
 	public Class<?> referencedClass() {
-		return foreignKeyHandler.getReferencedClass();
+		return classProperty.referencedClass();
 	}
 	
 	/**
@@ -125,7 +117,7 @@ public class ClassDBProperty {
 	 * @return the referenced table name, or null if not applicable
 	 */
 	public String referencedTableName() {
-		return foreignKeyHandler.getReferencedTableName();
+		return classProperty.referencedTableName();
 	}
 	
 	/**
@@ -138,7 +130,7 @@ public class ClassDBProperty {
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
 	public String referencedColumnName() {
-		return foreignKeyHandler.getReferencedColumnName();
+		return classProperty.referencedColumnName();
 	}
 
 	/**
@@ -148,7 +140,7 @@ public class ClassDBProperty {
 	 * @return
 	 */
 	public boolean isReadable() {
-		return adaptee.isReadable();
+		return classProperty.isReadable();
 	}
 
 	/**
@@ -158,7 +150,7 @@ public class ClassDBProperty {
 	 * @return
 	 */
 	public boolean isWritable() {
-		return adaptee.isWritable();
+		return classProperty.isWritable();
 	}
 
 	/**
@@ -168,13 +160,12 @@ public class ClassDBProperty {
 	 * 
 	 * <p> Use {@link #isReadable()} beforehand to check whether the property
 	 * can be read.
-	 * @param target object instance containing this property
 	 * @return
 	 * @throws IllegalStateException if not readable (you should have called isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public Object value(Object target) {
-		return typeHandler.getDBvValue(target);
+	public Object value() {
+		return classProperty.value(target);
 	}
 	
 	/**
@@ -184,13 +175,12 @@ public class ClassDBProperty {
 	 * 
 	 * <p> Use {@link #isWritable()} beforehand to check whether the property
 	 * can be modified.
-	 * @param target object instance containing this property
 	 * @param value
 	 * @throws IllegalStateException if not writable (you should have called isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public void setValue(Object target, QueryableDatatype value) {
-		typeHandler.setObjectValue(target, value);
+	public void setValue(QueryableDatatype value) {
+		classProperty.setValue(target, value);
 	}
 	
 	/**
@@ -203,13 +193,12 @@ public class ClassDBProperty {
 	 * 
 	 * <p> Use {@link #isReadable()} beforehand to check whether the property
 	 * can be read.
-	 * @param target object instance containing this property
 	 * @return value
 	 * @throws IllegalStateException if not readable (you should have called isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public Object rawValue(Object target) {
-		return adaptee.get(target);
+	public Object rawValue() {
+		return classProperty.rawValue(target);
 	}
 	
 	/**
@@ -222,13 +211,12 @@ public class ClassDBProperty {
 	 * 
 	 * <p> Use {@link #isWritable()} beforehand to check whether the property
 	 * can be modified.
-	 * @param target object instance containing this property
 	 * @param value new value
 	 * @throws IllegalStateException if not writable (you should have called isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public void setRawValue(Object target, Object value) {
-		adaptee.set(target, value);
+	public void setRawValue(Object value) {
+		classProperty.setRawValue(target, value);
 	}
 	
 	/**
@@ -243,33 +231,6 @@ public class ClassDBProperty {
 	 * @return
 	 */
 	public Class<?> getRawType() {
-		return adaptee.type();
+		return classProperty.getRawType();
 	}
-	
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBColumn} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBColumn getDBColumnAnnotation() {
-//			return columnHandler.getDBColumnAnnotation();
-//		}
-
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBForeignKey} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBForeignKey getDBForeignKeyAnnotation() {
-//			return foreignKeyHandler.getDBForeignKeyAnnotation();
-//		}
-		
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBTypeAdaptor} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBAdaptType getDBTypeAdaptorAnnotation() {
-//			return typeHandler.getDBTypeAdaptorAnnotation();
-//		}
 }

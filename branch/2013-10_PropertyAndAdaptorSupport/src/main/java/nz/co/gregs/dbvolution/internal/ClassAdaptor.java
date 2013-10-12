@@ -16,6 +16,10 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * the table name and the fields or bean properties that map to columns, however
  * this class will work against any class type.
  * 
+ * <p> To wrap a target object instance, use the
+ * {@link #objectAdaptorFor(DBDefinition, Object) objectAdapterFor()}
+ * method.
+ * 
  * <p> Note: instances of this class are expensive to create,
  * and are intended to be cached and kept long-term.
  * Instances can be safely shared between DBDatabase instances for different database types. 

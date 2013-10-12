@@ -1,13 +1,17 @@
 package nz.co.gregs.dbvolution.internal;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBPebkacException;
+import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
- * tbd
+ * Wraps a specific target object according to its type's {@link ClassAdaptor}.
+ * To create instances of this type, call {@link ClassAdaptor#objectAdaptorFor(DBDefinition, Object)}
+ * on the appropriate {@link ClassAdaptor}. 
  * 
  * <p> Instances of this class are lightweight and efficient to create,
  * and they are intended to be short lived.
@@ -20,18 +24,27 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 //TODO: consider whether this should be called ObjectWrapper to avoid overload of term "Adaptor"
 public class ObjectAdaptor {
 	private final DBDefinition dbDefn;
-	private ClassAdaptor classAdaptor;
-	private Object adaptee;
+	private final ClassAdaptor classAdaptor;
+	private final Object target;
 	
-//	public ObjectAdaptor(DBDefinition dbDefn, Object obj) {
-//		this.dbDefn = dbDefn;
-//		this.adaptee = obj;
-//		this.clazz = new ClassAdaptor(dbDefn, obj.getClass()); // TODO: lookup class cache for better performance
-//	}
-
-	ObjectAdaptor(DBDefinition dbDefn, ClassAdaptor classAdaptor, Object obj) {
+	/**
+	 * Called by {@link ClassAdaptor#objectAdaptorFor(DBDefinition, Object)}.
+	 * @param dbDefn
+	 * @param classAdaptor
+	 * @param target the target object of the same type as analysed by {@code classAdaptor}
+	 */
+	ObjectAdaptor(DBDefinition dbDefn, ClassAdaptor classAdaptor, Object target) {
+		if (target == null) {
+			throw new DBRuntimeException("Target object is null");
+		}
+		if (!classAdaptor.adaptee().isInstance(target)) {
+			throw new DBRuntimeException("Target object's type ("+target.getClass().getName()+
+					") is not compatible with given class adaptor for type "+classAdaptor.adaptee().getName()+
+					" (this is probably a bug in DBvolution)");
+		}
+		
 		this.dbDefn = dbDefn;
-		this.adaptee = obj;
+		this.target = target;
 		this.classAdaptor = classAdaptor;
 	}
 
@@ -70,7 +83,7 @@ public class ObjectAdaptor {
 	 * @return
 	 */
 	public Object adapteeObject() {
-		return adaptee;
+		return target;
 	}
 	
 	/**
@@ -116,8 +129,9 @@ public class ObjectAdaptor {
 	 * @param columnName
 	 * @return
 	 */
-	public ClassDBProperty getPropertyByColumn(String columnName) {
-		return classAdaptor.getPropertyByColumn(dbDefn, columnName);
+	public DBProperty getPropertyByColumn(String columnName) {
+		ClassDBProperty classProperty = classAdaptor.getPropertyByColumn(dbDefn, columnName);
+		return (classProperty == null) ? null : new DBProperty(classProperty, target);
 	}
 
 	/**
@@ -127,15 +141,39 @@ public class ObjectAdaptor {
 	 * @param propertyName
 	 * @return
 	 */
-	public ClassDBProperty getPropertyByName(String propertyName) {
-		return classAdaptor.getPropertyByName(propertyName);
+	public DBProperty getPropertyByName(String propertyName) {
+		ClassDBProperty classProperty = classAdaptor.getPropertyByName(propertyName);
+		return (classProperty == null) ? null : new DBProperty(classProperty, target);
+	}
+
+	/**
+	 * Gets all properties that are annotated with {@code DBColumn}.
+	 * This method is intended for where you need to get/set property values
+	 * on all properties in the class.
+	 * 
+	 * <p> Note: if you wish to iterate over the properties and only
+	 * use their definitions (ie: meta-information), this method is not efficient.
+	 * Use {@link #getPropertyDefinitions()} instead in that case.
+	 * @return
+	 */
+	public List<DBProperty> getProperties() {
+		List<DBProperty> list = new ArrayList<DBProperty>();
+		for (ClassDBProperty classProperty: classAdaptor.getProperties()) {
+			list.add(new DBProperty(classProperty, target));
+		}
+		return list;
 	}
 	
 	/**
-	 * Gets all properties annotated with {@code DBColumn}.
+	 * Gets all property definitions that are annotated with {@code DBColumn}.
+	 * This method is intended for where you need to examine meta-information
+	 * about all properties in a class.
+	 * 
+	 * <p> If you wish to get/set property values while iterating over the properties,
+	 * use {@link #getProperties()} instead.
 	 * @return
 	 */
-	public List<ClassDBProperty> getProperties() {
+	public List<ClassDBProperty> getPropertyDefinitions() {
 		return classAdaptor.getProperties();
 	}
 }
