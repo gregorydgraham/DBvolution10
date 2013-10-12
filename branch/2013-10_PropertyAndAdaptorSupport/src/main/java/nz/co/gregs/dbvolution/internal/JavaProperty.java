@@ -20,10 +20,23 @@ import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
 interface JavaProperty {
 	
 	/**
+	 * Gets a string representation suitable for debugging and logging.
+	 */
+	@Override
+	public String toString();
+	
+	/**
+	 * Indicates whether this java property is a field.
+	 * If it is not a field, then it is a bean-property.
+	 * @return {@code true} if a field, {@code false} if a bean-property.
+	 */
+	public boolean isField();
+	
+	/**
 	 * Gets the property name.
 	 * For fields this is the same as the field name.
 	 * For bean-properties it's the inferred name that (usually) starts with a lower-case letter.
-	 * @return
+	 * @return the java property name
 	 */
 	public String name();
 	
@@ -31,13 +44,13 @@ interface JavaProperty {
 	 * Gets the fully qualified name of the property in the class that declares it.
 	 * Fields and bean-properties are both formatted using the name of the property
 	 * without indication of field vs. method.
-	 * @return
+	 * @return the qualified name of the java property
 	 */
 	public String qualifiedName();
 	
 	/**
 	 * Gets the property type.
-	 * @return
+	 * @return the type
 	 */
 	public Class<?> type();
 	
@@ -46,7 +59,7 @@ interface JavaProperty {
 	 * Use {@link #isReadable()} to determine if the property is readable,
 	 * prior to calling this method.
 	 * @param target
-	 * @return
+	 * @return the property's value
 	 * @throws DBThrownByEndUserCodeException if the getter on the target object throws any runtime or checked exceptions
 	 * @throws IllegalStateException if the property is not readable
 	 */
@@ -67,7 +80,7 @@ interface JavaProperty {
 	 * Indicates whether the value of the property can be retrieved.
 	 * Bean properties which are missing a 'getter' can not be read,
 	 * but may be able to be set.
-	 * @return
+	 * @return {@code true} if readable
 	 */
 	public boolean isReadable();
 	
@@ -75,7 +88,7 @@ interface JavaProperty {
 	 * Indicates whether the value of the property can be modified.
 	 * Bean properties which are missing a 'setter' can not be written to,
 	 * but may be able to be read.
-	 * @return
+	 * @return {@code true} if writable
 	 */
 	public boolean isWritable();
 	
@@ -95,7 +108,7 @@ interface JavaProperty {
 	 * {@link #getAnnotations(Class)} should be used to retrieve all versions of the annotation
 	 * and validation performed against them.
 	 * @param annotationClass
-	 * @return
+	 * @return the annotation, or null if not found
 	 */
 	public <A extends Annotation> A getAnnotation(Class<A> annotationClass);
 
@@ -116,6 +129,16 @@ interface JavaProperty {
 		
 		public JavaField(Field field) {
 			this.field = field;
+		}
+		
+		@Override
+		public String toString() {
+			return "field "+name();
+		}
+		
+		@Override
+		public boolean isField() {
+			return true;
 		}
 		
 		@Override
@@ -215,6 +238,19 @@ interface JavaProperty {
 			this.setter = descriptor.getWriteMethod();
 		}
 
+		/**
+		 * String representation suitable for debugging and logging
+		 */
+		@Override
+		public String toString() {
+			return "property "+name();
+		}
+		
+		@Override
+		public boolean isField() {
+			return false;
+		}
+		
 		@Override
 		public String name() {
 			return name;

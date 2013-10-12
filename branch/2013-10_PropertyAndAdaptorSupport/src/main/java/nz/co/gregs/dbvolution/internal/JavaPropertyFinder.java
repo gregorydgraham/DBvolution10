@@ -38,22 +38,34 @@ class JavaPropertyFinder {
 	 * 
 	 * @param fieldVisibilityLevel the most private level of field that should be retrieved
 	 * @param methodVisibility the most private level of method that should be retrieved
-	 * @param propertyTypes
+	 * @param filter supply null for no filter
+	 * @param propertyTypes supply null for default
 	 */
 	public JavaPropertyFinder(Visibility fieldVisibility, Visibility methodVisibility,
 			JavaPropertyFilter filter, PropertyType... propertyTypes) {
 		this.fieldVisibility = fieldVisibility;
 		this.methodVisibility = methodVisibility;
-		this.filter = filter;
+		this.filter = (filter == null) ? JavaPropertyFilter.ANY_PROPERTY_FILTER : filter;
 		
-		this.propertyTypes = EnumSet.noneOf(PropertyType.class);
-		for (PropertyType propertyType: propertyTypes) {
-			this.propertyTypes.add(propertyType);
-		}		
+		if (propertyTypes == null || propertyTypes.length == 0) {
+			this.propertyTypes = EnumSet.allOf(PropertyType.class);
+		}
+		else {
+			this.propertyTypes = EnumSet.noneOf(PropertyType.class);
+			for (PropertyType propertyType: propertyTypes) {
+				this.propertyTypes.add(propertyType);
+			}
+		}
 	}
 	
 	/**
 	 * Gets all properties according to configured criteria.
+	 * 
+	 * <p> Note: this class makes no attempt to avoid returning a property
+	 * as both its field and it's accessor methods.
+	 * The caller may thus investigate both for expected annotations.
+	 * However this does mean that the caller must do extra effort to avoid
+	 * using both.
 	 * @param clazz the type to inspect
 	 * @return the non-null list of properties found on the given class
 	 */
