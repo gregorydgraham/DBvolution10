@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBRuntimeException;
+import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
 
 /**
  * Low-level internal abstraction layer over java fields and bean-properties.
@@ -27,6 +28,14 @@ interface JavaProperty {
 	public String name();
 	
 	/**
+	 * Gets the fully qualified name of the property in the class that declares it.
+	 * Fields and bean-properties are both formatted using the name of the property
+	 * without indication of field vs. method.
+	 * @return
+	 */
+	public String qualifiedName();
+	
+	/**
 	 * Gets the property type.
 	 * @return
 	 */
@@ -38,7 +47,7 @@ interface JavaProperty {
 	 * prior to calling this method.
 	 * @param target
 	 * @return
-	 * @throws DBRuntimeException if the getter on the target object throws any runtime or checked exceptions
+	 * @throws DBThrownByEndUserCodeException if the getter on the target object throws any runtime or checked exceptions
 	 * @throws IllegalStateException if the property is not readable
 	 */
 	public Object get(Object target);
@@ -49,7 +58,8 @@ interface JavaProperty {
 	 * prior to calling this method.
 	 * @param target
 	 * @param value
-	 * @throws DBRuntimeException if the getter on the target object throws any runtime or checked exceptions
+	 * @throws DBThrownByEndUserCodeException if the getter on the target object throws any runtime or checked exceptions
+	 * @throws IllegalStateException if the property is not writable
 	 */
 	public void set(Object target, Object value);
 	
@@ -118,7 +128,8 @@ interface JavaProperty {
 			return field.getType();
 		}
 
-		private String qualifiedName() {
+		@Override
+		public String qualifiedName() {
 			return field.getDeclaringClass().getName()+"."+field.getName();
 		}
 		
@@ -214,7 +225,8 @@ interface JavaProperty {
 			return type;
 		}
 		
-		private String qualifiedName() {
+		@Override
+		public String qualifiedName() {
 			if (getter != null) {
 				return getter.getDeclaringClass().getName()+"."+name;
 			}
@@ -229,6 +241,7 @@ interface JavaProperty {
 		@Override
 		public Object get(Object target) {
 			if (getter == null) {
+				// caller should have checked the isReadable() method first
 				throw new IllegalStateException("Internal error attempting to read non-readable property "+
 						qualifiedName()+" (this is probably a DBvolution bug)");
 			}
@@ -239,7 +252,7 @@ interface JavaProperty {
 				// usually thrown when 'target' isn't of the same type as 'field' is declared on,
 				// so this is probably a bug
 				String class1 = (target == null) ? "null" : target.getClass().getName();
-				throw new IllegalArgumentException("internal error reading property "+
+				throw new IllegalArgumentException("Internal error reading property "+
 						qualifiedName()+" on object of type "+class1+" (this is probably a DBvolution bug): "+
 						e.getLocalizedMessage(), e);
 			} catch (IllegalAccessException e) {
@@ -251,7 +264,7 @@ interface JavaProperty {
 				// any checked or runtime exception thrown by the setter method itself
 				// TODO: check that this exception wraps runtime exceptions as well
 				Throwable cause = e.getCause();
-				throw new DBRuntimeException("Accessor method threw "+cause.getClass().getSimpleName()+" reading property "+
+				throw new DBThrownByEndUserCodeException("Accessor method threw "+cause.getClass().getSimpleName()+" reading property "+
 						qualifiedName()+": "+cause.getLocalizedMessage(), cause);
 			}
 		}
@@ -259,6 +272,7 @@ interface JavaProperty {
 		@Override
 		public void set(Object target, Object value) {
 			if (setter == null) {
+				// caller should have checked the isWritable method first
 				throw new IllegalStateException("Internal error attempting to write to non-writable property "+
 						qualifiedName()+" (this is probably a DBvolution bug)");
 			}
@@ -281,7 +295,7 @@ interface JavaProperty {
 				// any checked or runtime exception thrown by the setter method itself
 				// TODO: check that this exception wraps runtime exceptions as well
 				Throwable cause = e.getCause();
-				throw new DBRuntimeException("Accessor method threw "+cause.getClass().getSimpleName()+" writing to property "+
+				throw new DBThrownByEndUserCodeException("Accessor method threw "+cause.getClass().getSimpleName()+" writing to property "+
 						qualifiedName()+": "+cause.getLocalizedMessage(), cause);
 			}
 			

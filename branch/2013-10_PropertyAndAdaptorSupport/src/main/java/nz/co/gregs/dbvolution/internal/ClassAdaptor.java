@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -15,22 +16,23 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * the table name and the fields or bean properties that map to columns, however
  * this class will work against any class type.
  * 
- * <p> Instances of this class should not be shared between different databases,
- * because it depends on the specific database's definition.
+ * <p> Note: instances of this class are expensive to create,
+ * and are intended to be cached and kept long-term.
+ * Instances can be safely shared between DBDatabase instances for different database types. 
  * 
  * <p> Instances of this class are <i>thread-safe</i>.
  * @author Malcolm Lett
  */
+// TODO: consider whether this should be called ClassWrapper to avoid overload of term "Adaptor"
 public class ClassAdaptor {
 	private final Class<?> adaptee;
-	private final DBTableName tableNameAnnotation; // null if not on class
-	private final String tableName; // null if missing @DBTableName
+	private final TableHandler tableHandler;
 	
 	/**
 	 * All properties of which DBvolution is aware, ordered as first encountered.
 	 * Requires that the {@code DBColumn} annotation is declared on the property.
 	 */
-	private final List<Property> properties;
+	private final List<DBProperty> properties;
 	
 	/**
 	 * Column names with original case for doing lookups on case-sensitive databases.
@@ -38,7 +40,7 @@ public class ClassAdaptor {
 	 * Assumes validation is done elsewhere in this class.
 	 * Note: doesn't need to be synchronized because it's never modified once created.
 	 */
-	private final Map<String, Property> propertiesByCaseSensitiveColumnName;
+	private final Map<String, DBProperty> propertiesByCaseSensitiveColumnName;
 
 	/**
 	 * Column names normalized to upper case for doing lookups on case-insensitive databases.
@@ -46,7 +48,7 @@ public class ClassAdaptor {
 	 * Assumes validation is done elsewhere in this class.
 	 * Note: doesn't need to be synchronized because it's never modified once created.
 	 */
-	private final Map<String, Property> propertiesByUpperCaseColumnName;
+	private final Map<String, DBProperty> propertiesByUpperCaseColumnName;
 	
 	/**
 	 * Lists of properties that have duplicated columns if-and-only-if using a
@@ -56,43 +58,34 @@ public class ClassAdaptor {
 	 * If this class is accessed for use on a case-insensitive database the exception
 	 * will be thrown then, on first access to this class.
 	 */
-	private final Map<String, List<Property>> duplicatedPropertiesByUpperCaseColumnName;
+	private final Map<String, List<DBProperty>> duplicatedPropertiesByUpperCaseColumnName;
 	
 	/**
 	 * Indexed by java property name.
 	 */
-	private final Map<String, Property> propertiesByPropertyName;
+	private final Map<String, DBProperty> propertiesByPropertyName;
 	
 	public ClassAdaptor(Class<?> clazz) {
 		this.adaptee = clazz;
 		
-		// pre-calculate table name annotation
-		this.tableNameAnnotation = adaptee.getAnnotation(DBTableName.class);
-		
-		// pre-calculate table name
-		// (null if no annotation)
-		if (tableNameAnnotation != null) {
-			String tableName = tableNameAnnotation.value();
-			this.tableName = (tableName == null) ? adaptee.getSimpleName() : tableName;
-		} else {
-			this.tableName = null;
-		}
+		// annotation handlers
+		this.tableHandler = new TableHandler(clazz);
 		
 		// pre-calculate properties list
-		properties = new ArrayList<Property>();
+		properties = new ArrayList<DBProperty>();
 		// TODO:
 		
 		// pre-calculate properties index
-		propertiesByCaseSensitiveColumnName = new HashMap<String, Property>();
-		propertiesByUpperCaseColumnName = new HashMap<String, Property>();
-		propertiesByPropertyName = new HashMap<String, Property>();
-		duplicatedPropertiesByUpperCaseColumnName = new HashMap<String, List<Property>>();
-		for (Property property: properties) {
+		propertiesByCaseSensitiveColumnName = new HashMap<String, DBProperty>();
+		propertiesByUpperCaseColumnName = new HashMap<String, DBProperty>();
+		propertiesByPropertyName = new HashMap<String, DBProperty>();
+		duplicatedPropertiesByUpperCaseColumnName = new HashMap<String, List<DBProperty>>();
+		for (DBProperty property: properties) {
 			propertiesByPropertyName.put(property.name(), property);
 			
 			// add unique values for case-sensitive lookups
 			if (propertiesByCaseSensitiveColumnName.containsKey(property.columnName())) {
-				throw new DBRuntimeException("Class "+clazz.getName()+" has multiple properties for column "+property.columnName());
+				throw new DBPebkacException("Class "+clazz.getName()+" has multiple properties for column "+property.columnName());
 			}
 			else {
 				propertiesByCaseSensitiveColumnName.put(property.columnName(), property);
@@ -100,9 +93,9 @@ public class ClassAdaptor {
 			
 			// add unique values for case-insensitive lookups
 			if (propertiesByUpperCaseColumnName.containsKey(property.columnName().toUpperCase())) {
-				List<Property> list = duplicatedPropertiesByUpperCaseColumnName.get(property.columnName().toUpperCase());
+				List<DBProperty> list = duplicatedPropertiesByUpperCaseColumnName.get(property.columnName().toUpperCase());
 				if (list == null) {
-					list = new ArrayList<Property>();
+					list = new ArrayList<DBProperty>();
 					list.add(propertiesByUpperCaseColumnName.get(property.columnName().toUpperCase()));
 				}
 				list.add(property);
@@ -113,7 +106,35 @@ public class ClassAdaptor {
 			}
 		}
 	}
+
+	/**
+	 * Checks all the annotations etc. and errors.
+	 * @throws Exception if has any errors
+	 */
+	public void checkForErrors() throws DBPebkacException {
+		// TODO: to be implemented
+	}
 	
+	/**
+	 * Checks for errors that can't be known in advance without knowing
+	 * the database being accessed.
+	 * @param dbDefn
+	 */
+	private void checkForRemainingErrorsOnAcccess(DBDefinition dbDefn) {
+		// check for case-differing duplicate columns
+		if (!duplicatedPropertiesByUpperCaseColumnName.isEmpty()) {
+			StringBuilder buf = new StringBuilder();
+			for (List<DBProperty> properties: duplicatedPropertiesByUpperCaseColumnName.values()) {
+				for (DBProperty property: properties) {
+					if (buf.length() > 0) buf.append(", ");
+					buf.append(property.columnName());
+				}
+			}
+			
+			throw new DBRuntimeException("The following columns are referenced multiple times on case-insensitive databases: "+buf.toString());
+		}
+	}
+
 	/**
 	 * Gets an object adaptor instance for the given target object
 	 * on the given active database definition.
@@ -127,31 +148,32 @@ public class ClassAdaptor {
 	}
 	
 	/**
-	 * Checks all the annotations etc. and errors.
-	 * @throws Exception if has any errors
+	 * Gets a string representation suitable for debugging.
 	 */
-	public void checkForErrors() throws Exception {
-		// TODO: to be implemented
+	@Override
+	public String toString() {
+		if (isTable()) {
+			return "ClassAdapter<"+tableName()+":"+adaptee.getName()+">";
+		}
+		else {
+			return "ClassAdapter<no-table:"+adaptee.getName()+">";
+		}
 	}
 	
 	/**
-	 * Checks for errors that can't be known in advance without knowing
-	 * the database being accessed.
-	 * @param dbDefn
+	 * Gets the underlying wrapped class.
+	 * @return
 	 */
-	private void checkForRemainingErrorsOnAcccess(DBDefinition dbDefn) {
-		// check for case-differing duplicate columns
-		if (!duplicatedPropertiesByUpperCaseColumnName.isEmpty()) {
-			StringBuilder buf = new StringBuilder();
-			for (List<Property> properties: duplicatedPropertiesByUpperCaseColumnName.values()) {
-				for (Property property: properties) {
-					if (buf.length() > 0) buf.append(", ");
-					buf.append(property.columnName());
-				}
-			}
-			
-			throw new DBRuntimeException("The following columns are referenced multiple times on case-insensitive databases: "+buf.toString());
-		}
+	public Class<?> adaptee() {
+		return adaptee;
+	}
+	
+	/**
+	 * Indicates whether this class maps to a database column.
+	 * @return
+	 */
+	public boolean isTable() {
+		return tableHandler.isTable();
 	}
 	
 	/**
@@ -164,8 +186,8 @@ public class ClassAdaptor {
 	 * <p> Use {@link #getDBTableNameAnnotation} for low level access.
 	 * @return the table name, if specified explicitly or implicitly.
 	 */
-	public String getTableName() {
-		return tableName;
+	public String tableName() {
+		return tableHandler.getTableName();
 	}
 	
 	/**
@@ -173,7 +195,7 @@ public class ClassAdaptor {
 	 * @return the annotation or null
 	 */
 	public DBTableName getDBTableNameAnnotation() {
-		return tableNameAnnotation;
+		return tableHandler.getDBTableNameAnnotation();
 	}
 	
 	/**
@@ -189,7 +211,7 @@ public class ClassAdaptor {
 	 * @param columnName
 	 * @return
 	 */
-	public Property getPropertyByColumn(DBDefinition dbDefn, String columnName) {
+	public DBProperty getPropertyByColumn(DBDefinition dbDefn, String columnName) {
 		if (dbDefn.isColumnNamesCaseSensitive()) {
 			return propertiesByUpperCaseColumnName.get(columnName.toUpperCase());
 		}
@@ -205,7 +227,7 @@ public class ClassAdaptor {
 	 * @param propertyName
 	 * @return
 	 */
-	public Property getPropertyByName(String propertyName) {
+	public DBProperty getPropertyByName(String propertyName) {
 		return propertiesByPropertyName.get(propertyName);
 	}
 	
@@ -213,7 +235,7 @@ public class ClassAdaptor {
 	 * Gets all properties annotated with {@code DBColumn}.
 	 * @return
 	 */
-	public List<Property> getProperties() {
+	public List<DBProperty> getProperties() {
 		return properties;
 	}
 }

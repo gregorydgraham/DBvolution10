@@ -1,7 +1,8 @@
 package nz.co.gregs.dbvolution;
 
 /**
- * Thrown when unexpected errors occur.
+ * Usually thrown when unexpected errors occur and sometimes indicate probable DBvolution bugs.
+ * Sub-classes of this are used when more specific details are known.
  * @author Malcolm Lett
  */
 public class DBRuntimeException extends RuntimeException {
