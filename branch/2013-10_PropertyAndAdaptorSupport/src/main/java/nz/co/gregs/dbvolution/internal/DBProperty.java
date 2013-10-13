@@ -1,6 +1,8 @@
 package nz.co.gregs.dbvolution.internal;
 
+import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -29,14 +31,16 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class DBProperty {
 	private final ClassDBProperty classProperty;
+	private final DBDefinition dbDefn;
 	private final Object target;
 	
 	/**
 	 * @param classProperty the class-level wrapper
 	 * @param target the target object containing the given property
 	 */
-	public DBProperty(ClassDBProperty classProperty, Object target) {
+	public DBProperty(ClassDBProperty classProperty, DBDefinition dbDefn, Object target) {
 		this.classProperty = classProperty;
+		this.dbDefn = dbDefn;
 		this.target = target;
 	}
 	
@@ -129,10 +133,39 @@ public class DBProperty {
 	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
-	public String referencedColumnName() {
-		return classProperty.referencedColumnName();
+	// TODO update javadoc for this method now that it's got more smarts
+	public String referencedColumnName(ClassAdaptorCache cache) {
+		return classProperty.referencedColumnName(dbDefn, cache);
 	}
 
+	/**
+	 * Note: this returns only a single property; in the case where multiple foreign key
+	 * columns are used together to reference a table with a composite primary key,
+	 * each foreign key column references its respective foreign primary key.
+	 * @param dbDefin the current active database definition
+	 * @param cache the active class adaptor cache
+	 * @return the mapped foreign key property, or null if not a foreign key
+	 * @throws DBPebkacException if the foreign table has multiple primary keys and the foreign key
+	 *         column doesn't identify which primary key column to target
+	 */
+	// An idea of what could be possible; to be decided whether we want to keep this
+	public ClassDBProperty referencedProperty(ClassAdaptorCache cache) {
+		return classProperty.referencedProperty(dbDefn, cache);
+	}
+	
+	/**
+	 * Gets the column name in the foreign table referenced by this property,
+	 * if this property is a foreign key.
+	 * Referenced column names may not be specified, in which case the foreign key
+	 * references the primary key in the foreign class/table.
+	 * 
+	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
+	 * @return the referenced column name, or null if not specified or not applicable
+	 */
+	public String declaredReferencedColumnName() {
+		return classProperty.declaredReferencedColumnName();
+	}
+	
 	/**
 	 * Indicates whether the value of the property can be retrieved.
 	 * Bean properties which are missing a 'getter' can not be read,

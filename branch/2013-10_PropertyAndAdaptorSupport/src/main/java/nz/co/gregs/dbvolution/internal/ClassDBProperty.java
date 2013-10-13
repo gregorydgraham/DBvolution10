@@ -1,6 +1,11 @@
 package nz.co.gregs.dbvolution.internal;
 
+import java.util.List;
+
+import nz.co.gregs.dbvolution.DBPebkacException;
+import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -49,14 +54,23 @@ public class ClassDBProperty {
 	}
 	
 	/**
-	 * Gets the name of the java property.
-	 * Mainly used within error messages.
+	 * Gets the name of the underlying java property.
+	 * Mainly used within logging and error messages.
 	 * 
 	 * <p> Use {@link #columnName()} to determine column name.
 	 * @return
 	 */
 	public String name() {
 		return adaptee.name();
+	}
+	
+	/**
+	 * Gets the qualified name of the underlying java property.
+	 * Mainly used within logging and error messages.
+	 * @return
+	 */
+	public String qualifiedName() {
+		return adaptee.qualifiedName();
 	}
 
 	/**
@@ -137,10 +151,82 @@ public class ClassDBProperty {
 	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
-	public String referencedColumnName() {
-		return foreignKeyHandler.getReferencedColumnName();
+	// TODO update javadoc for this method now that it's got more smarts
+	public String referencedColumnName(DBDefinition dbDefn, ClassAdaptorCache cache) {
+		ClassDBProperty referencedProperty = referencedProperty(dbDefn, cache);
+		if (referencedProperty != null) {
+			return referencedProperty.columnName();
+		}
+		return null;
 	}
 
+	/**
+	 * Note: this returns only a single property; in the case where multiple foreign key
+	 * columns are used together to reference a table with a composite primary key,
+	 * each foreign key column references its respective foreign primary key.
+	 * @param dbDefin the current active database definition
+	 * @param cache the active class adaptor cache
+	 * @return the mapped foreign key property, or null if not a foreign key
+	 * @throws DBPebkacException if the foreign table has multiple primary keys and the foreign key
+	 *         column doesn't identify which primary key column to target
+	 */
+	// An idea of what could be possible; to be decided whether we want to keep this
+	public ClassDBProperty referencedProperty(DBDefinition dbDefn, ClassAdaptorCache cache) {
+		if (!foreignKeyHandler.isForeignKey()) {
+			return null;
+		}
+		if (foreignKeyHandler.getReferencedClass() == null) {
+			// sanity check
+			throw new DBRuntimeException("Unexpected internal error: referenced class was null on "+qualifiedName());
+		}
+
+		ClassAdaptor referencedClassAdaptor = cache.classAdaptorFor(foreignKeyHandler.getReferencedClass());
+		
+		// get explicitly referenced property (by column name)
+		String explicitColumnName = foreignKeyHandler.getReferencedColumnName();
+		if (explicitColumnName != null) {
+			ClassDBProperty property = referencedClassAdaptor.getPropertyByColumn(dbDefn, explicitColumnName);
+			if (property == null) {
+				// TODO do this validation at annotation processing time?
+				throw new DBPebkacException("Property "+qualifiedName()+" references class "+referencedClassAdaptor.name()
+						+" and column "+explicitColumnName+", but the column doesn't exist");
+			}
+			return property;
+		}
+		
+		// get implicitly referenced property (by scalar primary key)
+		else {
+			List<ClassDBProperty> primaryKeyProperties = referencedClassAdaptor.primaryKey();
+			if (primaryKeyProperties == null || primaryKeyProperties.isEmpty()) {
+				// TODO do this validation at annotation processing time
+				// TODO not sure if it's appropriate to throw this exception here
+				throw new DBPebkacException("Property "+qualifiedName()+" references class "+referencedClassAdaptor.name()
+						+", which does not have a primary key");
+			}
+			else if (primaryKeyProperties.size() > 1) {
+				// TODO do this validation at annotation processing time
+				throw new DBPebkacException("Property "+qualifiedName()+" references class "+referencedClassAdaptor.name()
+						+" using an implicit primary key reference, but the referenced class has "+primaryKeyProperties.size()
+						+" primary key columns. You must include explicit foreign column names.");
+			}
+			
+			return primaryKeyProperties.get(0);
+		}
+	}
+
+	/**
+	 * Gets the column name in the foreign table referenced by this property,
+	 * if this property is a foreign key.
+	 * Referenced column names may not be specified, in which case the foreign key
+	 * references the primary key in the foreign class/table.
+	 * 
+	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
+	 * @return the referenced column name, or null if not specified or not applicable
+	 */
+	public String declaredReferencedColumnName() {
+		return foreignKeyHandler.getReferencedColumnName();
+	}
+	
 	/**
 	 * Indicates whether the value of the property can be retrieved.
 	 * Bean properties which are missing a 'getter' can not be read,

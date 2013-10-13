@@ -35,7 +35,7 @@ class ForeignKeyHandler {
 		// (from annotation on referenced class)
 		if (referencedClass != null) {
 			TableHandler tableHandler = new TableHandler(referencedClass);
-			if (tableHandler.isTable()) {
+			if (!tableHandler.isTable()) {
 				throw new DBPebkacException(adaptee.qualifiedName()+" is a foreign key to class "+referencedClass.getName()+
 						", which is not a table");
 			}

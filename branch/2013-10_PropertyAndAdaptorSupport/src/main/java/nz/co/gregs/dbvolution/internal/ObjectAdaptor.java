@@ -109,11 +109,12 @@ public class ObjectAdaptor {
 	}
 	
 	/**
-	 * Gets the {@link DBTableName} annotation on the class, if it exists.
-	 * @return the annotation or null
+	 * Gets the properties that together form the primary key, if any are marked.
+	 * In most tables this will be exactly one property.
+	 * @return the non-empty list of properties, or null if no primary key
 	 */
-	public DBTableName getDBTableNameAnnotation() {
-		return classAdaptor.getDBTableNameAnnotation();
+	public List<ClassDBProperty> primaryKey() {
+		return classAdaptor.primaryKey();
 	}
 	
 	/**
@@ -131,7 +132,7 @@ public class ObjectAdaptor {
 	 */
 	public DBProperty getPropertyByColumn(String columnName) {
 		ClassDBProperty classProperty = classAdaptor.getPropertyByColumn(dbDefn, columnName);
-		return (classProperty == null) ? null : new DBProperty(classProperty, target);
+		return (classProperty == null) ? null : new DBProperty(classProperty, dbDefn, target);
 	}
 
 	/**
@@ -143,7 +144,7 @@ public class ObjectAdaptor {
 	 */
 	public DBProperty getPropertyByName(String propertyName) {
 		ClassDBProperty classProperty = classAdaptor.getPropertyByName(propertyName);
-		return (classProperty == null) ? null : new DBProperty(classProperty, target);
+		return (classProperty == null) ? null : new DBProperty(classProperty, dbDefn, target);
 	}
 
 	/**
@@ -159,7 +160,7 @@ public class ObjectAdaptor {
 	public List<DBProperty> getProperties() {
 		List<DBProperty> list = new ArrayList<DBProperty>();
 		for (ClassDBProperty classProperty: classAdaptor.getProperties()) {
-			list.add(new DBProperty(classProperty, target));
+			list.add(new DBProperty(classProperty, dbDefn, target));
 		}
 		return list;
 	}
@@ -176,4 +177,13 @@ public class ObjectAdaptor {
 	public List<ClassDBProperty> getPropertyDefinitions() {
 		return classAdaptor.getProperties();
 	}
+
+// shouldn't be needed
+//	/**
+//	 * Gets the {@link DBTableName} annotation on the class, if it exists.
+//	 * @return the annotation or null
+//	 */
+//	public DBTableName getDBTableNameAnnotation() {
+//		return classAdaptor.getDBTableNameAnnotation();
+//	}
 }

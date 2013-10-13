@@ -9,6 +9,8 @@ import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.PropertyType;
+import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
 
 /**
  * Wraps the class-type of an end-user's data model object.
@@ -31,6 +33,11 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class ClassAdaptor {
 	private final Class<?> adaptee;
 	private final TableHandler tableHandler;
+	
+	/**
+	 * The properties that form the primary key, or null if none.
+	 */
+	private final List<ClassDBProperty> primaryKeyProperties;
 	
 	/**
 	 * All properties of which DBvolution is aware, ordered as first encountered.
@@ -76,8 +83,23 @@ public class ClassAdaptor {
 		this.tableHandler = new TableHandler(clazz);
 		
 		// pre-calculate properties list
+		JavaPropertyFinder propertyFinder = new JavaPropertyFinder(
+				Visibility.PRIVATE, Visibility.PUBLIC,
+				JavaPropertyFilter.COLUMN_PROPERTY_FILTER,
+				PropertyType.FIELD, PropertyType.BEAN_PROPERTY);
 		properties = new ArrayList<ClassDBProperty>();
-		// TODO:
+		for (JavaProperty javaProperty: propertyFinder.getPropertiesOf(clazz)) {
+			properties.add(new ClassDBProperty(javaProperty));
+		}
+		
+		// pre-calculate primary key
+		List<ClassDBProperty> primaryKeyProperties = new ArrayList<ClassDBProperty>();
+		for (ClassDBProperty property: properties) {
+			if (property.isPrimaryKey()) {
+				primaryKeyProperties.add(property);
+			}
+		}
+		this.primaryKeyProperties = (primaryKeyProperties == null) ? null : primaryKeyProperties;
 		
 		// pre-calculate properties index
 		propertiesByCaseSensitiveColumnName = new HashMap<String, ClassDBProperty>();
@@ -173,6 +195,24 @@ public class ClassAdaptor {
 	}
 	
 	/**
+	 * Gets the simple name of the class being wrapped by this adaptor.
+	 * <p> Use {@link #tableName()} for the name of the table mapped to this class.
+	 * @return
+	 */
+	public String name() {
+		return adaptee.getSimpleName();
+	}
+	
+	/**
+	 * Gets the fully qualified name of the class being wrapped by this adaptor.
+	 * <p> Use {@link #tableName()} for the name of the table mapped to this class.
+	 * @return
+	 */
+	public String qualifiedName() {
+		return adaptee.getName();
+	}
+	
+	/**
 	 * Indicates whether this class maps to a database column.
 	 * @return
 	 */
@@ -195,11 +235,12 @@ public class ClassAdaptor {
 	}
 	
 	/**
-	 * Gets the {@link DBTableName} annotation on the class, if it exists.
-	 * @return the annotation or null
+	 * Gets the properties that together form the primary key, if any are marked.
+	 * In most tables this will be exactly one property.
+	 * @return the non-empty list of properties, or null if no primary key
 	 */
-	public DBTableName getDBTableNameAnnotation() {
-		return tableHandler.getDBTableNameAnnotation();
+	public List<ClassDBProperty> primaryKey() {
+		return primaryKeyProperties;
 	}
 	
 	/**
@@ -228,6 +269,9 @@ public class ClassAdaptor {
 	 * Gets the property by its java property name.
 	 * <p> Only provides access to properties annotated with {@code DBColumn}.
 	 * 
+	 * <p> It's legal for a field and bean-property to have the same name,
+	 * and to both be annotated, but for different columns.
+	 * This method doesn't handle that well and returns only the first one it sees.
 	 * @param propertyName
 	 * @return
 	 */
@@ -242,4 +286,13 @@ public class ClassAdaptor {
 	public List<ClassDBProperty> getProperties() {
 		return properties;
 	}
+
+// shouldn't be needed
+//	/**
+//	 * Gets the {@link DBTableName} annotation on the class, if it exists.
+//	 * @return the annotation or null
+//	 */
+//	public DBTableName getDBTableNameAnnotation() {
+//		return tableHandler.getDBTableNameAnnotation();
+//	}
 }
