@@ -134,11 +134,11 @@ public class DBTableClassGenerator {
             File file;
             FileOutputStream fileOutputStream;
             for (DBTableClass clazz : generatedClasses) {
-                System.out.println(clazz.className + " => " + classDirectory.getAbsolutePath() + "/" + clazz.className + ".java");
+//                System.out.println(clazz.className + " => " + classDirectory.getAbsolutePath() + "/" + clazz.className + ".java");
                 file = new File(classDirectory, clazz.className + ".java");
                 fileOutputStream = new FileOutputStream(file);
-                System.out.println(clazz.javaSource);
-                System.out.println("");
+//                System.out.println(clazz.javaSource);
+//                System.out.println("");
                 fileOutputStream.write(clazz.javaSource.getBytes());
                 fileOutputStream.close();
             }
@@ -199,7 +199,7 @@ public class DBTableClassGenerator {
             DBTableClass dbTableClass = new DBTableClass();
             dbTableClass.packageName = packageName;
             dbTableClass.tableName = tables.getString("TABLE_NAME");
-            System.out.println(dbTableClass.tableName);
+//            System.out.println(dbTableClass.tableName);
             dbTableClass.className = toClassCase(dbTableClass.tableName);
 
             ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.tableName);
@@ -361,7 +361,7 @@ public class DBTableClassGenerator {
         if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
             classCaseString = s.toUpperCase();
         } else {
-            System.out.println("Splitting: " + s);
+//            System.out.println("Splitting: " + s);
             String[] parts = s.split("_");
             for (String part : parts) {
                 classCaseString = classCaseString + toProperCase(part);
