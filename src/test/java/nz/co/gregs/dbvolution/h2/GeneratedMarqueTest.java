@@ -30,14 +30,18 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.DBTableClass;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
 import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
+import org.freshvanilla.compile.CachedCompiler;
+import org.freshvanilla.compile.CompilerUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -64,7 +68,7 @@ public class GeneratedMarqueTest extends AbstractTest {
             System.out.print("" + dbcl.javaSource);
             boolean found = false;
             for (String str : testClasses) {
-                if (str.replaceAll("[ /n/r/t]*", " ").equals(dbcl.javaSource.replaceAll("[ /n/r/t]*", " "))) {
+                if (str.replaceAll("[ \n\r\t]*", " ").equals(dbcl.javaSource.replaceAll("[ \n\r\t]*", " "))) {
                     found = true;
                 }
             }
@@ -86,7 +90,7 @@ public class GeneratedMarqueTest extends AbstractTest {
             System.out.println(dbcl.javaSource);
             boolean found = false;
             for (String str : testGetSchemaWithRecognisorTestClasses) {
-                if (str.replaceAll("[ /n/r/t]*", " ").equals(dbcl.javaSource.replaceAll("[ /n/r/t]*", " "))) {
+                if (str.replaceAll("[ \n\r\t]*", " ").equals(dbcl.javaSource.replaceAll("[ \n\r\t]*", " "))) {
                     found = true;
                 }
             }
@@ -95,11 +99,38 @@ public class GeneratedMarqueTest extends AbstractTest {
     }
 
     @Test
+    public void testEssenceCompiling() throws SQLException, InstantiationException, IllegalAccessException, Exception {
+        CachedCompiler cc = CompilerUtils.DEBUGGING
+                ? new CachedCompiler(new File(System.getProperty("user.dir"), "src/test/java"), new File(System.getProperty("user.dir"), "target/compiled"))
+                : CompilerUtils.CACHED_COMPILER;
+
+        List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+        for (DBTableClass dbcl : generateSchema) {
+            Class compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), dbcl.javaSource);
+            Object newInstance = compiledClass.newInstance();
+            DBRow row = (DBRow) newInstance;
+            List<DBRow> rows = database.get(row);
+            database.print(rows);
+            if (row.getTableName().equals("CAR_COMPANY")) {
+                Assert.assertThat(rows.size(), is(4));
+            } else if (row.getTableName().equals("MARQUE")) {
+                Assert.assertThat(rows.size(), is(22));
+            } else if (row.getTableName().equals("LT_CARCO_LOGO")) {
+                Assert.assertThat(rows.size(), is(0));
+            } else if (row.getTableName().equals("COMPANYLOGO")) {
+                Assert.assertThat(rows.size(), is(0));
+            } else {
+                throw new Exception("UNKNOWN CLASS FOUND: " + row.getTableName());
+            }
+        }
+    }
+
+    @Test
     public void testCompiling() throws SQLException, IOException, Exception {
         List<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>(); // input for first compilation task
         List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
-            compilationUnits.add(new JavaSourceFromString(dbcl.getCanonicalName(), dbcl.javaSource));
+            compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.javaSource));
         }
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -107,7 +138,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
         // Try to add the classes to the TARGET directory
         List<File> locations = new ArrayList<File>();
-        File file = new File(System.getProperty("user.dir") + File.separator + "target");
+        File file = new File(System.getProperty("user.dir"), "target");
         if (file.exists()) {
             locations.add(file);
         } else {
@@ -115,18 +146,21 @@ public class GeneratedMarqueTest extends AbstractTest {
         }
 
         fileManager.setLocation(StandardLocation.CLASS_OUTPUT, locations);
-        compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits).call();
+        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
+        Boolean succeeded = task.call();
 
-        boolean succeeded = true;
         for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
             System.out.println("Error on line " + diagnostic.getLineNumber() + " in \"" + diagnostic.getSource() + "\"");
             succeeded = false;
         }
         fileManager.close();
-        if (!succeeded) {
+        if (succeeded) {
+            System.out.println("Everything compiled correctly");
+        } else {
             throw new Exception("There were compilation ERRORS");
+
+
         }
-        System.out.println("Everything compiled correctly");
     }
 
     /**
