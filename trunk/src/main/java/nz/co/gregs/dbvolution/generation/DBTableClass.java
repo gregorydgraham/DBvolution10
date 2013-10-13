@@ -17,12 +17,15 @@ package nz.co.gregs.dbvolution.generation;
 
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 
 /**
  *
  * @author gregory.graham
  */
 public class DBTableClass {
+
+    private final String unknownDatatype = new DBUnknownDatatype().getClass().getSimpleName();
 
     String packageName;
     String className;
@@ -58,6 +61,10 @@ public class DBTableClass {
             }
             if (field.isForeignKey) {
                 javaSrc.append("    @DBForeignKey(").append(field.referencesClass).append(".class)");
+                javaSrc.append(lineSeparator);
+            }
+            if (unknownDatatype.equals(field.columnType)) {
+                javaSrc.append("    @DBUnknownJavaSQLType(").append(field.javaSQLDatatype).append(")");
                 javaSrc.append(lineSeparator);
             }
             javaSrc.append("    public ").append(field.columnType).append(" ").append(field.fieldName).append(" = new ").append(field.columnType).append("();");

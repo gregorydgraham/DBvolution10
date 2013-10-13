@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.generation;
 
+import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -30,7 +31,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 
 /**
  *
@@ -125,7 +129,7 @@ public class DBTableClassGenerator {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    static void saveGeneratedClassesToDirectory(List<DBTableClass> generatedClasses, File classDirectory) throws SQLException, FileNotFoundException, IOException {
+    private static void saveGeneratedClassesToDirectory(List<DBTableClass> generatedClasses, File classDirectory) throws SQLException, FileNotFoundException, IOException {
         {
             File file;
             FileOutputStream fileOutputStream;
@@ -171,7 +175,7 @@ public class DBTableClassGenerator {
      * @return
      * @throws SQLException
      */
-    public static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
+    private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
 
         Statement dbStatement = database.getDBStatement();
@@ -220,7 +224,12 @@ public class DBTableClassGenerator {
                 dbTableField.columnName = columns.getString("COLUMN_NAME");
                 dbTableField.fieldName = toFieldCase(dbTableField.columnName);
                 dbTableField.precision = columns.getInt("COLUMN_SIZE");
-                dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
+                try {
+                    dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
+                } catch (UnknownJavaSQLTypeException ex) {
+                    dbTableField.columnType = (new DBUnknownDatatype()).getClass().getSimpleName();
+                    dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
+                }
                 if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
                     dbTableField.isPrimaryKey = true;
                 }
@@ -266,7 +275,7 @@ public class DBTableClassGenerator {
                 }
             }
             dbt.generateJavaSource();
-            System.out.println(dbt.javaSource);
+//            System.out.println(dbt.javaSource);
         }
     }
 
@@ -278,7 +287,7 @@ public class DBTableClassGenerator {
      * @param columnType
      * @return
      */
-    public static String getQueryableDatatypeNameOfSQLType(int columnType, int precision) {
+    private static String getQueryableDatatypeNameOfSQLType(int columnType, int precision) throws UnknownJavaSQLTypeException {
         String value = "";
         switch (columnType) {
             case Types.BIT:
@@ -333,7 +342,7 @@ public class DBTableClassGenerator {
                 value = "DBByteArray";
                 break;
             default:
-                throw new RuntimeException("Unknown Java SQL Type: " + columnType);
+                throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: " + columnType, columnType);
         }
         return value;
     }
@@ -370,12 +379,7 @@ public class DBTableClassGenerator {
      * @param s
      * @return
      */
-    public static String toFieldCase(String s) {
-//        String[] parts = s.split("_");
-//        String camelCaseString = "";
-//        for (String part : parts) {
-//            camelCaseString = camelCaseString + toProperCase(part);
-//        }
+    private static String toFieldCase(String s) {
         String classClass = toClassCase(s);
         String camelCaseString = classClass.substring(0, 1).toLowerCase() + classClass.substring(1);
         return camelCaseString;
@@ -388,7 +392,7 @@ public class DBTableClassGenerator {
      * @param s
      * @return
      */
-    public static String toProperCase(String s) {
+    private static String toProperCase(String s) {
         if (s.length() == 0) {
             return s;
         } else if (s.length() == 1) {
