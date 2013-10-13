@@ -35,7 +35,7 @@ public class DBTableClass {
     String lineSeparator = System.getProperty("line.separator");
     String conceptBreak = lineSeparator + lineSeparator;
     
-    public String getCanonicalName(){
+    public String getFullyQualifiedName(){
         return this.packageName+"."+className;
     }
 
