@@ -34,6 +34,10 @@ public class DBTableClass {
     List<DBTableField> fields = new ArrayList<DBTableField>();
     String lineSeparator = System.getProperty("line.separator");
     String conceptBreak = lineSeparator + lineSeparator;
+    
+    public String getCanonicalName(){
+        return this.packageName+"."+className;
+    }
 
     public String generateJavaSource() {
         StringBuilder javaSrc = new StringBuilder();
@@ -72,7 +76,7 @@ public class DBTableClass {
         }
         javaSrc.append("}");
         javaSrc.append(conceptBreak);
-        System.out.println(javaSrc.toString());
+//        System.out.println(javaSrc.toString());
 
         this.javaSource = javaSrc.toString();
         return this.javaSource;

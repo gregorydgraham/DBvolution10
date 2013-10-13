@@ -15,17 +15,26 @@
  */
 package nz.co.gregs.dbvolution.h2;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.DBRow;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.JavaFileObject.Kind;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.DBTableClass;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
-import nz.co.gregs.dbvolution.generation.Marque;
 import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,7 +51,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         super(db);
     }
 
-//    @Test
+    @Test
     public void testGetSchema() throws SQLException {
         List<DBTableClass> generateSchema;
         List<String> testClasses = new ArrayList<String>();
@@ -85,33 +94,69 @@ public class GeneratedMarqueTest extends AbstractTest {
         }
     }
 
-//    @Test
-    public void testGetAllRows() throws SQLException {
-        DBTable<Marque> marq = DBTable.getInstance(database, new Marque());
-        marq.getAllRows();
-        for (DBRow row : marq.toList()) {
-            System.out.println(row);
+    @Test
+    public void testCompiling() throws SQLException, IOException, Exception {
+        List<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>(); // input for first compilation task
+        List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+        for (DBTableClass dbcl : generateSchema) {
+            compilationUnits.add(new JavaSourceFromString(dbcl.getCanonicalName(), dbcl.javaSource));
         }
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+
+        // Try to add the classes to the TARGET directory
+        List<File> locations = new ArrayList<File>();
+        File file = new File(System.getProperty("user.dir") + File.separator + "target");
+        if (file.exists()) {
+            locations.add(file);
+        } else {
+            locations.add(new File(System.getProperty("user.dir")));
+        }
+
+        fileManager.setLocation(StandardLocation.CLASS_OUTPUT, locations);
+        compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits).call();
+
+        boolean succeeded = true;
+        for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
+            System.out.println("Error on line " + diagnostic.getLineNumber() + " in \"" + diagnostic.getSource() + "\"");
+            succeeded = false;
+        }
+        fileManager.close();
+        if (!succeeded) {
+            throw new Exception("There were compilation ERRORS");
+        }
+        System.out.println("Everything compiled correctly");
     }
 
-//    @Test
-    public void testGetFirstAndPrimaryKey() throws SQLException {
-        DBTable<Marque> marq = DBTable.getInstance(database, new Marque());
-        DBRow row = marq.getFirstRow();
-        if (row != null) {
-            String primaryKey = row.getPrimaryKey().getSQLValue(database);
-            DBTable<Marque> singleMarque = DBTable.getInstance(database, new Marque());
-            singleMarque.getRowsByPrimaryKey(primaryKey).print();
+    /**
+     * A file object used to represent source coming from a string.
+     */
+    public class JavaSourceFromString extends SimpleJavaFileObject {
+
+        /**
+         * The source code of this "file".
+         */
+        final String code;
+
+        /**
+         * Constructs a new JavaSourceFromString.
+         *
+         * @param name the name of the compilation unit represented by this file
+         * object
+         * @param code the source code for the compilation unit represented by
+         * this file object
+         */
+        JavaSourceFromString(String name, String code) {
+            super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension),
+                    Kind.SOURCE);
+            this.code = code;
         }
-    }
 
-//    @Test
-    public void testRawQuery() throws SQLException {
-        DBTable<Marque> marq = DBTable.getInstance(database, new Marque());
-        String rawQuery = "and lower(name) in ('toyota','hummer') ;  ";
-        marq = marq.getRowsByRawSQL(rawQuery);
-        marq.print();
-
+        @Override
+        public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+            return code;
+        }
     }
 
     @Test
