@@ -114,7 +114,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
     }
 
-//    @Test
+    @Test
     public void testToClassCase() {
         String test = "T_31";
         String expected = "T_31";
