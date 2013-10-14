@@ -12,7 +12,7 @@ import org.junit.Test;
 public class DBRowClassWrapperUsabilityTest {
 	private DBDatabase database = new DBDatabase();
 	private MyExampleTableClass obj = new MyExampleTableClass();
-	private DBRowClassWrapperFactory factory = new DBRowClassWrapperFactory();
+	private DBRowWrapperFactory factory = new DBRowWrapperFactory();
 	
 	@Test
 	public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {

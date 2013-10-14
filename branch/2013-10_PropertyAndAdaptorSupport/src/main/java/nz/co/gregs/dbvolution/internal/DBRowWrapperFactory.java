@@ -16,7 +16,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
  * <p> This class is <i>thread-safe</i>.
  * @author Malcolm Lett
  */
-public class DBRowClassWrapperFactory {
+public class DBRowWrapperFactory {
 	/** Thread-safety: access to this object must be synchronized on it */
 	private Map<Class<?>, DBRowClassWrapper> classWrappersByClass = new HashMap<Class<?>, DBRowClassWrapper>();
 	

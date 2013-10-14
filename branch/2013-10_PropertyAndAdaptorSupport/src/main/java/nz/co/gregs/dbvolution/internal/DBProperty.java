@@ -154,7 +154,7 @@ public class DBProperty {
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
 	// TODO update javadoc for this method now that it's got more smarts
-	public String referencedColumnName(DBRowClassWrapperFactory cache) {
+	public String referencedColumnName(DBRowWrapperFactory cache) {
 		return propertyDefinition.referencedColumnName(database, cache);
 	}
 
@@ -169,7 +169,7 @@ public class DBProperty {
 	 *         column doesn't identify which primary key column to target
 	 */
 	// An idea of what could be possible; to be decided whether we want to keep this
-	public DBPropertyDefinition referencedProperty(DBRowClassWrapperFactory cache) {
+	public DBPropertyDefinition referencedProperty(DBRowWrapperFactory cache) {
 		return propertyDefinition.referencedProperty(database, cache);
 	}
 	
