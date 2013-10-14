@@ -38,7 +38,7 @@ public class ClassAdaptorTest {
 	public void getsForeignKeyReferencedColumnName() {
 		ClassAdaptor classAdaptor = new ClassAdaptor(MyTable1.class);
 		assertThat(classAdaptor.getPropertyByName("fkTable2").referencedColumnName(
-				new DBDefinition(), new ClassAdaptorCache()),
+				new DBDefinition(), new ClassAdaptorFactory()),
 				is("uid_2"));
 	}
 	

@@ -134,7 +134,7 @@ public class DBProperty {
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
 	// TODO update javadoc for this method now that it's got more smarts
-	public String referencedColumnName(ClassAdaptorCache cache) {
+	public String referencedColumnName(ClassAdaptorFactory cache) {
 		return classProperty.referencedColumnName(dbDefn, cache);
 	}
 
@@ -149,7 +149,7 @@ public class DBProperty {
 	 *         column doesn't identify which primary key column to target
 	 */
 	// An idea of what could be possible; to be decided whether we want to keep this
-	public ClassDBProperty referencedProperty(ClassAdaptorCache cache) {
+	public ClassDBProperty referencedProperty(ClassAdaptorFactory cache) {
 		return classProperty.referencedProperty(dbDefn, cache);
 	}
 	

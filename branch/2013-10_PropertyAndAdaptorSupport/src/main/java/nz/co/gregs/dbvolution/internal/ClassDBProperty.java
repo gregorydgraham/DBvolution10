@@ -152,7 +152,7 @@ public class ClassDBProperty {
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
 	// TODO update javadoc for this method now that it's got more smarts
-	public String referencedColumnName(DBDefinition dbDefn, ClassAdaptorCache cache) {
+	public String referencedColumnName(DBDefinition dbDefn, ClassAdaptorFactory cache) {
 		ClassDBProperty referencedProperty = referencedProperty(dbDefn, cache);
 		if (referencedProperty != null) {
 			return referencedProperty.columnName();
@@ -171,7 +171,7 @@ public class ClassDBProperty {
 	 *         column doesn't identify which primary key column to target
 	 */
 	// An idea of what could be possible; to be decided whether we want to keep this
-	public ClassDBProperty referencedProperty(DBDefinition dbDefn, ClassAdaptorCache cache) {
+	public ClassDBProperty referencedProperty(DBDefinition dbDefn, ClassAdaptorFactory cache) {
 		if (!foreignKeyHandler.isForeignKey()) {
 			return null;
 		}
