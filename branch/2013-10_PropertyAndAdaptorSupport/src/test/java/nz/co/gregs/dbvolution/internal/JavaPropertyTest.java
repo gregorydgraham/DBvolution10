@@ -1,8 +1,15 @@
 package nz.co.gregs.dbvolution.internal;
 
-import static nz.co.gregs.dbvolution.internal.PropertyMatchers.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static nz.co.gregs.dbvolution.internal.PropertyMatchers.hasJavaPropertyName;
+import static nz.co.gregs.dbvolution.internal.PropertyMatchers.isJavaPropertyField;
+import static nz.co.gregs.dbvolution.internal.PropertyMatchers.itemOf;
+import static nz.co.gregs.dbvolution.internal.PropertyMatchers.that;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 import java.io.Serializable;
 import java.util.List;

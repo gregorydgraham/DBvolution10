@@ -6,12 +6,13 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
- * Wraps a specific target object according to its type's {@link ClassAdaptor}.
- * To create instances of this type, call {@link ClassAdaptor#objectAdaptorFor(DBDefinition, Object)}
- * on the appropriate {@link ClassAdaptor}. 
+ * Wraps a specific target object according to its type's {@link DBRowClassWrapper}.
+ * To create instances of this type, call {@link DBRowClassWrapper#objectAdaptorFor(DBDefinition, Object)}
+ * on the appropriate {@link DBRowClassWrapper}. 
  * 
  * <p> Instances of this class are lightweight and efficient to create,
  * and they are intended to be short lived.
@@ -21,19 +22,18 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * <p> Instances of this class are <i>thread-safe</i>.
  * @author Malcolm Lett
  */
-//TODO: consider whether this should be called ObjectWrapper to avoid overload of term "Adaptor"
-public class ObjectAdaptor {
-	private final DBDefinition dbDefn;
-	private final ClassAdaptor classAdaptor;
+public class DBRowInstanceWrapper {
+	private final DBDatabase database;
+	private final DBRowClassWrapper classAdaptor;
 	private final Object target;
 	
 	/**
-	 * Called by {@link ClassAdaptor#objectAdaptorFor(DBDefinition, Object)}.
+	 * Called by {@link DBRowClassWrapper#objectAdaptorFor(DBDefinition, Object)}.
 	 * @param dbDefn
 	 * @param classAdaptor
 	 * @param target the target object of the same type as analysed by {@code classAdaptor}
 	 */
-	ObjectAdaptor(DBDefinition dbDefn, ClassAdaptor classAdaptor, Object target) {
+	DBRowInstanceWrapper(DBDatabase database, DBRowClassWrapper classAdaptor, Object target) {
 		if (target == null) {
 			throw new DBRuntimeException("Target object is null");
 		}
@@ -43,7 +43,7 @@ public class ObjectAdaptor {
 					" (this is probably a bug in DBvolution)");
 		}
 		
-		this.dbDefn = dbDefn;
+		this.database = database;
 		this.target = target;
 		this.classAdaptor = classAdaptor;
 	}
@@ -87,6 +87,24 @@ public class ObjectAdaptor {
 	}
 	
 	/**
+	 * Gets the simple name of the class being wrapped by this adaptor.
+	 * <p> Use {@link #tableName()} for the name of the table mapped to this class.
+	 * @return
+	 */
+	public String javaName() {
+		return classAdaptor.javaName();
+	}
+	
+	/**
+	 * Gets the fully qualified name of the class being wrapped by this adaptor.
+	 * <p> Use {@link #tableName()} for the name of the table mapped to this class.
+	 * @return
+	 */
+	public String qualifiedJavaName() {
+		return classAdaptor.qualifiedJavaName();
+	}
+	
+	/**
 	 * Indicates whether this class maps to a database column.
 	 * @return
 	 */
@@ -113,7 +131,7 @@ public class ObjectAdaptor {
 	 * In most tables this will be exactly one property.
 	 * @return the non-empty list of properties, or null if no primary key
 	 */
-	public List<ClassDBProperty> primaryKey() {
+	public List<DBPropertyDefinition> primaryKey() {
 		return classAdaptor.primaryKey();
 	}
 	
@@ -130,9 +148,9 @@ public class ObjectAdaptor {
 	 * @param columnName
 	 * @return
 	 */
-	public DBProperty getPropertyByColumn(String columnName) {
-		ClassDBProperty classProperty = classAdaptor.getPropertyByColumn(dbDefn, columnName);
-		return (classProperty == null) ? null : new DBProperty(classProperty, dbDefn, target);
+	public DBProperty getDBPropertyByColumn(String columnName) {
+		DBPropertyDefinition classProperty = classAdaptor.getPropertyByColumn(database, columnName);
+		return (classProperty == null) ? null : new DBProperty(classProperty, database, target);
 	}
 
 	/**
@@ -143,8 +161,8 @@ public class ObjectAdaptor {
 	 * @return
 	 */
 	public DBProperty getPropertyByName(String propertyName) {
-		ClassDBProperty classProperty = classAdaptor.getPropertyByName(propertyName);
-		return (classProperty == null) ? null : new DBProperty(classProperty, dbDefn, target);
+		DBPropertyDefinition classProperty = classAdaptor.getPropertyByName(propertyName);
+		return (classProperty == null) ? null : new DBProperty(classProperty, database, target);
 	}
 
 	/**
@@ -157,10 +175,10 @@ public class ObjectAdaptor {
 	 * Use {@link #getPropertyDefinitions()} instead in that case.
 	 * @return
 	 */
-	public List<DBProperty> getProperties() {
+	public List<DBProperty> getDBProperties() {
 		List<DBProperty> list = new ArrayList<DBProperty>();
-		for (ClassDBProperty classProperty: classAdaptor.getProperties()) {
-			list.add(new DBProperty(classProperty, dbDefn, target));
+		for (DBPropertyDefinition classProperty: classAdaptor.getProperties()) {
+			list.add(new DBProperty(classProperty, database, target));
 		}
 		return list;
 	}
@@ -171,10 +189,10 @@ public class ObjectAdaptor {
 	 * about all properties in a class.
 	 * 
 	 * <p> If you wish to get/set property values while iterating over the properties,
-	 * use {@link #getProperties()} instead.
+	 * use {@link #getDBProperties()} instead.
 	 * @return
 	 */
-	public List<ClassDBProperty> getPropertyDefinitions() {
+	public List<DBPropertyDefinition> getPropertyDefinitions() {
 		return classAdaptor.getProperties();
 	}
 

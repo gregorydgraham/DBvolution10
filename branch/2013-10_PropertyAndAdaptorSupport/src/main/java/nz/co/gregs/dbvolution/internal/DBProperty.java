@@ -2,7 +2,7 @@ package nz.co.gregs.dbvolution.internal;
 
 import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -17,8 +17,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * 
  * <p> DB properties can be seen to have the types and values in the table that follows.
  * This class provides a virtual view over the property whereby the DBv-centric type
- * and value are easily accessible via the {@link #value(Object) value()} and
- * {@link #setValue(Object, QueryableDatatype) setValue()} methods.
+ * and value are easily accessible via the {@link #getQueryableDatatype(Object) value()} and
+ * {@link #setQueryableDatatype(Object, QueryableDatatype) setValue()} methods.
  * <ul>
  * <li> rawType/rawValue - the type and value actually stored on the declared java property
  * <li> dbvType/dbvValue - the type and value used within DBv (a QueryableDataType)
@@ -30,17 +30,17 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * <p> This class is <i>thread-safe</i>.
  */
 public class DBProperty {
-	private final ClassDBProperty classProperty;
-	private final DBDefinition dbDefn;
+	private final DBPropertyDefinition propertyDefinition;
+	private final DBDatabase database;
 	private final Object target;
 	
 	/**
 	 * @param classProperty the class-level wrapper
 	 * @param target the target object containing the given property
 	 */
-	public DBProperty(ClassDBProperty classProperty, DBDefinition dbDefn, Object target) {
-		this.classProperty = classProperty;
-		this.dbDefn = dbDefn;
+	public DBProperty(DBPropertyDefinition classProperty, DBDatabase database, Object target) {
+		this.propertyDefinition = classProperty;
+		this.database = database;
 		this.target = target;
 	}
 	
@@ -51,21 +51,32 @@ public class DBProperty {
 	 * <p> Use {@link #columnName()} to determine column name.
 	 * @return
 	 */
-	public String name() {
-		return classProperty.name();
+	public String javaName() {
+		return propertyDefinition.javaName();
 	}
 
+	/**
+	 * Gets the qualified name of the underlying java property.
+	 * Mainly used within logging and error messages.
+	 * 
+	 * <p> Use {@link #columnName()} to determine column name.
+	 * @return
+	 */
+	public String qualifiedJavaName() {
+		return propertyDefinition.qualifiedJavaName();
+	}
+	
 	/**
 	 * Gets the DBvolution-centric type of the property.
 	 * If a type adaptor is present, then this is the type after conversion
 	 * from the target object's actual property type.
 	 * 
-	 * <p> Use {@link #getRawType()} in the rare case that you need to know the underlying
+	 * <p> Use {@link #getRawJavaType()} in the rare case that you need to know the underlying
 	 * java property type.
 	 * @return
 	 */
 	public Class<? extends QueryableDatatype> type() {
-		return classProperty.type();
+		return propertyDefinition.type();
 	}
 	
 	/**
@@ -79,7 +90,7 @@ public class DBProperty {
 	 * @return the column name, if specified explicitly or implicitly
 	 */
 	public String columnName() {
-		return classProperty.columnName();
+		return propertyDefinition.columnName();
 	}
 
 	/**
@@ -87,7 +98,7 @@ public class DBProperty {
 	 * @return {@code true} if this property is a column
 	 */
 	public boolean isColumn() {
-		return classProperty.isColumn();
+		return propertyDefinition.isColumn();
 	}
 	
 	/**
@@ -95,7 +106,7 @@ public class DBProperty {
 	 * @return {@code true} if this property is a primary key
 	 */
 	public boolean isPrimaryKey() {
-		return classProperty.isPrimaryKey();
+		return propertyDefinition.isPrimaryKey();
 	}
 	
 	/**
@@ -103,7 +114,7 @@ public class DBProperty {
 	 * @return {@code true} if this property is a foreign key
 	 */
 	public boolean isForeignKey() {
-		return classProperty.isForeignKey();
+		return propertyDefinition.isForeignKey();
 	}
 
 	/**
@@ -112,7 +123,7 @@ public class DBProperty {
 	 * @return the referenced class or null if not applicable
 	 */
 	public Class<?> referencedClass() {
-		return classProperty.referencedClass();
+		return propertyDefinition.referencedClass();
 	}
 	
 	/**
@@ -121,7 +132,7 @@ public class DBProperty {
 	 * @return the referenced table name, or null if not applicable
 	 */
 	public String referencedTableName() {
-		return classProperty.referencedTableName();
+		return propertyDefinition.referencedTableName();
 	}
 	
 	/**
@@ -134,8 +145,8 @@ public class DBProperty {
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
 	// TODO update javadoc for this method now that it's got more smarts
-	public String referencedColumnName(ClassAdaptorFactory cache) {
-		return classProperty.referencedColumnName(dbDefn, cache);
+	public String referencedColumnName(DBRowClassWrapperFactory cache) {
+		return propertyDefinition.referencedColumnName(database, cache);
 	}
 
 	/**
@@ -149,8 +160,8 @@ public class DBProperty {
 	 *         column doesn't identify which primary key column to target
 	 */
 	// An idea of what could be possible; to be decided whether we want to keep this
-	public ClassDBProperty referencedProperty(ClassAdaptorFactory cache) {
-		return classProperty.referencedProperty(dbDefn, cache);
+	public DBPropertyDefinition referencedProperty(DBRowClassWrapperFactory cache) {
+		return propertyDefinition.referencedProperty(database, cache);
 	}
 	
 	/**
@@ -162,8 +173,9 @@ public class DBProperty {
 	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
+	// TODO improve javadoc
 	public String declaredReferencedColumnName() {
-		return classProperty.declaredReferencedColumnName();
+		return propertyDefinition.declaredReferencedColumnName();
 	}
 	
 	/**
@@ -173,7 +185,7 @@ public class DBProperty {
 	 * @return
 	 */
 	public boolean isReadable() {
-		return classProperty.isReadable();
+		return propertyDefinition.isReadable();
 	}
 
 	/**
@@ -183,7 +195,7 @@ public class DBProperty {
 	 * @return
 	 */
 	public boolean isWritable() {
-		return classProperty.isWritable();
+		return propertyDefinition.isWritable();
 	}
 
 	/**
@@ -197,8 +209,8 @@ public class DBProperty {
 	 * @throws IllegalStateException if not readable (you should have called isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public QueryableDatatype value() {
-		return classProperty.value(target);
+	public QueryableDatatype getQueryableDatatype() {
+		return propertyDefinition.getQueryableDatatype(target);
 	}
 	
 	/**
@@ -212,8 +224,8 @@ public class DBProperty {
 	 * @throws IllegalStateException if not writable (you should have called isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public void setValue(QueryableDatatype value) {
-		classProperty.setValue(target, value);
+	public void setQueryableDatatype(QueryableDatatype value) {
+		propertyDefinition.setQueryableDatatype(target, value);
 	}
 	
 	/**
@@ -221,8 +233,8 @@ public class DBProperty {
 	 * prior to type conversion to the DBvolution-centric type.
 	 * 
 	 * <p> In most cases you will not need to call this method, as type
-	 * conversion is done transparently via the {@link #value(Object)} and
-	 * {@link #setValue(Object, QueryableDatatype)} methods.
+	 * conversion is done transparently via the {@link #getQueryableDatatype(Object)} and
+	 * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods.
 	 * 
 	 * <p> Use {@link #isReadable()} beforehand to check whether the property
 	 * can be read.
@@ -230,8 +242,8 @@ public class DBProperty {
 	 * @throws IllegalStateException if not readable (you should have called isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public Object rawValue() {
-		return classProperty.rawValue(target);
+	public Object rawJavaValue() {
+		return propertyDefinition.rawJavaValue(target);
 	}
 	
 	/**
@@ -239,8 +251,8 @@ public class DBProperty {
 	 * without type conversion to/from the DBvolution-centric type.
 	 * 
 	 * <p> In most cases you will not need to call this method, as type
-	 * conversion is done transparently via the {@link #value(Object)} and
-	 * {@link #setValue(Object, QueryableDatatype)} methods.
+	 * conversion is done transparently via the {@link #getQueryableDatatype(Object)} and
+	 * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods.
 	 * 
 	 * <p> Use {@link #isWritable()} beforehand to check whether the property
 	 * can be modified.
@@ -248,8 +260,8 @@ public class DBProperty {
 	 * @throws IllegalStateException if not writable (you should have called isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public void setRawValue(Object value) {
-		classProperty.setRawValue(target, value);
+	public void setRawJavaValue(Object value) {
+		propertyDefinition.setRawJavaValue(target, value);
 	}
 	
 	/**
@@ -257,13 +269,13 @@ public class DBProperty {
 	 * prior to type conversion to the DBvolution-centric type.
 	 * 
 	 * <p> In most cases you will not need to call this method, as type
-	 * conversion is done transparently via the {@link #value(Object)} and
-	 * {@link #setValue(Object, QueryableDatatype)} methods.
+	 * conversion is done transparently via the {@link #getQueryableDatatype(Object)} and
+	 * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods.
 	 * Use the {@link #type()} method to get the DBv-centric property type,
 	 * after type conversion.
 	 * @return
 	 */
-	public Class<?> getRawType() {
-		return classProperty.getRawType();
+	public Class<?> getRawJavaType() {
+		return propertyDefinition.getRawJavaType();
 	}
 }

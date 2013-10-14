@@ -3,7 +3,7 @@ package nz.co.gregs.dbvolution.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
 
 /**
  * Constructs class adaptors for DB table classes and maintains an in-memory cache for re-use.
@@ -16,9 +16,9 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * <p> This class is <i>thread-safe</i>.
  * @author Malcolm Lett
  */
-public class ClassAdaptorFactory {
+public class DBRowClassWrapperFactory {
 	/** Thread-safety: access to this object must be synchronized on it */
-	private Map<Class<?>, ClassAdaptor> classAdaptorsByClass = new HashMap<Class<?>, ClassAdaptor>();
+	private Map<Class<?>, DBRowClassWrapper> classAdaptorsByClass = new HashMap<Class<?>, DBRowClassWrapper>();
 	
 	/**
 	 * Gets the class adaptor for the given class.
@@ -27,11 +27,11 @@ public class ClassAdaptorFactory {
 	 * @param clazz
 	 * @return the class adaptor
 	 */
-	public ClassAdaptor classAdaptorFor(Class<?> clazz) {
+	public DBRowClassWrapper classAdaptorFor(Class<?> clazz) {
 		synchronized (classAdaptorsByClass) {
-			ClassAdaptor adaptor = classAdaptorsByClass.get(clazz);
+			DBRowClassWrapper adaptor = classAdaptorsByClass.get(clazz);
 			if (adaptor == null) {
-				adaptor = new ClassAdaptor(clazz);
+				adaptor = new DBRowClassWrapper(clazz);
 				classAdaptorsByClass.put(clazz, adaptor);
 			}
 			return adaptor;
@@ -45,7 +45,7 @@ public class ClassAdaptorFactory {
 	 * @param object
 	 * @return the class adaptor
 	 */
-	public ClassAdaptor classAdaptorFor(Object object) {
+	public DBRowClassWrapper classAdaptorFor(Object object) {
 		return classAdaptorFor(object.getClass());
 	}
 	
@@ -53,11 +53,11 @@ public class ClassAdaptorFactory {
 	 * Gets the object adaptor for the given object.
 	 * If an adaptor for the object's class has not yet been created, one will be created
 	 * and added to the internal cache.
-	 * @param dbDefn the database definition in use
+	 * @param database the current database in use
 	 * @param object the object to wrap
 	 * @return the object adaptor for the given object
 	 */
-	public ObjectAdaptor objectAdaptorFor(DBDefinition dbDefn, Object object) {
-		return classAdaptorFor(object.getClass()).objectAdaptorFor(dbDefn, object);
+	public DBRowInstanceWrapper objectAdaptorFor(DBDatabase database, Object object) {
+		return classAdaptorFor(object.getClass()).objectAdaptorFor(database, object);
 	}
 }

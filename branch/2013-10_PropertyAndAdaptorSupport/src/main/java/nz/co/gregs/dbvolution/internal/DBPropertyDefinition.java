@@ -5,7 +5,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -17,7 +17,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * <p> Provides access to the meta-data defined on a single java property of a class,
  * and provides methods for reading and writing the value of the property
  * on target objects.
- * Instances of this class are not bound specific target objects, nor are they
+ * Instances of this class are not bound to specific target objects, nor are they
  * bound to specific database definitions.
  * 
  * <p> For binding to specific target objects and database definitions,
@@ -25,8 +25,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * 
  * <p> DB properties can be seen to have the types and values in the table that follows.
  * This class provides a virtual view over the property whereby the DBv-centric type
- * and value are easily accessible via the {@link #value(Object) value()} and
- * {@link #setValue(Object, QueryableDatatype) setValue()} methods.
+ * and value are easily accessible via the {@link #getQueryableDatatype(Object) value()} and
+ * {@link #setQueryableDatatype(Object, QueryableDatatype) setValue()} methods.
  * <ul>
  * <li> rawType/rawValue - the type and value actually stored on the declared java property
  * <li> dbvType/dbvValue - the type and value used within DBv (a QueryableDataType)
@@ -37,14 +37,14 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * 
  * <p> This class is <i>thread-safe</i>.
  */
-public class ClassDBProperty {
+public class DBPropertyDefinition {
 	private final JavaProperty adaptee;
 	
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
 	
-	public ClassDBProperty(JavaProperty javaProperty) {
+	public DBPropertyDefinition(JavaProperty javaProperty) {
 		this.adaptee = javaProperty;
 		
 		// handlers
@@ -60,7 +60,7 @@ public class ClassDBProperty {
 	 * <p> Use {@link #columnName()} to determine column name.
 	 * @return
 	 */
-	public String name() {
+	public String javaName() {
 		return adaptee.name();
 	}
 	
@@ -69,7 +69,7 @@ public class ClassDBProperty {
 	 * Mainly used within logging and error messages.
 	 * @return
 	 */
-	public String qualifiedName() {
+	public String qualifiedJavaName() {
 		return adaptee.qualifiedName();
 	}
 
@@ -78,7 +78,7 @@ public class ClassDBProperty {
 	 * If a type adaptor is present, then this is the type after conversion
 	 * from the target object's actual property type.
 	 * 
-	 * <p> Use {@link #getRawType()} in the rare case that you need to know the underlying
+	 * <p> Use {@link #getRawJavaType()} in the rare case that you need to know the underlying
 	 * java property type.
 	 * @return
 	 */
@@ -149,11 +149,13 @@ public class ClassDBProperty {
 	 * references the primary key in the foreign class/table.
 	 * 
 	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
+	 * @param database the current active database
+	 * @param cache the class wrapper factory
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
 	// TODO update javadoc for this method now that it's got more smarts
-	public String referencedColumnName(DBDefinition dbDefn, ClassAdaptorFactory cache) {
-		ClassDBProperty referencedProperty = referencedProperty(dbDefn, cache);
+	public String referencedColumnName(DBDatabase database, DBRowClassWrapperFactory cache) {
+		DBPropertyDefinition referencedProperty = referencedProperty(database, cache);
 		if (referencedProperty != null) {
 			return referencedProperty.columnName();
 		}
@@ -164,31 +166,31 @@ public class ClassDBProperty {
 	 * Note: this returns only a single property; in the case where multiple foreign key
 	 * columns are used together to reference a table with a composite primary key,
 	 * each foreign key column references its respective foreign primary key.
-	 * @param dbDefin the current active database definition
+	 * @param database the current active database
 	 * @param cache the active class adaptor cache
 	 * @return the mapped foreign key property, or null if not a foreign key
 	 * @throws DBPebkacException if the foreign table has multiple primary keys and the foreign key
 	 *         column doesn't identify which primary key column to target
 	 */
 	// An idea of what could be possible; to be decided whether we want to keep this
-	public ClassDBProperty referencedProperty(DBDefinition dbDefn, ClassAdaptorFactory cache) {
+	public DBPropertyDefinition referencedProperty(DBDatabase database, DBRowClassWrapperFactory cache) {
 		if (!foreignKeyHandler.isForeignKey()) {
 			return null;
 		}
 		if (foreignKeyHandler.getReferencedClass() == null) {
 			// sanity check
-			throw new DBRuntimeException("Unexpected internal error: referenced class was null on "+qualifiedName());
+			throw new DBRuntimeException("Unexpected internal error: referenced class was null on "+qualifiedJavaName());
 		}
 
-		ClassAdaptor referencedClassAdaptor = cache.classAdaptorFor(foreignKeyHandler.getReferencedClass());
+		DBRowClassWrapper referencedClassAdaptor = cache.classAdaptorFor(foreignKeyHandler.getReferencedClass());
 		
 		// get explicitly referenced property (by column name)
 		String explicitColumnName = foreignKeyHandler.getReferencedColumnName();
 		if (explicitColumnName != null) {
-			ClassDBProperty property = referencedClassAdaptor.getPropertyByColumn(dbDefn, explicitColumnName);
+			DBPropertyDefinition property = referencedClassAdaptor.getPropertyByColumn(database, explicitColumnName);
 			if (property == null) {
 				// TODO do this validation at annotation processing time?
-				throw new DBPebkacException("Property "+qualifiedName()+" references class "+referencedClassAdaptor.name()
+				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
 						+" and column "+explicitColumnName+", but the column doesn't exist");
 			}
 			return property;
@@ -196,16 +198,16 @@ public class ClassDBProperty {
 		
 		// get implicitly referenced property (by scalar primary key)
 		else {
-			List<ClassDBProperty> primaryKeyProperties = referencedClassAdaptor.primaryKey();
+			List<DBPropertyDefinition> primaryKeyProperties = referencedClassAdaptor.primaryKey();
 			if (primaryKeyProperties == null || primaryKeyProperties.isEmpty()) {
 				// TODO do this validation at annotation processing time
 				// TODO not sure if it's appropriate to throw this exception here
-				throw new DBPebkacException("Property "+qualifiedName()+" references class "+referencedClassAdaptor.name()
+				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
 						+", which does not have a primary key");
 			}
 			else if (primaryKeyProperties.size() > 1) {
 				// TODO do this validation at annotation processing time
-				throw new DBPebkacException("Property "+qualifiedName()+" references class "+referencedClassAdaptor.name()
+				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
 						+" using an implicit primary key reference, but the referenced class has "+primaryKeyProperties.size()
 						+" primary key columns. You must include explicit foreign column names.");
 			}
@@ -223,6 +225,7 @@ public class ClassDBProperty {
 	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
+	// TODO improve javadoc
 	public String declaredReferencedColumnName() {
 		return foreignKeyHandler.getReferencedColumnName();
 	}
@@ -259,7 +262,7 @@ public class ClassDBProperty {
 	 * @throws IllegalStateException if not readable (you should have called isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public QueryableDatatype value(Object target) {
+	public QueryableDatatype getQueryableDatatype(Object target) {
 		return typeHandler.getDBvValue(target);
 	}
 	
@@ -275,7 +278,7 @@ public class ClassDBProperty {
 	 * @throws IllegalStateException if not writable (you should have called isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public void setValue(Object target, QueryableDatatype value) {
+	public void setQueryableDatatype(Object target, QueryableDatatype value) {
 		typeHandler.setObjectValue(target, value);
 	}
 	
@@ -284,8 +287,8 @@ public class ClassDBProperty {
 	 * prior to type conversion to the DBvolution-centric type.
 	 * 
 	 * <p> In most cases you will not need to call this method, as type
-	 * conversion is done transparently via the {@link #value(Object)} and
-	 * {@link #setValue(Object, QueryableDatatype)} methods.
+	 * conversion is done transparently via the {@link #getQueryableDatatype(Object)} and
+	 * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods.
 	 * 
 	 * <p> Use {@link #isReadable()} beforehand to check whether the property
 	 * can be read.
@@ -294,7 +297,7 @@ public class ClassDBProperty {
 	 * @throws IllegalStateException if not readable (you should have called isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public Object rawValue(Object target) {
+	public Object rawJavaValue(Object target) {
 		return adaptee.get(target);
 	}
 	
@@ -303,8 +306,8 @@ public class ClassDBProperty {
 	 * without type conversion to/from the DBvolution-centric type.
 	 * 
 	 * <p> In most cases you will not need to call this method, as type
-	 * conversion is done transparently via the {@link #value(Object)} and
-	 * {@link #setValue(Object, QueryableDatatype)} methods.
+	 * conversion is done transparently via the {@link #getQueryableDatatype(Object)} and
+	 * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods.
 	 * 
 	 * <p> Use {@link #isWritable()} beforehand to check whether the property
 	 * can be modified.
@@ -313,7 +316,7 @@ public class ClassDBProperty {
 	 * @throws IllegalStateException if not writable (you should have called isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public void setRawValue(Object target, Object value) {
+	public void setRawJavaValue(Object target, Object value) {
 		adaptee.set(target, value);
 	}
 	
@@ -322,13 +325,13 @@ public class ClassDBProperty {
 	 * prior to type conversion to the DBvolution-centric type.
 	 * 
 	 * <p> In most cases you will not need to call this method, as type
-	 * conversion is done transparently via the {@link #value(Object)} and
-	 * {@link #setValue(Object, QueryableDatatype)} methods.
+	 * conversion is done transparently via the {@link #getQueryableDatatype(Object)} and
+	 * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods.
 	 * Use the {@link #type()} method to get the DBv-centric property type,
 	 * after type conversion.
 	 * @return
 	 */
-	public Class<?> getRawType() {
+	public Class<?> getRawJavaType() {
 		return adaptee.type();
 	}
 	

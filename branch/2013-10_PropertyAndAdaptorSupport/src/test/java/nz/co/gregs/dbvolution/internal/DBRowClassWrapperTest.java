@@ -1,22 +1,24 @@
 package nz.co.gregs.dbvolution.internal;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 
 import org.junit.Test;
 
-public class ClassAdaptorTest {
+public class DBRowClassWrapperTest {
 	
 	@Test
 	public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
-		ClassAdaptor classAdaptor = new ClassAdaptor(MyTable1.class);
+		DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
 		assertThat(classAdaptor.primaryKey(), is(not(nullValue())));
 		assertThat(classAdaptor.primaryKey().size(), is(1));
 		assertThat(classAdaptor.primaryKey().get(0).columnName(), is("uid"));
@@ -24,21 +26,21 @@ public class ClassAdaptorTest {
 	
 	@Test
 	public void getsProperties() {
-		ClassAdaptor classAdaptor = new ClassAdaptor(MyTable1.class);
+		DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
 		assertThat(classAdaptor.getProperties().size(), is(3));
 	}
 	
 	@Test
 	public void getsForeignKeyReferencedTableName() {
-		ClassAdaptor classAdaptor = new ClassAdaptor(MyTable1.class);
+		DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
 		assertThat(classAdaptor.getPropertyByName("fkTable2").referencedTableName(), is("table2"));
 	}
 
 	@Test
 	public void getsForeignKeyReferencedColumnName() {
-		ClassAdaptor classAdaptor = new ClassAdaptor(MyTable1.class);
+		DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
 		assertThat(classAdaptor.getPropertyByName("fkTable2").referencedColumnName(
-				new DBDefinition(), new ClassAdaptorFactory()),
+				new DBDatabase(), new DBRowClassWrapperFactory()),
 				is("uid_2"));
 	}
 	
