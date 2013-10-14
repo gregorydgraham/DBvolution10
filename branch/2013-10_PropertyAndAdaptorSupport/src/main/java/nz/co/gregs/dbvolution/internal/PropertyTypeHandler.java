@@ -2,6 +2,10 @@ package nz.co.gregs.dbvolution.internal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBRuntimeException;
@@ -39,9 +43,10 @@ class PropertyTypeHandler {
 		this.annotation = javaProperty.getAnnotation(DBAdaptType.class);
 		if (annotation != null) {
 			this.typeAdaptor = newTypeAdaptorInstanceGiven(javaProperty, annotation);
-			this.dbvPropertyType = annotation.type();
+			this.dbvPropertyType = annotation.type(); // TODO: make this optional
 		}
 		else {
+			// validation: java property type must be a QueryableDataType
 			if (!QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
 				throw new DBPebkacException("Property "+javaProperty.qualifiedName()+" is not a supported type. "+
 						"Use one of the standard DB types, or use the @"+DBAdaptType.class.getSimpleName()+" annotation "+
@@ -49,6 +54,151 @@ class PropertyTypeHandler {
 			}
 			this.dbvPropertyType = (Class<? extends QueryableDatatype>)javaProperty.type();
 		}
+		
+		// validation: if using type adaptor, type adaptor must have acceptable types
+		// TODO: ideal
+		if (typeAdaptor != null) {
+			if (dbvPropertyType == null) {
+				Method toDBvValueMethod = getMethodThatTakesType(javaProperty, typeAdaptor.getClass(), "toDBvValue",
+						javaProperty.type());
+				Class<?> dbvType = toDBvValueMethod.getReturnType();
+				
+				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toObjectValue", dbvType, javaProperty.type());
+			}
+			else {
+				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toObjectValue", dbvPropertyType, javaProperty.type());
+				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toDBvValue", javaProperty.type(), dbvPropertyType);
+			}
+		}
+		
+		
+//		if (typeAdaptor != null) {
+//			try {
+//				System.out.println("-------------------");
+//				for (Method method: typeAdaptor.getClass().getMethods()) {
+//					if (method.getName().equals("toObjectValue") || method.getName().equals("toDBvValue")) {
+//						System.out.println(descriptionOf(method));
+//					}
+//				}
+				
+//				System.out.println("-------------------");
+//				Method method = typeAdaptor.getClass().getMethod("toObjectValue", DBInteger.class);
+//				System.out.println("synthetic="+method.isSynthetic()+", bridge="+method.isBridge()+" - "+method);
+//				System.out.println("return type: "+method.getReturnType());
+//				Object result = method.invoke(typeAdaptor, new DBInteger());
+//				System.out.println("result="+result);
+//	
+//				System.out.println("-------------------");
+//				method = typeAdaptor.getClass().getMethod("toObjectValue", QueryableDatatype.class);
+//				System.out.println("synthetic="+method.isSynthetic()+", bridge="+method.isBridge()+" - "+method);
+//				System.out.println("return type: "+method.getReturnType());
+//				result = method.invoke(typeAdaptor, new DBInteger());
+//				System.out.println("result="+result);
+//			} catch (NoSuchMethodException e) {
+//				throw new RuntimeException(e);
+//			} catch (Exception e) {
+//				throw new RuntimeException(e);
+//			}
+//		}
+		
+	}
+	
+	protected static String descriptionOf(Method method) {
+		StringBuilder buf = new StringBuilder();
+		buf.append(method.getReturnType() == null ? null : method.getReturnType().getSimpleName());
+		buf.append(" ");
+		buf.append(method.getName());
+		buf.append("(");
+		boolean first = true;
+		for (Class<?> paramType: method.getParameterTypes()) {
+			if (!first) buf.append(",");
+			buf.append(paramType.getSimpleName());
+			first = false;
+		}
+		if (method.isVarArgs()) {
+			buf.append("..."); // applies to last parameter
+		}
+		buf.append(")");
+		
+		if (method.isSynthetic() || method.isBridge()) {
+			buf.append("    {");
+			if (method.isSynthetic() && method.isBridge()) {
+				buf.append("synthetic,bridge");
+			}
+			else if (method.isSynthetic()) {
+				buf.append("synthetic");
+			}
+			else if (method.isBridge()) {
+				buf.append("bridge");
+			}
+			buf.append("}");
+		}
+		
+		return buf.toString();
+	}
+
+	/**
+	 * Doesn't accept 
+	 * @param adaptorClass
+	 * @param requiredParameterType
+	 * @param requiredReturnType
+	 * @return
+	 */
+	protected void validateHasMethod(JavaProperty property, Class<?> adaptorClass, String requiredName, Class<?> requiredParameterType, Class<?> requiredReturnType) {
+		System.out.println("testing isCorrectToObjectValueMethod("+requiredParameterType.getSimpleName()+" -> "+requiredReturnType.getSimpleName()+")...");
+		List<Class<?>> possibleWrongParamTypes = new ArrayList<Class<?>>();
+		List<Class<?>> possibleWrongReturnTypes = new ArrayList<Class<?>>();
+		
+		for (Method method: adaptorClass.getMethods()) {
+			// ignore synthetic/bridge methods (which are the methods in the interface, I think)
+			if (!method.isSynthetic() && !method.isBridge() && method.getName().equals(requiredName)) {
+				if (method.getParameterTypes().length == 1 && method.getReturnType() != null) {
+					System.out.println("  "+descriptionOf(method));
+					boolean paramOK = false;
+					boolean returnOK = false;
+					
+					// must be able to assign from given type to parameter type
+					if (method.getParameterTypes()[0].isAssignableFrom(requiredParameterType)) {
+						paramOK = true;
+					}
+					else {
+						possibleWrongParamTypes.add(method.getParameterTypes()[0]);
+					}
+					
+					// must be able to assign from return type to desired type
+					if (requiredReturnType.isAssignableFrom(method.getReturnType())) {
+						returnOK = true;
+					}
+					else {
+						possibleWrongReturnTypes.add(method.getReturnType());
+					}
+					
+					if (paramOK && returnOK) {
+						return;
+					}
+				}
+			}
+		}
+		
+		// attempt to produce detailed error message
+		StringBuilder buf = new StringBuilder();
+		if ((!possibleWrongParamTypes.isEmpty() || !possibleWrongReturnTypes.isEmpty()) && 
+				possibleWrongParamTypes.size() <= 1 &&
+				possibleWrongReturnTypes.size() <= 1) {
+			buf.append(", got ");
+			if (!possibleWrongParamTypes.isEmpty()) {
+				buf.append(possibleWrongParamTypes.get(0).getSimpleName());
+			}
+			if (!possibleWrongReturnTypes.isEmpty()) {
+				if (buf.length() > 0) buf.append(" and ");
+				buf.append(possibleWrongReturnTypes.get(0).getSimpleName());
+			}
+		}
+		throw new DBPebkacException("TypeAdaptor converts between wrong types, expected "+
+				requiredParameterType.getSimpleName()+" and"+
+				requiredReturnType.getSimpleName()+
+				buf.toString()+
+				"on property "+property.qualifiedName());
 	}
 	
 	public void checkForErrors() throws DBPebkacException {
@@ -159,6 +309,15 @@ class PropertyTypeHandler {
 			// shouldn't be possible
 			throw new DBRuntimeException("Encountered unexpected null "+DBAdaptType.class.getSimpleName()+
 					".adptor() (probably a bug in DBvolution)");
+		}
+		
+		if (adaptorClass.isInterface()) {
+			throw new DBPebkacException("TypeAdaptor cannot be an interface ("+adaptorClass.getSimpleName()
+					+"), on property "+property.qualifiedName());
+		}
+		if (Modifier.isAbstract(adaptorClass.getModifiers())) {
+			throw new DBPebkacException("TypeAdaptor cannot be an abstract class ("+adaptorClass.getSimpleName()
+					+"), on property "+property.qualifiedName());
 		}
 		
 		// get default constructor

@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * @DBAdaptType(adaptor=TrimmingStringAdaptor.class, type=DBString.class)
  * public DBString trimmedValue;
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBAdaptType {
 	/**

@@ -6,8 +6,22 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import org.hamcrest.TypeSafeMatcher;
 
 class PropertyMatchers {
+	
+	public static Matcher<String> matchesRegex(final String regex) {
+		return new TypeSafeMatcher<String>() {
+			public void describeTo(Description description) {
+				description.appendText("matches ").appendValue(regex);
+			}
+
+			@Override
+			protected boolean matchesSafely(String item) {
+				return (item != null) && item.matches(regex);
+			}
+		};
+	}
 	
 	public static <E> E itemOf(Collection<E> c, Matcher<? super E> matcher) {
 		for (E item: c) {
