@@ -106,7 +106,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
         List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
-            Class compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), dbcl.javaSource);
+            Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), dbcl.javaSource);
             Object newInstance = compiledClass.newInstance();
             DBRow row = (DBRow) newInstance;
             List<DBRow> rows = database.get(row);
@@ -149,7 +149,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
         Boolean succeeded = task.call();
 
-        for (Diagnostic diagnostic : diagnostics.getDiagnostics()) {
+        for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
             System.out.println("Error on line " + diagnostic.getLineNumber() + " in \"" + diagnostic.getSource() + "\"");
             succeeded = false;
         }

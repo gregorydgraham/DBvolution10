@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public abstract class DBAction {
 
-    protected DBRow row;
+    private DBRow row;
     protected String sql = "";
 //    protected final DBDatabase database;
     

@@ -20,6 +20,7 @@ package nz.co.gregs.dbvolution.exceptions;
  * @author gregorygraham
  */
 public class UnknownJavaSQLTypeException extends Exception {
+    public static final long serialVersionUID = 1L;
     
     private int unknownJavaSQLType;
 
