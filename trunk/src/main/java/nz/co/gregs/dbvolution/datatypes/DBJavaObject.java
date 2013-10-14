@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
  *
  * @author gregory.graham
  */
-public class DBObject extends QueryableDatatype {
+public class DBJavaObject extends QueryableDatatype {
 
     public static final long serialVersionUID = 1;
 

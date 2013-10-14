@@ -556,6 +556,10 @@ public class DBTable<E extends DBRow> {
             }
         }
         statement.executeBatch();
+        // Hasn't thrown an exception so they are now defined.
+        for (DBAction action : allInserts){
+            action.getRow().setDefined(true);
+        }
     }
 
     /**
@@ -594,7 +598,7 @@ public class DBTable<E extends DBRow> {
                     + defn.endInsertColumnList()
                     + row.getValuesClause(database)
                     + defn.endInsertLine();
-            allInserts.add(new DBSave(sql));
+            allInserts.add(new DBSave(row, sql));
             if (row.hasLargeObjectColumns()) {
                 allInserts.addAll(row.getLargeObjectActions(database));
             }
