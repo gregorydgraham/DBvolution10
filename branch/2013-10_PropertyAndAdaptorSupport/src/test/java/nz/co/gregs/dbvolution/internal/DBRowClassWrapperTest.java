@@ -18,10 +18,10 @@ public class DBRowClassWrapperTest {
 	
 	@Test
 	public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
-		DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
-		assertThat(classAdaptor.primaryKey(), is(not(nullValue())));
-		assertThat(classAdaptor.primaryKey().size(), is(1));
-		assertThat(classAdaptor.primaryKey().get(0).columnName(), is("uid"));
+		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
+		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
+		assertThat(classWrapper.primaryKey().size(), is(1));
+		assertThat(classWrapper.primaryKey().get(0).columnName(), is("uid"));
 	}
 	
 	@Test
@@ -32,14 +32,14 @@ public class DBRowClassWrapperTest {
 	
 	@Test
 	public void getsForeignKeyReferencedTableName() {
-		DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
-		assertThat(classAdaptor.getPropertyByName("fkTable2").referencedTableName(), is("table2"));
+		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
+		assertThat(classWrapper.getPropertyByName("fkTable2").referencedTableName(), is("table2"));
 	}
 
 	@Test
 	public void getsForeignKeyReferencedColumnName() {
-		DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
-		assertThat(classAdaptor.getPropertyByName("fkTable2").referencedColumnName(
+		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
+		assertThat(classWrapper.getPropertyByName("fkTable2").referencedColumnName(
 				new DBDatabase(), new DBRowClassWrapperFactory()),
 				is("uid_2"));
 	}

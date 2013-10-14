@@ -54,6 +54,15 @@ public class DBPropertyDefinition {
 	}
 	
 	/**
+	 * Gets a string representation of the wrapped property,
+	 * suitable for debugging and logging.
+	 */
+	@Override
+	public String toString() {
+		return adaptee.toString();
+	}
+	
+	/**
 	 * Gets the name of the underlying java property.
 	 * Mainly used within logging and error messages.
 	 * 
@@ -182,7 +191,7 @@ public class DBPropertyDefinition {
 			throw new DBRuntimeException("Unexpected internal error: referenced class was null on "+qualifiedJavaName());
 		}
 
-		DBRowClassWrapper referencedClassAdaptor = cache.classAdaptorFor(foreignKeyHandler.getReferencedClass());
+		DBRowClassWrapper referencedClassAdaptor = cache.classWrapperFor(foreignKeyHandler.getReferencedClass());
 		
 		// get explicitly referenced property (by column name)
 		String explicitColumnName = foreignKeyHandler.getReferencedColumnName();

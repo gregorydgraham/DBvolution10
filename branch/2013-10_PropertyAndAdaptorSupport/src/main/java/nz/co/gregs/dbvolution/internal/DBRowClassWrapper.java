@@ -20,7 +20,7 @@ import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
  * this class will work against any class type.
  * 
  * <p> To wrap a target object instance, use the
- * {@link #objectAdaptorFor(DBDefinition, Object) objectAdapterFor()}
+ * {@link #instanceAdaptorFor(DBDefinition, Object) objectAdapterFor()}
  * method.
  * 
  * <p> Note: instances of this class are expensive to create,
@@ -170,7 +170,7 @@ public class DBRowClassWrapper {
 	 * @param target
 	 * @return
 	 */
-	public DBRowInstanceWrapper objectAdaptorFor(DBDatabase database, Object target) {
+	public DBRowInstanceWrapper instanceAdaptorFor(DBDatabase database, Object target) {
 		checkForRemainingErrorsOnAcccess(database);
 		return new DBRowInstanceWrapper(database, this, target);
 	}
@@ -181,10 +181,10 @@ public class DBRowClassWrapper {
 	@Override
 	public String toString() {
 		if (isTable()) {
-			return "ClassAdapter<"+tableName()+":"+adaptee.getName()+">";
+			return getClass().getSimpleName()+"<"+tableName()+":"+adaptee.getName()+">";
 		}
 		else {
-			return "ClassAdapter<no-table:"+adaptee.getName()+">";
+			return getClass().getSimpleName()+"<no-table:"+adaptee.getName()+">";
 		}
 	}
 	

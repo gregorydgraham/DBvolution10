@@ -43,6 +43,15 @@ public class DBProperty {
 		this.database = database;
 		this.target = target;
 	}
+
+	/**
+	 * Gets a string representation of the wrapped property,
+	 * suitable for debugging and logging.
+	 */
+	@Override
+	public String toString() {
+		return propertyDefinition.toString();
+	}
 	
 	/**
 	 * Gets the name of the java property.

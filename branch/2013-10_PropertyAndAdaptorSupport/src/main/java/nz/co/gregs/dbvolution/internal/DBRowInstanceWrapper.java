@@ -11,7 +11,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  * Wraps a specific target object according to its type's {@link DBRowClassWrapper}.
- * To create instances of this type, call {@link DBRowClassWrapper#objectAdaptorFor(DBDefinition, Object)}
+ * To create instances of this type, call {@link DBRowClassWrapper#instanceAdaptorFor(DBDefinition, Object)}
  * on the appropriate {@link DBRowClassWrapper}. 
  * 
  * <p> Instances of this class are lightweight and efficient to create,
@@ -24,28 +24,28 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  */
 public class DBRowInstanceWrapper {
 	private final DBDatabase database;
-	private final DBRowClassWrapper classAdaptor;
+	private final DBRowClassWrapper classWrapper;
 	private final Object target;
 	
 	/**
-	 * Called by {@link DBRowClassWrapper#objectAdaptorFor(DBDefinition, Object)}.
+	 * Called by {@link DBRowClassWrapper#instanceAdaptorFor(DBDefinition, Object)}.
 	 * @param dbDefn
-	 * @param classAdaptor
+	 * @param classWrapper
 	 * @param target the target object of the same type as analysed by {@code classAdaptor}
 	 */
-	DBRowInstanceWrapper(DBDatabase database, DBRowClassWrapper classAdaptor, Object target) {
+	DBRowInstanceWrapper(DBDatabase database, DBRowClassWrapper classWrapper, Object target) {
 		if (target == null) {
 			throw new DBRuntimeException("Target object is null");
 		}
-		if (!classAdaptor.adaptee().isInstance(target)) {
+		if (!classWrapper.adaptee().isInstance(target)) {
 			throw new DBRuntimeException("Target object's type ("+target.getClass().getName()+
-					") is not compatible with given class adaptor for type "+classAdaptor.adaptee().getName()+
+					") is not compatible with given class adaptor for type "+classWrapper.adaptee().getName()+
 					" (this is probably a bug in DBvolution)");
 		}
 		
 		this.database = database;
 		this.target = target;
-		this.classAdaptor = classAdaptor;
+		this.classWrapper = classWrapper;
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class DBRowInstanceWrapper {
 	 * @throws Exception if has any errors
 	 */
 	public void checkForErrors() throws DBPebkacException {
-		classAdaptor.checkForErrors();
+		classWrapper.checkForErrors();
 	}
 	
 	/**
@@ -62,10 +62,10 @@ public class DBRowInstanceWrapper {
 	@Override
 	public String toString() {
 		if (isTable()) {
-			return "ObjectAdapter<"+tableName()+":"+classAdaptor.adaptee().getName()+">";
+			return getClass().getSimpleName()+"<"+tableName()+":"+classWrapper.adaptee().getName()+">";
 		}
 		else {
-			return "ObjectAdapter<no-table:"+classAdaptor.adaptee().getName()+">";
+			return getClass().getSimpleName()+"<no-table:"+classWrapper.adaptee().getName()+">";
 		}
 	}
 	
@@ -75,7 +75,7 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public Class<?> adapteeType() {
-		return classAdaptor.adaptee();
+		return classWrapper.adaptee();
 	}
 	
 	/**
@@ -92,7 +92,7 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public String javaName() {
-		return classAdaptor.javaName();
+		return classWrapper.javaName();
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public String qualifiedJavaName() {
-		return classAdaptor.qualifiedJavaName();
+		return classWrapper.qualifiedJavaName();
 	}
 	
 	/**
@@ -109,7 +109,7 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public boolean isTable() {
-		return classAdaptor.isTable();
+		return classWrapper.isTable();
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class DBRowInstanceWrapper {
 	 * @return the table name, if specified explicitly or implicitly.
 	 */
 	public String tableName() {
-		return classAdaptor.tableName();
+		return classWrapper.tableName();
 	}
 	
 	/**
@@ -132,7 +132,7 @@ public class DBRowInstanceWrapper {
 	 * @return the non-empty list of properties, or null if no primary key
 	 */
 	public List<DBPropertyDefinition> primaryKey() {
-		return classAdaptor.primaryKey();
+		return classWrapper.primaryKey();
 	}
 	
 	/**
@@ -149,7 +149,7 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public DBProperty getDBPropertyByColumn(String columnName) {
-		DBPropertyDefinition classProperty = classAdaptor.getPropertyByColumn(database, columnName);
+		DBPropertyDefinition classProperty = classWrapper.getPropertyByColumn(database, columnName);
 		return (classProperty == null) ? null : new DBProperty(classProperty, database, target);
 	}
 
@@ -161,7 +161,7 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public DBProperty getPropertyByName(String propertyName) {
-		DBPropertyDefinition classProperty = classAdaptor.getPropertyByName(propertyName);
+		DBPropertyDefinition classProperty = classWrapper.getPropertyByName(propertyName);
 		return (classProperty == null) ? null : new DBProperty(classProperty, database, target);
 	}
 
@@ -177,7 +177,7 @@ public class DBRowInstanceWrapper {
 	 */
 	public List<DBProperty> getDBProperties() {
 		List<DBProperty> list = new ArrayList<DBProperty>();
-		for (DBPropertyDefinition classProperty: classAdaptor.getProperties()) {
+		for (DBPropertyDefinition classProperty: classWrapper.getProperties()) {
 			list.add(new DBProperty(classProperty, database, target));
 		}
 		return list;
@@ -193,7 +193,7 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public List<DBPropertyDefinition> getPropertyDefinitions() {
-		return classAdaptor.getProperties();
+		return classWrapper.getProperties();
 	}
 
 // shouldn't be needed

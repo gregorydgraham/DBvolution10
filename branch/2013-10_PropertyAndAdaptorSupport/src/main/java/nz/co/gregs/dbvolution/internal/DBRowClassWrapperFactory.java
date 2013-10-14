@@ -18,7 +18,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
  */
 public class DBRowClassWrapperFactory {
 	/** Thread-safety: access to this object must be synchronized on it */
-	private Map<Class<?>, DBRowClassWrapper> classAdaptorsByClass = new HashMap<Class<?>, DBRowClassWrapper>();
+	private Map<Class<?>, DBRowClassWrapper> classWrappersByClass = new HashMap<Class<?>, DBRowClassWrapper>();
 	
 	/**
 	 * Gets the class adaptor for the given class.
@@ -27,14 +27,14 @@ public class DBRowClassWrapperFactory {
 	 * @param clazz
 	 * @return the class adaptor
 	 */
-	public DBRowClassWrapper classAdaptorFor(Class<?> clazz) {
-		synchronized (classAdaptorsByClass) {
-			DBRowClassWrapper adaptor = classAdaptorsByClass.get(clazz);
-			if (adaptor == null) {
-				adaptor = new DBRowClassWrapper(clazz);
-				classAdaptorsByClass.put(clazz, adaptor);
+	public DBRowClassWrapper classWrapperFor(Class<?> clazz) {
+		synchronized (classWrappersByClass) {
+			DBRowClassWrapper wrapper = classWrappersByClass.get(clazz);
+			if (wrapper == null) {
+				wrapper = new DBRowClassWrapper(clazz);
+				classWrappersByClass.put(clazz, wrapper);
 			}
-			return adaptor;
+			return wrapper;
 		}
 	}
 
@@ -45,8 +45,8 @@ public class DBRowClassWrapperFactory {
 	 * @param object
 	 * @return the class adaptor
 	 */
-	public DBRowClassWrapper classAdaptorFor(Object object) {
-		return classAdaptorFor(object.getClass());
+	public DBRowClassWrapper classWrapperFor(Object object) {
+		return classWrapperFor(object.getClass());
 	}
 	
 	/**
@@ -57,7 +57,7 @@ public class DBRowClassWrapperFactory {
 	 * @param object the object to wrap
 	 * @return the object adaptor for the given object
 	 */
-	public DBRowInstanceWrapper objectAdaptorFor(DBDatabase database, Object object) {
-		return classAdaptorFor(object.getClass()).objectAdaptorFor(database, object);
+	public DBRowInstanceWrapper instanceWrapperFor(DBDatabase database, Object object) {
+		return classWrapperFor(object.getClass()).instanceAdaptorFor(database, object);
 	}
 }
