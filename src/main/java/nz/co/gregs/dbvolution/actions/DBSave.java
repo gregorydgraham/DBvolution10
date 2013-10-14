@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.actions;
 import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 
 /**
  *
@@ -25,8 +26,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
  */
 public class DBSave extends DBAction {
 
-    public DBSave(String sql) {
-        super(sql);
+    public DBSave(DBRow row, String sql) {
+        super(row, sql);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class DBSaveBLOB extends DBAction {
     private DBLargeObject blob = null;
 
     public DBSaveBLOB(DBRow row, DBLargeObject blob) {
-        this.row = row;
+        super(row);
         this.blob = blob;
     }
 

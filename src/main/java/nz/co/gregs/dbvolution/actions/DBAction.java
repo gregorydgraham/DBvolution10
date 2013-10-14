@@ -18,24 +18,26 @@ package nz.co.gregs.dbvolution.actions;
 import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 
 /**
  *
  * @author gregorygraham
  */
 public abstract class DBAction {
+
+    protected DBRow row;
     protected String sql = "";
 //    protected final DBDatabase database;
     
-    public DBAction() {
+    public DBAction(DBRow row) {
         super();
-//        this.database = database;
+        this.row = row;
     }
     
-    public DBAction(String sql) {
-        super();
+    public DBAction(DBRow row, String sql) {
+        this(row);
         this.sql = sql;
-//        this.database = database;
     }
     
     public String getSQLRepresentation(){
@@ -45,5 +47,12 @@ public abstract class DBAction {
     public abstract boolean canBeBatched();
 
     public abstract void execute(DBDatabase db, Statement statement) throws SQLException ;
+
+    /**
+     * @return the row
+     */
+    public DBRow getRow() {
+        return row;
+    }
     
 }

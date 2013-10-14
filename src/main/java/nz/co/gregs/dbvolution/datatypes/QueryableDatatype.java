@@ -147,7 +147,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         } else if (o instanceof Boolean) {
             return new DBBoolean();
         } else {
-            return new DBObject();
+            return new DBJavaObject();
         }
     }
 
