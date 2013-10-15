@@ -6,6 +6,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -43,6 +44,11 @@ class JavaPropertyFinder {
 	 */
 	public JavaPropertyFinder(Visibility fieldVisibility, Visibility methodVisibility,
 			JavaPropertyFilter filter, PropertyType... propertyTypes) {
+		// check for errors
+		if (methodVisibility.ordinal() > Visibility.PUBLIC.ordinal()) {
+			throw new UnsupportedOperationException("Scanning for non-public property accessors is not supported");
+		}
+		
 		this.fieldVisibility = fieldVisibility;
 		this.methodVisibility = methodVisibility;
 		this.filter = (filter == null) ? JavaPropertyFilter.ANY_PROPERTY_FILTER : filter;
@@ -111,19 +117,21 @@ class JavaPropertyFinder {
 		if (fieldVisibility.ordinal() > Visibility.PUBLIC.ordinal()) {
 			for (Field field: clazz.getDeclaredFields()) {
 				if (!observedFieldNames.contains(field.getName())) {
-					// skip standard java fields
-					if (field.getName().equals("serialVersionUID")) {
-						continue;
-					}
-					
-					// add field if accepted
-					// (plus set accessible)
-					if (filter.acceptField(field)) {
-						// make accessible
-						// TODO: pretty sure there's exception types that need to be caught on this call
-						field.setAccessible(true);
+					if (visibilityOf(field).ordinal() <= fieldVisibility.ordinal()) {
+						// skip standard java fields
+						if (field.getName().equals("serialVersionUID")) {
+							continue;
+						}
 						
-						properties.add(new JavaProperty.JavaField(field));
+						// add field if accepted
+						// (plus set accessible)
+						if (filter.acceptField(field)) {
+							// make accessible
+							// TODO: pretty sure there's exception types that need to be caught on this call
+							field.setAccessible(true);
+							
+							properties.add(new JavaProperty.JavaField(field));
+						}
 					}
 				}
 			}
@@ -131,7 +139,7 @@ class JavaPropertyFinder {
 		
 		return properties;
 	}
-
+	
 	/**
 	 * Gets the bean-property-based properties.
 	 * @param clazz
@@ -169,4 +177,28 @@ class JavaPropertyFinder {
 		
 		return properties;
 	}
+
+	private static Visibility visibilityOf(Field field) {
+		return visibilityOf(field.getModifiers());
+	}
+
+	private static Visibility visibilityOf(Method method) {
+		return visibilityOf(method.getModifiers());
+	}
+	
+	private static Visibility visibilityOf(int modifiers) {
+		if (Modifier.isPublic(modifiers)) {
+			return Visibility.PUBLIC;
+		}
+		else if (Modifier.isProtected(modifiers)) {
+			return Visibility.PROTECTED;
+		}
+		else if (Modifier.isPrivate(modifiers)) {
+			return Visibility.PRIVATE;
+		}
+		else {
+			return Visibility.DEFAULT;
+		}
+	}
+
 }

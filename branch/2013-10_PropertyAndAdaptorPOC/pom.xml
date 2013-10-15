@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nz.co.gregs</groupId>
-    <artifactId>dbvolution-propertyandadapter-support</artifactId>
+    <artifactId>dbvolution-propertyandadapter-poc</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     
-    <name>DBvolution - Property And Adapter Support</name>
+    <name>DBvolution - Property And Adapter POC</name>
     <description>Advanced Library to Remove Object Relational Impedance</description>
     <url>https://sourceforge.net/projects/dbvolution/</url>
     <licenses>

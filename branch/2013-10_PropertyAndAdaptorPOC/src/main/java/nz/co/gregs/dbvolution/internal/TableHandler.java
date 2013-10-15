@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal;
 
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 
 /**
@@ -10,30 +11,36 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
  * <p> This class behaves correctly when no {@link DBTableName} annotation is present.
  * @author Malcolm Lett
  */
-// TODO: is the handling here regarding no annotation correct? Or are all classes valid as a table?
 class TableHandler {
+	private final boolean isTable;
 	private final String tableName;
 	private final DBTableName tableNameAnnotation; // null if not present on class
 	
 	public TableHandler(Class<?> adaptee) {
 		this.tableNameAnnotation = adaptee.getAnnotation(DBTableName.class);
 		
+		// must extend DBRow to be a table
+		this.isTable = DBRow.class.isAssignableFrom(adaptee);
+		
 		// pre-calculate table name
-		// (null if no annotation, default if annotation present but no name given)
+		// (default if no annotation present or name not given)
+		String explicitName = null;
 		if (tableNameAnnotation != null) {
 			String name = tableNameAnnotation.value();
-			this.tableName = (name == null || name.trim().equals("")) ? adaptee.getSimpleName() : name;
-		} else {
-			this.tableName = null;
+			if (name != null && !name.trim().equals("")) {
+				explicitName = name;
+			}
 		}
+		this.tableName = (explicitName == null) ? adaptee.getSimpleName() : explicitName;
 	}
 
 	/**
 	 * Indicates whether this class maps to a database table.
+	 * {@code true} always with the present implementation.
 	 * @return
 	 */
 	public boolean isTable() {
-		return tableName != null;
+		return isTable;
 	}
 	
 	/**
@@ -45,7 +52,7 @@ class TableHandler {
 	 * @return the table name, if specified explicitly or implicitly.
 	 */
 	public String getTableName() {
-		return tableName;
+		return isTable ? tableName : null;
 	}
 	
 	/**

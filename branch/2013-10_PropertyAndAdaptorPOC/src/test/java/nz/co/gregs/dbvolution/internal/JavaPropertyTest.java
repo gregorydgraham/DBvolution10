@@ -1,19 +1,15 @@
 package nz.co.gregs.dbvolution.internal;
 
-import static nz.co.gregs.dbvolution.internal.PropertyMatchers.hasJavaPropertyName;
-import static nz.co.gregs.dbvolution.internal.PropertyMatchers.isJavaPropertyField;
-import static nz.co.gregs.dbvolution.internal.PropertyMatchers.itemOf;
-import static nz.co.gregs.dbvolution.internal.PropertyMatchers.that;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static nz.co.gregs.dbvolution.internal.PropertyMatchers.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.io.Serializable;
 import java.util.List;
 
+import nz.co.gregs.dbvolution.DBPebkacException;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
 
@@ -153,7 +149,7 @@ public class JavaPropertyTest {
 		assertThat(properties, not(hasItem(hasJavaPropertyName("privateField"))));
 	}
 	
-	
+
 	// check handling in unusual situations
 	
 	@Test
@@ -225,6 +221,86 @@ public class JavaPropertyTest {
 		//System.out.println(properties);
 		assertThat(properties, containsInAnyOrder(hasJavaPropertyName("property1"),
 				hasJavaPropertyName("property2"), hasJavaPropertyName("property3")));
+	}
+	
+	@Test
+	public void retrievesAnnotationGivenExactlyDuplicatedAnnotationOnGetterAndSetter() {
+		class MyClass {
+			@DBColumn("samename")
+			public int getProperty() {
+				return 0;
+			}
+			
+			@DBColumn("samename")
+			public void setProperty(int value){
+			}
+		}
+		
+		JavaProperty property = propertyOf(MyClass.class, "property");
+		assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
+	}
+
+	// TODO: turns out this is different to what I originally designed, but I think it's a good idea
+	@Test
+	public void retrievesAnnotationGivenExactlyDuplicatedEmptyAnnotationOnGetterAndSetter() {
+		class MyClass {
+			@DBColumn
+			public int getProperty() {
+				return 0;
+			}
+			
+			@DBColumn
+			public void setProperty(int value){
+			}
+		}
+		
+		JavaProperty property = propertyOf(MyClass.class, "property");
+		assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
+	}
+	
+	// TODO: turns out this is different to what I originally designed, but I think it's a good idea
+	@Test(expected=DBPebkacException.class)
+	public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedAnnotationOnGetterAndSetter() {
+		class MyClass {
+			@DBColumn("samename")
+			public int getProperty() {
+				return 0;
+			}
+			
+			@DBColumn("differentname")
+			public void setProperty(int value){
+			}
+		}
+		
+		JavaProperty property = propertyOf(MyClass.class, "property");
+		System.out.println(property.getAnnotation(DBColumn.class));
+	}
+	
+	@Test
+	public void retrievesAnnotationsGivenAnnotationsOnAlternatingGetterOrSetter() {
+		class MyClass {
+			@DBColumn("name")
+			public int getProperty() {
+				return 0;
+			}
+			
+			@DBPrimaryKey
+			public void setProperty(int value){
+			}
+		}
+		
+		JavaProperty property = propertyOf(MyClass.class, "property");
+		assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
+		assertThat(property.getAnnotation(DBPrimaryKey.class), is(not(nullValue())));
+	}
+	
+	private JavaProperty propertyOf(Class<?> clazz, String javaPropertyName) {
+		List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(clazz);
+		JavaProperty property = itemOf(properties, that(hasJavaPropertyName(javaPropertyName)));
+		if (property == null) {
+			throw new IllegalArgumentException("No property found with java name '"+javaPropertyName+"'");
+		}
+		return property;
 	}
 	
 	// note: protected/private tests here might not be sufficient because JavaPropertyTest class

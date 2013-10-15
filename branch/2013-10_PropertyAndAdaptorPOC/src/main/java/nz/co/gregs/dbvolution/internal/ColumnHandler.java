@@ -37,7 +37,7 @@ class ColumnHandler {
 	 * @return {@code true} if a column
 	 */
 	public boolean isColumn() {
-		return columnName != null;
+		return columnAnnotation != null;
 	}
 	
 	/**

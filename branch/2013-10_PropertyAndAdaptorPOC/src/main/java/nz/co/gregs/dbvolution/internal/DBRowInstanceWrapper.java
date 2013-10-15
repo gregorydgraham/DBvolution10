@@ -3,7 +3,6 @@ package nz.co.gregs.dbvolution.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
@@ -48,14 +47,6 @@ public class DBRowInstanceWrapper {
 		this.classWrapper = classWrapper;
 	}
 
-	/**
-	 * Checks all the annotations etc. and errors.
-	 * @throws Exception if has any errors
-	 */
-	public void checkForErrors() throws DBPebkacException {
-		classWrapper.checkForErrors();
-	}
-	
 	/**
 	 * Gets a string representation suitable for debugging.
 	 */

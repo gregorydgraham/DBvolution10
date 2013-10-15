@@ -1,9 +1,8 @@
 package nz.co.gregs.dbvolution.internal;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -22,6 +21,26 @@ public class DBRowClassWrapperTest {
 		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
 		assertThat(classWrapper.primaryKey().size(), is(1));
 		assertThat(classWrapper.primaryKey().get(0).columnName(), is("uid"));
+	}
+	
+	@Test
+	public void getsPrimaryKeyPropertiesGivenTwoPrimaryKeyColumns() {
+		@DBTableName("table2")
+		class TestClass extends DBRow {
+			@DBPrimaryKey
+			@DBColumn("uid_2")
+			public DBInteger uid = new DBInteger();
+
+			@DBPrimaryKey
+			@DBColumn
+			public DBInteger type = new DBInteger();
+		}
+		
+		DBRowClassWrapper classWrapper = new DBRowClassWrapper(TestClass.class);
+		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
+		assertThat(classWrapper.primaryKey().size(), is(2));
+		assertThat(classWrapper.primaryKey().get(0).columnName(), is("uid_2"));
+		assertThat(classWrapper.primaryKey().get(1).columnName(), is("type"));
 	}
 	
 	@Test
@@ -45,7 +64,7 @@ public class DBRowClassWrapperTest {
 	}
 	
 	@DBTableName("table1")
-	public static class MyTable1 {
+	public static class MyTable1 extends DBRow {
 		@DBPrimaryKey
 		@DBColumn
 		public DBInteger uid = new DBInteger();
@@ -59,7 +78,7 @@ public class DBRowClassWrapperTest {
 	}
 	
 	@DBTableName("table2")
-	public static class MyTable2 {
+	public static class MyTable2 extends DBRow {
 		@DBPrimaryKey
 		@DBColumn("uid_2")
 		public DBInteger uid = new DBInteger();

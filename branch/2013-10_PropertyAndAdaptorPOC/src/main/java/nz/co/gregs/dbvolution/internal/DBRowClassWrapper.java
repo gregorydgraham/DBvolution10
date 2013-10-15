@@ -41,7 +41,7 @@ public class DBRowClassWrapper {
 	
 	/**
 	 * All properties of which DBvolution is aware, ordered as first encountered.
-	 * Requires that the {@code DBColumn} annotation is declared on the property.
+	 * Properties are only included if they are columns.
 	 */
 	private final List<DBPropertyDefinition> properties;
 	
@@ -87,9 +87,13 @@ public class DBRowClassWrapper {
 				Visibility.PRIVATE, Visibility.PUBLIC,
 				JavaPropertyFilter.COLUMN_PROPERTY_FILTER,
 				PropertyType.FIELD, PropertyType.BEAN_PROPERTY);
+		
 		properties = new ArrayList<DBPropertyDefinition>();
 		for (JavaProperty javaProperty: propertyFinder.getPropertiesOf(clazz)) {
-			properties.add(new DBPropertyDefinition(javaProperty));
+			DBPropertyDefinition property = new DBPropertyDefinition(javaProperty);
+			if (property.isColumn()) {
+				properties.add(property);
+			}
 		}
 		
 		// pre-calculate primary key
@@ -110,6 +114,7 @@ public class DBRowClassWrapper {
 			propertiesByPropertyName.put(property.javaName(), property);
 			
 			// add unique values for case-sensitive lookups
+			// (error immediately on collisions)
 			if (propertiesByCaseSensitiveColumnName.containsKey(property.columnName())) {
 				throw new DBPebkacException("Class "+clazz.getName()+" has multiple properties for column "+property.columnName());
 			}
@@ -118,6 +123,7 @@ public class DBRowClassWrapper {
 			}
 			
 			// add unique values for case-insensitive lookups
+			// (defer erroring until actually know database is case insensitive)
 			if (propertiesByUpperCaseColumnName.containsKey(property.columnName().toUpperCase())) {
 				List<DBPropertyDefinition> list = duplicatedPropertiesByUpperCaseColumnName.get(property.columnName().toUpperCase());
 				if (list == null) {
@@ -133,14 +139,6 @@ public class DBRowClassWrapper {
 		}
 	}
 
-	/**
-	 * Checks all the annotations etc. and errors.
-	 * @throws Exception if has any errors
-	 */
-	public void checkForErrors() throws DBPebkacException {
-		// TODO: to be implemented
-	}
-	
 	/**
 	 * Checks for errors that can't be known in advance without knowing
 	 * the database being accessed.

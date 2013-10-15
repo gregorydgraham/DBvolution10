@@ -110,6 +110,8 @@ interface JavaProperty {
 	 * @param annotationClass
 	 * @return the annotation, or null if not found
 	 */
+	// TODO: change this to automatically check the annotations are identical
+	// TODO: throw a useful (checked?) exception if it does occur
 	public <A extends Annotation> A getAnnotation(Class<A> annotationClass);
 
 	/**
@@ -119,6 +121,7 @@ interface JavaProperty {
 	 * @param annotationClass
 	 * @return list of annotations of the given type, empty list if none
 	 */
+	// TODO: remove this in favour of smarter logic in the getAnnotation() method
 	public <A extends Annotation> List<A> getAnnotations(Class<A> annotationClass);
 	
 	/**

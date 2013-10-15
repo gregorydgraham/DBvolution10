@@ -23,7 +23,7 @@ public class DBRowClassWrapperUsabilityTest {
 	@Test
 	public void easyToGetSpecificPropertyValueOnObjectWhenDoingVerbosely() {
 		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyExampleTableClass.class);
-		DBRowInstanceWrapper objectWrapper = classWrapper.instanceAdaptorFor(database, new MyExampleTableClass());
+		DBRowInstanceWrapper objectWrapper = classWrapper.instanceAdaptorFor(database, obj);
 		DBProperty property = objectWrapper.getDBPropertyByColumn("column1");
 		if (property != null) {
 			QueryableDatatype qdt = property.getQueryableDatatype();
@@ -32,18 +32,16 @@ public class DBRowClassWrapperUsabilityTest {
 	}
 
 	@Test
-	public void easyToIterateOverPropertiesUsingFactory() {
-		DBRowInstanceWrapper objectWrapper = factory.instanceWrapperFor(database, new MyExampleTableClass());
-		for (DBProperty property: objectWrapper.getDBProperties()) {
-			QueryableDatatype qdt = property.getQueryableDatatype();
-		}
+	public void easyToGetInstanceWrapperGivenObject() {
+		DBRowInstanceWrapper objectWrapper = factory.instanceWrapperFor(database, obj);
 	}
 	
 	@Test
-	// requires: private ClassAdaptorCache adaptedClasses = new ClassAdaptorCache();
-	public void easyToGetObjectAdaptorGivenObject() {
-		//ObjectAdaptor objectAdaptor = adaptedClasses.objectAdaptorFor(dbDefn, obj);
-		throw new UnsupportedOperationException("not yet implemented");
+	public void easyToIterateOverPropertiesUsingFactory() {
+		DBRowInstanceWrapper objectWrapper = factory.instanceWrapperFor(database, obj);
+		for (DBProperty property: objectWrapper.getDBProperties()) {
+			QueryableDatatype qdt = property.getQueryableDatatype();
+		}
 	}
 	
 	@DBTableName("table")
