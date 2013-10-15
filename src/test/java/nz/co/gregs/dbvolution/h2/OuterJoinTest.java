@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.operators.DBEqualsCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
+import nz.co.gregs.dbvolution.query.QueryGraph;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -96,8 +97,9 @@ public class OuterJoinTest extends AbstractTest {
         DBQuery dbQuery = database.getDBQuery(mrq);
         List<DBRow> tables = new ArrayList<DBRow>();
         Set<DBRow> connectedTables = new HashSet<DBRow>();
+        QueryGraph queryGraph = new QueryGraph();
         StringBuilder ansiJoinClause = new StringBuilder();
-        ansiJoinClause.append(dbQuery.getANSIJoinClause(carCo, tables, connectedTables));
+        ansiJoinClause.append(dbQuery.getANSIJoinClause(carCo, tables, queryGraph));
         System.out.println("=============");
         System.out.println(ansiJoinClause);
         System.out.println("=============");
@@ -106,7 +108,8 @@ public class OuterJoinTest extends AbstractTest {
                 is(testableSQL(expectedCarCoJoin)));
 
         tables.add(carCo);
-        ansiJoinClause.append(dbQuery.getANSIJoinClause(mrq, tables, connectedTables));
+        queryGraph = new QueryGraph();
+        ansiJoinClause.append(dbQuery.getANSIJoinClause(mrq, tables, queryGraph));
         System.out.println("=============");
         System.out.println(ansiJoinClause);
         System.out.println("=============");
@@ -118,7 +121,8 @@ public class OuterJoinTest extends AbstractTest {
 
 
         tables.add(mrq);
-        ansiJoinClause.append(dbQuery.getANSIJoinClause(link, tables, connectedTables));
+        queryGraph = new QueryGraph();
+        ansiJoinClause.append(dbQuery.getANSIJoinClause(link, tables, queryGraph));
         System.out.println("=============");
         System.out.println(ansiJoinClause);
         System.out.println("=============");
@@ -132,7 +136,8 @@ public class OuterJoinTest extends AbstractTest {
 
 
         tables.add(link);
-        ansiJoinClause.append(dbQuery.getANSIJoinClause(logo, tables, connectedTables));
+        queryGraph = new QueryGraph();
+        ansiJoinClause.append(dbQuery.getANSIJoinClause(logo, tables, queryGraph));
         System.out.println("=============");
         System.out.println(ansiJoinClause);
         System.out.println("=============");
