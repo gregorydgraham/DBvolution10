@@ -4,11 +4,6 @@ import static nz.co.gregs.dbvolution.internal.PropertyMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBPebkacException;
@@ -23,6 +18,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 import org.junit.Test;
 
+// TODO: looks like I can use this library, or base some stuff of it:
+// com.sun.jersey.core.reflection.ReflectionHelper
 public class PropertyTypeHandlerTest {
 	private JavaPropertyFinder finder = new JavaPropertyFinder();
 
@@ -63,7 +60,7 @@ public class PropertyTypeHandlerTest {
 		DBTypeAdaptor<Object,QueryableDatatype> typeAdaptor =
 				(DBTypeAdaptor<Object,QueryableDatatype>)(Object)
 				new MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods();
-		printTypeAdaptorMethods(typeAdaptor.getClass());
+		TypeTestUtils.describeClass(typeAdaptor.getClass());
 		
 		try {
 			typeAdaptor.toObjectValue(new DBInteger());
@@ -80,7 +77,7 @@ public class PropertyTypeHandlerTest {
 		DBTypeAdaptor<Object,QueryableDatatype> typeAdaptor =
 				(DBTypeAdaptor<Object,QueryableDatatype>)(Object)
 				new MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods();
-		printTypeAdaptorMethods(typeAdaptor.getClass());
+		TypeTestUtils.describeClass(typeAdaptor.getClass());
 		
 		try {
 			typeAdaptor.toObjectValue(new DBNumber());
@@ -97,7 +94,7 @@ public class PropertyTypeHandlerTest {
 		DBTypeAdaptor<Object,QueryableDatatype> typeAdaptor =
 				(DBTypeAdaptor<Object,QueryableDatatype>)(Object)
 				new MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods();
-		printTypeAdaptorMethods(typeAdaptor.getClass());
+		TypeTestUtils.describeClass(typeAdaptor.getClass());
 		
 		try {
 			typeAdaptor.toObjectValue(new DBNumber());
@@ -114,7 +111,7 @@ public class PropertyTypeHandlerTest {
 		DBTypeAdaptor<Object,QueryableDatatype> typeAdaptor =
 				(DBTypeAdaptor<Object,QueryableDatatype>)(Object)
 				new MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods();
-		printTypeAdaptorMethods(typeAdaptor.getClass());
+		TypeTestUtils.describeClass(typeAdaptor.getClass());
 		
 		try {
 			typeAdaptor.toObjectValue(new DBInteger());
@@ -125,112 +122,20 @@ public class PropertyTypeHandlerTest {
 	
 	@Test
 	public void printMethods() {
-		printTypeAdaptorMethods(MyIntegerDBIntegerAdaptor.class);
-		printTypeAdaptorMethods(MyNumberDBNumberAdaptor.class);
-		printTypeAdaptorMethods(MyNumberDBNumberAdaptor2.class);
-		printTypeAdaptorMethods(MyObjectQDTAdaptor.class);
-		printTypeAdaptorMethods(MyAbstractAdaptor.class);
-		printTypeAdaptorMethods(MyAbstractAdaptor2.class);
-		printTypeAdaptorMethods(MyVarargsAdaptor.class);
-		printTypeAdaptorMethods(DBTypeAdaptor.class);
-		printTypeAdaptorMethods(MyInterfaceAdaptor.class);
-		printTypeAdaptorMethods(MyGenericNumberInterfaceAdaptor.class);
-		printTypeAdaptorMethods(MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods.class);
-		printTypeAdaptorMethods(MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods.class);
+		TypeTestUtils.describeClass(MyIntegerDBIntegerAdaptor.class);
+		TypeTestUtils.describeClass(MyNumberDBNumberAdaptor.class);
+		TypeTestUtils.describeClass(MyNumberDBNumberAdaptor2.class);
+		TypeTestUtils.describeClass(MyObjectQDTAdaptor.class);
+		TypeTestUtils.describeClass(MyAbstractAdaptor.class);
+		TypeTestUtils.describeClass(MyAbstractAdaptor2.class);
+		TypeTestUtils.describeClass(MyVarargsAdaptor.class);
+		TypeTestUtils.describeClass(DBTypeAdaptor.class);
+		TypeTestUtils.describeClass(MyInterfaceAdaptor.class);
+		//TypeTestUtils.describeClass(MyGenericNumberInterfaceAdaptor.class);
+		TypeTestUtils.describeClass(MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods.class);
+		TypeTestUtils.describeClass(MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods.class);
 	}
 
-	public static void printTypeAdaptorMethods(Class<?> typeAdaptorClass) {
-		System.out.println("Type adptor methods of "+typeAdaptorClass.getSimpleName());
-		System.out.println("  (class: synthetic="+typeAdaptorClass.isSynthetic()+"," +
-				" interface="+typeAdaptorClass.isInterface()+","+
-				" abstract="+(Modifier.isAbstract(typeAdaptorClass.getModifiers()))+
-				")");
-		Type[] genericInterfaces = typeAdaptorClass.getGenericInterfaces();
-		if (genericInterfaces != null && genericInterfaces.length > 0) {
-			System.out.print("  (class: generics=");
-			boolean first = true;
-			for (Type type: genericInterfaces) {
-				if (!first) System.out.print(",");
-				if (type instanceof ParameterizedType) {
-					Class<?> clazz = (Class<?>)(((ParameterizedType) type).getRawType());
-					System.out.print(clazz.getSimpleName());
-					Type[] args = ((ParameterizedType) type).getActualTypeArguments();
-					if (args != null && args.length > 0) {
-						System.out.print("<");
-						boolean first2 = true;
-						for (Type arg: args) {
-							if (!first2) System.out.print(",");
-							if (arg instanceof TypeVariable) {
-								System.out.print(((TypeVariable) arg).getName());
-								System.out.print(":");
-								System.out.print(((Class<?>)((TypeVariable) arg).getBounds()[0]).getSimpleName());
-								//System.out.print(((TypeVariable) arg).getGenericDeclaration());
-							}
-							else if (arg instanceof Class) {
-								System.out.print(((Class) arg).getSimpleName());
-							}
-							else {
-								throw new UnsupportedOperationException("What is "+arg.getClass().getName());
-							}
-							first2 = false;
-						}
-						System.out.print(">");
-					}
-					
-				}
-				else if (type instanceof Class) {
-					System.out.println(((Class<?>)type).getSimpleName());
-				}
-				else {
-					throw new UnsupportedOperationException("What is "+type.getClass().getName());
-				}
-				//System.out.print(type);
-				first = false;
-			}
-			System.out.println(")");
-		}
-		for (Method method: typeAdaptorClass.getMethods()) {
-			if (method.getName().equals("toObjectValue") || method.getName().equals("toDBvValue")) {
-				System.out.println("  "+descriptionOf(method));
-			}
-		}
-		System.out.println();
-	}
-	
-	protected static String descriptionOf(Method method) {
-		StringBuilder buf = new StringBuilder();
-		buf.append(method.getReturnType() == null ? null : method.getReturnType().getSimpleName());
-		buf.append(" ");
-		buf.append(method.getName());
-		buf.append("(");
-		boolean first = true;
-		for (Class<?> paramType: method.getParameterTypes()) {
-			if (!first) buf.append(",");
-			buf.append(paramType.getSimpleName());
-			first = false;
-		}
-		if (method.isVarArgs()) {
-			buf.append("..."); // applies to last parameter
-		}
-		buf.append(")");
-		
-		if (method.isSynthetic() || method.isBridge()) {
-			buf.append("    {");
-			if (method.isSynthetic() && method.isBridge()) {
-				buf.append("synthetic,bridge");
-			}
-			else if (method.isSynthetic()) {
-				buf.append("synthetic");
-			}
-			else if (method.isBridge()) {
-				buf.append("bridge");
-			}
-			buf.append("}");
-		}
-		
-		return buf.toString();
-	}
-	
 	@DBTableName("Simple_Table")
 	public static class MyTable {
 		@DBColumn
@@ -321,42 +226,69 @@ public class PropertyTypeHandlerTest {
 	public static interface MyInterfaceAdaptor extends DBTypeAdaptor<Object, QueryableDatatype> {
 	}
 
-	public static interface MyGenericNumberInterfaceAdaptor<T extends Number,D extends DBNumber> extends DBTypeAdaptor<T,D> {
-	}
-	
 	public static class MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods implements DBTypeAdaptor<Integer, DBInteger> {
+		@Override
 		public Integer toObjectValue(DBInteger dbvValue) {
 			throw new UnsupportedOperationException("toObjectValue(DBInteger): Integer");
 		}
 
+		//@Override
 		public Number toObjectValue(DBNumber dbvValue) {
 			throw new UnsupportedOperationException("toObjectValue(DBNumber): Number");
 		}
 
+		@Override
 		public DBInteger toDBvValue(Integer objectValue) {
 			throw new UnsupportedOperationException("toDBvValue(Integer): DBInteger");
 		}
 		
+		//@Override
 		public DBNumber toDBvValue(Number objectValue) {
 			throw new UnsupportedOperationException("toDBvValue(Number): DBNumber");
 		}
 	}
 
 	public static class MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods implements DBTypeAdaptor<Number, DBNumber> {
+		//@Override
 		public Integer toObjectValue(DBInteger dbvValue) {
 			throw new UnsupportedOperationException("toObjectValue(DBInteger): Integer");
 		}
 
+		@Override
 		public Number toObjectValue(DBNumber dbvValue) {
 			throw new UnsupportedOperationException("toObjectValue(DBNumber): Number");
 		}
 
+		//@Override
 		public DBInteger toDBvValue(Integer objectValue) {
 			throw new UnsupportedOperationException("toDBvValue(Integer): DBInteger");
 		}
 		
+		@Override
 		public DBNumber toDBvValue(Number objectValue) {
 			throw new UnsupportedOperationException("toDBvValue(Number): DBNumber");
 		}
 	}
+	
+//	public static class DualImplementation implements DBTypeAdaptor<Number, DBNumber>, DBTypeAdaptor<Integer, DBInteger> {
+//		//@Override
+//		public Integer toObjectValue(DBInteger dbvValue) {
+//			throw new UnsupportedOperationException("toObjectValue(DBInteger): Integer");
+//		}
+//
+//		//@Override
+//		public Number toObjectValue(DBNumber dbvValue) {
+//			throw new UnsupportedOperationException("toObjectValue(DBNumber): Number");
+//		}
+//
+//		//@Override
+//		public DBInteger toDBvValue(Integer objectValue) {
+//			throw new UnsupportedOperationException("toDBvValue(Integer): DBInteger");
+//		}
+//		
+//		//@Override
+//		public DBNumber toDBvValue(Number objectValue) {
+//			throw new UnsupportedOperationException("toDBvValue(Number): DBNumber");
+//		}
+//	}
 }

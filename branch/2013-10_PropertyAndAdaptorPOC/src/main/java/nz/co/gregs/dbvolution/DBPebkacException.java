@@ -23,10 +23,4 @@ public class DBPebkacException extends RuntimeException {
 	public DBPebkacException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
-	public DBPebkacException(String message, Throwable cause,
-			boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-
 }

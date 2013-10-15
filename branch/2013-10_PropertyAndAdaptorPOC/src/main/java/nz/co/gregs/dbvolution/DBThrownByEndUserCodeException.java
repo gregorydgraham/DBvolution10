@@ -23,10 +23,4 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	public DBThrownByEndUserCodeException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
-	public DBThrownByEndUserCodeException(String message, Throwable cause,
-			boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
-
 }

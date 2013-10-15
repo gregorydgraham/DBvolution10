@@ -57,19 +57,19 @@ class PropertyTypeHandler {
 		
 		// validation: if using type adaptor, type adaptor must have acceptable types
 		// TODO: ideal
-		if (typeAdaptor != null) {
-			if (dbvPropertyType == null) {
-				Method toDBvValueMethod = getMethodThatTakesType(javaProperty, typeAdaptor.getClass(), "toDBvValue",
-						javaProperty.type());
-				Class<?> dbvType = toDBvValueMethod.getReturnType();
-				
-				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toObjectValue", dbvType, javaProperty.type());
-			}
-			else {
-				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toObjectValue", dbvPropertyType, javaProperty.type());
-				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toDBvValue", javaProperty.type(), dbvPropertyType);
-			}
-		}
+//		if (typeAdaptor != null) {
+//			if (dbvPropertyType == null) {
+//				Method toDBvValueMethod = getMethodThatTakesType(javaProperty, typeAdaptor.getClass(), "toDBvValue",
+//						javaProperty.type());
+//				Class<?> dbvType = toDBvValueMethod.getReturnType();
+//				
+//				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toObjectValue", dbvType, javaProperty.type());
+//			}
+//			else {
+//				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toObjectValue", dbvPropertyType, javaProperty.type());
+//				validateHasMethod(javaProperty, typeAdaptor.getClass(), "toDBvValue", javaProperty.type(), dbvPropertyType);
+//			}
+//		}
 		
 		
 //		if (typeAdaptor != null) {
