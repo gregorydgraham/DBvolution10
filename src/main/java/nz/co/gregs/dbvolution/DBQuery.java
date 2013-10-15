@@ -154,8 +154,6 @@ public class DBQuery {
             String join = otherTable.getRelationshipsAsSQL(this.database, newTable);
             if (join != null && !join.isEmpty()) {
                 joinClauses.add(join);
-//                connectedTables.add(newTable);
-//                connectedTables.add(otherTable);
                 queryGraph.add(newTable.getClass(), otherTable.getClass());
             }
         }
@@ -193,7 +191,6 @@ public class DBQuery {
         }
 
         DBDefinition defn = database.getDefinition();
-//        Set<DBRow> connectedTables = new HashSet<DBRow>();
         StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
         StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
         List<DBRow> joinedTables = new ArrayList<DBRow>();
@@ -233,7 +230,6 @@ public class DBQuery {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
             }
-//            tabRow.setDatabase(database);
             String tabRowCriteria = tabRow.getWhereClause(database);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
@@ -242,8 +238,6 @@ public class DBQuery {
             if (!useANSISyntax) {
                 for (DBRelationship rel : tabRow.getAdHocRelationships()) {
                     whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
-//                    connectedTables.add(rel.getFirstTable());
-//                    connectedTables.add(rel.getSecondTable());
                     queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
                 }
 
@@ -265,8 +259,6 @@ public class DBQuery {
                                         .append(formattedPK)
                                         .append(defn.getEqualsComparator())
                                         .append(formattedFK);
-//                                connectedTables.add(otherTab);
-//                                connectedTables.add(tabRow);
                                 queryGraph.add(tabRow.getClass(), otherTab.getClass());
                             }
                         }
@@ -277,8 +269,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
-//        if (allQueryTables.size() > 1 && connectedTables.size() < allQueryTables.size() && !cartesianJoinAllowed) {
-        if (!cartesianJoinAllowed && queryGraph.containsDisconnectedSubgraph()){
+        if (!cartesianJoinAllowed && queryGraph.hasDisconnectedSubgraph()){
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString = selectClause.append(lineSep)
