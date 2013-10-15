@@ -29,6 +29,79 @@ public class InterfaceInfo {
 
 // Question: what do those things resolve to in, for example, Iterable<E>?
 	
+	
+//	Methods of this=AbstractPartialImplementationWithConcreteType:
+//		  (class: synthetic=false, interface=false, abstract=true)
+//		  (class: supertype=Object)
+//		  (class: implements=InterfaceImplementationUnderstandingTests.MyInterface<Number,DBNumber>)
+// => use "implements MyInterface<T,Q>"
+	
+//	Methods of this=ConcretePartialImplementationOfConcreteType:
+//		  (class: synthetic=false, interface=false, abstract=false)
+//		  (class: supertype=AbstractPartialImplementationWithConcreteType)
+// => have to recurse into supertype for "implements MyInterface<T,Q>"
+
+
+//	Methods of this=AbstractPartialImplementationWithWildcardType:
+//		  (class: synthetic=false, interface=false, abstract=true)
+//		  (class: typeVariables=<this.T extends Number,this.Q extends DBNumber>)
+//       note: could have been  <this.Q extends DBNumber,this.T extends Number> without breaking the 'implements' section.
+//		  (class: supertype=Object)
+//		  (class: implements=InterfaceImplementationUnderstandingTests.MyInterface<this.T extends Number,this.Q extends DBNumber>)
+// => use "implements MyInterface<T,Q>"  --> {T extends Number, Q extends DBNumber}
+// => then, because this is abstract, label those via the typeVariables section (via name "T" and "Q", and via order of typeVariables section)
+		  
+//	Methods of this=ConcretePartialImplementationOfWildcardType:
+//		  (class: synthetic=false, interface=false, abstract=false)
+//		  (class: supertype=InterfaceImplementationUnderstandingTests.AbstractPartialImplementationWithWildcardType<Integer,DBInteger>)
+//	      this.toDBvValue<Integer>(Integer): DBInteger
+//	      AbstractPartialImplementationWithWildcardType.toObjectValue<AbstractPartialImplementationWithWildcardType.Q extends DBNumber>(DBNumber): AbstractPartialImplementationWithWildcardType.T extends Number
+// => use supertype reference for "implements MyInterface<T,Q>", before trying in supertype itself
+// Hmm, this is hard. In this case, might be easier to investigate methods, but still hard work.
+// Also note that we can't recurse into the supertype because that looses too much information.
+// => So, now that we have the ordered lookups to "T" and "Q" in the abstract class, apply the constraints as observed here, in the same order.
+// => Then derive that backwards to discover what the types are for the "implements MyInterface" declaration.
+// => Alternatively: might be easier to work backwards from start: i) accept supertype reference and its values, ii) pass these up
+//                   when looking up recursively towards supertypes until find an "implements MyInterface".
+	
+//	Methods of this=ConcretePartialImplementationOfWildcardTypeWithAgreeingInterface:
+//		  (class: synthetic=false, interface=false, abstract=false)
+//		  (class: supertype=InterfaceImplementationUnderstandingTests.AbstractPartialImplementationWithWildcardType<Integer,DBInteger>)
+//		  (class: implements=InterfaceImplementationUnderstandingTests.MyInterface<Integer,DBInteger>)
+// => use "implements MyInterface<T,Q>" before using supertype reference
+	
+	
+//	Methods of this=AbstractPartialImplementationWithWildcardType:
+//	  (class: synthetic=false, interface=false, abstract=true)
+//	  (class: typeVariables=<this.T extends Number,this.Q extends DBNumber>)
+// note: could have been  <this.Q extends DBNumber,this.T extends Number> without breaking the 'implements' section.
+//	  (class: supertype=Object)
+//	  (class: implements=InterfaceImplementationUnderstandingTests.MyInterface<this.T extends Number,this.Q extends DBNumber>)
+//	
+//	Methods of this=AbstractPartialReImplementationOfWildcardTypeWithWildcardType:
+//		  (class: synthetic=false, interface=false, abstract=true)
+//		  (class: typeVariables=<this.I extends Integer>)
+//		  (class: supertype=AbstractPartialImplementationWithWildcardType<this.I extends Integer,DBInteger>)
+//	
+//	Methods of this=ConcretePartialReImplementationOfWildcardTypeWithWildcardType:
+//		  (class: synthetic=false, interface=false, abstract=false)
+//		  (class: supertype=InterfaceImplementationUnderstandingTests.AbstractPartialReImplementationOfWildcardTypeWithWildcardType<Integer>)
+// => No "implements MyInterface", so start with supertype reference: grab the type parameter and pass it through
+// => Then look at the supertype (AbstractPartialReImplementationOfWildcardTypeWithWildcardType)
+// => It has typeVariable "I" (now supplied value "Integer")
+//    That's used used in the next supertype reference (because again there's no "implements MyInterface")
+// => So grab the two type parameters in the reference to the next supertype and pass them through: Integer, DBInteger
+// => Then look at the next supertype (AbstractPartialImplementationWithWildcardType)
+// => It has typeVariables "T" (now supplied value "Integer") and "Q" (now supplied value "DBInteger")
+//    That's used in the "implements MyInterface" reference, supplying values <"T" = "Integer", "Q" = "DBInteger">
+// Finally, values given to type variables are of the form: {upperBound:Type, lowerBound:Type},
+// however the types used will be only GenericArrayType and Class:
+//   - WildcardType will be expanded out into {upperBound:Type, lowerBound:Type},
+//   - TypeVariable will be expanded out into {upperBound:Type, lowerBound:Type},
+//   - ParameterizedType will not be supported and will be expanded out into <null>, which will be treated as "unknown".
+	
+	
+	
 	/**
 	 * @param interfaceClass
 	 * @param implementationClass must be a concrete type
