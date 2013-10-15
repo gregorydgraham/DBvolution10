@@ -96,7 +96,6 @@ public class OuterJoinTest extends AbstractTest {
 
         DBQuery dbQuery = database.getDBQuery(mrq);
         List<DBRow> tables = new ArrayList<DBRow>();
-        Set<DBRow> connectedTables = new HashSet<DBRow>();
         QueryGraph queryGraph = new QueryGraph();
         StringBuilder ansiJoinClause = new StringBuilder();
         ansiJoinClause.append(dbQuery.getANSIJoinClause(carCo, tables, queryGraph));
