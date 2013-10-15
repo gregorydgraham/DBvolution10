@@ -13,6 +13,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JavaPropertyTest {
@@ -259,6 +260,7 @@ public class JavaPropertyTest {
 	}
 	
 	// TODO: turns out this is different to what I originally designed, but I think it's a good idea
+	@Ignore
 	@Test(expected=DBPebkacException.class)
 	public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedAnnotationOnGetterAndSetter() {
 		class MyClass {
