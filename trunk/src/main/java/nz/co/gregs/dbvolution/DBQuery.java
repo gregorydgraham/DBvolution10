@@ -16,6 +16,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.query.QueryGraph;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
@@ -50,13 +51,13 @@ public class DBQuery {
     private DBRow[] sortBase;
     private QueryableDatatype[] sortOrder;
     private String resultSQL;
-    private final int INNER_JOIN = 0;
-    private final int LEFT_JOIN = 1;
-    private final int RIGHT_JOIN = 2;
-    private final int FULL_OUTER_JOIN = 4;
+//    private final int INNER_JOIN = 0;
+//    private final int LEFT_JOIN = 1;
+//    private final int RIGHT_JOIN = 2;
+//    private final int FULL_OUTER_JOIN = 4;
     private boolean useANSISyntax = true;
     private boolean cartesianJoinAllowed = false;
-    private boolean blankQueryAllowed =false;
+    private boolean blankQueryAllowed = false;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -139,7 +140,7 @@ public class DBQuery {
         return getSQLForQuery(null);
     }
 
-    public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables, Set<DBRow> connectedTables) {
+    public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables, QueryGraph queryGraph) {
         List<String> joinClauses = new ArrayList<String>();
         DBDefinition defn = database.getDefinition();
         boolean isLeftOuterJoin = false;
@@ -153,8 +154,9 @@ public class DBQuery {
             String join = otherTable.getRelationshipsAsSQL(this.database, newTable);
             if (join != null && !join.isEmpty()) {
                 joinClauses.add(join);
-                connectedTables.add(newTable);
-                connectedTables.add(otherTable);
+//                connectedTables.add(newTable);
+//                connectedTables.add(otherTable);
+                queryGraph.add(newTable.getClass(), otherTable.getClass());
             }
         }
         String sqlToReturn;
@@ -186,18 +188,19 @@ public class DBQuery {
 
     private String getSQLForQuery(String providedSelectClause) throws SQLException {
 
-        if (!blankQueryAllowed && willCreateBlankQuery()){
+        if (!blankQueryAllowed && willCreateBlankQuery()) {
             throw new AccidentalBlankQueryException();
         }
-        
+
         DBDefinition defn = database.getDefinition();
-        Set<DBRow> connectedTables = new HashSet<DBRow>();
+//        Set<DBRow> connectedTables = new HashSet<DBRow>();
         StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
         StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
         List<DBRow> joinedTables = new ArrayList<DBRow>();
         StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getTrueOperation());
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
+        QueryGraph queryGraph = new QueryGraph();
 
         if (rowLimit != null) {
             selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
@@ -212,6 +215,7 @@ public class DBQuery {
             otherTables.addAll(allQueryTables);
             otherTables.remove(tabRow);
             tableName = tabRow.getTableName();
+            queryGraph.add(tabRow.getClass());
 
             if (providedSelectClause == null) {
                 List<String> columnNames = tabRow.getColumnNames();
@@ -226,7 +230,7 @@ public class DBQuery {
             if (!useANSISyntax) {
                 fromClause.append(separator).append(tableName);
             } else {
-                fromClause.append(getANSIJoinClause(tabRow, joinedTables, connectedTables));
+                fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
             }
 //            tabRow.setDatabase(database);
@@ -238,15 +242,16 @@ public class DBQuery {
             if (!useANSISyntax) {
                 for (DBRelationship rel : tabRow.getAdHocRelationships()) {
                     whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
-                    connectedTables.add(rel.getFirstTable());
-                    connectedTables.add(rel.getSecondTable());
+//                    connectedTables.add(rel.getFirstTable());
+//                    connectedTables.add(rel.getSecondTable());
+                    queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
                 }
 
-                for (DBRow otherTab : otherTables) {
-                    Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
-                    for (DBForeignKey fk : fks.keySet()) {
-                        final String tabRowPK = tabRow.getPrimaryKeyName();
-                        if (tabRowPK != null) {
+                final String tabRowPK = tabRow.getPrimaryKeyName();
+                if (tabRowPK != null) {
+                    for (DBRow otherTab : otherTables) {
+                        Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
+                        for (DBForeignKey fk : fks.keySet()) {
                             String formattedPK = defn.formatTableAndColumnName(tableName, tabRowPK);
                             Class<? extends DBRow> pkClass = fk.value();
                             DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
@@ -260,8 +265,9 @@ public class DBQuery {
                                         .append(formattedPK)
                                         .append(defn.getEqualsComparator())
                                         .append(formattedFK);
-                                connectedTables.add(otherTab);
-                                connectedTables.add(tabRow);
+//                                connectedTables.add(otherTab);
+//                                connectedTables.add(tabRow);
+                                queryGraph.add(tabRow.getClass(), otherTab.getClass());
                             }
                         }
                     }
@@ -271,11 +277,11 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
-        if (allQueryTables.size() > 1 && connectedTables.size() < allQueryTables.size() && !cartesianJoinAllowed) {
+//        if (allQueryTables.size() > 1 && connectedTables.size() < allQueryTables.size() && !cartesianJoinAllowed) {
+        if (!cartesianJoinAllowed && queryGraph.containsDisconnectedSubgraph()){
             throw new AccidentalCartesianJoinException();
         }
-        final String sqlString
-                = selectClause.append(lineSep)
+        final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
@@ -305,7 +311,7 @@ public class DBQuery {
             queryRow = new DBQueryRow();
             for (DBRow tableRow : allQueryTables) {
                 DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
-                
+
                 DBDefinition defn = database.getDefinition();
                 Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
                 for (String columnName : columnsAndQueryableDatatypes.keySet()) {

@@ -239,24 +239,9 @@ public class DBTable<E extends DBRow> {
     private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
         QueryableDatatype qdt = tableRow.getQueryableValueOfField(field);
         int columnType = rsMeta.getColumnType(dbColumnIndex);
-        int precision = rsMeta.getPrecision(dbColumnIndex);
+//        int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {
             case Types.BIT:
-//                if (precision == 1) {
-//                    // DBBoolean
-//                    Boolean aBoolean = resultSet.getBoolean(dbColumnName);
-//                    if (resultSet.wasNull()) {
-//                        aBoolean = null;
-//                    }
-//                    qdt.setValue(aBoolean);
-//                } else {
-//                    // DBByteArray
-//                    byte[] bytes = resultSet.getBytes(dbColumnName);
-//                    if (resultSet.wasNull()) {
-//                        bytes = null;
-//                    }
-//                    qdt.setValue(bytes);
-//                }
                 qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.INTEGER:
@@ -264,11 +249,6 @@ public class DBTable<E extends DBRow> {
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
-//                Long aLong = resultSet.getLong(dbColumnName);
-//                if (resultSet.wasNull()) {
-//                    aLong = null;
-//                }
-//                qdt.setValue(aLong);
                 qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.DECIMAL:
@@ -276,11 +256,6 @@ public class DBTable<E extends DBRow> {
             case Types.FLOAT:
             case Types.NUMERIC:
             case Types.REAL:
-//                Double aDouble = resultSet.getDouble(dbColumnName);
-//                if (resultSet.wasNull()) {
-//                    aDouble = null;
-//                }
-//                qdt.setValue(aDouble);
                 qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.CHAR:
@@ -291,28 +266,13 @@ public class DBTable<E extends DBRow> {
             case Types.LONGVARCHAR:
             case Types.CLOB:
             case Types.NCLOB:
-//                String string = resultSet.getString(dbColumnName);
-//                if (resultSet.wasNull()) {
-//                    string = null;
-//                }
-//                qdt.setValue(string);
                 qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.DATE:
             case Types.TIME:
-//                Date date = resultSet.getDate(dbColumnName);
-//                if (resultSet.wasNull()) {
-//                    date = null;
-//                }
-//                qdt.setValue(date);
                 qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.TIMESTAMP:
-//                Timestamp timestamp = resultSet.getTimestamp(dbColumnName);
-//                if (resultSet.wasNull()) {
-//                    timestamp = null;
-//                }
-//                qdt.setValue(timestamp);
                 qdt.setFromResultSet(resultSet, dbColumnName);
                 break;
             case Types.BINARY:
@@ -322,13 +282,6 @@ public class DBTable<E extends DBRow> {
             case Types.BLOB:
             case Types.OTHER:
                 qdt.setFromResultSet(resultSet, dbColumnName);
-//                Object obj = resultSet.getObject(dbColumnName);
-//                if (resultSet.wasNull()) {
-//                    qdt.useNullOperator();
-//                } else {
-//                    qdt.setValue(obj);
-//                    qdt.useEqualsOperator(obj);
-//                }
                 break;
             default:
                 throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));
