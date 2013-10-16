@@ -84,9 +84,16 @@ public class DBQuery {
 
     /**
      *
-     * Add a table to the query
+     * Add a table to the query.
+     * 
+     * This method adds the DBRow to the list of required (INNER) tables.
+     * 
+     * Criteria (permitted and excluded values) from this instance will be 
+     * automatically included in the query and an instance of this DBRow class 
+     * will be created for each DBQueryRow returned.
      *
-     * @param table
+     * @param table: an extension of DBRow that defines a required table 
+     * and criteria
      */
     public DBQuery add(DBRow table) {
         queryTables.add(table);
@@ -111,6 +118,14 @@ public class DBQuery {
     }
 
     /**
+     * Add an optional table to this query
+     * 
+     * This method adds an optional (OUTER) table to the query.
+     * The query will return an instance of this DBRow for each row found, though
+     * it may be a null instance as there was no matching row in the database.
+     * 
+     * Criteria (permitted and excluded values) specified in the supplied 
+     * instance will be added to the query.
      *
      * @param table
      * @return
