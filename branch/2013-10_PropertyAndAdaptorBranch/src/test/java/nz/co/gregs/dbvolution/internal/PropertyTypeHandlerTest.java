@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -16,17 +17,17 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-// TODO: looks like I can use this library, or base some stuff of it:
-// com.sun.jersey.core.reflection.ReflectionHelper
 public class PropertyTypeHandlerTest {
 	private JavaPropertyFinder finder = new JavaPropertyFinder();
 
 	// TODO: test that a sensible error is given early on where a TypeAdaptor
 	//       takes the wrong arguments.
 
-	@Test//(expected=DBPebkacException.class)
+	@Ignore
+	@Test(expected=DBPebkacException.class)
 	public void errorsOnConstructionGivenTypeAdaptorWithWrongDBvType() {
 		List<JavaProperty> properties = finder.getPropertiesOf(MyTable.class);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName("fieldAdaptedToWrongDBvType")));
@@ -47,95 +48,107 @@ public class PropertyTypeHandlerTest {
 		new PropertyTypeHandler(property);
 	}
 	
-	// investigate actual java calling behaviour
-	// (Theory is that, in the face of method overloading, the toObjectValue() method
-	//  is based on the declared implemented TypeAdaptor generics will be the one actually
-	//  invoked, even after casting to DBTypeAdaptor<Object,QueryableDatatype>).
-	// (I have no idea how java actually figures this out)
-	
-	// Pass the type matching the 'implements' declaration and you get the correct method
 	@Test
-	public void invokedMethodBasedOnInterfaceGenericsGivenIntegerGenerics() {
-		@SuppressWarnings("unchecked")
-		DBTypeAdaptor<Object,QueryableDatatype> typeAdaptor =
-				(DBTypeAdaptor<Object,QueryableDatatype>)(Object)
-				new MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods();
-		TypeTestUtils.describeClass(typeAdaptor.getClass());
-		
-		try {
-			typeAdaptor.toObjectValue(new DBInteger());
-		} catch (Exception e) {
-			assertThat(e.getMessage(), is("toObjectValue(DBInteger): Integer"));
+	public void getsQDTValueGivenValidObjectAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = new DBInteger();
 		}
-	}
-	
-	// Pass the wrong type and you still get the same method as above
-	// (here, we can't cast down from Number to Integer)
-	@Test
-	public void invokedMethodBasedOnInterfaceGenericsGivenIntegerGenericsEvenWhenGivenNumberValue() {
-		@SuppressWarnings("unchecked")
-		DBTypeAdaptor<Object,QueryableDatatype> typeAdaptor =
-				(DBTypeAdaptor<Object,QueryableDatatype>)(Object)
-				new MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods();
-		TypeTestUtils.describeClass(typeAdaptor.getClass());
 		
-		try {
-			typeAdaptor.toObjectValue(new DBNumber());
-		} catch (Exception e) {
-			assertThat(e, is(instanceOf(ClassCastException.class)));
-			assertThat(e.getMessage(), matchesRegex(".*DBNumber cannot be cast to .*DBInteger"));
-		}
-	}
-	
-	// Pass the type matching the 'implements' declaration and you get the correct method
-	@Test
-	public void invokedMethodBasedOnInterfaceGenericsGivenNumberGenerics() {
-		@SuppressWarnings("unchecked")
-		DBTypeAdaptor<Object,QueryableDatatype> typeAdaptor =
-				(DBTypeAdaptor<Object,QueryableDatatype>)(Object)
-				new MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods();
-		TypeTestUtils.describeClass(typeAdaptor.getClass());
+		MyClass myObj = new MyClass();
+		myObj.intField.setValue(23);
 		
-		try {
-			typeAdaptor.toObjectValue(new DBNumber());
-		} catch (Exception e) {
-			assertThat(e.getMessage(), is("toObjectValue(DBNumber): Number"));
-		}
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		DBInteger qdt = (DBInteger)propertyHandler.getDBvValue(myObj);
+		assertThat(qdt.intValue(), is(23));
 	}
 
-	// Pass the wrong type and you still get the same method as above
-	// (here, it successfully casts up from Integer to Number)
 	@Test
-	public void invokedMethodBasedOnInterfaceGenericsGivenNumberGenericsEvenWhenGivenIntegerValue() {
-		@SuppressWarnings("unchecked")
-		DBTypeAdaptor<Object,QueryableDatatype> typeAdaptor =
-				(DBTypeAdaptor<Object,QueryableDatatype>)(Object)
-				new MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods();
-		TypeTestUtils.describeClass(typeAdaptor.getClass());
-		
-		try {
-			typeAdaptor.toObjectValue(new DBInteger());
-		} catch (Exception e) {
-			assertThat(e.getMessage(), is("toObjectValue(DBNumber): Number"));
+	public void getsUnchangedQDTInstanceGivenValidObjectAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = new DBInteger();
 		}
+		
+		MyClass myObj = new MyClass();
+		
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		DBInteger qdt = (DBInteger)propertyHandler.getDBvValue(myObj);
+		assertThat(qdt == myObj.intField, is(true));
 	}
 	
 	@Test
-	public void printMethods() {
-		TypeTestUtils.describeClass(MyIntegerDBIntegerAdaptor.class);
-		TypeTestUtils.describeClass(MyNumberDBNumberAdaptor.class);
-		TypeTestUtils.describeClass(MyNumberDBNumberAdaptor2.class);
-		TypeTestUtils.describeClass(MyObjectQDTAdaptor.class);
-		TypeTestUtils.describeClass(MyAbstractAdaptor.class);
-		TypeTestUtils.describeClass(MyAbstractAdaptor2.class);
-		TypeTestUtils.describeClass(MyVarargsAdaptor.class);
-		TypeTestUtils.describeClass(DBTypeAdaptor.class);
-		TypeTestUtils.describeClass(MyInterfaceAdaptor.class);
-		//TypeTestUtils.describeClass(MyGenericNumberInterfaceAdaptor.class);
-		TypeTestUtils.describeClass(MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods.class);
-		TypeTestUtils.describeClass(MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods.class);
+	public void getsNullQDTValueGivenValidNullObjectAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = null;
+		}
+		
+		MyClass myObj = new MyClass();
+		
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		DBInteger qdt = (DBInteger)propertyHandler.getDBvValue(myObj);
+		assertThat(qdt, is(nullValue()));
+	}
+	
+	@Test
+	public void setsObjectValueGivenValidObjectAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		MyClass myObj = new MyClass();
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		DBInteger qdt = new DBInteger();
+		qdt.setValue(23);
+		
+		propertyHandler.setObjectValue(myObj, qdt);
+		assertThat(myObj.intField.intValue(), is(23));
 	}
 
+	@Test
+	public void setsUnchangedInstanceGivenValidObjectAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		MyClass myObj = new MyClass();
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		DBInteger qdt = new DBInteger();
+		
+		propertyHandler.setObjectValue(myObj, qdt);
+		assertThat(myObj.intField == qdt, is(true));
+	}
+	
+	@Test
+	public void setsObjectValueToNullGivenValidObjectAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		MyClass myObj = new MyClass();
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+
+		propertyHandler.setObjectValue(myObj, null);
+		assertThat(myObj.intField, is(nullValue()));
+	}
+	
+	private PropertyTypeHandler propertyHandlerOf(Class<?> clazz, String javaPropertyName) {
+		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName));
+	}
+	
+	private JavaProperty propertyOf(Class<?> clazz, String javaPropertyName) {
+		List<JavaProperty> properties = finder.getPropertiesOf(clazz);
+		JavaProperty property = itemOf(properties, that(hasJavaPropertyName(javaPropertyName)));
+		if (property == null) {
+			throw new IllegalArgumentException("No public property found with java name '"+javaPropertyName+"'");
+		}
+		return property;
+	}
+	
 	@DBTableName("Simple_Table")
 	public static class MyTable {
 		@DBColumn
@@ -184,111 +197,7 @@ public class PropertyTypeHandlerTest {
 			return null;
 		}
 	}
-
-	public static class MyObjectQDTAdaptor implements DBTypeAdaptor<Object, QueryableDatatype> {
-		public Object toObjectValue(QueryableDatatype dbvValue) {
-			return null;
-		}
-
-		public QueryableDatatype toDBvValue(Object objectValue) {
-			return null;
-		}
-	}
-
-	public static abstract class MyAbstractAdaptor implements DBTypeAdaptor<Object, QueryableDatatype> {
-		public abstract Object toObjectValue(QueryableDatatype dbvValue);
-
-		public QueryableDatatype toDBvValue(Object objectValue) {
-			return null;
-		}
-	}
-
-	public static class MyAbstractAdaptor2 extends MyAbstractAdaptor {
-		public Number toObjectValue(QueryableDatatype dbvValue) {
-			return null;
-		}
-	}
-
-	public static class MyVarargsAdaptor implements DBTypeAdaptor<Object, QueryableDatatype> {
-		public Object toObjectValue(QueryableDatatype dbvValue) {
-			return null;
-		}
-
-		public Object toObjectValue(QueryableDatatype... dbvValue) {
-			return null;
-		}
-
-		public QueryableDatatype toDBvValue(Object objectValue) {
-			return null;
-		}
-	}
 	
 	public static interface MyInterfaceAdaptor extends DBTypeAdaptor<Object, QueryableDatatype> {
 	}
-
-	public static class MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods implements DBTypeAdaptor<Integer, DBInteger> {
-		@Override
-		public Integer toObjectValue(DBInteger dbvValue) {
-			throw new UnsupportedOperationException("toObjectValue(DBInteger): Integer");
-		}
-
-		//@Override
-		public Number toObjectValue(DBNumber dbvValue) {
-			throw new UnsupportedOperationException("toObjectValue(DBNumber): Number");
-		}
-
-		@Override
-		public DBInteger toDBvValue(Integer objectValue) {
-			throw new UnsupportedOperationException("toDBvValue(Integer): DBInteger");
-		}
-		
-		//@Override
-		public DBNumber toDBvValue(Number objectValue) {
-			throw new UnsupportedOperationException("toDBvValue(Number): DBNumber");
-		}
-	}
-
-	public static class MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods implements DBTypeAdaptor<Number, DBNumber> {
-		//@Override
-		public Integer toObjectValue(DBInteger dbvValue) {
-			throw new UnsupportedOperationException("toObjectValue(DBInteger): Integer");
-		}
-
-		@Override
-		public Number toObjectValue(DBNumber dbvValue) {
-			throw new UnsupportedOperationException("toObjectValue(DBNumber): Number");
-		}
-
-		//@Override
-		public DBInteger toDBvValue(Integer objectValue) {
-			throw new UnsupportedOperationException("toDBvValue(Integer): DBInteger");
-		}
-		
-		@Override
-		public DBNumber toDBvValue(Number objectValue) {
-			throw new UnsupportedOperationException("toDBvValue(Number): DBNumber");
-		}
-	}
-	
-//	public static class DualImplementation implements DBTypeAdaptor<Number, DBNumber>, DBTypeAdaptor<Integer, DBInteger> {
-//		//@Override
-//		public Integer toObjectValue(DBInteger dbvValue) {
-//			throw new UnsupportedOperationException("toObjectValue(DBInteger): Integer");
-//		}
-//
-//		//@Override
-//		public Number toObjectValue(DBNumber dbvValue) {
-//			throw new UnsupportedOperationException("toObjectValue(DBNumber): Number");
-//		}
-//
-//		//@Override
-//		public DBInteger toDBvValue(Integer objectValue) {
-//			throw new UnsupportedOperationException("toDBvValue(Integer): DBInteger");
-//		}
-//		
-//		//@Override
-//		public DBNumber toDBvValue(Number objectValue) {
-//			throw new UnsupportedOperationException("toDBvValue(Number): DBNumber");
-//		}
-//	}
 }
