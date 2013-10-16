@@ -3,10 +3,10 @@ package nz.co.gregs.dbvolution.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.gregs.dbvolution.DBRuntimeException;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 
 /**
  * Wraps a specific target object according to its type's {@link DBRowClassWrapper}.

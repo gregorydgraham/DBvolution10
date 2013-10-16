@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nz.co.gregs.dbvolution.DBPebkacException;
-import nz.co.gregs.dbvolution.DBRuntimeException;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
 

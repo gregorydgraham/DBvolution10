@@ -30,7 +30,7 @@ import nz.co.gregs.dbvolution.DBRow;
  *
  * @author gregory.graham
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBForeignKey {
     

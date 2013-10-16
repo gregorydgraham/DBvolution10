@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import nz.co.gregs.dbvolution.DBRuntimeException;
-import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
 /**
  * Low-level internal abstraction layer over java fields and bean-properties.

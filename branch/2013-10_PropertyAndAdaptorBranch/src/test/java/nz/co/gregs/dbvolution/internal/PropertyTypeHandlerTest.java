@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -15,6 +14,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 
 import org.junit.Test;
 

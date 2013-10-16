@@ -4,12 +4,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
-import nz.co.gregs.dbvolution.DBPebkacException;
-import nz.co.gregs.dbvolution.DBRuntimeException;
-import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
 /**
  * Handles annotation processing, business logic, validation rules, defaulting,

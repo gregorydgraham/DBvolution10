@@ -1,18 +1,25 @@
 package nz.co.gregs.dbvolution.internal;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
+import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DBRowClassWrapperUsabilityTest {
-	private DBDatabase database = new DBDatabase();
 	private MyExampleTableClass obj = new MyExampleTableClass();
 	private DBRowWrapperFactory factory = new DBRowWrapperFactory();
+	private static DBDatabase database;
+	
+	@BeforeClass
+	public static void setup() {
+		database = new H2MemoryDB("dbvolutionTest","","", false);
+	}
 	
 	@Test
 	public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {

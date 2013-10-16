@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.gregs.dbvolution.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 
 /**
  * Low-level internal utility for finding properties within classes.

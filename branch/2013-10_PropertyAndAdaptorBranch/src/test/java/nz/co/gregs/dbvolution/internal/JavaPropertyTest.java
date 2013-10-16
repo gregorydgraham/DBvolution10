@@ -7,9 +7,9 @@ import static org.junit.Assert.*;
 import java.io.Serializable;
 import java.util.List;
 
-import nz.co.gregs.dbvolution.DBPebkacException;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
 

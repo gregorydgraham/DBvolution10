@@ -1,9 +1,9 @@
 package nz.co.gregs.dbvolution.internal;
 
-import nz.co.gregs.dbvolution.DBPebkacException;
-import nz.co.gregs.dbvolution.DBThrownByEndUserCodeException;
-import nz.co.gregs.dbvolution.databases.definitions.DBDatabase;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
+import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
 /**
  * Abstracts a java field or bean-property on a target object as a DBvolution-centric

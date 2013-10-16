@@ -1,9 +1,9 @@
 package nz.co.gregs.dbvolution.internal;
 
-import nz.co.gregs.dbvolution.DBPebkacException;
-import nz.co.gregs.dbvolution.DBRuntimeException;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 
 /**
  * Handles annotation processing, business logic, validation rules, defaulting,
