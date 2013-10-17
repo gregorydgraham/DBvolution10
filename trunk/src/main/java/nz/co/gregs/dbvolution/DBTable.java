@@ -449,8 +449,9 @@ public class DBTable<E extends DBRow> {
 
     /**
      *
-     * Returns the first row of the table, particularly helpful when you know
-     * there is only one row
+     * Returns the first row of the table
+     * 
+     * particularly helpful when you know there is only one row
      *
      * @return
      */
@@ -462,6 +463,15 @@ public class DBTable<E extends DBRow> {
         }
     }
 
+    /**
+     *
+     * Returns the first row and only row of the table.
+     * 
+     * Similar to getFirstRow() but throws an UnexpectedNumberOfRowsException
+     * if there is more than 1 row available
+     *
+     * @return
+     */
     public E getOnlyRow() throws UnexpectedNumberOfRowsException {
         if (this.listOfRows.size() > 0) {
             return this.listOfRows.get(0);
