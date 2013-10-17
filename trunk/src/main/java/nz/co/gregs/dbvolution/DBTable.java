@@ -242,22 +242,16 @@ public class DBTable<E extends DBRow> {
 //        int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {
             case Types.BIT:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.INTEGER:
             case Types.BIGINT:
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.NUMERIC:
             case Types.REAL:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.CHAR:
             case Types.NCHAR:
             case Types.NVARCHAR:
@@ -266,15 +260,9 @@ public class DBTable<E extends DBRow> {
             case Types.LONGVARCHAR:
             case Types.CLOB:
             case Types.NCLOB:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.DATE:
             case Types.TIME:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.TIMESTAMP:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.BINARY:
             case Types.VARBINARY:
             case Types.JAVA_OBJECT:
