@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBSaveBLOB;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -29,6 +30,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import org.reflections.Reflections;
 
 /**
  *
@@ -47,6 +49,7 @@ abstract public class DBRow implements Serializable {
     private HashMap<String, QueryableDatatype> columnsAndQDTs;
     private Boolean hasBlobs;
     private final List<DBLargeObject> blobColumns = new ArrayList<DBLargeObject>();
+    private ArrayList<Class<? extends DBRow>> referencedTables;
 
     public DBRow() {
     }
@@ -330,7 +333,6 @@ abstract public class DBRow implements Serializable {
 //            }
 //        }
 //    }
-
     protected String getValuesClause(DBDatabase db) {
 //        this.setDatabase(db);
         StringBuilder string = new StringBuilder();
@@ -754,5 +756,45 @@ abstract public class DBRow implements Serializable {
             }
         }
         return rels.toString();
+    }
+
+    /**
+     * Returns all the DBRow subclasses referenced by foreign keys
+     *
+     * @return A list of DBRow subclasses referenced with
+     * @DBForeignKey
+     *
+     */
+    public List<Class<? extends DBRow>> getReferencedTables() {
+        if (referencedTables == null) {
+            referencedTables = new ArrayList<Class<? extends DBRow>>();
+            List<Field> foreignKeyFields = getForeignKeyFields();
+            for (Field field : foreignKeyFields) {
+                DBForeignKey annotation = field.getAnnotation(DBForeignKey.class);
+                referencedTables.add(annotation.value());
+            }
+        }
+        return (List<Class<? extends DBRow>>) referencedTables.clone();
+    }
+
+    public List<Class<? extends DBRow>> getAllRelatedTables() {
+        List<Class<? extends DBRow>> relatedTables = getReferencedTables();
+        Reflections reflections = new Reflections("nz.co.gregs.dbvolution");
+
+        Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
+        for (Class<? extends DBRow> tableClass : subTypes) {
+            DBRow newInstance;
+            try {
+                newInstance = tableClass.newInstance();
+                if (newInstance.getReferencedTables().contains(this.getClass())) {
+                    relatedTables.add(tableClass);
+                }
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return relatedTables;
     }
 }

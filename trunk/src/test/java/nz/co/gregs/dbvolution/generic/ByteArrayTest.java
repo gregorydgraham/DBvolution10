@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.h2;
+package nz.co.gregs.dbvolution.generic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
