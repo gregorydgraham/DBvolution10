@@ -12,50 +12,58 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DBRowClassWrapperUsabilityTest {
-	private MyExampleTableClass obj = new MyExampleTableClass();
-	private DBRowWrapperFactory factory = new DBRowWrapperFactory();
-	private static DBDatabase database;
-	
-	@BeforeClass
-	public static void setup() {
-		database = new H2MemoryDB("dbvolutionTest","","", false);
-	}
-	
-	@Test
-	public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
-		QueryableDatatype qdt = new DBRowClassWrapper(MyExampleTableClass.class)
-			.instanceAdaptorFor(database, obj).getDBPropertyByColumn("column1").getQueryableDatatype();
-	}
 
-	@Test
-	public void easyToGetSpecificPropertyValueOnObjectWhenDoingVerbosely() {
-		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyExampleTableClass.class);
-		DBRowInstanceWrapper objectWrapper = classWrapper.instanceAdaptorFor(database, obj);
-		DBProperty property = objectWrapper.getDBPropertyByColumn("column1");
-		if (property != null) {
-			QueryableDatatype qdt = property.getQueryableDatatype();
-			property.setQueryableDatatype(qdt);
-		}
-	}
+    private MyExampleTableClass obj = new MyExampleTableClass();
+    private DBRowWrapperFactory factory = new DBRowWrapperFactory();
+    private static DBDatabase database;
 
-	@Test
-	public void easyToGetInstanceWrapperGivenObject() {
-		DBRowInstanceWrapper objectWrapper = factory.instanceWrapperFor(database, obj);
-	}
-	
-	@Test
-	public void easyToIterateOverPropertiesUsingFactory() {
-		DBRowInstanceWrapper objectWrapper = factory.instanceWrapperFor(database, obj);
-		for (DBProperty property: objectWrapper.getDBProperties()) {
-			QueryableDatatype qdt = property.getQueryableDatatype();
-		}
-	}
-	
-	@DBTableName("table")
-	public static class MyExampleTableClass {
-		@DBPrimaryKey
-		@DBColumn("column1")
-		public DBInteger uid = new DBInteger();
-	}
+    @BeforeClass
+    public static void setup() {
+        database = new H2MemoryDB("dbvolutionTest", "", "", false);
+    }
 
+    @Test
+    public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
+        QueryableDatatype qdt = new DBRowClassWrapper(MyExampleTableClass.class)
+                .instanceAdaptorFor(obj)
+                .getDBPropertyByColumn(database, "column1")
+                .getQueryableDatatype();
+    }
+
+    @Test
+    public void easyToGetSpecificPropertyValueOnObjectWhenDoingVerbosely() {
+        DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyExampleTableClass.class);
+        DBRowInstanceWrapper objectWrapper = classWrapper.instanceAdaptorFor(obj);
+        PropertyWrapper property = objectWrapper.getDBPropertyByColumn(database, "column1");
+        if (property != null) {
+            QueryableDatatype qdt = property.getQueryableDatatype();
+            property.setQueryableDatatype(qdt);
+        }
+    }
+
+    @Test
+    public void easyToGetInstanceWrapperGivenObject() {
+        DBRowInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
+    }
+
+    @Test
+    public void easyToIterateOverPropertiesUsingFactory() {
+        DBRowInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
+        for (PropertyWrapper property : objectWrapper.getPropertyWrappers()) {
+            QueryableDatatype qdt = property.getQueryableDatatype();
+            property.columnName();
+            property.isForeignKey();
+            property.isColumn();
+            objectWrapper.isTable();
+            objectWrapper.tableName();
+        }
+    }
+
+    @DBTableName("table")
+    public static class MyExampleTableClass {
+
+        @DBPrimaryKey
+        @DBColumn("column1")
+        public DBInteger uid = new DBInteger();
+    }
 }
