@@ -779,7 +779,7 @@ abstract public class DBRow implements Serializable {
 
     public List<Class<? extends DBRow>> getAllRelatedTables() {
         List<Class<? extends DBRow>> relatedTables = getReferencedTables();
-        Reflections reflections = new Reflections("nz.co.gregs.dbvolution");
+        Reflections reflections = new Reflections(this.getClass().getPackage().getName());
 
         Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
         for (Class<? extends DBRow> tableClass : subTypes) {
