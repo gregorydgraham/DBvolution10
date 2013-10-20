@@ -18,6 +18,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
+import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
  *
@@ -219,11 +220,11 @@ public class DBTable<E extends DBRow> {
             E tableRow = (E) DBRow.getDBRow(dummy.getClass());
 //            tableRow.setDatabase(database);
 
-            Field[] fields = tableRow.getClass().getDeclaredFields();
+            List<PropertyWrapper> fields = tableRow.getPropertyWrappers();
 
-            for (Field field : fields) {
-                if (field.isAnnotationPresent(DBColumn.class)) {
-                    String dbColumnName = getDBColumnName(field);
+            for (PropertyWrapper field : fields) {
+                if (field.isColumn()) {
+                    String dbColumnName = field.columnName();
                     String formattedColumnName = defn.formatColumnName(dbColumnName);
                     Integer dbColumnIndex = dbColumnNames.get(formattedColumnName);
                     if (formattedColumnName != null && dbColumnIndex != null) {
@@ -236,8 +237,8 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
-        QueryableDatatype qdt = tableRow.getQueryableValueOfField(field);
+    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, PropertyWrapper field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
+        QueryableDatatype qdt = tableRow.getQueryableValueOfPropertWrapper(field);
         int columnType = rsMeta.getColumnType(dbColumnIndex);
 //        int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {

@@ -710,19 +710,19 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     /**
      *
      * @param resultSet
-     * @param fullColumnName
+     * @param resultSetColumnName
      * @throws SQLException
      */
-    public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
-        if (resultSet == null || fullColumnName == null) {
+    public void setFromResultSet(ResultSet resultSet, String resultSetColumnName) throws SQLException {
+        if (resultSet == null || resultSetColumnName == null) {
             this.useNullOperator();
         } else {
             String dbValue;
-            try {
-                dbValue = resultSet.getString(fullColumnName);
-            } catch (SQLException ex) {
-                dbValue = null;
-            }
+//            try {
+                dbValue = resultSet.getString(resultSetColumnName);
+//            } catch (SQLException ex) {
+//                dbValue = null;
+//            }
             if (dbValue == null) {
                 this.useNullOperator();
             } else {

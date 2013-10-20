@@ -7,7 +7,7 @@
     <version>0.8.25-SNAPSHOT</version>
     <packaging>jar</packaging>
     
-    <name>DBvolution</name>
+    <name>DBvolution Property Extension</name>
     <description>Advanced Library to Remove Object Relational Impedance</description>
     <url>https://sourceforge.net/projects/dbvolution/</url>
     <licenses>

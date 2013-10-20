@@ -26,6 +26,8 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
+import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
  *
@@ -45,6 +47,7 @@ public abstract class DBDatabase {
     private String databaseName;
     private boolean batchIfPossible = true;
 
+    final DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
     /**
      *
      * @param definition
@@ -460,7 +463,7 @@ public abstract class DBDatabase {
      */
     public <TR extends DBRow> void createTable(TR newTableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
-        List<Field> pkFields = new ArrayList<Field>();
+        List<PropertyWrapper> pkFields = new ArrayList<PropertyWrapper>();
         String lineSeparator = System.getProperty("line.separator");
         // table name
 
@@ -469,15 +472,11 @@ public abstract class DBDatabase {
         // columns
         String sep = "";
         String nextSep = definition.getCreateTableColumnsSeparator();
-        Field[] fields = newTableRow.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            DBColumn annotation = field.getAnnotation(DBColumn.class);
-            if (annotation != null) {
-                QueryableDatatype qdt = newTableRow.getQueryableValueOfField(field);
-                String colName = annotation.value();
-                if (colName == null || colName.isEmpty()) {
-                    colName = field.getName();
-                }
+        List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
+        for (PropertyWrapper field : fields) {
+            if (field.isColumn()) {
+                QueryableDatatype qdt = newTableRow.getQueryableValueOfPropertWrapper(field);
+                String colName = field.columnName();
                 sqlScript
                         .append(sep)
                         .append(definition.formatColumnName(colName))
@@ -485,8 +484,7 @@ public abstract class DBDatabase {
                         .append(definition.getSQLTypeOfDBDatatype(qdt));
                 sep = nextSep + lineSeparator;
 
-                DBPrimaryKey pkAnno = field.getAnnotation(DBPrimaryKey.class);
-                if (pkAnno != null) {
+                if (field.isPrimaryKey()) {
                     pkFields.add(field);
                 }
             }
@@ -497,13 +495,8 @@ public abstract class DBDatabase {
         String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
         String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
         String pkSep = pkStart;
-        for (Field field : pkFields) {
-            DBColumn annotation = field.getAnnotation(DBColumn.class);
-            String colName = annotation.value();
-            if (colName == null || colName.isEmpty()) {
-                colName = field.getName();
-            }
-            sqlScript.append(pkSep).append(definition.formatColumnName(colName));
+        for (PropertyWrapper field : pkFields) {
+            sqlScript.append(pkSep).append(definition.formatColumnName(field.columnName()));
             pkSep = pkMiddle;
         }
         if (!pkSep.equalsIgnoreCase(pkStart)) {
