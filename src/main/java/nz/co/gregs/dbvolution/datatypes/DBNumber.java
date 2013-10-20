@@ -55,6 +55,14 @@ public class DBNumber extends QueryableDatatype {
         initDBNumber(aNumber);
     }
 
+    @Override
+    public void setValue(Object newLiteralValue) {
+        super.setValue(newLiteralValue);
+        initDBNumber(newLiteralValue);
+    }
+    
+    
+
     /**
      *
      * @param aNumber
@@ -180,15 +188,6 @@ public class DBNumber extends QueryableDatatype {
         return getOperator();
     }
 
-//    @Deprecated
-//    @Override
-//    public void isLiterally(QueryableDatatype literalValue) {
-//        if (literalValue instanceof DBNumber) {
-//            this.isLiterally(((DBNumber) literalValue).numberValue);
-//        } else {
-//            super.isLiterally(literalValue);
-//        }
-//    }
     /**
      *
      * @param literal
@@ -207,6 +206,18 @@ public class DBNumber extends QueryableDatatype {
     public DBOperator useLikeOperator(Object obj) {
         throw new RuntimeException("LIKE Comparison Cannot Be Used With Numeric Fields: " + obj);
     }
+
+    @Override
+    protected DBOperator useNullOperator() {
+        DBOperator operator = super.useNullOperator(); 
+        numberValue = null;
+        lowerBoundNumber = null;
+        upperBoundNumber = null;
+        inValuesNumber = new DBNumber[]{};
+        return operator;
+    }
+    
+    
 
     /**
      *
