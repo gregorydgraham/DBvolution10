@@ -534,7 +534,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * DBIsNullOperator for comparisons
      *
      */
-    protected final DBOperator useNullOperator() {
+    protected DBOperator useNullOperator() {
         blankQuery();
         this.literalValue = null;
         this.isDBNull = true;
