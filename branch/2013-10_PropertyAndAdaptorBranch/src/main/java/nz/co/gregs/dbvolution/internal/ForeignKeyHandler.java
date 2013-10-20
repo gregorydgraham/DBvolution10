@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal;
 
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
@@ -15,7 +16,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
  * @author Malcolm Lett
  */
 class ForeignKeyHandler {
-	private final Class<?> referencedClass;
+	private final Class<? extends DBRow> referencedClass;
 	private final String referencedTableName;
 	private final String referencedColumnName = null; // not yet supported
 	private final DBForeignKey foreignKeyAnnotation; // null if not present on property
@@ -67,7 +68,7 @@ class ForeignKeyHandler {
 	 * <p> If the {@link DBForeignKey} annotation is missing, this method returns {@code null}.
 	 * @return the referenced class or null if not a foreign key
 	 */
-	public Class<?> getReferencedClass() {
+	public Class<? extends DBRow> getReferencedClass() {
 		return referencedClass;
 	}
 	

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.naming.OperationNotSupportedException;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
@@ -36,9 +35,9 @@ public class DBRowClassWrapper {
     private final Class<?> adaptee;
     private final TableHandler tableHandler;
     /**
-     * The properties that form the primary key, or empty if none.
+     * The property that forms the primary key, null if none.
      */
-    private final List<PropertyWrapperDefinition> primaryKeyProperties;
+    private final PropertyWrapperDefinition primaryKeyProperty;
     /**
      * All properties of which DBvolution is aware, ordered as first
      * encountered. Properties are only included if they are columns.
@@ -101,7 +100,12 @@ public class DBRowClassWrapper {
                 primaryKeyProperties.add(property);
             }
         }
-        this.primaryKeyProperties = primaryKeyProperties;
+        if (primaryKeyProperties.size() > 1) {
+            throw new UnsupportedOperationException("Multi-Column Primary Keys are not yet supported.");
+        }
+        else {
+            this.primaryKeyProperty = primaryKeyProperties.isEmpty() ? null : primaryKeyProperties.get(0);
+        }
 
         // pre-calculate properties index
         propertiesByCaseSensitiveColumnName = new HashMap<String, PropertyWrapperDefinition>();
@@ -242,18 +246,12 @@ public class DBRowClassWrapper {
     }
 
     /**
-     * Gets the properties that together form the primary key, if any are
-     * marked. In most tables this will be exactly one property.
-     *
-     * @return the non-empty list of properties, or null if no primary key
+	 * Gets the property that is the primary key, if one is marked.
+	 * Note: multi-column primary key tables are not yet supported.
+	 * @return the primary key property or null if no primary key
      */
     public PropertyWrapperDefinition primaryKey() {
-        if (primaryKeyProperties.size() > 1) {
-            throw new UnsupportedOperationException("Multi-Column Primary Keys are not yet supported.");
-            //TODO
-        } else {
-            return primaryKeyProperties.get(0);
-        }
+    	return primaryKeyProperty;
     }
 
     /**

@@ -119,9 +119,8 @@ public class DBRowInstanceWrapper {
 	
 	/**
 	 * Gets the property that is the primary key, if one is marked.
-	 * In most tables this will be exactly one property. 
-	 * @return the non-empty list of properties, or null if no primary key
-         *  @throws UnsupportedOperationException for Multi-column PKs
+	 * Note: multi-column primary key tables are not yet supported.
+	 * @return the primary key property or null if no primary key
 	 */
 	public PropertyWrapper primaryKey() {
 		return new PropertyWrapper(classWrapper.primaryKey(), target);

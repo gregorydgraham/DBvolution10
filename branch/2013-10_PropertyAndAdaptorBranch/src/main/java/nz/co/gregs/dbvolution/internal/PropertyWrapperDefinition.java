@@ -3,6 +3,7 @@ package nz.co.gregs.dbvolution.internal;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -138,7 +139,7 @@ public class PropertyWrapperDefinition {
 	 * is a foreign key.
 	 * @return the referenced class or null if not applicable
 	 */
-	public Class<?> referencedClass() {
+	public Class<? extends DBRow> referencedClass() {
 		return foreignKeyHandler.getReferencedClass();
 	}
 	
