@@ -141,22 +141,24 @@ public class InterfaceInfo {
 		
 		// get bounds from "implements InterfaceClass"
 		// (assume either ParameterizedType or Class)
-		Type implementedInterfaceType = getExtendsOrImplementsTypeDeclaration(interfaceClass, implementationClass);
+		Type implementedInterfaceType = ancestorTypeByClass(interfaceClass, implementationClass);
 		if (implementedInterfaceType != null) {
 			return ParameterBounds.boundsForParametersOf(implementedInterfaceType, argumentValueByTypeVariableName);
 		}
 		
 		// retrieve bounds from supertype and interface references
-		else {
-			for (Type ancestorType: ancestorTypesOf(implementationClass)) {
-				ParameterBounds[] ancestorArgumentValues = ParameterBounds.boundsForParametersOf(ancestorType, argumentValueByTypeVariableName);
-				
-				// recurse into type
+		for (Type ancestorType: ancestorTypesOf(implementationClass)) {
+			ParameterBounds[] ancestorArgumentValues = ParameterBounds.boundsForParametersOf(ancestorType, argumentValueByTypeVariableName);
+			
+			// recurse into type
+			try {
 				Class<?> ancestorClass = resolveClassOf(ancestorType);
 				ParameterBounds[] result = getParameterBounds(interfaceClass, ancestorClass, ancestorArgumentValues);
 				if (result != null) {
 					return result;
 				}
+			} catch (UnsupportedType dropped) {
+				// try next ancestor
 			}
 		}
 		
@@ -173,11 +175,13 @@ public class InterfaceInfo {
 	private static List<Type> ancestorTypesOf(Class<?> child) {
 		List<Type> ancestors = new ArrayList<Type>();
 		
+		// get "extends xxx"
 		Type supertype = child.getGenericSuperclass();
 		if (supertype != null && !Object.class.equals(supertype)) {
 			ancestors.add(supertype);
 		}
 		
+		// get all "implements yyy"
 		Type[] interfaces = child.getGenericInterfaces();
 		if (interfaces != null) {
 			for (Type interfaceType: interfaces) {
@@ -192,25 +196,33 @@ public class InterfaceInfo {
 	/**
 	 * Non-recursive: checks on this class only.
 	 * @param ancestorClass a supertype or interface
-	 * @param implementationClass
+	 * @param child
 	 * @return the actual Type reference to the interface class or null if not implemented/extended
 	 */
-	private static Type getExtendsOrImplementsTypeDeclaration(Class<?> ancestorClass, Class<?> implementationClass) {
-		// look for "implements InterfaceClass"
-		Type[] implementedInterfaces = implementationClass.getGenericInterfaces();
-		for (Type implementedInterface: implementedInterfaces) {
-			Class<?> implementedInterfaceClass = resolveClassOf(implementedInterface);
-			if (implementedInterfaceClass.equals(ancestorClass)) {
-				return implementedInterface;
+	private static Type ancestorTypeByClass(Class<?> ancestorClass, Class<?> child) {
+		// look for "extends InterfaceClass"
+		Type supertype = child.getGenericSuperclass();
+		if (supertype != null && !supertype.equals(Object.class)) {
+			try {
+				Class<?> supertypeClass = resolveClassOf(supertype);
+				if (supertypeClass.equals(ancestorClass)) {
+					return supertype;
+				}
+			} catch (UnsupportedType dropped) {
+				// try next
 			}
 		}
 		
-		// look for "extends InterfaceClass"
-		Type supertype = implementationClass.getGenericSuperclass();
-		if (supertype != null && !supertype.equals(Object.class)) {
-			Class<?> supertypeClass = resolveClassOf(supertype);
-			if (supertypeClass.equals(ancestorClass)) {
-				return supertype;
+		// look for "implements InterfaceClass"
+		Type[] implementedInterfaces = child.getGenericInterfaces();
+		for (Type implementedInterface: implementedInterfaces) {
+			try {
+				Class<?> implementedInterfaceClass = resolveClassOf(implementedInterface);
+				if (implementedInterfaceClass.equals(ancestorClass)) {
+					return implementedInterface;
+				}
+			} catch (UnsupportedType dropped) {
+				// try next
 			}
 		}
 		
@@ -219,7 +231,7 @@ public class InterfaceInfo {
 	
 	// supports only classes and parameterized types
 	// doesn't support Array[] types or wildcard types
-	protected static Class<?> resolveClassOf(Type type) {
+	protected static Class<?> resolveClassOf(Type type) throws UnsupportedType {
 		if (type instanceof Class<?>) {
 			return (Class<?>)type;
 		}
@@ -230,17 +242,17 @@ public class InterfaceInfo {
 			return resolveClassOf(((ParameterizedType) type).getRawType());
 		}
 		else {
-			throw new UnsupportedOperationException("Can't yet handle "+type.getClass().getSimpleName()+" types");
+			throw new UnsupportedType("Can't yet handle "+type.getClass().getSimpleName()+" types");
 		}
 	}
-
+	
 	/**
 	 * Converts the given type into a concise representation
 	 * suitable for inclusion in error messages and logging.
 	 * @param type
 	 * @return
 	 */
-	private static String descriptionOf(Type type) {
+	protected static String descriptionOf(Type type) {
 		try {
 			return descriptionOf(type, new HashSet<TypeVariable<?>>());
 		} catch (RuntimeException dropped) {
@@ -256,7 +268,7 @@ public class InterfaceInfo {
 	 * @param type
 	 * @return
 	 */
-	private static String descriptionOf(Type[] types) {
+	static String descriptionOf(Type[] types) {
 		try {
 			return descriptionOf(types, new HashSet<TypeVariable<?>>());
 		} catch (RuntimeException dropped) {
@@ -303,7 +315,7 @@ public class InterfaceInfo {
 		}
 		
 		// handle simple class references
-		if (type instanceof Class) {
+		else if (type instanceof Class) {
 			buf.append(((Class<?>) type).getSimpleName());
 		}
 		
@@ -572,24 +584,7 @@ public class InterfaceInfo {
 		public ParameterBounds(Type[] upperTypes, Type[] lowerTypes) {
 			this.upperTypes = (upperTypes == null || upperTypes.length == 0) ? new Type[]{Object.class} : upperTypes;
 			this.lowerTypes = (lowerTypes == null || lowerTypes.length == 0) ? null : lowerTypes;
-			
-			// validate each type against supported types
-//			if (this.upperTypes != null) {
-//				for (Type type: upperTypes) {
-//					if (!(type instanceof Class) && !(type instanceof GenericArrayType)) {
-//						throw new UnsupportedOperationException("Only supporting bounds of type Class and GenericArrayType "+
-//								", "+descriptionOf(type)+" is not supported");
-//					}
-//				}
-//			}
-//			if (this.lowerTypes != null) {
-//				for (Type type: lowerTypes) {
-//					if (!(type instanceof Class) && !(type instanceof GenericArrayType)) {
-//						throw new UnsupportedOperationException("Only supporting bounds of type Class and GenericArrayType "+
-//								", "+descriptionOf(type)+" is not supported");
-//					}
-//				}
-//			}
+
 		}
 		
 		/**
@@ -636,9 +631,10 @@ public class InterfaceInfo {
 		/**
 		 * Assumes there's only one upper class and returns it.
 		 * @return the non-null upper class (defaults to {@code Object})
-		 * @throws UnsupportedOperationException if there's actually more than one class
+		 * @throws UnsupportedType if type reference cannot be converted to a class
+		 * @throws IllegalStateException if there's actually more than one class
 		 */
-		public Class<?> upperClass() {
+		public Class<?> upperClass() throws UnsupportedType {
 			Type type = upperType();
 			if (type != null) {
 				return resolveClassOf(type);
@@ -649,9 +645,10 @@ public class InterfaceInfo {
 		/**
 		 * Assumes there's only one lower class and returns it.
 		 * @return the lower class or null if none
-		 * @throws UnsupportedOperationException if there's actually more than one class
+		 * @throws UnsupportedType if type reference cannot be converted to a class
+		 * @throws IllegalStateException if there's actually more than one class
 		 */
-		public Class<?> lowerClass() {
+		public Class<?> lowerClass() throws UnsupportedType {
 			Type type = lowerType();
 			if (type != null) {
 				return resolveClassOf(type);
@@ -671,8 +668,9 @@ public class InterfaceInfo {
 		 * 
 		 * <p> If the upper bound has not been specialised, it will be {@code Object.class}.
 		 * @return non-empty upper bounding types (usually only one)
+		 * @throws UnsupportedType if type reference cannot be converted to a class
 		 */
-		public Class<?>[] upperClasses() {
+		public Class<?>[] upperClasses() throws UnsupportedType {
 			if (upperTypes == null) {
 				return null;
 			}
@@ -693,8 +691,9 @@ public class InterfaceInfo {
 		 * 
 		 * <p> If the lower bound has not been specialised, it will be null.
 		 * @return null if no lower bound, or non-empty bounding types (usually only one)
+		 * @throws UnsupportedType if type reference cannot be converted to a class
 		 */
-		public Class<?>[] lowerClasses() {
+		public Class<?>[] lowerClasses() throws UnsupportedType {
 			if (lowerTypes == null) {
 				return null;
 			}
@@ -708,11 +707,11 @@ public class InterfaceInfo {
 		/**
 		 * Assumes there's only one upper type and returns it.
 		 * @return the non-null upper type (defaults to {@code Object})
-		 * @throws UnsupportedOperationException if there's actually more than one type
+		 * @throws IllegalStateException if there's actually more than one type
 		 */
 		public Type upperType() {
 			if (upperTypes != null && upperTypes.length > 1) {
-				throw new UnsupportedOperationException("Encountered multiple upper types");
+				throw new IllegalStateException("Cannot get single type where multiple types are used");
 			}
 			return (upperTypes == null) ? null : upperTypes[0];
 		}
@@ -720,11 +719,11 @@ public class InterfaceInfo {
 		/**
 		 * Assumes there's only one lower type and returns it.
 		 * @return the lower type or null if none
-		 * @throws UnsupportedOperationException if there's actually more than one type
+		 * @throws IllegalStateException if there's actually more than one type
 		 */
 		public Type lowerType() {
 			if (lowerTypes != null && lowerTypes.length > 1) {
-				throw new UnsupportedOperationException("Encountered multiple lower types");
+				throw new IllegalStateException("Cannot get single type where multiple types are used");
 			}
 			return (lowerTypes == null) ? null : lowerTypes[0];
 		}
@@ -758,4 +757,12 @@ public class InterfaceInfo {
 		}
 	}
 	
+	/** Thrown internally when a Type is not supported by a method */
+	public static class UnsupportedType extends Exception {
+		private static final long serialVersionUID = 1L;
+		
+		public UnsupportedType(String message) {
+			super(message);
+		}
+	}
 }

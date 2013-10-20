@@ -14,6 +14,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.InterfaceInfo.ParameterBounds;
+import nz.co.gregs.dbvolution.internal.InterfaceInfo.UnsupportedType;
 
 import org.junit.Test;
 
@@ -186,7 +187,7 @@ public class InterfaceInfoTest {
 	}
 
 	@Test
-	public void getsDefaultBoundsOnEnumClass() {
+	public void getsDefaultBoundsOnEnumClass() throws UnsupportedType {
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(Enum.class);
 		System.out.println(Arrays.toString(bounds));
 		
@@ -220,21 +221,19 @@ public class InterfaceInfoTest {
 	}
 
 	@Test
-	public void getsBoundsGivenInterfaceTypeWithMultipleBoundingTypes() {
-		class MultiBoundedInterface<T extends Serializable & Map> {
-		}
+	public void getsBoundsGivenInterfaceTypeWithMultipleBoundingTypes() throws UnsupportedType {
+		class MultiBoundedInterface<T extends Serializable & Map<?,?>> {}
 		
-		class MySubclass<P extends Serializable & Map> extends MultiBoundedInterface<P> {
-		}
+		class MySubclass<P extends Serializable & Map<?,?>> extends MultiBoundedInterface<P> {}
 		
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MultiBoundedInterface.class, MySubclass.class);
 		System.out.println(Arrays.toString(bounds));
-		assertThat(Arrays.asList(bounds[0].upperTypes()), contains((Object)Serializable.class, (Object)Map.class));
+		assertThat(Arrays.asList(bounds[0].upperClasses()), contains((Object)Serializable.class, (Object)Map.class));
 		assertThat(bounds[0].lowerTypes(), is(nullValue()));
 	}
 
 	@Test
-	public void getsBoundsGivenInterfaceTypeWithSimpleParameterizedArgument() {
+	public void getsBoundsGivenInterfaceTypeWithSimpleParameterizedArgument() throws UnsupportedType {
 		class ParamaterizedArgumentInterface<T extends Map<?,?>> {
 		}
 		
@@ -249,7 +248,7 @@ public class InterfaceInfoTest {
 	}
 
 	@Test
-	public void getsBoundsGivenInterfaceTypeWithSimpleParameterizedArgument2() {
+	public void getsBoundsGivenInterfaceTypeWithSimpleParameterizedArgument2() throws UnsupportedType {
 		class ParamaterizedArgumentInterface<T extends Map<?,?>> {
 		}
 		
@@ -264,7 +263,7 @@ public class InterfaceInfoTest {
 	}
 
 	@Test
-	public void getsBoundsGivenInterfaceTypeWithRecursiveParameterizedArgument() {
+	public void getsBoundsGivenInterfaceTypeWithRecursiveParameterizedArgument() throws UnsupportedType {
 		class ParamaterizedArgumentInterface<E extends Enum<E>> {
 		}
 		
@@ -299,6 +298,7 @@ public class InterfaceInfoTest {
 		new InterfaceInfo(MyInterface.class, List.class);
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	public void acceptsAnonymousImpl() {
 		new InterfaceInfo(MyInterface.class, new MyInterface<Object,QueryableDatatype>(){
