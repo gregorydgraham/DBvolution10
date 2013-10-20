@@ -27,29 +27,48 @@ public class DBRowClassWrapperTest {
 	public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
 		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
 		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
-		assertThat(classWrapper.primaryKey().size(), is(1));
-		assertThat(classWrapper.primaryKey().get(0).columnName(), is("uid"));
+		assertThat(classWrapper.primaryKey().columnName(), is("uid"));
 	}
-	
+
 	@Test
-	public void getsPrimaryKeyPropertiesGivenTwoPrimaryKeyColumns() {
-		@DBTableName("table2")
+	public void errorsWhenConstructingGivenTwoPrimaryKeyColumns() {
+		@DBTableName("table1")
 		class TestClass extends DBRow {
 			@DBPrimaryKey
-			@DBColumn("uid_2")
-			public DBInteger uid = new DBInteger();
-
-			@DBPrimaryKey
 			@DBColumn
-			public DBInteger type = new DBInteger();
+			public DBInteger uid = new DBInteger();
+			
+			@DBPrimaryKey
+			@DBColumn("table_text")
+			public DBString text = new DBString();
+			
+			@DBColumn
+			@DBForeignKey(value=MyTable2.class)
+			public DBInteger fkTable2 = new DBInteger();
 		}
-		
-		DBRowClassWrapper classWrapper = new DBRowClassWrapper(TestClass.class);
-		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
-		assertThat(classWrapper.primaryKey().size(), is(2));
-		assertThat(classWrapper.primaryKey().get(0).columnName(), is("uid_2"));
-		assertThat(classWrapper.primaryKey().get(1).columnName(), is("type"));
+
+		new DBRowClassWrapper(TestClass.class);
 	}
+	
+//	@Test
+//	public void getsPrimaryKeyPropertiesGivenTwoPrimaryKeyColumns() {
+//		@DBTableName("table2")
+//		class TestClass extends DBRow {
+//			@DBPrimaryKey
+//			@DBColumn("uid_2")
+//			public DBInteger uid = new DBInteger();
+//
+//			@DBPrimaryKey
+//			@DBColumn
+//			public DBInteger type = new DBInteger();
+//		}
+//		
+//		DBRowClassWrapper classWrapper = new DBRowClassWrapper(TestClass.class);
+//		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
+//		assertThat(classWrapper.primaryKey().size(), is(2));
+//		assertThat(classWrapper.primaryKey().get(0).columnName(), is("uid_2"));
+//		assertThat(classWrapper.primaryKey().get(1).columnName(), is("type"));
+//	}
 	
 	@Test
 	public void getsProperties() {

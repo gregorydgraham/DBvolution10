@@ -30,7 +30,7 @@ public @interface DBAdaptType {
 	 * must have a default constructor.
 	 * @return
 	 */
-    Class<? extends DBTypeAdaptor<?,?>> adaptor();
+    Class<? extends DBTypeAdaptor<?,? extends QueryableDatatype>> adaptor();
     
     /**
      * The DBvolution type that the adaptor converts to.
