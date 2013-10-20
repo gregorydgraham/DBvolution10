@@ -29,18 +29,18 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * 
  * <p> This class is <i>thread-safe</i>.
  */
-public class DBProperty {
-	private final DBPropertyDefinition propertyDefinition;
-	private final DBDatabase database;
+public class PropertyWrapper {
+	private final PropertyWrapperDefinition propertyDefinition;
+//	private final DBDatabase database;
 	private final Object target;
 	
 	/**
 	 * @param classProperty the class-level wrapper
 	 * @param target the target object containing the given property
 	 */
-	public DBProperty(DBPropertyDefinition classProperty, DBDatabase database, Object target) {
+	public PropertyWrapper(PropertyWrapperDefinition classProperty, Object target) {
 		this.propertyDefinition = classProperty;
-		this.database = database;
+//		this.database = database;
 		this.target = target;
 	}
 
@@ -154,7 +154,7 @@ public class DBProperty {
 	 * @return the referenced column name, or null if not specified or not applicable
 	 */
 	// TODO update javadoc for this method now that it's got more smarts
-	public String referencedColumnName(DBRowWrapperFactory cache) {
+	public String referencedColumnName(DBDatabase database, DBRowWrapperFactory cache) {
 		return propertyDefinition.referencedColumnName(database, cache);
 	}
 
@@ -169,7 +169,7 @@ public class DBProperty {
 	 *         column doesn't identify which primary key column to target
 	 */
 	// An idea of what could be possible; to be decided whether we want to keep this
-	public DBPropertyDefinition referencedProperty(DBRowWrapperFactory cache) {
+	public PropertyWrapperDefinition referencedProperty(DBDatabase database, DBRowWrapperFactory cache) {
 		return propertyDefinition.referencedProperty(database, cache);
 	}
 	

@@ -37,14 +37,14 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * 
  * <p> This class is <i>thread-safe</i>.
  */
-public class DBPropertyDefinition {
+public class PropertyWrapperDefinition {
 	private final JavaProperty adaptee;
 	
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
 	
-	public DBPropertyDefinition(JavaProperty javaProperty) {
+	public PropertyWrapperDefinition(JavaProperty javaProperty) {
 		this.adaptee = javaProperty;
 		
 		// handlers
@@ -164,7 +164,7 @@ public class DBPropertyDefinition {
 	 */
 	// TODO update javadoc for this method now that it's got more smarts
 	public String referencedColumnName(DBDatabase database, DBRowWrapperFactory cache) {
-		DBPropertyDefinition referencedProperty = referencedProperty(database, cache);
+		PropertyWrapperDefinition referencedProperty = referencedProperty(database, cache);
 		if (referencedProperty != null) {
 			return referencedProperty.columnName();
 		}
@@ -182,7 +182,7 @@ public class DBPropertyDefinition {
 	 *         column doesn't identify which primary key column to target
 	 */
 	// An idea of what could be possible; to be decided whether we want to keep this
-	public DBPropertyDefinition referencedProperty(DBDatabase database, DBRowWrapperFactory cache) {
+	public PropertyWrapperDefinition referencedProperty(DBDatabase database, DBRowWrapperFactory cache) {
 		if (!foreignKeyHandler.isForeignKey()) {
 			return null;
 		}
@@ -196,7 +196,7 @@ public class DBPropertyDefinition {
 		// get explicitly referenced property (by column name)
 		String explicitColumnName = foreignKeyHandler.getReferencedColumnName();
 		if (explicitColumnName != null) {
-			DBPropertyDefinition property = referencedClassAdaptor.getPropertyByColumn(database, explicitColumnName);
+			PropertyWrapperDefinition property = referencedClassAdaptor.getPropertyByColumn(database, explicitColumnName);
 			if (property == null) {
 				// TODO do this validation at annotation processing time?
 				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
@@ -207,21 +207,21 @@ public class DBPropertyDefinition {
 		
 		// get implicitly referenced property (by scalar primary key)
 		else {
-			List<DBPropertyDefinition> primaryKeyProperties = referencedClassAdaptor.primaryKey();
-			if (primaryKeyProperties == null || primaryKeyProperties.isEmpty()) {
+			PropertyWrapperDefinition primaryKeyProperties = referencedClassAdaptor.primaryKey();
+			if (primaryKeyProperties == null) {
 				// TODO do this validation at annotation processing time
 				// TODO not sure if it's appropriate to throw this exception here
 				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
 						+", which does not have a primary key");
 			}
-			else if (primaryKeyProperties.size() > 1) {
+			else {
 				// TODO do this validation at annotation processing time
-				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
-						+" using an implicit primary key reference, but the referenced class has "+primaryKeyProperties.size()
-						+" primary key columns. You must include explicit foreign column names.");
+//				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
+//						+" using an implicit primary key reference, but the referenced class has "+primaryKeyProperties.size()
+//						+" primary key columns. You must include explicit foreign column names.");
 			}
 			
-			return primaryKeyProperties.get(0);
+			return primaryKeyProperties;
 		}
 	}
 

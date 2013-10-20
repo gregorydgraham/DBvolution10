@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
  * @author Malcolm Lett
  */
 public class DBRowInstanceWrapper {
-	private final DBDatabase database;
+//	private final DBDatabase database;
 	private final DBRowClassWrapper classWrapper;
 	private final Object target;
 	
@@ -32,7 +32,7 @@ public class DBRowInstanceWrapper {
 	 * @param classWrapper
 	 * @param target the target object of the same type as analysed by {@code classAdaptor}
 	 */
-	DBRowInstanceWrapper(DBDatabase database, DBRowClassWrapper classWrapper, Object target) {
+	DBRowInstanceWrapper(DBRowClassWrapper classWrapper, Object target) {
 		if (target == null) {
 			throw new DBRuntimeException("Target object is null");
 		}
@@ -42,7 +42,7 @@ public class DBRowInstanceWrapper {
 					" (this is probably a bug in DBvolution)");
 		}
 		
-		this.database = database;
+//		this.database = database;
 		this.target = target;
 		this.classWrapper = classWrapper;
 	}
@@ -118,12 +118,13 @@ public class DBRowInstanceWrapper {
 	}
 	
 	/**
-	 * Gets the properties that together form the primary key, if any are marked.
-	 * In most tables this will be exactly one property.
+	 * Gets the property that is the primary key, if one is marked.
+	 * In most tables this will be exactly one property. 
 	 * @return the non-empty list of properties, or null if no primary key
+         *  @throws UnsupportedOperationException for Multi-column PKs
 	 */
-	public List<DBPropertyDefinition> primaryKey() {
-		return classWrapper.primaryKey();
+	public PropertyWrapper primaryKey() {
+		return new PropertyWrapper(classWrapper.primaryKey(), target);
 	}
 	
 	/**
@@ -139,9 +140,9 @@ public class DBRowInstanceWrapper {
 	 * @param columnName
 	 * @return
 	 */
-	public DBProperty getDBPropertyByColumn(String columnName) {
-		DBPropertyDefinition classProperty = classWrapper.getPropertyByColumn(database, columnName);
-		return (classProperty == null) ? null : new DBProperty(classProperty, database, target);
+	public PropertyWrapper getDBPropertyByColumn(DBDatabase database, String columnName) {
+		PropertyWrapperDefinition classProperty = classWrapper.getPropertyByColumn(database, columnName);
+		return (classProperty == null) ? null : new PropertyWrapper(classProperty, target);
 	}
 
 	/**
@@ -151,9 +152,9 @@ public class DBRowInstanceWrapper {
 	 * @param propertyName
 	 * @return
 	 */
-	public DBProperty getPropertyByName(String propertyName) {
-		DBPropertyDefinition classProperty = classWrapper.getPropertyByName(propertyName);
-		return (classProperty == null) ? null : new DBProperty(classProperty, database, target);
+	public PropertyWrapper getPropertyByName(String propertyName) {
+		PropertyWrapperDefinition classProperty = classWrapper.getPropertyByName(propertyName);
+		return (classProperty == null) ? null : new PropertyWrapper(classProperty, target);
 	}
 
 	/**
@@ -166,10 +167,10 @@ public class DBRowInstanceWrapper {
 	 * Use {@link #getPropertyDefinitions()} instead in that case.
 	 * @return
 	 */
-	public List<DBProperty> getDBProperties() {
-		List<DBProperty> list = new ArrayList<DBProperty>();
-		for (DBPropertyDefinition classProperty: classWrapper.getProperties()) {
-			list.add(new DBProperty(classProperty, database, target));
+	public List<PropertyWrapper> getPropertyWrappers() {
+		List<PropertyWrapper> list = new ArrayList<PropertyWrapper>();
+		for (PropertyWrapperDefinition classProperty: classWrapper.getProperties()) {
+			list.add(new PropertyWrapper(classProperty, target));
 		}
 		return list;
 	}
@@ -183,7 +184,7 @@ public class DBRowInstanceWrapper {
 	 * use {@link #getDBProperties()} instead.
 	 * @return
 	 */
-	public List<DBPropertyDefinition> getPropertyDefinitions() {
+	public List<PropertyWrapperDefinition> getPropertyDefinitions() {
 		return classWrapper.getProperties();
 	}
 

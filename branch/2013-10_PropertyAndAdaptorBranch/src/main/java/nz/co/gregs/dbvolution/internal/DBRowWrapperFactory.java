@@ -57,7 +57,7 @@ public class DBRowWrapperFactory {
 	 * @param object the object to wrap
 	 * @return the object adaptor for the given object
 	 */
-	public DBRowInstanceWrapper instanceWrapperFor(DBDatabase database, Object object) {
-		return classWrapperFor(object.getClass()).instanceAdaptorFor(database, object);
+	public DBRowInstanceWrapper instanceWrapperFor(Object object) {
+		return classWrapperFor(object.getClass()).instanceAdaptorFor(object);
 	}
 }

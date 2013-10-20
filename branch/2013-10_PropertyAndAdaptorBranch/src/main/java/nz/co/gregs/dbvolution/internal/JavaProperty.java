@@ -17,7 +17,7 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * @author Malcolm Lett
  */
 // TODO: need to test support for private fields
-interface JavaProperty {
+public interface JavaProperty {
 	
 	/**
 	 * Gets a string representation suitable for debugging and logging.
