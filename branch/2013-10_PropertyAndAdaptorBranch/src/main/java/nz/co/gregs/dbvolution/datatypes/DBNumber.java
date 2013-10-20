@@ -18,6 +18,10 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  *
  * @author gregory.graham
  */
+// FIXME (comment from Malcolm): I think the use of numberValue, lowerBoundNumber, upperBoundNumber, inValuesNumber
+// in this class will cause bugs because they aren't settable via QueryableDatatype.
+// eg: calls to QueryableDatatype.permittedValues(null) currently won't change any of the local fields
+// because useNullOperator() isn't overridden. 
 public class DBNumber extends QueryableDatatype {
 
     public static final long serialVersionUID = 1;
