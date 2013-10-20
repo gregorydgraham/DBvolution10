@@ -22,6 +22,12 @@ import nz.co.gregs.dbvolution.operators.*;
  *
  * @author gregory.graham
  */
+// FIXME: literalValue has a broken type: sometimes it's the original QDT's native type,
+// other times it ends up as a string.
+// eg: DBInteger myInt = new DBInteger(23) -> literalValue is an Integer (23).
+// then do myInt.setValue(23) -> now literalValue is a String ("23").
+// This will break the equals() tests in setChanged().
+// It also breaks malcolm's new type adaptor logic.
 public abstract class QueryableDatatype extends Object implements Serializable {
 
     public static final long serialVersionUID = 1L;
@@ -29,15 +35,15 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     protected Object literalValue = null;
     protected boolean isDBNull = false;
     protected boolean includingNulls = false;
-    private boolean invertOperator;
-    private DBOperator operator = null;
-    private boolean undefined = true;
-    private boolean changed = false;
-    private QueryableDatatype previousValueAsQDT = null;
-    private boolean isPrimaryKey;
+    protected boolean invertOperator;
+    protected DBOperator operator = null;
+    protected boolean undefined = true;
+    protected boolean changed = false;
+    protected QueryableDatatype previousValueAsQDT = null;
+    protected boolean isPrimaryKey;
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
-    private Boolean sort = SORT_ASCENDING;
+    protected Boolean sort = SORT_ASCENDING;
 
     QueryableDatatype() {
     }
