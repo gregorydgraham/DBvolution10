@@ -283,19 +283,26 @@ public class InterfaceInfoTest {
 		assertThat(info.isInterfaceImplementedByImplementation(), is(false));
 	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void errorsWhenInterfaceNotAnInterface() {
-		new InterfaceInfo(ArrayList.class, SimpleIntegerDBIntegerImpl.class);
+	@Test
+	public void nullWhenInterfaceNotAnInterfaceAndUnrelated() {
+		InterfaceInfo info = new InterfaceInfo(ArrayList.class, SimpleIntegerDBIntegerImpl.class);
+		assertThat(info.getInterfaceParameterValueBounds(), is(nullValue()));
 	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void errorsWhenImplIsAbstract() {
-		new InterfaceInfo(MyInterface.class, AbstractPartialImplementationWithWildcardType.class);
+	@Test
+	public void acceptsWhenImplIsAbstract() throws UnsupportedType {
+		InterfaceInfo info = new InterfaceInfo(MyInterface.class, AbstractPartialImplementationWithWildcardType.class);
+		assertThat(info.getInterfaceParameterValueBounds(), is(not(nullValue())));
+		System.out.println(Arrays.toString(info.getInterfaceParameterValueBounds()));
+		assertThat(info.getInterfaceParameterValueBounds().length, is(2));
+		assertThat(info.getInterfaceParameterValueBounds()[0].upperClass(), is((Object) Number.class));
+		assertThat(info.getInterfaceParameterValueBounds()[1].upperClass(), is((Object) DBNumber.class));
 	}
 
-	@Test(expected=IllegalArgumentException.class)
-	public void errorsWhenImplIsInterface() {
-		new InterfaceInfo(MyInterface.class, List.class);
+	@Test
+	public void nullWhenImplIsUnrelatedInterface() throws UnsupportedType {
+		InterfaceInfo info = new InterfaceInfo(MyInterface.class, List.class);
+		assertThat(info.getInterfaceParameterValueBounds(), is(nullValue()));
 	}
 
 	@SuppressWarnings("unused")

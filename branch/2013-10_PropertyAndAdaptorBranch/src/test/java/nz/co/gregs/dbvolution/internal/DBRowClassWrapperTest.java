@@ -30,7 +30,7 @@ public class DBRowClassWrapperTest {
 		assertThat(classWrapper.primaryKey().columnName(), is("uid"));
 	}
 
-	@Test
+	@Test(expected=UnsupportedOperationException.class)
 	public void errorsWhenConstructingGivenTwoPrimaryKeyColumns() {
 		@DBTableName("table1")
 		class TestClass extends DBRow {

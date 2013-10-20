@@ -29,15 +29,6 @@ public class InterfaceInfo {
 	 * @throws UnsupportedOperationException if encounter generics that aren't handled yet
 	 */
 	public InterfaceInfo(Class<?> interfaceClass, Class<?> implementationClass) {
-		// step 0: validation: interfaceType must be an interface, implementationType must be a concrete class
-		// can likely increase the scope later, but for now all assumptions are based on this
-		if (!interfaceClass.isInterface()) {
-			throw new IllegalArgumentException("interfaceType must be an interface");
-		}
-		if (implementationClass.isInterface() || Modifier.isAbstract(implementationClass.getModifiers())) {
-			throw new IllegalArgumentException("implementationType must be a concrete class");
-		}
-		
 		this.typeArgumentBounds = getParameterBounds(interfaceClass, implementationClass);
 		this.interfaceImplementedByImplementation = (typeArgumentBounds != null);
 	}
@@ -61,7 +52,7 @@ public class InterfaceInfo {
 	 *         interface class;
 	 *         empty array if the implementation class implements or extends the interface or supertype,
 	 *         but that the interface/supertype has no generic parameters;
-	 *         null if the implemenation class does not implement or extend the interface or supertype.
+	 *         null if the implementation class does not implement or extend the interface or supertype.
 	 */
 	public ParameterBounds[] getInterfaceParameterValueBounds() {
 		return typeArgumentBounds;

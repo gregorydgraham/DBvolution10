@@ -17,7 +17,7 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	}
 
 	public DBThrownByEndUserCodeException(Throwable cause) {
-		super(cause);
+		super("An exception was thrown by user code: "+cause.toString(), cause);
 	}
 
 	public DBThrownByEndUserCodeException(String message, Throwable cause) {

@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import nz.co.gregs.dbvolution.DBTypeAdaptor;
+import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -30,12 +30,12 @@ public @interface DBAdaptType {
 	 * must have a default constructor.
 	 * @return
 	 */
-    Class<? extends DBTypeAdaptor<?,? extends QueryableDatatype>> adaptor();
+    Class<? extends DBTypeAdaptor<?,?>> adaptor();
     
     /**
      * The DBvolution type that the adaptor converts to.
      * @return
      */
-    Class<? extends QueryableDatatype> type();
+    Class<? extends QueryableDatatype> type() default QueryableDatatype.class;
     
 }

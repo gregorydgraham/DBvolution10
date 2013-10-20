@@ -7,13 +7,13 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 
@@ -23,10 +23,7 @@ import org.junit.Test;
 public class PropertyTypeHandlerTest {
 	private JavaPropertyFinder finder = new JavaPropertyFinder();
 
-	// TODO: test that a sensible error is given early on where a TypeAdaptor
-	//       takes the wrong arguments.
-
-	@Ignore
+	@Ignore // not working yet
 	@Test(expected=DBPebkacException.class)
 	public void errorsOnConstructionGivenTypeAdaptorWithWrongDBvType() {
 		List<JavaProperty> properties = finder.getPropertiesOf(MyTable.class);
@@ -136,6 +133,49 @@ public class PropertyTypeHandlerTest {
 		assertThat(myObj.intField, is(nullValue()));
 	}
 	
+	@Test
+	public void infersDBStringGivenIntegerStringAdaptor() {
+		class MyClass extends DBRow {
+			@DBAdaptType(adaptor=IntegerStringAdaptor.class)
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		assertThat(propertyHandler.getType(), is((Object) DBString.class));
+	}
+
+	@Test
+	public void getsCorrectInternalValueTypeGivenIntegerStringAdaptorOnDBIntegerField() {
+		class MyClass extends DBRow {
+			@DBAdaptType(adaptor=IntegerStringAdaptor.class)
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		QueryableDatatype qdt = propertyHandler.getDBvValue(new MyClass());
+		assertThat(qdt, is(instanceOf(DBString.class)));
+	}
+
+	@Ignore // broken due to bug in QueryableDatatype turning literalValues into strings
+	@Test
+	public void getsCorrectInternalValueGivenIntegerStringAdaptorOnDBIntegerField() {
+		class MyClass extends DBRow {
+			@DBAdaptType(adaptor=IntegerStringAdaptor.class)
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		MyClass myObj = new MyClass();
+		myObj.intField.setValue(23);
+		
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		DBString qdt = (DBString)propertyHandler.getDBvValue(myObj);
+		
+		assertThat(qdt.stringValue(), is("23"));
+	}
+	
 	private PropertyTypeHandler propertyHandlerOf(Class<?> clazz, String javaPropertyName) {
 		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName));
 	}
@@ -147,6 +187,24 @@ public class PropertyTypeHandlerTest {
 			throw new IllegalArgumentException("No public property found with java name '"+javaPropertyName+"'");
 		}
 		return property;
+	}
+	
+	public static class IntegerStringAdaptor implements DBTypeAdaptor<Integer,String> {
+		@Override
+		public Integer fromDatabaseValue(String dbvValue) {
+			if (dbvValue != null) {
+				return Integer.parseInt(dbvValue);
+			}
+			return null;
+		}
+
+		@Override
+		public String toDatabaseValue(Integer objectValue) {
+			if (objectValue != null) {
+				return objectValue.toString();
+			}
+			return null;
+		}
 	}
 	
 	@DBTableName("Simple_Table")
@@ -165,21 +223,21 @@ public class PropertyTypeHandlerTest {
 	}
 	
 	public static class MyIntegerDBIntegerAdaptor implements DBTypeAdaptor<Integer, DBInteger> {
-		public Integer toObjectValue(DBInteger dbvValue) {
+		public Integer fromDatabaseValue(DBInteger dbvValue) {
 			return null;
 		}
 
-		public DBInteger toDBvValue(Integer objectValue) {
+		public DBInteger toDatabaseValue(Integer objectValue) {
 			return null;
 		}
 	}
 
 	public static class MyNumberDBNumberAdaptor implements DBTypeAdaptor<Number, DBNumber> {
-		public Number toObjectValue(DBNumber dbvValue) {
+		public Number fromDatabaseValue(DBNumber dbvValue) {
 			return null;
 		}
 
-		public DBNumber toDBvValue(Number objectValue) {
+		public DBNumber toDatabaseValue(Number objectValue) {
 			return null;
 		}
 	}
