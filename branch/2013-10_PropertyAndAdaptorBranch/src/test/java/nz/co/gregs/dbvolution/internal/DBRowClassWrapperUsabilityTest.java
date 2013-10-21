@@ -26,7 +26,7 @@ public class DBRowClassWrapperUsabilityTest {
     public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
         QueryableDatatype qdt = new DBRowClassWrapper(MyExampleTableClass.class)
                 .instanceAdaptorFor(obj)
-                .getDBPropertyByColumn(database, "column1")
+                .getPropertyByColumn(database, "column1")
                 .getQueryableDatatype();
     }
 
@@ -34,7 +34,7 @@ public class DBRowClassWrapperUsabilityTest {
     public void easyToGetSpecificPropertyValueOnObjectWhenDoingVerbosely() {
         DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyExampleTableClass.class);
         DBRowInstanceWrapper objectWrapper = classWrapper.instanceAdaptorFor(obj);
-        PropertyWrapper property = objectWrapper.getDBPropertyByColumn(database, "column1");
+        PropertyWrapper property = objectWrapper.getPropertyByColumn(database, "column1");
         if (property != null) {
             QueryableDatatype qdt = property.getQueryableDatatype();
             property.setQueryableDatatype(qdt);

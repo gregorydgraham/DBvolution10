@@ -56,6 +56,6 @@ public class PropertyWrapperDefinitionTest {
 	// note: intentionally doesn't use a wrapper factory for tests on equals() methods
 	private PropertyWrapperDefinition wrapperDefinitionOf(Class<?> clazz, String javaPropertyName) {
 		DBRowClassWrapper classWrapper = new DBRowClassWrapper(clazz);
-		return classWrapper.getPropertyByName(javaPropertyName);
+		return classWrapper.getPropertyDefinitionByName(javaPropertyName);
 	}
 }

@@ -26,8 +26,8 @@ public class DBRowClassWrapperTest {
 	@Test
 	public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
 		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
-		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
-		assertThat(classWrapper.primaryKey().columnName(), is("uid"));
+		assertThat(classWrapper.primaryKeyDefinition(), is(not(nullValue())));
+		assertThat(classWrapper.primaryKeyDefinition().columnName(), is("uid"));
 	}
 
 	@Test(expected=UnsupportedOperationException.class)
@@ -73,19 +73,19 @@ public class DBRowClassWrapperTest {
 	@Test
 	public void getsProperties() {
 		DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
-		assertThat(classAdaptor.getProperties().size(), is(3));
+		assertThat(classAdaptor.getPropertyDefinitions().size(), is(3));
 	}
 	
 	@Test
 	public void getsForeignKeyReferencedTableName() {
 		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
-		assertThat(classWrapper.getPropertyByName("fkTable2").referencedTableName(), is("table2"));
+		assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedTableName(), is("table2"));
 	}
 
 	@Test
 	public void getsForeignKeyReferencedColumnName() {
 		DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
-		assertThat(classWrapper.getPropertyByName("fkTable2").referencedColumnName(
+		assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedColumnName(
 				database, new DBRowWrapperFactory()),
 				is("uid_2"));
 	}

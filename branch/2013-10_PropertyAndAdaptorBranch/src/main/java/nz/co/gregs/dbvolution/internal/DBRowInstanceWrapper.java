@@ -26,6 +26,9 @@ public class DBRowInstanceWrapper {
 	private final DBRowClassWrapper classWrapper;
 	private final Object target;
 	
+	private final List<PropertyWrapper> allProperties;
+	private final List<PropertyWrapper> foreignKeyProperties;
+	
 	/**
 	 * Called by {@link DBRowClassWrapper#instanceAdaptorFor(DBDefinition, Object)}.
 	 * @param dbDefn
@@ -45,6 +48,17 @@ public class DBRowInstanceWrapper {
 //		this.database = database;
 		this.target = target;
 		this.classWrapper = classWrapper;
+		
+		// pre-cache commonly used things
+		this.allProperties = new ArrayList<PropertyWrapper>();
+		for (PropertyWrapperDefinition propertyDefinition: classWrapper.getPropertyDefinitions()) {
+			this.allProperties.add(new PropertyWrapper(propertyDefinition, target));
+		}
+		
+		this.foreignKeyProperties = new ArrayList<PropertyWrapper>();
+		for (PropertyWrapperDefinition propertyDefinition: classWrapper.getForeignKeyPropertyDefinitions()) {
+			this.foreignKeyProperties.add(new PropertyWrapper(propertyDefinition, target));
+		}
 	}
 
 	/**
@@ -123,7 +137,7 @@ public class DBRowInstanceWrapper {
 	 * @return the primary key property or null if no primary key
 	 */
 	public PropertyWrapper primaryKey() {
-		return new PropertyWrapper(classWrapper.primaryKey(), target);
+		return new PropertyWrapper(classWrapper.primaryKeyDefinition(), target);
 	}
 	
 	/**
@@ -139,8 +153,8 @@ public class DBRowInstanceWrapper {
 	 * @param columnName
 	 * @return
 	 */
-	public PropertyWrapper getDBPropertyByColumn(DBDatabase database, String columnName) {
-		PropertyWrapperDefinition classProperty = classWrapper.getPropertyByColumn(database, columnName);
+	public PropertyWrapper getPropertyByColumn(DBDatabase database, String columnName) {
+		PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByColumn(database, columnName);
 		return (classProperty == null) ? null : new PropertyWrapper(classProperty, target);
 	}
 
@@ -152,7 +166,7 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public PropertyWrapper getPropertyByName(String propertyName) {
-		PropertyWrapperDefinition classProperty = classWrapper.getPropertyByName(propertyName);
+		PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByName(propertyName);
 		return (classProperty == null) ? null : new PropertyWrapper(classProperty, target);
 	}
 
@@ -164,16 +178,28 @@ public class DBRowInstanceWrapper {
 	 * <p> Note: if you wish to iterate over the properties and only
 	 * use their definitions (ie: meta-information), this method is not efficient.
 	 * Use {@link #getPropertyDefinitions()} instead in that case.
-	 * @return
+	 * @return the non-null list of properties, empty if none
 	 */
 	public List<PropertyWrapper> getPropertyWrappers() {
-		List<PropertyWrapper> list = new ArrayList<PropertyWrapper>();
-		for (PropertyWrapperDefinition classProperty: classWrapper.getProperties()) {
-			list.add(new PropertyWrapper(classProperty, target));
-		}
-		return list;
+		return allProperties;
 	}
 	
+    /**
+     * Gets all foreign key properties.
+     * @return non-null list, empty if no foreign key properties
+     */
+    public List<PropertyWrapper> getForeignKeyPropertyWrappers() {
+    	return foreignKeyProperties;
+    }
+
+    /**
+     * Gets all foreign key properties as property definitions.
+     * @return
+     */
+    public List<PropertyWrapperDefinition> getForeignKeyPropertyWrapperDefinitions() {
+    	return classWrapper.getForeignKeyPropertyDefinitions();
+    }
+    
 	/**
 	 * Gets all property definitions that are annotated with {@code DBColumn}.
 	 * This method is intended for where you need to examine meta-information
@@ -184,15 +210,6 @@ public class DBRowInstanceWrapper {
 	 * @return
 	 */
 	public List<PropertyWrapperDefinition> getPropertyDefinitions() {
-		return classWrapper.getProperties();
+		return classWrapper.getPropertyDefinitions();
 	}
-
-// shouldn't be needed
-//	/**
-//	 * Gets the {@link DBTableName} annotation on the class, if it exists.
-//	 * @return the annotation or null
-//	 */
-//	public DBTableName getDBTableNameAnnotation() {
-//		return classAdaptor.getDBTableNameAnnotation();
-//	}
 }

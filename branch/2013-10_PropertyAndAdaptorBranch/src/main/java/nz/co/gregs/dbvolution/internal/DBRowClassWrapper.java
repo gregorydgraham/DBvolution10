@@ -250,7 +250,7 @@ public class DBRowClassWrapper {
 	 * Note: multi-column primary key tables are not yet supported.
 	 * @return the primary key property or null if no primary key
      */
-    public PropertyWrapperDefinition primaryKey() {
+    public PropertyWrapperDefinition primaryKeyDefinition() {
     	return primaryKeyProperty;
     }
 
@@ -268,7 +268,7 @@ public class DBRowClassWrapper {
      * @param columnName
      * @return
      */
-    public PropertyWrapperDefinition getPropertyByColumn(DBDatabase database, String columnName) {
+    public PropertyWrapperDefinition getPropertyDefinitionByColumn(DBDatabase database, String columnName) {
         if (database.getDefinition().isColumnNamesCaseSensitive()) {
             return propertiesByUpperCaseColumnName.get(columnName.toUpperCase());
         } else {
@@ -287,7 +287,7 @@ public class DBRowClassWrapper {
      * @param propertyName
      * @return
      */
-    public PropertyWrapperDefinition getPropertyByName(String propertyName) {
+    public PropertyWrapperDefinition getPropertyDefinitionByName(String propertyName) {
         return propertiesByPropertyName.get(propertyName);
     }
 
@@ -296,15 +296,22 @@ public class DBRowClassWrapper {
      *
      * @return
      */
-    public List<PropertyWrapperDefinition> getProperties() {
+    public List<PropertyWrapperDefinition> getPropertyDefinitions() {
         return properties;
     }
-// shouldn't be needed
-//	/**
-//	 * Gets the {@link DBTableName} annotation on the class, if it exists.
-//	 * @return the annotation or null
-//	 */
-//	public DBTableName getDBTableNameAnnotation() {
-//		return tableHandler.getDBTableNameAnnotation();
-//	}
+    
+    /**
+     * Gets all foreign key properties.
+     * @return
+     */
+    public List<PropertyWrapperDefinition> getForeignKeyPropertyDefinitions() {
+        List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
+
+        for (PropertyWrapperDefinition property: properties) {
+            if (property.isColumn() && property.isForeignKey()) {
+            	list.add(property);
+            }
+        }
+        return list;
+    }
 }

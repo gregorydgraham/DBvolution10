@@ -235,7 +235,7 @@ public class PropertyWrapperDefinition {
 		// get explicitly referenced property (by column name)
 		String explicitColumnName = foreignKeyHandler.getReferencedColumnName();
 		if (explicitColumnName != null) {
-			PropertyWrapperDefinition property = referencedClassAdaptor.getPropertyByColumn(database, explicitColumnName);
+			PropertyWrapperDefinition property = referencedClassAdaptor.getPropertyDefinitionByColumn(database, explicitColumnName);
 			if (property == null) {
 				// TODO do this validation at annotation processing time?
 				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
@@ -246,7 +246,7 @@ public class PropertyWrapperDefinition {
 		
 		// get implicitly referenced property (by scalar primary key)
 		else {
-			PropertyWrapperDefinition primaryKeyProperties = referencedClassAdaptor.primaryKey();
+			PropertyWrapperDefinition primaryKeyProperties = referencedClassAdaptor.primaryKeyDefinition();
 			if (primaryKeyProperties == null) {
 				// TODO do this validation at annotation processing time
 				// TODO not sure if it's appropriate to throw this exception here
