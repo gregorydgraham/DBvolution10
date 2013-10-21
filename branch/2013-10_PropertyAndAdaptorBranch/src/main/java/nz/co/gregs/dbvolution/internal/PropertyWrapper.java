@@ -55,6 +55,53 @@ public class PropertyWrapper {
 	}
 	
 	/**
+	 * Generates a hash-code of this property wrapper definition,
+	 * based on the java property it wraps and the referenced target object.
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((propertyDefinition == null) ? 0 : propertyDefinition.hashCode());
+		result = prime * result + ((target == null) ? 0 : target.hashCode());
+		return result;
+	}
+
+	/**
+	 * Equality of this property wrapper definition,
+	 * based on the java property it wraps in a specific class,
+	 * plus the underlying object reference containing the wrapped property.
+	 * Two instances are identical if they wrap the same java property (field or bean-property)
+	 * in the same object instance (by object reference, rather than {@code .equals()} equality).
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof PropertyWrapper)) {
+			return false;
+		}
+		PropertyWrapper other = (PropertyWrapper) obj;
+		if (propertyDefinition == null) {
+			if (other.propertyDefinition != null) {
+				return false;
+			}
+		} else if (!propertyDefinition.equals(other.propertyDefinition)) {
+			return false;
+		}
+		if (target != other.target) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Gets the name of the java property.
 	 * Mainly used within error messages.
 	 * 

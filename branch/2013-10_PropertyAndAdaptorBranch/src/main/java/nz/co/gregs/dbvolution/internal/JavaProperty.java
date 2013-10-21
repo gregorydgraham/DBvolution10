@@ -26,6 +26,19 @@ public interface JavaProperty {
 	public String toString();
 	
 	/**
+	 * Tests for equality, based entirely on whether the underlying java field or bean-property
+	 * is the same.
+	 */
+	@Override
+	public boolean equals(Object other);
+
+	/**
+	 * Hash-code based on the underlying java field or bean-property.
+	 */
+	@Override
+	public int hashCode();
+	
+	/**
 	 * Indicates whether this java property is a field.
 	 * If it is not a field, then it is a bean-property.
 	 * @return {@code true} if a field, {@code false} if a bean-property.
@@ -138,7 +151,44 @@ public interface JavaProperty {
 		public String toString() {
 			return "field "+name();
 		}
-		
+
+		/**
+		 * Hash-code based on the underlying java field or bean-property.
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((field == null) ? 0 : field.hashCode());
+			return result;
+		}
+
+		/**
+		 * Tests for equality, based entirely on whether the underlying java field or bean-property
+		 * is the same.
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (!(obj instanceof JavaField)) {
+				return false;
+			}
+			JavaField other = (JavaField) obj;
+			if (field == null) {
+				if (other.field != null) {
+					return false;
+				}
+			} else if (!field.equals(other.field)) {
+				return false;
+			}
+			return true;
+		}
+
 		@Override
 		public boolean isField() {
 			return true;
@@ -249,6 +299,54 @@ public interface JavaProperty {
 			return "property "+name();
 		}
 		
+		/**
+		 * Hash-code based on the underlying java getter and
+		 * setter methods.
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((getter == null) ? 0 : getter.hashCode());
+			result = prime * result
+					+ ((setter == null) ? 0 : setter.hashCode());
+			return result;
+		}
+
+		/**
+		 * Tests for equality, based on the underlying java
+		 * getter and setter methods.
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (!(obj instanceof JavaBeanProperty)) {
+				return false;
+			}
+			JavaBeanProperty other = (JavaBeanProperty) obj;
+			if (getter == null) {
+				if (other.getter != null) {
+					return false;
+				}
+			} else if (!getter.equals(other.getter)) {
+				return false;
+			}
+			if (setter == null) {
+				if (other.setter != null) {
+					return false;
+				}
+			} else if (!setter.equals(other.setter)) {
+				return false;
+			}
+			return true;
+		}
+
 		@Override
 		public boolean isField() {
 			return false;

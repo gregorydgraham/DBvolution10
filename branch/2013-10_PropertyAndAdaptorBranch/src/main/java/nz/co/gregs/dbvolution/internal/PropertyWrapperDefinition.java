@@ -1,7 +1,5 @@
 package nz.co.gregs.dbvolution.internal;
 
-import java.util.List;
-
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -62,7 +60,47 @@ public class PropertyWrapperDefinition {
 	public String toString() {
 		return adaptee.toString();
 	}
-	
+
+	/**
+	 * Generates a hash-code of this property wrapper definition,
+	 * based entirely on the java property it wraps.
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((adaptee == null) ? 0 : adaptee.hashCode());
+		return result;
+	}
+
+	/**
+	 * Equality of this property wrapper definition,
+	 * based on the java property it wraps in a specific class.
+	 * Two instances are identical if they wrap the same java property (field or bean-property)
+	 * in the same class and the same class-loader.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof PropertyWrapperDefinition)) {
+			return false;
+		}
+		PropertyWrapperDefinition other = (PropertyWrapperDefinition) obj;
+		if (adaptee == null) {
+			if (other.adaptee != null) {
+				return false;
+			}
+		} else if (!adaptee.equals(other.adaptee)) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Gets the name of the underlying java property.
 	 * Mainly used within logging and error messages.
