@@ -260,11 +260,12 @@ public abstract class DBDatabase {
      */
     public void print(List<?> rows) {
         for (Object row : rows) {
-            if (row instanceof DBRow) {
-                System.out.println(((DBRow) row).toString());
-            } else if (row instanceof DBQueryRow) {
-                System.out.println(((DBQueryRow) row).toString());
-            }
+//            if (row instanceof DBRow) {
+//                System.out.println(((DBRow) row).toString());
+//            } else if (row instanceof DBQueryRow) {
+//                System.out.println(((DBQueryRow) row).toString());
+//            }
+            System.out.println(row.toString());
         }
     }
 

@@ -1,27 +1,28 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import java.io.Serializable;
-//import java.lang.reflect.Field;
-//import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.Map.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBSaveBLOB;
-import nz.co.gregs.dbvolution.annotations.*;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.internal.DBRowInstanceWrapper;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+
+import org.reflections.Reflections;
 
 /**
  *
@@ -42,6 +43,7 @@ abstract public class DBRow implements Serializable {
     private final List<DBLargeObject> blobColumns = new ArrayList<DBLargeObject>();
     static DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
     transient DBRowInstanceWrapper wrapper = null;
+    private ArrayList<Class<? extends DBRow>> referencedTables;
 
     public DBRow() {
     }
@@ -754,6 +756,45 @@ abstract public class DBRow implements Serializable {
             }
         }
         return rels.toString();
+    }
+
+    /**
+     * Returns all the DBRow subclasses referenced by foreign keys
+     *
+     * @return A list of DBRow subclasses referenced with
+     * @DBForeignKey
+     *
+     */
+    public List<Class<? extends DBRow>> getReferencedTables() {
+        if (referencedTables == null) {
+            referencedTables = new ArrayList<Class<? extends DBRow>>();
+            List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
+            for (PropertyWrapper prop: props) {
+            	referencedTables.add(prop.referencedClass());
+            }
+        }
+        return (List<Class<? extends DBRow>>) referencedTables.clone();
+    }
+
+    public List<Class<? extends DBRow>> getAllRelatedTables() {
+        List<Class<? extends DBRow>> relatedTables = getReferencedTables();
+        Reflections reflections = new Reflections(this.getClass().getPackage().getName());
+
+        Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
+        for (Class<? extends DBRow> tableClass : subTypes) {
+            DBRow newInstance;
+            try {
+                newInstance = tableClass.newInstance();
+                if (newInstance.getReferencedTables().contains(this.getClass())) {
+                    relatedTables.add(tableClass);
+                }
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return relatedTables;
     }
 
     private DBRowInstanceWrapper getWrapper() {

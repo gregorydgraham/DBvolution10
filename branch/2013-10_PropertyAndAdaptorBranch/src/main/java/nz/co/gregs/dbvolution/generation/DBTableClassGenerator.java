@@ -31,10 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
+import nz.co.gregs.dbvolution.datatypes.*;
 
 /**
  *
@@ -227,7 +225,7 @@ public class DBTableClassGenerator {
                 try {
                     dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
                 } catch (UnknownJavaSQLTypeException ex) {
-                    dbTableField.columnType = (new DBUnknownDatatype()).getClass().getSimpleName();
+                    dbTableField.columnType = DBUnknownDatatype.class.getSimpleName();
                     dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
                 }
                 if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
@@ -292,9 +290,9 @@ public class DBTableClassGenerator {
         switch (columnType) {
             case Types.BIT:
                 if (precision == 1) {
-                    value = "DBBoolean";
+                    value = DBBoolean.class.getSimpleName();
                 } else {
-                    value = "DBByteArray";
+                    value = DBByteArray.class.getSimpleName();
                 }
                 break;
             case Types.TINYINT:
@@ -304,14 +302,14 @@ public class DBTableClassGenerator {
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
-                value = "DBInteger";
+                value = DBInteger.class.getSimpleName();
                 break;
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.NUMERIC:
             case Types.REAL:
-                value = "DBNumber";
+                value = DBNumber.class.getSimpleName();
                 break;
             case Types.VARCHAR:
             case Types.CHAR:
@@ -321,25 +319,23 @@ public class DBTableClassGenerator {
             case Types.NCLOB:
             case Types.LONGNVARCHAR:
             case Types.LONGVARCHAR:
-                value = "DBString";
+                value = DBString.class.getSimpleName();
                 break;
             case Types.DATE:
             case Types.TIME:
-                value = "DBDate";
-                break;
             case Types.TIMESTAMP:
-                value = "DBDate";
+                value = DBDate.class.getSimpleName();
                 break;
             case Types.OTHER:
             case Types.JAVA_OBJECT:
-                value = "DBObject";
+                value = DBJavaObject.class.getSimpleName();
                 break;
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
             case Types.BLOB:
             case Types.ARRAY:
             case Types.SQLXML:
-                value = "DBByteArray";
+                value = DBByteArray.class.getSimpleName();
                 break;
             default:
                 throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: " + columnType, columnType);

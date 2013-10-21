@@ -85,57 +85,80 @@ public class DBQuery {
 
     /**
      *
-     * Add a table to the query
+     * Add a table to the query.
+     * 
+     * This method adds the DBRow to the list of required (INNER) tables.
+     * 
+     * Criteria (permitted and excluded values) from this instance will be 
+     * automatically included in the query and an instance of this DBRow class 
+     * will be created for each DBQueryRow returned.
+     *
+     * @param table: an extension of DBRow that defines a required table 
+     * and criteria
+     */
+    public DBQuery add(DBRow... tables) {
+        for (DBRow table : tables) {
+            queryTables.add(table);
+            allQueryTables.add(table);
+            results = null;
+            resultSQL = null;
+        }
+        return this;
+    }
+
+    /**
+     * Add an optional table to this query
+     * 
+     * This method adds an optional (OUTER) table to the query.
+     * The query will return an instance of this DBRow for each row found, though
+     * it may be a null instance as there was no matching row in the database.
+     * 
+     * Criteria (permitted and excluded values) specified in the supplied 
+     * instance will be added to the query.
      *
      * @param table
+     * 
+     * @return this DBQuery instance 
      */
-    public DBQuery add(DBRow table) {
-        queryTables.add(table);
-        allQueryTables.add(table);
-        results = null;
-        resultSQL = null;
+    public DBQuery addOptional(DBRow... tables) {
+        for (DBRow table : tables) {
+            optionalQueryTables.add(table.getClass());
+            allQueryTables.add(table);
+            results = null;
+            resultSQL = null;
+        }
         return this;
     }
 
     /**
      *
-     * Remove a table to the query
-     *
+     * Remove optional or required tables from the query
+     * 
      * @param table
      */
-    public DBQuery remove(DBRow table) {
-        queryTables.remove(table);
-        allQueryTables.remove(table);
-        results = null;
-        resultSQL = null;
+    public DBQuery remove(DBRow... tables) {
+        for (DBRow table : tables) {
+            queryTables.remove(table);
+            optionalQueryTables.remove(table.getClass());
+            allQueryTables.remove(table);
+            results = null;
+            resultSQL = null;
+        }
         return this;
     }
 
-    /**
-     *
-     * @param table
-     * @return
-     */
-    public DBQuery addOptional(DBRow table) {
-        optionalQueryTables.add(table.getClass());
-        allQueryTables.add(table);
-        results = null;
-        resultSQL = null;
-        return this;
-    }
-
-    /**
-     *
-     * @param table
-     * @return
-     */
-    public DBQuery removeOptionalTable(DBRow table) {
-        optionalQueryTables.remove(table.getClass());
-        allQueryTables.remove(table);
-        results = null;
-        resultSQL = null;
-        return this;
-    }
+//    /**
+//     *
+//     * @param table
+//     * @return
+//     */
+//    public DBQuery removeOptionalTable(DBRow table) {
+//        optionalQueryTables.remove(table.getClass());
+//        allQueryTables.remove(table);
+//        results = null;
+//        resultSQL = null;
+//        return this;
+//    }
 
     public String getSQLForQuery() throws SQLException {
         return getSQLForQuery(null);
@@ -587,5 +610,27 @@ public class DBQuery {
      */
     public void setUseANSISyntax(boolean useANSISyntax) {
         this.useANSISyntax = useANSISyntax;
+    }
+
+    public void addAllRelatedTables() throws InstantiationException, IllegalAccessException {
+        List<DBRow> tablesToAdd = new ArrayList<DBRow>();
+        for (DBRow table : allQueryTables) {
+            List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
+            for (Class<? extends DBRow> relatedTable : allRelatedTables) {
+                tablesToAdd.add(relatedTable.newInstance());
+            }
+        }
+        add(tablesToAdd.toArray(new DBRow[]{}));
+    }
+
+    public void addAllRelatedTablesAsOptional() throws InstantiationException, IllegalAccessException {
+        List<DBRow> tablesToAdd = new ArrayList<DBRow>();
+        for (DBRow table : allQueryTables) {
+            List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
+            for (Class<? extends DBRow> relatedTable : allRelatedTables) {
+                tablesToAdd.add(relatedTable.newInstance());
+            }
+        }
+        addOptional(tablesToAdd.toArray(new DBRow[]{}));
     }
 }

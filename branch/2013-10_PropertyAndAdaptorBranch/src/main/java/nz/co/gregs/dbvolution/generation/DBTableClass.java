@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.generation;
 
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 
 /**
@@ -26,7 +28,6 @@ import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 public class DBTableClass {
 
     private final String unknownDatatype = new DBUnknownDatatype().getClass().getSimpleName();
-
     String packageName;
     String className;
     String tableName;
@@ -34,41 +35,52 @@ public class DBTableClass {
     List<DBTableField> fields = new ArrayList<DBTableField>();
     String lineSeparator = System.getProperty("line.separator");
     String conceptBreak = lineSeparator + lineSeparator;
-    
-    public String getFullyQualifiedName(){
-        return this.packageName+"."+className;
+
+    public String getFullyQualifiedName() {
+        return this.packageName + "." + className;
     }
 
     public String generateJavaSource() {
         StringBuilder javaSrc = new StringBuilder();
-        if (this.packageName != null) {
-            javaSrc.append("package ").append(this.packageName).append(";");
+        final String outputPackageName = this.packageName;
+        if ( outputPackageName != null) {
+            javaSrc.append("package ").append( outputPackageName).append(";");
             javaSrc.append(conceptBreak);
         }
-        javaSrc.append("import nz.co.gregs.dbvolution.*;");
+        
+        final String importPackageName = DBRow.class.getPackage().getName();
+        javaSrc.append("import ").append(importPackageName).append(".*;");
         javaSrc.append(lineSeparator);
-        javaSrc.append("import nz.co.gregs.dbvolution.datatypes.*;");
+        javaSrc.append("import ").append(importPackageName).append(".datatypes.*;");
         javaSrc.append(lineSeparator);
-        javaSrc.append("import nz.co.gregs.dbvolution.annotations.*;");
+        javaSrc.append("import ").append(importPackageName).append(".annotations.*;");
         javaSrc.append(conceptBreak);
+        
+        final String tableNameAnnotation = DBTableName.class.getSimpleName();
+        final String dbRowClassName = DBRow.class.getSimpleName();
+        final String dbColumnAnnotation = DBColumn.class.getSimpleName();
+        final String primaryKeyAnnotation = DBPrimaryKey.class.getSimpleName();
+        final String foreignKeyAnnotation = DBForeignKey.class.getSimpleName();
+        final String unknownJavaSQLTypeAnnotation = DBUnknownJavaSQLType.class.getSimpleName();
 
-        javaSrc.append("@DBTableName(\"").append(this.tableName).append("\") ");
+        javaSrc.append("@").append(tableNameAnnotation).append("(\"").append(this.tableName).append("\") ");
         javaSrc.append(lineSeparator);
-        javaSrc.append("public class ").append(this.className).append(" extends DBRow {");
+        javaSrc.append("public class ").append(this.className).append(" extends ").append(dbRowClassName).append(" {");
         javaSrc.append(conceptBreak);
 
         for (DBTableField field : fields) {
-            javaSrc.append("    @DBColumn(\"").append(field.columnName).append("\")");
+            javaSrc.append("    @").append(dbColumnAnnotation).append("(\"").append(field.columnName).append("\")");
             javaSrc.append(lineSeparator);
             if (field.isPrimaryKey) {
-                javaSrc.append("    @DBPrimaryKey").append(lineSeparator);
+                javaSrc.append("    @").append(primaryKeyAnnotation).append(lineSeparator);
             }
             if (field.isForeignKey) {
-                javaSrc.append("    @DBForeignKey(").append(field.referencesClass).append(".class)");
+                javaSrc.append("    @").append(foreignKeyAnnotation).append("(").append(field.referencesClass).append(".class)");
                 javaSrc.append(lineSeparator);
             }
             if (unknownDatatype.equals(field.columnType)) {
-                javaSrc.append("    @DBUnknownJavaSQLType(").append(field.javaSQLDatatype).append(")");
+
+                javaSrc.append("    @").append(unknownJavaSQLTypeAnnotation).append("(").append(field.javaSQLDatatype).append(")");
                 javaSrc.append(lineSeparator);
             }
             javaSrc.append("    public ").append(field.columnType).append(" ").append(field.fieldName).append(" = new ").append(field.columnType).append("();");
@@ -76,7 +88,6 @@ public class DBTableClass {
         }
         javaSrc.append("}");
         javaSrc.append(conceptBreak);
-//        System.out.println(javaSrc.toString());
 
         this.javaSource = javaSrc.toString();
         return this.javaSource;

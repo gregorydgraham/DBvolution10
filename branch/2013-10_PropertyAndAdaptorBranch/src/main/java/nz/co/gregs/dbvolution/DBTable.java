@@ -240,22 +240,16 @@ public class DBTable<E extends DBRow> {
 //        int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {
             case Types.BIT:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.INTEGER:
             case Types.BIGINT:
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.NUMERIC:
             case Types.REAL:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.CHAR:
             case Types.NCHAR:
             case Types.NVARCHAR:
@@ -264,15 +258,9 @@ public class DBTable<E extends DBRow> {
             case Types.LONGVARCHAR:
             case Types.CLOB:
             case Types.NCLOB:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.DATE:
             case Types.TIME:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.TIMESTAMP:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-                break;
             case Types.BINARY:
             case Types.VARBINARY:
             case Types.JAVA_OBJECT:
@@ -459,8 +447,9 @@ public class DBTable<E extends DBRow> {
 
     /**
      *
-     * Returns the first row of the table, particularly helpful when you know
-     * there is only one row
+     * Returns the first row of the table
+     * 
+     * particularly helpful when you know there is only one row
      *
      * @return
      */
@@ -472,6 +461,15 @@ public class DBTable<E extends DBRow> {
         }
     }
 
+    /**
+     *
+     * Returns the first row and only row of the table.
+     * 
+     * Similar to getFirstRow() but throws an UnexpectedNumberOfRowsException
+     * if there is more than 1 row available
+     *
+     * @return
+     */
     public E getOnlyRow() throws UnexpectedNumberOfRowsException {
         if (this.listOfRows.size() > 0) {
             return this.listOfRows.get(0);
