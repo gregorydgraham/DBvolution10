@@ -335,4 +335,11 @@ public class PropertyWrapper {
 	public Class<?> getRawJavaType() {
 		return propertyDefinition.getRawJavaType();
 	}
+
+    /**
+     * @return the propertyDefinition
+     */
+    public PropertyWrapperDefinition getDefinition() {
+        return propertyDefinition;
+    }
 }

@@ -718,11 +718,12 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             this.useNullOperator();
         } else {
             String dbValue;
-//            try {
+            try {
                 dbValue = resultSet.getString(resultSetColumnName);
-//            } catch (SQLException ex) {
-//                dbValue = null;
-//            }
+            } catch (SQLException ex) {
+                // Probably means the column wasn't selected.
+                dbValue = null;
+            }
             if (dbValue == null) {
                 this.useNullOperator();
             } else {

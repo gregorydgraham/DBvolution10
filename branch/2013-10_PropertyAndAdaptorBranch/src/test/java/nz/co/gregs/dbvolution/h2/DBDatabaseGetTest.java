@@ -56,7 +56,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 
     @Test
     public void testGetFirstAndPrimaryKey() throws SQLException {
-        List<Marque> allMarques = database.get(new Marque());
+//        List<Marque> allMarques = database.get(new Marque());
         List<Marque> singleMarque = new ArrayList<Marque>();
         DBRow row = marqueRows.get(0);
         Long primaryKey;

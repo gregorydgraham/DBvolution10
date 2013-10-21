@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException
 import nz.co.gregs.dbvolution.internal.DBRowInstanceWrapper;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -30,9 +31,9 @@ abstract public class DBRow implements Serializable {
 
 //    private transient DBDatabase database;
     private boolean isDefined = false;
-    private HashMap<DBForeignKey, DBColumn> foreignKeys = null;
-    private final List<PropertyWrapper> ignoredForeignKeys = new ArrayList<PropertyWrapper>();
-    private final List<QueryableDatatype> returnColumns = new ArrayList<QueryableDatatype>();
+//    private HashMap<DBForeignKey, DBColumn> foreignKeys = null;
+    private final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
+    private final List<PropertyWrapperDefinition> returnColumns = new ArrayList<PropertyWrapperDefinition>();
     private final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
     private final List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
 //    private PropertyWrapper primaryKeyPropertyWrapper;
@@ -402,7 +403,7 @@ abstract public class DBRow implements Serializable {
 
         for (PropertyWrapper prop : props) {
             if (prop.isColumn()) {
-                if (returnColumns == null || returnColumns.isEmpty() || returnColumns.contains(prop.getQueryableDatatype())) {
+                if (returnColumns == null || returnColumns.isEmpty() || returnColumns.contains(prop.getDefinition())) {
                     String dbColumnName = prop.columnName();
                     if (dbColumnName != null) {
                         columnNames.add(dbColumnName);
@@ -461,12 +462,14 @@ abstract public class DBRow implements Serializable {
 //    }
     protected List<PropertyWrapper> getForeignKeyPropertyWrappers() {
         if (fkFields.isEmpty()) {
-            List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+            List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
 
-            for (PropertyWrapper field : fields) {
-                if (field.isColumn()) {
-                    if (field.isForeignKey()) {
-                        fkFields.add(field);
+            for (PropertyWrapper prop : props) {
+                if (prop.isColumn()) {
+                    if (prop.isForeignKey()) {
+                        if (!ignoredForeignKeys.contains(prop.getDefinition())) {
+                            fkFields.add(prop);
+                        }
                     }
                 }
             }
@@ -480,21 +483,8 @@ abstract public class DBRow implements Serializable {
 
         Object qdtOfProp;
         for (PropertyWrapper prop : props) {
-            try {
-//                Object testObject = field.getQueryableDatatype();
-//                if (testObject == null) {
-//                    @SuppressWarnings("unchecked")
-//                    final Class<QueryableDatatype> fieldType = (Class<QueryableDatatype>) field.type();
-//                    QueryableDatatype newQdt = QueryableDatatype.getQueryableDatatypeInstance(fieldType);
-//                    field.setQueryableDatatype(newQdt);
-//                }
-                qdtOfProp = prop.rawJavaValue();
-            } catch (IllegalArgumentException ex) {
-                throw new RuntimeException("Field Found But Somehow The Argument Was Illegal: Please ensure the fields of " + this.getClass().getSimpleName() + "." + prop.javaName() + "  are public.", ex.getCause());
-//            } catch (IllegalAccessException ex) {
-//                throw new RuntimeException("Field Found But Unable To Access: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.javaName()+ "  are public.", ex);
-            }
-            if (qdtOfProp.equals(qdt)) {
+            qdtOfProp = prop.rawJavaValue();
+            if (qdtOfProp == qdt) {
                 return prop;
             }
         }
@@ -512,18 +502,21 @@ abstract public class DBRow implements Serializable {
         if (fieldOfFK == null) {
             throw new IncorrectDBRowInstanceSuppliedException();
         }
-        ignoredForeignKeys.add(fieldOfFK);
-        foreignKeys = null;
+        ignoredForeignKeys.add(fieldOfFK.getDefinition());
+        fkFields.clear();
     }
 
     public void useAllForeignKeys() {
         ignoredForeignKeys.clear();
-        foreignKeys = null;
+        fkFields.clear();
     }
 
     public void ignoreAllForeignKeys() {
-        ignoredForeignKeys.addAll(this.getForeignKeyPropertyWrappers());
-        foreignKeys = null;
+        List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
+        for (PropertyWrapper prop : props) {
+            ignoredForeignKeys.add(prop.getDefinition());
+        }
+        fkFields.clear();
     }
 
     /**
@@ -631,7 +624,7 @@ abstract public class DBRow implements Serializable {
      */
     public void returnFieldsLimitedTo(QueryableDatatype... qdts) {
         for (QueryableDatatype qdt : qdts) {
-            returnColumns.add(qdt);
+            returnColumns.add(getPropertyWrapperOf(qdt).getDefinition());
         }
     }
 
@@ -742,7 +735,7 @@ abstract public class DBRow implements Serializable {
 
             if (this.getClass().equals(value)) {
 
-                String fkColumnName = fk.referencedColumnName(db, wrapperFactory);
+                String fkColumnName = fk.columnName();
                 String formattedForeignKey = defn.formatTableAndColumnName(
                         newTable.getTableName(),
                         fkColumnName);
