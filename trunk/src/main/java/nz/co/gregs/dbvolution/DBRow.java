@@ -765,12 +765,13 @@ abstract public class DBRow implements Serializable {
      * @DBForeignKey
      *
      */
+    @SuppressWarnings("unchecked")
     public List<Class<? extends DBRow>> getReferencedTables() {
         if (referencedTables == null) {
             referencedTables = new ArrayList<Class<? extends DBRow>>();
             List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
-            for (PropertyWrapper prop: props) {
-            	referencedTables.add(prop.referencedClass());
+            for (PropertyWrapper prop : props) {
+                referencedTables.add(prop.referencedClass());
             }
         }
         return (List<Class<? extends DBRow>>) referencedTables.clone();

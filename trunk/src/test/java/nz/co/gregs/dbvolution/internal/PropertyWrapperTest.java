@@ -7,7 +7,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 
 import org.junit.Test;
-
+@SuppressWarnings("serial")
 public class PropertyWrapperTest {
 	@Test
 	public void dotEqualsFalseWhenSameFieldOnSameObjectButRetrievedSeparately() {
