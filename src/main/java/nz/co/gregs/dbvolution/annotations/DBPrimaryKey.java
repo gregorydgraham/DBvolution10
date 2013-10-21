@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package nz.co.gregs.dbvolution.annotations;
 
 import java.lang.annotation.ElementType;
@@ -13,8 +9,8 @@ import java.lang.annotation.Target;
  * 
  * DBPrimaryKey indicates that the field is the primary key for the table
  *
- * @DBPrimaryKey
- * @DBColumn("my_table_id")
+ * \@DBPrimaryKey
+ * \@DBColumn("my_table_id")
  * public DBInteger myPrimaryKey = new DBInteger();
  * 
  * DBPrimaryKey is used extensively within DBvolution and should be specified in most tables, many-to-many link tables being a notable exception.

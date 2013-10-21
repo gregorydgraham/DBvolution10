@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * 
  * Used to indicate that this field is associated with a database column and the name of that column
  * 
- * @DBColumn("my_column")
+ * \@DBColumn("my_column")
  * public DBString myColumn = new DBString();
  * 
  * DBColumn allows you to change the field name without affecting database functionality and is highly recommended.
