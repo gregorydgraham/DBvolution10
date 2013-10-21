@@ -1,4 +1,0 @@
-nz.co.gregs.dbvolution.DBRow.getPropertyWrapperOf(QueryableDatatype) (previously getFieldOf()):
-	- it takes the actual QDT instance, passed from end-user code, such as: query.addRelationship(..., marque.marqueUid)
-	- thus it's given the actual raw java property instance
-	- so getPropertyWrapperOf() needs to look up via property.getRawJavaValue() instead of via property.getQueryableDatatype().
