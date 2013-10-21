@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
+@SuppressWarnings("serial")
 public class PropertyTypeHandlerTest {
 	private JavaPropertyFinder finder = new JavaPropertyFinder();
 
