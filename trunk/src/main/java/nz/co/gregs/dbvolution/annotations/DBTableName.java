@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package nz.co.gregs.dbvolution.annotations;
 
 import java.lang.annotation.ElementType;
@@ -13,7 +9,7 @@ import java.lang.annotation.Target;
  * 
  * DBTableName indicates the name of the database table that this DBRow implementation refers to.
  * 
- * @DBTableName("my_table")
+ * \@DBTableName("my_table")
  * public class MyTable extends DBRow {
  * 
 * DBTableName allows you to change the class name without affecting database functionality and is highly recommended.

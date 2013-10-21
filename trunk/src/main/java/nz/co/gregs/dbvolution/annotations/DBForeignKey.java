@@ -15,8 +15,8 @@ import nz.co.gregs.dbvolution.DBRow;
  * Indicates that this field is a Foreign Key to another database table and specifies the table
  * 
  * public class MyTable extends DBRow {
- * @DBForeignKey(OtherTable.class)
- * @DBColumn("other_table_fk")
+ * \@DBForeignKey(OtherTable.class)
+ * \@DBColumn("other_table_fk")
  * public DBInteger otherTableFK = new DBInteger();
  * ...
  * 
