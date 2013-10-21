@@ -34,6 +34,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
  *
@@ -267,14 +268,14 @@ public class DBQuery {
                 final String tabRowPK = tabRow.getPrimaryKeyName();
                 if (tabRowPK != null) {
                     for (DBRow otherTab : otherTables) {
-                        Map<DBForeignKey, DBColumn> fks = otherTab.getForeignKeys();
-                        for (DBForeignKey fk : fks.keySet()) {
+                        List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
+                        for (PropertyWrapper fk : fks) {
                             String formattedPK = defn.formatTableAndColumnName(tableName, tabRowPK);
-                            Class<? extends DBRow> pkClass = fk.value();
+                            Class<? extends DBRow> pkClass = fk.referencedClass();
                             DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
                             String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
                             if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
-                                String fkColumnName = fks.get(fk).value();
+                                String fkColumnName = fk.columnName();
                                 String formattedFK = defn.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
                                 whereClause
                                         .append(lineSep)
@@ -327,25 +328,28 @@ public class DBQuery {
                 DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
                 DBDefinition defn = database.getDefinition();
-                Map<String, QueryableDatatype> columnsAndQueryableDatatypes = newInstance.getColumnsAndQueryableDatatypes();
-                for (String columnName : columnsAndQueryableDatatypes.keySet()) {
-                    QueryableDatatype qdt = columnsAndQueryableDatatypes.get(columnName);
-                    String fullColumnName = defn.formatColumnNameForResultSet(tableRow.getTableName(), columnName);
-                    qdt.setFromResultSet(resultSet, fullColumnName);
+                List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
+                for (PropertyWrapper newProp : newProperties) {
+                    QueryableDatatype qdt = newProp.getQueryableDatatype();
+                    String resultSetColumnName = defn.formatColumnNameForResultSet(newInstance.getTableName(), newProp.columnName());
+                    qdt.setFromResultSet(resultSet, resultSetColumnName);
                 }
                 newInstance.setDefined(true); // Actually came from the database so it is a defined row.
                 Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
                 if (existingInstancesOfThisTableRow == null) {
                     existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
-                    existingInstances.put(tableRow.getClass(), existingInstancesOfThisTableRow);
+                    existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
                 }
                 DBRow existingInstance = newInstance;
-                final QueryableDatatype primaryKey = newInstance.getPrimaryKey();
+                final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
                 if (primaryKey != null) {
-                    existingInstance = existingInstancesOfThisTableRow.get(primaryKey.getSQLValue(this.database));
-                    if (existingInstance == null) {
-                        existingInstance = newInstance;
-                        existingInstancesOfThisTableRow.put(primaryKey.getSQLValue(this.database), existingInstance);
+                    final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
+                    if (qdt != null) {
+                        existingInstance = existingInstancesOfThisTableRow.get(qdt.getSQLValue(this.database));
+                        if (existingInstance == null) {
+                            existingInstance = newInstance;
+                            existingInstancesOfThisTableRow.put(qdt.getSQLValue(this.database), existingInstance);
+                        }
                     }
                 }
                 queryRow.put(existingInstance.getClass(), existingInstance);

@@ -30,8 +30,8 @@ import org.junit.Test;
  */
 public class DBExistsOperatorTest extends AbstractTest {
 
-    public DBExistsOperatorTest(Object db) {
-        super(db);
+    public DBExistsOperatorTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

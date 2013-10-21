@@ -34,8 +34,8 @@ import org.junit.Test;
  */
 public class DBQueryTest extends AbstractTest {
 
-    public DBQueryTest(Object db) {
-        super(db);
+    public DBQueryTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

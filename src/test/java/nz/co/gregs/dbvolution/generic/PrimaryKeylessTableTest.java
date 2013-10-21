@@ -30,8 +30,8 @@ import org.junit.Test;
  */
 public class PrimaryKeylessTableTest extends AbstractTest {
 
-    public PrimaryKeylessTableTest(Object db) {
-        super(db);
+    public PrimaryKeylessTableTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

@@ -30,8 +30,8 @@ import org.junit.Test;
  */
 public class IgnoreForeignKeyTest extends AbstractTest {
 
-    public IgnoreForeignKeyTest(Object db) {
-        super(db);
+    public IgnoreForeignKeyTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

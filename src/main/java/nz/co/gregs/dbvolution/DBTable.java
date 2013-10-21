@@ -18,6 +18,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
+import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
  *
@@ -95,19 +96,16 @@ public class DBTable<E extends DBRow> {
 
     private String getAllFieldsForInsert() {
         StringBuilder allFields = new StringBuilder();
-        @SuppressWarnings("unchecked")
-        Class<E> thisClass = (Class<E>) dummy.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
+        DBDefinition defn = database.getDefinition();
+        List<PropertyWrapper> props = dummy.getPropertyWrappers();
         String separator = "";
-        for (Field field : fields) {
-            String fieldTypeName = field.getType().getSimpleName();
-
-
-            if (field.isAnnotationPresent(DBColumn.class)
-                    && !fieldTypeName.equals(DBLargeObject.class
-                    .getSimpleName())) {
-                allFields.append(separator)
-                        .append(" ").append(database.getDefinition().formatColumnName(getDBColumnName(field)));
+        for (PropertyWrapper prop : props) {
+            // BLOBS are not inserted.so exclude them
+            if (prop.isColumn() && !(prop.getQueryableDatatype() instanceof DBLargeObject)) {
+                allFields
+                        .append(separator)
+                        .append(" ")
+                        .append(defn.formatColumnName(prop.columnName()));
                 separator = ",";
             }
         }
@@ -219,11 +217,11 @@ public class DBTable<E extends DBRow> {
             E tableRow = (E) DBRow.getDBRow(dummy.getClass());
 //            tableRow.setDatabase(database);
 
-            Field[] fields = tableRow.getClass().getDeclaredFields();
+            List<PropertyWrapper> fields = tableRow.getPropertyWrappers();
 
-            for (Field field : fields) {
-                if (field.isAnnotationPresent(DBColumn.class)) {
-                    String dbColumnName = getDBColumnName(field);
+            for (PropertyWrapper field : fields) {
+                if (field.isColumn()) {
+                    String dbColumnName = field.columnName();
                     String formattedColumnName = defn.formatColumnName(dbColumnName);
                     Integer dbColumnIndex = dbColumnNames.get(formattedColumnName);
                     if (formattedColumnName != null && dbColumnIndex != null) {
@@ -236,8 +234,8 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, Field field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
-        QueryableDatatype qdt = tableRow.getQueryableValueOfField(field);
+    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, PropertyWrapper field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
+        QueryableDatatype qdt = tableRow.getQueryableValueOfPropertWrapper(field);
         int columnType = rsMeta.getColumnType(dbColumnIndex);
 //        int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {
@@ -508,7 +506,7 @@ public class DBTable<E extends DBRow> {
         }
         statement.executeBatch();
         // Hasn't thrown an exception so they are now defined.
-        for (DBAction action : allInserts){
+        for (DBAction action : allInserts) {
             action.getRow().setDefined(true);
         }
     }
