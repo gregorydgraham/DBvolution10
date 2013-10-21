@@ -485,7 +485,7 @@ abstract public class DBRow implements Serializable {
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException("Field Found But Unable To Access: Please ensure the fields of " + this.getClass().getSimpleName() + "." + field.getName() + "  are public.", ex);
             }
-            if (fieldOfThisInstance.equals(qdt)) {
+            if (fieldOfThisInstance == qdt) {
                 return field;
             }
         }
