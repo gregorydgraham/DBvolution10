@@ -30,8 +30,8 @@ import org.junit.Test;
  */
 public class DBTableDeleteTest extends AbstractTest {
 
-    public DBTableDeleteTest(Object db) {
-        super(db);
+    public DBTableDeleteTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

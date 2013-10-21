@@ -24,8 +24,8 @@ import static org.hamcrest.Matchers.*;
 
 public class RelatedTableTest extends AbstractTest {
 
-    public RelatedTableTest(Object db) {
-        super(db);
+    public RelatedTableTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

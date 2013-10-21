@@ -41,8 +41,8 @@ public class DBDatabaseGetTest extends AbstractTest {
     Marque myTableRow = new Marque();
     List<Marque> myTableRows = new ArrayList<Marque>();
 
-    public DBDatabaseGetTest(Object db) {
-        super(db);
+    public DBDatabaseGetTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

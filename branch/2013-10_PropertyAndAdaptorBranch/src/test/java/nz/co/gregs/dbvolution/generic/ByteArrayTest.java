@@ -32,8 +32,8 @@ import static org.hamcrest.Matchers.*;
  */
 public class ByteArrayTest extends AbstractTest {
 
-    public ByteArrayTest(Object db) {
-        super(db);
+    public ByteArrayTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

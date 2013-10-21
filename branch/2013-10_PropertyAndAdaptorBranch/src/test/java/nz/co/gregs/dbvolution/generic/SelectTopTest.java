@@ -29,8 +29,8 @@ import static org.hamcrest.Matchers.*;
 
 public class SelectTopTest extends AbstractTest {
 
-    public SelectTopTest(Object db) {
-        super(db);
+    public SelectTopTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
     
     @Test

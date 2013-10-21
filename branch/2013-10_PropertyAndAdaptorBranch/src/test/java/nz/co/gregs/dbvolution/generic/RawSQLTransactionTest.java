@@ -27,8 +27,8 @@ import org.junit.Test;
 
 public class RawSQLTransactionTest extends AbstractTest {
 
-    public RawSQLTransactionTest(Object db) {
-        super(db);
+    public RawSQLTransactionTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

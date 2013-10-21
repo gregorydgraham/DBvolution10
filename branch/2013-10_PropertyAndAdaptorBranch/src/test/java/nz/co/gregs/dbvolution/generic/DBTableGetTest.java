@@ -43,8 +43,8 @@ public class DBTableGetTest extends AbstractTest {
     Marque myTableRow = new Marque();
     List<Marque> myTableRows = new ArrayList<Marque>();
 
-    public DBTableGetTest(Object db) {
-        super(db);
+    public DBTableGetTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

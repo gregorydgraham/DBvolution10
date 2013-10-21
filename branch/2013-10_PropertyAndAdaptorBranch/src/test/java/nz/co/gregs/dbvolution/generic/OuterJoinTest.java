@@ -37,8 +37,8 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class OuterJoinTest extends AbstractTest {
 
-    public OuterJoinTest(Object db) {
-        super(db);
+    public OuterJoinTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test
