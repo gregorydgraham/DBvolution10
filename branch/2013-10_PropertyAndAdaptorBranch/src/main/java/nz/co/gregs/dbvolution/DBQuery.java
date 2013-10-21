@@ -270,7 +270,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
-        if (!cartesianJoinAllowed && queryGraph.hasDisconnectedSubgraph()){
+        if (!cartesianJoinAllowed && queryGraph.hasDisconnectedSubgraph()) {
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString = selectClause.append(lineSep)
@@ -321,10 +321,12 @@ public class DBQuery {
                 final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
                 if (primaryKey != null) {
                     final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
-                    existingInstance = existingInstancesOfThisTableRow.get(qdt.getSQLValue(this.database));
-                    if (existingInstance == null) {
-                        existingInstance = newInstance;
-                        existingInstancesOfThisTableRow.put(qdt.getSQLValue(this.database), existingInstance);
+                    if (qdt != null) {
+                        existingInstance = existingInstancesOfThisTableRow.get(qdt.getSQLValue(this.database));
+                        if (existingInstance == null) {
+                            existingInstance = newInstance;
+                            existingInstancesOfThisTableRow.put(qdt.getSQLValue(this.database), existingInstance);
+                        }
                     }
                 }
                 queryRow.put(existingInstance.getClass(), existingInstance);

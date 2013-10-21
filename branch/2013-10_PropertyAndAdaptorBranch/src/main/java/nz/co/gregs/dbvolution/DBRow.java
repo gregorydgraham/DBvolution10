@@ -41,7 +41,7 @@ abstract public class DBRow implements Serializable {
     private Boolean hasBlobs;
     private final List<DBLargeObject> blobColumns = new ArrayList<DBLargeObject>();
     static DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
-    DBRowInstanceWrapper wrapper = null;
+    transient DBRowInstanceWrapper wrapper = null;
 
     public DBRow() {
     }

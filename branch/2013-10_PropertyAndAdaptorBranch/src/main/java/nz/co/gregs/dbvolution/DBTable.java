@@ -96,19 +96,16 @@ public class DBTable<E extends DBRow> {
 
     private String getAllFieldsForInsert() {
         StringBuilder allFields = new StringBuilder();
-        @SuppressWarnings("unchecked")
-        Class<E> thisClass = (Class<E>) dummy.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
+        DBDefinition defn = database.getDefinition();
+        List<PropertyWrapper> props = dummy.getPropertyWrappers();
         String separator = "";
-        for (Field field : fields) {
-            String fieldTypeName = field.getType().getSimpleName();
-
-
-            if (field.isAnnotationPresent(DBColumn.class)
-                    && !fieldTypeName.equals(DBLargeObject.class
-                    .getSimpleName())) {
-                allFields.append(separator)
-                        .append(" ").append(database.getDefinition().formatColumnName(getDBColumnName(field)));
+        for (PropertyWrapper prop : props) {
+            // BLOBS are not inserted.so exclude them
+            if (prop.isColumn() && !(prop.getQueryableDatatype() instanceof DBLargeObject)) {
+                allFields
+                        .append(separator)
+                        .append(" ")
+                        .append(defn.formatColumnName(prop.columnName()));
                 separator = ",";
             }
         }
@@ -511,7 +508,7 @@ public class DBTable<E extends DBRow> {
         }
         statement.executeBatch();
         // Hasn't thrown an exception so they are now defined.
-        for (DBAction action : allInserts){
+        for (DBAction action : allInserts) {
             action.getRow().setDefined(true);
         }
     }
