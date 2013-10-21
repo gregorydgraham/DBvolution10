@@ -34,8 +34,8 @@ public class DBTableTransactionTest extends AbstractTest {
 
     Marque myTableRow = new Marque();
 
-    public DBTableTransactionTest(Object db) {
-        super(db);
+    public DBTableTransactionTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

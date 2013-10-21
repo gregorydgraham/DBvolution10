@@ -31,8 +31,8 @@ import org.junit.Test;
  */
 public class AdHocRelationshipTest extends AbstractTest {
 
-    public AdHocRelationshipTest(Object db) {
-        super(db);
+    public AdHocRelationshipTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

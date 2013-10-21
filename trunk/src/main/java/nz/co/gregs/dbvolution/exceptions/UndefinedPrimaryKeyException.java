@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.exceptions;
 
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 /**
  *
@@ -28,7 +29,7 @@ public class UndefinedPrimaryKeyException extends RuntimeException {
     }
 
     public <E extends DBRow> UndefinedPrimaryKeyException(Class<E> thisClass) {
-        super("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + " using the @DBPrimaryKey annotation.");
+        super("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + " using the @"+ DBPrimaryKey.class.getSimpleName()+" annotation.");
     }
 
     public <E extends DBRow> UndefinedPrimaryKeyException(E thisRow) {

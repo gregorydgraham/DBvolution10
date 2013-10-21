@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
+import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
  *
@@ -35,11 +36,11 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
 
     public DBExistsOperator(E tableRow, QueryableDatatype qdtOfTheRow) {
         this.tableRow = tableRow;
-        Field qdtField = tableRow.getFieldOf(qdtOfTheRow);
+        PropertyWrapper qdtField = tableRow.getPropertyWrapperOf(qdtOfTheRow);
         if (qdtField == null) {
             throw new RuntimeException("QueryableDatatype Not Found: the specified " + qdtOfTheRow.getClass().getSimpleName() + " is not part of the specified row, please use only columns from the actual row");
         }
-        this.referencedColumnName = tableRow.getDBColumnName(qdtField);
+        this.referencedColumnName = qdtField.columnName();
     }
     
     

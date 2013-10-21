@@ -30,8 +30,8 @@ public class DBTableInsertTest extends AbstractTest {
 
     Marque myTableRow = new Marque();
 
-    public DBTableInsertTest(Object db) {
-        super(db);
+    public DBTableInsertTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

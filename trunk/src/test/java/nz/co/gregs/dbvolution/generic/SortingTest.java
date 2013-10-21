@@ -29,8 +29,8 @@ import static org.hamcrest.Matchers.*;
 
 public class SortingTest extends AbstractTest {
 
-    public SortingTest(Object db) {
-        super(db);
+    public SortingTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

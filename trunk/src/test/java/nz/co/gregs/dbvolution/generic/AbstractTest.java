@@ -52,19 +52,19 @@ public class AbstractTest {
     public String firstDateStr = "23/March/2013";
     public String secondDateStr = "2/April/2013";
 
-    @Parameters
+    @Parameters(name="{0}")
     public static List<Object[]> data() throws IOException {
         Object[][] data = new Object[][]{
-//            {new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")}
-//            {new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
-//            {new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
-//            {MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
-            {new H2MemoryDB("dbvolutionTest","","", false)}
+//            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")}
+//            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
+//            {"MySQLDB" new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
+//            {"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
+            {"H2MemoryDB", new H2MemoryDB("dbvolutionTest","","", false)}
         };
         return Arrays.asList(data);
     }
 
-    public AbstractTest(Object db) {
+    public AbstractTest(Object testIterationName, Object db) {
         if (db instanceof DBDatabase) {
             this.database = (DBDatabase) db;
             database.setPrintSQLBeforeExecuting(true);

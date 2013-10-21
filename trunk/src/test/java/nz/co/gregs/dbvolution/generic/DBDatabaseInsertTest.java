@@ -29,8 +29,8 @@ import org.junit.Test;
  */
 public class DBDatabaseInsertTest extends AbstractTest{
 
-    public DBDatabaseInsertTest(Object db) {
-        super(db);
+    public DBDatabaseInsertTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
     
     

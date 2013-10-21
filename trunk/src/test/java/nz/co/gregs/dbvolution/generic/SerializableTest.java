@@ -34,8 +34,8 @@ public class SerializableTest extends AbstractTest {
 
     String filename = "SerializableTest.obj";
 
-    public SerializableTest(Object db) {
-        super(db);
+    public SerializableTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test

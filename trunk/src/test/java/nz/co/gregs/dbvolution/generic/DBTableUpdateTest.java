@@ -24,8 +24,8 @@ import static org.hamcrest.Matchers.*;
 
 public class DBTableUpdateTest extends AbstractTest {
 
-    public DBTableUpdateTest(Object db) {
-        super(db);
+    public DBTableUpdateTest(Object testIterationName, Object db) {
+        super(testIterationName, db);
     }
 
     @Test
