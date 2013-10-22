@@ -44,6 +44,7 @@
         
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <libDirectory>${basedir}/lib</libDirectory>
     </properties>
     
     <build>
@@ -113,19 +114,19 @@
     </build>
   
     <dependencies>
-        <dependency>
+<!--        <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc</artifactId>
             <version>14</version>
             <scope>system</scope>
-            <systemPath>${basedir}/lib/ojdbc6.jar</systemPath>
-        </dependency>
+            <systemPath>${libDirectory}/ojdbc6.jar</systemPath>
+        </dependency>-->
         <dependency>
             <groupId>essence-jcf</groupId>
             <artifactId>essence-jcf</artifactId>
             <version>1.02</version>
             <scope>system</scope>
-            <systemPath>${basedir}/lib/essence-jcf-1.02.jar</systemPath>
+            <systemPath>${libDirectory}/essence-jcf-1.02.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -179,6 +180,7 @@
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.9.9-RC1</version>
+            <type>jar</type>
         </dependency>
         <dependency>
         	<groupId>commons-logging</groupId>

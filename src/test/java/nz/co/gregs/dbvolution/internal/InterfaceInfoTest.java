@@ -201,13 +201,16 @@ public class InterfaceInfoTest {
 		assertThat(bounds, is(nullValue()));
 	}
 
+        @SuppressWarnings("rawtypes")
 	@Test
 	public void getsDefaultBoundsGivenNonSpecifiedTypeArguments() {
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class,
 				new MyInterface(){
+                                        @Override
 					public Object toObjectValue(QueryableDatatype dbvValue) {
 						return null;
 					}
+                                        @Override
 					public QueryableDatatype toDBvValue(Object objectValue) {
 						return null;
 					}
@@ -247,6 +250,7 @@ public class InterfaceInfoTest {
 		assertThat(bounds[0].lowerClass(), is(nullValue()));
 	}
 
+        @SuppressWarnings("rawtypes")
 	@Test
 	public void getsBoundsGivenInterfaceTypeWithSimpleParameterizedArgument2() throws UnsupportedType {
 		class ParamaterizedArgumentInterface<T extends Map<?,?>> {
@@ -262,6 +266,7 @@ public class InterfaceInfoTest {
 		assertThat(bounds[0].lowerClass(), is(nullValue()));
 	}
 
+        @SuppressWarnings("rawtypes")
 	@Test
 	public void getsBoundsGivenInterfaceTypeWithRecursiveParameterizedArgument() throws UnsupportedType {
 		class ParamaterizedArgumentInterface<E extends Enum<E>> {
@@ -308,14 +313,16 @@ public class InterfaceInfoTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void acceptsAnonymousImpl() {
-		new InterfaceInfo(MyInterface.class, new MyInterface<Object,QueryableDatatype>(){
-			public Object toObjectValue(QueryableDatatype dbvValue) {
-				return null;
-			}
+            InterfaceInfo interfaceInfo = new InterfaceInfo(MyInterface.class, new MyInterface<Object,QueryableDatatype>(){
+                                                  @Override
+                                                  public Object toObjectValue(QueryableDatatype dbvValue) {
+                                                          return null;
+                                                  }
 
-			public QueryableDatatype toDBvValue(Object objectValue) {
-				return null;
-			}}.getClass());
+                                                  @Override
+                                                  public QueryableDatatype toDBvValue(Object objectValue) {
+                                                          return null;
+                                                  }}.getClass());
 	}
 	
 	public interface MyInterface<T, Q extends QueryableDatatype> {
@@ -325,6 +332,7 @@ public class InterfaceInfoTest {
 	}	
 	
 	public static class SimpleIntegerDBIntegerImpl implements MyInterface<Integer, DBInteger> {
+                @Override
 		public Integer toObjectValue(DBInteger dbvValue) {
 			return null;
 		}

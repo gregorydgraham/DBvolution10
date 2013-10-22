@@ -33,6 +33,7 @@ public class DBByteArray extends DBLargeObject {
 
     public static final long serialVersionUID = 1;
     byte[] bytes;
+    InputStream byteStream = null;//new BufferedInputStream(new ByteArrayInputStream(bytes));
 
     public DBByteArray(Object object) {
         super(object);
@@ -46,6 +47,18 @@ public class DBByteArray extends DBLargeObject {
     public String getSQLDatatype() {
         return "BLOB";
     }
+
+    public void setValue(byte[] byteArray) {
+        super.setValue(byteArray);
+        bytes = byteArray;
+        byteStream = new BufferedInputStream(new ByteArrayInputStream(bytes));
+    }  
+    
+    public void setValue(InputStream inputViaStream) {
+        super.setValue(inputViaStream);
+        bytes = null;
+        byteStream = new BufferedInputStream(inputViaStream);
+    }  
 
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
@@ -86,16 +99,14 @@ public class DBByteArray extends DBLargeObject {
                     System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
                     bytesAdded += someBytes.length;
                 }
-
                 this.setValue(bytes);
-//        this.useEqualsOperator(resultSet.getBytes(fullColumnName));
             }
         }
     }
 
     @Override
     public String getSQLValue(DBDatabase db) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Binary datatypes like "+this.getClass().getSimpleName()+" do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
     }
 
     public byte[] readFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
@@ -163,7 +174,10 @@ public class DBByteArray extends DBLargeObject {
 
     @Override
     public InputStream getInputStream() {
-        return new BufferedInputStream(new ByteArrayInputStream(bytes));
+        if (byteStream==null){
+            this.setValue(bytes);
+        }
+        return byteStream;
     }
 
     @Override
