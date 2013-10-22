@@ -101,7 +101,7 @@ public class DBRowClassWrapper {
             }
         }
         if (primaryKeyProperties.size() > 1) {
-            throw new UnsupportedOperationException("Multi-Column Primary Keys are not yet supported.");
+            throw new UnsupportedOperationException("Multi-Column Primary Keys are not yet supported: Please remove the excess @PrimaryKey statements from "+clazz.getSimpleName());
         }
         else {
             this.primaryKeyProperty = primaryKeyProperties.isEmpty() ? null : primaryKeyProperties.get(0);

@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
-import org.reflections.Reflections;
+import org.reflections.*;
 
 /**
  *
@@ -800,6 +800,7 @@ abstract public class DBRow implements Serializable {
 
     private DBRowInstanceWrapper getWrapper() {
         if (wrapper == null) {
+            System.out.println(this.getClass().getSimpleName());
             wrapper = wrapperFactory.instanceWrapperFor(this);
         }
         return wrapper;
