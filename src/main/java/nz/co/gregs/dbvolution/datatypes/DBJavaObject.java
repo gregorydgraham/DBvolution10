@@ -44,6 +44,9 @@ public class DBJavaObject extends QueryableDatatype {
             Object dbValue;
             try {
                 dbValue = resultSet.getObject(fullColumnName);
+                if (resultSet.wasNull()){
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 dbValue = null;
             }
