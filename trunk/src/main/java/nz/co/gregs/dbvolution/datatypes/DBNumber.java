@@ -253,6 +253,9 @@ public class DBNumber extends QueryableDatatype {
     @Override
     public String getSQLValue(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
+        if (isNull() || numberValue==null){
+            return defn.getNull();
+        }
         return defn.beginNumberValue() + numberValue.toString() + defn.endNumberValue();
     }
 
@@ -297,6 +300,9 @@ public class DBNumber extends QueryableDatatype {
             BigDecimal dbValue;
             try {
                 dbValue = resultSet.getBigDecimal(fullColumnName);
+                if (resultSet.wasNull()){
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 dbValue = null;
             }

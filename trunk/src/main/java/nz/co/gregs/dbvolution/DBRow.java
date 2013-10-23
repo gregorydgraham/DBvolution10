@@ -800,7 +800,7 @@ abstract public class DBRow implements Serializable {
 
     private DBRowInstanceWrapper getWrapper() {
         if (wrapper == null) {
-            System.out.println(this.getClass().getSimpleName());
+//            System.out.println(this.getClass().getSimpleName());
             wrapper = wrapperFactory.instanceWrapperFor(this);
         }
         return wrapper;

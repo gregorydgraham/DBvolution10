@@ -292,7 +292,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
-        if (!cartesianJoinAllowed && queryGraph.hasDisconnectedSubgraph()) {
+        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString = selectClause.append(lineSep)
@@ -626,15 +626,20 @@ public class DBQuery {
         Set<DBRow> tablesToAdd = new HashSet<DBRow>();
         List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
         for (DBRow table : allQueryTables) {
-            alreadyAddedClasses.add((Class<DBRow>) table.getClass());
+            @SuppressWarnings("unchecked")
+            Class<DBRow> aClass = (Class<DBRow>) table.getClass();
+            alreadyAddedClasses.add(aClass);
         }
         for (DBRow table : allQueryTables) {
             List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
             for (Class<? extends DBRow> relatedTable : allRelatedTables) {
+                @SuppressWarnings("unchecked")
                 DBRow newInstance = relatedTable.newInstance();
-                if (!alreadyAddedClasses.contains((Class<DBRow>)newInstance.getClass())) {
+                @SuppressWarnings("unchecked")
+                final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
+                if (!alreadyAddedClasses.contains(newInstanceClass)) {
                     tablesToAdd.add(newInstance);
-                    alreadyAddedClasses.add((Class<DBRow>) newInstance.getClass());
+                    alreadyAddedClasses.add(newInstanceClass);
                 }
             }
         }

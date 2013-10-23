@@ -152,6 +152,9 @@ public class DBDate extends QueryableDatatype {
             java.sql.Date dbValue;
             try {
                 dbValue = resultSet.getDate(fullColumnName);
+                if (resultSet.wasNull()){
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 dbValue = null;
             }

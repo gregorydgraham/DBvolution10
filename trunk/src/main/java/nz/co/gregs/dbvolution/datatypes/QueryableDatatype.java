@@ -720,6 +720,9 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             String dbValue;
             try {
                 dbValue = resultSet.getString(resultSetColumnName);
+                if (resultSet.wasNull()) {
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 // Probably means the column wasn't selected.
                 dbValue = null;

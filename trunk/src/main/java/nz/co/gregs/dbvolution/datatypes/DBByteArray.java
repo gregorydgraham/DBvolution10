@@ -69,6 +69,9 @@ public class DBByteArray extends DBLargeObject {
 
             try {
                 dbValue = resultSet.getBinaryStream(fullColumnName);
+                if (resultSet.wasNull()){
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 dbValue = null;
             }
