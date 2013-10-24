@@ -17,13 +17,10 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
@@ -46,8 +43,8 @@ public abstract class DBDatabase {
     private final DBDefinition definition;
     private String databaseName;
     private boolean batchIfPossible = true;
-
     final DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
+
     /**
      *
      * @param definition
@@ -189,7 +186,7 @@ public abstract class DBDatabase {
      * @param objs
      * @throws SQLException
      */
-    public void update(Object... objs) throws SQLException {
+    public void updateRowsAndListsOfRows(Object... objs) throws SQLException {
         for (Object obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
@@ -203,6 +200,26 @@ public abstract class DBDatabase {
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
                 this.getDBTable(row).update(row);
+            }
+        }
+    }
+
+    public void update(DBRow row) throws SQLException {
+        this.getDBTable(row).update(row);
+    }
+
+    public void update(List<DBRow> list) throws SQLException {
+        if (list.size() > 0 && list.get(0) instanceof DBRow) {
+            for (DBRow row : list) {
+                this.update(row);
+            }
+        }
+    }
+
+    public void update(DBRow[] list) throws SQLException {
+        if (list.length > 0) {
+            for (int i = 0; i < list.length; i++) {
+                this.update(list[i]);
             }
         }
     }
@@ -359,31 +376,31 @@ public abstract class DBDatabase {
         }
         return returnValues;
     }
-    
+
     /**
      * Convenience method to run a DBScript on this database
-     * 
+     *
      * equivalent to script.implement(this);
      *
      * @param script
      * @return
      * @throws Exception
      */
-    public List<String> implement(DBScript script) throws Exception{
+    public List<String> implement(DBScript script) throws Exception {
         return script.implement(this);
     }
 
     /**
-     * 
+     *
      * Convenience method to test a DBScript on this database
-     * 
+     *
      * equivalent to script.test(this);
      *
      * @param script
      * @return
      * @throws Exception
      */
-    public List<String> test(DBScript script) throws Exception{
+    public List<String> test(DBScript script) throws Exception {
         return script.test(this);
     }
 
@@ -544,7 +561,7 @@ public abstract class DBDatabase {
         return row.willCreateBlankQuery(this);
     }
 
-    public void dropDatabase() throws Exception{
+    public void dropDatabase() throws Exception {
         ;
     }
 

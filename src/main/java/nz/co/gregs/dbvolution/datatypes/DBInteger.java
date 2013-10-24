@@ -54,14 +54,14 @@ public class DBInteger extends DBNumber {
     @Override
     public DBOperator useEqualsOperator(Object someNumber) {
         if (someNumber == null || someNumber.toString().isEmpty()) {
-            super.useEqualsOperator((Object) null);
+            return super.useEqualsOperator((Object) null);
         } else if (someNumber instanceof Number) {
             Number aNumber = (Number) someNumber;
-            super.useEqualsOperator(aNumber.longValue());
+            return super.useEqualsOperator(aNumber.longValue());
         } else {
-            super.useEqualsOperator(Long.parseLong(someNumber.toString()));
+            return super.useEqualsOperator(Long.parseLong(someNumber.toString()));
         }
-        return getOperator();
+//        return getOperator();
     }
 
     public DBOperator useInOperator(Integer... inValues) {

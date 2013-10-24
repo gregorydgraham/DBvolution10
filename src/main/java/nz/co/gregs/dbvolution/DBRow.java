@@ -805,4 +805,11 @@ abstract public class DBRow implements Serializable {
         }
         return wrapper;
     }
+
+    void setUnchanged() {
+        List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
+        for (PropertyWrapper prop: propertyWrappers){
+            prop.getQueryableDatatype().setUnchanged();
+        }
+    }
 }
