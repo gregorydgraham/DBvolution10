@@ -281,7 +281,6 @@ public class DBTable<E extends DBRow> {
         Class<E> thisClass = (Class<E>) dummy.getClass();
         Field[] fields = thisClass.getDeclaredFields();
 
-
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBPrimaryKey.class)) {
                 pkColumn = this.getDBColumnName(field);
@@ -540,8 +539,8 @@ public class DBTable<E extends DBRow> {
         DBDefinition defn = database.getDefinition();
         DBActionList allInserts = new DBActionList();
         for (E row : newRows) {
-            String sql =
-                    defn.beginInsertLine()
+            String sql
+                    = defn.beginInsertLine()
                     + defn.formatTableName(row.getTableName())
                     + defn.beginInsertColumnList()
                     + this.getAllFieldsForInsert()
@@ -614,8 +613,8 @@ public class DBTable<E extends DBRow> {
                 if (primaryKey == null) {
                     allDeletes.add(getSQLForDeleteWithoutPrimaryKey(row));
                 } else {
-                    String sql =
-                            defn.beginDeleteLine()
+                    String sql
+                            = defn.beginDeleteLine()
                             + defn.formatTableName(row.getTableName())
                             + defn.beginWhereClause()
                             + defn.formatColumnName(this.getPrimaryKeyColumn())
@@ -626,8 +625,8 @@ public class DBTable<E extends DBRow> {
                 }
             } else {
                 // Delete by example
-                String sql =
-                        defn.beginDeleteLine()
+                String sql
+                        = defn.beginDeleteLine()
                         + defn.formatTableName(row.getTableName())
                         + defn.beginWhereClause()
                         + defn.getTrueOperation()
@@ -646,8 +645,8 @@ public class DBTable<E extends DBRow> {
      */
     public String getSQLForDeleteWithoutPrimaryKey(E row) {
         DBDefinition defn = database.getDefinition();
-        String sql =
-                defn.beginDeleteLine()
+        String sql
+                = defn.beginDeleteLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginWhereClause()
                 + defn.getTrueOperation();
@@ -656,7 +655,7 @@ public class DBTable<E extends DBRow> {
                     + defn.beginAndLine()
                     + row.getDBColumnName(qdt)
                     + defn.getEqualsComparator()
-                    + (qdt.hasChanged()?qdt.getPreviousSQLValue(database):qdt.getSQLValue(database));
+                    + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.getSQLValue(database));
         }
         sql = sql + defn.endDeleteLine();
         return sql;
@@ -677,8 +676,8 @@ public class DBTable<E extends DBRow> {
 
     public String getSQLForUpdateWithoutPrimaryKey(E row) {
         DBDefinition defn = database.getDefinition();
-        String sql =
-                defn.beginUpdateLine()
+        String sql
+                = defn.beginUpdateLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginSetClause()
                 + row.getSetClause(database)
@@ -694,7 +693,7 @@ public class DBTable<E extends DBRow> {
                         + defn.beginAndLine()
                         + row.getDBColumnName(qdt)
                         + defn.getEqualsComparator()
-                        + (qdt.hasChanged()?qdt.getPreviousSQLValue(database):qdt.getSQLValue(database));
+                        + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.getSQLValue(database));
             }
         }
         sql = sql + defn.endDeleteLine();
@@ -717,75 +716,73 @@ public class DBTable<E extends DBRow> {
 
     public void update(List<E> oldRows) throws SQLException {
         Statement statement = database.getDBStatement();
-        List<String> allSQL = getSQLForUpdate(oldRows);
-        if (database.getBatchSQLStatementsWhenPossible()) {
-            for (String sql : allSQL) {
+        final boolean useBatch = database.getBatchSQLStatementsWhenPossible();
+        boolean batchHasEntries = false;
+
+        for (E row : oldRows) {
+            if (row.hasChanged()) {
+                String sql = getSQLForUpdate(row);
+
                 if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                     System.out.println(sql);
                 }
-                statement.addBatch(sql);
+                if (useBatch) {
+                    statement.addBatch(sql);
+                    batchHasEntries = true;
+                } else {
+                    statement.execute(sql);
+                }
             }
+        }
+
+        // Do the batched statements
+        if (useBatch && batchHasEntries) {
             statement.executeBatch();
-        } else {
-            for (String sql : allSQL) {
-                statement.execute(sql);
-            }
         }
-        for (DBRow row : oldRows) {
-//            row.setDatabase(database);
+        // Clean up after the updates
+        for (E row : oldRows) {
             row.setUnchanged();
-//            row.getPrimaryKey().setUnchanged();
         }
     }
 
     /**
+     * Creates the SQL used to update a row.
      *
-     * Convenience method for getSQLForUpdate(List<E>)
-     *
-     * @param oldRow
-     * @return
-     */
-    public String getSQLForUpdate(E oldRow) {
-        ArrayList<E> arrayList = new ArrayList<E>();
-        arrayList.add(oldRow);
-        return getSQLForUpdate(arrayList).get(0);
-    }
-
-    /**
-     * Creates the SQL used to update the rows.
-     *
-     * Helpful for debugging and reversion scripts
+     * Helpful for debugging and reversion scripts Defers to
+     * getSQLForUpdateWithoutPrimaryKey for some updates
      *
      *
      * @param oldRows
      * @return
      */
-    public List<String> getSQLForUpdate(List<E> oldRows) {
+    public String getSQLForUpdate(E row) {
         DBDefinition defn = database.getDefinition();
-        List<String> allSQL = new ArrayList<String>();
-        for (E row : oldRows) {
-            QueryableDatatype primaryKey = row.getPrimaryKey();
-            if (primaryKey == null) {
-                allSQL.add(getSQLForUpdateWithoutPrimaryKey(row));
-            } else {
-                String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.getSQLValue(database));
-                String sql =
-                        defn.beginUpdateLine()
-                        + defn.formatTableName(row.getTableName())
-                        + defn.beginSetClause()
-                        + row.getSetClause(database)
-                        + defn.beginWhereClause()
-                        + defn.formatColumnName(this.getPrimaryKeyColumn())
-                        + defn.getEqualsComparator()
-                        + pkOriginalValue
-                        + defn.endDeleteLine();
-                allSQL.add(sql);
-            }
+        QueryableDatatype primaryKey = row.getPrimaryKey();
+        if (primaryKey == null) {
+            return getSQLForUpdateWithoutPrimaryKey(row);
+        } else {
+            String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.getSQLValue(database));
+            String sql
+                    = defn.beginUpdateLine()
+                    + defn.formatTableName(row.getTableName())
+                    + defn.beginSetClause()
+                    + row.getSetClause(database)
+                    + defn.beginWhereClause()
+                    + defn.formatColumnName(this.getPrimaryKeyColumn())
+                    + defn.getEqualsComparator()
+                    + pkOriginalValue
+                    + defn.endDeleteLine();
+            return sql;
         }
-
-        return allSQL;
     }
 
+//    public List<String> getSQLForUpdate(List<E> oldRows) {
+//        List<String> allSQL = new ArrayList<String>();
+//        for (E row : oldRows) {
+//            allSQL.add(getSQLForUpdate(row));
+//        }
+//        return allSQL;
+//    }
     /**
      *
      * @param query

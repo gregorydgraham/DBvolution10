@@ -106,6 +106,16 @@ abstract public class DBRow implements Serializable {
     public boolean getDefined() {
         return isDefined;
     }
+    
+    public boolean hasChanged(){
+        List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
+        for (PropertyWrapper prop : propertyWrappers){
+            if (prop.getQueryableDatatype().hasChanged()){
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Deprecated
     public String getPrimaryKeySQLStringValue(DBDatabase db) {
