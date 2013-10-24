@@ -443,6 +443,14 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
+     * @return
+     */
+    public Object getValue(){
+        return literalValue;
+    }
+
+    /**
+     *
      * @param newLiteralValue the literalValue to set
      */
     public void setValue(Object newLiteralValue) {
@@ -683,7 +691,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 //            }
 //        }
 //    }
-
+    
     /**
      * @return the operator
      */

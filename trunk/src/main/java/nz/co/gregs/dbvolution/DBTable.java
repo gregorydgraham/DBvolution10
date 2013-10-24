@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 
 /**
  *
@@ -448,7 +449,7 @@ public class DBTable<E extends DBRow> {
     /**
      *
      * Returns the first row of the table
-     * 
+     *
      * particularly helpful when you know there is only one row
      *
      * @return
@@ -464,9 +465,9 @@ public class DBTable<E extends DBRow> {
     /**
      *
      * Returns the first row and only row of the table.
-     * 
-     * Similar to getFirstRow() but throws an UnexpectedNumberOfRowsException
-     * if there is more than 1 row available
+     *
+     * Similar to getFirstRow() but throws an UnexpectedNumberOfRowsException if
+     * there is more than 1 row available
      *
      * @return
      */
@@ -640,13 +641,25 @@ public class DBTable<E extends DBRow> {
 
     /**
      *
-     * @param oldRow
+     * @param row
      * @return
      */
-    public String getSQLForDeleteWithoutPrimaryKey(E oldRow) {
-        List<E> rows = new ArrayList<E>();
-        rows.add(oldRow);
-        return getSQLForDeleteWithoutPrimaryKey(rows).get(0);
+    public String getSQLForDeleteWithoutPrimaryKey(E row) {
+        DBDefinition defn = database.getDefinition();
+        String sql =
+                defn.beginDeleteLine()
+                + defn.formatTableName(row.getTableName())
+                + defn.beginWhereClause()
+                + defn.getTrueOperation();
+        for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
+            sql = sql
+                    + defn.beginAndLine()
+                    + row.getDBColumnName(qdt)
+                    + defn.getEqualsComparator()
+                    + (qdt.hasChanged()?qdt.getPreviousSQLValue(database):qdt.getSQLValue(database));
+        }
+        sql = sql + defn.endDeleteLine();
+        return sql;
     }
 
     /**
@@ -655,25 +668,45 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public List<String> getSQLForDeleteWithoutPrimaryKey(List<E> oldRows) {
-        DBDefinition defn = database.getDefinition();
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
-            String sql =
-                    defn.beginDeleteLine()
-                    + defn.formatTableName(row.getTableName())
-                    + defn.beginWhereClause()
-                    + defn.getTrueOperation();
-            for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
+            allInserts.add(getSQLForDeleteWithoutPrimaryKey(row));
+        }
+        return allInserts;
+    }
+
+    public String getSQLForUpdateWithoutPrimaryKey(E row) {
+        DBDefinition defn = database.getDefinition();
+        String sql =
+                defn.beginUpdateLine()
+                + defn.formatTableName(row.getTableName())
+                + defn.beginSetClause()
+                + row.getSetClause(database)
+                + defn.beginWhereClause()
+                + defn.getTrueOperation();
+        for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
+            if (qdt.isNull()) {
+                DBIsNullOperator isNullOp = new DBIsNullOperator();
+                sql = sql
+                        + isNullOp.generateWhereLine(database, row.getDBColumnName(qdt));
+            } else {
                 sql = sql
                         + defn.beginAndLine()
                         + row.getDBColumnName(qdt)
                         + defn.getEqualsComparator()
-                        + qdt.getSQLValue(database);
+                        + (qdt.hasChanged()?qdt.getPreviousSQLValue(database):qdt.getSQLValue(database));
             }
-            sql = sql + defn.endDeleteLine();
-            allInserts.add(sql);
         }
-        return allInserts;
+        sql = sql + defn.endDeleteLine();
+        return sql;
+    }
+
+    public List<String> getSQLForUpdateWithoutPrimaryKey(List<E> rows) {
+        List<String> updates = new ArrayList<String>();
+        for (E row : rows) {
+            updates.add(getSQLForUpdateWithoutPrimaryKey(row));
+        }
+        return updates;
     }
 
     public void update(E oldRow) throws SQLException {
@@ -700,7 +733,8 @@ public class DBTable<E extends DBRow> {
         }
         for (DBRow row : oldRows) {
 //            row.setDatabase(database);
-            row.getPrimaryKey().setUnchanged();
+            row.setUnchanged();
+//            row.getPrimaryKey().setUnchanged();
         }
     }
 
@@ -730,18 +764,17 @@ public class DBTable<E extends DBRow> {
         DBDefinition defn = database.getDefinition();
         List<String> allSQL = new ArrayList<String>();
         for (E row : oldRows) {
-//            row.setDatabase(database);
             QueryableDatatype primaryKey = row.getPrimaryKey();
             if (primaryKey == null) {
-                throw new UndefinedPrimaryKeyException(row);
+                allSQL.add(getSQLForUpdateWithoutPrimaryKey(row));
             } else {
                 String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.getSQLValue(database));
                 String sql =
                         defn.beginUpdateLine()
                         + defn.formatTableName(row.getTableName())
-                        + defn.beginSetClause();
-                sql = sql + row.getSetClause(database);
-                sql = sql + defn.beginWhereClause()
+                        + defn.beginSetClause()
+                        + row.getSetClause(database)
+                        + defn.beginWhereClause()
                         + defn.formatColumnName(this.getPrimaryKeyColumn())
                         + defn.getEqualsComparator()
                         + pkOriginalValue

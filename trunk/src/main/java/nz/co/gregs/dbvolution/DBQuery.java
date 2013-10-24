@@ -501,8 +501,11 @@ public class DBQuery {
             for (DBRow tab : this.allQueryTables) {
                 DBRow rowPart = row.get(tab);
                 if (rowPart != null) {
-                    String rowPartStr = rowPart.getPrimaryKey().getSQLValue(this.database);
-                    ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
+                    final QueryableDatatype primaryKey = rowPart.getPrimaryKey();
+                    if (primaryKey != null) {
+                        String rowPartStr = primaryKey.getSQLValue(this.database);
+                        ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
+                    }
                 }
             }
 
