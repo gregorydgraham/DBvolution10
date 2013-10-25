@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -26,7 +27,11 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public class DBSave extends DBAction {
 
-    public DBSave(DBRow row, String sql) {
+    public <R extends DBRow> DBSave(R row) {
+        super(row);
+    }
+
+    public <R extends DBRow> DBSave(R row, String sql) {
         super(row, sql);
     }
 
@@ -36,7 +41,25 @@ public class DBSave extends DBAction {
     }
 
     @Override
-    public void execute(DBDatabase db, Statement statement) throws SQLException{
+    public String getSQLStatement(DBDatabase db) {
+        DBDefinition defn = db.getDefinition();
+        final DBRow row = getRow();
+        if (sql == null || sql.isEmpty()) {
+            return defn.beginInsertLine()
+                    + defn.formatTableName(row.getTableName())
+                    + defn.beginInsertColumnList()
+                    + db.getDBTable(row).getAllFieldsForInsert()
+                    + defn.endInsertColumnList()
+                    + row.getValuesClause(db)
+                    + defn.endInsertLine();
+
+        } else {
+            return super.getSQLStatement(db);
+        }
+    }
+
+    @Override
+    public void execute(DBDatabase db, Statement statement) throws SQLException {
         statement.execute(sql);
     }
 }
