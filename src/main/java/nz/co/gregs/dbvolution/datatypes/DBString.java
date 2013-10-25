@@ -35,22 +35,22 @@ public class DBString extends QueryableDatatype {
     }
 
     @Override
-    public String getSQLValue(DBDatabase db) {
+    public String formatValueForSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
-        if (this.isDBNull || literalValue == null) {
-            return defn.getNull();
+//        if (this.isDBNull || literalValue == null) {
+//            return defn.getNull();
+//        } else {
+        if (literalValue instanceof Date) {
+            return defn.getDateFormattedForQuery((Date) literalValue);
         } else {
-            if (literalValue instanceof Date) {
-                return defn.getDateFormattedForQuery((Date) literalValue);
-            } else {
-                String unsafeValue = literalValue.toString();
-                return defn.beginStringValue() + defn.safeString(unsafeValue) + defn.endStringValue();
-            }
+            String unsafeValue = literalValue.toString();
+            return defn.beginStringValue() + defn.safeString(unsafeValue) + defn.endStringValue();
         }
+//    }
     }
 
-    @Deprecated
-    public DBOperator useGreaterThanOperator(String literalValue) {
-        return this.useGreaterThanOperator(new DBString(literalValue));
-    }
+//    @Deprecated
+//    public DBOperator useGreaterThanOperator(String literalValue) {
+//        return this.useGreaterThanOperator(new DBString(literalValue));
+//    }
 }

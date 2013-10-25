@@ -51,7 +51,7 @@ public class DBSaveBLOB extends DBAction {
                 + defn.beginWhereClause()
                 + defn.formatColumnName(row.getPrimaryKeyName())
                 + defn.getEqualsComparator()
-                + row.getPrimaryKey().getSQLValue(db)
+                + row.getPrimaryKey().toSQLString(db)
                 + defn.endSQLStatement();
         db.printSQLIfRequested(sqlString);
         PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);

@@ -56,7 +56,7 @@ public class DBInOperator extends DBOperator {
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
 //                qdt.setDatabase(database);
-                whereClause.append(sep).append(" ").append(qdt.getSQLValue(db)).append(" ");
+                whereClause.append(sep).append(" ").append(qdt.toSQLString(db)).append(" ");
                 sep = ",";
             }
             whereClause.append("))");

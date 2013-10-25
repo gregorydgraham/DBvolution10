@@ -344,10 +344,10 @@ public class DBQuery {
                 if (primaryKey != null) {
                     final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
                     if (qdt != null) {
-                        existingInstance = existingInstancesOfThisTableRow.get(qdt.getSQLValue(this.database));
+                        existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
                         if (existingInstance == null) {
                             existingInstance = newInstance;
-                            existingInstancesOfThisTableRow.put(qdt.getSQLValue(this.database), existingInstance);
+                            existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
                         }
                     }
                 }
@@ -378,7 +378,7 @@ public class DBQuery {
 
     /**
      *
-     * @param <R>: A Java Object that extends DBRow
+     * @param <>>: A Java Object that extends DBRow
      * @param exemplar: The DBRow class that you would like returned.
      * @param expected: The expected number of rows, an exception will be thrown
      * if this expectation is not met.
@@ -503,7 +503,7 @@ public class DBQuery {
                 if (rowPart != null) {
                     final QueryableDatatype primaryKey = rowPart.getPrimaryKey();
                     if (primaryKey != null) {
-                        String rowPartStr = primaryKey.getSQLValue(this.database);
+                        String rowPartStr = primaryKey.toSQLString(this.database);
                         ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
                     }
                 }

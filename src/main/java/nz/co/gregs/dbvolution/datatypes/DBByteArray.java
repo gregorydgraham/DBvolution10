@@ -43,6 +43,19 @@ public class DBByteArray extends DBLargeObject {
         super();
     }
 
+    /**
+     *
+     * @return @throws CloneNotSupportedException
+     */
+    @Override
+    public DBByteArray clone() throws CloneNotSupportedException {
+        try {
+            return (DBByteArray) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     @Override
     public String getSQLDatatype() {
         return "BLOB";
@@ -52,13 +65,17 @@ public class DBByteArray extends DBLargeObject {
         super.setValue(byteArray);
         bytes = byteArray;
         byteStream = new BufferedInputStream(new ByteArrayInputStream(bytes));
-    }  
-    
+    }
+
     public void setValue(InputStream inputViaStream) {
         super.setValue(inputViaStream);
         bytes = null;
         byteStream = new BufferedInputStream(inputViaStream);
-    }  
+    }
+    
+    public void setValue(File fileToRead) throws IOException{
+        setValue(readFromFileSystem(fileToRead));
+    }
 
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
@@ -69,7 +86,7 @@ public class DBByteArray extends DBLargeObject {
 
             try {
                 dbValue = resultSet.getBinaryStream(fullColumnName);
-                if (resultSet.wasNull()){
+                if (resultSet.wasNull()) {
                     dbValue = null;
                 }
             } catch (SQLException ex) {
@@ -108,12 +125,17 @@ public class DBByteArray extends DBLargeObject {
     }
 
     @Override
-    public String getSQLValue(DBDatabase db) {
-        throw new UnsupportedOperationException("Binary datatypes like "+this.getClass().getSimpleName()+" do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
+    public String formatValueForSQLStatement(DBDatabase db) {
+        throw new UnsupportedOperationException("Binary datatypes like " + this.getClass().getSimpleName() + " do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
     }
 
     public byte[] readFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
         File file = new File(originalFile);
+        return readFromFileSystem(file);
+    }
+
+    public byte[] readFromFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
+        File file = new File(originalFile.stringValue());
         return readFromFileSystem(file);
     }
 
@@ -177,10 +199,14 @@ public class DBByteArray extends DBLargeObject {
 
     @Override
     public InputStream getInputStream() {
-        if (byteStream==null){
+        if (byteStream == null) {
             this.setValue(bytes);
         }
         return byteStream;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
     }
 
     @Override

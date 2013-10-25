@@ -41,7 +41,7 @@ public class DBLikeOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        likeableValue.setDatabase(db);
         DBDefinition defn = db.getDefinition();
-        return defn.beginAndLine() +(invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+likeableValue.getSQLValue(db)+")";
+        return defn.beginAndLine() +(invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+likeableValue.toSQLString(db)+")";
     }
 
     private String getOperator() {

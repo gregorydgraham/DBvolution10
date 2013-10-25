@@ -47,7 +47,7 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
 //                qdt.setDatabase(db);
-                whereClause.append(sep).append(" ").append(qdt.getSQLValue(db).toLowerCase()).append(" ");
+                whereClause.append(sep).append(" ").append(qdt.toSQLString(db).toLowerCase()).append(" ");
                 sep = ",";
             }
             whereClause.append("))");
