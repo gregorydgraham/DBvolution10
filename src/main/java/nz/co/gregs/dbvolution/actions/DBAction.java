@@ -24,23 +24,23 @@ import nz.co.gregs.dbvolution.DBRow;
  *
  * @author gregorygraham
  */
-public abstract class DBAction {
+public  abstract class DBAction {
 
     private DBRow row;
     protected String sql = "";
 //    protected final DBDatabase database;
     
-    public DBAction(DBRow row) {
+    public <R extends DBRow> DBAction(R row) {
         super();
-        this.row = row;
+        this.row = row.copy(row);
     }
     
-    public DBAction(DBRow row, String sql) {
+    public <R extends DBRow> DBAction(R row, String sql) {
         this(row);
         this.sql = sql;
     }
     
-    public String getSQLRepresentation(){
+    public String getSQLStatement(DBDatabase db){
         return sql;
     }
 

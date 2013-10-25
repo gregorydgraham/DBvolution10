@@ -60,7 +60,7 @@ public class DBSaveBLOB extends DBAction {
     }
 
     @Override
-    public String getSQLRepresentation() {
+    public String getSQLStatement(DBDatabase db) {
         return "// SAVE BINARY DATA";
     }
 }

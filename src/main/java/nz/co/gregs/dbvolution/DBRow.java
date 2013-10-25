@@ -66,6 +66,11 @@ abstract public class DBRow implements Serializable {
         }
     }
 
+    public <R extends DBRow> R copy(R row) {
+        //TODO
+        return row;
+    }
+
     protected List<PropertyWrapper> getPropertyWrappers() {
         return getWrapper().getPropertyWrappers();
     }
@@ -106,11 +111,11 @@ abstract public class DBRow implements Serializable {
     public boolean getDefined() {
         return isDefined;
     }
-    
-    public boolean hasChanged(){
+
+    public boolean hasChanged() {
         List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
-        for (PropertyWrapper prop : propertyWrappers){
-            if (prop.getQueryableDatatype().hasChanged()){
+        for (PropertyWrapper prop : propertyWrappers) {
+            if (prop.getQueryableDatatype().hasChanged()) {
                 return true;
             }
         }
@@ -240,7 +245,6 @@ abstract public class DBRow implements Serializable {
     public List<QueryableDatatype> getQueryableDatatypes() {
         List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
 
-
         List<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
         for (PropertyWrapper prop : propertyWrappers) {
             arrayList.add(prop.getQueryableDatatype());
@@ -361,7 +365,7 @@ abstract public class DBRow implements Serializable {
 //            }
 //        }
 //    }
-    protected String getValuesClause(DBDatabase db) {
+    public String getValuesClause(DBDatabase db) {
 //        this.setDatabase(db);
         StringBuilder string = new StringBuilder();
         Class<? extends DBRow> thisClass = this.getClass();
@@ -396,7 +400,7 @@ abstract public class DBRow implements Serializable {
                             .append(defn.formatColumnName(columnName))
                             .append(defn.getEqualsComparator())
                             .append(qdt
-                            .toSQLString(db));
+                                    .toSQLString(db));
                     separator = defn.getSubsequentSetSubClauseSeparator();
                 }
             }
@@ -713,7 +717,6 @@ abstract public class DBRow implements Serializable {
             joinSeparator = defn.beginAndLine();
         }
 
-
         adHocs = newTable.getAdHocRelationships();
         for (DBRelationship adhoc : adHocs) {
             DBRow firstTable = adhoc.getFirstTable();
@@ -738,8 +741,6 @@ abstract public class DBRow implements Serializable {
 
             joinSeparator = defn.beginAndLine();
         }
-
-
 
         fks = newTable.getForeignKeyPropertyWrappers();
         for (PropertyWrapper fk : fks) {
@@ -818,7 +819,7 @@ abstract public class DBRow implements Serializable {
 
     void setUnchanged() {
         List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
-        for (PropertyWrapper prop: propertyWrappers){
+        for (PropertyWrapper prop : propertyWrappers) {
             prop.getQueryableDatatype().setUnchanged();
         }
     }

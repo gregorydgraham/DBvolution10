@@ -95,7 +95,7 @@ public class DBTable<E extends DBRow> {
         return allFields.toString();
     }
 
-    private String getAllFieldsForInsert() {
+    public String getAllFieldsForInsert() {
         StringBuilder allFields = new StringBuilder();
         DBDefinition defn = database.getDefinition();
         List<PropertyWrapper> props = dummy.getPropertyWrappers();
@@ -494,10 +494,10 @@ public class DBTable<E extends DBRow> {
         DBActionList allInserts = getSQLForInsert(newRows);
         for (DBAction action : allInserts) {
             if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                System.out.println(action.getSQLRepresentation());
+                System.out.println(action.getSQLStatement(database));
             }
             if (action.canBeBatched() && database.getBatchSQLStatementsWhenPossible()) {
-                statement.addBatch(action.getSQLRepresentation());
+                statement.addBatch(action.getSQLStatement(database));
             } else {
                 statement.executeBatch();
                 statement.clearBatch();
@@ -523,7 +523,7 @@ public class DBTable<E extends DBRow> {
     public String getSQLForInsert(E newRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(newRow);
-        return getSQLForInsert(arrayList).get(0).getSQLRepresentation();
+        return getSQLForInsert(arrayList).get(0).getSQLStatement(database);
     }
 
     /**
@@ -539,15 +539,16 @@ public class DBTable<E extends DBRow> {
         DBDefinition defn = database.getDefinition();
         DBActionList allInserts = new DBActionList();
         for (E row : newRows) {
-            String sql
-                    = defn.beginInsertLine()
-                    + defn.formatTableName(row.getTableName())
-                    + defn.beginInsertColumnList()
-                    + this.getAllFieldsForInsert()
-                    + defn.endInsertColumnList()
-                    + row.getValuesClause(database)
-                    + defn.endInsertLine();
-            allInserts.add(new DBSave(row, sql));
+//            String sql
+//                    = defn.beginInsertLine()
+//                    + defn.formatTableName(row.getTableName())
+//                    + defn.beginInsertColumnList()
+//                    + this.getAllFieldsForInsert()
+//                    + defn.endInsertColumnList()
+//                    + row.getValuesClause(database)
+//                    + defn.endInsertLine();
+//            allInserts.add(new DBSave(row, sql));
+            allInserts.add(new DBSave(row));
             if (row.hasLargeObjectColumns()) {
                 allInserts.addAll(row.getLargeObjectActions(database));
             }
