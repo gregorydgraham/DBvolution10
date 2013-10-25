@@ -105,7 +105,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 //            System.out.println(row);
         }
         Assert.assertEquals(gotMarques.size(), 1);
-        Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().getSQLValue(database));
+        Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().toSQLString(database));
     }
 
     @Test
@@ -117,8 +117,8 @@ public class DBDatabaseGetTest extends AbstractTest {
 //            System.out.println(row);
         }
         Assert.assertEquals(gotMarques.size(), 2);
-        Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().getSQLValue(database));
-        Assert.assertEquals("" + 4893090, gotMarques.get(1).getPrimaryKey().getSQLValue(database));
+        Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().toSQLString(database));
+        Assert.assertEquals("" + 4893090, gotMarques.get(1).getPrimaryKey().toSQLString(database));
     }
 
     @Test

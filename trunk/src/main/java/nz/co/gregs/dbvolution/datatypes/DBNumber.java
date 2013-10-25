@@ -238,20 +238,21 @@ public class DBNumber extends QueryableDatatype {
      * {123} => 123
      *
      */
-    @Override
-    public String toSQLString(DBDatabase db) {
-        if (this.isDBNull || this.numberValue == null) {
-            return db.getDefinition().getNull();
-        }
-        return this.numberValue.toString();
-    }
+//    @Override
+//    public String toSQLString(DBDatabase db) {
+//        if (this.isDBNull || this.numberValue == null) {
+//            return db.getDefinition().getNull();
+//        }
+//        return this.numberValue.toString();
+//    }
 
     /**
      *
+     * @param db
      * @return
      */
     @Override
-    public String getSQLValue(DBDatabase db) {
+    public String formatValueForSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
         if (isNull() || numberValue==null){
             return defn.getNull();

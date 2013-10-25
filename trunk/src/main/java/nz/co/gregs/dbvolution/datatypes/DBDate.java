@@ -130,17 +130,17 @@ public class DBDate extends QueryableDatatype {
         return dateValue().toString();
     }
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        DBDefinition defn = db.getDefinition();
-        if (this.isDBNull || dateValue() == null) {
-            return defn.getNull();
-        }
-        return defn.getDateFormattedForQuery(dateValue());
-    }
+//    @Override
+//    public String toSQLString(DBDatabase db) {
+//        DBDefinition defn = db.getDefinition();
+//        if (this.isDBNull || dateValue() == null) {
+//            return defn.getNull();
+//        }
+//        return formatValueForSQLStatement(db);
+//    }
 
     @Override
-    public String getSQLValue(DBDatabase db) {
+    public String formatValueForSQLStatement(DBDatabase db) {
         return db.getDefinition().getDateFormattedForQuery(dateValue());
     }
 

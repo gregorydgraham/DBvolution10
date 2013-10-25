@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 public class DBBoolean extends QueryableDatatype {
+
     private static final long serialVersionUID = 1L;
 
     public DBBoolean() {
@@ -34,11 +35,12 @@ public class DBBoolean extends QueryableDatatype {
     }
 
     @Override
-    public String getSQLValue(DBDatabase db) {
+    public String formatValueForSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
-        if (this.isDBNull || literalValue == null) {
-            defn.getNull();
-        } else if (literalValue instanceof Boolean) {
+//        if (this.isDBNull || literalValue == null) {
+//            defn.getNull();
+//        } else 
+        if (literalValue instanceof Boolean) {
             Boolean boolValue = (Boolean) literalValue;
             return defn.beginNumberValue() + (boolValue == Boolean.TRUE ? 1 : 0) + defn.endNumberValue();
         }

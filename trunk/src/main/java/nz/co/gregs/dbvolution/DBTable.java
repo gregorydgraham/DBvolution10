@@ -619,7 +619,7 @@ public class DBTable<E extends DBRow> {
                             + defn.beginWhereClause()
                             + defn.formatColumnName(this.getPrimaryKeyColumn())
                             + defn.getEqualsComparator()
-                            + primaryKey.getSQLValue(database)
+                            + primaryKey.toSQLString(database)
                             + defn.endDeleteLine();
                     allDeletes.add(sql);
                 }
@@ -655,7 +655,7 @@ public class DBTable<E extends DBRow> {
                     + defn.beginAndLine()
                     + row.getDBColumnName(qdt)
                     + defn.getEqualsComparator()
-                    + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.getSQLValue(database));
+                    + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.toSQLString(database));
         }
         sql = sql + defn.endDeleteLine();
         return sql;
@@ -693,7 +693,7 @@ public class DBTable<E extends DBRow> {
                         + defn.beginAndLine()
                         + row.getDBColumnName(qdt)
                         + defn.getEqualsComparator()
-                        + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.getSQLValue(database));
+                        + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.toSQLString(database));
             }
         }
         sql = sql + defn.endDeleteLine();
@@ -761,7 +761,7 @@ public class DBTable<E extends DBRow> {
         if (primaryKey == null) {
             return getSQLForUpdateWithoutPrimaryKey(row);
         } else {
-            String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.getSQLValue(database));
+            String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.toSQLString(database));
             String sql
                     = defn.beginUpdateLine()
                     + defn.formatTableName(row.getTableName())

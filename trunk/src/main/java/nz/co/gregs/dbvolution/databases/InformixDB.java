@@ -29,5 +29,7 @@ public class InformixDB extends DBDatabase {
 
     public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
         super(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
+        // Informix causes problems when using batched statements :(
+        setBatchSQLStatementsWhenPossible(false);
     }
 }
