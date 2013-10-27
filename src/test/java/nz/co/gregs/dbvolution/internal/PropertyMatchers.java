@@ -1,10 +1,13 @@
 package nz.co.gregs.dbvolution.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.StringDescription;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -23,11 +26,42 @@ class PropertyMatchers {
 		};
 	}
 	
-	public static <E> E itemOf(Collection<E> c, Matcher<? super E> matcher) {
+	/**
+	 * Gets the first found item where there are many.
+	 * @param c
+	 * @param matcher
+	 * @return
+	 */
+	public static <E> E firstItemOf(Collection<E> c, Matcher<? super E> matcher) {
 		for (E item: c) {
 			if (matcher.matches(item)) {
 				return item;
 			}
+		}
+		return null; // not found
+	}
+	
+	/**
+	 * Gets the zero or one item accepted by the matcher.
+	 * @param c
+	 * @param matcher
+	 * @return the item or null if not found
+	 * @throws AssertionError if multiple items match
+	 */
+	public static <E> E itemOf(Collection<E> c, Matcher<? super E> matcher) {
+		List<E> found = new ArrayList<E>();
+		for (E item: c) {
+			if (matcher.matches(item)) {
+				found.add(item);
+			}
+		}
+		if (found.size() > 1) {
+			Description desc = new StringDescription();
+			matcher.describeTo(desc);
+			throw new AssertionError("Expected at most one item "+desc.toString()+", got "+found.size()+" items");
+		}
+		if (found.size() == 1) {
+			return found.get(0);
 		}
 		return null; // not found
 	}
