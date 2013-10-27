@@ -22,6 +22,7 @@ import java.util.*;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
@@ -493,7 +494,13 @@ public abstract class DBDatabase {
         List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
         for (PropertyWrapper field : fields) {
             if (field.isColumn()) {
-                QueryableDatatype qdt = newTableRow.getQueryableValueOfPropertWrapper(field);
+                QueryableDatatype qdt = field.getQueryableDatatype();
+                if (qdt == null) {
+                	// this is inefficient since the new qdt will be thrown away,
+                	// but it's only for creating tables, which doesn't happen often.
+					qdt = QueryableDatatype.getQueryableDatatypeInstance(field.type());
+                }
+                
                 String colName = field.columnName();
                 sqlScript
                         .append(sep)
