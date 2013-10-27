@@ -3,8 +3,6 @@ package nz.co.gregs.dbvolution.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import nz.co.gregs.dbvolution.DBDatabase;
-
 /**
  * Constructs class adaptors for DB table classes and maintains an in-memory cache for re-use.
  * Creating class adaptors is expensive and this class is provided as a convenience for anything that needs to

@@ -6,9 +6,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
@@ -16,7 +16,6 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * Low-level internal abstraction layer over java fields and bean-properties.
  * @author Malcolm Lett
  */
-// TODO: need to test support for private fields
 public interface JavaProperty {
 	
 	/**
@@ -40,7 +39,6 @@ public interface JavaProperty {
 	
 	/**
 	 * Indicates whether this java property is a field.
-	 * If it is not a field, then it is a bean-property.
 	 * @return {@code true} if a field, {@code false} if a bean-property.
 	 */
 	public boolean isField();
@@ -113,30 +111,15 @@ public interface JavaProperty {
 	 * annotation as the overriding method, it's likely that the java specification says
 	 * the overriding method's version of the annotation is the only one seen.
 	 * 
-	 * <p> This method returns the first encountered annotation where multiple exist
-	 * for the given type. Multiple annotations of the same type is generally
-	 * not possible in java because it doesn't allow the same annotation type on a given
-	 * class member. However bean properties are made up of a 'getter' and a 'setter' method,
-	 * which may each include the same annotation.
-	 * {@link #getAnnotations(Class)} should be used to retrieve all versions of the annotation
-	 * and validation performed against them.
+	 * <p> On bean-properties, it is possible for the getter and setter to both specify
+	 * the same annotation. This that circumstance, this method asserts that the declared
+	 * annotations must be identical. If not, an exception is thrown.
 	 * @param annotationClass
 	 * @return the annotation, or null if not found
+	 * @throws DBPebkacException if the annotation is duplicated and different
 	 */
-	// TODO: change this to automatically check the annotations are identical
-	// TODO: throw a useful (checked?) exception if it does occur
 	public <A extends Annotation> A getAnnotation(Class<A> annotationClass);
 
-	/**
-	 * Gets all applicable instances of the specified annotation on the property.
-	 * This method should be used when first initialising in order to perform validation
-	 * on user specified annotations.
-	 * @param annotationClass
-	 * @return list of annotations of the given type, empty list if none
-	 */
-	// TODO: remove this in favour of smarter logic in the getAnnotation() method
-	public <A extends Annotation> List<A> getAnnotations(Class<A> annotationClass);
-	
 	/**
 	 * Implementation over java fields.
 	 */
@@ -217,7 +200,7 @@ public interface JavaProperty {
 				// usually thrown when 'target' isn't of the same type as 'field' is declared on,
 				// so this is probably a bug
 				String class1 = (target == null) ? "null" : target.getClass().getName();
-				throw new IllegalArgumentException("Internal error reading field "+
+				throw new DBRuntimeException("Internal error reading field "+
 						qualifiedName()+" on object of type "+class1+" (this is probably a DBvolution bug): "+
 						e.getLocalizedMessage(), e);
 			} catch (IllegalAccessException e) {
@@ -260,18 +243,6 @@ public interface JavaProperty {
 		@Override
 		public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
 			return field.getAnnotation(annotationClass);
-		}
-
-		// fields can only ever have one instance of the annotation
-		@Override
-		public <A extends Annotation> List<A> getAnnotations(Class<A> annotationClass) {
-			A annotation = getAnnotation(annotationClass);
-			if (annotation == null) {
-				return Collections.emptyList();
-			}
-			else {
-				return Collections.singletonList(annotation);
-			}
 		}
 	}
 	
@@ -384,12 +355,12 @@ public interface JavaProperty {
 			}
 			
 			try {
-				return setter.invoke(target);
+				return getter.invoke(target);
 			} catch (IllegalArgumentException e) {
 				// usually thrown when 'target' isn't of the same type as 'field' is declared on,
 				// so this is probably a bug
 				String class1 = (target == null) ? "null" : target.getClass().getName();
-				throw new IllegalArgumentException("Internal error reading property "+
+				throw new DBRuntimeException("Internal error reading property "+
 						qualifiedName()+" on object of type "+class1+" (this is probably a DBvolution bug): "+
 						e.getLocalizedMessage(), e);
 			} catch (IllegalAccessException e) {
@@ -399,10 +370,10 @@ public interface JavaProperty {
 						e.getLocalizedMessage(), e);
 			} catch (InvocationTargetException e) {
 				// any checked or runtime exception thrown by the setter method itself
-				// TODO: check that this exception wraps runtime exceptions as well
-				Throwable cause = e.getCause();
+				Throwable cause = (e.getCause() == null) ? e : e.getCause();
+				String msg = (cause.getLocalizedMessage() == null) ? "" : ": "+cause.getLocalizedMessage();
 				throw new DBThrownByEndUserCodeException("Accessor method threw "+cause.getClass().getSimpleName()+" reading property "+
-						qualifiedName()+": "+cause.getLocalizedMessage(), cause);
+						qualifiedName()+msg, cause);
 			}
 		}
 
@@ -430,10 +401,10 @@ public interface JavaProperty {
 						e.getLocalizedMessage(), e);
 			} catch (InvocationTargetException e) {
 				// any checked or runtime exception thrown by the setter method itself
-				// TODO: check that this exception wraps runtime exceptions as well
-				Throwable cause = e.getCause();
+				Throwable cause = (e.getCause() == null) ? e : e.getCause();
+				String msg = (cause.getLocalizedMessage() == null) ? "" : ": "+cause.getLocalizedMessage();
 				throw new DBThrownByEndUserCodeException("Accessor method threw "+cause.getClass().getSimpleName()+" writing to property "+
-						qualifiedName()+": "+cause.getLocalizedMessage(), cause);
+						qualifiedName()+msg, cause);
 			}
 			
 		}
@@ -450,38 +421,81 @@ public interface JavaProperty {
 
 		@Override
 		public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
+			A getterAnnotation = null;
+			A setterAnnotation = null;
 			if (getter != null) {
-				A annotation = getter.getAnnotation(annotationClass);
-				if (annotation != null) {
-					return annotation;
-				}
+				getterAnnotation = getter.getAnnotation(annotationClass);
 			}
 			if (setter != null) {
-				A annotation = setter.getAnnotation(annotationClass);
-				if (annotation != null) {
-					return annotation;
+				setterAnnotation = setter.getAnnotation(annotationClass);
+			}
+			
+			if (getterAnnotation != null && setterAnnotation != null) {
+				if (!annotationsEqual(getterAnnotation, setterAnnotation)) {
+					String name = annotationClass.getSimpleName();
+					throw new DBPebkacException("@"+name+" different on "+qualifiedName()+" getter and setter ");
 				}
+			}
+			
+			if (getterAnnotation != null) {
+				return getterAnnotation;
+			}
+			else if (setterAnnotation != null) {
+				return setterAnnotation;
 			}
 			return null;
 		}
-
-		@Override
-		public <A extends Annotation> List<A> getAnnotations(Class<A> annotationClass) {
-			List<A> annotations = new ArrayList<A>();
-			if (getter != null) {
-				A annotation = getter.getAnnotation(annotationClass);
-				if (annotation != null) {
-					annotations.add(annotation);
-				}
-			}
-			if (setter != null) {
-				A annotation = setter.getAnnotation(annotationClass);
-				if (annotation != null) {
-					annotations.add(annotation);
-				}
-			}
-			return annotations;
+		
+		/**
+		 * Tests whether two annotations are semantically identical. 
+		 * @param ann1
+		 * @param ann2
+		 * @return
+		 */
+		protected static <A extends Annotation> boolean annotationsEqual(A ann1, A ann2) {
+			List<Object> values1 = getAnnotationValues(ann1);
+			List<Object> values2 = getAnnotationValues(ann2);
+			return values1.equals(values2);
 		}
 		
+		/**
+		 * Gets the attribute values of the annotation.
+		 * @param annotation
+		 * @return
+		 */
+		protected static <A extends Annotation> List<Object> getAnnotationValues(A annotation) {
+			List<Object> values = new ArrayList<Object>();
+			
+			Method[] methods = annotation.annotationType().getMethods();
+			for (Method method: methods) {
+				if (!method.getDeclaringClass().isAssignableFrom(Annotation.class)) {
+					try {
+						Object value = method.invoke(annotation);
+						values.add(value);
+					} catch (IllegalArgumentException e) {
+						// usually thrown when 'target' isn't of the same type as 'field' is declared on,
+						// so this is probably a bug
+						String name = "@"+annotation.annotationType().getSimpleName()+"."+method.getName();
+						throw new DBRuntimeException("Internal error reading annotation value "+name+
+								" (this is probably a DBvolution bug): "+
+								e.getLocalizedMessage(), e);
+					} catch (IllegalAccessException e) {
+						// caused by a Java security manager or an attempt to access a non-visible field
+						// without first making it visible
+						String name = "@"+annotation.annotationType().getSimpleName()+"."+method.getName();
+						throw new DBRuntimeException("Java security error reading annotation value "+name+": "+
+								e.getLocalizedMessage(), e);
+					} catch (InvocationTargetException e) {
+						Throwable cause = (e.getCause() == null) ? e : e.getCause();
+						String msg = (cause.getLocalizedMessage() == null) ? "" : ": "+cause.getLocalizedMessage();
+						String name = "@"+annotation.annotationType().getSimpleName()+"."+method.getName();
+						throw new DBRuntimeException("Internal error reading annotation value "+name+
+								" (this is probably a DBvolution bug)"+msg, cause);
+					}
+				}
+			}
+			
+			return values;
+		}
 	}
 }

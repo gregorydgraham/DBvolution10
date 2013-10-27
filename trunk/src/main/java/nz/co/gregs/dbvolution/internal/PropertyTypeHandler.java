@@ -5,9 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -433,10 +430,10 @@ class PropertyTypeHandler {
                     + adaptorClass.getName() + ", referenced by property " + property.qualifiedName() + ": " + e.getLocalizedMessage(), e);
         } catch (InvocationTargetException e) {
             // any checked or runtime exception thrown by the setter method itself
-            // TODO: check that this exception wraps runtime exceptions as well
-            Throwable cause = e.getCause();
+            Throwable cause = (e.getCause() == null) ? e : e.getCause();
+			String msg = (cause.getLocalizedMessage() == null) ? "" : ": "+cause.getLocalizedMessage();
             throw new DBThrownByEndUserCodeException("Constructor threw " + cause.getClass().getSimpleName() + " when instantiating "
-                    + adaptorClass.getName() + ", referenced by property " + property.qualifiedName() + ": " + cause.getLocalizedMessage(), cause);
+                    + adaptorClass.getName() + ", referenced by property " + property.qualifiedName() + msg, cause);
         }
 
         // downcast

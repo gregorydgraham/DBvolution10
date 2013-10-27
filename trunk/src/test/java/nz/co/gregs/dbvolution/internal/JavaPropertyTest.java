@@ -7,13 +7,17 @@ import static org.junit.Assert.*;
 import java.io.Serializable;
 import java.util.List;
 
+import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
+import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class JavaPropertyTest {
@@ -72,12 +76,14 @@ public class JavaPropertyTest {
     @Test
     public void getsShadowingPrivateFieldGivenStandardBean() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleStandardBeanClass.class);
+        // will contain two 'property' properties, one is java field
         assertThat(properties, hasItem(allOf(hasJavaPropertyName("property"), isJavaPropertyField())));
     }
 
     @Test
     public void getsShadowingPublicPropertyGivenStandardBean() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleStandardBeanClass.class);
+        // will contain two 'property' properties, one is java bean-property
         assertThat(properties, hasItem(allOf(hasJavaPropertyName("property"), not(isJavaPropertyField()))));
     }
 
@@ -145,7 +151,20 @@ public class JavaPropertyTest {
         assertThat(properties, not(hasItem(hasJavaPropertyName("privateField"))));
     }
 
+    // check avoidance of non-properties
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getsOnlyPropertiesGivenOtherStuff() {
+        List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(ThreePropertiesAndOtherStuffClass.class);
+        //System.out.println(properties);
+        assertThat(properties, containsInAnyOrder(hasJavaPropertyName("property1"),
+                hasJavaPropertyName("property2"), hasJavaPropertyName("property3")));
+    }
+
+    
     // check handling in unusual situations
+    
     @Test
     public void getsAllPropertiesWithoutExceptionGivenWeirdTypes() {
         privateFieldPublicBeanFinder.getPropertiesOf(WeirdTypesClass.class);
@@ -206,19 +225,87 @@ public class JavaPropertyTest {
         assertThat("type", (Object) property.type(), is(not((Object) Boolean.class)));
     }
 
-    // check avoidance of non-properties
+    // check access to property values
+    
     @Test
-    @SuppressWarnings("unchecked")
-    public void getsOnlyPropertiesGivenOtherStuff() {
-        List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(ThreePropertiesAndOtherStuffClass.class);
-        //System.out.println(properties);
-        assertThat(properties, containsInAnyOrder(hasJavaPropertyName("property1"),
-                hasJavaPropertyName("property2"), hasJavaPropertyName("property3")));
+    public void readsPublicField() {
+    	SimpleIndependentFieldsAndPropertiesClass obj = new SimpleIndependentFieldsAndPropertiesClass();
+    	obj.publicField = "hello"; 
+    	JavaProperty property = propertyOf(obj, "publicField");
+        assertThat((String)property.get(obj), is("hello"));
     }
 
+    @Test
+    public void writesPublicField() {
+    	SimpleIndependentFieldsAndPropertiesClass obj = new SimpleIndependentFieldsAndPropertiesClass();
+    	JavaProperty property = propertyOf(obj, "publicField");
+    	property.set(obj, "hello");
+        assertThat(obj.publicField, is("hello"));
+    }
+
+    @Test
+    public void readsPrivateField() {
+    	SimpleIndependentFieldsAndPropertiesClass obj = new SimpleIndependentFieldsAndPropertiesClass();
+    	obj.privateField = "hello"; 
+    	JavaProperty property = propertyOf(obj, "privateField");
+        assertThat((String)property.get(obj), is("hello"));
+    }
+
+    @Test
+    public void writesPrivateField() {
+    	SimpleIndependentFieldsAndPropertiesClass obj = new SimpleIndependentFieldsAndPropertiesClass();
+    	JavaProperty property = propertyOf(obj, "privateField");
+    	property.set(obj, "hello");
+        assertThat(obj.privateField, is("hello"));
+    }
+    
+    @Test
+    public void readsPublicBeanProperty() {
+    	SimpleIndependentFieldsAndPropertiesClass obj = new SimpleIndependentFieldsAndPropertiesClass();
+    	obj.setPublicProperty("hello");
+    	JavaProperty property = propertyOf(obj, "publicProperty");
+        assertThat((String)property.get(obj), is("hello"));
+    }
+
+    @Test
+    public void writesPublicBeanProperty() {
+    	SimpleIndependentFieldsAndPropertiesClass obj = new SimpleIndependentFieldsAndPropertiesClass();
+    	JavaProperty property = propertyOf(obj, "publicProperty");
+    	property.set(obj, "hello");
+        assertThat(obj.getPublicProperty(), is("hello"));
+    }
+    
+    @Test(expected=DBThrownByEndUserCodeException.class)
+    public void handlesUserExceptionWhenReadingBeanProperty() {
+        class TestClass {
+            @SuppressWarnings("unused")
+			public int getProperty() {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+        }
+
+        JavaProperty property = propertyOf(TestClass.class, "property");
+        property.get(new TestClass());
+    }
+
+    @Test(expected=DBThrownByEndUserCodeException.class)
+    public void handlesUserExceptionWhenWritingBeanProperty() {
+        class TestClass {
+            @SuppressWarnings("unused")
+			public void setProperty(int value) {
+                throw new ArrayIndexOutOfBoundsException("bar");
+            }
+        }
+
+        JavaProperty property = propertyOf(TestClass.class, "property");
+        property.set(new TestClass(), 23);
+    }
+    
+    // check handling of annotations (including duplicates)
+    
     @Test
     public void retrievesAnnotationGivenExactlyDuplicatedAnnotationOnGetterAndSetter() {
-        class MyClass {
+        class TestClass {
 
             @DBColumn("samename")
             public int getProperty() {
@@ -230,14 +317,13 @@ public class JavaPropertyTest {
             }
         }
 
-        JavaProperty property = propertyOf(MyClass.class, "property");
+        JavaProperty property = propertyOf(TestClass.class, "property");
         assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
     }
 
-    // TODO: turns out this is different to what I originally designed, but I think it's a good idea
     @Test
     public void retrievesAnnotationGivenExactlyDuplicatedEmptyAnnotationOnGetterAndSetter() {
-        class MyClass {
+        class TestClass {
 
             @DBColumn
             public int getProperty() {
@@ -249,15 +335,13 @@ public class JavaPropertyTest {
             }
         }
 
-        JavaProperty property = propertyOf(MyClass.class, "property");
+        JavaProperty property = propertyOf(TestClass.class, "property");
         assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
     }
 
-    // TODO: turns out this is different to what I originally designed, but I think it's a good idea
-    @Ignore
     @Test(expected = DBPebkacException.class)
-    public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedAnnotationOnGetterAndSetter() {
-        class MyClass {
+    public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedSimpleAnnotationOnGetterAndSetter() {
+        class TestClass {
 
             @DBColumn("samename")
             public int getProperty() {
@@ -269,13 +353,83 @@ public class JavaPropertyTest {
             }
         }
 
-        JavaProperty property = propertyOf(MyClass.class, "property");
-        System.out.println(property.getAnnotation(DBColumn.class));
+        JavaProperty property = propertyOf(TestClass.class, "property");
+        property.getAnnotation(DBColumn.class);
     }
 
     @Test
+    public void acceptsAnnotationWhenRetrievingAnnotationGivenSemanticallyIdenticalAnnotationOnGetterAndSetter() {
+        class TestClass {
+
+            @DBColumn("")
+            public int getProperty() {
+                return 0;
+            }
+
+            @DBColumn
+            public void setProperty(int value) {
+            }
+        }
+
+        JavaProperty property = propertyOf(TestClass.class, "property");
+        assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
+    }
+    
+    @Test(expected = DBPebkacException.class)
+    public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedComplexAnnotationOnGetterAndSetter() {
+    	class MyAdaptor implements DBTypeAdaptor<Object, DBInteger> {
+			public Object fromDatabaseValue(DBInteger dbvValue) {
+				return null;
+			}
+			public DBInteger toDatabaseValue(Object objectValue) {
+				return null;
+			}
+    	}
+    	
+        class TestClass {
+            @DBAdaptType(adaptor=MyAdaptor.class, type=DBString.class)
+            public int getProperty() {
+                return 0;
+            }
+
+            @DBAdaptType(adaptor=MyAdaptor.class, type=DBInteger.class)
+            public void setProperty(int value) {
+            }
+        }
+
+        JavaProperty property = propertyOf(TestClass.class, "property");
+        property.getAnnotation(DBAdaptType.class);
+    }
+
+    @Test(expected = DBPebkacException.class)
+    public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedDefaultedComplexAnnotationOnGetterAndSetter() {
+    	class MyAdaptor implements DBTypeAdaptor<Object, DBInteger> {
+			public Object fromDatabaseValue(DBInteger dbvValue) {
+				return null;
+			}
+			public DBInteger toDatabaseValue(Object objectValue) {
+				return null;
+			}
+    	}
+    	
+        class TestClass {
+            @DBAdaptType(adaptor=MyAdaptor.class)
+            public int getProperty() {
+                return 0;
+            }
+
+            @DBAdaptType(adaptor=MyAdaptor.class, type=DBInteger.class)
+            public void setProperty(int value) {
+            }
+        }
+
+        JavaProperty property = propertyOf(TestClass.class, "property");
+        property.getAnnotation(DBAdaptType.class);
+    }
+    
+    @Test
     public void retrievesAnnotationsGivenAnnotationsOnAlternatingGetterOrSetter() {
-        class MyClass {
+        class TestClass {
 
             @DBColumn("name")
             public int getProperty() {
@@ -287,11 +441,15 @@ public class JavaPropertyTest {
             }
         }
 
-        JavaProperty property = propertyOf(MyClass.class, "property");
+        JavaProperty property = propertyOf(TestClass.class, "property");
         assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
         assertThat(property.getAnnotation(DBPrimaryKey.class), is(not(nullValue())));
     }
 
+    private JavaProperty propertyOf(Object obj, String javaPropertyName) {
+    	return propertyOf(obj.getClass(), javaPropertyName);
+    }
+    
     private JavaProperty propertyOf(Class<?> clazz, String javaPropertyName) {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(clazz);
         JavaProperty property = itemOf(properties, that(hasJavaPropertyName(javaPropertyName)));
@@ -308,26 +466,33 @@ public class JavaPropertyTest {
         public String publicField;
         protected String protectedField;
         private String privateField;
+        
+        private String _publicProperty;
+        private String _protectedProperty;
+        private String _privateProperty;
 
         public String getPublicProperty() {
-            return "hello";
+            return _publicProperty;
         }
 
         public void setPublicProperty(String value) {
+        	this._publicProperty = value;
         }
 
         protected String getProtectedProperty() {
-            return "hello";
+            return _protectedProperty;
         }
 
         protected void setProtectedProperty(String value) {
+        	this._protectedProperty = value;
         }
 
         private String getPrivateProperty() {
-            return "hello";
+            return _privateProperty;
         }
 
         private void setPrivateProperty(String value) {
+        	this._privateProperty = value;
         }
     }
 
