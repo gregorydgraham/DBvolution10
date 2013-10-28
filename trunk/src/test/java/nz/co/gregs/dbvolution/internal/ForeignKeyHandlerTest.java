@@ -265,6 +265,58 @@ public class ForeignKeyHandlerTest {
 		
 		foreignKeyHandlerOf(TestCustomer.class, "fkAddress2");
 	}
+
+	@Test(expected=DBPebkacException.class)
+	public void errorsWhenColumnExplicitlySpecifiedGivenDuplicateReferencedColumnName() {
+		class TestAddress extends DBRow {
+			@DBColumn
+			public DBInteger addressUid;
+
+			@DBColumn("addressUid")
+			public DBInteger addressUid2;
+			
+			@DBColumn
+			public DBInteger intValue;
+		}
+		
+		class TestCustomer extends DBRow {
+			@DBPrimaryKey
+			@DBColumn
+			public DBInteger customerUid;
+			
+			@DBForeignKey(value=TestAddress.class, column="addressUid")
+			@DBColumn
+			public DBInteger fkAddress2;
+		}
+		
+		foreignKeyHandlerOf(TestCustomer.class, "fkAddress2");
+	}
+
+	@Test(expected=DBPebkacException.class)
+	public void errorsWhenColumnExplicitlySpecifiedGivenDuplicateButDifferingCaseReferencedColumnName() {
+		class TestAddress extends DBRow {
+			@DBColumn
+			public DBInteger addressUid;
+
+			@DBColumn("ADDRESSuid")
+			public DBInteger addressUid2;
+			
+			@DBColumn
+			public DBInteger intValue;
+		}
+		
+		class TestCustomer extends DBRow {
+			@DBPrimaryKey
+			@DBColumn
+			public DBInteger customerUid;
+			
+			@DBForeignKey(value=TestAddress.class, column="addressUid")
+			@DBColumn
+			public DBInteger fkAddress2;
+		}
+		
+		foreignKeyHandlerOf(TestCustomer.class, "fkAddress2");
+	}
 	
 	@Test(expected=DBPebkacException.class)
 	public void errorsGivenColumnUnspecifiedOnAnnotationAndNoPrimaryKey() {
