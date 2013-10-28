@@ -33,7 +33,7 @@ public class DBByteArray extends DBLargeObject {
 
     public static final long serialVersionUID = 1;
     byte[] bytes;
-    InputStream byteStream = null;//new BufferedInputStream(new ByteArrayInputStream(bytes));
+    InputStream byteStream = null;
 
     public DBByteArray(Object object) {
         super(object);
