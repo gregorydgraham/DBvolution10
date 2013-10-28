@@ -65,7 +65,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             this.operator = new DBEqualsOperator(this);
         }
     }
-
+    
     @Override
     public String toString() {
         return (literalValue == null ? "" : literalValue.toString());

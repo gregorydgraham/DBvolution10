@@ -28,14 +28,11 @@ import org.reflections.Reflections;
  */
 abstract public class DBRow implements Serializable {
 
-//    private transient DBDatabase database;
     private boolean isDefined = false;
-//    private HashMap<DBForeignKey, DBColumn> foreignKeys = null;
     private final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
     private final List<PropertyWrapperDefinition> returnColumns = new ArrayList<PropertyWrapperDefinition>();
     private final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
     private final List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
-//    private PropertyWrapper primaryKeyPropertyWrapper;
     private HashMap<String, QueryableDatatype> columnsAndQDTs;
     private Boolean hasBlobs;
     private final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
@@ -63,11 +60,7 @@ abstract public class DBRow implements Serializable {
             throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         }
     }
-
-    public <R extends DBRow> R copy(R row) {
-        //TODO
-        return row;
-    }
+    
 
     /**
      * 

@@ -28,7 +28,7 @@ abstract public class DBOperator implements Serializable{
 
     public DBOperator() {
     }
-
+    
     /**
      *
      * @param database
