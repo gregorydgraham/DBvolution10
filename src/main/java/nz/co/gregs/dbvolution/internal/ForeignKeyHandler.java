@@ -74,10 +74,7 @@ class ForeignKeyHandler {
 				List<PropertyWrapperDefinition> properties = referencedClassWrapper.getPropertyDefinitionIdentitiesByCaseInsensitiveColumnName(declaredReferencedColumnName);
 				if (properties.size() > 1) {
 					throw new DBPebkacException(adaptee.qualifiedName()+" references column "+declaredReferencedColumnName+
-							", however there appear to be "+properties.size()+" such properties in "+referencedClassWrapper.javaName()+
-							" with differing case." +
-							" Please ensure that columns referenced by foreign keys have case-insensitively unique names"+
-							", even when using databases with case-sensitive column names.");
+							", however there are "+properties.size()+" such properties in "+referencedClassWrapper.javaName()+".");
 				}
 				if (properties.isEmpty()) {
 					throw new DBPebkacException("Property "+adaptee.qualifiedName()+" references class "+referencedClassWrapper.javaName()
