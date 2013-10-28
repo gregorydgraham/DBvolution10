@@ -87,7 +87,7 @@ public class DBRowClassWrapper {
 
         properties = new ArrayList<PropertyWrapperDefinition>();
         for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(clazz)) {
-            PropertyWrapperDefinition property = new PropertyWrapperDefinition(javaProperty);
+            PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty);
             if (property.isColumn()) {
                 properties.add(property);
             }
@@ -269,6 +269,7 @@ public class DBRowClassWrapper {
      * @return
      */
     public PropertyWrapperDefinition getPropertyDefinitionByColumn(DBDatabase database, String columnName) {
+    	checkForRemainingErrorsOnAcccess(database);
         if (database.getDefinition().isColumnNamesCaseSensitive()) {
             return propertiesByUpperCaseColumnName.get(columnName.toUpperCase());
         } else {

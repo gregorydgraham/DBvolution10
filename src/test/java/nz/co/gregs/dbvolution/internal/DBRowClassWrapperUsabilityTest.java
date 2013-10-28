@@ -11,6 +11,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+@SuppressWarnings("unused")
 public class DBRowClassWrapperUsabilityTest {
 
     private MyExampleTableClass obj = new MyExampleTableClass();
@@ -22,7 +23,7 @@ public class DBRowClassWrapperUsabilityTest {
         database = new H2MemoryDB("dbvolutionTest", "", "", false);
     }
 
-    @Test
+	@Test
     public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
         QueryableDatatype qdt = new DBRowClassWrapper(MyExampleTableClass.class)
                 .instanceAdaptorFor(obj)

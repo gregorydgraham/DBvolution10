@@ -37,13 +37,15 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * <p> This class is <i>thread-safe</i>.
  */
 public class PropertyWrapperDefinition {
+	private final DBRowClassWrapper classWrapper;
 	private final JavaProperty adaptee;
 	
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
 	
-	public PropertyWrapperDefinition(JavaProperty javaProperty) {
+	public PropertyWrapperDefinition(DBRowClassWrapper classWrapper, JavaProperty javaProperty) {
+		this.classWrapper = classWrapper;
 		this.adaptee = javaProperty;
 		
 		// handlers
@@ -132,6 +134,16 @@ public class PropertyWrapperDefinition {
 	 */
 	public Class<? extends QueryableDatatype> type() {
 		return typeHandler.getType();
+	}
+	
+	/**
+	 * Gets the annotated table name of the table this
+	 * property belongs to.
+	 * Equivalent to {@code getDBRowClassWrapper().tableName()}.
+	 * @return
+	 */
+	public String tableName() {
+		return classWrapper.tableName();
 	}
 	
 	/**
@@ -383,30 +395,13 @@ public class PropertyWrapperDefinition {
 		return adaptee.type();
 	}
 	
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBColumn} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBColumn getDBColumnAnnotation() {
-//			return columnHandler.getDBColumnAnnotation();
-//		}
-
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBForeignKey} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBForeignKey getDBForeignKeyAnnotation() {
-//			return foreignKeyHandler.getDBForeignKeyAnnotation();
-//		}
-		
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBTypeAdaptor} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBAdaptType getDBTypeAdaptorAnnotation() {
-//			return typeHandler.getDBTypeAdaptorAnnotation();
-//		}
+    
+    /**
+     * Gets the wrapper for the DBRow class containing
+     * this property.
+     * @return
+     */
+    public DBRowClassWrapper getDBRowClassWrapper() {
+    	return classWrapper;
+    }
 }
