@@ -32,7 +32,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 public class DBByteArray extends DBLargeObject {
 
     public static final long serialVersionUID = 1;
-    byte[] bytes;
     InputStream byteStream = null;
 
     public DBByteArray(Object object) {
@@ -54,18 +53,16 @@ public class DBByteArray extends DBLargeObject {
 
     public void setValue(byte[] byteArray) {
         super.setValue(byteArray);
-        bytes = byteArray;
-        byteStream = new BufferedInputStream(new ByteArrayInputStream(bytes));
+        byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
     }
 
     public void setValue(InputStream inputViaStream) {
         super.setValue(inputViaStream);
-        bytes = null;
         byteStream = new BufferedInputStream(inputViaStream);
     }
 
     public void setValue(File fileToRead) throws IOException{
-        setValue(readFromFileSystem(fileToRead));
+        setValue(setFromFileSystem(fileToRead));
     }
 
     @Override
@@ -103,8 +100,7 @@ public class DBByteArray extends DBLargeObject {
                 } catch (IOException ex) {
                     Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-                bytes = new byte[totalBytesRead];
+                byte[] bytes = new byte[totalBytesRead];
                 int bytesAdded = 0;
                 for (byte[] someBytes : byteArrays) {
                     System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
@@ -120,19 +116,19 @@ public class DBByteArray extends DBLargeObject {
         throw new UnsupportedOperationException("Binary datatypes like " + this.getClass().getSimpleName() + " do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
     }
 
-    public byte[] readFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
+    public byte[] setFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
         File file = new File(originalFile);
-        return readFromFileSystem(file);
+        return setFromFileSystem(file);
     }
 
-    public byte[] readFromFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
+    public byte[] setFromFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
         File file = new File(originalFile.stringValue());
-        return readFromFileSystem(file);
+        return setFromFileSystem(file);
     }
 
-    public byte[] readFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
+    public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
         System.out.println("FILE: " + originalFile.getAbsolutePath());
-        bytes = new byte[(int) originalFile.length()];
+        byte[] bytes = new byte[(int) originalFile.length()];
         InputStream input = null;
         try {
             int totalBytesRead = 0;
@@ -155,6 +151,7 @@ public class DBByteArray extends DBLargeObject {
                 input.close();
             }
         }
+        setValue(bytes);
         return bytes;
     }
 
@@ -168,7 +165,7 @@ public class DBByteArray extends DBLargeObject {
     }
 
     public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
-        if (bytes != null && originalFile != null) {
+        if (literalValue != null && originalFile != null) {
             System.out.println("FILE: " + originalFile.getAbsolutePath());
             if (!originalFile.exists()) {
                 originalFile.createNewFile();
@@ -176,7 +173,7 @@ public class DBByteArray extends DBLargeObject {
             OutputStream output = null;
             try {
                 output = new BufferedOutputStream(new FileOutputStream(originalFile));
-                output.write(this.bytes);
+                output.write(getBytes());
                 output.flush();
                 output.close();
                 output = null;
@@ -191,17 +188,17 @@ public class DBByteArray extends DBLargeObject {
     @Override
     public InputStream getInputStream() {
         if (byteStream == null) {
-            this.setValue(bytes);
+            this.setValue(getBytes());
         }
         return byteStream;
     }
 
     public byte[] getBytes() {
-        return bytes;
+        return (byte[])this.literalValue;
     }
 
     @Override
     public int getSize() {
-        return bytes.length;
+        return getBytes().length;
     }
 }
