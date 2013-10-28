@@ -43,7 +43,7 @@ public class ByteArrayTest extends AbstractTest {
         companyLogo.logoID.setValue(1);
         companyLogo.carCompany.setValue(1);//Toyota
         companyLogo.imageFilename.setValue("toyota_logo.jpg");
-        companyLogo.imageBytes.readFromFileSystem("toyota_share_logo.jpg");
+        companyLogo.imageBytes.setFromFileSystem("toyota_share_logo.jpg");
         database.insert(companyLogo);
         
         CarCompany carCompany = new CarCompany();
@@ -53,7 +53,7 @@ public class ByteArrayTest extends AbstractTest {
         companyLogo.logoID.setValue(2);
         companyLogo.carCompany.setValue(ford.uidCarCompany.longValue());
         companyLogo.imageFilename.setValue("ford_logo.jpg");
-        companyLogo.imageBytes.readFromFileSystem("ford_logo.jpg");
+        companyLogo.imageBytes.setFromFileSystem("ford_logo.jpg");
         database.insert(companyLogo);
     }
 
@@ -65,7 +65,7 @@ public class ByteArrayTest extends AbstractTest {
         companyLogo.carCompany.setValue(1);//Toyota
         companyLogo.imageFilename.setValue("toyota_logo.jpg");
         File image = new File("toyota_share_logo.jpg");
-        companyLogo.imageBytes.readFromFileSystem(image);
+        companyLogo.imageBytes.setFromFileSystem(image);
         database.insert(companyLogo);
 
         File newFile = new File("found_toyota_logo.jpg");
