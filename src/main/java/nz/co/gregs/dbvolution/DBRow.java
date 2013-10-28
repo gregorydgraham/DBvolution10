@@ -665,24 +665,21 @@ abstract public class DBRow implements Serializable {
         List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
         String joinSeparator = "";
         for (PropertyWrapper fk : fks) {
-            Class<? extends DBRow> value = fk.referencedClass();
+            Class<? extends DBRow> referencedClass = fk.referencedClass();
+            PropertyWrapperDefinition referencedProp = fk.referencedPropertyDefinitionIdentity();
 
-            if (newTable.getClass().equals(value)) {
-
-                String fkColumnName = fk.columnName();
+            if (newTable.getClass().equals(referencedClass)) {
                 String formattedForeignKey = defn.formatTableAndColumnName(
-                        this.getTableName(),
-                        fkColumnName);
+                		fk.tableName(), fk.columnName());
 
-                String formattedPrimaryKey = defn.formatTableAndColumnName(
-                        newTable.getTableName(),
-                        newTable.getPrimaryKeyName());
-
+                String formattedReferencedColumn = defn.formatTableAndColumnName(
+                		referencedProp.tableName(), referencedProp.columnName());
+                
                 rels.append(lineSeparator)
                         .append(joinSeparator)
                         .append(formattedForeignKey)
                         .append(defn.getEqualsComparator())
-                        .append(formattedPrimaryKey);
+                        .append(formattedReferencedColumn);
 
                 joinSeparator = defn.beginAndLine();
             }
@@ -806,7 +803,6 @@ abstract public class DBRow implements Serializable {
 
     private DBRowInstanceWrapper getWrapper() {
         if (wrapper == null) {
-//            System.out.println(this.getClass().getSimpleName());
             wrapper = wrapperFactory.instanceWrapperFor(this);
         }
         return wrapper;

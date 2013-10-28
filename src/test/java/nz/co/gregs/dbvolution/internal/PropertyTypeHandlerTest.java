@@ -29,21 +29,21 @@ public class PropertyTypeHandlerTest {
 	public void errorsOnConstructionGivenTypeAdaptorWithWrongDBvType() {
 		List<JavaProperty> properties = finder.getPropertiesOf(MyTable.class);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName("fieldAdaptedToWrongDBvType")));
-		new PropertyTypeHandler(property);
+		new PropertyTypeHandler(property, false);
 	}
 
 	@Test(expected=DBPebkacException.class)
 	public void errorsOnConstructionGivenInterfaceTypeAdaptor() {
 		List<JavaProperty> properties = finder.getPropertiesOf(MyTable.class);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName("interfaceAdaptorField")));
-		new PropertyTypeHandler(property);
+		new PropertyTypeHandler(property, false);
 	}
 	
 	@Test
 	public void acceptsOnConstructionGivenTypeAdaptorWithCorrectDBvType() {
 		List<JavaProperty> properties = finder.getPropertiesOf(MyTable.class);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName("correctlyAdaptedField")));
-		new PropertyTypeHandler(property);
+		new PropertyTypeHandler(property, false);
 	}
 	
 	@Test
@@ -177,7 +177,7 @@ public class PropertyTypeHandlerTest {
 	}
 	
 	private PropertyTypeHandler propertyHandlerOf(Class<?> clazz, String javaPropertyName) {
-		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName));
+		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName), false);
 	}
 	
 	private JavaProperty propertyOf(Class<?> clazz, String javaPropertyName) {

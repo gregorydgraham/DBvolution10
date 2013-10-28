@@ -1,5 +1,7 @@
 package nz.co.gregs.dbvolution.internal;
 
+import java.util.List;
+
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -15,14 +17,24 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
  * <p> This class behaves correctly when no {@link DBForeignKey} annotation is present.
  * @author Malcolm Lett
  */
+// TODO if referenced property has differing case of column name,
+// need to throw exception during a deferred validation step once database case-ness is known.
 class ForeignKeyHandler {
+	private final boolean identityOnly;
 	private final Class<? extends DBRow> referencedClass;
-	private final String referencedTableName;
-	private final String referencedColumnName = null; // not yet supported
+	private final PropertyWrapperDefinition identityOnlyReferencedProperty; // stores identity info only
 	private final DBForeignKey foreignKeyAnnotation; // null if not present on property
 	
-	public ForeignKeyHandler(JavaProperty adaptee) {
-		this.foreignKeyAnnotation = adaptee.getAnnotation(DBForeignKey.class);
+	public ForeignKeyHandler(JavaProperty adaptee, boolean processIdentityOnly) {
+		if (processIdentityOnly) {
+			// skip processing of foreign keys
+			this.foreignKeyAnnotation = null;
+			this.identityOnly = true;
+		}
+		else {
+			this.foreignKeyAnnotation = adaptee.getAnnotation(DBForeignKey.class);
+			this.identityOnly = false;
+		}
 		
 		// pre-calculate referenced class
 		if (foreignKeyAnnotation != null) {
@@ -31,26 +43,71 @@ class ForeignKeyHandler {
 		else {
 			this.referencedClass = null;
 		}
+		
+		// pre-calculate declared referenced column
+		String declaredReferencedColumnName = null;
+		if (foreignKeyAnnotation != null) {
+			if (foreignKeyAnnotation.column() != null && foreignKeyAnnotation.column().trim().length() > 0) {
+				declaredReferencedColumnName = foreignKeyAnnotation.column();
+			}
+		}
 
-		// pre-calculate referenced table
-		// (from annotation on referenced class)
+		// pre-calculate referenced property
+		// (from annotations etc. on referenced class)
+		PropertyWrapperDefinition identifiedReferencedProperty = null;
 		if (referencedClass != null) {
-			TableHandler tableHandler = new TableHandler(referencedClass);
-			if (!tableHandler.isTable()) {
-				throw new DBPebkacException(adaptee.qualifiedName()+" is a foreign key to class "+referencedClass.getName()+
+			DBRowClassWrapper referencedClassWrapper = new DBRowClassWrapper(referencedClass, true);
+
+			// validate: referenced class is valid enough for the purposes of doing queries on this class
+			if (!referencedClassWrapper.isTable()) {
+				throw new DBPebkacException(adaptee.qualifiedName()+" is a foreign key to class "+referencedClassWrapper.javaName()+
 						", which is not a table");
 			}
-			if (tableHandler.getTableName() == null) {
+			if (referencedClassWrapper.tableName() == null) {
 				// not expected
-				throw new DBRuntimeException(adaptee.qualifiedName()+" is a foreign key to class "+referencedClass.getName()+
+				throw new DBRuntimeException(adaptee.qualifiedName()+" is a foreign key to class "+referencedClassWrapper.javaName()+
 						", which is a table but doesn't have a table name (this is probably a bug in DBvolution)");
 			}
 			
-			this.referencedTableName = tableHandler.getTableName();
+			// validate: explicitly declared column name exists on referenced table
+			if (declaredReferencedColumnName != null) {
+				List<PropertyWrapperDefinition> properties = referencedClassWrapper.getPropertyDefinitionIdentitiesByCaseInsensitiveColumnName(declaredReferencedColumnName);
+				if (properties.size() > 1) {
+					throw new DBPebkacException(adaptee.qualifiedName()+" references column "+declaredReferencedColumnName+
+							", however there appear to be "+properties.size()+" such properties in "+referencedClassWrapper.javaName()+
+							" with differing case." +
+							" Please ensure that columns referenced by foreign keys have case-insensitively unique names"+
+							", even when using databases with case-sensitive column names.");
+				}
+				if (properties.isEmpty()) {
+					throw new DBPebkacException("Property "+adaptee.qualifiedName()+" references class "+referencedClassWrapper.javaName()
+							+" and column "+declaredReferencedColumnName+", but the column doesn't exist");
+				}
+				
+				// get explicitly identified property
+				identifiedReferencedProperty = properties.get(0);
+			}
+			
+			// validate: referenced class has single primary key when implicitly referencing primary key column
+			if (declaredReferencedColumnName == null) {
+				PropertyWrapperDefinition primaryKey = referencedClassWrapper.primaryKeyDefinition();
+				if (primaryKey == null) {
+					throw new DBPebkacException("Property "+adaptee.qualifiedName()+" references class "+referencedClassWrapper.javaName()+
+							", which does not have a primary key. Please identify the primary key on that class or specify the column in the" +
+							" @"+DBForeignKey.class.getSimpleName()+" declaration.");
+				}
+//				else {
+//					// TODO once support multiple primary keys
+//					if (primaryKeyProperties.size() > 1) {
+//						throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassWrapper.javaName()
+//								+" using an implicit primary key reference, but the referenced class has "+primaryKeyProperties.size()
+//								+" primary key columns. You must include explicit foreign column names.");
+//					}
+//				}
+				identifiedReferencedProperty = primaryKey;
+			}
 		}
-		else {
-			this.referencedTableName = null;
-		}
+		this.identityOnlyReferencedProperty = identifiedReferencedProperty;
 	}
 
 	/**
@@ -59,43 +116,72 @@ class ForeignKeyHandler {
 	 * @return
 	 */
 	public boolean isForeignKey() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only foreign key handler");
+    	}
 		return referencedClass != null;
 	}
 	
 	/**
 	 * Gets the class referenced by this foreign key.
-	 * 
-	 * <p> If the {@link DBForeignKey} annotation is missing, this method returns {@code null}.
-	 * @return the referenced class or null if not a foreign key
+	 * @return the referenced class if this property is a foreign key;
+	 * null if not a foreign key
 	 */
 	public Class<? extends DBRow> getReferencedClass() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only foreign key handler");
+    	}
 		return referencedClass;
 	}
 	
 	/**
 	 * Gets the name of the referenced table.
-	 * 
-	 * <p> If the {@link DBForeignKey} annotation is missing, this method returns {@code null}.
-	 * @return the referenced table name, or null if not a foreign key
+	 * @return the referenced table name if this property is a foreign key;
+	 * null if not a foreign key
 	 */
 	public String getReferencedTableName() {
-		return referencedTableName;
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only foreign key handler");
+    	}
+		return (identityOnlyReferencedProperty == null) ? null : identityOnlyReferencedProperty.tableName();
 	}
 	
 	/**
-	 * Gets the name of the referenced column in the referenced table, if known.
-	 * The referenced column is only known if explicitly indicated, however in many cases
-	 * it is not explicitly indicated.
-	 * If the referenced column is not specified, the primary key of the referenced
-	 * table should be referenced.
+	 * Gets the name of the referenced column in the referenced table.
+	 * The referenced column is either explicitly indicated by use of the
+	 * {@link DBForeignKey#column()} attribute, or it is implicitly the
+	 * single primary key of the referenced table.
 	 * 
-	 * <p> Note: in the present implementation, the column name is never specified.
-	 * 
-	 * <p> If the {@link DBForeignKey} annotation is missing, this method returns {@code null}.
-	 * @return the referenced column name; or null, indicating that the referenced table's primary key should be referenced
+	 * @return the referenced column name if this property is a foreign key;
+	 * null if not a foreign key
 	 */
 	public String getReferencedColumnName() {
-		return referencedColumnName;
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only foreign key handler");
+    	}
+		return (identityOnlyReferencedProperty == null) ? null : identityOnlyReferencedProperty.columnName();
+	}
+	
+	/**
+	 * Gets identity information for the referenced property in the referenced table.
+	 * The referenced property is either explicitly indicated by use of the
+	 * {@link DBForeignKey#column()} attribute, or it is implicitly the
+	 * single primary key of the referenced table.
+	 * 
+	 * <p> Note that the property definition returned provides identity of
+	 * the property only. It provides access to the property's: java name, column name,
+	 * type, and identity information about the table it belongs to (ie: table name).
+	 * Attempts to get or set its value or get the type adaptor instance will
+	 * result in an internal exception.
+	 * 
+	 * @return the referenced property if this property is a foreign key;
+	 * null if not a foreign key
+	 */
+	public PropertyWrapperDefinition getReferencedPropertyDefinitionIdentity() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only foreign key handler");
+    	}
+		return identityOnlyReferencedProperty;
 	}
 	
 	/**
@@ -103,6 +189,9 @@ class ForeignKeyHandler {
 	 * @return the annotation or null if it is not present
 	 */
 	public DBForeignKey getDBForeignKeyAnnotation() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only foreign key handler");
+    	}
 		return foreignKeyAnnotation;
 	}
 }

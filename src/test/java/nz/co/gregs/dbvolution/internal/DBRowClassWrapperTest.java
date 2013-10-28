@@ -86,9 +86,7 @@ public class DBRowClassWrapperTest {
     @Test
     public void getsForeignKeyReferencedColumnName() {
         DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
-        assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedColumnName(
-                database, new DBRowWrapperFactory()),
-                is("uid_2"));
+        assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedColumnName(), is("uid_2"));
     }
 
     @SuppressWarnings("serial")

@@ -61,7 +61,17 @@ public interface JavaProperty {
 	
 	/**
 	 * Gets the property type.
-	 * @return the type
+	 * 
+	 * <p> On bean-properties, it is possible for the getter and setter to specify
+	 * different types. When the getter's type is a sub-type of the setter's type,
+	 * this can be safely resolved to the getter's type.
+	 * All other cases are invalid are result in an exception,
+	 * including when the setter's type is a sub-type of the getter's type.
+	 * In those other cases there is no one reference type that can be
+	 * used when calling both the getter and setter. 
+	 * @return the type if a single consistent type can be resolved
+	 * @throws DBPebkacException if the types are different and unable to
+	 * be resolved to a single type
 	 */
 	public Class<?> type();
 	
@@ -104,6 +114,23 @@ public interface JavaProperty {
 	public boolean isWritable();
 	
 	/**
+	 * Indicates whether the specified annotation is declared
+	 * on this java property.
+	 * 
+	 * <p> This method handles inheritance of annotations as per the standard 
+	 * java specification. Note that, where the inherited method specifies the same
+	 * annotation as the overriding method, it's likely that the java specification says
+	 * the overriding method's version of the annotation is the only one seen.
+	 * 
+	 * <p> On bean-properties, it is possible for the getter and setter to both specify
+	 * the same annotation. This method makes no attempt to validate them if present
+	 * more than once.
+	 * @param annotationClass
+	 * @return {@code true} if the annotation is present
+	 */
+	public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass);
+	
+	/**
 	 * Gets the specified annotation, if it exists.
 	 * 
 	 * <p> This method handles inheritance of annotations as per the standard 
@@ -132,7 +159,7 @@ public interface JavaProperty {
 		
 		@Override
 		public String toString() {
-			return "field "+name();
+			return "field "+type().getName()+" "+name();
 		}
 
 		/**
@@ -193,6 +220,16 @@ public interface JavaProperty {
 		}
 		
 		@Override
+		public boolean isReadable() {
+			return true;
+		}
+
+		@Override
+		public boolean isWritable() {
+			return true;
+		}
+		
+		@Override
 		public Object get(Object target) {
 			try {
 				return field.get(target);
@@ -231,13 +268,8 @@ public interface JavaProperty {
 		}
 
 		@Override
-		public boolean isReadable() {
-			return true;
-		}
-
-		@Override
-		public boolean isWritable() {
-			return true;
+		public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+			return field.isAnnotationPresent(annotationClass);
 		}
 
 		@Override
@@ -267,7 +299,7 @@ public interface JavaProperty {
 		 */
 		@Override
 		public String toString() {
-			return "property "+name();
+			return "property "+type().getName()+" "+name();
 		}
 		
 		/**
@@ -333,6 +365,54 @@ public interface JavaProperty {
 			return type;
 		}
 		
+//		private static Class<?> determineType(String name, Method getter, Method setter) {
+//			Class<?> getterType = null;
+//			Class<?> setterType = null;
+//			String qualifiedName;
+//			if (getter != null) {
+//				qualifiedName = getter.getDeclaringClass().getName()+"."+name;
+//			}
+//			else if (setter != null) {
+//				qualifiedName = setter.getDeclaringClass().getName()+"."+name;
+//			}
+//			else {
+//				qualifiedName = name;
+//			}
+//			
+//            if (getter != null) {
+//                Class<?>[] params = getter.getParameterTypes();
+//                if (params.length != 0) {
+//                    throw new DBPebkacException("Bad read method arg count on property "+qualifiedName);
+//                }
+//                getterType = getter.getReturnType();
+//                if (getterType == Void.TYPE) {
+//                    throw new DBPebkacException("Read method returns void on property "+qualifiedName);
+//                }
+//            }
+//            if (setter != null) {
+//                Class<?> params[] = setter.getParameterTypes();
+//                if (params.length != 1) {
+//                    throw new DBPebkacException("Bad write method arg count on property "+qualifiedName);
+//                }
+//                setterType = params[0];
+//            }
+//            
+//            if (getterType != null && setterType != null) {
+//            	if (setterType.isAssignableFrom(getterType)) {
+//            		return getterType;
+//            	}
+//            	else {
+//            		throw new DBPebkacException("Getter and setter have inconsistent types for property "+qualifiedName);
+//            	}
+//            }
+//            else if (getterType != null) {
+//            	return getterType;
+//            }
+//            else {
+//            	return setterType;
+//            }
+//		}
+		
 		@Override
 		public String qualifiedName() {
 			if (getter != null) {
@@ -344,6 +424,16 @@ public interface JavaProperty {
 			else {
 				return name;
 			}
+		}
+
+		@Override
+		public boolean isReadable() {
+			return getter != null;
+		}
+
+		@Override
+		public boolean isWritable() {
+			return setter != null;
 		}
 		
 		@Override
@@ -410,15 +500,11 @@ public interface JavaProperty {
 		}
 
 		@Override
-		public boolean isReadable() {
-			return getter != null;
+		public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+			return (getter != null && getter.isAnnotationPresent(annotationClass)) ||
+					(setter != null && setter.isAnnotationPresent(annotationClass));
 		}
-
-		@Override
-		public boolean isWritable() {
-			return setter != null;
-		}
-
+		
 		@Override
 		public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
 			A getterAnnotation = null;
