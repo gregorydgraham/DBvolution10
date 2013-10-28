@@ -242,7 +242,7 @@ public class DBTable<E extends DBRow> {
     }
 
     private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, PropertyWrapper field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
-        QueryableDatatype qdt = tableRow.getQueryableValueOfPropertWrapper(field);
+        QueryableDatatype qdt = field.getQueryableDatatype();
         int columnType = rsMeta.getColumnType(dbColumnIndex);
 //        int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {
