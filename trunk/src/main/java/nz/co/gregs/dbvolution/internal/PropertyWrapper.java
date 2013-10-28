@@ -138,6 +138,16 @@ public class PropertyWrapper {
 	}
 
 	/**
+	 * Convenience method for testing the type.
+	 * Equivalent to {@code refType.isAssignableFrom(this.type())}.
+	 * @param refType
+	 * @return
+	 */
+	public boolean isInstanceOf(Class<? extends QueryableDatatype> refType) {
+		return propertyDefinition.isInstanceOf(refType);
+	}
+	
+	/**
 	 * Gets the annotated table name of the table this
 	 * property belongs to.
 	 * Equivalent to calling {@code getDBRowInstanceWrapper().tableName()}.

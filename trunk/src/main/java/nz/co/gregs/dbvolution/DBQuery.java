@@ -1,6 +1,5 @@
 /*
- * Copyright Error: on line 4, column 29 in Templates/Licenses/license-apache20.txt
- Expecting a date here, found: 6/06/2013 gregorygraham.
+ * Copyright 2013 gregorygraham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +15,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.query.QueryGraph;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import java.io.PrintStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,10 +25,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.query.QueryGraph;
 
 /**
  *
@@ -49,8 +48,7 @@ public class DBQuery {
     private List<DBQueryRow> results;
     private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private Long rowLimit;
-    private DBRow[] sortBase;
-    private QueryableDatatype[] sortOrder;
+    private List<PropertyWrapper> sortOrder = null;
     private String resultSQL;
 //    private final int INNER_JOIN = 0;
 //    private final int LEFT_JOIN = 1;
@@ -555,10 +553,40 @@ public class DBQuery {
         results = null;
     }
 
+    /**
+     * Sets the sort order of properties (field and/or method)
+     * by the given property object references.
+     * 
+     * <p> For example the following code snippet will sort
+     * by just the name column:
+     * <pre>
+     * Customer customer = ...;
+     * query.setSortOrder(new DBRow[]{customer}, customer.name);
+     * </pre>
+     *
+     * <p> Requires that each {@code baseRowColumn) be from one of the
+     * {@code baseRow) instances to work.
+     * @param baseRows
+     * @param baseRowColumns
+     */
     public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {
-        sortBase = baseRows;
-        sortOrder = baseRowColumns;
         results = null;
+        
+        sortOrder = new ArrayList<PropertyWrapper>();
+        for (QueryableDatatype qdt: baseRowColumns) {
+        	PropertyWrapper prop = null;
+	        for (DBRow baseRow: baseRows) {
+	            prop = baseRow.getPropertyWrapperOf(qdt);
+	            if (prop != null) {
+	            	break;
+	            }
+	        }
+	        if (prop == null) {
+	        	throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
+	        }
+	        
+        	sortOrder.add(prop);
+        }
     }
 
     public void clearSortOrder() {
@@ -570,8 +598,9 @@ public class DBQuery {
         if (sortOrder != null) {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
-            for (QueryableDatatype qdt : sortOrder) {
-                final String dbColumnName = DBRow.getTableAndColumnName(this.database, sortBase, qdt);
+            for (PropertyWrapper prop : sortOrder) {
+            	QueryableDatatype qdt = prop.getQueryableDatatype();
+            	final String dbColumnName = defn.formatTableAndColumnName(prop.tableName(), prop.columnName());
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();
@@ -636,7 +665,6 @@ public class DBQuery {
         for (DBRow table : allQueryTables) {
             List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
             for (Class<? extends DBRow> relatedTable : allRelatedTables) {
-                @SuppressWarnings("unchecked")
                 DBRow newInstance = relatedTable.newInstance();
                 @SuppressWarnings("unchecked")
                 final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();

@@ -1,23 +1,30 @@
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.exceptions.*;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBSave;
-import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 
@@ -34,8 +41,7 @@ public class DBTable<E extends DBRow> {
     private DBDatabase database = null;
     private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
     private Long rowLimit;
-    private QueryableDatatype[] sortOrder = null;
-    private E sortBase;
+    private List<PropertyWrapper> sortOrder = null;
 
     /**
      *
@@ -102,7 +108,7 @@ public class DBTable<E extends DBRow> {
         String separator = "";
         for (PropertyWrapper prop : props) {
             // BLOBS are not inserted.so exclude them
-            if (prop.isColumn() && !(prop.getQueryableDatatype() instanceof DBLargeObject)) {
+            if (prop.isColumn() && !prop.isInstanceOf(DBLargeObject.class)) { 
                 allFields
                         .append(separator)
                         .append(" ")
@@ -651,10 +657,11 @@ public class DBTable<E extends DBRow> {
                 + defn.formatTableName(row.getTableName())
                 + defn.beginWhereClause()
                 + defn.getTrueOperation();
-        for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
+        for (PropertyWrapper prop: row.getPropertyWrappers()) {
+        	QueryableDatatype qdt = prop.getQueryableDatatype();
             sql = sql
                     + defn.beginAndLine()
-                    + row.getDBColumnName(qdt)
+                    + prop.columnName()
                     + defn.getEqualsComparator()
                     + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.toSQLString(database));
         }
@@ -684,15 +691,16 @@ public class DBTable<E extends DBRow> {
                 + row.getSetClause(database)
                 + defn.beginWhereClause()
                 + defn.getTrueOperation();
-        for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
+        for (PropertyWrapper prop: row.getPropertyWrappers()) {
+        	QueryableDatatype qdt = prop.getQueryableDatatype();
             if (qdt.isNull()) {
                 DBIsNullOperator isNullOp = new DBIsNullOperator();
                 sql = sql
-                        + isNullOp.generateWhereLine(database, row.getDBColumnName(qdt));
+                        + isNullOp.generateWhereLine(database, prop.columnName());
             } else {
                 sql = sql
                         + defn.beginAndLine()
-                        + row.getDBColumnName(qdt)
+                        + prop.columnName()
                         + defn.getEqualsComparator()
                         + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.toSQLString(database));
             }
@@ -854,9 +862,31 @@ public class DBTable<E extends DBRow> {
         rowLimit = null;
     }
 
+    /**
+     * Sets the sort order of properties (field and/or method)
+     * by the given property object references.
+     * 
+     * <p> For example the following code snippet will sort
+     * by just the name column:
+     * <pre>
+     * Customer customer = ...;
+     * customer.setSortOrder(customer, customer.name);
+     * </pre>
+     *
+     * <p> Requires that all {@code orderColumns) be from the {@code baseRow)
+     * instance to work.
+     * @param baseRow
+     * @param orderColumns
+     */
     public void setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
-        sortBase = baseRow;
-        sortOrder = orderColumns;
+        sortOrder = new ArrayList<PropertyWrapper>();
+        for (QueryableDatatype qdt: orderColumns) {
+            PropertyWrapper prop = baseRow.getPropertyWrapperOf(qdt);
+            if (prop == null) {
+                throw new IncorrectDBRowInstanceSuppliedException(baseRow, qdt);
+            }
+        	sortOrder.add(prop);
+        }
     }
 
     public void clearSortOrder() {
@@ -868,8 +898,9 @@ public class DBTable<E extends DBRow> {
         if (sortOrder != null) {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
-            for (QueryableDatatype qdt : sortOrder) {
-                final String dbColumnName = sortBase.getDBColumnName(qdt);
+            for (PropertyWrapper prop : sortOrder) {
+            	QueryableDatatype qdt = prop.getQueryableDatatype();
+                final String dbColumnName = prop.columnName();
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(defn.formatColumnName(dbColumnName)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();

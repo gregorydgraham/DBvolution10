@@ -73,7 +73,7 @@ public class ByteArrayTest extends AbstractTest {
         
         companyLogo = new CompanyLogo();
         CompanyLogo firstRow = database.getDBTable(companyLogo).getRowsByPrimaryKey(1).getOnlyRow();
-        System.out.println("" + firstRow.toString());
+        System.out.println("row = " + firstRow.toString());
         firstRow.imageBytes.writeToFileSystem(newFile.getName());
         newFile = new File(newFile.getName());
         Assert.assertThat(newFile.length(), is(image.length()));
