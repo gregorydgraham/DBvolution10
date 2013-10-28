@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
+import nz.co.gregs.dbvolution.DBRow;
+
 /**
  *
  * @author gregory.graham
@@ -26,5 +28,46 @@ public class IncorrectDBRowInstanceSuppliedException extends RuntimeException{
     public IncorrectDBRowInstanceSuppliedException() {
         super("The Field Supplied Is Not A Field Of This Instance: use only fields from this instance.");
     }
+
+    public IncorrectDBRowInstanceSuppliedException(DBRow row, Object qdt) {
+        super(constructMessage(row, qdt));
+    }
+
+    public static IncorrectDBRowInstanceSuppliedException newMultiRowInstance(Object qdt) {
+    	StringBuilder buf = new StringBuilder();
+    	buf.append("The ");
+    	if (qdt == null) {
+    		buf.append("null");
+    	}
+    	else {
+    		buf.append(qdt.getClass().getSimpleName());
+    	}
+    	buf.append(" Field Supplied Is Not A Field Of Any Of The DBRow ");
+    	buf.append(" Instances: use only fields from these instances.");
+        return new IncorrectDBRowInstanceSuppliedException(buf.toString());
+    }
     
+    public IncorrectDBRowInstanceSuppliedException(String message) {
+    	super(message);
+    }
+    
+    private static String constructMessage(DBRow row, Object qdt) {
+    	StringBuilder buf = new StringBuilder();
+    	buf.append("The ");
+    	if (qdt == null) {
+    		buf.append("null");
+    	}
+    	else {
+    		buf.append(qdt.getClass().getSimpleName());
+    	}
+    	buf.append(" Field Supplied Is Not A Field Of The ");
+    	if (row == null) {
+    		buf.append("null");
+    	}
+    	else {
+    		buf.append(row.getClass().getSimpleName());
+    	}
+    	buf.append(" Instance: use only fields from this instance.");
+        return buf.toString();
+    }
 }
