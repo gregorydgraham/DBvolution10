@@ -78,9 +78,11 @@ abstract public class DBRow implements Serializable {
     }
 
     public void clear() {
-        List<QueryableDatatype> qdts = getQueryableDatatypes();
-        for (QueryableDatatype qdt : qdts) {
-            qdt.clear();
+        for (PropertyWrapper prop : getPropertyWrappers()) {
+        	QueryableDatatype qdt = prop.getQueryableDatatype();
+        	if (qdt != null) {
+        		qdt.clear();
+        	}
         }
     }
 
@@ -170,80 +172,42 @@ abstract public class DBRow implements Serializable {
 //            return null;
     }
 
-    /**
-     * DO NOT USE THIS.
-     *
-     * @param <Q>
-     * @param property
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public <Q extends QueryableDatatype> Q getQueryableValueOfPropertWrapper(PropertyWrapper property) {
-        return (Q) property.getQueryableDatatype();
-//        if (property == null) {
-//            return null;
-//        }
-//        Q qdt;
-//        BeanInfo info = null;
-//        try {
-//            info = Introspector.getBeanInfo(this.getClass());
-//        } catch (IntrospectionException ex) {
-//            throw new RuntimeException("Unable Retrieve Bean Information: Bean Information Not Found For Class: " + this.getClass().getSimpleName(), ex);
-//        }
-//        PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
-//        for (PropertyDescriptor pd : descriptors) {
-//            if (pd.getName().equals(property.getName())) {
-//                Method readMethod = pd.getReadMethod();
-//                if (readMethod != null) {
-//                    try {
-//                        qdt = (Q) readMethod.invoke(this);
-//                        if (qdt == null) {
-//                            qdt = QueryableDatatype.getQueryableDatatypeInstance((Class<Q>) pd.getPropertyType());
-//                            Method setMethod = pd.getWriteMethod();
-//                            setMethod.invoke(this, qdt);
-//                        }
-//                    } catch (IllegalAccessException ex) {
-//                        throw new RuntimeException("GET Method Found But Unable To Access: Please change GET method to public for " + this.getClass().getSimpleName() + "." + property.getName(), ex);
-//                    } catch (IllegalArgumentException ex) {
-//                        throw new RuntimeException("GET Method Found But Somehow The Argument Was Illegal: Please ensure the read method of " + this.getClass().getSimpleName() + "." + property.getName() + "  has NO arguments.", ex.getCause());
-//                    } catch (InvocationTargetException ex) {
-//                        throw new RuntimeException("GET Method Found But Unable To Access: Please ensure the read method of " + this.getClass().getSimpleName() + "." + property.getName() + "  has NO arguments.", ex.getCause());
-//                    }
+//    /**
+//     * DO NOT USE THIS.
+//     *
+//     * @param <Q>
+//     * @param property
+//     * @return
+//     */
+//    @SuppressWarnings("unchecked")
+//    @Deprecated
+//    public <Q extends QueryableDatatype> Q getQueryableValueOfPropertWrapper(PropertyWrapper property) {
+//        return (Q) property.getQueryableDatatype();
+//    }
+
+//    @Deprecated
+//    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() {
+//        if (columnsAndQDTs == null) {
+//            columnsAndQDTs = new HashMap<String, QueryableDatatype>();
+//            String columnName;
+//            QueryableDatatype qdt;
+//
+//            List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+//            for (PropertyWrapper field : fields) {
+//                if (field.isColumn()) {
+//                    qdt = field.getQueryableDatatype();
+//                    columnName = field.columnName();
+//                    columnsAndQDTs.put(columnName, qdt);
 //                }
 //            }
 //        }
-//        try {
-//            // no GET method found so try direct method
-//            qdt = (Q) property.get(this);
-//            if (qdt == null) {
-//                qdt = QueryableDatatype.getQueryableDatatypeInstance((Class<Q>) property.getType());
-//                property.set(this, qdt);
-//            }
-//        } catch (IllegalAccessException ex) {
-//            throw new RuntimeException("Unable To Access Variable Nor GET Method: Please change protection to public for GET method or field " + this.getClass().getSimpleName() + "." + property.getName(), ex);
-//        }
-//        return qdt;
-    }
+//        return columnsAndQDTs;
+//    }
 
+    /**
+     * @deprecated use of this method is likely a bug
+     */
     @Deprecated
-    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() {
-        if (columnsAndQDTs == null) {
-            columnsAndQDTs = new HashMap<String, QueryableDatatype>();
-            String columnName;
-            QueryableDatatype qdt;
-
-            List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
-            for (PropertyWrapper field : fields) {
-                if (field.isColumn()) {
-                    qdt = field.getQueryableDatatype();
-                    columnName = field.columnName();
-                    columnsAndQDTs.put(columnName, qdt);
-                }
-            }
-        }
-        return columnsAndQDTs;
-    }
-
     public List<QueryableDatatype> getQueryableDatatypes() {
         List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
 
@@ -388,7 +352,7 @@ abstract public class DBRow implements Serializable {
         String separator = defn.getStartingSetSubClauseSeparator();
         for (PropertyWrapper field : fields) {
             if (field.isColumn()) {
-                final QueryableDatatype qdt = getQueryableValueOfPropertWrapper(field);
+                final QueryableDatatype qdt = field.getQueryableDatatype();
                 if (qdt.hasChanged()) {
                     String columnName = field.columnName();
                     sql.append(separator)
