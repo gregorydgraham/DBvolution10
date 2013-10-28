@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
 public class DBRowClassWrapper {
 
     private final Class<?> adaptee;
+	private final boolean identityOnly;
     private final TableHandler tableHandler;
     /**
      * The property that forms the primary key, null if none.
@@ -60,8 +61,11 @@ public class DBRowClassWrapper {
      */
     private final Map<String, PropertyWrapperDefinition> propertiesByUpperCaseColumnName;
     /**
-     * Lists of properties that have duplicated columns if-and-only-if using a
-     * case-insensitive database. We don't know in advance whether the database
+     * Lists of properties that would have duplicated columns if-and-only-if using a
+     * case-insensitive database. For each duplicate upper case column name,
+     * lists all properties that have that same upper case column name.
+     * 
+     * <p> We don't know in advance whether the database
      * in use is case-insensitive or not. So we give case-different duplicates
      * the benefit of doubt and just record until later. If this class is
      * accessed for use on a case-insensitive database the exception will be
@@ -73,24 +77,58 @@ public class DBRowClassWrapper {
      */
     private final Map<String, PropertyWrapperDefinition> propertiesByPropertyName;
 
+    /**
+     * Fully constructs a wrapper for the given class,
+     * including performing all validations that can be performed up front.
+     * @param clazz the {@code DBRow} class to wrap
+     * @throws DBPebkacException on any validation errors
+     */
     public DBRowClassWrapper(Class<?> clazz) {
-        this.adaptee = clazz;
+    	this(clazz, false);
+    }
+    
+    /**
+     * Internal constructor only.
+     * Pass {@code processIdentityOnly=true} when processing a referenced class.
+     * 
+     * <p> When processing identity only, only the primary key properties
+     * are identified.
+     * @param clazz
+     * @param processIdentityOnly pass {@code true} to only process the set of columns
+     * and primary keys, and to ensure that the primary key columns are valid, but
+     * to exclude all other validations on non-primary key columns and types etc.
+     */
+    DBRowClassWrapper(Class<?> clazz, boolean processIdentityOnly) {
+        adaptee = clazz;
+        identityOnly = processIdentityOnly;
 
         // annotation handlers
-        this.tableHandler = new TableHandler(clazz);
+        tableHandler = new TableHandler(clazz);
 
         // pre-calculate properties list
-        JavaPropertyFinder propertyFinder = new JavaPropertyFinder(
-                Visibility.PRIVATE, Visibility.PUBLIC,
-                JavaPropertyFilter.COLUMN_PROPERTY_FILTER,
-                PropertyType.FIELD, PropertyType.BEAN_PROPERTY);
-
+        // (note: skip if processing identity only, in order to avoid
+        //  all the per-property validation)
         properties = new ArrayList<PropertyWrapperDefinition>();
-        for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(clazz)) {
-            PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty);
-            if (property.isColumn()) {
-                properties.add(property);
-            }
+        if (processIdentityOnly) {
+        	// identity-only: extract only primary key properties
+            JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
+	        for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(clazz)) {
+	        	ColumnHandler column = new ColumnHandler(javaProperty);
+	        	if (column.isColumn() && column.isPrimaryKey()) {
+    	            PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty, processIdentityOnly);
+	                properties.add(property);
+	        	}
+	        }
+        }
+        else {
+        	// extract all column properties
+            JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
+	        for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(clazz)) {
+	            PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty, processIdentityOnly);
+	            if (property.isColumn()) {
+	                properties.add(property);
+	            }
+	        }
         }
 
         // pre-calculate primary key
@@ -118,7 +156,9 @@ public class DBRowClassWrapper {
             // add unique values for case-sensitive lookups
             // (error immediately on collisions)
             if (propertiesByCaseSensitiveColumnName.containsKey(property.columnName())) {
-                throw new DBPebkacException("Class " + clazz.getName() + " has multiple properties for column " + property.columnName());
+            	if (!processIdentityOnly) {
+            		throw new DBPebkacException("Class " + clazz.getName() + " has multiple properties for column " + property.columnName());
+            	}
             } else {
                 propertiesByCaseSensitiveColumnName.put(property.columnName(), property);
             }
@@ -126,17 +166,31 @@ public class DBRowClassWrapper {
             // add unique values for case-insensitive lookups
             // (defer erroring until actually know database is case insensitive)
             if (propertiesByUpperCaseColumnName.containsKey(property.columnName().toUpperCase())) {
-                List<PropertyWrapperDefinition> list = duplicatedPropertiesByUpperCaseColumnName.get(property.columnName().toUpperCase());
-                if (list == null) {
-                    list = new ArrayList<PropertyWrapperDefinition>();
-                    list.add(propertiesByUpperCaseColumnName.get(property.columnName().toUpperCase()));
-                }
-                list.add(property);
-                duplicatedPropertiesByUpperCaseColumnName.put(property.columnName().toUpperCase(), list);
+            	if (!processIdentityOnly) {
+	                List<PropertyWrapperDefinition> list = duplicatedPropertiesByUpperCaseColumnName.get(property.columnName().toUpperCase());
+	                if (list == null) {
+	                    list = new ArrayList<PropertyWrapperDefinition>();
+	                    list.add(propertiesByUpperCaseColumnName.get(property.columnName().toUpperCase()));
+	                }
+	                list.add(property);
+	                duplicatedPropertiesByUpperCaseColumnName.put(property.columnName().toUpperCase(), list);
+            	}
             } else {
                 propertiesByUpperCaseColumnName.put(property.columnName().toUpperCase(), property);
             }
         }
+    }
+    
+    /**
+     * Gets a new instance of the java property finder,
+     * configured as required
+     * @return
+     */
+    private static JavaPropertyFinder getJavaPropertyFinder() {
+        return new JavaPropertyFinder(
+                Visibility.PRIVATE, Visibility.PUBLIC,
+                JavaPropertyFilter.COLUMN_PROPERTY_FILTER,
+                PropertyType.FIELD, PropertyType.BEAN_PROPERTY);
     }
 
     /**
@@ -165,14 +219,14 @@ public class DBRowClassWrapper {
     }
 
     /**
-     * Gets an object adaptor instance for the given target object on the given
-     * active database definition.
-     *
-     * @param database active database
-     * @param target
+     * Gets an object wrapper instance for the given target object
+     * @param target the {@code DBRow} instance
      * @return
      */
-    public DBRowInstanceWrapper instanceAdaptorFor(Object target) {
+    public DBRowInstanceWrapper instanceWrapperFor(Object target) {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
+    	}
 //		checkForRemainingErrorsOnAcccess(database);
         return new DBRowInstanceWrapper(this, target);
     }
@@ -269,6 +323,10 @@ public class DBRowClassWrapper {
      * @return
      */
     public PropertyWrapperDefinition getPropertyDefinitionByColumn(DBDatabase database, String columnName) {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
+    	}
+    	
     	checkForRemainingErrorsOnAcccess(database);
         if (database.getDefinition().isColumnNamesCaseSensitive()) {
             return propertiesByUpperCaseColumnName.get(columnName.toUpperCase());
@@ -277,6 +335,41 @@ public class DBRowClassWrapper {
         }
     }
 
+    /**
+     * Like {@link #getPropertyDefinitionByColumn(DBDatabase, String)} except
+     * that handles the case where the database definition is not yet known,
+     * and thus returns all possible matching properties by column name.
+     *
+     * <p> Assumes working in "identity-only" mode. 
+     * @param columnName
+     * @return the non-null list of matching property definitions, with only identity
+     * information available, empty if no such properties found
+     */
+    List<PropertyWrapperDefinition> getPropertyDefinitionIdentitiesByCaseInsensitiveColumnName(String columnName) {
+    	List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
+        JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
+        for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(adaptee)) {
+        	ColumnHandler column = new ColumnHandler(javaProperty);
+        	if (column.isColumn() && column.getColumnName().equalsIgnoreCase(columnName)) {
+	            PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty, true);
+                list.add(property);
+        	}
+        }
+        return list;
+
+//    	List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
+//    	if (duplicatedPropertiesByUpperCaseColumnName.containsKey(columnName.toUpperCase())) {
+//    		list.addAll(duplicatedPropertiesByUpperCaseColumnName.get(columnName.toUpperCase()));
+//    	}
+//    	else {
+//    		PropertyWrapperDefinition property = propertiesByUpperCaseColumnName.get(columnName.toUpperCase());
+//    		if (property != null) {
+//    			list.add(property);
+//    		}
+//    	}
+//    	return list;
+    }
+    
     /**
      * Gets the property by its java property name.
      * <p> Only provides access to properties annotated with {@code DBColumn}.
@@ -289,6 +382,9 @@ public class DBRowClassWrapper {
      * @return
      */
     public PropertyWrapperDefinition getPropertyDefinitionByName(String propertyName) {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
+    	}
         return propertiesByPropertyName.get(propertyName);
     }
 
@@ -298,6 +394,9 @@ public class DBRowClassWrapper {
      * @return
      */
     public List<PropertyWrapperDefinition> getPropertyDefinitions() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
+    	}
         return properties;
     }
     
@@ -306,8 +405,11 @@ public class DBRowClassWrapper {
      * @return
      */
     public List<PropertyWrapperDefinition> getForeignKeyPropertyDefinitions() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
+    	}
+    	
         List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
-
         for (PropertyWrapperDefinition property: properties) {
             if (property.isColumn() && property.isForeignKey()) {
             	list.add(property);

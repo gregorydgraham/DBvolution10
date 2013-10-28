@@ -40,11 +40,12 @@ import nz.co.gregs.dbvolution.internal.InterfaceInfo.UnsupportedType;
 class PropertyTypeHandler {
 
 //    private static Log logger = LogFactory.getLog(PropertyTypeHandler.class);
-    private JavaProperty javaProperty;
-    private Class<? extends QueryableDatatype> dbvPropertyType;
-    private DBTypeAdaptor<Object, Object> typeAdaptor;
-    private QueryableDatatypeSyncer internalQdtSyncer;
-    private DBAdaptType annotation;
+    private final JavaProperty javaProperty;
+    private final Class<? extends QueryableDatatype> dbvPropertyType;
+    private final DBTypeAdaptor<Object, Object> typeAdaptor;
+    private final QueryableDatatypeSyncer internalQdtSyncer;
+    private final boolean identityOnly;
+    private final DBAdaptType annotation;
     private static Class<?>[] SUPPORTED_SIMPLE_TYPES = {
         String.class,
         boolean.class, int.class, long.class, float.class, double.class,
@@ -56,9 +57,10 @@ class PropertyTypeHandler {
      * @param javaProperty the annotated property
      */
     @SuppressWarnings("unchecked")
-    public PropertyTypeHandler(JavaProperty javaProperty) {
+    public PropertyTypeHandler(JavaProperty javaProperty, boolean processIdentityOnly) {
         this.javaProperty = javaProperty;
-        this.annotation = javaProperty.getAnnotation(DBAdaptType.class);
+    	this.identityOnly = processIdentityOnly;
+    	this.annotation = javaProperty.getAnnotation(DBAdaptType.class);
 
         Class<?> typeAdaptorInternalType = null; // DBv-internal
         Class<?> typeAdaptorExternalType = null;
@@ -142,7 +144,7 @@ class PropertyTypeHandler {
         if (typeAdaptorExternalType != null && !QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
             if (!typeAdaptorExternalType.isAssignableFrom(javaProperty.type())) {
                 throw new DBPebkacException(
-                        "Type adaptor " + annotation.adaptor().getName() + " is not compatible "
+                        "Type adaptor " + annotation.adaptor().getSimpleName() + " is not compatible "
                         + " with " + javaProperty.type().getName() + ", on " + javaProperty.qualifiedName());
             }
         }
@@ -193,19 +195,41 @@ class PropertyTypeHandler {
             }
         }
 
-        // populate when no annotation is present
+        // populate everything
         if (annotation == null) {
+        	// populate when no annotation
+        	this.typeAdaptor = null;
             this.dbvPropertyType = (Class<? extends QueryableDatatype>) javaProperty.type();
-        } // populate given annotation
-        else {
-            this.typeAdaptor = newTypeAdaptorInstanceGiven(javaProperty, annotation);
-            this.dbvPropertyType = explicitTypeOrNullOf(annotation);
-            if (this.dbvPropertyType == null && typeAdaptorInternalType != null) {
-                this.dbvPropertyType = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
+            this.internalQdtSyncer = null;
+        }
+        else if (identityOnly) {
+        	// populate identity-only information when type adaptor declared
+            Class<? extends QueryableDatatype> type;
+            type = explicitTypeOrNullOf(annotation);
+            if (type == null && typeAdaptorInternalType != null) {
+                type = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
             }
-            if (dbvPropertyType == null) {
+            if (type == null) {
                 throw new NullPointerException("null dbvPropertyType, this is an internal bug");
             }
+            this.dbvPropertyType = type;
+
+        	this.typeAdaptor = null;
+            this.internalQdtSyncer = null;
+        }
+        else {
+        	// initialise type adapting
+            this.typeAdaptor = newTypeAdaptorInstanceGiven(javaProperty, annotation);
+            
+            Class<? extends QueryableDatatype> type;
+            type = explicitTypeOrNullOf(annotation);
+            if (type == null && typeAdaptorInternalType != null) {
+                type = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
+            }
+            if (type == null) {
+                throw new NullPointerException("null dbvPropertyType, this is an internal bug");
+            }
+            this.dbvPropertyType = type;
 
             if (QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
                 this.internalQdtSyncer = new QueryableDatatypeSyncer(javaProperty.qualifiedName(),
@@ -272,6 +296,9 @@ class PropertyTypeHandler {
      * @return
      */
     public boolean isTypeAdapted() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only property type handler");
+    	}
         return (annotation != null);
     }
 
@@ -281,6 +308,9 @@ class PropertyTypeHandler {
      * @return
      */
     public DBAdaptType getDBTypeAdaptorAnnotation() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only property type handler");
+    	}
         return annotation;
     }
 
@@ -297,6 +327,10 @@ class PropertyTypeHandler {
      * readable
      */
     public QueryableDatatype getDBvValue(Object target) {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to read value from identity-only property");
+    	}
+    	
         // set via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
             Object externalValue = javaProperty.get(target);
@@ -336,6 +370,10 @@ class PropertyTypeHandler {
      * writable
      */
     public void setObjectValue(Object target, QueryableDatatype dbvValue) {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to write value to identity-only property");
+    	}
+    	
         // set via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
             SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;

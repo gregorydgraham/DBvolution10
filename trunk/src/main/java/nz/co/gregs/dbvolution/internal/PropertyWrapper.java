@@ -1,9 +1,8 @@
 package nz.co.gregs.dbvolution.internal;
 
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
 /**
@@ -198,7 +197,8 @@ public class PropertyWrapper {
 	/**
 	 * Gets the class referenced by this property, if this property
 	 * is a foreign key.
-	 * @return the referenced class or null if not applicable
+	 * @return the referenced class if this property is a foreign key;
+	 * null if not a foreign key
 	 */
 	public Class<? extends DBRow> referencedClass() {
 		return propertyDefinition.referencedClass();
@@ -207,53 +207,44 @@ public class PropertyWrapper {
 	/**
 	 * Gets the table referenced by this property, if this property
 	 * is a foreign key.
-	 * @return the referenced table name, or null if not applicable
+	 * @return the referenced table name if this property is a foreign key;
+	 * null if not a foreign key
 	 */
 	public String referencedTableName() {
 		return propertyDefinition.referencedTableName();
 	}
 	
 	/**
-	 * Gets the column name in the foreign table referenced by this property,
-	 * if this property is a foreign key.
-	 * Referenced column names may not be specified, in which case the foreign key
-	 * references the primary key in the foreign class/table.
+	 * Gets the column name in the foreign table referenced by this property.
+	 * The referenced column is either explicitly indicated by use of the
+	 * {@link DBForeignKey#column()} attribute, or it is implicitly the
+	 * single primary key of the referenced table if the {@link DBForeignKey#column()}
+	 * attribute is unset.
 	 * 
-	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
-	 * @return the referenced column name, or null if not specified or not applicable
+	 * @return the referenced column name if this property is a foreign key;
+	 * null if not a foreign key
 	 */
-	// TODO update javadoc for this method now that it's got more smarts
-	public String referencedColumnName(DBDatabase database, DBRowWrapperFactory cache) {
-		return propertyDefinition.referencedColumnName(database, cache);
+	public String referencedColumnName() {
+		return propertyDefinition.referencedColumnName();
 	}
 
 	/**
-	 * Note: this returns only a single property; in the case where multiple foreign key
-	 * columns are used together to reference a table with a composite primary key,
-	 * each foreign key column references its respective foreign primary key.
-	 * @param dbDefin the current active database definition
-	 * @param cache the active class adaptor cache
-	 * @return the mapped foreign key property, or null if not a foreign key
-	 * @throws DBPebkacException if the foreign table has multiple primary keys and the foreign key
-	 *         column doesn't identify which primary key column to target
-	 */
-	// An idea of what could be possible; to be decided whether we want to keep this
-	public PropertyWrapperDefinition referencedProperty(DBDatabase database, DBRowWrapperFactory cache) {
-		return propertyDefinition.referencedProperty(database, cache);
-	}
-	
-	/**
-	 * Gets the column name in the foreign table referenced by this property,
-	 * if this property is a foreign key.
-	 * Referenced column names may not be specified, in which case the foreign key
-	 * references the primary key in the foreign class/table.
+	 * Gets information for the referenced property in the referenced table.
+	 * The referenced property is either explicitly indicated by use of the
+	 * {@link DBForeignKey#column()} attribute, or it is implicitly the
+	 * single primary key of the referenced table.
 	 * 
-	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
-	 * @return the referenced column name, or null if not specified or not applicable
+	 * <p> Note that the property definition returned provides identity of
+	 * the property only. It provides access to the property's: java name, column name,
+	 * type, and identity information about the table it belongs to (ie: table name).
+	 * Attempts to get or set its value or get the type adaptor instance will
+	 * result in an internal exception.
+	 * 
+	 * @return the referenced property if this property is a foreign key;
+	 * null if not a foreign key
 	 */
-	// TODO improve javadoc
-	public String declaredReferencedColumnName() {
-		return propertyDefinition.declaredReferencedColumnName();
+	public PropertyWrapperDefinition referencedPropertyDefinitionIdentity() {
+		return propertyDefinition.referencedPropertyDefinitionIdentity();
 	}
 	
 	/**

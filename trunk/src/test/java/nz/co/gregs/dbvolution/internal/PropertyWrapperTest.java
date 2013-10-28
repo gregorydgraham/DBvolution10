@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 
 import org.junit.Test;
@@ -69,21 +68,9 @@ public class PropertyWrapperTest {
 		assertThat(intField1_obj1.equals(intField1_obj2), is(false));
 	}
 	
-	@Test
-	public void getsTableNameViaProperty() {
-		@DBTableName("Customer")
-		class MyClass extends DBRow {
-			@DBColumn
-			public DBInteger intField1 = new DBInteger();
-		}
-		
-		PropertyWrapper property = propertyOf(new MyClass(), "intField1");
-		assertThat(property.tableName(), is("Customer"));
-	}
-	
 	// note: intentionally doesn't use a wrapper factory for tests on equals() methods
 	private PropertyWrapper propertyOf(Object target, String javaPropertyName) {
 		DBRowClassWrapper classWrapper = new DBRowClassWrapper(target.getClass());
-		return classWrapper.instanceAdaptorFor(target).getPropertyByName(javaPropertyName);
+		return classWrapper.instanceWrapperFor(target).getPropertyByName(javaPropertyName);
 	}
 }

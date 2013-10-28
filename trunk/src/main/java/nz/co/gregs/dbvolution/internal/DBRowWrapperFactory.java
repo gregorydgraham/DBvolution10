@@ -56,6 +56,6 @@ public class DBRowWrapperFactory {
 	 * @return the object adaptor for the given object
 	 */
 	public DBRowInstanceWrapper instanceWrapperFor(Object object) {
-		return classWrapperFor(object.getClass()).instanceAdaptorFor(object);
+		return classWrapperFor(object.getClass()).instanceWrapperFor(object);
 	}
 }
