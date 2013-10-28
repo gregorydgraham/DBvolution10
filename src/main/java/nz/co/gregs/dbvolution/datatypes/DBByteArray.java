@@ -45,17 +45,8 @@ public class DBByteArray extends DBLargeObject {
 
     /**
      *
-     * @return @throws CloneNotSupportedException
+     * @return 
      */
-    @Override
-    public DBByteArray clone() throws CloneNotSupportedException {
-        try {
-            return (DBByteArray) super.clone();
-        } catch (CloneNotSupportedException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
     @Override
     public String getSQLDatatype() {
         return "BLOB";
@@ -72,7 +63,7 @@ public class DBByteArray extends DBLargeObject {
         bytes = null;
         byteStream = new BufferedInputStream(inputViaStream);
     }
-    
+
     public void setValue(File fileToRead) throws IOException{
         setValue(readFromFileSystem(fileToRead));
     }

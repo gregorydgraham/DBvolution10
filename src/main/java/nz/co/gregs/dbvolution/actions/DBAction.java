@@ -32,7 +32,7 @@ public  abstract class DBAction {
     
     public <R extends DBRow> DBAction(R row) {
         super();
-        this.row = row.copy(row);
+        this.row = row;
     }
     
     public <R extends DBRow> DBAction(R row, String sql) {
