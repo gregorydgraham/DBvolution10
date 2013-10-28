@@ -7,8 +7,6 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -69,7 +67,7 @@ public class DBInteger extends DBNumber {
         for (Integer num : inValues) {
             intOptions.add(new DBInteger(num));
         }
-        return useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(new DBInteger[]{}));
     }
 
     public DBOperator useInOperator(Long... inValues) {
@@ -77,7 +75,7 @@ public class DBInteger extends DBNumber {
         for (Long num : inValues) {
             intOptions.add(new DBInteger(num));
         }
-        return useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(new DBInteger[]{}));
     }
 
     public DBOperator useInOperator(DBInteger... inValues) {
