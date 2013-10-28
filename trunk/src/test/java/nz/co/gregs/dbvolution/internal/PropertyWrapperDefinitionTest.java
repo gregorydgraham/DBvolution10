@@ -21,8 +21,8 @@ public class PropertyWrapperDefinitionTest {
             public DBInteger intField2 = new DBInteger();
         }
 
-        PropertyWrapperDefinition intField1_obj1 = wrapperDefinitionOf(new MyClass(), "intField1");
-        PropertyWrapperDefinition intField1_obj2 = wrapperDefinitionOf(new MyClass(), "intField1");
+        PropertyWrapperDefinition intField1_obj1 = propertyDefinitionOf(new MyClass(), "intField1");
+        PropertyWrapperDefinition intField1_obj2 = propertyDefinitionOf(new MyClass(), "intField1");
         assertThat(intField1_obj1 == intField1_obj2, is(false));
 
         assertThat(intField1_obj1.equals(intField1_obj2), is(true));
@@ -46,17 +46,17 @@ public class PropertyWrapperDefinitionTest {
             public DBInteger intField2 = new DBInteger();
         }
 
-        PropertyWrapperDefinition intField1_obj1 = wrapperDefinitionOf(new MyClass1(), "intField1");
-        PropertyWrapperDefinition intField1_obj2 = wrapperDefinitionOf(new MyClass2(), "intField1");
+        PropertyWrapperDefinition intField1_obj1 = propertyDefinitionOf(new MyClass1(), "intField1");
+        PropertyWrapperDefinition intField1_obj2 = propertyDefinitionOf(new MyClass2(), "intField1");
         assertThat(intField1_obj1.equals(intField1_obj2), is(false));
     }
 
-    private PropertyWrapperDefinition wrapperDefinitionOf(Object target, String javaPropertyName) {
-        return wrapperDefinitionOf(target.getClass(), javaPropertyName);
+    private PropertyWrapperDefinition propertyDefinitionOf(Object target, String javaPropertyName) {
+        return propertyDefinitionOf(target.getClass(), javaPropertyName);
     }
 
     // note: intentionally doesn't use a wrapper factory for tests on equals() methods
-    private PropertyWrapperDefinition wrapperDefinitionOf(Class<?> clazz, String javaPropertyName) {
+    private PropertyWrapperDefinition propertyDefinitionOf(Class<?> clazz, String javaPropertyName) {
         DBRowClassWrapper classWrapper = new DBRowClassWrapper(clazz);
         return classWrapper.getPropertyDefinitionByName(javaPropertyName);
     }

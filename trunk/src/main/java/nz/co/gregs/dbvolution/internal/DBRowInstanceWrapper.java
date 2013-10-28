@@ -24,8 +24,6 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
  * @author Malcolm Lett
  */
 public class DBRowInstanceWrapper {
-//	private final DBDatabase database;
-
     private final DBRowClassWrapper classWrapper;
     private final Object target;
     private final List<PropertyWrapper> allProperties;
@@ -50,19 +48,18 @@ public class DBRowInstanceWrapper {
                     + " (this is probably a bug in DBvolution)");
         }
 
-//		this.database = database;
         this.target = target;
         this.classWrapper = classWrapper;
 
         // pre-cache commonly used things
         this.allProperties = new ArrayList<PropertyWrapper>();
         for (PropertyWrapperDefinition propertyDefinition : classWrapper.getPropertyDefinitions()) {
-            this.allProperties.add(new PropertyWrapper(propertyDefinition, target));
+            this.allProperties.add(new PropertyWrapper(this, propertyDefinition, target));
         }
 
         this.foreignKeyProperties = new ArrayList<PropertyWrapper>();
         for (PropertyWrapperDefinition propertyDefinition : classWrapper.getForeignKeyPropertyDefinitions()) {
-            this.foreignKeyProperties.add(new PropertyWrapper(propertyDefinition, target));
+            this.foreignKeyProperties.add(new PropertyWrapper(this, propertyDefinition, target));
         }
     }
 
@@ -152,7 +149,7 @@ public class DBRowInstanceWrapper {
      */
     public PropertyWrapper primaryKey() {
         if (classWrapper.primaryKeyDefinition() != null) {
-            return new PropertyWrapper(classWrapper.primaryKeyDefinition(), target);
+            return new PropertyWrapper(this, classWrapper.primaryKeyDefinition(), target);
         } else {
             return null;
         }
@@ -174,7 +171,7 @@ public class DBRowInstanceWrapper {
      */
     public PropertyWrapper getPropertyByColumn(DBDatabase database, String columnName) {
         PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByColumn(database, columnName);
-        return (classProperty == null) ? null : new PropertyWrapper(classProperty, target);
+        return (classProperty == null) ? null : new PropertyWrapper(this, classProperty, target);
     }
 
     /**
@@ -186,7 +183,7 @@ public class DBRowInstanceWrapper {
      */
     public PropertyWrapper getPropertyByName(String propertyName) {
         PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByName(propertyName);
-        return (classProperty == null) ? null : new PropertyWrapper(classProperty, target);
+        return (classProperty == null) ? null : new PropertyWrapper(this, classProperty, target);
     }
 
     /**

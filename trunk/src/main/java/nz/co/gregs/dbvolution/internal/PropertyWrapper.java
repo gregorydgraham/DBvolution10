@@ -31,17 +31,18 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * <p> This class is <i>thread-safe</i>.
  */
 public class PropertyWrapper {
+	private final DBRowInstanceWrapper dbRowInstanceWrapper;
 	private final PropertyWrapperDefinition propertyDefinition;
-//	private final DBDatabase database;
 	private final Object target;
 	
 	/**
 	 * @param classProperty the class-level wrapper
 	 * @param target the target object containing the given property
 	 */
-	public PropertyWrapper(PropertyWrapperDefinition classProperty, Object target) {
+	public PropertyWrapper(DBRowInstanceWrapper instanceWrapper,
+			PropertyWrapperDefinition classProperty, Object target) {
+		this.dbRowInstanceWrapper = instanceWrapper;
 		this.propertyDefinition = classProperty;
-//		this.database = database;
 		this.target = target;
 	}
 
@@ -134,6 +135,16 @@ public class PropertyWrapper {
 	 */
 	public Class<? extends QueryableDatatype> type() {
 		return propertyDefinition.type();
+	}
+
+	/**
+	 * Gets the annotated table name of the table this
+	 * property belongs to.
+	 * Equivalent to calling {@code getDBRowInstanceWrapper().tableName()}.
+	 * @return
+	 */
+	public String tableName() {
+		return propertyDefinition.tableName();
 	}
 	
 	/**
@@ -337,9 +348,19 @@ public class PropertyWrapper {
 	}
 
     /**
+     * Gets the definition of the property, independent of any DBRow instance.
      * @return the propertyDefinition
      */
     public PropertyWrapperDefinition getDefinition() {
         return propertyDefinition;
+    }
+    
+    /**
+     * Gets the wrapper for the DBRow instance containing
+     * this property.
+     * @return
+     */
+    public DBRowInstanceWrapper getDBRowInstanceWrapper() {
+    	return dbRowInstanceWrapper;
     }
 }

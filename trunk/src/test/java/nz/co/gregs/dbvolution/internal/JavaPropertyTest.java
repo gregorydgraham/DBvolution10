@@ -469,7 +469,6 @@ public class JavaPropertyTest {
         
         private String _publicProperty;
         private String _protectedProperty;
-        private String _privateProperty;
 
         public String getPublicProperty() {
             return _publicProperty;
@@ -485,14 +484,6 @@ public class JavaPropertyTest {
 
         protected void setProtectedProperty(String value) {
         	this._protectedProperty = value;
-        }
-
-        private String getPrivateProperty() {
-            return _privateProperty;
-        }
-
-        private void setPrivateProperty(String value) {
-        	this._privateProperty = value;
         }
     }
 
@@ -518,8 +509,8 @@ public class JavaPropertyTest {
         public Boolean bigBBooleanField;
     }
 
+    @SuppressWarnings("unused")
     public static class ThreePropertiesAndOtherStuffClass implements Serializable {
-
         private static final long serialVersionUID = 1L;
         public String property1;
 
@@ -529,7 +520,7 @@ public class JavaPropertyTest {
 
         public void setProperty2(String value) {
         }
-        private Long property3;
+		private Long property3;
 
         public String calculateName() {
             return ThreePropertiesAndOtherStuffClass.class.getSimpleName();

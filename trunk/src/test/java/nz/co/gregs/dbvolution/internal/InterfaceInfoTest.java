@@ -18,6 +18,7 @@ import nz.co.gregs.dbvolution.internal.InterfaceInfo.UnsupportedType;
 
 import org.junit.Test;
 
+@SuppressWarnings("unused")
 public class InterfaceInfoTest {
 	@Test
 	public void recognisesImplementationGivenStandardInputs() {
@@ -310,7 +311,6 @@ public class InterfaceInfoTest {
 		assertThat(info.getInterfaceParameterValueBounds(), is(nullValue()));
 	}
 
-	@SuppressWarnings("unused")
 	@Test
 	public void acceptsAnonymousImpl() {
             InterfaceInfo interfaceInfo = new InterfaceInfo(MyInterface.class, new MyInterface<Object,QueryableDatatype>(){
