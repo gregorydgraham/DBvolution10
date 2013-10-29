@@ -275,6 +275,9 @@ public class DBTable<E extends DBRow> {
             case Types.BLOB:
             case Types.OTHER:
                 qdt.setFromResultSet(resultSet, dbColumnName);
+                
+                // ensure field set when using type adaptors
+            	field.setQueryableDatatype(qdt);
                 break;
             default:
                 throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));

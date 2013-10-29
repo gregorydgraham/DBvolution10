@@ -296,9 +296,6 @@ class PropertyTypeHandler {
      * @return
      */
     public boolean isTypeAdapted() {
-    	if (identityOnly) {
-    		throw new AssertionError("Attempt to access non-identity information of identity-only property type handler");
-    	}
         return (annotation != null);
     }
 
@@ -331,7 +328,7 @@ class PropertyTypeHandler {
     		throw new AssertionError("Attempt to read value from identity-only property");
     	}
     	
-        // set via type adaptor and simple-type java property
+        // get via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
             Object externalValue = javaProperty.get(target);
 
@@ -340,7 +337,7 @@ class PropertyTypeHandler {
             SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
             syncer.setInternalFromExternalSimpleValue(externalValue);
             return internalQdtSyncer.getInternalQueryableDatatype();
-        } // set via type adaptor and QDT java property
+        } // get via type adaptor and QDT java property
         else if (typeAdaptor != null) {
             Object externalValue = javaProperty.get(target);
 
@@ -348,7 +345,7 @@ class PropertyTypeHandler {
             QueryableDatatype externalQdt = (QueryableDatatype) externalValue;
 
             // convert
-            internalQdtSyncer.setInternalFromExternalQDT(externalQdt);
+            internalQdtSyncer.setInternalQDTFromExternalQDT(externalQdt);
             return internalQdtSyncer.getInternalQueryableDatatype();
         } // get directly without type adaptor
         // (note: type checking was performed at creation time)
@@ -377,6 +374,7 @@ class PropertyTypeHandler {
         // set via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
             SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
+            internalQdtSyncer.setExternalFromInternalQDT(dbvValue);
 
             Object externalValue = syncer.getExternalSimpleValueFromInternal();
 
@@ -384,7 +382,7 @@ class PropertyTypeHandler {
             javaProperty.set(target, externalValue);
         } // set via type adaptor and QDT java property
         else if (typeAdaptor != null) {
-            internalQdtSyncer.setInternalFromExternalQDT(dbvValue);
+            internalQdtSyncer.setExternalFromInternalQDT(dbvValue);
             QueryableDatatype internalQdt = internalQdtSyncer.getInternalQueryableDatatype();
 
             javaProperty.set(target, internalQdt);

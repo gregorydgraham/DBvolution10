@@ -59,7 +59,7 @@ public class QueryableDatatypeSyncer {
 		try {
 			return typeAdaptor.toDatabaseValue(externalLiteralValue);
 		} catch (RuntimeException e) {
-			String msg = (e.getLocalizedMessage() == null) ? "" : e.getLocalizedMessage();
+			String msg = (e.getLocalizedMessage() == null) ? "" : ": "+e.getLocalizedMessage();
             throw new DBThrownByEndUserCodeException("Type adaptor threw " + e.getClass().getSimpleName()
                     + " when setting property " + propertyName + msg, e);
 		}
@@ -69,17 +69,17 @@ public class QueryableDatatypeSyncer {
 		try {
 			return typeAdaptor.fromDatabaseValue(internalLiteralValue);
 		} catch (RuntimeException e) {
-			String msg = (e.getLocalizedMessage() == null) ? "" : e.getLocalizedMessage();
+			String msg = (e.getLocalizedMessage() == null) ? "" : ": "+e.getLocalizedMessage();
 	        throw new DBThrownByEndUserCodeException("Type adaptor threw " + e.getClass().getSimpleName()
 	                + " when getting property " + propertyName + msg, e);
 		}
 	}
 	
-	public void setInternalFromExternalQDT(QueryableDatatype externalQdt) {
+	public void setInternalQDTFromExternalQDT(QueryableDatatype externalQdt) {
 		setTargetQDTFromSourceQDT(Direction.FROM_EXTERNAL, internalQdt, externalQdt);
 	}
 
-	public void setExternalQDTFromInternal(QueryableDatatype externalQdt) {
+	public void setExternalFromInternalQDT(QueryableDatatype externalQdt) {
 		setTargetQDTFromSourceQDT(Direction.FROM_INTERNAL, externalQdt, internalQdt);
 	}
 	

@@ -52,13 +52,24 @@ public class PropertyWrapperDefinition {
 		this.foreignKeyHandler = new ForeignKeyHandler(javaProperty, processIdentityOnly);
 	}
 	
+	JavaProperty getRawJavaProperty() {
+		return adaptee;
+	}
+	
 	/**
 	 * Gets a string representation of the wrapped property,
 	 * suitable for debugging and logging.
 	 */
 	@Override
 	public String toString() {
-		return adaptee.toString();
+		StringBuilder buf = new StringBuilder();
+		buf.append(adaptee);
+		if (isTypeAdapted()) {
+			buf.append(" (");
+			buf.append(getRawJavaType().getName());
+			buf.append(")");
+		}
+		return buf.toString();
 	}
 
 	/**
@@ -264,6 +275,17 @@ public class PropertyWrapperDefinition {
 	public boolean isWritable() {
 		return adaptee.isWritable();
 	}
+	
+    /**
+     * Indicates whether the property's type is adapted by an explicit or
+     * implicit type adaptor. (Note: at present there is no support for implicit
+     * type adaptors)
+     *
+     * @return {@code true} if a type adaptor is being used
+     */
+    public boolean isTypeAdapted() {
+        return typeHandler.isTypeAdapted();
+    }
 
 	/**
 	 * Gets the DBvolution-centric value of the property.
@@ -350,7 +372,6 @@ public class PropertyWrapperDefinition {
 		return adaptee.type();
 	}
 	
-    
     /**
      * Gets the wrapper for the DBRow class containing
      * this property.
