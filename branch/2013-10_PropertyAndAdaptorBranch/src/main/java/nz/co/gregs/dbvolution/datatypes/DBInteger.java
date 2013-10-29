@@ -7,8 +7,6 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -54,14 +52,14 @@ public class DBInteger extends DBNumber {
     @Override
     public DBOperator useEqualsOperator(Object someNumber) {
         if (someNumber == null || someNumber.toString().isEmpty()) {
-            super.useEqualsOperator((Object) null);
+            return super.useEqualsOperator((Object) null);
         } else if (someNumber instanceof Number) {
-            Number aNumber = (Number)someNumber;
-            super.useEqualsOperator(aNumber.longValue());
+            Number aNumber = (Number) someNumber;
+            return super.useEqualsOperator(aNumber.longValue());
         } else {
-            super.useEqualsOperator(Long.parseLong(someNumber.toString()));
+            return super.useEqualsOperator(Long.parseLong(someNumber.toString()));
         }
-        return getOperator();
+//        return getOperator();
     }
 
     public DBOperator useInOperator(Integer... inValues) {
@@ -69,7 +67,7 @@ public class DBInteger extends DBNumber {
         for (Integer num : inValues) {
             intOptions.add(new DBInteger(num));
         }
-        return useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(new DBInteger[]{}));
     }
 
     public DBOperator useInOperator(Long... inValues) {
@@ -77,7 +75,7 @@ public class DBInteger extends DBNumber {
         for (Long num : inValues) {
             intOptions.add(new DBInteger(num));
         }
-        return useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(new DBInteger[]{}));
     }
 
     public DBOperator useInOperator(DBInteger... inValues) {
@@ -94,12 +92,6 @@ public class DBInteger extends DBNumber {
     }
 
     @Override
-    public String getSQLValue(DBDatabase db) {
-        DBDefinition defn = db.getDefinition();
-        return defn.beginNumberValue() + numberValue.toString() + defn.endNumberValue();
-    }
-
-    @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
             this.useNullOperator();
@@ -107,6 +99,9 @@ public class DBInteger extends DBNumber {
             Long dbValue;
             try {
                 dbValue = resultSet.getLong(fullColumnName);
+                if (resultSet.wasNull()) {
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 dbValue = null;
             }

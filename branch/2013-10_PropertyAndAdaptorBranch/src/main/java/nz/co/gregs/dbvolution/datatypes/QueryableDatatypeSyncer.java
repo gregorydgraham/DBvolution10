@@ -59,8 +59,9 @@ public class QueryableDatatypeSyncer {
 		try {
 			return typeAdaptor.toDatabaseValue(externalLiteralValue);
 		} catch (RuntimeException e) {
+			String msg = (e.getLocalizedMessage() == null) ? "" : e.getLocalizedMessage();
             throw new DBThrownByEndUserCodeException("Type adaptor threw " + e.getClass().getSimpleName()
-                    + " when setting property " + propertyName + ": " + e.getMessage(), e);
+                    + " when setting property " + propertyName + msg, e);
 		}
 	}
 	
@@ -68,8 +69,9 @@ public class QueryableDatatypeSyncer {
 		try {
 			return typeAdaptor.fromDatabaseValue(internalLiteralValue);
 		} catch (RuntimeException e) {
+			String msg = (e.getLocalizedMessage() == null) ? "" : e.getLocalizedMessage();
 	        throw new DBThrownByEndUserCodeException("Type adaptor threw " + e.getClass().getSimpleName()
-	                + " when getting property " + propertyName + ": " + e.getMessage(), e);
+	                + " when getting property " + propertyName + msg, e);
 		}
 	}
 	

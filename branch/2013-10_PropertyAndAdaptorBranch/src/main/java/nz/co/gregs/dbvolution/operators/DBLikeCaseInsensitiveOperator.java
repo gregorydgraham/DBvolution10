@@ -43,7 +43,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
 //        likeableValue.setDatabase(db);
         if (db == null) {
             throw new RuntimeException("Database Cannot Be NULL: Please supply a proper DBDatabase instance.");
-        } else if (likeableValue.getSQLValue(db) == null) {
+        } else if (likeableValue.toSQLString(db) == null) {
             throw new RuntimeException("Actual Comparison Is Required: please supply an actual object to compare against");
         } else if (columnName == null) {
             throw new RuntimeException("MalFormed DBRow: please supply a column name using the DBColumn annotation");
@@ -53,7 +53,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
             throw new RuntimeException("Get Operator Returns NULL: the getOperator() method returned null when it should return a String of the database's operator.");
         } else {
             DBDefinition defn = db.getDefinition();
-            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(likeableValue.getSQLValue(db)) + ")";
+            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(likeableValue.toSQLString(db)) + ")";
         }
     }
 

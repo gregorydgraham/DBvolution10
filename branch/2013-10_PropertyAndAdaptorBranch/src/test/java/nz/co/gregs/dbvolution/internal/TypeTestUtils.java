@@ -170,6 +170,7 @@ public class TypeTestUtils {
 		return descriptionOf(type, null);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static String descriptionOf(Type type, GenericDeclaration context) {
 		StringBuilder buf = new StringBuilder();
 		

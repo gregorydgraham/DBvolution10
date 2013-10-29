@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
@@ -130,17 +129,17 @@ public class DBDate extends QueryableDatatype {
         return dateValue().toString();
     }
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        DBDefinition defn = db.getDefinition();
-        if (this.isDBNull || dateValue() == null) {
-            return defn.getNull();
-        }
-        return defn.getDateFormattedForQuery(dateValue());
-    }
+//    @Override
+//    public String toSQLString(DBDatabase db) {
+//        DBDefinition defn = db.getDefinition();
+//        if (this.isDBNull || dateValue() == null) {
+//            return defn.getNull();
+//        }
+//        return formatValueForSQLStatement(db);
+//    }
 
     @Override
-    public String getSQLValue(DBDatabase db) {
+    public String formatValueForSQLStatement(DBDatabase db) {
         return db.getDefinition().getDateFormattedForQuery(dateValue());
     }
 
@@ -152,6 +151,9 @@ public class DBDate extends QueryableDatatype {
             java.sql.Date dbValue;
             try {
                 dbValue = resultSet.getDate(fullColumnName);
+                if (resultSet.wasNull()){
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 dbValue = null;
             }

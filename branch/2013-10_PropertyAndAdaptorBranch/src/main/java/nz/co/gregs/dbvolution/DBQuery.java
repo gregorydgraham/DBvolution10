@@ -1,6 +1,5 @@
 /*
- * Copyright Error: on line 4, column 29 in Templates/Licenses/license-apache20.txt
- Expecting a date here, found: 6/06/2013 gregorygraham.
+ * Copyright 2013 gregorygraham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +15,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.query.QueryGraph;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import java.io.PrintStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,10 +25,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.query.QueryGraph;
 
 /**
  *
@@ -49,8 +48,7 @@ public class DBQuery {
     private List<DBQueryRow> results;
     private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private Long rowLimit;
-    private DBRow[] sortBase;
-    private QueryableDatatype[] sortOrder;
+    private List<PropertyWrapper> sortOrder = null;
     private String resultSQL;
 //    private final int INNER_JOIN = 0;
 //    private final int LEFT_JOIN = 1;
@@ -86,15 +84,15 @@ public class DBQuery {
     /**
      *
      * Add a table to the query.
-     * 
+     *
      * This method adds the DBRow to the list of required (INNER) tables.
-     * 
-     * Criteria (permitted and excluded values) from this instance will be 
-     * automatically included in the query and an instance of this DBRow class 
+     *
+     * Criteria (permitted and excluded values) from this instance will be
+     * automatically included in the query and an instance of this DBRow class
      * will be created for each DBQueryRow returned.
      *
-     * @param table: an extension of DBRow that defines a required table 
-     * and criteria
+     * @param table: an extension of DBRow that defines a required table and
+     * criteria
      */
     public DBQuery add(DBRow... tables) {
         for (DBRow table : tables) {
@@ -108,17 +106,17 @@ public class DBQuery {
 
     /**
      * Add an optional table to this query
-     * 
-     * This method adds an optional (OUTER) table to the query.
-     * The query will return an instance of this DBRow for each row found, though
-     * it may be a null instance as there was no matching row in the database.
-     * 
-     * Criteria (permitted and excluded values) specified in the supplied 
+     *
+     * This method adds an optional (OUTER) table to the query. The query will
+     * return an instance of this DBRow for each row found, though it may be a
+     * null instance as there was no matching row in the database.
+     *
+     * Criteria (permitted and excluded values) specified in the supplied
      * instance will be added to the query.
      *
      * @param table
-     * 
-     * @return this DBQuery instance 
+     *
+     * @return this DBQuery instance
      */
     public DBQuery addOptional(DBRow... tables) {
         for (DBRow table : tables) {
@@ -133,7 +131,7 @@ public class DBQuery {
     /**
      *
      * Remove optional or required tables from the query
-     * 
+     *
      * @param table
      */
     public DBQuery remove(DBRow... tables) {
@@ -159,7 +157,6 @@ public class DBQuery {
 //        resultSQL = null;
 //        return this;
 //    }
-
     public String getSQLForQuery() throws SQLException {
         return getSQLForQuery(null);
     }
@@ -293,7 +290,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
-        if (!cartesianJoinAllowed && queryGraph.hasDisconnectedSubgraph()) {
+        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
             throw new AccidentalCartesianJoinException();
         }
         final String sqlString = selectClause.append(lineSep)
@@ -345,10 +342,10 @@ public class DBQuery {
                 if (primaryKey != null) {
                     final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
                     if (qdt != null) {
-                        existingInstance = existingInstancesOfThisTableRow.get(qdt.getSQLValue(this.database));
+                        existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
                         if (existingInstance == null) {
                             existingInstance = newInstance;
-                            existingInstancesOfThisTableRow.put(qdt.getSQLValue(this.database), existingInstance);
+                            existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
                         }
                     }
                 }
@@ -379,7 +376,7 @@ public class DBQuery {
 
     /**
      *
-     * @param <R>: A Java Object that extends DBRow
+     * @param <>>: A Java Object that extends DBRow
      * @param exemplar: The DBRow class that you would like returned.
      * @param expected: The expected number of rows, an exception will be thrown
      * if this expectation is not met.
@@ -502,8 +499,11 @@ public class DBQuery {
             for (DBRow tab : this.allQueryTables) {
                 DBRow rowPart = row.get(tab);
                 if (rowPart != null) {
-                    String rowPartStr = rowPart.getPrimaryKey().getSQLValue(this.database);
-                    ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
+                    final QueryableDatatype primaryKey = rowPart.getPrimaryKey();
+                    if (primaryKey != null) {
+                        String rowPartStr = primaryKey.toSQLString(this.database);
+                        ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
+                    }
                 }
             }
 
@@ -553,10 +553,40 @@ public class DBQuery {
         results = null;
     }
 
+    /**
+     * Sets the sort order of properties (field and/or method)
+     * by the given property object references.
+     * 
+     * <p> For example the following code snippet will sort
+     * by just the name column:
+     * <pre>
+     * Customer customer = ...;
+     * query.setSortOrder(new DBRow[]{customer}, customer.name);
+     * </pre>
+     *
+     * <p> Requires that each {@code baseRowColumn) be from one of the
+     * {@code baseRow) instances to work.
+     * @param baseRows
+     * @param baseRowColumns
+     */
     public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {
-        sortBase = baseRows;
-        sortOrder = baseRowColumns;
         results = null;
+        
+        sortOrder = new ArrayList<PropertyWrapper>();
+        for (QueryableDatatype qdt: baseRowColumns) {
+        	PropertyWrapper prop = null;
+	        for (DBRow baseRow: baseRows) {
+	            prop = baseRow.getPropertyWrapperOf(qdt);
+	            if (prop != null) {
+	            	break;
+	            }
+	        }
+	        if (prop == null) {
+	        	throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
+	        }
+	        
+        	sortOrder.add(prop);
+        }
     }
 
     public void clearSortOrder() {
@@ -568,8 +598,9 @@ public class DBQuery {
         if (sortOrder != null) {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
-            for (QueryableDatatype qdt : sortOrder) {
-                final String dbColumnName = DBRow.getTableAndColumnName(this.database, sortBase, qdt);
+            for (PropertyWrapper prop : sortOrder) {
+            	QueryableDatatype qdt = prop.getQueryableDatatype();
+            	final String dbColumnName = defn.formatTableAndColumnName(prop.tableName(), prop.columnName());
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();
@@ -624,11 +655,23 @@ public class DBQuery {
     }
 
     public void addAllRelatedTablesAsOptional() throws InstantiationException, IllegalAccessException {
-        List<DBRow> tablesToAdd = new ArrayList<DBRow>();
+        Set<DBRow> tablesToAdd = new HashSet<DBRow>();
+        List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
+        for (DBRow table : allQueryTables) {
+            @SuppressWarnings("unchecked")
+            Class<DBRow> aClass = (Class<DBRow>) table.getClass();
+            alreadyAddedClasses.add(aClass);
+        }
         for (DBRow table : allQueryTables) {
             List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
             for (Class<? extends DBRow> relatedTable : allRelatedTables) {
-                tablesToAdd.add(relatedTable.newInstance());
+                DBRow newInstance = relatedTable.newInstance();
+                @SuppressWarnings("unchecked")
+                final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
+                if (!alreadyAddedClasses.contains(newInstanceClass)) {
+                    tablesToAdd.add(newInstance);
+                    alreadyAddedClasses.add(newInstanceClass);
+                }
             }
         }
         addOptional(tablesToAdd.toArray(new DBRow[]{}));

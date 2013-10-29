@@ -3,7 +3,6 @@ package nz.co.gregs.dbvolution;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import java.util.Set;
 
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBSaveBLOB;
-import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -30,17 +28,14 @@ import org.reflections.Reflections;
  */
 abstract public class DBRow implements Serializable {
 
-//    private transient DBDatabase database;
     private boolean isDefined = false;
-//    private HashMap<DBForeignKey, DBColumn> foreignKeys = null;
     private final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
     private final List<PropertyWrapperDefinition> returnColumns = new ArrayList<PropertyWrapperDefinition>();
     private final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
     private final List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
-//    private PropertyWrapper primaryKeyPropertyWrapper;
     private HashMap<String, QueryableDatatype> columnsAndQDTs;
     private Boolean hasBlobs;
-    private final List<DBLargeObject> blobColumns = new ArrayList<DBLargeObject>();
+    private final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
     static DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
     transient DBRowInstanceWrapper wrapper = null;
     private ArrayList<Class<? extends DBRow>> referencedTables;
@@ -65,15 +60,22 @@ abstract public class DBRow implements Serializable {
             throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         }
     }
+    
 
+    /**
+     * 
+     * @return non-null list of property wrappers, empty if none
+     */
     protected List<PropertyWrapper> getPropertyWrappers() {
         return getWrapper().getPropertyWrappers();
     }
 
     public void clear() {
-        List<QueryableDatatype> qdts = getQueryableDatatypes();
-        for (QueryableDatatype qdt : qdts) {
-            qdt.clear();
+        for (PropertyWrapper prop : getPropertyWrappers()) {
+        	QueryableDatatype qdt = prop.getQueryableDatatype();
+        	if (qdt != null) {
+        		qdt.clear();
+        	}
         }
     }
 
@@ -105,6 +107,16 @@ abstract public class DBRow implements Serializable {
      */
     public boolean getDefined() {
         return isDefined;
+    }
+
+    public boolean hasChanged() {
+        List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
+        for (PropertyWrapper prop : propertyWrappers) {
+            if (prop.getQueryableDatatype().hasChanged()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Deprecated
@@ -153,83 +165,44 @@ abstract public class DBRow implements Serializable {
 //            return null;
     }
 
-    /**
-     * DO NOT USE THIS.
-     *
-     * @param <Q>
-     * @param property
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public <Q extends QueryableDatatype> Q getQueryableValueOfPropertWrapper(PropertyWrapper property) {
-        return (Q) property.getQueryableDatatype();
-//        if (property == null) {
-//            return null;
-//        }
-//        Q qdt;
-//        BeanInfo info = null;
-//        try {
-//            info = Introspector.getBeanInfo(this.getClass());
-//        } catch (IntrospectionException ex) {
-//            throw new RuntimeException("Unable Retrieve Bean Information: Bean Information Not Found For Class: " + this.getClass().getSimpleName(), ex);
-//        }
-//        PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
-//        for (PropertyDescriptor pd : descriptors) {
-//            if (pd.getName().equals(property.getName())) {
-//                Method readMethod = pd.getReadMethod();
-//                if (readMethod != null) {
-//                    try {
-//                        qdt = (Q) readMethod.invoke(this);
-//                        if (qdt == null) {
-//                            qdt = QueryableDatatype.getQueryableDatatypeInstance((Class<Q>) pd.getPropertyType());
-//                            Method setMethod = pd.getWriteMethod();
-//                            setMethod.invoke(this, qdt);
-//                        }
-//                    } catch (IllegalAccessException ex) {
-//                        throw new RuntimeException("GET Method Found But Unable To Access: Please change GET method to public for " + this.getClass().getSimpleName() + "." + property.getName(), ex);
-//                    } catch (IllegalArgumentException ex) {
-//                        throw new RuntimeException("GET Method Found But Somehow The Argument Was Illegal: Please ensure the read method of " + this.getClass().getSimpleName() + "." + property.getName() + "  has NO arguments.", ex.getCause());
-//                    } catch (InvocationTargetException ex) {
-//                        throw new RuntimeException("GET Method Found But Unable To Access: Please ensure the read method of " + this.getClass().getSimpleName() + "." + property.getName() + "  has NO arguments.", ex.getCause());
-//                    }
+//    /**
+//     * DO NOT USE THIS.
+//     *
+//     * @param <Q>
+//     * @param property
+//     * @return
+//     */
+//    @SuppressWarnings("unchecked")
+//    @Deprecated
+//    public <Q extends QueryableDatatype> Q getQueryableValueOfPropertWrapper(PropertyWrapper property) {
+//        return (Q) property.getQueryableDatatype();
+//    }
+
+//    @Deprecated
+//    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() {
+//        if (columnsAndQDTs == null) {
+//            columnsAndQDTs = new HashMap<String, QueryableDatatype>();
+//            String columnName;
+//            QueryableDatatype qdt;
+//
+//            List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+//            for (PropertyWrapper field : fields) {
+//                if (field.isColumn()) {
+//                    qdt = field.getQueryableDatatype();
+//                    columnName = field.columnName();
+//                    columnsAndQDTs.put(columnName, qdt);
 //                }
 //            }
 //        }
-//        try {
-//            // no GET method found so try direct method
-//            qdt = (Q) property.get(this);
-//            if (qdt == null) {
-//                qdt = QueryableDatatype.getQueryableDatatypeInstance((Class<Q>) property.getType());
-//                property.set(this, qdt);
-//            }
-//        } catch (IllegalAccessException ex) {
-//            throw new RuntimeException("Unable To Access Variable Nor GET Method: Please change protection to public for GET method or field " + this.getClass().getSimpleName() + "." + property.getName(), ex);
-//        }
-//        return qdt;
-    }
+//        return columnsAndQDTs;
+//    }
 
+    /**
+     * @deprecated use of this method is likely a bug
+     */
     @Deprecated
-    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() {
-        if (columnsAndQDTs == null) {
-            columnsAndQDTs = new HashMap<String, QueryableDatatype>();
-            String columnName;
-            QueryableDatatype qdt;
-
-            List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
-            for (PropertyWrapper field : fields) {
-                if (field.isColumn()) {
-                    qdt = field.getQueryableDatatype();
-                    columnName = field.columnName();
-                    columnsAndQDTs.put(columnName, qdt);
-                }
-            }
-        }
-        return columnsAndQDTs;
-    }
-
     public List<QueryableDatatype> getQueryableDatatypes() {
         List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
-
 
         List<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
         for (PropertyWrapper prop : propertyWrappers) {
@@ -286,14 +259,7 @@ abstract public class DBRow implements Serializable {
      *
      */
     public String getTableName() {
-        @SuppressWarnings("unchecked")
-        Class<? extends DBRow> thisClass = (Class<? extends DBRow>) this.getClass();
-        if (thisClass.isAnnotationPresent(DBTableName.class)) {
-            DBTableName annotation = thisClass.getAnnotation(DBTableName.class);
-            return annotation.value();
-        } else {
-            return thisClass.getSimpleName();
-        }
+    	return getWrapper().tableName();
     }
 
     @Override
@@ -351,7 +317,7 @@ abstract public class DBRow implements Serializable {
 //            }
 //        }
 //    }
-    protected String getValuesClause(DBDatabase db) {
+    public String getValuesClause(DBDatabase db) {
 //        this.setDatabase(db);
         StringBuilder string = new StringBuilder();
         Class<? extends DBRow> thisClass = this.getClass();
@@ -379,14 +345,14 @@ abstract public class DBRow implements Serializable {
         String separator = defn.getStartingSetSubClauseSeparator();
         for (PropertyWrapper field : fields) {
             if (field.isColumn()) {
-                final QueryableDatatype qdt = getQueryableValueOfPropertWrapper(field);
+                final QueryableDatatype qdt = field.getQueryableDatatype();
                 if (qdt.hasChanged()) {
                     String columnName = field.columnName();
                     sql.append(separator)
                             .append(defn.formatColumnName(columnName))
                             .append(defn.getEqualsComparator())
                             .append(qdt
-                            .toSQLString(db));
+                                    .toSQLString(db));
                     separator = defn.getSubsequentSetSubClauseSeparator();
                 }
             }
@@ -416,20 +382,21 @@ abstract public class DBRow implements Serializable {
         return columnNames;
     }
 
+    /**
+     * This method shouldn't be needed anymore because
+     * PropertyWrappers or PropertyWrapperDefinitions should be passed around
+     * instead of QDTs. In particular, with the introduction of
+     * type adaptors, java fields aren't necessarily of type QDT.
+     * @param qdt
+     * @return
+     * @deprecated use of this method indicates a likely bug
+     */
+    @Deprecated
     public String getDBColumnName(QueryableDatatype qdt) {
         return this.getPropertyWrapperOf(qdt).columnName();
     }
 
     @Deprecated
-    public String getDBColumnName(PropertyWrapper field) {
-        String columnName = "";
-
-        if (field.isColumn()) {
-            return field.columnName();
-        }
-        return columnName;
-    }
-
     protected static String getTableAndColumnName(DBDatabase db, DBRow[] baseRows, QueryableDatatype qdt) {
         String columnName;
         String tableName;
@@ -478,9 +445,21 @@ abstract public class DBRow implements Serializable {
         }
         return fkFields;
     }
-
-    public PropertyWrapper getPropertyWrapperOf(QueryableDatatype qdt) {
-
+    
+    /**
+     * Gets a wrapper for the underlying property (field or method) given the
+     * property's object reference.
+     * 
+     * <p> For example the following code snippet will get
+     * a property wrapper for the {@code name} field:
+     * <pre>
+     * Customer customer = ...;
+     * getPropertyWrapperOf(customer.name);
+     * </pre>
+     * @param qdt
+     * @return
+     */
+    public PropertyWrapper getPropertyWrapperOf(Object qdt) {
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
 
         Object qdtOfProp;
@@ -494,17 +473,25 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
+     * Ignores the foreign key of the property (field or method)
+     * given the property's object reference.
+     * 
+     * <p> For example the following code snippet will ignore the
+     * foreign key on the fkAddress field:
+     * <pre>
+     * Customer customer = ...;
+     * customer.ignoreForeignKey(customer.fkAddress);
+     * </pre>
      *
-     * Requires the field to be from this instance to work
-     *
+     * <p> Requires the field to be from this instance to work.
      * @param qdt
      */
-    public void ignoreForeignKey(QueryableDatatype qdt) {
-        PropertyWrapper fieldOfFK = getPropertyWrapperOf(qdt);
-        if (fieldOfFK == null) {
-            throw new IncorrectDBRowInstanceSuppliedException();
+    public void ignoreForeignKey(Object qdt) {
+        PropertyWrapper fkProp = getPropertyWrapperOf(qdt);
+        if (fkProp == null) {
+            throw new IncorrectDBRowInstanceSuppliedException(this, qdt);
         }
-        ignoredForeignKeys.add(fieldOfFK.getDefinition());
+        ignoredForeignKeys.add(fkProp.getDefinition());
         fkFields.clear();
     }
 
@@ -587,22 +574,30 @@ abstract public class DBRow implements Serializable {
     protected boolean hasLargeObjectColumns() {
         if (hasBlobs == null) {
             hasBlobs = Boolean.FALSE;
-            Map<String, QueryableDatatype> columnsAndQueryableDatatypes = getColumnsAndQueryableDatatypes();
-            Collection<QueryableDatatype> values = columnsAndQueryableDatatypes.values();
-            for (QueryableDatatype qdt : values) {
-                if (qdt instanceof DBLargeObject) {
-                    blobColumns.add((DBLargeObject) qdt);
+            for (PropertyWrapper prop: getPropertyWrappers()) {
+            	if (prop.isInstanceOf(DBLargeObject.class)) {
+            		blobColumns.add(prop);
                     hasBlobs = Boolean.TRUE;
-                }
+            	}
             }
+            
+//            Map<String, QueryableDatatype> columnsAndQueryableDatatypes = getColumnsAndQueryableDatatypes();
+//            Collection<QueryableDatatype> values = columnsAndQueryableDatatypes.values();
+//            for (QueryableDatatype qdt : values) {
+//                if (qdt instanceof DBLargeObject) {
+//                    blobColumns.add((DBLargeObject) qdt);
+//                    hasBlobs = Boolean.TRUE;
+//                }
+//            }
         }
         return hasBlobs;
     }
 
     protected boolean hasSetLargeObjectColumns() {
         if (hasLargeObjectColumns()) {
-            for (DBLargeObject qdt : blobColumns) {
-                if (qdt instanceof QueryableDatatype && ((QueryableDatatype) qdt).hasChanged()) {
+            for (PropertyWrapper prop : blobColumns) {
+            	QueryableDatatype qdt = prop.getQueryableDatatype();
+            	if (qdt != null && qdt.hasChanged()) {
                     return true;
                 }
             }
@@ -612,21 +607,35 @@ abstract public class DBRow implements Serializable {
 
     protected DBActionList getLargeObjectActions(DBDatabase db) {
         DBActionList actions = new DBActionList();
-        for (DBLargeObject blob : blobColumns) {
-            actions.add(new DBSaveBLOB(this, blob));
+        for (PropertyWrapper prop : blobColumns) {
+        	actions.add(new DBSaveBLOB(this, prop.columnName(),
+        			(DBLargeObject)prop.getQueryableDatatype()));
         }
         return actions;
     }
 
     /**
+     * Limits the returned columns by the specified properties (fields and/or methods)
+     * given the properties' object references.
+     * 
+     * <p> For example the following code snippet will include
+     * only the uid and name columns based on the uid and name fields:
+     * <pre>
+     * Customer customer = ...;
+     * customer.returnFieldsLimitedTo(customer.uid, customer.name);
+     * </pre>
      *
-     * Requires the field to be from this instance to work
+     * <p> Requires the field to be from this instance to work.
      *
      * @param qdt
      */
-    public void returnFieldsLimitedTo(QueryableDatatype... qdts) {
-        for (QueryableDatatype qdt : qdts) {
-            returnColumns.add(getPropertyWrapperOf(qdt).getDefinition());
+    public void returnFieldsLimitedTo(Object... qdts) {
+        for (Object qdt : qdts) {
+        	PropertyWrapper prop = getPropertyWrapperOf(qdt);
+            if (prop == null) {
+                throw new IncorrectDBRowInstanceSuppliedException(this, qdt);
+            }
+            returnColumns.add(prop.getDefinition());
         }
     }
 
@@ -656,24 +665,21 @@ abstract public class DBRow implements Serializable {
         List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
         String joinSeparator = "";
         for (PropertyWrapper fk : fks) {
-            Class<? extends DBRow> value = fk.referencedClass();
+            Class<? extends DBRow> referencedClass = fk.referencedClass();
+            PropertyWrapperDefinition referencedProp = fk.referencedPropertyDefinitionIdentity();
 
-            if (newTable.getClass().equals(value)) {
-
-                String fkColumnName = fk.columnName();
+            if (newTable.getClass().equals(referencedClass)) {
                 String formattedForeignKey = defn.formatTableAndColumnName(
-                        this.getTableName(),
-                        fkColumnName);
+                		fk.tableName(), fk.columnName());
 
-                String formattedPrimaryKey = defn.formatTableAndColumnName(
-                        newTable.getTableName(),
-                        newTable.getPrimaryKeyName());
-
+                String formattedReferencedColumn = defn.formatTableAndColumnName(
+                		referencedProp.tableName(), referencedProp.columnName());
+                
                 rels.append(lineSeparator)
                         .append(joinSeparator)
                         .append(formattedForeignKey)
                         .append(defn.getEqualsComparator())
-                        .append(formattedPrimaryKey);
+                        .append(formattedReferencedColumn);
 
                 joinSeparator = defn.beginAndLine();
             }
@@ -684,15 +690,15 @@ abstract public class DBRow implements Serializable {
             DBRow secondTable = adhoc.getSecondTable();
             DBRow leftTable = firstTable;
             DBRow rightTable = secondTable;
-            QueryableDatatype leftColumn = adhoc.getFirstColumn();
-            QueryableDatatype rightColumn = adhoc.getSecondColumn();
+            PropertyWrapper leftColumn = adhoc.getFirstColumnPropertyWrapper();
+            PropertyWrapper rightColumn = adhoc.getSecondColumnPropertyWrapper();
             DBOperator operator = adhoc.getOperation();
 
             if (rightTable.getClass().equals(this.getClass())) {
                 leftTable = secondTable;
                 rightTable = firstTable;
-                leftColumn = adhoc.getSecondColumn();
-                rightColumn = adhoc.getFirstColumn();
+                leftColumn = adhoc.getSecondColumnPropertyWrapper();
+                rightColumn = adhoc.getFirstColumnPropertyWrapper();
                 operator = operator.getInverseOperator();
             }
 
@@ -702,7 +708,6 @@ abstract public class DBRow implements Serializable {
 
             joinSeparator = defn.beginAndLine();
         }
-
 
         adHocs = newTable.getAdHocRelationships();
         for (DBRelationship adhoc : adHocs) {
@@ -710,15 +715,15 @@ abstract public class DBRow implements Serializable {
             DBRow secondTable = adhoc.getSecondTable();
             DBRow leftTable = firstTable;
             DBRow rightTable = secondTable;
-            QueryableDatatype leftColumn = adhoc.getFirstColumn();
-            QueryableDatatype rightColumn = adhoc.getSecondColumn();
+            PropertyWrapper leftColumn = adhoc.getFirstColumnPropertyWrapper();
+            PropertyWrapper rightColumn = adhoc.getSecondColumnPropertyWrapper();
             DBOperator operator = adhoc.getOperation();
 
             if (rightTable.getClass().equals(this.getClass())) {
                 leftTable = secondTable;
                 rightTable = firstTable;
-                leftColumn = adhoc.getSecondColumn();
-                rightColumn = adhoc.getFirstColumn();
+                leftColumn = adhoc.getSecondColumnPropertyWrapper();
+                rightColumn = adhoc.getFirstColumnPropertyWrapper();
                 operator = operator.getInverseOperator();
             }
 
@@ -728,8 +733,6 @@ abstract public class DBRow implements Serializable {
 
             joinSeparator = defn.beginAndLine();
         }
-
-
 
         fks = newTable.getForeignKeyPropertyWrappers();
         for (PropertyWrapper fk : fks) {
@@ -765,12 +768,13 @@ abstract public class DBRow implements Serializable {
      * @DBForeignKey
      *
      */
+    @SuppressWarnings("unchecked")
     public List<Class<? extends DBRow>> getReferencedTables() {
         if (referencedTables == null) {
             referencedTables = new ArrayList<Class<? extends DBRow>>();
             List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
-            for (PropertyWrapper prop: props) {
-            	referencedTables.add(prop.referencedClass());
+            for (PropertyWrapper prop : props) {
+                referencedTables.add(prop.referencedClass());
             }
         }
         return (List<Class<? extends DBRow>>) referencedTables.clone();
@@ -802,5 +806,12 @@ abstract public class DBRow implements Serializable {
             wrapper = wrapperFactory.instanceWrapperFor(this);
         }
         return wrapper;
+    }
+
+    void setUnchanged() {
+        List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
+        for (PropertyWrapper prop : propertyWrappers) {
+            prop.getQueryableDatatype().setUnchanged();
+        }
     }
 }

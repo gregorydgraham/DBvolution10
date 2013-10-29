@@ -1,24 +1,32 @@
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.exceptions.*;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBSave;
-import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 
 /**
  *
@@ -33,8 +41,7 @@ public class DBTable<E extends DBRow> {
     private DBDatabase database = null;
     private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
     private Long rowLimit;
-    private QueryableDatatype[] sortOrder = null;
-    private E sortBase;
+    private List<PropertyWrapper> sortOrder = null;
 
     /**
      *
@@ -94,14 +101,14 @@ public class DBTable<E extends DBRow> {
         return allFields.toString();
     }
 
-    private String getAllFieldsForInsert() {
+    public String getAllFieldsForInsert() {
         StringBuilder allFields = new StringBuilder();
         DBDefinition defn = database.getDefinition();
         List<PropertyWrapper> props = dummy.getPropertyWrappers();
         String separator = "";
         for (PropertyWrapper prop : props) {
             // BLOBS are not inserted.so exclude them
-            if (prop.isColumn() && !(prop.getQueryableDatatype() instanceof DBLargeObject)) {
+            if (prop.isColumn() && !prop.isInstanceOf(DBLargeObject.class)) { 
                 allFields
                         .append(separator)
                         .append(" ")
@@ -235,7 +242,7 @@ public class DBTable<E extends DBRow> {
     }
 
     private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, PropertyWrapper field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
-        QueryableDatatype qdt = tableRow.getQueryableValueOfPropertWrapper(field);
+        QueryableDatatype qdt = field.getQueryableDatatype();
         int columnType = rsMeta.getColumnType(dbColumnIndex);
 //        int precision = rsMeta.getPrecision(dbColumnIndex);
         switch (columnType) {
@@ -279,7 +286,6 @@ public class DBTable<E extends DBRow> {
         @SuppressWarnings("unchecked")
         Class<E> thisClass = (Class<E>) dummy.getClass();
         Field[] fields = thisClass.getDeclaredFields();
-
 
         for (Field field : fields) {
             if (field.isAnnotationPresent(DBPrimaryKey.class)) {
@@ -448,7 +454,7 @@ public class DBTable<E extends DBRow> {
     /**
      *
      * Returns the first row of the table
-     * 
+     *
      * particularly helpful when you know there is only one row
      *
      * @return
@@ -464,9 +470,9 @@ public class DBTable<E extends DBRow> {
     /**
      *
      * Returns the first row and only row of the table.
-     * 
-     * Similar to getFirstRow() but throws an UnexpectedNumberOfRowsException
-     * if there is more than 1 row available
+     *
+     * Similar to getFirstRow() but throws an UnexpectedNumberOfRowsException if
+     * there is more than 1 row available
      *
      * @return
      */
@@ -494,10 +500,10 @@ public class DBTable<E extends DBRow> {
         DBActionList allInserts = getSQLForInsert(newRows);
         for (DBAction action : allInserts) {
             if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                System.out.println(action.getSQLRepresentation());
+                System.out.println(action.getSQLStatement(database));
             }
             if (action.canBeBatched() && database.getBatchSQLStatementsWhenPossible()) {
-                statement.addBatch(action.getSQLRepresentation());
+                statement.addBatch(action.getSQLStatement(database));
             } else {
                 statement.executeBatch();
                 statement.clearBatch();
@@ -523,7 +529,7 @@ public class DBTable<E extends DBRow> {
     public String getSQLForInsert(E newRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(newRow);
-        return getSQLForInsert(arrayList).get(0).getSQLRepresentation();
+        return getSQLForInsert(arrayList).get(0).getSQLStatement(database);
     }
 
     /**
@@ -539,15 +545,16 @@ public class DBTable<E extends DBRow> {
         DBDefinition defn = database.getDefinition();
         DBActionList allInserts = new DBActionList();
         for (E row : newRows) {
-            String sql =
-                    defn.beginInsertLine()
-                    + defn.formatTableName(row.getTableName())
-                    + defn.beginInsertColumnList()
-                    + this.getAllFieldsForInsert()
-                    + defn.endInsertColumnList()
-                    + row.getValuesClause(database)
-                    + defn.endInsertLine();
-            allInserts.add(new DBSave(row, sql));
+//            String sql
+//                    = defn.beginInsertLine()
+//                    + defn.formatTableName(row.getTableName())
+//                    + defn.beginInsertColumnList()
+//                    + this.getAllFieldsForInsert()
+//                    + defn.endInsertColumnList()
+//                    + row.getValuesClause(database)
+//                    + defn.endInsertLine();
+//            allInserts.add(new DBSave(row, sql));
+            allInserts.add(new DBSave(row));
             if (row.hasLargeObjectColumns()) {
                 allInserts.addAll(row.getLargeObjectActions(database));
             }
@@ -613,20 +620,20 @@ public class DBTable<E extends DBRow> {
                 if (primaryKey == null) {
                     allDeletes.add(getSQLForDeleteWithoutPrimaryKey(row));
                 } else {
-                    String sql =
-                            defn.beginDeleteLine()
+                    String sql
+                            = defn.beginDeleteLine()
                             + defn.formatTableName(row.getTableName())
                             + defn.beginWhereClause()
                             + defn.formatColumnName(this.getPrimaryKeyColumn())
                             + defn.getEqualsComparator()
-                            + primaryKey.getSQLValue(database)
+                            + primaryKey.toSQLString(database)
                             + defn.endDeleteLine();
                     allDeletes.add(sql);
                 }
             } else {
                 // Delete by example
-                String sql =
-                        defn.beginDeleteLine()
+                String sql
+                        = defn.beginDeleteLine()
                         + defn.formatTableName(row.getTableName())
                         + defn.beginWhereClause()
                         + defn.getTrueOperation()
@@ -640,13 +647,26 @@ public class DBTable<E extends DBRow> {
 
     /**
      *
-     * @param oldRow
+     * @param row
      * @return
      */
-    public String getSQLForDeleteWithoutPrimaryKey(E oldRow) {
-        List<E> rows = new ArrayList<E>();
-        rows.add(oldRow);
-        return getSQLForDeleteWithoutPrimaryKey(rows).get(0);
+    public String getSQLForDeleteWithoutPrimaryKey(E row) {
+        DBDefinition defn = database.getDefinition();
+        String sql
+                = defn.beginDeleteLine()
+                + defn.formatTableName(row.getTableName())
+                + defn.beginWhereClause()
+                + defn.getTrueOperation();
+        for (PropertyWrapper prop: row.getPropertyWrappers()) {
+        	QueryableDatatype qdt = prop.getQueryableDatatype();
+            sql = sql
+                    + defn.beginAndLine()
+                    + prop.columnName()
+                    + defn.getEqualsComparator()
+                    + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.toSQLString(database));
+        }
+        sql = sql + defn.endDeleteLine();
+        return sql;
     }
 
     /**
@@ -655,25 +675,46 @@ public class DBTable<E extends DBRow> {
      * @return
      */
     public List<String> getSQLForDeleteWithoutPrimaryKey(List<E> oldRows) {
-        DBDefinition defn = database.getDefinition();
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
-            String sql =
-                    defn.beginDeleteLine()
-                    + defn.formatTableName(row.getTableName())
-                    + defn.beginWhereClause()
-                    + defn.getTrueOperation();
-            for (QueryableDatatype qdt : row.getQueryableDatatypes()) {
-                sql = sql
-                        + defn.beginAndLine()
-                        + row.getDBColumnName(qdt)
-                        + defn.getEqualsComparator()
-                        + qdt.getSQLValue(database);
-            }
-            sql = sql + defn.endDeleteLine();
-            allInserts.add(sql);
+            allInserts.add(getSQLForDeleteWithoutPrimaryKey(row));
         }
         return allInserts;
+    }
+
+    public String getSQLForUpdateWithoutPrimaryKey(E row) {
+        DBDefinition defn = database.getDefinition();
+        String sql
+                = defn.beginUpdateLine()
+                + defn.formatTableName(row.getTableName())
+                + defn.beginSetClause()
+                + row.getSetClause(database)
+                + defn.beginWhereClause()
+                + defn.getTrueOperation();
+        for (PropertyWrapper prop: row.getPropertyWrappers()) {
+        	QueryableDatatype qdt = prop.getQueryableDatatype();
+            if (qdt.isNull()) {
+                DBIsNullOperator isNullOp = new DBIsNullOperator();
+                sql = sql
+                        + isNullOp.generateWhereLine(database, prop.columnName());
+            } else {
+                sql = sql
+                        + defn.beginAndLine()
+                        + prop.columnName()
+                        + defn.getEqualsComparator()
+                        + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.toSQLString(database));
+            }
+        }
+        sql = sql + defn.endDeleteLine();
+        return sql;
+    }
+
+    public List<String> getSQLForUpdateWithoutPrimaryKey(List<E> rows) {
+        List<String> updates = new ArrayList<String>();
+        for (E row : rows) {
+            updates.add(getSQLForUpdateWithoutPrimaryKey(row));
+        }
+        return updates;
     }
 
     public void update(E oldRow) throws SQLException {
@@ -684,75 +725,73 @@ public class DBTable<E extends DBRow> {
 
     public void update(List<E> oldRows) throws SQLException {
         Statement statement = database.getDBStatement();
-        List<String> allSQL = getSQLForUpdate(oldRows);
-        if (database.getBatchSQLStatementsWhenPossible()) {
-            for (String sql : allSQL) {
+        final boolean useBatch = database.getBatchSQLStatementsWhenPossible();
+        boolean batchHasEntries = false;
+
+        for (E row : oldRows) {
+            if (row.hasChanged()) {
+                String sql = getSQLForUpdate(row);
+
                 if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                     System.out.println(sql);
                 }
-                statement.addBatch(sql);
+                if (useBatch) {
+                    statement.addBatch(sql);
+                    batchHasEntries = true;
+                } else {
+                    statement.execute(sql);
+                }
             }
+        }
+
+        // Do the batched statements
+        if (useBatch && batchHasEntries) {
             statement.executeBatch();
-        } else {
-            for (String sql : allSQL) {
-                statement.execute(sql);
-            }
         }
-        for (DBRow row : oldRows) {
-//            row.setDatabase(database);
-            row.getPrimaryKey().setUnchanged();
+        // Clean up after the updates
+        for (E row : oldRows) {
+            row.setUnchanged();
         }
     }
 
     /**
+     * Creates the SQL used to update a row.
      *
-     * Convenience method for getSQLForUpdate(List<E>)
-     *
-     * @param oldRow
-     * @return
-     */
-    public String getSQLForUpdate(E oldRow) {
-        ArrayList<E> arrayList = new ArrayList<E>();
-        arrayList.add(oldRow);
-        return getSQLForUpdate(arrayList).get(0);
-    }
-
-    /**
-     * Creates the SQL used to update the rows.
-     *
-     * Helpful for debugging and reversion scripts
+     * Helpful for debugging and reversion scripts Defers to
+     * getSQLForUpdateWithoutPrimaryKey for some updates
      *
      *
      * @param oldRows
      * @return
      */
-    public List<String> getSQLForUpdate(List<E> oldRows) {
+    public String getSQLForUpdate(E row) {
         DBDefinition defn = database.getDefinition();
-        List<String> allSQL = new ArrayList<String>();
-        for (E row : oldRows) {
-//            row.setDatabase(database);
-            QueryableDatatype primaryKey = row.getPrimaryKey();
-            if (primaryKey == null) {
-                throw new UndefinedPrimaryKeyException(row);
-            } else {
-                String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.getSQLValue(database));
-                String sql =
-                        defn.beginUpdateLine()
-                        + defn.formatTableName(row.getTableName())
-                        + defn.beginSetClause();
-                sql = sql + row.getSetClause(database);
-                sql = sql + defn.beginWhereClause()
-                        + defn.formatColumnName(this.getPrimaryKeyColumn())
-                        + defn.getEqualsComparator()
-                        + pkOriginalValue
-                        + defn.endDeleteLine();
-                allSQL.add(sql);
-            }
+        QueryableDatatype primaryKey = row.getPrimaryKey();
+        if (primaryKey == null) {
+            return getSQLForUpdateWithoutPrimaryKey(row);
+        } else {
+            String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.toSQLString(database));
+            String sql
+                    = defn.beginUpdateLine()
+                    + defn.formatTableName(row.getTableName())
+                    + defn.beginSetClause()
+                    + row.getSetClause(database)
+                    + defn.beginWhereClause()
+                    + defn.formatColumnName(this.getPrimaryKeyColumn())
+                    + defn.getEqualsComparator()
+                    + pkOriginalValue
+                    + defn.endDeleteLine();
+            return sql;
         }
-
-        return allSQL;
     }
 
+//    public List<String> getSQLForUpdate(List<E> oldRows) {
+//        List<String> allSQL = new ArrayList<String>();
+//        for (E row : oldRows) {
+//            allSQL.add(getSQLForUpdate(row));
+//        }
+//        return allSQL;
+//    }
     /**
      *
      * @param query
@@ -823,9 +862,31 @@ public class DBTable<E extends DBRow> {
         rowLimit = null;
     }
 
+    /**
+     * Sets the sort order of properties (field and/or method)
+     * by the given property object references.
+     * 
+     * <p> For example the following code snippet will sort
+     * by just the name column:
+     * <pre>
+     * Customer customer = ...;
+     * customer.setSortOrder(customer, customer.name);
+     * </pre>
+     *
+     * <p> Requires that all {@code orderColumns) be from the {@code baseRow)
+     * instance to work.
+     * @param baseRow
+     * @param orderColumns
+     */
     public void setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
-        sortBase = baseRow;
-        sortOrder = orderColumns;
+        sortOrder = new ArrayList<PropertyWrapper>();
+        for (QueryableDatatype qdt: orderColumns) {
+            PropertyWrapper prop = baseRow.getPropertyWrapperOf(qdt);
+            if (prop == null) {
+                throw new IncorrectDBRowInstanceSuppliedException(baseRow, qdt);
+            }
+        	sortOrder.add(prop);
+        }
     }
 
     public void clearSortOrder() {
@@ -837,8 +898,9 @@ public class DBTable<E extends DBRow> {
         if (sortOrder != null) {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
-            for (QueryableDatatype qdt : sortOrder) {
-                final String dbColumnName = sortBase.getDBColumnName(qdt);
+            for (PropertyWrapper prop : sortOrder) {
+            	QueryableDatatype qdt = prop.getQueryableDatatype();
+                final String dbColumnName = prop.columnName();
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(defn.formatColumnName(dbColumnName)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();

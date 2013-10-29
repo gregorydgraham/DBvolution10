@@ -1,10 +1,8 @@
 package nz.co.gregs.dbvolution.internal;
 
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
 /**
@@ -37,19 +35,21 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * <p> This class is <i>thread-safe</i>.
  */
 public class PropertyWrapperDefinition {
+	private final DBRowClassWrapper classWrapper;
 	private final JavaProperty adaptee;
 	
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
 	
-	public PropertyWrapperDefinition(JavaProperty javaProperty) {
+	public PropertyWrapperDefinition(DBRowClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
+		this.classWrapper = classWrapper;
 		this.adaptee = javaProperty;
 		
 		// handlers
 		this.columnHandler = new ColumnHandler(javaProperty);
-		this.typeHandler = new PropertyTypeHandler(javaProperty);
-		this.foreignKeyHandler = new ForeignKeyHandler(javaProperty);
+		this.typeHandler = new PropertyTypeHandler(javaProperty, processIdentityOnly);
+		this.foreignKeyHandler = new ForeignKeyHandler(javaProperty, processIdentityOnly);
 	}
 	
 	/**
@@ -135,6 +135,26 @@ public class PropertyWrapperDefinition {
 	}
 	
 	/**
+	 * Convenience method for testing the type.
+	 * Equivalent to {@code refType.isAssignableFrom(this.type())}.
+	 * @param refType
+	 * @return
+	 */
+	public boolean isInstanceOf(Class<? extends QueryableDatatype> refType) {
+		return refType.isAssignableFrom(type());
+	}
+	
+	/**
+	 * Gets the annotated table name of the table this
+	 * property belongs to.
+	 * Equivalent to {@code getDBRowClassWrapper().tableName()}.
+	 * @return
+	 */
+	public String tableName() {
+		return classWrapper.tableName();
+	}
+	
+	/**
 	 * Gets the annotated column name.
 	 * Applies defaulting if the {@code DBColumn} annotation is present
 	 * but does not explicitly specify the column name.
@@ -175,7 +195,8 @@ public class PropertyWrapperDefinition {
 	/**
 	 * Gets the class referenced by this property, if this property
 	 * is a foreign key.
-	 * @return the referenced class or null if not applicable
+	 * @return the referenced class if this property is a foreign key;
+	 * null if not a foreign key
 	 */
 	public Class<? extends DBRow> referencedClass() {
 		return foreignKeyHandler.getReferencedClass();
@@ -184,100 +205,46 @@ public class PropertyWrapperDefinition {
 	/**
 	 * Gets the table referenced by this property, if this property
 	 * is a foreign key.
-	 * @return the referenced table name, or null if not applicable
+	 * @return the referenced table name if this property is a foreign key;
+	 * null if not a foreign key
 	 */
 	public String referencedTableName() {
 		return foreignKeyHandler.getReferencedTableName();
 	}
 	
 	/**
-	 * Gets the column name in the foreign table referenced by this property,
-	 * if this property is a foreign key.
-	 * Referenced column names may not be specified, in which case the foreign key
-	 * references the primary key in the foreign class/table.
+	 * Gets the column name in the foreign table referenced by this property.
+	 * The referenced column is either explicitly indicated by use of the
+	 * {@link DBForeignKey#column()} attribute, or it is implicitly the
+	 * single primary key of the referenced table if the {@link DBForeignKey#column()}
+	 * attribute is unset.
 	 * 
-	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
-	 * @param database the current active database
-	 * @param cache the class wrapper factory
-	 * @return the referenced column name, or null if not specified or not applicable
+	 * @return the referenced column name if this property is a foreign key;
+	 * null if not a foreign key
 	 */
-	// TODO update javadoc for this method now that it's got more smarts
-	public String referencedColumnName(DBDatabase database, DBRowWrapperFactory cache) {
-		PropertyWrapperDefinition referencedProperty = referencedProperty(database, cache);
-		if (referencedProperty != null) {
-			return referencedProperty.columnName();
-		}
-		return null;
-	}
-
-	/**
-	 * Note: this returns only a single property; in the case where multiple foreign key
-	 * columns are used together to reference a table with a composite primary key,
-	 * each foreign key column references its respective foreign primary key.
-	 * @param database the current active database
-	 * @param cache the active class adaptor cache
-	 * @return the mapped foreign key property, or null if not a foreign key
-	 * @throws DBPebkacException if the foreign table has multiple primary keys and the foreign key
-	 *         column doesn't identify which primary key column to target
-	 */
-	// An idea of what could be possible; to be decided whether we want to keep this
-	public PropertyWrapperDefinition referencedProperty(DBDatabase database, DBRowWrapperFactory cache) {
-		if (!foreignKeyHandler.isForeignKey()) {
-			return null;
-		}
-		if (foreignKeyHandler.getReferencedClass() == null) {
-			// sanity check
-			throw new DBRuntimeException("Unexpected internal error: referenced class was null on "+qualifiedJavaName());
-		}
-
-		DBRowClassWrapper referencedClassAdaptor = cache.classWrapperFor(foreignKeyHandler.getReferencedClass());
-		
-		// get explicitly referenced property (by column name)
-		String explicitColumnName = foreignKeyHandler.getReferencedColumnName();
-		if (explicitColumnName != null) {
-			PropertyWrapperDefinition property = referencedClassAdaptor.getPropertyDefinitionByColumn(database, explicitColumnName);
-			if (property == null) {
-				// TODO do this validation at annotation processing time?
-				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
-						+" and column "+explicitColumnName+", but the column doesn't exist");
-			}
-			return property;
-		}
-		
-		// get implicitly referenced property (by scalar primary key)
-		else {
-			PropertyWrapperDefinition primaryKeyProperties = referencedClassAdaptor.primaryKeyDefinition();
-			if (primaryKeyProperties == null) {
-				// TODO do this validation at annotation processing time
-				// TODO not sure if it's appropriate to throw this exception here
-				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
-						+", which does not have a primary key");
-			}
-			else {
-				// TODO do this validation at annotation processing time
-//				throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassAdaptor.javaName()
-//						+" using an implicit primary key reference, but the referenced class has "+primaryKeyProperties.size()
-//						+" primary key columns. You must include explicit foreign column names.");
-			}
-			
-			return primaryKeyProperties;
-		}
-	}
-
-	/**
-	 * Gets the column name in the foreign table referenced by this property,
-	 * if this property is a foreign key.
-	 * Referenced column names may not be specified, in which case the foreign key
-	 * references the primary key in the foreign class/table.
-	 * 
-	 * <p> Use {@link #getDBForeignKeyAnnotation} for low level access.
-	 * @return the referenced column name, or null if not specified or not applicable
-	 */
-	// TODO improve javadoc
-	public String declaredReferencedColumnName() {
+	public String referencedColumnName() {
 		return foreignKeyHandler.getReferencedColumnName();
 	}
-	
+
+	/**
+	 * Gets identity information for the referenced property in the referenced table.
+	 * The referenced property is either explicitly indicated by use of the
+	 * {@link DBForeignKey#column()} attribute, or it is implicitly the
+	 * single primary key of the referenced table.
+	 * 
+	 * <p> Note that the property definition returned provides identity of
+	 * the property only. It provides access to the property's: java name, column name,
+	 * type, and identity information about the table it belongs to (ie: table name).
+	 * Attempts to get or set its value or get the type adaptor instance will
+	 * result in an internal exception.
+	 * 
+	 * @return the referenced property if this property is a foreign key;
+	 * null if not a foreign key
+	 */
+	public PropertyWrapperDefinition referencedPropertyDefinitionIdentity() {
+		return foreignKeyHandler.getReferencedPropertyDefinitionIdentity();
+	}
+
 	/**
 	 * Indicates whether the value of the property can be retrieved.
 	 * Bean properties which are missing a 'getter' can not be read,
@@ -383,30 +350,13 @@ public class PropertyWrapperDefinition {
 		return adaptee.type();
 	}
 	
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBColumn} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBColumn getDBColumnAnnotation() {
-//			return columnHandler.getDBColumnAnnotation();
-//		}
-
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBForeignKey} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBForeignKey getDBForeignKeyAnnotation() {
-//			return foreignKeyHandler.getDBForeignKeyAnnotation();
-//		}
-		
-	// commented out because shouldn't be needed:
-//		/**
-//		 * Gets the {@link DBTypeAdaptor} annotation on the property, if it exists.
-//		 * @return the annotation or null
-//		 */
-//		public DBAdaptType getDBTypeAdaptorAnnotation() {
-//			return typeHandler.getDBTypeAdaptorAnnotation();
-//		}
+    
+    /**
+     * Gets the wrapper for the DBRow class containing
+     * this property.
+     * @return
+     */
+    public DBRowClassWrapper getDBRowClassWrapper() {
+    	return classWrapper;
+    }
 }

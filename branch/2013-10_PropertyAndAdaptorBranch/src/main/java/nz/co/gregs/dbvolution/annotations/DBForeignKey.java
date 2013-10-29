@@ -15,8 +15,8 @@ import nz.co.gregs.dbvolution.DBRow;
  * Indicates that this field is a Foreign Key to another database table and specifies the table
  * 
  * public class MyTable extends DBRow {
- * @DBForeignKey(OtherTable.class)
- * @DBColumn("other_table_fk")
+ * \@DBForeignKey(OtherTable.class)
+ * \@DBColumn("other_table_fk")
  * public DBInteger otherTableFK = new DBInteger();
  * ...
  * 
@@ -33,7 +33,23 @@ import nz.co.gregs.dbvolution.DBRow;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBForeignKey {
-    
+
+	/**
+	 * Identifies the foreign table by its {@code DBRow} implementation class.
+	 * @return
+	 */
     Class<? extends DBRow> value();
+    
+    /**
+     * Identifies the foreign column by column name.
+     * This must be a column in the foreign class.
+     * 
+     * <p> If not specified, and the foreign class as exactly one primary key column,
+     * the primary key of the foreign class is used.
+     * <p> Must be specified if the foreign class has no primary key,
+     * or if it has multiple primary key columns (not supported yet).
+     * @return
+     */
+    String column() default "";
 
 }

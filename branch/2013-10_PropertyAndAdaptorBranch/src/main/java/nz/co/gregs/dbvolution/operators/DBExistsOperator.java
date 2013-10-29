@@ -15,13 +15,12 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import java.lang.reflect.Field;
-import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
+import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
@@ -34,11 +33,30 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
     E tableRow;
     private final String referencedColumnName;
 
-    public DBExistsOperator(E tableRow, QueryableDatatype qdtOfTheRow) {
+    /**
+     * Creates an exists operator on the given table row
+     * instance and column identified by the given property's
+     * object reference (field or method).
+     * 
+     * <p> For example the following code snippet will create
+     * an exists operator on the uid column:
+     * <pre>
+     * Customer customer = ...;
+     * new DBExistsOperator(customer, customer.uid);
+     * </pre>
+     *
+     * <p> Requires that {@code qdtOfTheRow} is from the {@code tableRow}
+     * instance for this to work.
+     * @param tableRow
+     * @param qdtOfTheRow
+     * @throws IncorrectDBRowInstanceSuppliedException if {@code qdtOfTheRow}
+     * is not from the {@code tableRow} instance
+     */
+    public DBExistsOperator(E tableRow, Object qdtOfTheRow) {
         this.tableRow = tableRow;
         PropertyWrapper qdtField = tableRow.getPropertyWrapperOf(qdtOfTheRow);
         if (qdtField == null) {
-            throw new RuntimeException("QueryableDatatype Not Found: the specified " + qdtOfTheRow.getClass().getSimpleName() + " is not part of the specified row, please use only columns from the actual row");
+            throw new IncorrectDBRowInstanceSuppliedException(tableRow, qdtOfTheRow);
         }
         this.referencedColumnName = qdtField.columnName();
     }

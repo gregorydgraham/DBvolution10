@@ -33,7 +33,7 @@ public class DBUnknownDatatype extends QueryableDatatype {
     }
 
     @Override
-    public String getSQLValue(DBDatabase db) {
+    public String formatValueForSQLStatement(DBDatabase db) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

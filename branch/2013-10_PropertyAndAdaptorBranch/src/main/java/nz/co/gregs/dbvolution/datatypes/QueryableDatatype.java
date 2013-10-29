@@ -65,12 +65,17 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             this.operator = new DBEqualsOperator(this);
         }
     }
-
+    
     @Override
     public String toString() {
         return (literalValue == null ? "" : literalValue.toString());
     }
 
+    /**
+     * Returns the raw value as a String
+     *
+     * @return
+     */
     public String stringValue() {
         return (literalValue == null ? null : literalValue.toString());
     }
@@ -443,6 +448,14 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
+     * @return
+     */
+    public Object getValue() {
+        return literalValue;
+    }
+
+    /**
+     *
      * @param newLiteralValue the literalValue to set
      */
     public void setValue(Object newLiteralValue) {
@@ -465,7 +478,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
                 this.setOperator(new DBEqualsOperator(new DBDate((Timestamp) newLiteralValue)));
             } else {
                 setChanged(newLiteralValue);
-                this.literalValue = newLiteralValue.toString();
+                this.literalValue = newLiteralValue;//.toString();
                 this.setOperator(new DBEqualsOperator(this));
             }
         }
@@ -626,41 +639,30 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
-     * @return the literal value as it would appear in an SQL statement i.e.
-     * {yada} => 'yada'
-     */
-    public String toSQLString(DBDatabase db) {
-        DBDefinition def = db.getDefinition();
-        if (this.isDBNull || literalValue == null) {
-            return def.getNull();
-        }
-        return def.beginStringValue() + this.toString().replace("'", "\'") + def.endStringValue();
-    }
-
-    /**
-     * @return the database
-     */
-//    protected DBDatabase getDatabase() {
-//        return database;
-//    }
-    /**
-     * @param database the database to set
-     */
-//    public void setDatabase(DBDatabase database) {
-//        this.database = database;
-//    }
-    /**
-     *
      * Provides the SQL datatype used by default for this type of object
      *
      * This should be overridden in each subclass
      *
+     * Example return value: "VARCHAR(1000)"
+     *
      * @return
      */
     public abstract String getSQLDatatype();
-//    {
-//        return "VARCHAR(1000)";
-//    }
+
+    /**
+     *
+     * @param db
+     * @return the literal value as it would appear in an SQL statement i.e.
+     * {yada} => 'yada' {} => NULL
+     */
+    public final String toSQLString(DBDatabase db) {
+        DBDefinition def = db.getDefinition();
+        if (this.isDBNull || literalValue == null) {
+            return def.getNull();
+        }
+        return formatValueForSQLStatement(db);
+        //return def.beginStringValue() + this.toString().replace("'", "\'") + def.endStringValue();
+    }
 
     /**
      *
@@ -668,9 +670,22 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * This should be overridden in each subclass
      *
+     * This method is called by toSQLString after checking for NULLs and should
+     * return a string representation of the object formatted for use within a
+     * SQL select, insert, update, or delete statement.
+     *
+     * For Example: 
+     * 
+     * DBString{yada} => 'yada' 
+     * 
+     * DBInteger{1234} => 123
+     * 
+     * DBDate{1/March/2013} => TO_DATE('20130301', 'YYYYMMDD')
+     *
+     * @param db
      * @return
      */
-    public abstract String getSQLValue(DBDatabase db);
+    protected abstract String formatValueForSQLStatement(DBDatabase db);
 //    {
 //        if (this.isDBNull) {
 //            return database.getNull();
@@ -720,6 +735,9 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             String dbValue;
             try {
                 dbValue = resultSet.getString(resultSetColumnName);
+                if (resultSet.wasNull()) {
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 // Probably means the column wasn't selected.
                 dbValue = null;
@@ -762,7 +780,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     public String getPreviousSQLValue(DBDatabase db) {
 //        previousValueAsQDT.setDatabase(database);
-        return previousValueAsQDT.getSQLValue(db);
+        return previousValueAsQDT.toSQLString(db);
     }
 
     public QueryableDatatype setSortOrder(Boolean order) {

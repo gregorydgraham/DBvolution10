@@ -5,9 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -41,18 +38,18 @@ import nz.co.gregs.dbvolution.internal.InterfaceInfo.UnsupportedType;
 // TODO: this class could also handle implicit type adaptors where the target object's properties
 // are simple types, and we need to automatically convert between DBv data types.
 class PropertyTypeHandler {
-	private static Log logger = LogFactory.getLog(PropertyTypeHandler.class);
 
-    private JavaProperty javaProperty;
-    private Class<? extends QueryableDatatype> dbvPropertyType;
-    private DBTypeAdaptor<Object, Object> typeAdaptor;
-    private QueryableDatatypeSyncer internalQdtSyncer;
-    private DBAdaptType annotation;
-    
+//    private static Log logger = LogFactory.getLog(PropertyTypeHandler.class);
+    private final JavaProperty javaProperty;
+    private final Class<? extends QueryableDatatype> dbvPropertyType;
+    private final DBTypeAdaptor<Object, Object> typeAdaptor;
+    private final QueryableDatatypeSyncer internalQdtSyncer;
+    private final boolean identityOnly;
+    private final DBAdaptType annotation;
     private static Class<?>[] SUPPORTED_SIMPLE_TYPES = {
-    	String.class,
-    	boolean.class, int.class, long.class, float.class, double.class, 
-    	Boolean.class, Integer.class, Long.class, Float.class, Double.class
+        String.class,
+        boolean.class, int.class, long.class, float.class, double.class,
+        Boolean.class, Integer.class, Long.class, Float.class, Double.class
     };
 
     /**
@@ -60,210 +57,228 @@ class PropertyTypeHandler {
      * @param javaProperty the annotated property
      */
     @SuppressWarnings("unchecked")
-    public PropertyTypeHandler(JavaProperty javaProperty) {
+    public PropertyTypeHandler(JavaProperty javaProperty, boolean processIdentityOnly) {
         this.javaProperty = javaProperty;
-        this.annotation = javaProperty.getAnnotation(DBAdaptType.class);
-        
+    	this.identityOnly = processIdentityOnly;
+    	this.annotation = javaProperty.getAnnotation(DBAdaptType.class);
+
         Class<?> typeAdaptorInternalType = null; // DBv-internal
         Class<?> typeAdaptorExternalType = null;
-        
+
         // validation: java property type must be a QueryableDataType if not using type adaptor
         if (annotation == null) {
             if (!QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
-                throw new DBPebkacException(javaProperty.type().getName()+" is not a supported type on "
-                		+ javaProperty.qualifiedName()+". "
+                throw new DBPebkacException(javaProperty.type().getName() + " is not a supported type on "
+                        + javaProperty.qualifiedName() + ". "
                         + "Use one of the standard DB types, or use the @" + DBAdaptType.class.getSimpleName() + " annotation "
                         + "to adapt from a non-standard type.");
             }
         }
-        
+
         // validation: type adaptor must implement TypeAdaptor interface if used
         if (annotation != null) {
-        	Class<?> typeAdaptorClass = annotation.adaptor();
-        	if (!DBTypeAdaptor.class.isAssignableFrom(typeAdaptorClass)) {
-                throw new DBPebkacException("Type adaptor "+typeAdaptorClass.getName()+" must implement "
-                		+ DBTypeAdaptor.class.getSimpleName()+", on "+javaProperty.qualifiedName());
-        	}
+            Class<?> typeAdaptorClass = annotation.adaptor();
+            if (!DBTypeAdaptor.class.isAssignableFrom(typeAdaptorClass)) {
+                throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName() + " must implement "
+                        + DBTypeAdaptor.class.getSimpleName() + ", on " + javaProperty.qualifiedName());
+            }
         }
-        
-		// validation: type adaptor must not be an interface or abstract
+
+        // validation: type adaptor must not be an interface or abstract
         if (annotation != null) {
-        	Class<?> typeAdaptorClass = annotation.adaptor();
-			if (typeAdaptorClass.isInterface()) {
-                throw new DBPebkacException("Type adaptor "+typeAdaptorClass.getName()+
-                		" must not be an interface, on "+javaProperty.qualifiedName());
-			}
-			if (Modifier.isAbstract(typeAdaptorClass.getModifiers())) {
-                throw new DBPebkacException("Type adaptor "+typeAdaptorClass.getName()+
-                		" must not be abstract, on "+javaProperty.qualifiedName());
-			}
+            Class<?> typeAdaptorClass = annotation.adaptor();
+            if (typeAdaptorClass.isInterface()) {
+                throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName()
+                        + " must not be an interface, on " + javaProperty.qualifiedName());
+            }
+            if (Modifier.isAbstract(typeAdaptorClass.getModifiers())) {
+                throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName()
+                        + " must not be abstract, on " + javaProperty.qualifiedName());
+            }
         }
-        
+
         // validation: type adaptor must use only acceptable styles of generics
         // (note: rule de-activates if InterfaceInfo can't handle the class,
         //   or if other assumptions are broken.
         //   This is intentional to future-proof and because generics of type
         //   hierarchies is tremendously complex and its process very prone to error.)
         if (annotation != null) {
-        	Class<?> typeAdaptorClass = annotation.adaptor();
-        	ParameterBounds[] parameterBounds = null;
-        	try {
-	            InterfaceInfo interfaceInfo = new InterfaceInfo(DBTypeAdaptor.class, typeAdaptorClass);
-	            parameterBounds = interfaceInfo.getInterfaceParameterValueBounds();
-        	} catch (UnsupportedOperationException dropped) {
-        		// bumped into generics that can't be handled, so best to give the
-        		// end-user the benefit of doubt and just skip the validation
-        		logger.debug("Cancelled validation on type adaptor "+typeAdaptorClass.getName()
-        				+" due to internal error: "+dropped.getMessage(), dropped);
-        	}
+            Class<?> typeAdaptorClass = annotation.adaptor();
+            ParameterBounds[] parameterBounds = null;
+            try {
+                InterfaceInfo interfaceInfo = new InterfaceInfo(DBTypeAdaptor.class, typeAdaptorClass);
+                parameterBounds = interfaceInfo.getInterfaceParameterValueBounds();
+            } catch (UnsupportedOperationException dropped) {
+                // bumped into generics that can't be handled, so best to give the
+                // end-user the benefit of doubt and just skip the validation
+//                logger.debug("Cancelled validation on type adaptor " + typeAdaptorClass.getName()
+//                        + " due to internal error: " + dropped.getMessage(), dropped);
+            }
             if (parameterBounds != null && parameterBounds.length == 2) {
-            	if (parameterBounds[0].isUpperMulti()) {
-                    throw new DBPebkacException("Type adaptor "+typeAdaptorClass.getName()+" must not be "
-                    		+"declared with multiple super types for type variables, "
-                    		+"on "+javaProperty.qualifiedName());
-            	}
-            	if (parameterBounds[1].isUpperMulti()) {
-                    throw new DBPebkacException("Type adaptor "+typeAdaptorClass.getName()+" must not be "
-                    		+"declared with multiple super types for type variables, "
-                    		+"on "+javaProperty.qualifiedName());
-            	}
-            	
-            	try {
-					typeAdaptorExternalType = parameterBounds[0].upperClass();
-				} catch (UnsupportedType e) {
-					// rules dependent on this attribute will be disabled
-				}
+                if (parameterBounds[0].isUpperMulti()) {
+                    throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName() + " must not be "
+                            + "declared with multiple super types for type variables, "
+                            + "on " + javaProperty.qualifiedName());
+                }
+                if (parameterBounds[1].isUpperMulti()) {
+                    throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName() + " must not be "
+                            + "declared with multiple super types for type variables, "
+                            + "on " + javaProperty.qualifiedName());
+                }
 
-            	try {
-					typeAdaptorInternalType = parameterBounds[1].upperClass();
-				} catch (UnsupportedType e) {
-					// rules dependent on this attribute will be disabled
-				}
+                try {
+                    typeAdaptorExternalType = parameterBounds[0].upperClass();
+                } catch (UnsupportedType e) {
+                    // rules dependent on this attribute will be disabled
+                }
+
+                try {
+                    typeAdaptorInternalType = parameterBounds[1].upperClass();
+                } catch (UnsupportedType e) {
+                    // rules dependent on this attribute will be disabled
+                }
             }
         }
 
         // validation: type adaptor's external type must be compatible with simple-type java property
         if (typeAdaptorExternalType != null && !QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
-        	if (!typeAdaptorExternalType.isAssignableFrom(javaProperty.type())) {
+            if (!typeAdaptorExternalType.isAssignableFrom(javaProperty.type())) {
                 throw new DBPebkacException(
-                		"Type adaptor "+annotation.adaptor().getName()+" is not compatible "
-                		+" with "+javaProperty.type().getName()+", on "+javaProperty.qualifiedName());
-        	}
+                        "Type adaptor " + annotation.adaptor().getSimpleName() + " is not compatible "
+                        + " with " + javaProperty.type().getName() + ", on " + javaProperty.qualifiedName());
+            }
         }
-        
+
         // validation: type adaptor's external type must be compatible with actual QDT java property
         if (typeAdaptorExternalType != null && QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
-        	// TODO
+            // TODO
         }
 
         // validation: type adaptor's internal type must be supported simple type if no explicit type
         if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) == null) {
-        	boolean supported = false;
-        	for (Class<?> simpleType: SUPPORTED_SIMPLE_TYPES) {
-        		if (simpleType.isAssignableFrom(typeAdaptorInternalType)) {
-        			supported = true;
-        		}
-        	}
-        	if (!supported) {
-	            throw new DBPebkacException(
-	            		"Type adaptor "+annotation.adaptor().getName()+" internal type "
-	            		+typeAdaptorInternalType.getSimpleName()+" is not supported, on "
-	            		+javaProperty.qualifiedName());
-        	}
+            boolean supported = false;
+            for (Class<?> simpleType : SUPPORTED_SIMPLE_TYPES) {
+                if (simpleType.isAssignableFrom(typeAdaptorInternalType)) {
+                    supported = true;
+                }
+            }
+            if (!supported) {
+                throw new DBPebkacException(
+                        "Type adaptor " + annotation.adaptor().getName() + " internal type "
+                        + typeAdaptorInternalType.getSimpleName() + " is not supported, on "
+                        + javaProperty.qualifiedName());
+            }
         }
-        
+
         // validation: explicit type must be given if type adaptor's internal type isn't one where
         //             implied internal type is supported
         if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) == null) {
-        	if (inferredQDTTypeForSimpleType(typeAdaptorInternalType) == null) {
-	            throw new DBPebkacException(
-	            		"Must specify internal type when adapting to type "+typeAdaptorInternalType.getName()+
-	            		", on "+javaProperty.qualifiedName());
-        	}
+            if (inferredQDTTypeForSimpleType(typeAdaptorInternalType) == null) {
+                throw new DBPebkacException(
+                        "Must specify internal type when adapting to type " + typeAdaptorInternalType.getName()
+                        + ", on " + javaProperty.qualifiedName());
+            }
         }
 
         // validation: type adaptor's internal type be compatible with explicit type if specified
         if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) != null) {
-        	// TODO
+            // TODO
         }
-        
+
         // validation: explicitly declared type adapted target DBv property type must be a QueryableDataType
         if (annotation != null && explicitTypeOrNullOf(annotation) != null) {
             if (!QueryableDatatype.class.isAssignableFrom(explicitTypeOrNullOf(annotation))) {
-                throw new DBPebkacException("@DB"+DBAdaptType.class.getSimpleName()+"(type) on "+
-                		javaProperty.qualifiedName() + " is not a supported type. "
+                throw new DBPebkacException("@DB" + DBAdaptType.class.getSimpleName() + "(type) on "
+                        + javaProperty.qualifiedName() + " is not a supported type. "
                         + "Use one of the standard DB types, or use the @" + DBAdaptType.class.getSimpleName() + " annotation "
                         + "to adapt from a non-standard type.");
             }
         }
-        
-        // populate when no annotation is present
+
+        // populate everything
         if (annotation == null) {
+        	// populate when no annotation
+        	this.typeAdaptor = null;
             this.dbvPropertyType = (Class<? extends QueryableDatatype>) javaProperty.type();
+            this.internalQdtSyncer = null;
         }
-        
-        // populate given annotation
+        else if (identityOnly) {
+        	// populate identity-only information when type adaptor declared
+            Class<? extends QueryableDatatype> type;
+            type = explicitTypeOrNullOf(annotation);
+            if (type == null && typeAdaptorInternalType != null) {
+                type = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
+            }
+            if (type == null) {
+                throw new NullPointerException("null dbvPropertyType, this is an internal bug");
+            }
+            this.dbvPropertyType = type;
+
+        	this.typeAdaptor = null;
+            this.internalQdtSyncer = null;
+        }
         else {
+        	// initialise type adapting
             this.typeAdaptor = newTypeAdaptorInstanceGiven(javaProperty, annotation);
-            this.dbvPropertyType = explicitTypeOrNullOf(annotation);
-            if (this.dbvPropertyType == null && typeAdaptorInternalType != null) {
-            	this.dbvPropertyType = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
-            }
-            if (dbvPropertyType == null) {
-            	throw new NullPointerException("null dbvPropertyType, this is an internal bug");
-            }
             
+            Class<? extends QueryableDatatype> type;
+            type = explicitTypeOrNullOf(annotation);
+            if (type == null && typeAdaptorInternalType != null) {
+                type = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
+            }
+            if (type == null) {
+                throw new NullPointerException("null dbvPropertyType, this is an internal bug");
+            }
+            this.dbvPropertyType = type;
+
             if (QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
                 this.internalQdtSyncer = new QueryableDatatypeSyncer(javaProperty.qualifiedName(),
-                		this.dbvPropertyType, this.typeAdaptor);
-            }
-            else {
+                        this.dbvPropertyType, this.typeAdaptor);
+            } else {
                 this.internalQdtSyncer = new SimpleValueQueryableDatatypeSyncer(javaProperty.qualifiedName(),
-                		this.dbvPropertyType, this.typeAdaptor);
+                        this.dbvPropertyType, this.typeAdaptor);
             }
         }
     }
-    
+
     private static Class<? extends QueryableDatatype> inferredQDTTypeForSimpleType(Class<?> simpleType) {
-    	if (simpleType.equals(String.class)) {
-    		return DBString.class;
-    	}
-    	else if (Number.class.isAssignableFrom(simpleType)) {
-    		if (Integer.class.isAssignableFrom(simpleType) || Long.class.isAssignableFrom(simpleType)) {
-    			return DBInteger.class;
-    		}
-    		if (Float.class.isAssignableFrom(simpleType) || Double.class.isAssignableFrom(simpleType)) {
-    			return DBNumber.class;
-    		}
-    		else {
-    			return DBNumber.class;
-    		}
-    	}
-    	else if (Date.class.isAssignableFrom(simpleType)) {
-    		return DBDate.class;
-    	}
-    	
-    	// all remaining types require explicit declaration
-    	return null;
+        if (simpleType.equals(String.class)) {
+            return DBString.class;
+        } else if (Number.class.isAssignableFrom(simpleType)) {
+            if (Integer.class.isAssignableFrom(simpleType) || Long.class.isAssignableFrom(simpleType)) {
+                return DBInteger.class;
+            }
+            if (Float.class.isAssignableFrom(simpleType) || Double.class.isAssignableFrom(simpleType)) {
+                return DBNumber.class;
+            } else {
+                return DBNumber.class;
+            }
+        } else if (Date.class.isAssignableFrom(simpleType)) {
+            return DBDate.class;
+        }
+
+        // all remaining types require explicit declaration
+        return null;
     }
-    
+
     /**
      * Internal helper to support the way annotation attribute defaulting works.
+     *
      * @param annotation
      * @return
      */
     private static Class<? extends QueryableDatatype> explicitTypeOrNullOf(DBAdaptType annotation) {
-    	if (annotation == null) {
-    		return null;
-    	}
-    	
-    	// detect default
-    	if (annotation.type().equals(QueryableDatatype.class)) {
-    		return null;
-    	}
-    	
-    	// return value
-    	return annotation.type();
+        if (annotation == null) {
+            return null;
+        }
+
+        // detect default
+        if (annotation.type().equals(QueryableDatatype.class)) {
+            return null;
+        }
+
+        // return value
+        return annotation.type();
     }
 
     /**
@@ -281,6 +296,9 @@ class PropertyTypeHandler {
      * @return
      */
     public boolean isTypeAdapted() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only property type handler");
+    	}
         return (annotation != null);
     }
 
@@ -290,6 +308,9 @@ class PropertyTypeHandler {
      * @return
      */
     public DBAdaptType getDBTypeAdaptorAnnotation() {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to access non-identity information of identity-only property type handler");
+    	}
         return annotation;
     }
 
@@ -306,33 +327,33 @@ class PropertyTypeHandler {
      * readable
      */
     public QueryableDatatype getDBvValue(Object target) {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to read value from identity-only property");
+    	}
+    	
         // set via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
-	        Object externalValue = javaProperty.get(target);
-	        
-	        // convert
-	        // TODO think this still needs some last-minute type checks
-        	SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
-        	syncer.setInternalFromExternalSimpleValue(externalValue);
-        	return internalQdtSyncer.getInternalQueryableDatatype();
-        }
-        
-        // set via type adaptor and QDT java property
+            Object externalValue = javaProperty.get(target);
+
+            // convert
+            // TODO think this still needs some last-minute type checks
+            SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
+            syncer.setInternalFromExternalSimpleValue(externalValue);
+            return internalQdtSyncer.getInternalQueryableDatatype();
+        } // set via type adaptor and QDT java property
         else if (typeAdaptor != null) {
-	        Object externalValue = javaProperty.get(target);
-	        
-	        // this should be completely safe by now
-	        QueryableDatatype externalQdt = (QueryableDatatype) externalValue;
-	
-	        // convert
-        	internalQdtSyncer.setInternalFromExternalQDT(externalQdt);
-        	return internalQdtSyncer.getInternalQueryableDatatype();
-        }
-        
-        // get directly without type adaptor
-    	// (note: type checking was performed at creation time)
+            Object externalValue = javaProperty.get(target);
+
+            // this should be completely safe by now
+            QueryableDatatype externalQdt = (QueryableDatatype) externalValue;
+
+            // convert
+            internalQdtSyncer.setInternalFromExternalQDT(externalQdt);
+            return internalQdtSyncer.getInternalQueryableDatatype();
+        } // get directly without type adaptor
+        // (note: type checking was performed at creation time)
         else {
-        	return (QueryableDatatype) javaProperty.get(target);
+            return (QueryableDatatype) javaProperty.get(target);
         }
     }
 
@@ -349,28 +370,28 @@ class PropertyTypeHandler {
      * writable
      */
     public void setObjectValue(Object target, QueryableDatatype dbvValue) {
+    	if (identityOnly) {
+    		throw new AssertionError("Attempt to write value to identity-only property");
+    	}
+    	
         // set via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
-        	SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
-        	
-        	Object externalValue = syncer.getExternalSimpleValueFromInternal();
-        	
-	        // TODO think this still needs some last-minute type checks
-            javaProperty.set(target, externalValue);
-        }
+            SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
 
-        // set via type adaptor and QDT java property
+            Object externalValue = syncer.getExternalSimpleValueFromInternal();
+
+            // TODO think this still needs some last-minute type checks
+            javaProperty.set(target, externalValue);
+        } // set via type adaptor and QDT java property
         else if (typeAdaptor != null) {
-        	internalQdtSyncer.setInternalFromExternalQDT(dbvValue);
-        	QueryableDatatype internalQdt = internalQdtSyncer.getInternalQueryableDatatype();
-        	
+            internalQdtSyncer.setInternalFromExternalQDT(dbvValue);
+            QueryableDatatype internalQdt = internalQdtSyncer.getInternalQueryableDatatype();
+
             javaProperty.set(target, internalQdt);
-        }
-        
-        // set directly without type adaptor
-    	// (note: type checking was performed at creation time)
+        } // set directly without type adaptor
+        // (note: type checking was performed at creation time)
         else {
-        	javaProperty.set(target, dbvValue);
+            javaProperty.set(target, dbvValue);
         }
     }
 
@@ -401,26 +422,26 @@ class PropertyTypeHandler {
             throw new DBPebkacException("TypeAdaptor cannot be an abstract class (" + adaptorClass.getSimpleName()
                     + "), on property " + property.qualifiedName());
         }
-        
+
         try {
-			adaptorClass.newInstance();
-		} catch (InstantiationException e) {
-            throw new DBPebkacException("Type adaptor "+adaptorClass.getName()
-            		+ " could not be constructed, on property "
-                    + property.qualifiedName()+": "+e.getMessage(), e);
-		} catch (IllegalAccessException e) {
-            throw new DBPebkacException("Type adaptor "+adaptorClass.getName()
-            		+ " could not be constructed, on property "
-                    + property.qualifiedName()+": "+e.getMessage(), e);
-		}
+            adaptorClass.newInstance();
+        } catch (InstantiationException e) {
+            throw new DBPebkacException("Type adaptor " + adaptorClass.getName()
+                    + " could not be constructed, on property "
+                    + property.qualifiedName() + ": " + e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            throw new DBPebkacException("Type adaptor " + adaptorClass.getName()
+                    + " could not be constructed, on property "
+                    + property.qualifiedName() + ": " + e.getMessage(), e);
+        }
 
         // get default constructor
         Constructor<? extends DBTypeAdaptor<?, ?>> constructor;
         try {
             constructor = adaptorClass.getConstructor();
         } catch (NoSuchMethodException e) {
-            throw new DBPebkacException("Type adaptor "+adaptorClass.getName()
-            		+ " has no default constructor, on property "
+            throw new DBPebkacException("Type adaptor " + adaptorClass.getName()
+                    + " has no default constructor, on property "
                     + property.qualifiedName(), e);
         } catch (SecurityException e) {
             // caused by a Java security manager or an attempt to access a non-visible field
@@ -447,10 +468,10 @@ class PropertyTypeHandler {
                     + adaptorClass.getName() + ", referenced by property " + property.qualifiedName() + ": " + e.getLocalizedMessage(), e);
         } catch (InvocationTargetException e) {
             // any checked or runtime exception thrown by the setter method itself
-            // TODO: check that this exception wraps runtime exceptions as well
-            Throwable cause = e.getCause();
+            Throwable cause = (e.getCause() == null) ? e : e.getCause();
+			String msg = (cause.getLocalizedMessage() == null) ? "" : ": "+cause.getLocalizedMessage();
             throw new DBThrownByEndUserCodeException("Constructor threw " + cause.getClass().getSimpleName() + " when instantiating "
-                    + adaptorClass.getName() + ", referenced by property " + property.qualifiedName() + ": " + cause.getLocalizedMessage(), cause);
+                    + adaptorClass.getName() + ", referenced by property " + property.qualifiedName() + msg, cause);
         }
 
         // downcast
@@ -460,7 +481,6 @@ class PropertyTypeHandler {
         DBTypeAdaptor<Object, Object> result = (DBTypeAdaptor<Object, Object>) instance;
         return result;
     }
-
 //    private abstract class InternalQDTWrapper {
 //    	public InternalQDTWrapper() {
 //    	}
@@ -473,7 +493,6 @@ class PropertyTypeHandler {
 //    	
 //    	public abstract QueryableDatatype getQueryableDatatype();
 //    }
-    
 //    private class InternalDBNumberWrapper extends InternalQDTWrapper {
 //    	private DBNumber internalQdt = new DBNumber();
 //    	

@@ -25,10 +25,10 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 public class DBNumber extends QueryableDatatype {
 
     public static final long serialVersionUID = 1;
-    protected Number numberValue = null;
-    protected DBNumber lowerBoundNumber = null;
-    protected DBNumber upperBoundNumber = null;
-    protected DBNumber[] inValuesNumber = new DBNumber[]{};
+//    protected Number numberValue = null;
+//    protected DBNumber lowerBoundNumber = null;
+//    protected DBNumber upperBoundNumber = null;
+//    protected DBNumber[] inValuesNumber = new DBNumber[]{};
 
     public DBNumber() {
         super();
@@ -41,12 +41,12 @@ public class DBNumber extends QueryableDatatype {
     public DBNumber(Number aNumber) {
         super(aNumber);
         if (aNumber == null) {
-            numberValue = 0L;
+//            numberValue = 0L;
 //            this.isDBNull = true;
 //            this.usingNullComparison = true;
         } else {
 //            super.isLiterally(aNumber);
-            numberValue = aNumber;
+//            numberValue = aNumber;
         }
     }
 
@@ -56,16 +56,15 @@ public class DBNumber extends QueryableDatatype {
      */
     public DBNumber(Object aNumber) {
         super(aNumber);
-        initDBNumber(aNumber);
+        if (!(aNumber instanceof Number)) {
+            initDBNumber(aNumber);
+        }
     }
 
     @Override
     public void setValue(Object newLiteralValue) {
-        super.setValue(newLiteralValue);
         initDBNumber(newLiteralValue);
     }
-    
-    
 
     /**
      *
@@ -76,19 +75,19 @@ public class DBNumber extends QueryableDatatype {
 //    }
     private void initDBNumber(Object aNumber) {
         if (aNumber == null) {
-            numberValue = null;
+            super.setValue(null);
         } else {
             if (aNumber instanceof Number) {
-                numberValue = (Number) aNumber;
+                super.setValue((Number) aNumber);
             } else {
-                numberValue = Double.parseDouble(aNumber.toString());
+                super.setValue(Double.parseDouble(aNumber.toString()));
             }
         }
     }
 
     @Override
     public String toString() {
-        return (numberValue == null ? null : numberValue.toString());
+        return (doubleValue() == null ? null : doubleValue().toString());
     }
 
     /**
@@ -97,10 +96,10 @@ public class DBNumber extends QueryableDatatype {
     @Override
     public void blankQuery() {
         super.blankQuery();
-        this.numberValue = null;
-        this.lowerBoundNumber = null;
-        this.upperBoundNumber = null;
-        this.inValuesNumber = new DBNumber[]{};
+//        this.numberValue = null;
+//        this.lowerBoundNumber = null;
+//        this.upperBoundNumber = null;
+//        this.inValuesNumber = new DBNumber[]{};
     }
 
     @Override
@@ -109,7 +108,7 @@ public class DBNumber extends QueryableDatatype {
         for (Object str : literalOptions) {
             intOptions.add(new DBNumber(str));
         }
-        return useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(new DBNumber[]{}));
     }
 
     /**
@@ -121,7 +120,7 @@ public class DBNumber extends QueryableDatatype {
         for (Number num : inValues) {
             intOptions.add(new DBNumber(num));
         }
-        return useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(new DBNumber[]{}));
     }
 
     /**
@@ -133,7 +132,7 @@ public class DBNumber extends QueryableDatatype {
         for (Number num : inValues) {
             intOptions.add(new DBNumber(num));
         }
-        return useInOperator(intOptions.toArray(this.inValuesNumber));
+        return useInOperator(intOptions.toArray(new DBNumber[]{}));
     }
 
     /**
@@ -141,7 +140,7 @@ public class DBNumber extends QueryableDatatype {
      * @param inValues
      */
     public DBOperator useInOperator(DBNumber... inValues) {
-        this.inValuesNumber = inValues;
+//        this.inValuesNumber = inValues;
         return super.useInOperator(inValues);
     }
 
@@ -165,8 +164,8 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     public DBOperator useBetweenOperator(Object lower, Object upper) {
-        this.upperBoundNumber = new DBNumber(upper);
-        this.lowerBoundNumber = new DBNumber(lower);
+        DBNumber upperBoundNumber = new DBNumber(upper);
+        DBNumber lowerBoundNumber = new DBNumber(lower);
         return super.useBetweenOperator(lowerBoundNumber, upperBoundNumber);
     }
 
@@ -176,8 +175,8 @@ public class DBNumber extends QueryableDatatype {
      * @param upper
      */
     public DBOperator useBetweenOperator(Number lower, Number upper) {
-        this.upperBoundNumber = new DBNumber(upper);
-        this.lowerBoundNumber = new DBNumber(lower);
+        DBNumber upperBoundNumber = new DBNumber(upper);
+        DBNumber lowerBoundNumber = new DBNumber(lower);
         return super.useBetweenOperator(lowerBoundNumber, upperBoundNumber);
     }
 
@@ -185,7 +184,7 @@ public class DBNumber extends QueryableDatatype {
     public DBOperator useEqualsOperator(Object literal) {
         if (literal == null || literal.toString().isEmpty()) {
             super.useEqualsOperator(null);
-            this.numberValue = null;
+//            this.numberValue = null;
         } else {
             this.useEqualsOperator(Double.parseDouble(literal.toString()));
         }
@@ -198,7 +197,7 @@ public class DBNumber extends QueryableDatatype {
      */
     public DBOperator useEqualsOperator(Number literal) {
         DBOperator useEqualsOperator = super.useEqualsOperator(literal);
-        this.numberValue = literal;
+//        this.numberValue = literal;
         return useEqualsOperator;
     }
 
@@ -213,15 +212,13 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     protected DBOperator useNullOperator() {
-        DBOperator operator = super.useNullOperator(); 
-        numberValue = null;
-        lowerBoundNumber = null;
-        upperBoundNumber = null;
-        inValuesNumber = new DBNumber[]{};
+        DBOperator operator = super.useNullOperator();
+//        numberValue = null;
+//        lowerBoundNumber = null;
+//        upperBoundNumber = null;
+//        inValuesNumber = new DBNumber[]{};
         return operator;
     }
-    
-    
 
     /**
      *
@@ -238,22 +235,25 @@ public class DBNumber extends QueryableDatatype {
      * {123} => 123
      *
      */
-    @Override
-    public String toSQLString(DBDatabase db) {
-        if (this.isDBNull || this.numberValue == null) {
-            return db.getDefinition().getNull();
-        }
-        return this.numberValue.toString();
-    }
-
+//    @Override
+//    public String toSQLString(DBDatabase db) {
+//        if (this.isDBNull || this.numberValue == null) {
+//            return db.getDefinition().getNull();
+//        }
+//        return this.numberValue.toString();
+//    }
     /**
      *
+     * @param db
      * @return
      */
     @Override
-    public String getSQLValue(DBDatabase db) {
+    public String formatValueForSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
-        return defn.beginNumberValue() + numberValue.toString() + defn.endNumberValue();
+        if (isNull()) {
+            return defn.getNull();
+        }
+        return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
     }
 
     /**
@@ -262,7 +262,13 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     public Double doubleValue() {
-        return numberValue == null ? null : numberValue.doubleValue();
+        if (literalValue == null) {
+            return null;
+        } else if (literalValue instanceof Number) {
+            return ((Number) literalValue).doubleValue();
+        } else {
+            return Double.parseDouble(literalValue.toString());
+        }
     }
 
     /**
@@ -271,7 +277,13 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     public Long longValue() {
-        return numberValue == null ? null : numberValue.longValue();
+        if (literalValue == null) {
+            return null;
+        } else if (literalValue instanceof Number) {
+            return ((Number) literalValue).longValue();
+        } else {
+            return Long.parseLong(literalValue.toString());
+        }
     }
 
     /**
@@ -280,14 +292,19 @@ public class DBNumber extends QueryableDatatype {
      */
     @Override
     public Integer intValue() {
-        return numberValue == null ? null : numberValue.intValue();
+        if (literalValue == null) {
+            return null;
+        } else if (literalValue instanceof Number) {
+            return ((Number) literalValue).intValue();
+        } else {
+            return Integer.parseInt(literalValue.toString());
+        }
     }
 
     /**
      *
      * @param resultSet
      * @param fullColumnName
-     * @throws SQLException
      */
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
@@ -297,6 +314,9 @@ public class DBNumber extends QueryableDatatype {
             BigDecimal dbValue;
             try {
                 dbValue = resultSet.getBigDecimal(fullColumnName);
+                if (resultSet.wasNull()) {
+                    dbValue = null;
+                }
             } catch (SQLException ex) {
                 dbValue = null;
             }

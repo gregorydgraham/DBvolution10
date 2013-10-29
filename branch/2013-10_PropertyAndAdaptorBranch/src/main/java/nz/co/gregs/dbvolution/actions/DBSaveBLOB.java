@@ -18,18 +18,21 @@ package nz.co.gregs.dbvolution.actions;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.DBRow;
+
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 
 public class DBSaveBLOB extends DBAction {
 
 //    private DBRow row = null;
+	private String columnName;
     private DBLargeObject blob = null;
 
-    public DBSaveBLOB(DBRow row, DBLargeObject blob) {
+    public DBSaveBLOB(DBRow row, String columnName, DBLargeObject blob) {
         super(row);
+        this.columnName = columnName;
         this.blob = blob;
     }
 
@@ -45,13 +48,13 @@ public class DBSaveBLOB extends DBAction {
         String sqlString = defn.beginUpdateLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginSetClause()
-                + defn.formatColumnName(row.getDBColumnName(blob))
+                + defn.formatColumnName(columnName)
                 + defn.getEqualsComparator()
                 + defn.getPreparedVariableSymbol()
                 + defn.beginWhereClause()
                 + defn.formatColumnName(row.getPrimaryKeyName())
                 + defn.getEqualsComparator()
-                + row.getPrimaryKey().getSQLValue(db)
+                + row.getPrimaryKey().toSQLString(db)
                 + defn.endSQLStatement();
         db.printSQLIfRequested(sqlString);
         PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
@@ -60,7 +63,7 @@ public class DBSaveBLOB extends DBAction {
     }
 
     @Override
-    public String getSQLRepresentation() {
+    public String getSQLStatement(DBDatabase db) {
         return "// SAVE BINARY DATA";
     }
 }

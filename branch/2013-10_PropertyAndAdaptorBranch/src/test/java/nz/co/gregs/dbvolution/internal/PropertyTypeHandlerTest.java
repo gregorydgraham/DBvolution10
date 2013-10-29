@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import org.junit.Ignore;
 import org.junit.Test;
 
+@SuppressWarnings("serial")
 public class PropertyTypeHandlerTest {
 	private JavaPropertyFinder finder = new JavaPropertyFinder();
 
@@ -28,21 +29,21 @@ public class PropertyTypeHandlerTest {
 	public void errorsOnConstructionGivenTypeAdaptorWithWrongDBvType() {
 		List<JavaProperty> properties = finder.getPropertiesOf(MyTable.class);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName("fieldAdaptedToWrongDBvType")));
-		new PropertyTypeHandler(property);
+		new PropertyTypeHandler(property, false);
 	}
 
 	@Test(expected=DBPebkacException.class)
 	public void errorsOnConstructionGivenInterfaceTypeAdaptor() {
 		List<JavaProperty> properties = finder.getPropertiesOf(MyTable.class);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName("interfaceAdaptorField")));
-		new PropertyTypeHandler(property);
+		new PropertyTypeHandler(property, false);
 	}
 	
 	@Test
 	public void acceptsOnConstructionGivenTypeAdaptorWithCorrectDBvType() {
 		List<JavaProperty> properties = finder.getPropertiesOf(MyTable.class);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName("correctlyAdaptedField")));
-		new PropertyTypeHandler(property);
+		new PropertyTypeHandler(property, false);
 	}
 	
 	@Test
@@ -136,7 +137,7 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void infersDBStringGivenIntegerStringAdaptor() {
 		class MyClass extends DBRow {
-			@DBAdaptType(adaptor=IntegerStringAdaptor.class)
+			@DBAdaptType(adaptor=LongStringAdaptor.class)
 			@DBColumn
 			public DBInteger intField = new DBInteger();
 		}
@@ -148,7 +149,7 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void getsCorrectInternalValueTypeGivenIntegerStringAdaptorOnDBIntegerField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(adaptor=IntegerStringAdaptor.class)
+			@DBAdaptType(adaptor=LongStringAdaptor.class)
 			@DBColumn
 			public DBInteger intField = new DBInteger();
 		}
@@ -158,11 +159,10 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt, is(instanceOf(DBString.class)));
 	}
 
-	@Ignore // broken due to bug in QueryableDatatype turning literalValues into strings
 	@Test
-	public void getsCorrectInternalValueGivenIntegerStringAdaptorOnDBIntegerField() {
+	public void getsCorrectInternalValueGivenLongStringAdaptorOnDBIntegerField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(adaptor=IntegerStringAdaptor.class)
+			@DBAdaptType(adaptor=LongStringAdaptor.class)
 			@DBColumn
 			public DBInteger intField = new DBInteger();
 		}
@@ -177,7 +177,7 @@ public class PropertyTypeHandlerTest {
 	}
 	
 	private PropertyTypeHandler propertyHandlerOf(Class<?> clazz, String javaPropertyName) {
-		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName));
+		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName), false);
 	}
 	
 	private JavaProperty propertyOf(Class<?> clazz, String javaPropertyName) {
@@ -189,17 +189,17 @@ public class PropertyTypeHandlerTest {
 		return property;
 	}
 	
-	public static class IntegerStringAdaptor implements DBTypeAdaptor<Integer,String> {
+	public static class LongStringAdaptor implements DBTypeAdaptor<Long,String> {
 		@Override
-		public Integer fromDatabaseValue(String dbvValue) {
+		public Long fromDatabaseValue(String dbvValue) {
 			if (dbvValue != null) {
-				return Integer.parseInt(dbvValue);
+				return Long.parseLong(dbvValue);
 			}
 			return null;
 		}
 
 		@Override
-		public String toDatabaseValue(Integer objectValue) {
+		public String toDatabaseValue(Long objectValue) {
 			if (objectValue != null) {
 				return objectValue.toString();
 			}
