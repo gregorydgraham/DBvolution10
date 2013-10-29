@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 
 /**
  *
@@ -46,7 +47,7 @@ public  abstract class DBAction {
 
     public abstract boolean canBeBatched();
 
-    public abstract void execute(DBDatabase db, Statement statement) throws SQLException ;
+    public abstract void execute(DBDatabase db, DBStatement statement) throws SQLException ;
 
     /**
      * @return the row

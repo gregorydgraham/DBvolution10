@@ -20,9 +20,10 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.DBTransactionStatement;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
@@ -40,7 +41,7 @@ public abstract class DBDatabase {
     private DataSource dataSource = null;
     private boolean printSQLBeforeExecuting;
     private boolean isInATransaction;
-    private Statement transactionStatement;
+    private DBTransactionStatement transactionStatement;
     private final DBDefinition definition;
     private String databaseName;
     private boolean batchIfPossible = true;
@@ -72,13 +73,22 @@ public abstract class DBDatabase {
         this.username = username;
     }
 
+    private DBTransactionStatement getDBTransactionStatement() {
+        final DBStatement dbStatement = getDBStatement();
+        if (dbStatement instanceof DBTransactionStatement) {
+            return (DBTransactionStatement) dbStatement;
+        } else {
+            return new DBTransactionStatement(dbStatement);
+        }
+    }
+
     /**
      *
      * @return
      */
-    public synchronized Statement getDBStatement() {
+    public synchronized DBStatement getDBStatement() {
         Connection connection;
-        Statement statement;
+        DBStatement statement;
         if (isInATransaction) {
             statement = this.transactionStatement;
         } else {
@@ -102,7 +112,7 @@ public abstract class DBDatabase {
                 }
             }
             try {
-                statement = connection.createStatement();
+                statement = new DBStatement(connection.createStatement());
             } catch (SQLException noConnection) {
                 throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
             }
@@ -313,24 +323,28 @@ public abstract class DBDatabase {
     synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
         V returnValues = null;
         Connection connection;
-        this.transactionStatement = getDBStatement();
-        this.isInATransaction = true;
-        connection = transactionStatement.getConnection();
-        connection.setAutoCommit(false);
+        this.transactionStatement = getDBTransactionStatement();
         try {
-            returnValues = dbTransaction.doTransaction(this);
-            connection.commit();
-            System.err.println("Transaction Successful: Commit Performed");
-            connection.setAutoCommit(true);
+            this.isInATransaction = true;
+            connection = transactionStatement.getConnection();
+            connection.setAutoCommit(false);
+            try {
+                returnValues = dbTransaction.doTransaction(this);
+                connection.commit();
+                System.err.println("Transaction Successful: Commit Performed");
+                connection.setAutoCommit(true);
+            } catch (Exception ex) {
+                connection.rollback();
+                System.err.println("Exception Occurred: ROLLBACK Performed");
+                throw ex;
+            } finally {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        } finally {
+            this.transactionStatement.transactionFinished();
             this.isInATransaction = false;
             transactionStatement = null;
-        } catch (Exception ex) {
-            connection.rollback();
-            System.err.println("Exception Occurred: ROLLBACK Performed");
-            connection.setAutoCommit(true);
-            this.isInATransaction = false;
-            transactionStatement = null;
-            throw ex;
         }
         return returnValues;
     }
@@ -349,31 +363,32 @@ public abstract class DBDatabase {
         boolean wasReadOnly = false;
         boolean wasAutoCommit = true;
 
-        this.transactionStatement = getDBStatement();
-        this.isInATransaction = true;
+        this.transactionStatement = getDBTransactionStatement();
+        try {
+            this.isInATransaction = true;
 
-        connection = transactionStatement.getConnection();
-        wasReadOnly = connection.isReadOnly();
-        wasAutoCommit = connection.getAutoCommit();
+            connection = transactionStatement.getConnection();
+            wasReadOnly = connection.isReadOnly();
+            wasAutoCommit = connection.getAutoCommit();
 
 //        connection.setReadOnly(true);
-        connection.setAutoCommit(false);
-        try {
-            returnValues = dbTransaction.doTransaction(this);
-            connection.rollback();
-            System.err.println("Transaction Successful: ROLLBACK Performed");
-            connection.setAutoCommit(wasAutoCommit);
-//            connection.setReadOnly(wasReadOnly);
+            connection.setAutoCommit(false);
+            try {
+                returnValues = dbTransaction.doTransaction(this);
+                connection.rollback();
+                System.err.println("Transaction Successful: ROLLBACK Performed");
+            } catch (Exception ex) {
+                connection.rollback();
+                System.err.println("Exception Occurred: ROLLBACK Performed");
+                throw ex;
+            } finally {
+                connection.setAutoCommit(wasAutoCommit);
+                connection.close();
+            }
+        } finally {
+            this.transactionStatement.transactionFinished();
             this.isInATransaction = false;
             transactionStatement = null;
-        } catch (Exception ex) {
-            connection.rollback();
-            System.err.println("Exception Occurred: ROLLBACK Performed");
-            connection.setAutoCommit(wasAutoCommit);
-//            connection.setReadOnly(wasReadOnly);
-            this.isInATransaction = false;
-            transactionStatement = null;
-            throw ex;
         }
         return returnValues;
     }
@@ -496,11 +511,11 @@ public abstract class DBDatabase {
             if (field.isColumn()) {
                 QueryableDatatype qdt = field.getQueryableDatatype();
                 if (qdt == null) {
-                	// this is inefficient since the new qdt will be thrown away,
-                	// but it's only for creating tables, which doesn't happen often.
-					qdt = QueryableDatatype.getQueryableDatatypeInstance(field.type());
+                    // this is inefficient since the new qdt will be thrown away,
+                    // but it's only for creating tables, which doesn't happen often.
+                    qdt = QueryableDatatype.getQueryableDatatypeInstance(field.type());
                 }
-                
+
                 String colName = field.columnName();
                 sqlScript
                         .append(sep)

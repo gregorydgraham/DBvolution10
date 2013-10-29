@@ -18,13 +18,13 @@ package nz.co.gregs.dbvolution;
 import java.io.PrintStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -317,41 +317,49 @@ public class DBQuery {
         resultSQL = this.getSQLForQuery();
         DBQueryRow queryRow;
 
-        Statement dbStatement = database.getDBStatement();
-        ResultSet resultSet = dbStatement.executeQuery(resultSQL);
-        while (resultSet.next()) {
-            queryRow = new DBQueryRow();
-            for (DBRow tableRow : allQueryTables) {
-                DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
+        DBStatement dbStatement = database.getDBStatement();
+        try {
+            ResultSet resultSet = dbStatement.executeQuery(resultSQL);
+            try {
+                while (resultSet.next()) {
+                    queryRow = new DBQueryRow();
+                    for (DBRow tableRow : allQueryTables) {
+                        DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
-                DBDefinition defn = database.getDefinition();
-                List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
-                for (PropertyWrapper newProp : newProperties) {
-                    QueryableDatatype qdt = newProp.getQueryableDatatype();
-                    String resultSetColumnName = defn.formatColumnNameForResultSet(newInstance.getTableName(), newProp.columnName());
-                    qdt.setFromResultSet(resultSet, resultSetColumnName);
-                }
-                newInstance.setDefined(true); // Actually came from the database so it is a defined row.
-                Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
-                if (existingInstancesOfThisTableRow == null) {
-                    existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
-                    existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
-                }
-                DBRow existingInstance = newInstance;
-                final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
-                if (primaryKey != null) {
-                    final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
-                    if (qdt != null) {
-                        existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
-                        if (existingInstance == null) {
-                            existingInstance = newInstance;
-                            existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
+                        DBDefinition defn = database.getDefinition();
+                        List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
+                        for (PropertyWrapper newProp : newProperties) {
+                            QueryableDatatype qdt = newProp.getQueryableDatatype();
+                            String resultSetColumnName = defn.formatColumnNameForResultSet(newInstance.getTableName(), newProp.columnName());
+                            qdt.setFromResultSet(resultSet, resultSetColumnName);
                         }
+                        newInstance.setDefined(true); // Actually came from the database so it is a defined row.
+                        Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
+                        if (existingInstancesOfThisTableRow == null) {
+                            existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
+                            existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
+                        }
+                        DBRow existingInstance = newInstance;
+                        final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
+                        if (primaryKey != null) {
+                            final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
+                            if (qdt != null) {
+                                existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
+                                if (existingInstance == null) {
+                                    existingInstance = newInstance;
+                                    existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
+                                }
+                            }
+                        }
+                        queryRow.put(existingInstance.getClass(), existingInstance);
                     }
+                    results.add(queryRow);
                 }
-                queryRow.put(existingInstance.getClass(), existingInstance);
+            } finally {
+                resultSet.close();
             }
-            results.add(queryRow);
+        } finally {
+            dbStatement.close();
         }
         return results;
     }
@@ -525,10 +533,18 @@ public class DBQuery {
         } else {
             Long result = 0L;
 
-            Statement dbStatement = database.getDBStatement();
-            ResultSet resultSet = dbStatement.executeQuery(this.getSQLForCount());
-            while (resultSet.next()) {
-                result = resultSet.getLong(1);
+            DBStatement dbStatement = database.getDBStatement();
+            try {
+                ResultSet resultSet = dbStatement.executeQuery(this.getSQLForCount());
+                try {
+                    while (resultSet.next()) {
+                        result = resultSet.getLong(1);
+                    }
+                } finally {
+                    resultSet.close();
+                }
+            } finally {
+                dbStatement.close();
             }
             return result;
         }
@@ -554,38 +570,39 @@ public class DBQuery {
     }
 
     /**
-     * Sets the sort order of properties (field and/or method)
-     * by the given property object references.
-     * 
-     * <p> For example the following code snippet will sort
-     * by just the name column:
+     * Sets the sort order of properties (field and/or method) by the given
+     * property object references.
+     *
+     * <p>
+     * For example the following code snippet will sort by just the name column:
      * <pre>
      * Customer customer = ...;
      * query.setSortOrder(new DBRow[]{customer}, customer.name);
      * </pre>
      *
-     * <p> Requires that each {@code baseRowColumn) be from one of the
+     * <p>
+     * Requires that each {@code baseRowColumn) be from one of the
      * {@code baseRow) instances to work.
      * @param baseRows
      * @param baseRowColumns
      */
     public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {
         results = null;
-        
+
         sortOrder = new ArrayList<PropertyWrapper>();
-        for (QueryableDatatype qdt: baseRowColumns) {
-        	PropertyWrapper prop = null;
-	        for (DBRow baseRow: baseRows) {
-	            prop = baseRow.getPropertyWrapperOf(qdt);
-	            if (prop != null) {
-	            	break;
-	            }
-	        }
-	        if (prop == null) {
-	        	throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
-	        }
-	        
-        	sortOrder.add(prop);
+        for (QueryableDatatype qdt : baseRowColumns) {
+            PropertyWrapper prop = null;
+            for (DBRow baseRow : baseRows) {
+                prop = baseRow.getPropertyWrapperOf(qdt);
+                if (prop != null) {
+                    break;
+                }
+            }
+            if (prop == null) {
+                throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
+            }
+
+            sortOrder.add(prop);
         }
     }
 
@@ -599,8 +616,8 @@ public class DBQuery {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (PropertyWrapper prop : sortOrder) {
-            	QueryableDatatype qdt = prop.getQueryableDatatype();
-            	final String dbColumnName = defn.formatTableAndColumnName(prop.tableName(), prop.columnName());
+                QueryableDatatype qdt = prop.getQueryableDatatype();
+                final String dbColumnName = defn.formatTableAndColumnName(prop.tableName(), prop.columnName());
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();

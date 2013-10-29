@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
@@ -59,7 +60,7 @@ public class DBSave extends DBAction {
     }
 
     @Override
-    public void execute(DBDatabase db, Statement statement) throws SQLException {
+    public void execute(DBDatabase db, DBStatement statement) throws SQLException {
         statement.execute(sql);
     }
 }

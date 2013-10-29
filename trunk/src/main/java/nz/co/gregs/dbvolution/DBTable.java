@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBSave;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -176,20 +176,30 @@ public class DBTable<E extends DBRow> {
             System.out.println(selectStatement);
         }
 
-        Statement statement;
-        ResultSet resultSet;
+        DBStatement statement = null;
+        ResultSet resultSet = null;
         statement = this.database.getDBStatement();
         try {
-            boolean executed = statement.execute(selectStatement);
-        } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + database.getJdbcURL() + " USERNAME=" + database.getUsername(), noConnection);
+            try {
+                try {
+                    boolean executed = statement.execute(selectStatement);
+                } catch (SQLException noConnection) {
+                    throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + database.getJdbcURL() + " USERNAME=" + database.getUsername(), noConnection);
+                }
+                try {
+                    resultSet = statement.getResultSet();
+                } catch (SQLException noConnection) {
+                    throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + database.getJdbcURL() + " USERNAME=" + database.getUsername(), noConnection);
+                }
+                addAllFields(this, resultSet);
+            } finally {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            }
+        } finally {
+            statement.close();
         }
-        try {
-            resultSet = statement.getResultSet();
-        } catch (SQLException noConnection) {
-            throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + database.getJdbcURL() + " USERNAME=" + database.getUsername(), noConnection);
-        }
-        addAllFields(this, resultSet);
         return this;
     }
 
@@ -264,7 +274,7 @@ public class DBTable<E extends DBRow> {
     }
 
     private String getPrimaryKeyColumn() {
-    	String columnName = dummy.getPrimaryKeyName();
+        String columnName = dummy.getPrimaryKeyName();
         if (columnName == null) {
             throw new UndefinedPrimaryKeyException(dummy.getClass());
         } else {
@@ -285,11 +295,18 @@ public class DBTable<E extends DBRow> {
             System.out.println(selectStatement);
         }
 
-        Statement statement = database.getDBStatement();
-        boolean executed = statement.execute(selectStatement);
-        ResultSet resultSet = statement.getResultSet();
-
-        addAllFields(this, resultSet);
+        DBStatement statement = database.getDBStatement();
+        try {
+            boolean executed = statement.execute(selectStatement);
+            ResultSet resultSet = statement.getResultSet();
+            try {
+                addAllFields(this, resultSet);
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            statement.close();
+        }
         return this;
     }
 
@@ -469,24 +486,28 @@ public class DBTable<E extends DBRow> {
      * @throws SQLException
      */
     public void insert(List<E> newRows) throws SQLException {
-        Statement statement = database.getDBStatement();
-        DBActionList allInserts = getSQLForInsert(newRows);
-        for (DBAction action : allInserts) {
-            if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                System.out.println(action.getSQLStatement(database));
+        DBStatement statement = database.getDBStatement();
+        try {
+            DBActionList allInserts = getSQLForInsert(newRows);
+            for (DBAction action : allInserts) {
+                if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
+                    System.out.println(action.getSQLStatement(database));
+                }
+                if (action.canBeBatched() && database.getBatchSQLStatementsWhenPossible()) {
+                    statement.addBatch(action.getSQLStatement(database));
+                } else {
+                    statement.executeBatch();
+                    statement.clearBatch();
+                    action.execute(database, statement);
+                }
             }
-            if (action.canBeBatched() && database.getBatchSQLStatementsWhenPossible()) {
-                statement.addBatch(action.getSQLStatement(database));
-            } else {
-                statement.executeBatch();
-                statement.clearBatch();
-                action.execute(database, statement);
+            statement.executeBatch();
+            // Hasn't thrown an exception so they are now defined.
+            for (DBAction action : allInserts) {
+                action.getRow().setDefined(true);
             }
-        }
-        statement.executeBatch();
-        // Hasn't thrown an exception so they are now defined.
-        for (DBAction action : allInserts) {
-            action.getRow().setDefined(true);
+        } finally {
+            statement.close();
         }
     }
 
@@ -547,21 +568,25 @@ public class DBTable<E extends DBRow> {
      * @throws SQLException
      */
     public void delete(List<E> oldRows) throws SQLException {
-        Statement statement = database.getDBStatement();
-        List<String> allSQL = getSQLForDelete(oldRows);
-        if (database.getBatchSQLStatementsWhenPossible()) {
-            for (String sql : allSQL) {
-                if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                    System.out.println(sql);
+        DBStatement statement = database.getDBStatement();
+        try {
+            List<String> allSQL = getSQLForDelete(oldRows);
+            if (database.getBatchSQLStatementsWhenPossible()) {
+                for (String sql : allSQL) {
+                    if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
+                        System.out.println(sql);
+                    }
+                    statement.addBatch(sql);
                 }
-                statement.addBatch(sql);
+                statement.executeBatch();
+            } else {
+                for (String sql : allSQL) {
+                    database.printSQLIfRequested(sql);
+                    statement.execute(sql);
+                }
             }
-            statement.executeBatch();
-        } else {
-            for (String sql : allSQL) {
-                database.printSQLIfRequested(sql);
-                statement.execute(sql);
-            }
+        } finally {
+            statement.close();
         }
     }
 
@@ -630,8 +655,8 @@ public class DBTable<E extends DBRow> {
                 + defn.formatTableName(row.getTableName())
                 + defn.beginWhereClause()
                 + defn.getTrueOperation();
-        for (PropertyWrapper prop: row.getPropertyWrappers()) {
-        	QueryableDatatype qdt = prop.getQueryableDatatype();
+        for (PropertyWrapper prop : row.getPropertyWrappers()) {
+            QueryableDatatype qdt = prop.getQueryableDatatype();
             sql = sql
                     + defn.beginAndLine()
                     + prop.columnName()
@@ -664,8 +689,8 @@ public class DBTable<E extends DBRow> {
                 + row.getSetClause(database)
                 + defn.beginWhereClause()
                 + defn.getTrueOperation();
-        for (PropertyWrapper prop: row.getPropertyWrappers()) {
-        	QueryableDatatype qdt = prop.getQueryableDatatype();
+        for (PropertyWrapper prop : row.getPropertyWrappers()) {
+            QueryableDatatype qdt = prop.getQueryableDatatype();
             if (qdt.isNull()) {
                 DBIsNullOperator isNullOp = new DBIsNullOperator();
                 sql = sql
@@ -697,33 +722,37 @@ public class DBTable<E extends DBRow> {
     }
 
     public void update(List<E> oldRows) throws SQLException {
-        Statement statement = database.getDBStatement();
-        final boolean useBatch = database.getBatchSQLStatementsWhenPossible();
-        boolean batchHasEntries = false;
+        DBStatement statement = database.getDBStatement();
+        try {
+            final boolean useBatch = database.getBatchSQLStatementsWhenPossible();
+            boolean batchHasEntries = false;
 
-        for (E row : oldRows) {
-            if (row.hasChanged()) {
-                String sql = getSQLForUpdate(row);
+            for (E row : oldRows) {
+                if (row.hasChanged()) {
+                    String sql = getSQLForUpdate(row);
 
-                if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                    System.out.println(sql);
-                }
-                if (useBatch) {
-                    statement.addBatch(sql);
-                    batchHasEntries = true;
-                } else {
-                    statement.execute(sql);
+                    if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
+                        System.out.println(sql);
+                    }
+                    if (useBatch) {
+                        statement.addBatch(sql);
+                        batchHasEntries = true;
+                    } else {
+                        statement.execute(sql);
+                    }
                 }
             }
-        }
 
-        // Do the batched statements
-        if (useBatch && batchHasEntries) {
-            statement.executeBatch();
-        }
-        // Clean up after the updates
-        for (E row : oldRows) {
-            row.setUnchanged();
+            // Do the batched statements
+            if (useBatch && batchHasEntries) {
+                statement.executeBatch();
+            }
+            // Clean up after the updates
+            for (E row : oldRows) {
+                row.setUnchanged();
+            }
+        } finally {
+            statement.close();
         }
     }
 
@@ -836,29 +865,30 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * Sets the sort order of properties (field and/or method)
-     * by the given property object references.
-     * 
-     * <p> For example the following code snippet will sort
-     * by just the name column:
+     * Sets the sort order of properties (field and/or method) by the given
+     * property object references.
+     *
+     * <p>
+     * For example the following code snippet will sort by just the name column:
      * <pre>
      * Customer customer = ...;
      * customer.setSortOrder(customer, customer.name);
      * </pre>
      *
-     * <p> Requires that all {@code orderColumns) be from the {@code baseRow)
+     * <p>
+     * Requires that all {@code orderColumns) be from the {@code baseRow)
      * instance to work.
      * @param baseRow
      * @param orderColumns
      */
     public void setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
         sortOrder = new ArrayList<PropertyWrapper>();
-        for (QueryableDatatype qdt: orderColumns) {
+        for (QueryableDatatype qdt : orderColumns) {
             PropertyWrapper prop = baseRow.getPropertyWrapperOf(qdt);
             if (prop == null) {
                 throw new IncorrectDBRowInstanceSuppliedException(baseRow, qdt);
             }
-        	sortOrder.add(prop);
+            sortOrder.add(prop);
         }
     }
 
@@ -872,7 +902,7 @@ public class DBTable<E extends DBRow> {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (PropertyWrapper prop : sortOrder) {
-            	QueryableDatatype qdt = prop.getQueryableDatatype();
+                QueryableDatatype qdt = prop.getQueryableDatatype();
                 final String dbColumnName = prop.columnName();
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(defn.formatColumnName(dbColumnName)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
