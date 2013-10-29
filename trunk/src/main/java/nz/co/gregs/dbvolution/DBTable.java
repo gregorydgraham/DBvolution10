@@ -1,7 +1,6 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -16,8 +15,6 @@ import java.util.Map;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBSave;
-import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -75,22 +72,8 @@ public class DBTable<E extends DBRow> {
         printSQLBeforeExecuting = aPrintSQLBeforeExecuting;
     }
 
-    private String getDBColumnName(Field field) {
-        String columnName = "";
-
-        if (field.isAnnotationPresent(DBColumn.class)) {
-            DBColumn annotation = field.getAnnotation(DBColumn.class);
-            columnName = annotation.value();
-            if (columnName == null || columnName.isEmpty()) {
-                columnName = field.getName();
-            }
-        }
-        return columnName;
-    }
-
     private String getAllFieldsForSelect() {
         StringBuilder allFields = new StringBuilder();
-        @SuppressWarnings("unchecked")
         List<String> columnNames = dummy.getColumnNames();
         String separator = "";
         for (String column : columnNames) {
@@ -108,7 +91,7 @@ public class DBTable<E extends DBRow> {
         String separator = "";
         for (PropertyWrapper prop : props) {
             // BLOBS are not inserted.so exclude them
-            if (prop.isColumn() && !prop.isInstanceOf(DBLargeObject.class)) { 
+            if (prop.isColumn() && !prop.isInstanceOf(DBLargeObject.class)) {
                 allFields
                         .append(separator)
                         .append(" ")
@@ -123,8 +106,7 @@ public class DBTable<E extends DBRow> {
         DBDefinition defn = database.getDefinition();
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
-        if (selectQueryAnnotation
-                != null) {
+        if (selectQueryAnnotation != null) {
             selectStatement.append(selectQueryAnnotation.value());
         } else {
             selectStatement.append(defn.beginSelectStatement());
@@ -282,20 +264,11 @@ public class DBTable<E extends DBRow> {
     }
 
     private String getPrimaryKeyColumn() {
-        String pkColumn = "";
-        @SuppressWarnings("unchecked")
-        Class<E> thisClass = (Class<E>) dummy.getClass();
-        Field[] fields = thisClass.getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(DBPrimaryKey.class)) {
-                pkColumn = this.getDBColumnName(field);
-            }
-        }
-        if (pkColumn.isEmpty()) {
-            throw new UndefinedPrimaryKeyException(thisClass);
+    	String columnName = dummy.getPrimaryKeyName();
+        if (columnName == null) {
+            throw new UndefinedPrimaryKeyException(dummy.getClass());
         } else {
-            return pkColumn;
+            return columnName;
         }
     }
 
