@@ -73,6 +73,22 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return (literalValue == null ? "" : literalValue.toString());
     }
 
+    /**
+     * Copies a QueryableDatatype and returns the copy.
+     * 
+     * Used internally to provide immutability to DBOperator objects.
+     * 
+     * The intention is that this method will provide a snapshot of the QDT at 
+     * this moment in time and copy or clone any internal objects that might
+     * change.
+     * 
+     * Subclasses should extend this method if they have fields that maintain
+     * the state of the QDT.
+     * 
+     * Always use the super.copy() method first when overriding this method.
+     *
+     * @return
+     */
     public QueryableDatatype copy() {
         QueryableDatatype newQDT = this;
         try {
