@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;

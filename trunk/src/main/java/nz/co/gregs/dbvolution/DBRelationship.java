@@ -68,8 +68,8 @@ public class DBRelationship implements Serializable {
      * the {@code otherTable} instance
      */
     public DBRelationship(DBRow thisTable, Object thisTableField, DBRow otherTable, Object otherTableField, DBOperator operator) {
-        this.firstTable = thisTable;
-        this.secondTable = otherTable;
+        this.firstTable = DBRow.copyDBRow(thisTable);
+        this.secondTable = DBRow.copyDBRow(otherTable);
         this.operation = operator;
         
         this.firstColumnPropertyWrapper = thisTable.getPropertyWrapperOf(thisTableField);

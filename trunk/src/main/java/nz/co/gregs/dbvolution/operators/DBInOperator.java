@@ -28,16 +28,17 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBInOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    protected final List<QueryableDatatype> listOfPossibleValues;
+    protected final List<QueryableDatatype> listOfPossibleValues = new ArrayList<QueryableDatatype>();
 
     public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
         super();
-        this.listOfPossibleValues = listOfPossibleValues;
+        for(QueryableDatatype qdt : listOfPossibleValues){
+            this.listOfPossibleValues.add(qdt==null?qdt:qdt.copy());
+        }
     }
 
     public DBInOperator() {
         super();
-        this.listOfPossibleValues = new ArrayList<QueryableDatatype>();
     }
 
     @Override
@@ -74,7 +75,7 @@ public class DBInOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
+//        DBDefinition defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
     }
 

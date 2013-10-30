@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.actions;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
@@ -27,14 +26,13 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 
 public class DBSaveBLOB extends DBAction {
 
-//    private DBRow row = null;
-	private String columnName;
-    private DBLargeObject blob = null;
+    private final String columnName;
+    private final DBLargeObject blob;
 
     public DBSaveBLOB(DBRow row, String columnName, DBLargeObject blob) {
         super(row);
         this.columnName = columnName;
-        this.blob = blob;
+        this.blob = (DBLargeObject)blob.copy();
     }
 
     @Override

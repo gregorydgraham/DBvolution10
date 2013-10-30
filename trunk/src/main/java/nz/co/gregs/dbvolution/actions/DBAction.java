@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -33,7 +32,7 @@ public  abstract class DBAction {
     
     public <R extends DBRow> DBAction(R row) {
         super();
-        this.row = row;
+        this.row = DBRow.copyDBRow(row);
     }
     
     public <R extends DBRow> DBAction(R row, String sql) {

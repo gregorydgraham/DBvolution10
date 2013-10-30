@@ -38,7 +38,7 @@ public class DBGreaterThanOperator extends DBOperator {
 
     public DBGreaterThanOperator(QueryableDatatype greaterThanThis) {
         super();
-        this.greaterThanThis = greaterThanThis;
+        this.greaterThanThis = greaterThanThis == null ? greaterThanThis : greaterThanThis.copy();
     }
 
     public String getInverse() {
@@ -58,7 +58,7 @@ public class DBGreaterThanOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
+//        DBDefinition defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ";
     }
 

@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
+import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.operators.*;
 
 /**
@@ -35,7 +37,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     protected Object literalValue = null;
     protected boolean isDBNull = false;
     protected boolean includingNulls = false;
-    protected boolean invertOperator;
+//    protected boolean invertOperator;
     protected DBOperator operator = null;
     protected boolean undefined = true;
     protected boolean changed = false;
@@ -65,10 +67,35 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             this.operator = new DBEqualsOperator(this);
         }
     }
-    
+
     @Override
     public String toString() {
         return (literalValue == null ? "" : literalValue.toString());
+    }
+
+    public QueryableDatatype copy() {
+        QueryableDatatype newQDT = this;
+        try {
+            newQDT = this.getClass().newInstance();
+
+            newQDT.literalValue = this.literalValue;
+            newQDT.isDBNull = this.isDBNull;
+            newQDT.includingNulls = this.includingNulls;
+            newQDT.operator = this.operator;
+            newQDT.undefined = this.undefined;
+            newQDT.changed = this.changed;
+            if (this.previousValueAsQDT != null) {
+                newQDT.previousValueAsQDT = this.previousValueAsQDT.copy();
+            }
+            newQDT.isPrimaryKey = this.isPrimaryKey;
+            newQDT.sort = this.sort;
+        } catch (InstantiationException ex) {
+            throw new UnableInstantiateQueryableDatatypeException(this, ex);
+        } catch (IllegalAccessException ex) {
+            throw new UnableToCopyQueryableDatatypeException(this, ex);
+        }
+
+        return newQDT;
     }
 
     /**
@@ -181,9 +208,9 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public void negateOperator() {
-        invertOperator = true;
+//        invertOperator = true;
         if (getOperator() != null) {
-            getOperator().invertOperator(invertOperator);
+            getOperator().invertOperator(true);
         } else {
             throw new RuntimeException("No Operator Has Been Defined Yet: please use the query methods before inverting the operation");
         }
@@ -674,12 +701,12 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * return a string representation of the object formatted for use within a
      * SQL select, insert, update, or delete statement.
      *
-     * For Example: 
-     * 
-     * DBString{yada} => 'yada' 
-     * 
+     * For Example:
+     *
+     * DBString{yada} => 'yada'
+     *
      * DBInteger{1234} => 123
-     * 
+     *
      * DBDate{1/March/2013} => TO_DATE('20130301', 'YYYYMMDD')
      *
      * @param db

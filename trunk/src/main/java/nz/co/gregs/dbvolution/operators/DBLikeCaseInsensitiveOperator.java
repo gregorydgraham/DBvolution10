@@ -30,7 +30,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
 
     public DBLikeCaseInsensitiveOperator(QueryableDatatype likeableValue) {
         super();
-        this.likeableValue = likeableValue;
+        this.likeableValue = likeableValue == null ? likeableValue : likeableValue.copy();
     }
 
     public DBLikeCaseInsensitiveOperator() {
@@ -71,6 +71,5 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
     public DBOperator getInverseOperator() {
         return this;
     }
-    
-    
+
 }

@@ -31,8 +31,8 @@ public class DBBetweenOperator extends DBOperator{
     
     public DBBetweenOperator(QueryableDatatype lowValue, QueryableDatatype highValue){
         super();
-        this.lowValue =lowValue;
-        this.highValue = highValue;
+        this.lowValue = lowValue==null?lowValue:lowValue.copy();
+        this.highValue = highValue==null?highValue:highValue.copy();
     }
     
     @Override
