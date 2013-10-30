@@ -27,6 +27,7 @@ public class TypeAdaptorTest {
 	@Before
 	public void setup() throws SQLException {
 		this.db = new H2MemoryDB("dbvolutionTest","","", false);
+		this.db.setPrintSQLBeforeExecuting(false);
 		
 		// create tables and add standard records
 		db.createTable(new CustomerWithDBInteger());
@@ -45,15 +46,19 @@ public class TypeAdaptorTest {
 		c.uid.setValue(22);
 		c.year.setValue(2012);
 		db.insert(c);
+		
+		this.db.setPrintSQLBeforeExecuting(true);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
+		db.setPrintSQLBeforeExecuting(false);
 		db.dropTable(new CustomerWithDBInteger());
         db.dropDatabase();
 	}
 	
 	private void assertDbSetup() throws SQLException {
+		db.setPrintSQLBeforeExecuting(false);
 		CustomerWithDBInteger q = new CustomerWithDBInteger();
 		q.uid.permittedValues(23);
 		List<CustomerWithDBInteger> rows = db.get(q);
@@ -67,6 +72,7 @@ public class TypeAdaptorTest {
 		assertThat(rows.size(), is(1));
 		assertThat(rows.get(0).uid.intValue(), is(22));
 		assertThat(rows.get(0).year.intValue(), is(2012));
+		db.setPrintSQLBeforeExecuting(true);
 	}
 	
 //	@Test
@@ -85,8 +91,20 @@ public class TypeAdaptorTest {
 //	}
 
 	@Test
+	public void queriesOnDBIntegerGivenDBInteger() throws SQLException {
+		//assertDbSetup();
+		CustomerWithDBInteger query = new CustomerWithDBInteger();
+		query.uid.permittedValues(23);
+		
+		List<CustomerWithDBInteger> rows = db.get(query);
+		assertThat(rows.size(), is(1));
+		assertThat(rows.get(0).uid.intValue(), is(23));
+		assertThat(rows.get(0).year.intValue(), is(2013));
+	}
+	
+	@Test
 	public void queriesOnDBIntegerGivenStringIntegerTypeAdaptor() throws SQLException {
-		assertDbSetup();
+		//assertDbSetup();
 		CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
 		query.uid.permittedValues(23);
 		
@@ -98,7 +116,7 @@ public class TypeAdaptorTest {
 	
 	@Test
 	public void queriesOnNonNullStringGivenStringIntegerTypeAdaptor() throws SQLException {
-		assertDbSetup();
+		//assertDbSetup();
 		CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
 		query.year = "2013";
 		
@@ -114,6 +132,13 @@ public class TypeAdaptorTest {
 		row.uid.setValue(50);
 		row.year = "2050";
 		db.insert(row);
+		
+		CustomerWithDBInteger q = new CustomerWithDBInteger();
+		q.uid.permittedValues(50);
+		List<CustomerWithDBInteger> rows = db.get(q);
+		assertThat(rows.size(), is(1));
+		assertThat(rows.get(0).uid.intValue(), is(50));
+		assertThat(rows.get(0).year.intValue(), is(2050));
 	}
 	
 	// base-case "Customer": DBInteger uid (PK), DBInteger year
@@ -128,13 +153,13 @@ public class TypeAdaptorTest {
 
 	@DBTableName("Customer")
 	public static class CustomerWithStringIntegerTypeAdaptor extends DBRow {
-		public static class MyTypeAdaptor implements DBTypeAdaptor<String, Integer> {
-			public String fromDatabaseValue(Integer dbvValue) {
+		public static class MyTypeAdaptor implements DBTypeAdaptor<String, Long> {
+			public String fromDatabaseValue(Long dbvValue) {
 				return (dbvValue == null) ? null : dbvValue.toString();
 			}
 
-			public Integer toDatabaseValue(String objectValue) {
-				return (objectValue == null) ? null : Integer.parseInt(objectValue);
+			public Long toDatabaseValue(String objectValue) {
+				return (objectValue == null) ? null : Long.parseLong(objectValue);
 			}
 		}
 		

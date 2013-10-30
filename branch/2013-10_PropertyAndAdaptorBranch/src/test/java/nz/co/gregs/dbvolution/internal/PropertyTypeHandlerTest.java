@@ -57,7 +57,7 @@ public class PropertyTypeHandlerTest {
 		myObj.intField.setValue(23);
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-		DBInteger qdt = (DBInteger)propertyHandler.getDBvValue(myObj);
+		DBInteger qdt = (DBInteger)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt.intValue(), is(23));
 	}
 
@@ -71,7 +71,7 @@ public class PropertyTypeHandlerTest {
 		MyClass myObj = new MyClass();
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-		DBInteger qdt = (DBInteger)propertyHandler.getDBvValue(myObj);
+		DBInteger qdt = (DBInteger)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt == myObj.intField, is(true));
 	}
 	
@@ -85,7 +85,7 @@ public class PropertyTypeHandlerTest {
 		MyClass myObj = new MyClass();
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-		DBInteger qdt = (DBInteger)propertyHandler.getDBvValue(myObj);
+		DBInteger qdt = (DBInteger)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt, is(nullValue()));
 	}
 	
@@ -101,7 +101,7 @@ public class PropertyTypeHandlerTest {
 		DBInteger qdt = new DBInteger();
 		qdt.setValue(23);
 		
-		propertyHandler.setObjectValue(myObj, qdt);
+		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
 		assertThat(myObj.intField.intValue(), is(23));
 	}
 
@@ -116,7 +116,7 @@ public class PropertyTypeHandlerTest {
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
 		DBInteger qdt = new DBInteger();
 		
-		propertyHandler.setObjectValue(myObj, qdt);
+		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
 		assertThat(myObj.intField == qdt, is(true));
 	}
 	
@@ -130,7 +130,7 @@ public class PropertyTypeHandlerTest {
 		MyClass myObj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
 
-		propertyHandler.setObjectValue(myObj, null);
+		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, null);
 		assertThat(myObj.intField, is(nullValue()));
 	}
 	
@@ -155,7 +155,7 @@ public class PropertyTypeHandlerTest {
 		}
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-		QueryableDatatype qdt = propertyHandler.getDBvValue(new MyClass());
+		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(qdt, is(instanceOf(DBString.class)));
 	}
 
@@ -171,7 +171,7 @@ public class PropertyTypeHandlerTest {
 		myObj.intField.setValue(23);
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-		DBString qdt = (DBString)propertyHandler.getDBvValue(myObj);
+		DBString qdt = (DBString)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		
 		assertThat(qdt.stringValue(), is("23"));
 	}

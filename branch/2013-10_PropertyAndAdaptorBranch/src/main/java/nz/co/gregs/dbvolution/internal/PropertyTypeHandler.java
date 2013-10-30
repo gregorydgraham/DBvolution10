@@ -323,7 +323,7 @@ class PropertyTypeHandler {
      * @throws IllegalStateException if the underlying java property is not
      * readable
      */
-    public QueryableDatatype getDBvValue(Object target) {
+    public QueryableDatatype getJavaPropertyAsQueryableDatatype(Object target) {
     	if (identityOnly) {
     		throw new AssertionError("Attempt to read value from identity-only property");
     	}
@@ -366,7 +366,7 @@ class PropertyTypeHandler {
      * @throws IllegalStateException if the underlying java property is not
      * writable
      */
-    public void setObjectValue(Object target, QueryableDatatype dbvValue) {
+    public void setJavaPropertyAsQueryableDatatype(Object target, QueryableDatatype dbvValue) {
     	if (identityOnly) {
     		throw new AssertionError("Attempt to write value to identity-only property");
     	}

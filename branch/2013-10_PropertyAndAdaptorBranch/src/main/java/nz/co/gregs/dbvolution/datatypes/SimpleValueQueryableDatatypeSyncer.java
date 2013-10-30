@@ -19,8 +19,18 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	}
 
 	public void setInternalFromExternalSimpleValue(Object externalValue) {
-		Object internalValue = adaptValueFromExternal(externalValue);
-		internalQdt.setValue(internalValue);
+		Object internalValue = adaptValueToInternal(externalValue);
+		if (internalValue == null) {
+			// TODO complete this
+			internalQdt.undefined = true;
+			internalQdt.operator = null;
+			internalQdt.literalValue = null;
+			internalQdt.changed = false;
+			internalQdt.previousValueAsQDT = null;
+		}
+		else {
+			internalQdt.setValue(internalValue);
+		}
 	}
 
 	/**
@@ -31,6 +41,6 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	 */
 	// TODO: need to decide where type casting is needed
 	public Object getExternalSimpleValueFromInternal() {
-		return adaptValueFromInternal(internalQdt.literalValue);
+		return adaptValueToExternal(internalQdt.literalValue);
 	}
 }

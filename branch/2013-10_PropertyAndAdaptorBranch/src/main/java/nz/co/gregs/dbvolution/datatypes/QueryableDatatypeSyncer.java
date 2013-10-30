@@ -10,10 +10,12 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  */
 // TODO come up with a better name
 public class QueryableDatatypeSyncer {
-	protected enum Direction {FROM_EXTERNAL, FROM_INTERNAL}
+	protected enum Direction {TO_INTERNAL, TO_EXTERNAL}
 	protected final String propertyName;
 	protected final DBTypeAdaptor<Object, Object> typeAdaptor;
 	protected QueryableDatatype internalQdt;
+	private DBSafeInternalTypeAdaptor internalToExternalTypeAdaptor;
+	private DBSafeInternalTypeAdaptor internalToInternalTypeAdaptor;
 
 	/**
 	 * 
@@ -28,6 +30,8 @@ public class QueryableDatatypeSyncer {
 		}
 		this.propertyName = propertyName;
 		this.typeAdaptor = typeAdaptor;
+		this.internalToExternalTypeAdaptor = new DBSafeInternalTypeAdaptor(Direction.TO_EXTERNAL, typeAdaptor);
+		this.internalToInternalTypeAdaptor = new DBSafeInternalTypeAdaptor(Direction.TO_INTERNAL, typeAdaptor);
 		
 		try {
 			this.internalQdt = internalQdtType.newInstance();
@@ -47,15 +51,15 @@ public class QueryableDatatypeSyncer {
 	}
 
 	protected Object adaptValue(Direction direction, Object sourceLiteralValue) {
-		if (direction == Direction.FROM_EXTERNAL) {
-			return adaptValueFromExternal(sourceLiteralValue);
+		if (direction == Direction.TO_INTERNAL) {
+			return adaptValueToInternal(sourceLiteralValue);
 		}
 		else {
-			return adaptValueFromInternal(sourceLiteralValue);
+			return adaptValueToExternal(sourceLiteralValue);
 		}
 	}
 	
-	protected Object adaptValueFromExternal(Object externalLiteralValue) {
+	protected Object adaptValueToInternal(Object externalLiteralValue) {
 		try {
 			return typeAdaptor.toDatabaseValue(externalLiteralValue);
 		} catch (RuntimeException e) {
@@ -65,7 +69,7 @@ public class QueryableDatatypeSyncer {
 		}
 	}
 	
-	protected Object adaptValueFromInternal(Object internalLiteralValue) {
+	protected Object adaptValueToExternal(Object internalLiteralValue) {
 		try {
 			return typeAdaptor.fromDatabaseValue(internalLiteralValue);
 		} catch (RuntimeException e) {
@@ -76,11 +80,11 @@ public class QueryableDatatypeSyncer {
 	}
 	
 	public void setInternalQDTFromExternalQDT(QueryableDatatype externalQdt) {
-		setTargetQDTFromSourceQDT(Direction.FROM_EXTERNAL, internalQdt, externalQdt);
+		setTargetQDTFromSourceQDT(Direction.TO_INTERNAL, internalQdt, externalQdt);
 	}
 
 	public void setExternalFromInternalQDT(QueryableDatatype externalQdt) {
-		setTargetQDTFromSourceQDT(Direction.FROM_INTERNAL, externalQdt, internalQdt);
+		setTargetQDTFromSourceQDT(Direction.TO_EXTERNAL, externalQdt, internalQdt);
 	}
 	
 	protected void setTargetQDTFromSourceQDT(Direction direction, QueryableDatatype targetQdt, QueryableDatatype sourceQdt) {
@@ -96,9 +100,41 @@ public class QueryableDatatypeSyncer {
 		targetQdt.literalValue = adaptValue(direction, sourceQdt.literalValue);
 		
 		// copy operator with translation
-		targetQdt.operator = sourceQdt.operator; // TODO: translate
+		// TODO call operator.copyAndTranslate(new DBSafeInternalTypeAdaptor(typeAdaptor))
+		//   class DBSafeInternalTypeAdaptor {
+		//       public QueryableDatatype convert(QueryableDatatype qdt);
+	    //   }
+		// Needs to detect where DBOperator is created as QueryableDatatype.do{new DBOperator(this)};
+		//  (eg: in QueryableDatatype.setValue())
+		//targetQdt.operator = sourceQdt.operator; // TODO: translate
+		if (direction == Direction.TO_INTERNAL) {
+			targetQdt.operator = sourceQdt.operator.copyAndAdapt(internalToInternalTypeAdaptor);
+		}
+		else {
+			targetQdt.operator = sourceQdt.operator.copyAndAdapt(internalToExternalTypeAdaptor);
+		}
 		
 		// copy previous value with translation
 		//sourceQdt.previousValueAsQDT = // TODO 
+	}
+	
+	public static class DBSafeInternalTypeAdaptor {
+		private Direction direction;
+		private DBTypeAdaptor<Object,Object> typeAdaptor;
+		
+		public DBSafeInternalTypeAdaptor(Direction direction, DBTypeAdaptor<Object,Object> typeAdaptor) {
+			this.direction = direction;
+			this.typeAdaptor = typeAdaptor;
+		}
+		
+		public QueryableDatatype convert(QueryableDatatype qdt) {
+//			if (qdt == null) {
+//				return null;
+//			}
+//			else if (qdt instanceof DBInteger) {
+//				
+//			}
+			throw new UnsupportedOperationException("Trying to convert from "+qdt.getClass().getSimpleName()+"="+qdt);
+		}
 	}
 }

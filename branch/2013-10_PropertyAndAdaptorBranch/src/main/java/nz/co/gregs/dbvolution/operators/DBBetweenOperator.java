@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalTypeAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 
@@ -55,4 +56,10 @@ public class DBBetweenOperator extends DBOperator{
         throw new InappropriateRelationshipOperator(this);
     }
     
+    @Override
+    public DBBetweenOperator copyAndAdapt(DBSafeInternalTypeAdaptor typeAdaptor) {
+    	DBBetweenOperator op = new DBBetweenOperator(typeAdaptor.convert(lowValue), typeAdaptor.convert(highValue));
+    	op.invertOperator = this.invertOperator;
+    	return op;
+    }
 }

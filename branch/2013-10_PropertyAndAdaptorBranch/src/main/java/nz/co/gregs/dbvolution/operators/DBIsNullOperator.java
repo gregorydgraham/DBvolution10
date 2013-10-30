@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalTypeAdaptor;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 /**
  *
@@ -47,4 +48,9 @@ public class DBIsNullOperator extends DBOperator {
         throw new InappropriateRelationshipOperator(this);
     }
     
+    
+    @Override
+    public DBIsNullOperator copyAndAdapt(DBSafeInternalTypeAdaptor typeAdaptor) {
+    	return this;
+    }
 }

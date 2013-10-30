@@ -300,7 +300,7 @@ public class PropertyWrapperDefinition {
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
 	public QueryableDatatype getQueryableDatatype(Object target) {
-		return typeHandler.getDBvValue(target);
+		return typeHandler.getJavaPropertyAsQueryableDatatype(target);
 	}
 	
 	/**
@@ -316,7 +316,7 @@ public class PropertyWrapperDefinition {
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
 	public void setQueryableDatatype(Object target, QueryableDatatype value) {
-		typeHandler.setObjectValue(target, value);
+		typeHandler.setJavaPropertyAsQueryableDatatype(target, value);
 	}
 	
 	/**
