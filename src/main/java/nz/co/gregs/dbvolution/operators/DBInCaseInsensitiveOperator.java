@@ -34,7 +34,7 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-                DBDefinition defn = db.getDefinition();
+        DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
         whereClause.append(defn.beginAndLine());
         if (listOfPossibleValues.isEmpty()) {

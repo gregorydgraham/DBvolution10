@@ -33,7 +33,11 @@ public class DBLessThanOperator extends DBOperator {
      */
     public DBLessThanOperator(QueryableDatatype lessThanThis) {
         super();
-        this.lessThanThis = lessThanThis;
+        if (lessThanThis != null) {
+            this.lessThanThis = lessThanThis.copy();
+        } else {
+            this.lessThanThis = null;
+        }
     }
 
     public DBLessThanOperator() {

@@ -86,7 +86,7 @@ public class QueryableDatatypeSyncer {
 	protected void setTargetQDTFromSourceQDT(Direction direction, QueryableDatatype targetQdt, QueryableDatatype sourceQdt) {
 		targetQdt.changed = sourceQdt.changed;
 		targetQdt.includingNulls = sourceQdt.includingNulls;
-		targetQdt.invertOperator = sourceQdt.invertOperator;
+//		targetQdt.invertOperator = sourceQdt.invertOperator;
 		targetQdt.isDBNull = sourceQdt.isDBNull;
 		targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
 		targetQdt.undefined = sourceQdt.undefined;

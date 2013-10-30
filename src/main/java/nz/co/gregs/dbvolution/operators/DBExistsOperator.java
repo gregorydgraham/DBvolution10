@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 /**
  *
  * @author gregory.graham
+ * @param <E>
  */
 public class  DBExistsOperator<E extends DBRow> extends DBOperator {
     public static final long serialVersionUID = 1L;
@@ -53,7 +54,7 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
      * is not from the {@code tableRow} instance
      */
     public DBExistsOperator(E tableRow, Object qdtOfTheRow) {
-        this.tableRow = tableRow;
+        this.tableRow = DBRow.copyDBRow(tableRow);
         PropertyWrapper qdtField = tableRow.getPropertyWrapperOf(qdtOfTheRow);
         if (qdtField == null) {
             throw new IncorrectDBRowInstanceSuppliedException(tableRow, qdtOfTheRow);

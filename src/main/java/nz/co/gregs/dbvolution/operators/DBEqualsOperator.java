@@ -39,18 +39,18 @@ public class DBEqualsOperator extends DBOperator {
 
     public DBEqualsOperator(QueryableDatatype equalTo) {
         super();
-        this.equalTo = equalTo;
+        this.equalTo = (equalTo == null ? equalTo : equalTo.copy());
     }
 
     public String getInverse() {
-        if (defn!=null){
+        if (defn != null) {
             return defn.getNotEqualsComparator();
         }
         return " <> ";
     }
 
     public String getOperator() {
-        if (defn!=null){
+        if (defn != null) {
             return defn.getEqualsComparator();
         }
         return " = ";
@@ -60,17 +60,24 @@ public class DBEqualsOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        equalTo.setDatabase(database);
         defn = db.getDefinition();
-        if (equalTo.toSQLString(db).equals(defn.getNull())) {
+        String whereLine;
+//        if (equalTo.toSQLString(db).equals(defn.getNull())) {
+        if (equalTo.isNull()) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-            return dbIsNullOperator.generateWhereLine(db, columnName);
+            whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
+        } else {
+            whereLine = defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.toSQLString(db) + " ";
         }
-        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.toSQLString(db) + " ";
+        defn = null;
+        return whereLine;
     }
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         defn = database.getDefinition();
-        return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+        String relationStr = columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+        defn = null;
+        return relationStr;
     }
 
     @Override
