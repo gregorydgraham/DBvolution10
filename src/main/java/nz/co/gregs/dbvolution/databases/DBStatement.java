@@ -20,6 +20,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.changes.DBChangeList;
+import nz.co.gregs.dbvolution.changes.DBDataChange;
 
 /**
  *
@@ -27,10 +30,12 @@ import java.sql.Statement;
  */
 public class DBStatement implements Statement {
 
-    Statement realStatement = null;
+    protected final Statement realStatement;
     private boolean batchHasEntries;
+    private final DBDatabase database;
 
-    public DBStatement(Statement realStatement) {
+    public DBStatement(DBDatabase db, Statement realStatement) {
+        this.database = db;
         this.realStatement = realStatement;
     }
 
@@ -265,6 +270,12 @@ public class DBStatement implements Statement {
 
     public boolean getBatchHasEntries() {
         return batchHasEntries;
+    }
+
+    public void executeChanges(DBChangeList changes) throws SQLException {
+        for (DBDataChange change : changes){
+            change.execute(database, this);
+        }
     }
 
 }

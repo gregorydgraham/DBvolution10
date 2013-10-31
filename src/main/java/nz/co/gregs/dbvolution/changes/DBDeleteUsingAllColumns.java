@@ -20,9 +20,12 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 
-public class DBDeleteUsingAllColumns extends DBDataChange {
+public class DBDeleteUsingAllColumns extends DBDelete {
 
     public <R extends DBRow> DBDeleteUsingAllColumns(R row) {
         super(row);
@@ -30,16 +33,22 @@ public class DBDeleteUsingAllColumns extends DBDataChange {
     
     @Override
     public String getSQLStatement(DBDatabase db) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean canBeBatched() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void execute(DBDatabase db, DBStatement statement) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        DBDefinition defn = db.getDefinition();
+        DBRow row = getRow();
+        String sql
+                = defn.beginDeleteLine()
+                + defn.formatTableName(row.getTableName())
+                + defn.beginWhereClause()
+                + defn.getTrueOperation();
+        for (PropertyWrapper prop : row.getPropertyWrappers()) {
+            QueryableDatatype qdt = prop.getQueryableDatatype();
+            sql = sql
+                    + defn.beginAndLine()
+                    + prop.columnName()
+                    + defn.getEqualsComparator()
+                    + (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
+        }
+        sql = sql + defn.endDeleteLine();
+        return sql;
     }
 }

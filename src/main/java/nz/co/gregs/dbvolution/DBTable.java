@@ -15,6 +15,10 @@ import nz.co.gregs.dbvolution.changes.DBDataChange;
 import nz.co.gregs.dbvolution.changes.DBChangeList;
 import nz.co.gregs.dbvolution.changes.DBSaveNonBLOBs;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
+import nz.co.gregs.dbvolution.changes.DBDelete;
+import nz.co.gregs.dbvolution.changes.DBDeleteByExample;
+import nz.co.gregs.dbvolution.changes.DBDeleteByPrimaryKey;
+import nz.co.gregs.dbvolution.changes.DBDeleteUsingAllColumns;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -274,7 +278,7 @@ public class DBTable<E extends DBRow> {
     }
 
     private String getPrimaryKeyColumn() {
-        String columnName = dummy.getPrimaryKeyName();
+        String columnName = dummy.getPrimaryKeyColumnName();
         if (columnName == null) {
             throw new UndefinedPrimaryKeyException(dummy.getClass());
         } else {
@@ -388,11 +392,11 @@ public class DBTable<E extends DBRow> {
      * Returns the WHERE clause used by the getByExample method. Provided to aid
      * understanding and debugging.
      *
-     * @param query
+     * @param row
      * @return
      */
-    public String getSQLForExample(E query) {
-        return query.getWhereClause(database);
+    public String getSQLForExample(E row) {
+        return row.getWhereClause(database);
     }
 
     /**
@@ -546,10 +550,10 @@ public class DBTable<E extends DBRow> {
         return allInserts;
     }
 
-    public void delete(E oldRow) throws SQLException {
+    public DBChangeList delete(E oldRow) throws SQLException {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(oldRow);
-        delete(arrayList);
+        return delete(arrayList);
     }
 
     /**
@@ -557,27 +561,28 @@ public class DBTable<E extends DBRow> {
      * @param oldRows
      * @throws SQLException
      */
-    public void delete(List<E> oldRows) throws SQLException {
+    public DBChangeList delete(List<E> oldRows) throws SQLException {
         DBStatement statement = database.getDBStatement();
+        DBChangeList changes = new DBChangeList();
         try {
-            List<String> allSQL = getSQLForDelete(oldRows);
+            changes = getDeleteDBDataChanges(oldRows);//; getSQLForDelete(oldRows);
             if (database.getBatchSQLStatementsWhenPossible()) {
-                for (String sql : allSQL) {
+                for (DBDataChange deleteEvent : changes) {
                     if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                        System.out.println(sql);
+                        System.out.println(deleteEvent);
                     }
-                    statement.addBatch(sql);
                 }
-                statement.executeBatch();
+                statement.executeChanges(changes);
             } else {
-                for (String sql : allSQL) {
-                    database.printSQLIfRequested(sql);
-                    statement.execute(sql);
+                for (DBDataChange deleteEvent : changes) {
+                    database.printSQLIfRequested(deleteEvent.getSQLStatement(database));
+                    statement.execute(deleteEvent.getSQLStatement(database));
                 }
             }
         } finally {
             statement.close();
         }
+        return changes;
     }
 
     /**
@@ -587,6 +592,7 @@ public class DBTable<E extends DBRow> {
      * @param oldRow
      * @return
      */
+    @Deprecated
     public String getSQLForDelete(E oldRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(oldRow);
@@ -598,6 +604,7 @@ public class DBTable<E extends DBRow> {
      * @param oldRows
      * @return
      */
+    @Deprecated
     public List<String> getSQLForDelete(List<E> oldRows) {
         DBDefinition defn = database.getDefinition();
         List<String> allDeletes = new ArrayList<String>();
@@ -619,11 +626,31 @@ public class DBTable<E extends DBRow> {
         return allDeletes;
     }
 
+    public DBChangeList getDeleteDBDataChanges(List<E> oldRows) {
+        DBChangeList allDeletes = new DBChangeList();
+        for (E row : oldRows) {
+            if (row.getDefined()) {
+                final QueryableDatatype primaryKey = row.getPrimaryKey();
+                if (primaryKey == null) {
+                    allDeletes.add(new DBDeleteUsingAllColumns(row));
+                } else {
+
+                    allDeletes.add(new DBDeleteByPrimaryKey(row));
+                }
+            } else {
+                // Delete by example
+                allDeletes.add(new DBDeleteByExample(row));
+            }
+        }
+        return allDeletes;
+    }
+
     /**
      *
      * @param row
      * @return
      */
+    @Deprecated
     public String getSQLForDeleteUsingAllFields(E row) {
         DBDefinition defn = database.getDefinition();
         String sql
@@ -643,7 +670,7 @@ public class DBTable<E extends DBRow> {
         return sql;
     }
     
-    
+    @Deprecated
     private String getSQLForDeleteByPrimaryKey(E row, QueryableDatatype primaryKey) {
         DBDefinition defn = database.getDefinition();
         return defn.beginDeleteLine()
@@ -655,6 +682,7 @@ public class DBTable<E extends DBRow> {
                 + defn.endDeleteLine();
     }
     
+    @Deprecated
     private String getSQLForDeleteByExample(E row) {
         DBDefinition defn = database.getDefinition();
         return defn.beginDeleteLine()
@@ -670,6 +698,7 @@ public class DBTable<E extends DBRow> {
      * @param oldRows
      * @return
      */
+    @Deprecated
     public List<String> getSQLForDeleteWithoutPrimaryKey(List<E> oldRows) {
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {

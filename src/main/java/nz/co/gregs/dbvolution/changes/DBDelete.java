@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2013 gregorygraham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package nz.co.gregs.dbvolution.databases;
+package nz.co.gregs.dbvolution.changes;
 
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.DBRow;
 
 
-public class DBTransactionStatement extends DBStatement {
+public abstract class DBDelete extends DBDataChange {
 
-    public DBTransactionStatement(DBDatabase database, DBStatement realStatement) {
-        super(database, realStatement);
+    public <R extends DBRow> DBDelete(R row) {
+        super(row);
+    }
+    
+    @Override
+    public boolean canBeBatched() {
+        return true;
     }
 
     @Override
-    public void close() throws SQLException {
-        ;
-        // does nothing to avoid accidental closing during a transaction
+    public void execute(DBDatabase db, DBStatement statement) throws SQLException {
+        statement.execute(getSQLStatement(db));
     }
-    
-    public void transactionFinished() throws SQLException {
-        realStatement.close();
-    }
-    
-    
+
 }
