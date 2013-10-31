@@ -148,7 +148,8 @@ public abstract class DBDatabase {
      * @param objs
      * @throws SQLException
      */
-    public void insert(Object... objs) throws SQLException {
+    public DBChangeList insert(Object... objs) throws SQLException {
+        DBChangeList changes = new DBChangeList();
         for (Object obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
@@ -156,14 +157,15 @@ public abstract class DBDatabase {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
                     for (DBRow row : rowList) {
-                        this.getDBTable(row).insert(row);
+                        changes.addAll(this.getDBTable(row).insert(row));
                     }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
-                this.getDBTable(row).insert(row);
+                changes.addAll(this.getDBTable(row).insert(row));
             }
         }
+        return changes;
     }
 
     /**

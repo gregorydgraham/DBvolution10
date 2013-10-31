@@ -19,9 +19,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.changes.DBChangeList;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Assert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -38,6 +41,9 @@ public class DBDatabaseInsertTest extends AbstractTest{
     
     @Test
     public void testInsertRows() throws SQLException{
+        int originalNumberOfMarques = marques.getAllRows().toList().size();
+        int originalNumberOfCarCos = database.getDBTable(new CarCompany()).getAllRows().toList().size();
+
         Marque newMarque1 = new Marque();
         newMarque1.getUidMarque().setValue(999);
         newMarque1.getName().permittedValues("TOYOTA");
@@ -49,11 +55,13 @@ public class DBDatabaseInsertTest extends AbstractTest{
         myTableRows.add(newMarque1);
         myTableRows.add(newMarque2);
         CarCompany carCompany = new CarCompany("TATA", 569);
-        
-        database.insert(myTableRows, carCompany);
+        DBChangeList changes = database.insert(myTableRows, carCompany);
         marques.getAllRows();
         marques.print();
         database.getDBTable(carCompany).getAllRows().print();
+        Assert.assertThat(changes.size(), is(3));
+        Assert.assertThat(marques.getAllRows().toList().size(), is(originalNumberOfMarques+2));
+        Assert.assertThat(database.getDBTable(carCompany).getAllRows().toList().size(), is(originalNumberOfCarCos+1));
     }
     
 }
