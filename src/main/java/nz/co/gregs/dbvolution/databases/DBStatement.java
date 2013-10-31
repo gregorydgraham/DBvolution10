@@ -273,9 +273,24 @@ public class DBStatement implements Statement {
     }
 
     public void executeChanges(DBChangeList changes) throws SQLException {
-        for (DBDataChange change : changes){
-            change.execute(database, this);
+        for (DBDataChange change : changes) {
+            final String sqlStatement = change.getSQLStatement(database);
+            if (database.isPrintSQLBeforeExecuting()) {
+                System.out.println(sqlStatement);
+            }
+            if (database.batchSQLStatementsWhenPossible() && change.canBeBatched()) {
+                this.addBatch(sqlStatement);
+            } else {
+                if (batchHasEntries) {
+                    this.executeBatch();
+                }
+                change.execute(database, this);
+            }
         }
-    }
+        // Clear out the batch
+        if (batchHasEntries) {
+            this.executeBatch();
+        }
 
+    }
 }

@@ -497,7 +497,7 @@ public class DBTable<E extends DBRow> {
                 if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                     System.out.println(action.getSQLStatement(database));
                 }
-                if (action.canBeBatched() && database.getBatchSQLStatementsWhenPossible()) {
+                if (action.canBeBatched() && database.batchSQLStatementsWhenPossible()) {
                     statement.addBatch(action.getSQLStatement(database));
                 } else {
                     statement.executeBatch();
@@ -562,23 +562,11 @@ public class DBTable<E extends DBRow> {
      * @throws SQLException
      */
     public DBChangeList delete(List<E> oldRows) throws SQLException {
-        DBStatement statement = database.getDBStatement();
         DBChangeList changes = new DBChangeList();
+        DBStatement statement = database.getDBStatement();
         try {
-            changes = getDeleteDBDataChanges(oldRows);//; getSQLForDelete(oldRows);
-            if (database.getBatchSQLStatementsWhenPossible()) {
-                for (DBDataChange deleteEvent : changes) {
-                    if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                        System.out.println(deleteEvent);
-                    }
-                }
-                statement.executeChanges(changes);
-            } else {
-                for (DBDataChange deleteEvent : changes) {
-                    database.printSQLIfRequested(deleteEvent.getSQLStatement(database));
-                    statement.execute(deleteEvent.getSQLStatement(database));
-                }
-            }
+            changes = getDeleteDBDataChanges(oldRows);
+            statement.executeChanges(changes);
         } finally {
             statement.close();
         }
@@ -653,8 +641,7 @@ public class DBTable<E extends DBRow> {
     @Deprecated
     public String getSQLForDeleteUsingAllFields(E row) {
         DBDefinition defn = database.getDefinition();
-        String sql
-                = defn.beginDeleteLine()
+        String sql = defn.beginDeleteLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginWhereClause()
                 + defn.getTrueOperation();
@@ -669,7 +656,7 @@ public class DBTable<E extends DBRow> {
         sql = sql + defn.endDeleteLine();
         return sql;
     }
-    
+
     @Deprecated
     private String getSQLForDeleteByPrimaryKey(E row, QueryableDatatype primaryKey) {
         DBDefinition defn = database.getDefinition();
@@ -681,16 +668,16 @@ public class DBTable<E extends DBRow> {
                 + primaryKey.toSQLString(database)
                 + defn.endDeleteLine();
     }
-    
+
     @Deprecated
     private String getSQLForDeleteByExample(E row) {
         DBDefinition defn = database.getDefinition();
         return defn.beginDeleteLine()
-                        + defn.formatTableName(row.getTableName())
-                        + defn.beginWhereClause()
-                        + defn.getTrueOperation()
-                        + getSQLForExample(row)
-                        + defn.endDeleteLine();
+                + defn.formatTableName(row.getTableName())
+                + defn.beginWhereClause()
+                + defn.getTrueOperation()
+                + getSQLForExample(row)
+                + defn.endDeleteLine();
     }
 
     /**
@@ -714,8 +701,7 @@ public class DBTable<E extends DBRow> {
      */
     public String getSQLForUpdateWithoutPrimaryKey(E row) {
         DBDefinition defn = database.getDefinition();
-        String sql
-                = defn.beginUpdateLine()
+        String sql = defn.beginUpdateLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginSetClause()
                 + row.getSetClause(database)
@@ -754,7 +740,7 @@ public class DBTable<E extends DBRow> {
     }
 
     public void updateSingle(DBStatement statement, E row) throws SQLException {
-        final boolean useBatch = database.getBatchSQLStatementsWhenPossible();
+        final boolean useBatch = database.batchSQLStatementsWhenPossible();
 
         if (row.hasChanged()) {
             String sql = getSQLForUpdate(row);
@@ -781,7 +767,7 @@ public class DBTable<E extends DBRow> {
     public void update(List<E> oldRows) throws SQLException {
         DBStatement statement = database.getDBStatement();
         try {
-            final boolean useBatch = database.getBatchSQLStatementsWhenPossible();
+            final boolean useBatch = database.batchSQLStatementsWhenPossible();
             boolean batchHasEntries = false;
 
             for (E row : oldRows) {
@@ -831,8 +817,7 @@ public class DBTable<E extends DBRow> {
             return getSQLForUpdateWithoutPrimaryKey(row);
         } else {
             String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.toSQLString(database));
-            String sql
-                    = defn.beginUpdateLine()
+            String sql = defn.beginUpdateLine()
                     + defn.formatTableName(row.getTableName())
                     + defn.beginSetClause()
                     + row.getSetClause(database)
@@ -936,7 +921,9 @@ public class DBTable<E extends DBRow> {
      * <p>
      * Requires that all {@literal orderColumns) be from the {@code baseRow)
      * instance to work.
-     * }@param baseRow
+     * }
+     *
+     * @param baseRow
      *
      * @param orderColumns
      */

@@ -600,7 +600,7 @@ public abstract class DBDatabase {
         return this.databaseName = databaseName;
     }
 
-    public boolean getBatchSQLStatementsWhenPossible() {
+    public boolean batchSQLStatementsWhenPossible() {
         return batchIfPossible;
     }
 
