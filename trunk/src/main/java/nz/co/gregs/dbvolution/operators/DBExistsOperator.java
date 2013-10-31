@@ -46,12 +46,12 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
      * new DBExistsOperator(customer, customer.uid);
      * </pre>
      *
-     * <p> Requires that {@code qdtOfTheRow} is from the {@code tableRow}
+     * <p> Requires that {@literal qdtOfTheRow} is from theliteralode tableRow}
      * instance for this to work.
      * @param tableRow
      * @param qdtOfTheRow
-     * @throws IncorrectDBRowInstanceSuppliedException if {@code qdtOfTheRow}
-     * is not from the {@code tableRow} instance
+     * @throws IncorrectDBRowInstanceSuppliedExceptionliteral{@code qdtOfTheRow}
+     * is not frliteralhe {@code tableRow} instance
      */
     public DBExistsOperator(E tableRow, Object qdtOfTheRow) {
         this.tableRow = DBRow.copyDBRow(tableRow);

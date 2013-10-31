@@ -229,8 +229,8 @@ public abstract class DBDatabase {
 
     public void update(DBRow[] list) throws SQLException {
         if (list.length > 0) {
-            for (int i = 0; i < list.length; i++) {
-                this.update(list[i]);
+            for (DBRow list1 : list) {
+                this.update(list1);
             }
         }
     }
@@ -240,7 +240,9 @@ public abstract class DBDatabase {
      * Automatically selects the correct table and returns the selected rows as
      * a list
      *
-     * @param rows
+     * @param <R>
+     * @param row
+     * @return 
      * @throws SQLException
      */
     public <R extends DBRow> List<R> get(R row) throws SQLException {

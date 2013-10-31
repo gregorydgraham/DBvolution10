@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.exceptions;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -24,8 +23,10 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class UnableToCopyQueryableDatatypeException extends DBRuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     public UnableToCopyQueryableDatatypeException(QueryableDatatype qdt, IllegalAccessException ex) {
-        super("Unable To Copy "+qdt.getClass().getSimpleName()+" Due To "+ex.getClass().getSimpleName()+": Please ensure that all fields are accessible.",ex);
+        super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + ex.getClass().getSimpleName() + ": Please ensure that all fields are accessible.", ex);
     }
-    
+
 }
