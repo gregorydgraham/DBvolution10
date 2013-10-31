@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.changes;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
@@ -62,7 +64,9 @@ public class DBUpdateBLOB extends DBDataChange {
     }
 
     @Override
-    public String getSQLStatement(DBDatabase db) {
-        return "// SAVE BINARY DATA";
+    public List<String> getSQLStatements(DBDatabase db) {
+        List<String> strs = new ArrayList<String>();
+        strs.add("// SAVE BINARY DATA");
+        return strs;
     }
 }

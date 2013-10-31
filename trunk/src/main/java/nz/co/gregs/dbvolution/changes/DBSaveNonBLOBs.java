@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.changes;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
@@ -44,21 +45,25 @@ public class DBSaveNonBLOBs extends DBDataChange {
     }
 
     @Override
-    public String getSQLStatement(DBDatabase db) {
+    public ArrayList<String> getSQLStatements(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
         final DBRow row = getRow();
-        return defn.beginInsertLine()
+        ArrayList<String> strs = new ArrayList<String>();
+        strs.add(defn.beginInsertLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginInsertColumnList()
                 + getAllColumnsToInsert(db)
                 + defn.endInsertColumnList()
                 + getValuesClause(db)
-                + defn.endInsertLine();
+                + defn.endInsertLine());
+        return strs;
     }
 
     @Override
     public void execute(DBDatabase db, DBStatement statement) throws SQLException {
-        statement.execute(getSQLStatement(db));
+        for (String sql : getSQLStatements(db)) {
+            statement.execute(sql);
+        }
     }
 
     private String getAllColumnsToInsert(DBDatabase database) {
@@ -78,8 +83,8 @@ public class DBSaveNonBLOBs extends DBDataChange {
         }
         return allFields.toString();
     }
-    
-        public String getValuesClause(DBDatabase db) {
+
+    public String getValuesClause(DBDatabase db) {
 //        this.setDatabase(db);
         StringBuilder string = new StringBuilder();
         Class<? extends DBRow> thisClass = getRow().getClass();
@@ -96,6 +101,4 @@ public class DBSaveNonBLOBs extends DBDataChange {
         }
         return string.append(")").toString();
     }
-
-
 }

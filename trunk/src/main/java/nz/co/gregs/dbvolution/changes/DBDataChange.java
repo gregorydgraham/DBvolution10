@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.changes;
 
 import java.sql.SQLException;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -33,7 +34,7 @@ public  abstract class DBDataChange {
         this.row = DBRow.copyDBRow(row);
     }
     
-    public abstract String getSQLStatement(DBDatabase db);
+    public abstract List<String> getSQLStatements(DBDatabase db);
 
     public abstract boolean canBeBatched();
 

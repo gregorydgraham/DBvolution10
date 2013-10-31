@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.changes.DBChangeList;
 import nz.co.gregs.dbvolution.changes.DBDataChange;
@@ -274,17 +275,19 @@ public class DBStatement implements Statement {
 
     public void executeChanges(DBChangeList changes) throws SQLException {
         for (DBDataChange change : changes) {
-            final String sqlStatement = change.getSQLStatement(database);
-            if (database.isPrintSQLBeforeExecuting()) {
-                System.out.println(sqlStatement);
-            }
-            if (database.batchSQLStatementsWhenPossible() && change.canBeBatched()) {
-                this.addBatch(sqlStatement);
-            } else {
-                if (batchHasEntries) {
-                    this.executeBatch();
+            final List<String> sqlStatements = change.getSQLStatements(database);
+            for (String sqlStatement : sqlStatements) {
+                if (database.isPrintSQLBeforeExecuting()) {
+                    System.out.println(sqlStatement);
                 }
-                change.execute(database, this);
+                if (database.batchSQLStatementsWhenPossible() && change.canBeBatched()) {
+                    this.addBatch(sqlStatement);
+                } else {
+                    if (batchHasEntries) {
+                        this.executeBatch();
+                    }
+                    change.execute(database, this);
+                }
             }
         }
         // Clear out the batch

@@ -17,6 +17,7 @@
 package nz.co.gregs.dbvolution.changes;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.DBRow;
@@ -32,7 +33,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
     }
     
     @Override
-    public String getSQLStatement(DBDatabase db) {
+    public ArrayList<String> getSQLStatements(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
         DBRow row = getRow();
         String sql
@@ -49,6 +50,8 @@ public class DBDeleteUsingAllColumns extends DBDelete {
                     + (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
         }
         sql = sql + defn.endDeleteLine();
-        return sql;
+        ArrayList<String> strs = new ArrayList<String>();
+        strs.add(sql);
+        return strs;
     }
 }
