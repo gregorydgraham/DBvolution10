@@ -16,9 +16,7 @@
 
 package nz.co.gregs.dbvolution.changes;
 
-import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
@@ -29,11 +27,6 @@ public class DBDeleteByExample extends DBDelete {
         super(row);
     }
     
-    @Override
-    public boolean canBeBatched() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     @Override
     public String getSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
