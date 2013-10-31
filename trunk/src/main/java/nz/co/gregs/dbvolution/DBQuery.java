@@ -262,7 +262,7 @@ public class DBQuery {
                     queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
                 }
 
-                final String tabRowPK = tabRow.getPrimaryKeyName();
+                final String tabRowPK = tabRow.getPrimaryKeyColumnName();
                 if (tabRowPK != null) {
                     for (DBRow otherTab : otherTables) {
                         List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
@@ -270,7 +270,7 @@ public class DBQuery {
                             String formattedPK = defn.formatTableAndColumnName(tableName, tabRowPK);
                             Class<? extends DBRow> pkClass = fk.referencedClass();
                             DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                            String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
+                            String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyColumnName());
                             if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                                 String fkColumnName = fk.columnName();
                                 String formattedFK = defn.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
@@ -510,7 +510,7 @@ public class DBQuery {
                     final QueryableDatatype primaryKey = rowPart.getPrimaryKey();
                     if (primaryKey != null) {
                         String rowPartStr = primaryKey.toSQLString(this.database);
-                        ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
+                        ps.print(" " + rowPart.getPrimaryKeyColumnName() + ": " + rowPartStr);
                     }
                 }
             }

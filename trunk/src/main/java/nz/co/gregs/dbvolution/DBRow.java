@@ -107,7 +107,7 @@ abstract public class DBRow implements Serializable {
      *
      * @return non-null list of property wrappers, empty if none
      */
-    protected List<PropertyWrapper> getPropertyWrappers() {
+    public List<PropertyWrapper> getPropertyWrappers() {
         return getWrapper().getPropertyWrappers();
     }
 
@@ -177,7 +177,7 @@ abstract public class DBRow implements Serializable {
         return "";
     }
 
-    public String getPrimaryKeyName() {
+    public String getPrimaryKeyColumnName() {
         PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
         if (primaryKeyPropertyWrapper == null) {
             return null;
@@ -796,7 +796,7 @@ abstract public class DBRow implements Serializable {
 
                 String formattedPrimaryKey = defn.formatTableAndColumnName(
                         this.getTableName(),
-                        this.getPrimaryKeyName());
+                        this.getPrimaryKeyColumnName());
 
                 rels.append(lineSeparator)
                         .append(joinSeparator)

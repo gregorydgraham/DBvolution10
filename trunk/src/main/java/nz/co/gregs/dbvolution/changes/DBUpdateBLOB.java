@@ -51,7 +51,7 @@ public class DBUpdateBLOB extends DBDataChange {
                 + defn.getEqualsComparator()
                 + defn.getPreparedVariableSymbol()
                 + defn.beginWhereClause()
-                + defn.formatColumnName(row.getPrimaryKeyName())
+                + defn.formatColumnName(row.getPrimaryKeyColumnName())
                 + defn.getEqualsComparator()
                 + row.getPrimaryKey().toSQLString(db)
                 + defn.endSQLStatement();

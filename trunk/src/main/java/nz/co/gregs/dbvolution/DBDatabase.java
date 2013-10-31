@@ -20,6 +20,7 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.changes.DBChangeList;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.DBTransactionStatement;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -78,7 +79,7 @@ public abstract class DBDatabase {
         if (dbStatement instanceof DBTransactionStatement) {
             return (DBTransactionStatement) dbStatement;
         } else {
-            return new DBTransactionStatement(dbStatement);
+            return new DBTransactionStatement(this, dbStatement);
         }
     }
 
@@ -112,7 +113,7 @@ public abstract class DBDatabase {
                 }
             }
             try {
-                statement = new DBStatement(connection.createStatement());
+                statement = new DBStatement(this, connection.createStatement());
             } catch (SQLException noConnection) {
                 throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
             }
@@ -172,7 +173,8 @@ public abstract class DBDatabase {
      * @param objs
      * @throws SQLException
      */
-    public void delete(Object... objs) throws SQLException {
+    public DBChangeList delete(Object... objs) throws SQLException {
+        DBChangeList changes =new DBChangeList();
         for (Object obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
@@ -180,14 +182,15 @@ public abstract class DBDatabase {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
                     for (DBRow row : rowList) {
-                        this.getDBTable(row).delete(row);
+                        changes.addAll(this.getDBTable(row).delete(row));
                     }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
-                this.getDBTable(row).delete(row);
+                changes.addAll(this.getDBTable(row).delete(row));
             }
         }
+        return changes;
     }
 
     /**

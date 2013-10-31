@@ -20,9 +20,10 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 
-public class DBDeleteByExample extends DBDataChange {
+public class DBDeleteByExample extends DBDelete {
 
     public <R extends DBRow> DBDeleteByExample(R row) {
         super(row);
@@ -34,12 +35,14 @@ public class DBDeleteByExample extends DBDataChange {
     }
 
     @Override
-    public void execute(DBDatabase db, DBStatement statement) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getSQLStatement(DBDatabase db) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        DBDefinition defn = db.getDefinition();
+        DBRow row = getRow();
+        return defn.beginDeleteLine()
+                        + defn.formatTableName(row.getTableName())
+                        + defn.beginWhereClause()
+                        + defn.getTrueOperation()
+                        + row.getWhereClause(db)
+                        + defn.endDeleteLine();
     }
 }
