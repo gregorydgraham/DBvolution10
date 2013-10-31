@@ -11,14 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nz.co.gregs.dbvolution.changes.DBDataChange;
-import nz.co.gregs.dbvolution.changes.DBChangeList;
-import nz.co.gregs.dbvolution.changes.DBSaveNonBLOBs;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
-import nz.co.gregs.dbvolution.changes.DBDelete;
-import nz.co.gregs.dbvolution.changes.DBDeleteByExample;
-import nz.co.gregs.dbvolution.changes.DBDeleteByPrimaryKey;
-import nz.co.gregs.dbvolution.changes.DBDeleteUsingAllColumns;
+import nz.co.gregs.dbvolution.changes.*;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -88,6 +82,7 @@ public class DBTable<E extends DBRow> {
         return allFields.toString();
     }
 
+    @Deprecated
     public String getAllFieldsForInsert() {
         StringBuilder allFields = new StringBuilder();
         DBDefinition defn = database.getDefinition();
@@ -478,10 +473,10 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    public void insert(E newRow) throws SQLException {
+    public DBChangeList insert(E newRow) throws SQLException {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(newRow);
-        insert(arrayList);
+        return insert(arrayList);
     }
 
     /**
@@ -489,30 +484,20 @@ public class DBTable<E extends DBRow> {
      * @param newRows
      * @throws SQLException
      */
-    public void insert(List<E> newRows) throws SQLException {
+    public DBChangeList insert(List<E> newRows) throws SQLException {
+        DBChangeList changes = new DBChangeList();
         DBStatement statement = database.getDBStatement();
         try {
-            DBChangeList allInserts = getSQLForInsert(newRows);
-            for (DBDataChange action : allInserts) {
-                if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                    System.out.println(action.getSQLStatement(database));
-                }
-                if (action.canBeBatched() && database.batchSQLStatementsWhenPossible()) {
-                    statement.addBatch(action.getSQLStatement(database));
-                } else {
-                    statement.executeBatch();
-                    statement.clearBatch();
-                    action.execute(database, statement);
-                }
-            }
-            statement.executeBatch();
+            changes = getInsertDBChangeList(newRows);
+            statement.executeChanges(changes);
             // Hasn't thrown an exception so they are now defined.
-            for (DBDataChange action : allInserts) {
-                action.getRow().setDefined(true);
+            for (DBRow newlyDefinedRow : newRows) {
+                newlyDefinedRow.setDefined(true);
             }
         } finally {
             statement.close();
         }
+        return changes;
     }
 
     /**
@@ -524,10 +509,10 @@ public class DBTable<E extends DBRow> {
      * @param newRow
      * @return
      */
-    public String getSQLForInsert(E newRow) {
+    public DBDataChange getSQLForInsert(E newRow) {
         ArrayList<E> arrayList = new ArrayList<E>();
         arrayList.add(newRow);
-        return getSQLForInsert(arrayList).get(0).getSQLStatement(database);
+        return getInsertDBChangeList(arrayList).get(0);
     }
 
     /**
@@ -539,7 +524,7 @@ public class DBTable<E extends DBRow> {
      * @param newRows
      * @return
      */
-    public DBChangeList getSQLForInsert(List<E> newRows) {
+    public DBChangeList getInsertDBChangeList(List<E> newRows) {
         DBChangeList allInserts = new DBChangeList();
         for (E row : newRows) {
             allInserts.add(new DBSaveNonBLOBs(row));

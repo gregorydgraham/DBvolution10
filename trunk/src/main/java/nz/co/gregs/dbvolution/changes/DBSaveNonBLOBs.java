@@ -16,10 +16,14 @@
 package nz.co.gregs.dbvolution.changes;
 
 import java.sql.SQLException;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
  *
@@ -43,22 +47,55 @@ public class DBSaveNonBLOBs extends DBDataChange {
     public String getSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
         final DBRow row = getRow();
-//        if (sql == null || sql.isEmpty()) {
         return defn.beginInsertLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginInsertColumnList()
-                + db.getDBTable(row).getAllFieldsForInsert()
+                + getAllColumnsToInsert(db)
                 + defn.endInsertColumnList()
-                + row.getValuesClause(db)
+                + getValuesClause(db)
                 + defn.endInsertLine();
-
-//        } else {
-//            return super.getSQLStatement(db);
-//        }
     }
 
     @Override
     public void execute(DBDatabase db, DBStatement statement) throws SQLException {
         statement.execute(getSQLStatement(db));
     }
+
+    private String getAllColumnsToInsert(DBDatabase database) {
+        StringBuilder allFields = new StringBuilder();
+        DBDefinition defn = database.getDefinition();
+        List<PropertyWrapper> props = getRow().getPropertyWrappers();
+        String separator = "";
+        for (PropertyWrapper prop : props) {
+            // BLOBS are not inserted.so exclude them
+            if (prop.isColumn() && !prop.isInstanceOf(DBLargeObject.class)) {
+                allFields
+                        .append(separator)
+                        .append(" ")
+                        .append(defn.formatColumnName(prop.columnName()));
+                separator = ",";
+            }
+        }
+        return allFields.toString();
+    }
+    
+        public String getValuesClause(DBDatabase db) {
+//        this.setDatabase(db);
+        StringBuilder string = new StringBuilder();
+        Class<? extends DBRow> thisClass = getRow().getClass();
+        List<PropertyWrapper> props = getRow().getPropertyWrappers();
+
+        String separator = " VALUES ( ";
+        for (PropertyWrapper prop : props) {
+            if (prop.isColumn()
+                    && !DBLargeObject.class.isAssignableFrom(prop.type())) {
+                final QueryableDatatype qdt = prop.getQueryableDatatype();
+                string.append(separator).append(qdt.toSQLString(db));
+                separator = ",";
+            }
+        }
+        return string.append(")").toString();
+    }
+
+
 }

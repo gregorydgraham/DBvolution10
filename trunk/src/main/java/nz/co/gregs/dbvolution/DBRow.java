@@ -344,38 +344,7 @@ abstract public class DBRow implements Serializable {
         return string.toString();
     }
 
-    /**
-     * @param database the database to set
-     */
-//    public void setDatabase(DBDatabase db) {
-////        this.database = theDatabase;
-//
-//        for (Field field : this.getClass().getDeclaredFields()) {
-//            if (field.isAnnotationPresent(DBColumn.class)) {
-//                getQueryableValueOfField(field).setDatabase(database);
-//            }
-//        }
-//    }
-    public String getValuesClause(DBDatabase db) {
-//        this.setDatabase(db);
-        StringBuilder string = new StringBuilder();
-        Class<? extends DBRow> thisClass = this.getClass();
-        List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
-
-        String separator = " VALUES ( ";
-        for (PropertyWrapper prop : props) {
-            if (prop.isColumn()
-                    && !DBLargeObject.class.isAssignableFrom(prop.type())) {
-                final QueryableDatatype qdt = prop.getQueryableDatatype();
-                string.append(separator).append(qdt.toSQLString(db));
-                separator = ",";
-            }
-        }
-        return string.append(")").toString();
-    }
-
     protected String getSetClause(DBDatabase db) {
-//        this.setDatabase(db);
         DBDefinition defn = db.getDefinition();
         StringBuilder sql = new StringBuilder();
         Class<? extends DBRow> thisClass = this.getClass();
