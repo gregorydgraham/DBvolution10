@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import javassist.Modifier;
 
-import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.DBSaveBLOB;
+import nz.co.gregs.dbvolution.changes.DBChangeList;
+import nz.co.gregs.dbvolution.changes.DBUpdateBLOB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -64,10 +64,9 @@ abstract public class DBRow implements Serializable {
         }
     }
 
-    public static <R extends DBRow> R copyDBRow(R originalRow) {
-        R newRow = originalRow;
-//        try (
-        newRow = (R) DBRow.getDBRow(originalRow.getClass());
+    public static <T extends DBRow> T copyDBRow(T originalRow) {
+        @SuppressWarnings("unchecked")
+        T newRow = (T) DBRow.getDBRow(originalRow.getClass());
         newRow.isDefined = originalRow.isDefined;
         for (PropertyWrapperDefinition defn : originalRow.ignoredForeignKeys) {
             newRow.ignoredForeignKeys.add(defn);
@@ -493,7 +492,7 @@ abstract public class DBRow implements Serializable {
      *
      * <p>
      * For example the following code snippet will get a property wrapper for
-     * the {@code name} field:
+     * the {@literal name} field:
      * <pre>
      * Customer customer = ...;
      * getPropertyWrapperOf(customer.name);
@@ -651,11 +650,11 @@ abstract public class DBRow implements Serializable {
         return false;
     }
 
-    protected DBActionList getLargeObjectActions(DBDatabase db) {
-        DBActionList actions = new DBActionList();
+    protected DBChangeList getLargeObjectActions(DBDatabase db) {
+        DBChangeList actions = new DBChangeList();
         if (hasLargeObjectColumns()) {
             for (PropertyWrapper prop : blobColumns) {
-                actions.add(new DBSaveBLOB(this, prop.columnName(),
+                actions.add(new DBUpdateBLOB(this, prop.columnName(),
                         (DBLargeObject) prop.getQueryableDatatype()));
             }
         }

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.Connection;
@@ -26,13 +25,15 @@ import java.sql.Statement;
  *
  * @author gregory.graham
  */
-public class DBStatement implements Statement{
+public class DBStatement implements Statement {
 
     Statement realStatement = null;
-    
-    public DBStatement(Statement realStatement){
+    private boolean batchHasEntries;
+
+    public DBStatement(Statement realStatement) {
         this.realStatement = realStatement;
     }
+
     @Override
     public ResultSet executeQuery(String string) throws SQLException {
         return realStatement.executeQuery(string);
@@ -65,7 +66,7 @@ public class DBStatement implements Statement{
 
     @Override
     public void setMaxRows(int i) throws SQLException {
-         realStatement.setMaxRows(i);
+        realStatement.setMaxRows(i);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class DBStatement implements Statement{
 
     @Override
     public void clearWarnings() throws SQLException {
-         realStatement.clearWarnings();
+        realStatement.clearWarnings();
     }
 
     @Override
@@ -156,15 +157,20 @@ public class DBStatement implements Statement{
     @Override
     public void addBatch(String string) throws SQLException {
         realStatement.addBatch(string);
+        setBatchHasEntries(true);
     }
 
     @Override
     public void clearBatch() throws SQLException {
         realStatement.clearBatch();
+        setBatchHasEntries(false);
     }
 
     @Override
     public int[] executeBatch() throws SQLException {
+        if (getBatchHasEntries()) {
+            setBatchHasEntries(false);
+        }
         return realStatement.executeBatch();
     }
 
@@ -252,5 +258,13 @@ public class DBStatement implements Statement{
     public boolean isWrapperFor(Class<?> type) throws SQLException {
         return realStatement.isWrapperFor(type);
     }
-    
+
+    public void setBatchHasEntries(boolean b) {
+        batchHasEntries = b;
+    }
+
+    public boolean getBatchHasEntries() {
+        return batchHasEntries;
+    }
+
 }

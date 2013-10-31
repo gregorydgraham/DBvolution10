@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nz.co.gregs.dbvolution.actions.DBAction;
-import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.DBSave;
+import nz.co.gregs.dbvolution.changes.DBDataChange;
+import nz.co.gregs.dbvolution.changes.DBChangeList;
+import nz.co.gregs.dbvolution.changes.DBSaveNonBLOBs;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -488,8 +488,8 @@ public class DBTable<E extends DBRow> {
     public void insert(List<E> newRows) throws SQLException {
         DBStatement statement = database.getDBStatement();
         try {
-            DBActionList allInserts = getSQLForInsert(newRows);
-            for (DBAction action : allInserts) {
+            DBChangeList allInserts = getSQLForInsert(newRows);
+            for (DBDataChange action : allInserts) {
                 if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
                     System.out.println(action.getSQLStatement(database));
                 }
@@ -503,7 +503,7 @@ public class DBTable<E extends DBRow> {
             }
             statement.executeBatch();
             // Hasn't thrown an exception so they are now defined.
-            for (DBAction action : allInserts) {
+            for (DBDataChange action : allInserts) {
                 action.getRow().setDefined(true);
             }
         } finally {
@@ -535,20 +535,10 @@ public class DBTable<E extends DBRow> {
      * @param newRows
      * @return
      */
-    public DBActionList getSQLForInsert(List<E> newRows) {
-        DBDefinition defn = database.getDefinition();
-        DBActionList allInserts = new DBActionList();
+    public DBChangeList getSQLForInsert(List<E> newRows) {
+        DBChangeList allInserts = new DBChangeList();
         for (E row : newRows) {
-//            String sql
-//                    = defn.beginInsertLine()
-//                    + defn.formatTableName(row.getTableName())
-//                    + defn.beginInsertColumnList()
-//                    + this.getAllFieldsForInsert()
-//                    + defn.endInsertColumnList()
-//                    + row.getValuesClause(database)
-//                    + defn.endInsertLine();
-//            allInserts.add(new DBSave(row, sql));
-            allInserts.add(new DBSave(row));
+            allInserts.add(new DBSaveNonBLOBs(row));
             if (row.hasLargeObjectColumns()) {
                 allInserts.addAll(row.getLargeObjectActions(database));
             }
@@ -616,28 +606,14 @@ public class DBTable<E extends DBRow> {
             if (row.getDefined()) {
                 final QueryableDatatype primaryKey = row.getPrimaryKey();
                 if (primaryKey == null) {
-                    allDeletes.add(getSQLForDeleteWithoutPrimaryKey(row));
+                    allDeletes.add(getSQLForDeleteUsingAllFields(row));
                 } else {
-                    String sql
-                            = defn.beginDeleteLine()
-                            + defn.formatTableName(row.getTableName())
-                            + defn.beginWhereClause()
-                            + defn.formatColumnName(this.getPrimaryKeyColumn())
-                            + defn.getEqualsComparator()
-                            + primaryKey.toSQLString(database)
-                            + defn.endDeleteLine();
-                    allDeletes.add(sql);
+
+                    allDeletes.add(getSQLForDeleteByPrimaryKey(row, primaryKey));
                 }
             } else {
                 // Delete by example
-                String sql
-                        = defn.beginDeleteLine()
-                        + defn.formatTableName(row.getTableName())
-                        + defn.beginWhereClause()
-                        + defn.getTrueOperation()
-                        + getSQLForExample(row)
-                        + defn.endDeleteLine();
-                allDeletes.add(sql);
+                allDeletes.add(getSQLForDeleteByExample(row));
             }
         }
         return allDeletes;
@@ -648,7 +624,7 @@ public class DBTable<E extends DBRow> {
      * @param row
      * @return
      */
-    public String getSQLForDeleteWithoutPrimaryKey(E row) {
+    public String getSQLForDeleteUsingAllFields(E row) {
         DBDefinition defn = database.getDefinition();
         String sql
                 = defn.beginDeleteLine()
@@ -666,6 +642,28 @@ public class DBTable<E extends DBRow> {
         sql = sql + defn.endDeleteLine();
         return sql;
     }
+    
+    
+    private String getSQLForDeleteByPrimaryKey(E row, QueryableDatatype primaryKey) {
+        DBDefinition defn = database.getDefinition();
+        return defn.beginDeleteLine()
+                + defn.formatTableName(row.getTableName())
+                + defn.beginWhereClause()
+                + defn.formatColumnName(this.getPrimaryKeyColumn())
+                + defn.getEqualsComparator()
+                + primaryKey.toSQLString(database)
+                + defn.endDeleteLine();
+    }
+    
+    private String getSQLForDeleteByExample(E row) {
+        DBDefinition defn = database.getDefinition();
+        return defn.beginDeleteLine()
+                        + defn.formatTableName(row.getTableName())
+                        + defn.beginWhereClause()
+                        + defn.getTrueOperation()
+                        + getSQLForExample(row)
+                        + defn.endDeleteLine();
+    }
 
     /**
      *
@@ -675,11 +673,16 @@ public class DBTable<E extends DBRow> {
     public List<String> getSQLForDeleteWithoutPrimaryKey(List<E> oldRows) {
         List<String> allInserts = new ArrayList<String>();
         for (E row : oldRows) {
-            allInserts.add(getSQLForDeleteWithoutPrimaryKey(row));
+            allInserts.add(getSQLForDeleteUsingAllFields(row));
         }
         return allInserts;
     }
 
+    /**
+     *
+     * @param row
+     * @return
+     */
     public String getSQLForUpdateWithoutPrimaryKey(E row) {
         DBDefinition defn = database.getDefinition();
         String sql
@@ -721,6 +724,31 @@ public class DBTable<E extends DBRow> {
         update(arrayList);
     }
 
+    public void updateSingle(DBStatement statement, E row) throws SQLException {
+        final boolean useBatch = database.getBatchSQLStatementsWhenPossible();
+
+        if (row.hasChanged()) {
+            String sql = getSQLForUpdate(row);
+
+            if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
+                System.out.println(sql);
+            }
+            if (useBatch) {
+                statement.addBatch(sql);
+            } else {
+                statement.execute(sql);
+            }
+        }
+
+        // Do the batched statements
+        if (statement.getBatchHasEntries()) {
+            statement.executeBatch();
+        }
+        // Clean up after the updates
+
+        row.setUnchanged();
+    }
+
     public void update(List<E> oldRows) throws SQLException {
         DBStatement statement = database.getDBStatement();
         try {
@@ -759,11 +787,12 @@ public class DBTable<E extends DBRow> {
     /**
      * Creates the SQL used to update a row.
      *
-     * Helpful for debugging and reversion scripts Defers to
-     * getSQLForUpdateWithoutPrimaryKey for some updates
+     * Helpful for debugging and reversion scripts.
+     *
+     * Defers to getSQLForUpdateWithoutPrimaryKey for some updates
      *
      *
-     * @param oldRows
+     * @param row
      * @return
      */
     public String getSQLForUpdate(E row) {
@@ -876,9 +905,10 @@ public class DBTable<E extends DBRow> {
      * </pre>
      *
      * <p>
-     * Requires that all {@code orderColumns) be from the {@code baseRow)
+     * Requires that all {@literal orderColumns) be from the {@code baseRow)
      * instance to work.
-     * @param baseRow
+     * }@param baseRow
+     *
      * @param orderColumns
      */
     public void setSortOrder(E baseRow, QueryableDatatype... orderColumns) {

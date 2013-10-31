@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.exceptions;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -23,12 +22,11 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * @author gregory.graham
  */
 public class UnableInstantiateQueryableDatatypeException extends DBRuntimeException {
-    
-    
+
+    private static final long serialVersionUID = 1L;
 
     public UnableInstantiateQueryableDatatypeException(QueryableDatatype qdt, Exception exception) {
-        super("Unable To Copy "+qdt.getClass().getSimpleName()+" Due To "+exception.getClass().getSimpleName()+": Please ensure the newInstance() method works correctly.", exception);
+        super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + exception.getClass().getSimpleName() + ": Please ensure the newInstance() method works correctly.", exception);
     }
 
-    
 }
