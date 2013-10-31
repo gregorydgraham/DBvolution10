@@ -17,6 +17,7 @@
 package nz.co.gregs.dbvolution.changes;
 
 import java.sql.SQLException;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.DBRow;
@@ -42,7 +43,7 @@ public class DBUpdateNonBLOB extends DBDataChange {
     }
 
     @Override
-    public String getSQLStatement(DBDatabase db) {
+    public List<String> getSQLStatements(DBDatabase db) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

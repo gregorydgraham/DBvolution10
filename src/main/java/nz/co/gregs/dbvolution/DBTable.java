@@ -509,10 +509,8 @@ public class DBTable<E extends DBRow> {
      * @param newRow
      * @return
      */
-    public DBDataChange getSQLForInsert(E newRow) {
-        ArrayList<E> arrayList = new ArrayList<E>();
-        arrayList.add(newRow);
-        return getInsertDBChangeList(arrayList).get(0);
+    public DBChangeList getSQLForInsert(E newRow) {
+        return getInsertDBChangeList(newRow);
     }
 
     /**
@@ -527,10 +525,7 @@ public class DBTable<E extends DBRow> {
     public DBChangeList getInsertDBChangeList(List<E> newRows) {
         DBChangeList allInserts = new DBChangeList();
         for (E row : newRows) {
-            allInserts.add(new DBSaveNonBLOBs(row));
-            if (row.hasLargeObjectColumns()) {
-                allInserts.addAll(row.getLargeObjectActions(database));
-            }
+            allInserts.addAll(getInsertDBChangeList(row));
         }
         return allInserts;
     }
@@ -944,5 +939,14 @@ public class DBTable<E extends DBRow> {
             return orderByClause.toString();
         }
         return "";
+    }
+
+    private DBChangeList getInsertDBChangeList(E row) {
+        DBChangeList changes = new DBChangeList();
+        changes.add(new DBSaveNonBLOBs(row));
+        if (row.hasLargeObjectColumns()) {
+            changes.addAll(row.getLargeObjectActions(database));
+        }
+        return changes;
     }
 }

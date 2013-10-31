@@ -20,13 +20,12 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.DBRow;
 
-
 public abstract class DBDelete extends DBDataChange {
 
     public <R extends DBRow> DBDelete(R row) {
         super(row);
     }
-    
+
     @Override
     public boolean canBeBatched() {
         return true;
@@ -34,7 +33,8 @@ public abstract class DBDelete extends DBDataChange {
 
     @Override
     public void execute(DBDatabase db, DBStatement statement) throws SQLException {
-        statement.execute(getSQLStatement(db));
+        for (String str : getSQLStatements(db)) {
+            statement.execute(str);
+        }
     }
-
 }

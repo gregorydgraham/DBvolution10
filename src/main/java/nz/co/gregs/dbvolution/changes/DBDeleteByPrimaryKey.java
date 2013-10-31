@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.changes;
 
+import java.util.ArrayList;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -26,15 +27,17 @@ public class DBDeleteByPrimaryKey extends DBDelete {
     }
 
     @Override
-    public String getSQLStatement(DBDatabase db) {
+    public ArrayList<String> getSQLStatements(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
         DBRow row = getRow();
-        return defn.beginDeleteLine()
+        ArrayList<String> strs = new ArrayList<String>();
+        strs.add(defn.beginDeleteLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginWhereClause()
                 + defn.formatColumnName(row.getPrimaryKeyColumnName())
                 + defn.getEqualsComparator()
                 + row.getPrimaryKey().toSQLString(db)
-                + defn.endDeleteLine();
+                + defn.endDeleteLine());
+        return strs;
     }
 }

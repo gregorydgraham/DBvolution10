@@ -16,6 +16,8 @@
 
 package nz.co.gregs.dbvolution.changes;
 
+import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -28,14 +30,16 @@ public class DBDeleteByExample extends DBDelete {
     }
     
     @Override
-    public String getSQLStatement(DBDatabase db) {
+    public List<String> getSQLStatements(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
         DBRow row = getRow();
-        return defn.beginDeleteLine()
-                        + defn.formatTableName(row.getTableName())
-                        + defn.beginWhereClause()
-                        + defn.getTrueOperation()
-                        + row.getWhereClause(db)
-                        + defn.endDeleteLine();
+        ArrayList<String> strs = new ArrayList<String>();
+        strs.add(defn.beginDeleteLine()
+                                      + defn.formatTableName(row.getTableName())
+                                      + defn.beginWhereClause()
+                                      + defn.getTrueOperation()
+                                      + row.getWhereClause(db)
+                                      + defn.endDeleteLine());
+        return strs;
     }
 }

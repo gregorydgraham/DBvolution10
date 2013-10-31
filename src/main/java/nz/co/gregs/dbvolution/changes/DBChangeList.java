@@ -29,7 +29,7 @@ public class DBChangeList extends ArrayList<DBDataChange>{
     public synchronized List<String> getSQL(DBDatabase db){
         List<String> sqlList = new ArrayList<String>();
         for (DBDataChange act : this) {
-            sqlList.add(act.getSQLStatement(db));
+            sqlList.addAll(act.getSQLStatements(db));
         }
         return sqlList;
     }
