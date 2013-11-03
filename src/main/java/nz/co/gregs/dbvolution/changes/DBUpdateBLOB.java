@@ -66,7 +66,7 @@ public class DBUpdateBLOB extends DBDataChange {
     @Override
     public List<String> getSQLStatements(DBDatabase db) {
         List<String> strs = new ArrayList<String>();
-        strs.add("// SAVE BINARY DATA");
+        strs.add(db.getDefinition().startMultilineComment()+" SAVE BINARY DATA"+db.getDefinition().endMultilineComment());
         return strs;
     }
 }

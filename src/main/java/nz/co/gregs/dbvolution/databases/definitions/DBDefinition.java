@@ -335,4 +335,12 @@ public abstract class DBDefinition {
     public boolean isColumnNamesCaseSensitive() {
 		return false;
     }
+
+    public String startMultilineComment() {
+        return "/*";
+    }
+
+    public String endMultilineComment() {
+        return "*/";
+    }
 }

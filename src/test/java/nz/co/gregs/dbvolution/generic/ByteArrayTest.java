@@ -61,6 +61,7 @@ public class ByteArrayTest extends AbstractTest {
     public void retrieveRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException {
 
         CompanyLogo companyLogo = new CompanyLogo();
+        database.print(database.get(companyLogo));
         companyLogo.logoID.setValue(1);
         companyLogo.carCompany.setValue(1);//Toyota
         companyLogo.imageFilename.setValue("toyota_logo.jpg");

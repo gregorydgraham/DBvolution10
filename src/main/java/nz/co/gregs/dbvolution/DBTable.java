@@ -474,9 +474,20 @@ public class DBTable<E extends DBRow> {
     }
 
     public DBChangeList insert(E newRow) throws SQLException {
-        ArrayList<E> arrayList = new ArrayList<E>();
-        arrayList.add(newRow);
-        return insert(arrayList);
+//        ArrayList<E> arrayList = new ArrayList<E>();
+//        arrayList.add(newRow);
+//        return insert(arrayList);
+        DBChangeList changes = new DBChangeList();
+        DBStatement statement = database.getDBStatement();
+        try {
+            changes = getInsertDBChangeList(newRow);
+            statement.executeChanges(changes);
+            // Hasn't thrown an exception so it is now defined.
+            newRow.setDefined(true);
+        } finally {
+            statement.close();
+        }
+        return changes;
     }
 
     /**
@@ -509,7 +520,7 @@ public class DBTable<E extends DBRow> {
      * @param newRow
      * @return
      */
-    public DBChangeList getSQLForInsert(E newRow) {
+    public DBChangeList getInsertDBDataChange(E newRow) {
         return getInsertDBChangeList(newRow);
     }
 
@@ -943,10 +954,10 @@ public class DBTable<E extends DBRow> {
 
     private DBChangeList getInsertDBChangeList(E row) {
         DBChangeList changes = new DBChangeList();
-        changes.add(new DBSaveNonBLOBs(row));
-        if (row.hasLargeObjectColumns()) {
-            changes.addAll(row.getLargeObjectActions(database));
-        }
+        changes.add(new DBSave(row));
+//        if (row.hasLargeObjectColumns()) {
+//            changes.addAll(row.getLargeObjectActions(database));
+//        }
         return changes;
     }
 }
