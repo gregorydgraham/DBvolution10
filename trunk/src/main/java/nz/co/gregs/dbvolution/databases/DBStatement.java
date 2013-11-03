@@ -174,9 +174,9 @@ public class DBStatement implements Statement {
 
     @Override
     public int[] executeBatch() throws SQLException {
-        if (getBatchHasEntries()) {
-            setBatchHasEntries(false);
-        }
+//        if (getBatchHasEntries()) {
+//            setBatchHasEntries(false);
+//        }
         return realStatement.executeBatch();
     }
 
@@ -285,6 +285,7 @@ public class DBStatement implements Statement {
                 } else {
                     if (batchHasEntries) {
                         this.executeBatch();
+                        this.clearBatch();
                     }
                     change.execute(database, this);
                 }
@@ -293,6 +294,7 @@ public class DBStatement implements Statement {
         // Clear out the batch
         if (batchHasEntries) {
             this.executeBatch();
+            this.clearBatch();
         }
 
     }
