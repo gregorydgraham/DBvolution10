@@ -390,37 +390,37 @@ abstract public class DBRow implements Serializable {
         return columnNames;
     }
 
-    /**
-     * This method shouldn't be needed anymore because PropertyWrappers or
-     * PropertyWrapperDefinitions should be passed around instead of QDTs. In
-     * particular, with the introduction of type adaptors, java fields aren't
-     * necessarily of type QDT.
-     *
-     * @param qdt
-     * @return
-     * @deprecated use of this method indicates a likely bug
-     */
-    @Deprecated
-    public String getDBColumnName(QueryableDatatype qdt) {
-        return this.getPropertyWrapperOf(qdt).columnName();
-    }
-
-    @Deprecated
-    protected static String getTableAndColumnName(DBDatabase db, DBRow[] baseRows, QueryableDatatype qdt) {
-        String columnName;
-        String tableName;
-        String fullName = null;
-        DBDefinition defn = db.getDefinition();
-        for (DBRow row : baseRows) {
-            tableName = row.getTableName();
-            columnName = row.getDBColumnName(qdt);
-            if (columnName != null) {
-                fullName = defn.formatTableAndColumnName(tableName, columnName);
-                return fullName;
-            }
-        }
-        return fullName;
-    }
+//    /**
+//     * This method shouldn't be needed anymore because PropertyWrappers or
+//     * PropertyWrapperDefinitions should be passed around instead of QDTs. In
+//     * particular, with the introduction of type adaptors, java fields aren't
+//     * necessarily of type QDT.
+//     *
+//     * @param qdt
+//     * @return
+//     * @deprecated use of this method indicates a likely bug
+//     */
+//    @Deprecated
+//    public String getDBColumnName(QueryableDatatype qdt) {
+//        return this.getPropertyWrapperOf(qdt).columnName();
+//    }
+//
+//    @Deprecated
+//    protected static String getTableAndColumnName(DBDatabase db, DBRow[] baseRows, QueryableDatatype qdt) {
+//        String columnName;
+//        String tableName;
+//        String fullName = null;
+//        DBDefinition defn = db.getDefinition();
+//        for (DBRow row : baseRows) {
+//            tableName = row.getTableName();
+//            columnName = row.getDBColumnName(qdt);
+//            if (columnName != null) {
+//                fullName = defn.formatTableAndColumnName(tableName, columnName);
+//                return fullName;
+//            }
+//        }
+//        return fullName;
+//    }
 
 //    protected Map<DBForeignKey, DBColumn> getForeignKeys() {
 //        if (foreignKeys == null) {
@@ -438,9 +438,14 @@ abstract public class DBRow implements Serializable {
 //        }
 //        return foreignKeys;
 //    }
-    protected List<PropertyWrapper> getForeignKeyPropertyWrappers() {
+
+    /**
+     *
+     * @return a list of all foreign keys, MINUS the ignored foreign keys
+     */
+        protected List<PropertyWrapper> getForeignKeyPropertyWrappers() {
         if (fkFields.isEmpty()) {
-            List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
+            List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
 
             for (PropertyWrapper prop : props) {
                 if (prop.isColumn()) {
