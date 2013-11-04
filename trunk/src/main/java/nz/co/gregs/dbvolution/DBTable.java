@@ -624,6 +624,23 @@ public class DBTable<E extends DBRow> {
         return allDeletes;
     }
 
+    public DBDataChange getDeleteDBDataChanges(E row) {
+        DBDataChange change;
+        if (row.getDefined()) {
+            final QueryableDatatype primaryKey = row.getPrimaryKey();
+            if (primaryKey == null) {
+                change = new DBDeleteUsingAllColumns(row);
+            } else {
+
+                change = new DBDeleteByPrimaryKey(row);
+            }
+        } else {
+            // Delete by example
+            change = new DBDeleteByExample(row);
+        }
+        return change;
+    }
+
     /**
      *
      * @param row
