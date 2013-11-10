@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalTypeAdaptor;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 
 /**
@@ -67,7 +67,7 @@ public class DBLessThanOperator extends DBOperator {
     }
     
     @Override
-    public DBLessThanOperator copyAndAdapt(DBSafeInternalTypeAdaptor typeAdaptor) {
+    public DBLessThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	DBLessThanOperator op = new DBLessThanOperator(typeAdaptor.convert(lessThanThis));
     	op.invertOperator = this.invertOperator;
     	return op;

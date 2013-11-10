@@ -1,7 +1,8 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.internal.SafeOneWayTypeAdaptor;
+import nz.co.gregs.dbvolution.internal.SafeOneWayTypeAdaptor.Direction;
 
 /**
  * Allows synchronisations to be done between two QueryableDatatypes,
@@ -10,12 +11,14 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  */
 // TODO come up with a better name
 public class QueryableDatatypeSyncer {
-	protected enum Direction {TO_INTERNAL, TO_EXTERNAL}
+	//protected enum Direction {TO_INTERNAL, TO_EXTERNAL}
 	protected final String propertyName;
 	protected final DBTypeAdaptor<Object, Object> typeAdaptor;
 	protected QueryableDatatype internalQdt;
-	private DBSafeInternalTypeAdaptor internalToExternalTypeAdaptor;
-	private DBSafeInternalTypeAdaptor internalToInternalTypeAdaptor;
+	private DBSafeInternalQDTAdaptor internalToExternalQDTAdaptor;
+	private DBSafeInternalQDTAdaptor internalToInternalQDTAdaptor;
+	private SafeOneWayTypeAdaptor internalToExternalTypeAdaptor;
+	private SafeOneWayTypeAdaptor internalToInternalTypeAdaptor;
 
 	/**
 	 * 
@@ -30,8 +33,14 @@ public class QueryableDatatypeSyncer {
 		}
 		this.propertyName = propertyName;
 		this.typeAdaptor = typeAdaptor;
-		this.internalToExternalTypeAdaptor = new DBSafeInternalTypeAdaptor(Direction.TO_EXTERNAL, typeAdaptor);
-		this.internalToInternalTypeAdaptor = new DBSafeInternalTypeAdaptor(Direction.TO_INTERNAL, typeAdaptor);
+		this.internalToExternalTypeAdaptor = new SafeOneWayTypeAdaptor(propertyName,
+				typeAdaptor, Direction.TO_EXTERNAL, null, null);
+		
+		this.internalToInternalTypeAdaptor = new SafeOneWayTypeAdaptor(propertyName,
+				typeAdaptor, Direction.TO_INTERNAL, null, null);
+		
+		this.internalToExternalQDTAdaptor = new DBSafeInternalQDTAdaptor(internalToExternalTypeAdaptor);
+		this.internalToInternalQDTAdaptor = new DBSafeInternalQDTAdaptor(internalToInternalTypeAdaptor);
 		
 		try {
 			this.internalQdt = internalQdtType.newInstance();
@@ -50,35 +59,6 @@ public class QueryableDatatypeSyncer {
 		return internalQdt;
 	}
 
-	protected Object adaptValue(Direction direction, Object sourceLiteralValue) {
-		if (direction == Direction.TO_INTERNAL) {
-			return adaptValueToInternal(sourceLiteralValue);
-		}
-		else {
-			return adaptValueToExternal(sourceLiteralValue);
-		}
-	}
-	
-	protected Object adaptValueToInternal(Object externalLiteralValue) {
-		try {
-			return typeAdaptor.toDatabaseValue(externalLiteralValue);
-		} catch (RuntimeException e) {
-			String msg = (e.getLocalizedMessage() == null) ? "" : ": "+e.getLocalizedMessage();
-            throw new DBThrownByEndUserCodeException("Type adaptor threw " + e.getClass().getSimpleName()
-                    + " when setting property " + propertyName + msg, e);
-		}
-	}
-	
-	protected Object adaptValueToExternal(Object internalLiteralValue) {
-		try {
-			return typeAdaptor.fromDatabaseValue(internalLiteralValue);
-		} catch (RuntimeException e) {
-			String msg = (e.getLocalizedMessage() == null) ? "" : ": "+e.getLocalizedMessage();
-	        throw new DBThrownByEndUserCodeException("Type adaptor threw " + e.getClass().getSimpleName()
-	                + " when getting property " + propertyName + msg, e);
-		}
-	}
-	
 	public void setInternalQDTFromExternalQDT(QueryableDatatype externalQdt) {
 		setTargetQDTFromSourceQDT(Direction.TO_INTERNAL, internalQdt, externalQdt);
 	}
@@ -108,22 +88,37 @@ public class QueryableDatatypeSyncer {
 		//  (eg: in QueryableDatatype.setValue())
 		//targetQdt.operator = sourceQdt.operator; // TODO: translate
 		if (direction == Direction.TO_INTERNAL) {
-			targetQdt.operator = sourceQdt.operator.copyAndAdapt(internalToInternalTypeAdaptor);
+			targetQdt.operator = sourceQdt.operator.copyAndAdapt(internalToInternalQDTAdaptor);
 		}
 		else {
-			targetQdt.operator = sourceQdt.operator.copyAndAdapt(internalToExternalTypeAdaptor);
+			targetQdt.operator = sourceQdt.operator.copyAndAdapt(internalToExternalQDTAdaptor);
 		}
 		
 		// copy previous value with translation
 		//sourceQdt.previousValueAsQDT = // TODO 
 	}
+
+	protected Object adaptValue(Direction direction, Object sourceLiteralValue) {
+		if (direction == Direction.TO_INTERNAL) {
+			return adaptValueToInternal(sourceLiteralValue);
+		}
+		else {
+			return adaptValueToExternal(sourceLiteralValue);
+		}
+	}
 	
-	public static class DBSafeInternalTypeAdaptor {
-		private Direction direction;
-		private DBTypeAdaptor<Object,Object> typeAdaptor;
+	protected Object adaptValueToInternal(Object externalLiteralValue) {
+		return internalToInternalTypeAdaptor.convert(externalLiteralValue);
+	}
+	
+	protected Object adaptValueToExternal(Object internalLiteralValue) {
+		return internalToExternalTypeAdaptor.convert(internalLiteralValue);
+	}
+	
+	public static class DBSafeInternalQDTAdaptor {
+		private SafeOneWayTypeAdaptor typeAdaptor;
 		
-		public DBSafeInternalTypeAdaptor(Direction direction, DBTypeAdaptor<Object,Object> typeAdaptor) {
-			this.direction = direction;
+		public DBSafeInternalQDTAdaptor(SafeOneWayTypeAdaptor typeAdaptor) {
 			this.typeAdaptor = typeAdaptor;
 		}
 		

@@ -17,6 +17,19 @@ import java.util.Set;
 public class InterfaceInfo {
 	private boolean interfaceImplementedByImplementation = false;
 	private ParameterBounds[] typeArgumentBounds;
+
+	/**
+	 * Resolves the most concrete known type arguments against the given interface class,
+	 * as specified an the implementation class, or one of its ancestors (supertype or interfaces).
+	 * If the implementation class does not extend or implement the supertype orinterface
+	 * (after a recursive search), this method returns {@code null}.
+	 * @param interfaceClass the supertype class or interface you're looking for
+	 * @param implementation the actual implementation object you're testing
+	 * @throws UnsupportedOperationException if encounter generics that aren't handled yet
+	 */
+	public InterfaceInfo(Class<?> interfaceClass, Object implementationObject) {
+		this(interfaceClass, implementationObject.getClass());
+	}
 	
 	/**
 	 * Resolves the most concrete known type arguments against the given interface class,

@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalTypeAdaptor;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
@@ -93,7 +93,7 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
     }
 
     @Override
-    public DBExistsOperator<E> copyAndAdapt(DBSafeInternalTypeAdaptor typeAdaptor) {
+    public DBExistsOperator<E> copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	return this;
     }
 }

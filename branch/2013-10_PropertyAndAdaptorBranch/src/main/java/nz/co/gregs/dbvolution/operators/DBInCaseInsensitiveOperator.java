@@ -21,7 +21,7 @@ import java.util.List;
 import javax.management.Query;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalTypeAdaptor;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
@@ -67,7 +67,7 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
     }
     
     @Override
-    public DBInCaseInsensitiveOperator copyAndAdapt(DBSafeInternalTypeAdaptor typeAdaptor) {
+    public DBInCaseInsensitiveOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	List<QueryableDatatype> list = new ArrayList<QueryableDatatype>();
     	for (QueryableDatatype item: listOfPossibleValues) {
     		list.add(typeAdaptor.convert(item));

@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalTypeAdaptor;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
@@ -74,7 +74,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
     }
 
     @Override
-    public DBLikeCaseInsensitiveOperator copyAndAdapt(DBSafeInternalTypeAdaptor typeAdaptor) {
+    public DBLikeCaseInsensitiveOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	DBLikeCaseInsensitiveOperator op = new DBLikeCaseInsensitiveOperator(typeAdaptor.convert(likeableValue));
     	op.invertOperator = this.invertOperator;
     	return op;

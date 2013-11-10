@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalTypeAdaptor;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
@@ -62,7 +62,7 @@ public class DBLikeOperator extends DBOperator {
     
     
     @Override
-    public DBLikeOperator copyAndAdapt(DBSafeInternalTypeAdaptor typeAdaptor) {
+    public DBLikeOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	DBLikeOperator op = new DBLikeOperator(typeAdaptor.convert(likeableValue));
     	op.invertOperator = this.invertOperator;
     	return op;
