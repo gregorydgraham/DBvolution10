@@ -4,14 +4,10 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javassist.Modifier;
 
-import nz.co.gregs.dbvolution.changes.DBChangeList;
-import nz.co.gregs.dbvolution.changes.DBUpdateBLOB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -31,12 +27,10 @@ import org.reflections.Reflections;
 abstract public class DBRow implements Serializable {
 
     static DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
-
     protected boolean isDefined = false;
     protected final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
     protected final List<PropertyWrapperDefinition> returnColumns = new ArrayList<PropertyWrapperDefinition>();
     protected final List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
-
     private transient Boolean hasBlobs;
     private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
     private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
@@ -83,7 +77,7 @@ abstract public class DBRow implements Serializable {
             if (!Modifier.isStatic(field.getModifiers())) {
                 try {
                     Object originalValue = field.get(originalRow);
-                if (originalValue instanceof QueryableDatatype) {
+                    if (originalValue instanceof QueryableDatatype) {
                         QueryableDatatype originalQDT = (QueryableDatatype) originalValue;
                         field.set(newRow, originalQDT.copy());
                     } else {
@@ -96,10 +90,6 @@ abstract public class DBRow implements Serializable {
                 }
             }
         }
-
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
         return newRow;
     }
 
@@ -150,31 +140,47 @@ abstract public class DBRow implements Serializable {
         return isDefined;
     }
 
-    public boolean hasChanged() {
+    /**
+     *
+     * indicates the DBRow is not defined in the database
+     *
+     */
+    public void setUndefined() {
+        isDefined = false;
+    }
+
+    /**
+     *
+     * indicates the DBRow is defined in the database
+     *
+     */
+    public void setDefined() {
+        isDefined = false;
+    }
+
+    public boolean hasChangedSimpleTypes() {
         List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
         for (PropertyWrapper prop : propertyWrappers) {
-            if (prop.getQueryableDatatype().hasChanged()) {
-                return true;
+            if (!(prop.getQueryableDatatype() instanceof DBLargeObject)) {
+                if (prop.getQueryableDatatype().hasChanged()) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    @Deprecated
-    public String getPrimaryKeySQLStringValue(DBDatabase db) {
-        QueryableDatatype queryableValueOfField;
-        final PropertyWrapper primaryKey = getPrimaryKeyPropertyWrapper();
-        if (primaryKey != null) {
-            queryableValueOfField = primaryKey.getQueryableDatatype();
-            String pkColumnValue;
-            if (queryableValueOfField.hasChanged()) {
-                pkColumnValue = queryableValueOfField.getPreviousSQLValue(db);
-            } else {
-                pkColumnValue = queryableValueOfField.toSQLString(db);
+    public boolean setSimpleTypesToUnchanged() {
+        List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
+        for (PropertyWrapper prop : propertyWrappers) {
+            final QueryableDatatype qdt = prop.getQueryableDatatype();
+            if (!(qdt instanceof DBLargeObject)) {
+                if (qdt.hasChanged()) {
+                    qdt.setUnchanged();
+                }
             }
-            return pkColumnValue;
         }
-        return "";
+        return false;
     }
 
     public String getPrimaryKeyColumnName() {
@@ -184,71 +190,10 @@ abstract public class DBRow implements Serializable {
         } else {
             return primaryKeyPropertyWrapper.columnName();
         }
-
-        //        final Field pkField = getPrimaryKeyField();
-        //        if (pkField == null) {
-        //            return null;
-        //        } else {
-        //            return pkField.getAnnotation(DBColumn.class).value();
-        //        }
     }
 
     protected PropertyWrapper getPrimaryKeyPropertyWrapper() {
         return getWrapper().primaryKey();
-//        
-//            Class<? extends DBRow> thisClass = this.getClass();
-//            Field[] fields = thisClass.getDeclaredFields();
-//            for (Field field : fields) {
-//                if (field.isAnnotationPresent(DBPrimaryKey.class)) {
-//                    return field;
-//                }
-//            }
-//            return null;
-    }
-
-//    /**
-//     * DO NOT USE THIS.
-//     *
-//     * @param <Q>
-//     * @param property
-//     * @return
-//     */
-//    @SuppressWarnings("unchecked")
-//    @Deprecated
-//    public <Q extends QueryableDatatype> Q getQueryableValueOfPropertWrapper(PropertyWrapper property) {
-//        return (Q) property.getQueryableDatatype();
-//    }
-//    @Deprecated
-//    Map<String, QueryableDatatype> getColumnsAndQueryableDatatypes() {
-//        if (columnsAndQDTs == null) {
-//            columnsAndQDTs = new HashMap<String, QueryableDatatype>();
-//            String columnName;
-//            QueryableDatatype qdt;
-//
-//            List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
-//            for (PropertyWrapper field : fields) {
-//                if (field.isColumn()) {
-//                    qdt = field.getQueryableDatatype();
-//                    columnName = field.columnName();
-//                    columnsAndQDTs.put(columnName, qdt);
-//                }
-//            }
-//        }
-//        return columnsAndQDTs;
-//    }
-    /**
-     * @deprecated use of this method is likely a bug
-     */
-    @Deprecated
-    public List<QueryableDatatype> getQueryableDatatypes() {
-        List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
-
-        List<QueryableDatatype> arrayList = new ArrayList<QueryableDatatype>();
-        for (PropertyWrapper prop : propertyWrappers) {
-            arrayList.add(prop.getQueryableDatatype());
-        }
-//        arrayList.addAll(getColumnsAndQueryableDatatypes().values());
-        return arrayList;
     }
 
     /**
@@ -257,14 +202,12 @@ abstract public class DBRow implements Serializable {
      *
      */
     public String getWhereClause(DBDatabase db) {
-//        this.setDatabase(db);
         DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
         for (PropertyWrapper prop : props) {
             if (prop.isColumn()) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
-//                qdt.setDatabase(db);
                 whereClause.append(qdt.getWhereClause(db, defn.formatTableAndColumnName(this.getTableName(), prop.columnName())));
             }
         }
@@ -344,37 +287,12 @@ abstract public class DBRow implements Serializable {
         return string.toString();
     }
 
-    protected String getSetClause(DBDatabase db) {
-        DBDefinition defn = db.getDefinition();
-        StringBuilder sql = new StringBuilder();
-        Class<? extends DBRow> thisClass = this.getClass();
-        List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
-
-        String separator = defn.getStartingSetSubClauseSeparator();
-        for (PropertyWrapper field : fields) {
-            if (field.isColumn()) {
-                final QueryableDatatype qdt = field.getQueryableDatatype();
-                if (qdt.hasChanged()) {
-                    String columnName = field.columnName();
-                    sql.append(separator)
-                            .append(defn.formatColumnName(columnName))
-                            .append(defn.getEqualsComparator())
-                            .append(qdt
-                                    .toSQLString(db));
-                    separator = defn.getSubsequentSetSubClauseSeparator();
-                }
-            }
-        }
-        return sql.toString();
-    }
-
     /**
      *
      * @return
      */
     protected List<String> getColumnNames() {
         ArrayList<String> columnNames = new ArrayList<String>();
-//        Class<? extends DBRow> thisClass = this.getClass();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
 
         for (PropertyWrapper prop : props) {
@@ -389,55 +307,6 @@ abstract public class DBRow implements Serializable {
         }
         return columnNames;
     }
-
-//    /**
-//     * This method shouldn't be needed anymore because PropertyWrappers or
-//     * PropertyWrapperDefinitions should be passed around instead of QDTs. In
-//     * particular, with the introduction of type adaptors, java fields aren't
-//     * necessarily of type QDT.
-//     *
-//     * @param qdt
-//     * @return
-//     * @deprecated use of this method indicates a likely bug
-//     */
-//    @Deprecated
-//    public String getDBColumnName(QueryableDatatype qdt) {
-//        return this.getPropertyWrapperOf(qdt).columnName();
-//    }
-//
-//    @Deprecated
-//    protected static String getTableAndColumnName(DBDatabase db, DBRow[] baseRows, QueryableDatatype qdt) {
-//        String columnName;
-//        String tableName;
-//        String fullName = null;
-//        DBDefinition defn = db.getDefinition();
-//        for (DBRow row : baseRows) {
-//            tableName = row.getTableName();
-//            columnName = row.getDBColumnName(qdt);
-//            if (columnName != null) {
-//                fullName = defn.formatTableAndColumnName(tableName, columnName);
-//                return fullName;
-//            }
-//        }
-//        return fullName;
-//    }
-
-//    protected Map<DBForeignKey, DBColumn> getForeignKeys() {
-//        if (foreignKeys == null) {
-//            foreignKeys = new HashMap<DBForeignKey, DBColumn>();
-////        Class<? extends DBRow> thisClass = this.getClass();
-//            List<PropertyWrapper> fields = this.getForeignKeyFields();
-//
-//            for (PropertyWrapper field : fields) {
-//                if (!ignoredForeignKeys.contains(field)) {
-//                    DBForeignKey annotation = field.getAnnotation(DBForeignKey.class);
-//                    DBColumn columnName = field.getAnnotation(DBColumn.class);
-//                    foreignKeys.put(annotation, columnName);
-//                }
-//            }
-//        }
-//        return foreignKeys;
-//    }
 
     /**
      *
@@ -590,7 +459,7 @@ abstract public class DBRow implements Serializable {
         return sqlStrings;
     }
 
-    protected boolean hasLargeObjectColumns() {
+    protected boolean hasLargeObjects() {
         if (hasBlobs == null) {
             hasBlobs = Boolean.FALSE;
             for (PropertyWrapper prop : getPropertyWrappers()) {
@@ -599,21 +468,12 @@ abstract public class DBRow implements Serializable {
                     hasBlobs = Boolean.TRUE;
                 }
             }
-
-//            Map<String, QueryableDatatype> columnsAndQueryableDatatypes = getColumnsAndQueryableDatatypes();
-//            Collection<QueryableDatatype> values = columnsAndQueryableDatatypes.values();
-//            for (QueryableDatatype qdt : values) {
-//                if (qdt instanceof DBLargeObject) {
-//                    blobColumns.add((DBLargeObject) qdt);
-//                    hasBlobs = Boolean.TRUE;
-//                }
-//            }
         }
         return hasBlobs;
     }
 
-    protected boolean hasSetLargeObjectColumns() {
-        if (hasLargeObjectColumns()) {
+    public boolean hasChangedLargeObjects() {
+        if (hasLargeObjects()) {
             for (PropertyWrapper prop : blobColumns) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
                 if (qdt != null && qdt.hasChanged()) {
@@ -624,15 +484,20 @@ abstract public class DBRow implements Serializable {
         return false;
     }
 
-    protected DBChangeList getLargeObjectActions(DBDatabase db) {
-        DBChangeList actions = new DBChangeList();
-        if (hasLargeObjectColumns()) {
+    public List<PropertyWrapper> getChangedLargeObjects() {
+        List<PropertyWrapper> changed = new ArrayList<PropertyWrapper>();
+        if (hasLargeObjects()) {
             for (PropertyWrapper prop : blobColumns) {
-                actions.add(new DBUpdateBLOB(this, prop.columnName(),
-                        (DBLargeObject) prop.getQueryableDatatype()));
+                QueryableDatatype qdt = prop.getQueryableDatatype();
+                if (qdt instanceof DBLargeObject) {
+                    DBLargeObject large = (DBLargeObject) qdt;
+                    if (large.hasChanged()) {
+                        changed.add(prop);
+                    }
+                }
             }
         }
-        return actions;
+        return changed;
     }
 
     /**
@@ -831,10 +696,12 @@ abstract public class DBRow implements Serializable {
         return wrapper;
     }
 
-    void setUnchanged() {
-        List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
-        for (PropertyWrapper prop : propertyWrappers) {
-            prop.getQueryableDatatype().setUnchanged();
+    public List<PropertyWrapper> getLargeObjects() {
+        // Initialise the blob columns list if necessary
+        if (hasLargeObjects()) {
+            return blobColumns;
+        } else {
+            return blobColumns;
         }
     }
 }

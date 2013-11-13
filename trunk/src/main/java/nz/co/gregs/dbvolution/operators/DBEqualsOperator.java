@@ -58,10 +58,8 @@ public class DBEqualsOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-//        equalTo.setDatabase(database);
         defn = db.getDefinition();
         String whereLine;
-//        if (equalTo.toSQLString(db).equals(defn.getNull())) {
         if (equalTo.isNull()) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             whereLine = dbIsNullOperator.generateWhereLine(db, columnName);

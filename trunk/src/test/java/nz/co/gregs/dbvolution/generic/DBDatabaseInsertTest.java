@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import nz.co.gregs.dbvolution.changes.DBChangeList;
+import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
@@ -55,7 +55,7 @@ public class DBDatabaseInsertTest extends AbstractTest{
         myTableRows.add(newMarque1);
         myTableRows.add(newMarque2);
         CarCompany carCompany = new CarCompany("TATA", 569);
-        DBChangeList changes = database.insert(myTableRows, carCompany);
+        DBActionList changes = database.insert(myTableRows, carCompany);
         marques.getAllRows();
         marques.print();
         database.getDBTable(carCompany).getAllRows().print();

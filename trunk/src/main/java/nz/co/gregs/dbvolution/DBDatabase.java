@@ -20,7 +20,7 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.changes.DBChangeList;
+import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.DBTransactionStatement;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -148,8 +148,8 @@ public abstract class DBDatabase {
      * @param objs
      * @throws SQLException
      */
-    public DBChangeList insert(Object... objs) throws SQLException {
-        DBChangeList changes = new DBChangeList();
+    public DBActionList insert(Object... objs) throws SQLException {
+        DBActionList changes = new DBActionList();
         for (Object obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
@@ -175,8 +175,8 @@ public abstract class DBDatabase {
      * @param objs
      * @throws SQLException
      */
-    public DBChangeList delete(Object... objs) throws SQLException {
-        DBChangeList changes =new DBChangeList();
+    public DBActionList delete(Object... objs) throws SQLException {
+        DBActionList changes =new DBActionList();
         for (Object obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
@@ -295,11 +295,6 @@ public abstract class DBDatabase {
      */
     public void print(List<?> rows) {
         for (Object row : rows) {
-//            if (row instanceof DBRow) {
-//                System.out.println(((DBRow) row).toString());
-//            } else if (row instanceof DBQueryRow) {
-//                System.out.println(((DBQueryRow) row).toString());
-//            }
             System.out.println(row.toString());
         }
     }
@@ -378,7 +373,6 @@ public abstract class DBDatabase {
             wasReadOnly = connection.isReadOnly();
             wasAutoCommit = connection.getAutoCommit();
 
-//        connection.setReadOnly(true);
             connection.setAutoCommit(false);
             try {
                 returnValues = dbTransaction.doTransaction(this);
