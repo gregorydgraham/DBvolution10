@@ -22,13 +22,14 @@ import nz.co.gregs.dbvolution.DBDatabase;
  *
  * @author gregorygraham
  */
-abstract public class DBOperator implements Serializable{
+abstract public class DBOperator implements Serializable {
 
     Boolean invertOperator = false;
+    Boolean includeNulls = false;
 
     public DBOperator() {
     }
-    
+
     /**
      *
      * @param database
@@ -36,15 +37,21 @@ abstract public class DBOperator implements Serializable{
      * @return
      */
     abstract public String generateWhereLine(DBDatabase database, String columnName);
+
     abstract public String generateRelationship(DBDatabase database, String columnName, String otherColumnName);
 
     public void invertOperator(Boolean invertOperator) {
         this.invertOperator = invertOperator;
     }
-    
-    public void not(){
+
+    public void not() {
         invertOperator = true;
     }
 
-    abstract public DBOperator getInverseOperator() ;
+    abstract public DBOperator getInverseOperator();
+
+    // TODO
+    public void includeNulls() {
+        includeNulls = true;
+    }
 }

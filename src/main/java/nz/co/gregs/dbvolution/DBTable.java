@@ -1,5 +1,7 @@
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.DBSave;
 import java.io.PrintStream;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -10,18 +12,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.actions.DBDelete;
+import nz.co.gregs.dbvolution.actions.DBUpdate;
 
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
-import nz.co.gregs.dbvolution.changes.*;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
-import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 
 /**
  *
@@ -79,25 +80,6 @@ public class DBTable<E extends DBRow> {
             separator = ",";
         }
 
-        return allFields.toString();
-    }
-
-    @Deprecated
-    public String getAllFieldsForInsert() {
-        StringBuilder allFields = new StringBuilder();
-        DBDefinition defn = database.getDefinition();
-        List<PropertyWrapper> props = dummy.getPropertyWrappers();
-        String separator = "";
-        for (PropertyWrapper prop : props) {
-            // BLOBS are not inserted.so exclude them
-            if (prop.isColumn() && !prop.isInstanceOf(DBLargeObject.class)) {
-                allFields
-                        .append(separator)
-                        .append(" ")
-                        .append(defn.formatColumnName(prop.columnName()));
-                separator = ",";
-            }
-        }
         return allFields.toString();
     }
 
@@ -213,7 +195,6 @@ public class DBTable<E extends DBRow> {
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
             E tableRow = (E) DBRow.getDBRow(dummy.getClass());
-//            tableRow.setDatabase(database);
 
             List<PropertyWrapper> fields = tableRow.getPropertyWrappers();
 
@@ -473,78 +454,28 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    public DBChangeList insert(E newRow) throws SQLException {
-//        ArrayList<E> arrayList = new ArrayList<E>();
-//        arrayList.add(newRow);
-//        return insert(arrayList);
-        DBChangeList changes = new DBChangeList();
-        DBStatement statement = database.getDBStatement();
-        try {
-            changes = getInsertDBChangeList(newRow);
-            statement.executeChanges(changes);
-            // Hasn't thrown an exception so it is now defined.
-            newRow.setDefined(true);
-        } finally {
-            statement.close();
-        }
-        return changes;
-    }
-
-    /**
-     *
-     * @param newRows
-     * @throws SQLException
-     */
-    public DBChangeList insert(List<E> newRows) throws SQLException {
-        DBChangeList changes = new DBChangeList();
-        DBStatement statement = database.getDBStatement();
-        try {
-            changes = getInsertDBChangeList(newRows);
-            statement.executeChanges(changes);
-            // Hasn't thrown an exception so they are now defined.
-            for (DBRow newlyDefinedRow : newRows) {
-                newlyDefinedRow.setDefined(true);
-            }
-        } finally {
-            statement.close();
-        }
-        return changes;
-    }
-
-    /**
-     *
-     * returns the SQL that will be used to insert the row.
-     *
-     * Useful for debugging and reversion scripts
-     *
-     * @param newRow
-     * @return
-     */
-    public DBChangeList getInsertDBDataChange(E newRow) {
-        return getInsertDBChangeList(newRow);
-    }
-
-    /**
-     *
-     * returns the SQL that will be used to insert the rows.
-     *
-     * Useful for debugging and reversion scripts
-     *
-     * @param newRows
-     * @return
-     */
-    public DBChangeList getInsertDBChangeList(List<E> newRows) {
-        DBChangeList allInserts = new DBChangeList();
+    public DBActionList insert(E... newRows) throws SQLException {
+        DBActionList actions = new DBActionList();
         for (E row : newRows) {
-            allInserts.addAll(getInsertDBChangeList(row));
+            actions.addAll(DBSave.save(database, row));
         }
-        return allInserts;
+        return actions;
     }
 
-    public DBChangeList delete(E oldRow) throws SQLException {
-        ArrayList<E> arrayList = new ArrayList<E>();
-        arrayList.add(oldRow);
-        return delete(arrayList);
+    public DBActionList insert(List<E> newRows) throws SQLException {
+        DBActionList changes = new DBActionList();
+        for (DBRow row : newRows) {
+            changes.addAll(DBSave.save(database, row));
+        }
+        return changes;
+    }
+
+    public DBActionList delete(E... oldRows) throws SQLException {
+        DBActionList actions = new DBActionList();
+        for (E row : oldRows) {
+            actions.addAll(DBDelete.delete(database, row));
+        }
+        return actions;
     }
 
     /**
@@ -552,299 +483,28 @@ public class DBTable<E extends DBRow> {
      * @param oldRows
      * @throws SQLException
      */
-    public DBChangeList delete(List<E> oldRows) throws SQLException {
-        DBChangeList changes = new DBChangeList();
-        DBStatement statement = database.getDBStatement();
-        try {
-            changes = getDeleteDBDataChanges(oldRows);
-            statement.executeChanges(changes);
-        } finally {
-            statement.close();
+    public DBActionList delete(List<E> oldRows) throws SQLException {
+        DBActionList actions = new DBActionList();
+        for (E row : oldRows) {
+            actions.addAll(DBDelete.delete(database, row));
+        }
+        return actions;
+    }
+
+    public DBActionList update(E oldRow) throws SQLException {
+        return DBUpdate.update(database, oldRow);
+    }
+
+    public DBActionList update(List<E> oldRows) throws SQLException {
+        DBActionList changes = new DBActionList();
+        for (E row : oldRows) {
+            if (row.hasChangedSimpleTypes()) {
+                changes.addAll(DBUpdate.update(database, row));
+            }
         }
         return changes;
     }
 
-    /**
-     *
-     * Convenience method
-     *
-     * @param oldRow
-     * @return
-     */
-    @Deprecated
-    public String getSQLForDelete(E oldRow) {
-        ArrayList<E> arrayList = new ArrayList<E>();
-        arrayList.add(oldRow);
-        return getSQLForDelete(arrayList).get(0);
-    }
-
-    /**
-     *
-     * @param oldRows
-     * @return
-     */
-    @Deprecated
-    public List<String> getSQLForDelete(List<E> oldRows) {
-        DBDefinition defn = database.getDefinition();
-        List<String> allDeletes = new ArrayList<String>();
-        for (E row : oldRows) {
-//            row.setDatabase(database);
-            if (row.getDefined()) {
-                final QueryableDatatype primaryKey = row.getPrimaryKey();
-                if (primaryKey == null) {
-                    allDeletes.add(getSQLForDeleteUsingAllFields(row));
-                } else {
-
-                    allDeletes.add(getSQLForDeleteByPrimaryKey(row, primaryKey));
-                }
-            } else {
-                // Delete by example
-                allDeletes.add(getSQLForDeleteByExample(row));
-            }
-        }
-        return allDeletes;
-    }
-
-    public DBChangeList getDeleteDBDataChanges(List<E> oldRows) {
-        DBChangeList allDeletes = new DBChangeList();
-        for (E row : oldRows) {
-            if (row.getDefined()) {
-                final QueryableDatatype primaryKey = row.getPrimaryKey();
-                if (primaryKey == null) {
-                    allDeletes.add(new DBDeleteUsingAllColumns(row));
-                } else {
-
-                    allDeletes.add(new DBDeleteByPrimaryKey(row));
-                }
-            } else {
-                // Delete by example
-                allDeletes.add(new DBDeleteByExample(row));
-            }
-        }
-        return allDeletes;
-    }
-
-    public DBDataChange getDeleteDBDataChanges(E row) {
-        DBDataChange change;
-        if (row.getDefined()) {
-            final QueryableDatatype primaryKey = row.getPrimaryKey();
-            if (primaryKey == null) {
-                change = new DBDeleteUsingAllColumns(row);
-            } else {
-
-                change = new DBDeleteByPrimaryKey(row);
-            }
-        } else {
-            // Delete by example
-            change = new DBDeleteByExample(row);
-        }
-        return change;
-    }
-
-    /**
-     *
-     * @param row
-     * @return
-     */
-    @Deprecated
-    public String getSQLForDeleteUsingAllFields(E row) {
-        DBDefinition defn = database.getDefinition();
-        String sql = defn.beginDeleteLine()
-                + defn.formatTableName(row.getTableName())
-                + defn.beginWhereClause()
-                + defn.getTrueOperation();
-        for (PropertyWrapper prop : row.getPropertyWrappers()) {
-            QueryableDatatype qdt = prop.getQueryableDatatype();
-            sql = sql
-                    + defn.beginAndLine()
-                    + prop.columnName()
-                    + defn.getEqualsComparator()
-                    + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.toSQLString(database));
-        }
-        sql = sql + defn.endDeleteLine();
-        return sql;
-    }
-
-    @Deprecated
-    private String getSQLForDeleteByPrimaryKey(E row, QueryableDatatype primaryKey) {
-        DBDefinition defn = database.getDefinition();
-        return defn.beginDeleteLine()
-                + defn.formatTableName(row.getTableName())
-                + defn.beginWhereClause()
-                + defn.formatColumnName(this.getPrimaryKeyColumn())
-                + defn.getEqualsComparator()
-                + primaryKey.toSQLString(database)
-                + defn.endDeleteLine();
-    }
-
-    @Deprecated
-    private String getSQLForDeleteByExample(E row) {
-        DBDefinition defn = database.getDefinition();
-        return defn.beginDeleteLine()
-                + defn.formatTableName(row.getTableName())
-                + defn.beginWhereClause()
-                + defn.getTrueOperation()
-                + getSQLForExample(row)
-                + defn.endDeleteLine();
-    }
-
-    /**
-     *
-     * @param oldRows
-     * @return
-     */
-    @Deprecated
-    public List<String> getSQLForDeleteWithoutPrimaryKey(List<E> oldRows) {
-        List<String> allInserts = new ArrayList<String>();
-        for (E row : oldRows) {
-            allInserts.add(getSQLForDeleteUsingAllFields(row));
-        }
-        return allInserts;
-    }
-
-    /**
-     *
-     * @param row
-     * @return
-     */
-    public String getSQLForUpdateWithoutPrimaryKey(E row) {
-        DBDefinition defn = database.getDefinition();
-        String sql = defn.beginUpdateLine()
-                + defn.formatTableName(row.getTableName())
-                + defn.beginSetClause()
-                + row.getSetClause(database)
-                + defn.beginWhereClause()
-                + defn.getTrueOperation();
-        for (PropertyWrapper prop : row.getPropertyWrappers()) {
-            QueryableDatatype qdt = prop.getQueryableDatatype();
-            if (qdt.isNull()) {
-                DBIsNullOperator isNullOp = new DBIsNullOperator();
-                sql = sql
-                        + isNullOp.generateWhereLine(database, prop.columnName());
-            } else {
-                sql = sql
-                        + defn.beginAndLine()
-                        + prop.columnName()
-                        + defn.getEqualsComparator()
-                        + (qdt.hasChanged() ? qdt.getPreviousSQLValue(database) : qdt.toSQLString(database));
-            }
-        }
-        sql = sql + defn.endDeleteLine();
-        return sql;
-    }
-
-    public List<String> getSQLForUpdateWithoutPrimaryKey(List<E> rows) {
-        List<String> updates = new ArrayList<String>();
-        for (E row : rows) {
-            updates.add(getSQLForUpdateWithoutPrimaryKey(row));
-        }
-        return updates;
-    }
-
-    public void update(E oldRow) throws SQLException {
-        ArrayList<E> arrayList = new ArrayList<E>();
-        arrayList.add(oldRow);
-        update(arrayList);
-    }
-
-    public void updateSingle(DBStatement statement, E row) throws SQLException {
-        final boolean useBatch = database.batchSQLStatementsWhenPossible();
-
-        if (row.hasChanged()) {
-            String sql = getSQLForUpdate(row);
-
-            if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                System.out.println(sql);
-            }
-            if (useBatch) {
-                statement.addBatch(sql);
-            } else {
-                statement.execute(sql);
-            }
-        }
-
-        // Do the batched statements
-        if (statement.getBatchHasEntries()) {
-            statement.executeBatch();
-        }
-        // Clean up after the updates
-
-        row.setUnchanged();
-    }
-
-    public void update(List<E> oldRows) throws SQLException {
-        DBStatement statement = database.getDBStatement();
-        try {
-            final boolean useBatch = database.batchSQLStatementsWhenPossible();
-            boolean batchHasEntries = false;
-
-            for (E row : oldRows) {
-                if (row.hasChanged()) {
-                    String sql = getSQLForUpdate(row);
-
-                    if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-                        System.out.println(sql);
-                    }
-                    if (useBatch) {
-                        statement.addBatch(sql);
-                        batchHasEntries = true;
-                    } else {
-                        statement.execute(sql);
-                    }
-                }
-            }
-
-            // Do the batched statements
-            if (useBatch && batchHasEntries) {
-                statement.executeBatch();
-            }
-            // Clean up after the updates
-            for (E row : oldRows) {
-                row.setUnchanged();
-            }
-        } finally {
-            statement.close();
-        }
-    }
-
-    /**
-     * Creates the SQL used to update a row.
-     *
-     * Helpful for debugging and reversion scripts.
-     *
-     * Defers to getSQLForUpdateWithoutPrimaryKey for some updates
-     *
-     *
-     * @param row
-     * @return
-     */
-    public String getSQLForUpdate(E row) {
-        DBDefinition defn = database.getDefinition();
-        QueryableDatatype primaryKey = row.getPrimaryKey();
-        if (primaryKey == null) {
-            return getSQLForUpdateWithoutPrimaryKey(row);
-        } else {
-            String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(database) : primaryKey.toSQLString(database));
-            String sql = defn.beginUpdateLine()
-                    + defn.formatTableName(row.getTableName())
-                    + defn.beginSetClause()
-                    + row.getSetClause(database)
-                    + defn.beginWhereClause()
-                    + defn.formatColumnName(this.getPrimaryKeyColumn())
-                    + defn.getEqualsComparator()
-                    + pkOriginalValue
-                    + defn.endDeleteLine();
-            return sql;
-        }
-    }
-
-//    public List<String> getSQLForUpdate(List<E> oldRows) {
-//        List<String> allSQL = new ArrayList<String>();
-//        for (E row : oldRows) {
-//            allSQL.add(getSQLForUpdate(row));
-//        }
-//        return allSQL;
-//    }
     /**
      *
      * @param query
@@ -969,12 +629,9 @@ public class DBTable<E extends DBRow> {
         return "";
     }
 
-    private DBChangeList getInsertDBChangeList(E row) {
-        DBChangeList changes = new DBChangeList();
+    private DBActionList getInsertDBChangeList(E row) {
+        DBActionList changes = new DBActionList();
         changes.add(new DBSave(row));
-//        if (row.hasLargeObjectColumns()) {
-//            changes.addAll(row.getLargeObjectActions(database));
-//        }
         return changes;
     }
 }

@@ -343,4 +343,20 @@ public abstract class DBDefinition {
     public String endMultilineComment() {
         return "*/";
     }
+
+    public String beginValueClause() {
+        return " VALUES ( ";
+    }
+
+    public Object endValueClause() {
+        return ")";
+    }
+
+    public String getValuesClauseValueSeparator() {
+        return ",";
+    }
+
+    public String getValuesClauseColumnSeparator() {
+        return ",";
+    }
 }
