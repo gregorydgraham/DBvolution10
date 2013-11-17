@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 public class DBUpdateSimpleTypes extends DBUpdate {
 //    private List<QueryableDatatype> changedQDTs = new ArrayList<QueryableDatatype>();
 
-    private <R extends DBRow> DBUpdateSimpleTypes(R row) {
+    DBUpdateSimpleTypes(DBRow row) {
         super(row);
     }
 
@@ -56,16 +56,12 @@ public class DBUpdateSimpleTypes extends DBUpdate {
         List<String> sqls = new ArrayList<String>();
         DBDefinition defn = db.getDefinition();
 
-        QueryableDatatype primaryKey = row.getPrimaryKey();
-        String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
         String sql = defn.beginUpdateLine()
                 + defn.formatTableName(row.getTableName())
                 + defn.beginSetClause()
                 + getSetClause(db, row)
                 + defn.beginWhereClause()
-                + defn.formatColumnName(row.getPrimaryKeyColumnName())
-                + defn.getEqualsComparator()
-                + pkOriginalValue
+                + getWhereClause(db, row)
                 + defn.endDeleteLine();
         sqls.add(sql);
         return sqls;
@@ -97,7 +93,16 @@ public class DBUpdateSimpleTypes extends DBUpdate {
     @Override
     public DBActionList getRevertDBActionList() {
         DBActionList dbActionList = new DBActionList();
-        dbActionList.add(new DBUpdateToPreviousValues());
+        dbActionList.add(new DBUpdateToPreviousValues(this.row));
         return dbActionList;
+    }
+
+    String getWhereClause(DBDatabase db, DBRow row) {
+        DBDefinition defn = db.getDefinition();
+        QueryableDatatype primaryKey = row.getPrimaryKey();
+        String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
+        return defn.formatColumnName(row.getPrimaryKeyColumnName())
+                + defn.getEqualsComparator()
+                + pkOriginalValue;
     }
 }

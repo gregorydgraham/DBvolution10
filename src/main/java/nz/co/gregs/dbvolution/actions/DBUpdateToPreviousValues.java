@@ -26,10 +26,14 @@ import nz.co.gregs.dbvolution.internal.PropertyWrapper;
  *
  * @author gregorygraham
  */
-class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
+public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 
     public DBUpdateToPreviousValues() {
         super();
+    }
+
+    DBUpdateToPreviousValues(DBRow row) {
+        super(row);
     }
 
     @Override
@@ -53,5 +57,15 @@ class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
             }
         }
         return sql.toString();
+    }
+
+    @Override
+    String getWhereClause(DBDatabase db, DBRow row) {
+        DBDefinition defn = db.getDefinition();
+        QueryableDatatype primaryKey = row.getPrimaryKey();
+        String pkCurrentValue = primaryKey.toSQLString(db);
+        return defn.formatColumnName(row.getPrimaryKeyColumnName())
+                + defn.getEqualsComparator()
+                + pkCurrentValue;
     }
 }
