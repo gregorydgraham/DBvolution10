@@ -25,6 +25,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 public class DBDeleteByExample extends DBDelete {
 
+    private List<DBRow> savedRows = new ArrayList<DBRow>();
+
     public <R extends DBRow> DBDeleteByExample(R row) {
         super(row);
     }
@@ -36,6 +38,10 @@ public class DBDeleteByExample extends DBDelete {
     @Override
     public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBActionList actions = new DBActionList(new DBDeleteByExample(row));
+        List<DBRow> rowsToBeDeleted = db.get(row);
+        for (DBRow deletingRow : rowsToBeDeleted) {
+            savedRows.add(DBRow.copyDBRow(deletingRow));
+        }
         DBStatement statement = db.getDBStatement();
         for (String str : getSQLStatements(db, row)) {
             statement.execute(str);
@@ -55,5 +61,14 @@ public class DBDeleteByExample extends DBDelete {
                 + row.getWhereClause(db)
                 + defn.endDeleteLine());
         return strs;
+    }
+
+    @Override
+    public DBActionList getRevertDBActionList() {
+        DBActionList reverts = new DBActionList();
+        for (DBRow row : savedRows) {
+            reverts.add(new DBSave(row));
+        }
+        return reverts;
     }
 }

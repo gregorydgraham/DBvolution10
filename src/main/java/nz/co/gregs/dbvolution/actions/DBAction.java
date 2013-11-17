@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
  */
 public abstract class DBAction {
 
-    private final DBRow row;
+    protected final DBRow row;
 
     DBAction() {
         super();
@@ -44,6 +44,8 @@ public abstract class DBAction {
     }
 
     protected abstract List<String> getSQLStatements(DBDatabase db, DBRow row);
+
+    public abstract DBActionList getRevertDBActionList();
 
     /**
      *

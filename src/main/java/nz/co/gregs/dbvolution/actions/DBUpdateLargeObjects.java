@@ -80,4 +80,9 @@ public class DBUpdateLargeObjects extends DBUpdate {
     protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
         return row.getChangedLargeObjects();
     }
+
+    @Override
+    public DBActionList getRevertDBActionList() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
