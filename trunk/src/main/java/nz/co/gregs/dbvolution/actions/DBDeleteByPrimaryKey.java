@@ -17,12 +17,14 @@ package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 public class DBDeleteByPrimaryKey extends DBDelete {
+    private List<DBRow> savedRows = new ArrayList<DBRow>();
 
     public <R extends DBRow> DBDeleteByPrimaryKey(R row) {
         super(row);
@@ -35,6 +37,10 @@ public class DBDeleteByPrimaryKey extends DBDelete {
     @Override
     public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBActionList actions = new DBActionList(new DBDeleteByPrimaryKey(row));
+        List<DBRow> rowsToBeDeleted = db.get(row);
+        for (DBRow deletingRow : rowsToBeDeleted) {
+            savedRows.add(DBRow.copyDBRow(deletingRow));
+        }
         DBStatement statement = db.getDBStatement();
         for (String str : getSQLStatements(db, row)) {
             statement.execute(str);
@@ -55,5 +61,14 @@ public class DBDeleteByPrimaryKey extends DBDelete {
                 + row.getPrimaryKey().toSQLString(db)
                 + defn.endDeleteLine());
         return strs;
+    }
+
+    @Override
+    public DBActionList getRevertDBActionList() {
+        DBActionList reverts = new DBActionList();
+        for (DBRow row : savedRows) {
+            reverts.add(new DBSave(row));
+        }
+        return reverts;
     }
 }

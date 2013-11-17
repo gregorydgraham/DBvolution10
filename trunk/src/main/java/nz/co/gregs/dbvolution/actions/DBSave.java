@@ -104,4 +104,15 @@ public class DBSave extends DBAction {
         }
         allValues.append(defn.endValueClause());
     }
+
+    @Override
+    public DBActionList getRevertDBActionList() {
+        DBActionList reverts = new DBActionList();
+        if (this.row.getPrimaryKey()==null){
+            reverts.add(new DBDeleteUsingAllColumns(row));
+        }else{
+            reverts.add(new DBDeleteByPrimaryKey(row));
+        }
+        return reverts;
+    }
 }

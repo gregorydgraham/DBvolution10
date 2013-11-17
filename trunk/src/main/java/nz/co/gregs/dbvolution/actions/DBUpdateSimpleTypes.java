@@ -43,7 +43,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
     @Override
     public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBStatement statement = db.getDBStatement();
-        DBActionList actions  = new DBActionList(new DBUpdateSimpleTypes(row));
+        DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(row));
         for (String sql : getSQLStatements(db, row)) {
             statement.execute(sql);
             row.setSimpleTypesToUnchanged();
@@ -55,7 +55,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
     public List<String> getSQLStatements(DBDatabase db, DBRow row) {
         List<String> sqls = new ArrayList<String>();
         DBDefinition defn = db.getDefinition();
-//        DBRow row = getRow();
+
         QueryableDatatype primaryKey = row.getPrimaryKey();
         String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
         String sql = defn.beginUpdateLine()
@@ -70,8 +70,8 @@ public class DBUpdateSimpleTypes extends DBUpdate {
         sqls.add(sql);
         return sqls;
     }
-    
-        protected String getSetClause(DBDatabase db, DBRow row) {
+
+    protected String getSetClause(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();
         StringBuilder sql = new StringBuilder();
         List<PropertyWrapper> fields = row.getPropertyWrappers();
@@ -81,17 +81,23 @@ public class DBUpdateSimpleTypes extends DBUpdate {
             if (field.isColumn()) {
                 final QueryableDatatype qdt = field.getQueryableDatatype();
                 if (qdt.hasChanged()) {
-//                    changedQDTs.add(qdt);
                     String columnName = field.columnName();
                     sql.append(separator)
                             .append(defn.formatColumnName(columnName))
                             .append(defn.getEqualsComparator())
                             .append(qdt
-                                    .toSQLString(db));
+                            .toSQLString(db));
                     separator = defn.getSubsequentSetSubClauseSeparator();
                 }
             }
         }
         return sql.toString();
+    }
+
+    @Override
+    public DBActionList getRevertDBActionList() {
+        DBActionList dbActionList = new DBActionList();
+        dbActionList.add(new DBUpdateToPreviousValues());
+        return dbActionList;
     }
 }
