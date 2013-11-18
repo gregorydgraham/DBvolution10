@@ -24,20 +24,20 @@ import org.junit.Test;
 public class TypeAdaptorUsabilityTest {
 	@Test
 	public void integerFieldAdaptedAsDBInteger_whenAdaptingOnSimpleTypes() {
-		class MyTypeAdaptor implements DBTypeAdaptor<Integer, Long> {
-			public Integer fromDatabaseValue(Long dbvValue) {
-				return (dbvValue == null) ? null : dbvValue.intValue();
+		class MyTypeAdaptor implements DBTypeAdaptor<Integer, Integer> {
+			public Integer fromDatabaseValue(Integer dbvValue) {
+				return dbvValue;
 			}
 
-			public Long toDatabaseValue(Integer objectValue) {
-				return (objectValue == null) ? null : objectValue.longValue();
+			public Integer toDatabaseValue(Integer objectValue) {
+				return objectValue;
 			}
 		}
 		
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(MyTypeAdaptor.class)
 			public Integer year;
 		}
 	}
@@ -57,7 +57,7 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(value=MyTypeAdaptor.class, type=DBInteger.class)
 			public String year;
 		}
 	}
@@ -77,14 +77,14 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(MyTypeAdaptor.class)
 			public DBString year;
 		}
 	}
 	
 	@Test
-	@SuppressWarnings("deprecation")
 	public void integerFieldAdaptedAsDBDate_whenAdaptingOnSimpleTypes() {
+		@SuppressWarnings("deprecation")
 		class MyTypeAdaptor implements DBTypeAdaptor<Integer, Date> {
 			public Integer fromDatabaseValue(Date dbvValue) {
 				return (dbvValue == null) ? null : dbvValue.getYear()+1900;
@@ -98,14 +98,14 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=DBDate.class)
+			@DBAdaptType(MyTypeAdaptor.class)
 			public Integer year;
 		}
 	}
 	
 	@Test
-	@SuppressWarnings("deprecation")
 	public void dbintegerFieldAdaptedAsDBDate_whenAdaptingOnSimpleTypes() {
+		@SuppressWarnings("deprecation")
 		class MyTypeAdaptor implements DBTypeAdaptor<Long, Date> {
 			public Long fromDatabaseValue(Date dbvValue) {
 				return (dbvValue == null) ? null : (long)(dbvValue.getYear()+1900);
@@ -119,7 +119,7 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=DBDate.class)
+			@DBAdaptType(MyTypeAdaptor.class)
 			public DBInteger year;
 		}
 	}
@@ -140,14 +140,14 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(value=MyTypeAdaptor.class, type=DBInteger.class)
 			public Date year;
 		}
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	public void dbdateFieldAdaptedAsDBInteger_whenAdaptingOnSimpleTypes() {
+		@SuppressWarnings("deprecation")
 		class MyTypeAdaptor implements DBTypeAdaptor<Date, Integer> {
 			public Date fromDatabaseValue(Integer dbvValue) {
 				return (dbvValue == null) ? null : new Date(dbvValue-1900, 0, 1);
@@ -161,7 +161,7 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(MyTypeAdaptor.class)
 			public DBDate year;
 		}
 	}
@@ -192,7 +192,7 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=DBString.class)
+			@DBAdaptType(MyTypeAdaptor.class)
 			public MyDataType obj;
 		}
 	}
@@ -230,7 +230,7 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=MyQDT.class)
+			@DBAdaptType(value=MyTypeAdaptor.class, type=MyQDT.class)
 			public String year;
 		}
 	}
@@ -280,7 +280,7 @@ public class TypeAdaptorUsabilityTest {
 		@DBTableName("Customer")
 		class MyTable extends DBRow {
 			@DBColumn
-			@DBAdaptType(adaptor=MyTypeAdaptor.class, type=MyQDT.class)
+			@DBAdaptType(value=MyTypeAdaptor.class, type=MyQDT.class)
 			public String text;
 		}
 	}
@@ -292,6 +292,15 @@ public class TypeAdaptorUsabilityTest {
 //		class MyTable extends DBRow {
 //			@DBColumn
 //			@DBAdaptType(type=DBInteger.class)
+//			public Integer year;
+//		}
+//	}
+	
+//	@Test
+//	public static void integerFieldAdaptedAsDBInteger_withImplicitTypeAdaptor2() {
+//		@DBTableName("Customer")
+//		class MyTable extends DBRow {
+//			@DBColumn
 //			public Integer year;
 //		}
 //	}

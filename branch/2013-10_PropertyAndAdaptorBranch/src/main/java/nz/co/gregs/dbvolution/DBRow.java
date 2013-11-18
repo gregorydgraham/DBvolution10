@@ -75,6 +75,9 @@ abstract public class DBRow implements Serializable {
         	QueryableDatatype qdt = prop.getQueryableDatatype();
         	if (qdt != null) {
         		qdt.clear();
+        		
+                // ensure field set when using type adaptors
+            	prop.setQueryableDatatype(qdt);
         	}
         }
     }

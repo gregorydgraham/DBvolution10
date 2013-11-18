@@ -18,7 +18,12 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 		super(propertyName, internalQdtType, typeAdaptor);
 	}
 
-	public void setInternalFromExternalSimpleValue(Object externalValue) {
+	/**
+	 * Sets the cached internal QDT value from the provided non-QDT external value.
+	 * @param externalValue may be null
+	 * @return the updated internal QDT
+	 */
+	public QueryableDatatype setInternalQDTFromExternalSimpleValue(Object externalValue) {
 		Object internalValue = toInternalSimpleTypeAdaptor.convert(externalValue);
 		if (internalValue == null) {
 			// TODO complete this
@@ -29,17 +34,19 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 			internalQdt.previousValueAsQDT = null;
 		}
 		else {
+			// TODO what type checking can/should be done here?
 			internalQdt.setValue(internalValue);
 		}
+		return internalQdt;
 	}
 
 	/**
-	 * Note: directly returning the value from the type adaptor,
+	 * Warning: this directly returns the value from the type adaptor,
 	 * without casting to the specific type expected by the target
 	 * java property.
 	 * @return
 	 */
-	public Object getExternalSimpleValueFromInternal() {
+	public Object getExternalSimpleValueFromInternalQDT() {
 		return toExternalSimpleTypeAdaptor.convert(internalQdt.getValue());
 	}
 }

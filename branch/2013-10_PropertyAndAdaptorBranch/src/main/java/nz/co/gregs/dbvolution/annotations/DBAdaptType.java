@@ -9,16 +9,24 @@ import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
+ * Adapts a non-DBvolution field or property to a DBvolution type,
+ * or adapts a DBvolution field or property to a different DBvolution type.
+ * Where the adapted field or property is a non-DBvolution type, a null value
+ * returned by the type adaptor is translated into a non-null {@link QueryableDatatype}
+ * of the appropriate type with {@link QueryableDatatype#isNull()} {@code true}
+ * and the field is not used in the {@code WHERE} clause of queries.
+ * 
  * Examples:
- *
- * \@DBAdaptType(adaptor=DaysSinceEpochDateAdaptor.class, type=DBDate.class)
+ * <pre>
+ * &#64;DBAdaptType(value=DaysSinceEpochDateAdaptor.class, type=DBDate.class)
  * public DBInteger daysSinceEpoch;
  *
- * \@DBAdaptType(adaptor=MyFreeTextNumberAdaptor.class, type=DBInteger.class)
+ * &#64;DBAdaptType(value=MyFreeTextNumberAdaptor.class, type=DBInteger.class)
  * public String freeTextNumber;
  *
- * \@DBAdaptType(adaptor=TrimmingStringAdaptor.class, type=DBString.class) public
+ * &#64;DBAdaptType(value=TrimmingStringAdaptor.class, type=DBString.class) public
  * DBString trimmedValue;
+ * </pre>
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -33,7 +41,7 @@ public @interface DBAdaptType {
      *
      * @return the adaptor used to mediate between the external java object (possibly a QueryableDatatype) and the internalQueryableDatatype. 
      */
-    Class<? extends DBTypeAdaptor<?, ?>> adaptor();
+    Class<? extends DBTypeAdaptor<?, ?>> value();
 
     /**
      * The DBvolution type that the adaptor converts to.

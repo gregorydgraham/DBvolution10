@@ -65,6 +65,11 @@ public class QueryableDatatypeSyncer {
 		return internalQdt;
 	}
 
+	/**
+	 * Replaces the internal QDT with the one provided.
+	 * Validates that the provided QDT is of the correct type.
+	 * @param internalQdt
+	 */
 	public void setInternalQueryableDatatype(QueryableDatatype internalQdt) {
 		if (internalQdt != null && !internalQdt.getClass().equals(internalQdtType)) {
 			throw new RuntimeException("Don't know what to do here: targetQdtType:"+internalQdt.getClass().getSimpleName()+" != "+internalQdtType+":"+internalQdtType.getSimpleName());
@@ -72,20 +77,41 @@ public class QueryableDatatypeSyncer {
 		this.internalQdt = internalQdt;
 	}
 	
-	public void setInternalQDTFromExternalQDT(QueryableDatatype externalQdt) {
-		//setTargetQDTFromSourceQDT(Direction.TO_INTERNAL, internalQdt, externalQdt);
-		DBSafeInternalQDTAdaptor qdtAdaptor = new DBSafeInternalQDTAdaptor(internalQdtType, toInternalSimpleTypeAdaptor);
-		qdtAdaptor.setTargetQDTFromSourceQDT(internalQdt, externalQdt);
+	/**
+	 * Sets the cached internal QDT after adapting the value from the provided QDT.
+	 * @param externalQdt may be null
+	 * @return the updated internal QDT
+	 */
+	public QueryableDatatype setInternalQDTFromExternalQDT(QueryableDatatype externalQdt) {
+		if (externalQdt == null) {
+			internalQdt = null;
+		}
+		else {
+			DBSafeInternalQDTAdaptor qdtAdaptor = new DBSafeInternalQDTAdaptor(internalQdtType, toInternalSimpleTypeAdaptor);
+			qdtAdaptor.setTargetQDTFromSourceQDT(internalQdt, externalQdt);
+		}
+		return internalQdt;
 	}
 
-	public void setExternalFromInternalQDT(QueryableDatatype externalQdt) {
-		//setTargetQDTFromSourceQDT(Direction.TO_EXTERNAL, externalQdt, internalQdt);
-		DBSafeInternalQDTAdaptor qdtAdaptor = new DBSafeInternalQDTAdaptor(externalQdt.getClass(), toExternalSimpleTypeAdaptor);
-		qdtAdaptor.setTargetQDTFromSourceQDT(externalQdt, internalQdt);
+	/**
+	 * Sets the provided external QDT from the internal QDT and returns the updated
+	 * external QDT.
+	 * @param externalQdt
+	 * @return the updated external QDT or null if the internal QDT is null
+	 */
+	public QueryableDatatype setExternalFromInternalQDT(QueryableDatatype externalQdt) {
+		if (internalQdt == null) {
+			return null;
+		}
+		else {
+			DBSafeInternalQDTAdaptor qdtAdaptor = new DBSafeInternalQDTAdaptor(externalQdt.getClass(), toExternalSimpleTypeAdaptor);
+			qdtAdaptor.setTargetQDTFromSourceQDT(externalQdt, internalQdt);
+		}
+		return externalQdt;
 	}
 
 	// for DEBUG purposes only
-	private static String qdtToString(QueryableDatatype qdt) {
+	static String qdtToString(QueryableDatatype qdt) {
 		String literalStr = (qdt == null) ? null : qdt.literalValue.getClass().getSimpleName()+"["+qdt.literalValue+"]";
 		StringBuilder buf = new StringBuilder();
 		if (qdt == null) {
@@ -122,7 +148,7 @@ public class QueryableDatatypeSyncer {
 	public static class DBSafeInternalQDTAdaptor {
 		private Class<? extends QueryableDatatype> targetQdtType;
 		private SafeOneWaySimpleTypeAdaptor simpleTypeAdaptor;
-		private List<Map.Entry<QueryableDatatype, QueryableDatatype>> soFar =
+		private List<Map.Entry<QueryableDatatype, QueryableDatatype>> observedSourcesAndTargets =
 			new ArrayList<Map.Entry<QueryableDatatype,QueryableDatatype>>();
 		
 		public DBSafeInternalQDTAdaptor(
@@ -142,15 +168,14 @@ public class QueryableDatatypeSyncer {
 		 * @param qdt the QDT to convert to the target type, may be null
 		 * @return the newly created QDT of the target type, or null if {@code sourceQdt} was null
 		 */
-		@SuppressWarnings("synthetic-access")
 		public QueryableDatatype convert(QueryableDatatype sourceQdt) {
 			try {
 				// cycle-detection
 				// (note: important that it uses reference equality, not object equality)
-				for (Map.Entry<QueryableDatatype, QueryableDatatype> soFarEntry: soFar) {
-					if (soFarEntry.getKey() == sourceQdt) {
+				for (Map.Entry<QueryableDatatype, QueryableDatatype> sourceAndTarget: observedSourcesAndTargets) {
+					if (sourceAndTarget.getKey() == sourceQdt) {
 						// re-use existing value
-						return soFarEntry.getValue();
+						return sourceAndTarget.getValue();
 					}
 				}
 
@@ -183,13 +208,13 @@ public class QueryableDatatypeSyncer {
 			
 			// cycle-detection
 			// (note: important that it uses reference equality, not object equality)
-			for (Map.Entry<QueryableDatatype, QueryableDatatype> soFarEntry: soFar) {
+			for (Map.Entry<QueryableDatatype, QueryableDatatype> soFarEntry: observedSourcesAndTargets) {
 				if (soFarEntry.getKey() == sourceQdt) {
 					// already observed, so already done.
 					return;
 				}
 			}
-			soFar.add(new SimpleEntry<QueryableDatatype, QueryableDatatype>(sourceQdt, targetQdt));
+			observedSourcesAndTargets.add(new SimpleEntry<QueryableDatatype, QueryableDatatype>(sourceQdt, targetQdt));
 			
 			// copy simple fields
 			targetQdt.changed = sourceQdt.changed;

@@ -77,7 +77,7 @@ class PropertyTypeHandler {
 
         // validation: type adaptor must implement TypeAdaptor interface if used
         if (annotation != null) {
-            Class<?> typeAdaptorClass = annotation.adaptor();
+            Class<?> typeAdaptorClass = annotation.value();
             if (!DBTypeAdaptor.class.isAssignableFrom(typeAdaptorClass)) {
                 throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName() + " must implement "
                         + DBTypeAdaptor.class.getSimpleName() + ", on " + javaProperty.qualifiedName());
@@ -86,7 +86,7 @@ class PropertyTypeHandler {
 
         // validation: type adaptor must not be an interface or abstract
         if (annotation != null) {
-            Class<?> typeAdaptorClass = annotation.adaptor();
+            Class<?> typeAdaptorClass = annotation.value();
             if (typeAdaptorClass.isInterface()) {
                 throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName()
                         + " must not be an interface, on " + javaProperty.qualifiedName());
@@ -103,7 +103,7 @@ class PropertyTypeHandler {
         //   This is intentional to future-proof and because generics of type
         //   hierarchies is tremendously complex and its process very prone to error.)
         if (annotation != null) {
-            Class<?> typeAdaptorClass = annotation.adaptor();
+            Class<?> typeAdaptorClass = annotation.value();
             ParameterBounds[] parameterBounds = null;
             try {
                 InterfaceInfo interfaceInfo = new InterfaceInfo(DBTypeAdaptor.class, typeAdaptorClass);
@@ -144,7 +144,7 @@ class PropertyTypeHandler {
         if (typeAdaptorExternalType != null && !QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
             if (!typeAdaptorExternalType.isAssignableFrom(javaProperty.type())) {
                 throw new DBPebkacException(
-                        "Type adaptor " + annotation.adaptor().getSimpleName() + " is not compatible "
+                        "Type adaptor " + annotation.value().getSimpleName() + " is not compatible "
                         + " with " + javaProperty.type().getName() + ", on " + javaProperty.qualifiedName());
             }
         }
@@ -157,14 +157,14 @@ class PropertyTypeHandler {
         // validation: type adaptor's internal type must be supported simple type if no explicit type
         if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) == null) {
             boolean supported = false;
-            for (Class<?> simpleType : SUPPORTED_SIMPLE_TYPES) {
+            for (Class<?> simpleType: SUPPORTED_SIMPLE_TYPES) {
                 if (simpleType.isAssignableFrom(typeAdaptorInternalType)) {
                     supported = true;
                 }
             }
             if (!supported) {
                 throw new DBPebkacException(
-                        "Type adaptor " + annotation.adaptor().getName() + " internal type "
+                        "Type adaptor " + annotation.value().getName() + " internal type "
                         + typeAdaptorInternalType.getSimpleName() + " is not supported, on "
                         + javaProperty.qualifiedName());
             }
@@ -330,13 +330,12 @@ class PropertyTypeHandler {
     	
         // get via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
+            SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
             Object externalValue = javaProperty.get(target);
 
             // convert
             // TODO think this still needs some last-minute type checks
-            SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
-            syncer.setInternalFromExternalSimpleValue(externalValue);
-            return internalQdtSyncer.getInternalQueryableDatatype();
+            return syncer.setInternalQDTFromExternalSimpleValue(externalValue);
         } // get via type adaptor and QDT java property
         else if (typeAdaptor != null) {
             Object externalValue = javaProperty.get(target);
@@ -345,8 +344,7 @@ class PropertyTypeHandler {
             QueryableDatatype externalQdt = (QueryableDatatype) externalValue;
 
             // convert
-            internalQdtSyncer.setInternalQDTFromExternalQDT(externalQdt);
-            return internalQdtSyncer.getInternalQueryableDatatype();
+            return internalQdtSyncer.setInternalQDTFromExternalQDT(externalQdt);
         } // get directly without type adaptor
         // (note: type checking was performed at creation time)
         else {
@@ -374,18 +372,24 @@ class PropertyTypeHandler {
         // set via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
             SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
-            //internalQdtSyncer.setExternalFromInternalQDT(dbvValue);
             syncer.setInternalQueryableDatatype(dbvValue);
-            Object externalValue = syncer.getExternalSimpleValueFromInternal();
+            Object externalValue = syncer.getExternalSimpleValueFromInternalQDT();
 
             // TODO think this still needs some last-minute type checks
             javaProperty.set(target, externalValue);
         } // set via type adaptor and QDT java property
         else if (typeAdaptor != null) {
-            internalQdtSyncer.setExternalFromInternalQDT(dbvValue);
-            QueryableDatatype internalQdt = internalQdtSyncer.getInternalQueryableDatatype();
+            Object externalValue = javaProperty.get(target);
 
-            javaProperty.set(target, internalQdt);
+            // this should be completely safe by now
+            QueryableDatatype externalQdt = (QueryableDatatype) externalValue;
+
+            // convert
+            internalQdtSyncer.setInternalQueryableDatatype(dbvValue);
+            externalQdt = internalQdtSyncer.setExternalFromInternalQDT(externalQdt);
+            if (externalQdt == null && externalValue != null) {
+            	javaProperty.set(target, null);
+            }
         } // set directly without type adaptor
         // (note: type checking was performed at creation time)
         else {
@@ -405,7 +409,7 @@ class PropertyTypeHandler {
      * @throws DBPebkacException on errors with the end-user supplied code
      */
     private static DBTypeAdaptor<Object, Object> newTypeAdaptorInstanceGiven(JavaProperty property, DBAdaptType annotation) {
-        Class<? extends DBTypeAdaptor<?, ?>> adaptorClass = annotation.adaptor();
+        Class<? extends DBTypeAdaptor<?, ?>> adaptorClass = annotation.value();
         if (adaptorClass == null) {
             // shouldn't be possible
             throw new DBRuntimeException("Encountered unexpected null " + DBAdaptType.class.getSimpleName()
