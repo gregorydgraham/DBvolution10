@@ -47,7 +47,19 @@ public class PropertyTypeHandlerTest {
 	}
 	
 	@Test
-	public void getsQDTValueGivenValidObjectAndNoTypeAdaptor() {
+	public void infersDBStringGivenIntegerStringAdaptor() {
+		class MyClass extends DBRow {
+			@DBAdaptType(adaptor=LongStringAdaptor.class)
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		assertThat(propertyHandler.getType(), is((Object) DBString.class));
+	}
+	
+	@Test
+	public void getsQDTValueGivenValidFieldAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
 			@DBColumn
 			public DBInteger intField = new DBInteger();
@@ -62,7 +74,7 @@ public class PropertyTypeHandlerTest {
 	}
 
 	@Test
-	public void getsUnchangedQDTInstanceGivenValidObjectAndNoTypeAdaptor() {
+	public void getsUnchangedQDTInstanceGivenValidFieldAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
 			@DBColumn
 			public DBInteger intField = new DBInteger();
@@ -76,7 +88,7 @@ public class PropertyTypeHandlerTest {
 	}
 	
 	@Test
-	public void getsNullQDTValueGivenValidNullObjectAndNoTypeAdaptor() {
+	public void getsNullQDTValueGivenValidNullFieldAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
 			@DBColumn
 			public DBInteger intField = null;
@@ -89,63 +101,6 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt, is(nullValue()));
 	}
 	
-	@Test
-	public void setsObjectValueGivenValidObjectAndNoTypeAdaptor() {
-		class MyClass extends DBRow {
-			@DBColumn
-			public DBInteger intField = new DBInteger();
-		}
-		
-		MyClass myObj = new MyClass();
-		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-		DBInteger qdt = new DBInteger();
-		qdt.setValue(23);
-		
-		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
-		assertThat(myObj.intField.intValue(), is(23));
-	}
-
-	@Test
-	public void setsUnchangedInstanceGivenValidObjectAndNoTypeAdaptor() {
-		class MyClass extends DBRow {
-			@DBColumn
-			public DBInteger intField = new DBInteger();
-		}
-		
-		MyClass myObj = new MyClass();
-		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-		DBInteger qdt = new DBInteger();
-		
-		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
-		assertThat(myObj.intField == qdt, is(true));
-	}
-	
-	@Test
-	public void setsObjectValueToNullGivenValidObjectAndNoTypeAdaptor() {
-		class MyClass extends DBRow {
-			@DBColumn
-			public DBInteger intField = new DBInteger();
-		}
-		
-		MyClass myObj = new MyClass();
-		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-
-		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, null);
-		assertThat(myObj.intField, is(nullValue()));
-	}
-	
-	@Test
-	public void infersDBStringGivenIntegerStringAdaptor() {
-		class MyClass extends DBRow {
-			@DBAdaptType(adaptor=LongStringAdaptor.class)
-			@DBColumn
-			public DBInteger intField = new DBInteger();
-		}
-		
-		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
-		assertThat(propertyHandler.getType(), is((Object) DBString.class));
-	}
-
 	@Test
 	public void getsCorrectInternalValueTypeGivenIntegerStringAdaptorOnDBIntegerField() {
 		class MyClass extends DBRow {
@@ -176,6 +131,53 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt.stringValue(), is("23"));
 	}
 	
+	@Test
+	public void setsFieldValueGivenValidFieldAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		MyClass myObj = new MyClass();
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+		
+		DBInteger qdt = new DBInteger();
+		qdt.setValue(23);
+		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
+		
+		assertThat(myObj.intField.intValue(), is(23));
+	}
+
+	@Test
+	public void setsUnchangedFieldReferenceGivenValidObjectAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		MyClass myObj = new MyClass();
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+
+		DBInteger qdt = new DBInteger();
+		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
+		
+		assertThat(myObj.intField == qdt, is(true));
+	}
+	
+	@Test
+	public void setsFieldValueToNullGivenValidObjectAndNoTypeAdaptor() {
+		class MyClass extends DBRow {
+			@DBColumn
+			public DBInteger intField = new DBInteger();
+		}
+		
+		MyClass myObj = new MyClass();
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "intField");
+
+		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, null);
+		assertThat(myObj.intField, is(nullValue()));
+	}
+
 	private PropertyTypeHandler propertyHandlerOf(Class<?> clazz, String javaPropertyName) {
 		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName), false);
 	}
