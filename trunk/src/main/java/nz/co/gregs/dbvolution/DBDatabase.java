@@ -202,7 +202,8 @@ public abstract class DBDatabase {
      * @param objs
      * @throws SQLException
      */
-    public void updateRowsAndListsOfRows(Object... objs) throws SQLException {
+    public DBActionList update(Object... objs) throws SQLException {
+        DBActionList actions = new DBActionList();
         for (Object obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
@@ -210,32 +211,33 @@ public abstract class DBDatabase {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
                     for (DBRow row : rowList) {
-                        this.getDBTable(row).update(row);
+                        actions.addAll(this.getDBTable(row).update(row));
                     }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
-                this.getDBTable(row).update(row);
+                actions.addAll(this.getDBTable(row).update(row));;
             }
         }
+        return actions;
     }
 
-    public void update(DBRow row) throws SQLException {
+    private void updateARow(DBRow row) throws SQLException {
         this.getDBTable(row).update(row);
     }
 
-    public void update(List<DBRow> list) throws SQLException {
+    public void updateAList(List<DBRow> list) throws SQLException {
         if (list.size() > 0 && list.get(0) instanceof DBRow) {
             for (DBRow row : list) {
-                this.update(row);
+                this.updateARow(row);
             }
         }
     }
 
-    public void update(DBRow[] list) throws SQLException {
+    public void updateAnArray(DBRow[] list) throws SQLException {
         if (list.length > 0) {
             for (DBRow list1 : list) {
-                this.update(list1);
+                this.updateARow(list1);
             }
         }
     }

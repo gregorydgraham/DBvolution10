@@ -34,10 +34,8 @@ public class DBActionListCreationTest extends AbstractTest {
     public void simpleActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
         Marque marqueExample = new Marque();
         marqueExample.getUidMarque().permittedValues(1);
-
-        marques.getRowsByExample(marqueExample);
-        marques.print();
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
+
         toyota.uidMarque.permittedValues(99999);
         DBActionList updateList = marques.update(toyota);
         Assert.assertThat(updateList.size(), is(1));
@@ -49,11 +47,31 @@ public class DBActionListCreationTest extends AbstractTest {
         Assert.assertThat(revertList.get(0), instanceOf(DBUpdateToPreviousValues.class));
         List<String> revertStrings = revertList.get(0).getSQLStatements(database);
         Assert.assertThat(revertStrings.size(), is(1));
-        Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)), 
+        Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
                 is(this.testableSQLWithoutColumnAliases("UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;")));
         System.out.println("REVERT:");
-        for(String revert : revertStrings){
+        for (String revert : revertStrings) {
             System.out.println(revert);
         }
+    }
+
+    @Test
+    public void multiActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
+        Marque marqueExample = new Marque();
+        marqueExample.getUidMarque().permittedValues(1);
+
+        Marque toyota = marques.getOnlyRowByExample(marqueExample);
+        toyota.uidMarque.permittedValues(99999);
+
+        marqueExample.clear();
+        marqueExample.name.permittedValuesIgnoreCase("ford");
+        Marque ford = marques.getOnlyRowByExample(marqueExample);
+        ford.updateCount.setValue(ford.updateCount.intValue() + 10);
+
+        DBActionList update = database.update(toyota, ford);
+        Assert.assertThat(update.size(), is(2));
+        Assert.assertThat(update.get(0), instanceOf(DBUpdateSimpleTypes.class));
+        Assert.assertThat(update.get(1), instanceOf(DBUpdateSimpleTypes.class));
+
     }
 }
