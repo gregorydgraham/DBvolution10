@@ -45,10 +45,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
 
-    QueryableDatatype() {
+    protected QueryableDatatype() {
     }
 
-    QueryableDatatype(String str) {
+    protected QueryableDatatype(String str) {
         if (str == null) {
             this.isDBNull = true;
         } else if (!str.isEmpty()) {
@@ -57,7 +57,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
-    QueryableDatatype(Object str) {
+    protected QueryableDatatype(Object str) {
         if (str == null) {
             this.isDBNull = true;
         } else if (!str.toString().isEmpty()) {
@@ -447,15 +447,23 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     /**
-     *
-     * @return
+     * Gets the current literal value of this queryable data type, without any formatting.
+     * The returned value <i>should/<i> be in the correct type as appropriate
+     * for the type of queryable data type.
+     * 
+     * <p> The literal value is undefined (and {@code null}) if using an operator
+     * other than {@code equals}.
+     * @return the literal value, if defined, which may be null
      */
+    // FIXME sometimes strings are returned for DBNumber types
     public Object getValue() {
         return literalValue;
     }
 
     /**
-     *
+     * Sets the literal value of this queryable data type.
+     * Replaces any assigned operator with an {@code equals} operator on the
+     * given value.
      * @param newLiteralValue the literalValue to set
      */
     public void setValue(Object newLiteralValue) {
@@ -709,6 +717,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     /**
      * @param operator the operator to set
      */
+    // FIXME I think this should set 'literalValue' to null
     public void setOperator(DBOperator operator) {
         this.operator = operator;
         if (undefined) {

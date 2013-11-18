@@ -2,6 +2,9 @@ package nz.co.gregs.dbvolution.internal;
 
 import java.lang.reflect.Method;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.internal.InterfaceInfo.ParameterBounds;
@@ -13,7 +16,9 @@ import nz.co.gregs.dbvolution.internal.InterfaceInfo.UnsupportedType;
  * casting between number types.
  */
 // TODO exceptions need to reference the field the type adaptor is on
-public class SafeOneWayTypeAdaptor {
+public class SafeOneWaySimpleTypeAdaptor {
+	public static final Log log = LogFactory.getLog(SafeOneWaySimpleTypeAdaptor.class);
+	
 	public static enum Direction {
 		/** To DBvolution-centric type. toDatabaseValue() method */
 		TO_INTERNAL,
@@ -34,12 +39,13 @@ public class SafeOneWayTypeAdaptor {
 	};
 	
 	private String propertyName;
+	private Direction direction;
+	
 	private Class<?> sourceType;
 	private SimpleCast sourceCast = null;
+	private DBTypeAdaptor<Object, Object> typeAdaptor;
 	private SimpleCast targetCast = null;
 	private Class<?> targetType;
-	private DBTypeAdaptor<Object, Object> typeAdaptor;
-	private Direction direction;
 	
 	static {
 		try {
@@ -75,7 +81,7 @@ public class SafeOneWayTypeAdaptor {
 	 * @param targetType type of variable to which output value is to be assigned, optional
 	 */
 	@SuppressWarnings("unchecked")
-	public SafeOneWayTypeAdaptor(String propertyName, DBTypeAdaptor<?,?> typeAdaptor, Direction direction, Class<?> sourceType, Class<?> targetType) {
+	public SafeOneWaySimpleTypeAdaptor(String propertyName, DBTypeAdaptor<?,?> typeAdaptor, Direction direction, Class<?> sourceType, Class<?> targetType) {
 		this.propertyName = propertyName;
 		this.direction = direction;
 		this.typeAdaptor = (DBTypeAdaptor<Object, Object>) typeAdaptor;
@@ -151,6 +157,30 @@ public class SafeOneWayTypeAdaptor {
         }
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append(sourceType == null ? "unknown" : sourceType.getSimpleName());
+		buf.append("-->");
+		if (sourceCast != null) {
+			buf.append("(");
+			buf.append(sourceCast.getClass().getSimpleName());
+			buf.append(")");
+			buf.append("-->");
+		}
+		buf.append(typeAdaptor.getClass().getSimpleName());
+		buf.append("-->");
+		if (targetCast != null) {
+			buf.append("(");
+			buf.append(targetCast.getClass().getSimpleName());
+			buf.append(")");
+			buf.append("-->");
+		}
+		buf.append(targetType == null ? "unknown" : targetType.getSimpleName());
+		
+		return buf.toString();
+	}
+	
 	/**
 	 * Gets the expected type of source values passed
 	 * to {@link #convert(Object)}.
@@ -178,6 +208,20 @@ public class SafeOneWayTypeAdaptor {
 	 * @throws DBThrownByEndUserCodeException if the type adaptor throws an exception
 	 */
 	public Object convert(Object value) {
+		String valStr = (value == null) ? "null" : value.getClass().getSimpleName()+"["+value+"]";
+		try {
+			Object result = convertInternal(value);
+
+			String resultStr = (result == null) ? "null" : result.getClass().getSimpleName()+"["+result+"]";
+			log.info(this+" converting "+valStr+" ==> "+resultStr);
+			return result;
+		} catch (RuntimeException e) {
+			log.info(this+" converting "+valStr+" ==> "+e.getClass().getSimpleName());
+			throw e;
+		}
+	}
+	
+	private Object convertInternal(Object value) {
 		// validate source
 		if (sourceType != null && value != null) {
 			if (!sourceType.isInstance(value)) {

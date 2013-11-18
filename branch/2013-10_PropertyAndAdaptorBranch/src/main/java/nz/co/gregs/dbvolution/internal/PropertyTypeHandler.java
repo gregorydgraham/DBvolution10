@@ -374,8 +374,8 @@ class PropertyTypeHandler {
         // set via type adaptor and simple-type java property
         if (typeAdaptor != null && internalQdtSyncer instanceof SimpleValueQueryableDatatypeSyncer) {
             SimpleValueQueryableDatatypeSyncer syncer = (SimpleValueQueryableDatatypeSyncer) internalQdtSyncer;
-            internalQdtSyncer.setExternalFromInternalQDT(dbvValue);
-
+            //internalQdtSyncer.setExternalFromInternalQDT(dbvValue);
+            syncer.setInternalQueryableDatatype(dbvValue);
             Object externalValue = syncer.getExternalSimpleValueFromInternal();
 
             // TODO think this still needs some last-minute type checks
