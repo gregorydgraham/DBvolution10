@@ -1,11 +1,16 @@
 package nz.co.gregs.dbvolution.datatypes;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor.Direction;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Allows synchronisations to be done between two QueryableDatatypes,
@@ -21,10 +26,10 @@ public class QueryableDatatypeSyncer {
 	protected final DBTypeAdaptor<Object, Object> typeAdaptor;
 	protected final Class<? extends QueryableDatatype> internalQdtType;
 	protected QueryableDatatype internalQdt;
-//	private DBSafeInternalQDTAdaptor toExternalQDTAdaptor;
-//	private DBSafeInternalQDTAdaptor toInternalQDTAdaptor;
 	protected SafeOneWaySimpleTypeAdaptor toExternalSimpleTypeAdaptor;
 	protected SafeOneWaySimpleTypeAdaptor toInternalSimpleTypeAdaptor;
+//	private DBSafeInternalQDTAdaptor toExternalQDTAdaptor;
+//	private DBSafeInternalQDTAdaptor toInternalQDTAdaptor;
 
 	/**
 	 * 
@@ -77,55 +82,69 @@ public class QueryableDatatypeSyncer {
 	public void setExternalFromInternalQDT(QueryableDatatype externalQdt) {
 		setTargetQDTFromSourceQDT(Direction.TO_EXTERNAL, externalQdt, internalQdt);
 	}
-	
+
+	// TODO subsume this into the two methods above
 	private void setTargetQDTFromSourceQDT(Direction direction, QueryableDatatype targetQdt, QueryableDatatype sourceQdt) {
-		setTargetQDTFromSourceQDT(null, direction, targetQdt, sourceQdt);
-	}
-	
-	private void setTargetQDTFromSourceQDT(DBSafeInternalQDTAdaptor qdtAdaptor, Direction direction, QueryableDatatype targetQdt, QueryableDatatype sourceQdt) {
-		targetQdt.changed = sourceQdt.changed;
-		targetQdt.includingNulls = sourceQdt.includingNulls;
-		targetQdt.invertOperator = sourceQdt.invertOperator;
-		targetQdt.isDBNull = sourceQdt.isDBNull;
-		targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
-		targetQdt.undefined = sourceQdt.undefined;
-		targetQdt.sort = sourceQdt.sort;
-		
-		// copy literal value with translation
-//		targetQdt.literalValue = adaptValue(direction, sourceQdt.literalValue);
-		if (direction == Direction.TO_INTERNAL) {
-			targetQdt.literalValue = toInternalSimpleTypeAdaptor.convert(sourceQdt.literalValue);
-		}
-		else {
-			targetQdt.literalValue = toExternalSimpleTypeAdaptor.convert(sourceQdt.literalValue);
-		}
-		
-		// copy operator with translation
-		// TODO call operator.copyAndTranslate(new DBSafeInternalTypeAdaptor(typeAdaptor))
-		//   class DBSafeInternalTypeAdaptor {
-		//       public QueryableDatatype convert(QueryableDatatype qdt);
-	    //   }
-		// Needs to detect where DBOperator is created as QueryableDatatype.do{new DBOperator(this)};
-		//  (eg: in QueryableDatatype.setValue())
-		//targetQdt.operator = sourceQdt.operator; // TODO: translate
+		DBSafeInternalQDTAdaptor qdtAdaptor;
 		if (direction == Direction.TO_INTERNAL) {
 			if (!targetQdt.getClass().equals(internalQdtType)) {
 				throw new RuntimeException("Don't know what to do here: targetQdtType:"+targetQdt.getClass().getSimpleName()+" != "+internalQdtType+":"+internalQdtType.getSimpleName());
 			}
 			
-			DBSafeInternalQDTAdaptor toInternalQDTAdaptor = (qdtAdaptor != null) ? qdtAdaptor :
-					new DBSafeInternalQDTAdaptor(this, direction, internalQdtType, toInternalSimpleTypeAdaptor);
-			targetQdt.operator = sourceQdt.operator.copyAndAdapt(toInternalQDTAdaptor);
+			qdtAdaptor = new DBSafeInternalQDTAdaptor(internalQdtType, toInternalSimpleTypeAdaptor);
 		}
 		else {
-			DBSafeInternalQDTAdaptor toExternalQDTAdaptor = (qdtAdaptor != null) ? qdtAdaptor :
-					new DBSafeInternalQDTAdaptor(this, direction, targetQdt.getClass(), toExternalSimpleTypeAdaptor);
-			targetQdt.operator = sourceQdt.operator.copyAndAdapt(toExternalQDTAdaptor);
+			qdtAdaptor = new DBSafeInternalQDTAdaptor(targetQdt.getClass(), toExternalSimpleTypeAdaptor);
 		}
 		
-		// copy previous value with translation
-		//sourceQdt.previousValueAsQDT = // TODO 
+		qdtAdaptor.setTargetQDTFromSourceQDT(targetQdt, sourceQdt);
+		//setTargetQDTFromSourceQDT(null, direction, targetQdt, sourceQdt);
 	}
+	
+//	private void setTargetQDTFromSourceQDT(DBSafeInternalQDTAdaptor qdtAdaptor, Direction direction, QueryableDatatype targetQdt, QueryableDatatype sourceQdt) {
+//		targetQdt.changed = sourceQdt.changed;
+//		targetQdt.includingNulls = sourceQdt.includingNulls;
+//		targetQdt.invertOperator = sourceQdt.invertOperator;
+//		targetQdt.isDBNull = sourceQdt.isDBNull;
+//		targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
+//		targetQdt.undefined = sourceQdt.undefined;
+//		targetQdt.sort = sourceQdt.sort;
+//		
+//		// copy literal value with translation
+////		targetQdt.literalValue = adaptValue(direction, sourceQdt.literalValue);
+//		if (direction == Direction.TO_INTERNAL) {
+//			targetQdt.literalValue = toInternalSimpleTypeAdaptor.convert(sourceQdt.literalValue);
+//		}
+//		else {
+//			targetQdt.literalValue = toExternalSimpleTypeAdaptor.convert(sourceQdt.literalValue);
+//		}
+//		
+//		// copy operator with translation
+//		// TODO call operator.copyAndTranslate(new DBSafeInternalTypeAdaptor(typeAdaptor))
+//		//   class DBSafeInternalTypeAdaptor {
+//		//       public QueryableDatatype convert(QueryableDatatype qdt);
+//	    //   }
+//		// Needs to detect where DBOperator is created as QueryableDatatype.do{new DBOperator(this)};
+//		//  (eg: in QueryableDatatype.setValue())
+//		//targetQdt.operator = sourceQdt.operator; // TODO: translate
+//		if (direction == Direction.TO_INTERNAL) {
+//			if (!targetQdt.getClass().equals(internalQdtType)) {
+//				throw new RuntimeException("Don't know what to do here: targetQdtType:"+targetQdt.getClass().getSimpleName()+" != "+internalQdtType+":"+internalQdtType.getSimpleName());
+//			}
+//			
+//			DBSafeInternalQDTAdaptor toInternalQDTAdaptor = (qdtAdaptor != null) ? qdtAdaptor :
+//					new DBSafeInternalQDTAdaptor(this, direction, internalQdtType, toInternalSimpleTypeAdaptor);
+//			targetQdt.operator = sourceQdt.operator.copyAndAdapt(toInternalQDTAdaptor);
+//		}
+//		else {
+//			DBSafeInternalQDTAdaptor toExternalQDTAdaptor = (qdtAdaptor != null) ? qdtAdaptor :
+//					new DBSafeInternalQDTAdaptor(this, direction, targetQdt.getClass(), toExternalSimpleTypeAdaptor);
+//			targetQdt.operator = sourceQdt.operator.copyAndAdapt(toExternalQDTAdaptor);
+//		}
+//		
+//		// copy previous value with translation
+//		//sourceQdt.previousValueAsQDT = // TODO 
+//	}
 
 //	protected Object adaptValue(Direction direction, Object sourceLiteralValue) {
 //		if (direction == Direction.TO_INTERNAL) {
@@ -165,47 +184,108 @@ public class QueryableDatatypeSyncer {
 		return buf.toString();
 	}
 	
+	/**
+	 * One-shot cycle-aware recursive QDT adaptor.
+	 * Converts from existing QDT to brand new one,
+	 * and copies from one QDT to another.
+	 * 
+	 * <p> Must be used only once for a given read or write of a field.
+	 */
 	public static class DBSafeInternalQDTAdaptor {
-		private QueryableDatatypeSyncer syncer;
-		private Direction direction;
 		private Class<? extends QueryableDatatype> targetQdtType;
-		private SafeOneWaySimpleTypeAdaptor typeAdaptor;
+		private SafeOneWaySimpleTypeAdaptor simpleTypeAdaptor;
+		private List<Map.Entry<QueryableDatatype, QueryableDatatype>> soFar =
+			new ArrayList<Map.Entry<QueryableDatatype,QueryableDatatype>>();
 		
 		public DBSafeInternalQDTAdaptor(
-				QueryableDatatypeSyncer syncer,
-				Direction direction,
 				Class<? extends QueryableDatatype> targetQdtType,
 				SafeOneWaySimpleTypeAdaptor typeAdaptor) {
-			this.syncer = syncer;
-			this.direction = direction;
 			this.targetQdtType = targetQdtType;
-			this.typeAdaptor = typeAdaptor;
+			this.simpleTypeAdaptor = typeAdaptor;
 		}
 
+		/**
+		 * Creates a brand new QDT of the configured target type,
+		 * based on converted values from the given QDT.
+		 * Recursively traverses the operators and inner QDT references
+		 * within the given QDT.
+		 * @param qdt the QDT to convert to the target type
+		 * @return the newly created QDT of the target type
+		 */
 		@SuppressWarnings("synthetic-access")
-		public QueryableDatatype convert(QueryableDatatype qdt) {
+		public QueryableDatatype convert(QueryableDatatype sourceQdt) {
 			try {
-				QueryableDatatype result = convertInternal(qdt);
-				log.info(typeAdaptor+" converting "+qdtToString(qdt)+" ==> "+qdtToString(result));
-				return result;
+				// cycle-detection
+				// (note: important that it uses reference equality, not object equality)
+				for (Map.Entry<QueryableDatatype, QueryableDatatype> soFarEntry: soFar) {
+					if (soFarEntry.getKey() == sourceQdt) {
+						// re-use existing value
+						return soFarEntry.getValue();
+					}
+				}
+				
+				QueryableDatatype targetQdt = newTargetQDT();
+				setTargetQDTFromSourceQDT(targetQdt, sourceQdt);
+				log.info(simpleTypeAdaptor+" converting "+qdtToString(sourceQdt)+" ==> "+qdtToString(targetQdt));
+				return targetQdt;
 			} catch (RuntimeException e) {
-				log.info(typeAdaptor+" converting "+qdtToString(qdt)+" ==> "+e.getClass().getSimpleName());
+				log.info(simpleTypeAdaptor+" converting "+qdtToString(sourceQdt)+" ==> "+e.getClass().getSimpleName());
 				throw e;
 			}
 		}
-		
-		private QueryableDatatype convertInternal(QueryableDatatype sourceQdt) {
-//			QueryableDatatype targetQdt = newTargetQDT();
-//			syncer.setTargetQDTFromSourceQDT(this, direction, targetQdt, sourceQdt);
-//			return targetQdt;
+
+		/**
+		 * Updates the target QDT with converted values from the source QDT.
+		 * Recursively traverses the operations and inner QDT references within
+		 * the given source QTD.
+		 * @param targetQdt the QDT to update
+		 * @param sourceQdt the QDT with values to convert and copy to the target
+		 */
+		protected void setTargetQDTFromSourceQDT(QueryableDatatype targetQdt, QueryableDatatype sourceQdt) {
+			// sanity checks
+			if (!targetQdt.getClass().equals(targetQdtType)) {
+				throw new RuntimeException("Don't know what to do here: targetQdtType:"+
+						targetQdt.getClass().getSimpleName()+" != "+targetQdtType+":"+targetQdtType.getSimpleName());
+			}
 			
-//			if (qdt == null) {
-//				return null;
-//			}
-//			else if (qdt instanceof DBInteger) {
-//				
-//			}
-			throw new UnsupportedOperationException(typeAdaptor+" trying to convert from "+qdtToString(sourceQdt));
+			// cycle-detection
+			// (note: important that it uses reference equality, not object equality)
+			for (Map.Entry<QueryableDatatype, QueryableDatatype> soFarEntry: soFar) {
+				if (soFarEntry.getKey() == sourceQdt) {
+					// already observed, so already done.
+					return;
+				}
+			}
+			soFar.add(new SimpleEntry<QueryableDatatype, QueryableDatatype>(sourceQdt, targetQdt));
+			
+			// copy simple fields
+			targetQdt.changed = sourceQdt.changed;
+			targetQdt.includingNulls = sourceQdt.includingNulls;
+			targetQdt.invertOperator = sourceQdt.invertOperator;
+			targetQdt.isDBNull = sourceQdt.isDBNull;
+			targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
+			targetQdt.undefined = sourceQdt.undefined;
+			targetQdt.sort = sourceQdt.sort;
+			
+			// copy literal value with translation
+			targetQdt.literalValue = simpleTypeAdaptor.convert(sourceQdt.literalValue);
+			
+			// copy operator with translation
+			// TODO call operator.copyAndTranslate(new DBSafeInternalTypeAdaptor(typeAdaptor))
+			//   class DBSafeInternalTypeAdaptor {
+			//       public QueryableDatatype convert(QueryableDatatype qdt);
+		    //   }
+			// Needs to detect where DBOperator is created as QueryableDatatype.do{new DBOperator(this)};
+			//  (eg: in QueryableDatatype.setValue())
+			if (sourceQdt.operator == null) {
+				targetQdt.operator = null;
+			}
+			else {
+				targetQdt.operator = sourceQdt.operator.copyAndAdapt(this);
+			}
+			
+			// copy previous value with translation
+			//sourceQdt.previousValueAsQDT = // TODO 
 		}
 		
 		private QueryableDatatype newTargetQDT() {
