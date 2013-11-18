@@ -49,6 +49,8 @@ public class DBActionListCreationTest extends AbstractTest {
         Assert.assertThat(revertList.get(0), instanceOf(DBUpdateToPreviousValues.class));
         List<String> revertStrings = revertList.get(0).getSQLStatements(database);
         Assert.assertThat(revertStrings.size(), is(1));
+        Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)), 
+                is(this.testableSQLWithoutColumnAliases("UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;")));
         System.out.println("REVERT:");
         for(String revert : revertStrings){
             System.out.println(revert);
