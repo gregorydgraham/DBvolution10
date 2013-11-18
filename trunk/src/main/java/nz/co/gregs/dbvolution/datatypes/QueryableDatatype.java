@@ -334,21 +334,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
-     * @param permitted
-     */
-    @Deprecated
-    public void permittedValuesCaseInsensitive(String... permitted) {
-        if (permitted == null) {
-            useNullOperator();
-        } else if (permitted.length == 1) {
-            useEqualsCaseInsensitiveOperator(permitted[0]);
-        } else {
-            useInCaseInsensitiveOperator(permitted);
-        }
-    }
-
-    /**
-     *
      * excludes the object, Set, List, Array, or vararg of objects
      *
      *

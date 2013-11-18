@@ -58,20 +58,41 @@ public class DBActionListCreationTest extends AbstractTest {
     @Test
     public void multiActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
         Marque marqueExample = new Marque();
-        marqueExample.getUidMarque().permittedValues(1);
+        final int toyotaUID = 1;
+        marqueExample.getUidMarque().permittedValues(toyotaUID);
 
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
-        toyota.uidMarque.permittedValues(99999);
+        toyota.uidMarque.setValue(999999);
 
         marqueExample.clear();
         marqueExample.name.permittedValuesIgnoreCase("ford");
         Marque ford = marques.getOnlyRowByExample(marqueExample);
-        ford.updateCount.setValue(ford.updateCount.intValue() + 10);
+        final Integer fordOriginalUpdateCount = ford.updateCount.intValue();
+        ford.updateCount.setValue(fordOriginalUpdateCount + 10);
 
-        DBActionList update = database.update(toyota, ford);
-        Assert.assertThat(update.size(), is(2));
-        Assert.assertThat(update.get(0), instanceOf(DBUpdateSimpleTypes.class));
-        Assert.assertThat(update.get(1), instanceOf(DBUpdateSimpleTypes.class));
+        DBActionList updates = database.update(toyota, ford);
+        Assert.assertThat(updates.size(), is(2));
+        Assert.assertThat(updates.get(0), instanceOf(DBUpdateSimpleTypes.class));
+        Assert.assertThat(updates.get(1), instanceOf(DBUpdateSimpleTypes.class));
 
+        DBActionList reverts = updates.getRevertActionList();
+        Assert.assertThat(reverts.size(), is(2));
+            System.out.println("REVERTS: ");
+        for(String revert : reverts.getSQL(database)){
+            System.out.println(revert);
+        }
+
+        reverts.execute(database);
+        marqueExample.clear();
+        marqueExample.getUidMarque().permittedValues(toyotaUID);
+
+        toyota = marques.getOnlyRowByExample(marqueExample);
+
+        marqueExample.clear();
+        marqueExample.name.permittedValuesIgnoreCase("ford");
+        ford = marques.getOnlyRowByExample(marqueExample);
+        
+        Assert.assertThat(toyota.uidMarque.intValue(), is(toyotaUID));
+        Assert.assertThat(ford.updateCount.intValue(), is(fordOriginalUpdateCount));
     }
 }
