@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +39,12 @@ public class DBActionList extends ArrayList<DBAction>{
             sqlList.addAll(act.getSQLStatements(db));
         }
         return sqlList;
+    }
+    
+    public synchronized void execute(DBDatabase database) throws SQLException{
+        for (DBAction action : this){
+            action.execute(database);
+        }
     }
         
 }

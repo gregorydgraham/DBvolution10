@@ -62,4 +62,8 @@ public abstract class DBAction {
      * @throws SQLException
      */
     protected abstract DBActionList execute(DBDatabase db, DBRow row) throws SQLException;
+
+    protected final void execute(DBDatabase database) throws SQLException{
+        this.execute(database, row);
+    }
 }
