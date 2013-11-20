@@ -40,7 +40,7 @@ abstract public class DBRow implements Serializable {
     public DBRow() {
     }
 
-    protected static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) {
+    public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) {
         try {
             return requiredDBRowClass.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {
