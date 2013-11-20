@@ -20,9 +20,9 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 
-public class DBSaveLargeObjects extends DBUpdateLargeObjects {
+public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 
-    public DBSaveLargeObjects() {
+    public DBInsertLargeObjects() {
         super();
     }
 

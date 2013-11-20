@@ -109,6 +109,7 @@ public class DBStatement implements Statement {
 
     @Override
     public boolean execute(String string) throws SQLException {
+        database.printSQLIfRequested(string);
         return realStatement.execute(string);
     }
 
@@ -269,39 +270,4 @@ public class DBStatement implements Statement {
     public boolean getBatchHasEntries() {
         return batchHasEntries;
     }
-
-//    public void executeChanges(DBActionList changes) throws SQLException {
-//        for (DBAction change : changes) {
-//            executeChange(change, true);
-//        }
-//        // Clear out the batch
-//        if (batchHasEntries) {
-//            this.executeBatch();
-//            this.clearBatch();
-//        }
-//
-//    }
-//    
-//    public void executeChange(DBAction change) throws SQLException{
-//        executeChange(change, false);
-//    }
-//
-//    private void executeChange(DBAction change, Boolean canDeferToBatch) throws SQLException {
-//        if (canDeferToBatch && database.batchSQLStatementsWhenPossible() && change.canBeBatched()) {
-//            final List<String> sqlStatements = change.getSQLStatements(database);
-//            for (String sqlStatement : sqlStatements) {
-//                if (database.isPrintSQLBeforeExecuting()) {
-//                    System.out.println(sqlStatement);
-//                }
-//                this.addBatch(sqlStatement);
-//            }
-//        } else {
-//            if (batchHasEntries) {
-//                this.executeBatch();
-//                this.clearBatch();
-//            }
-//            change.execute(database, this);
-//        }
-//        change.hasBeenApplied();
-//    }
 }

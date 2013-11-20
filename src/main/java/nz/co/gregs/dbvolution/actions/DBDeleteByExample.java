@@ -37,10 +37,11 @@ public class DBDeleteByExample extends DBDelete {
 
     @Override
     public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
-        DBActionList actions = new DBActionList(new DBDeleteByExample(row));
+        final DBDeleteByExample deleteAction = new DBDeleteByExample(row);
+        DBActionList actions = new DBActionList(deleteAction);
         List<DBRow> rowsToBeDeleted = db.get(row);
         for (DBRow deletingRow : rowsToBeDeleted) {
-            savedRows.add(DBRow.copyDBRow(deletingRow));
+            deleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
         }
         DBStatement statement = db.getDBStatement();
         for (String str : getSQLStatements(db, row)) {
@@ -67,7 +68,7 @@ public class DBDeleteByExample extends DBDelete {
     public DBActionList getRevertDBActionList() {
         DBActionList reverts = new DBActionList();
         for (DBRow row : savedRows) {
-            reverts.add(new DBSave(row));
+            reverts.add(new DBInsert(row));
         }
         return reverts;
     }

@@ -30,14 +30,14 @@ import nz.co.gregs.dbvolution.internal.PropertyWrapper;
  *
  * @author gregorygraham
  */
-public class DBSave extends DBAction {
+public class DBInsert extends DBAction {
 
-    static DBSave saver = new DBSave();
-    private static DBSaveLargeObjects blobSave = new DBSaveLargeObjects();
+    static DBInsert saver = new DBInsert();
+    private static DBInsertLargeObjects blobSave = new DBInsertLargeObjects();
     private transient StringBuilder allColumns;
     private transient StringBuilder allValues;
 
-    public <R extends DBRow> DBSave(R row) {
+    public <R extends DBRow> DBInsert(R row) {
         super(row);
     }
 
@@ -45,7 +45,7 @@ public class DBSave extends DBAction {
         return saver.execute(database, row);
     }
 
-    private DBSave() {
+    private DBInsert() {
         super();
     }
 
@@ -68,7 +68,7 @@ public class DBSave extends DBAction {
     @Override
     public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBStatement statement = db.getDBStatement();
-        DBActionList actions = new DBActionList(new DBSave(row));
+        DBActionList actions = new DBActionList(new DBInsert(row));
         for (String sql : getSQLStatements(db, row)) {
             statement.execute(sql);
         }

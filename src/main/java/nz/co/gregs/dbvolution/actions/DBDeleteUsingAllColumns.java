@@ -79,7 +79,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
     public DBActionList getRevertDBActionList() {
         DBActionList reverts = new DBActionList();
         for (DBRow row : savedRows) {
-            reverts.add(new DBSave(row));
+            reverts.add(new DBInsert(row));
         }
         return reverts;
     }
