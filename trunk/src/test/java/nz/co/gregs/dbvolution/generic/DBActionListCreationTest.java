@@ -16,7 +16,9 @@
 package nz.co.gregs.dbvolution.generic;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
@@ -77,8 +79,8 @@ public class DBActionListCreationTest extends AbstractTest {
 
         DBActionList reverts = updates.getRevertActionList();
         Assert.assertThat(reverts.size(), is(2));
-            System.out.println("REVERTS: ");
-        for(String revert : reverts.getSQL(database)){
+        System.out.println("REVERTS: ");
+        for (String revert : reverts.getSQL(database)) {
             System.out.println(revert);
         }
 
@@ -91,8 +93,97 @@ public class DBActionListCreationTest extends AbstractTest {
         marqueExample.clear();
         marqueExample.name.permittedValuesIgnoreCase("ford");
         ford = marques.getOnlyRowByExample(marqueExample);
-        
+
         Assert.assertThat(toyota.uidMarque.intValue(), is(toyotaUID));
         Assert.assertThat(ford.updateCount.intValue(), is(fordOriginalUpdateCount));
+    }
+
+    @Test
+    public void insertAndRevertTest() throws SQLException {
+        Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
+        DBActionList insertActions = database.insert(marque);
+        Marque example = new Marque();
+        example.name.permittedValuesIgnoreCase("TVR");
+        List<Marque> foundTVR = database.get(example);
+        Assert.assertThat(foundTVR.size(), is(1));
+        DBActionList revertActionList = insertActions.getRevertActionList();
+        revertActionList.execute(database);
+        foundTVR = database.get(example);
+        Assert.assertThat(foundTVR.size(), is(0));
+
+    }
+
+    @Test
+    public void deleteAndRevertTest() throws SQLException {
+        database.setPrintSQLBeforeExecuting(true);
+        Marque example = new Marque();
+        example.name.permittedValuesIgnoreCase("toyota");
+        List<Marque> foundToyota = database.get(example);
+        Assert.assertThat(foundToyota.size(), is(1));
+
+        DBActionList deleteActions = database.delete(example);
+        Assert.assertThat(deleteActions.size(), is(1));
+        Assert.assertThat(deleteActions.get(0), instanceOf(DBDeleteByExample.class));
+
+        foundToyota = database.get(example);
+        Assert.assertThat(foundToyota.size(), is(0));
+
+        DBActionList revertActionList = deleteActions.getRevertActionList();
+        Assert.assertThat(revertActionList.size(), is(1));
+        Assert.assertThat(revertActionList.get(0), instanceOf(DBInsert.class));
+
+        revertActionList.execute(database);
+        foundToyota = database.get(example);
+        Assert.assertThat(foundToyota.size(), is(1));
+    }
+
+    @Test
+    public void lotsOfDifferentActionsTest() throws SQLException, UnexpectedNumberOfRowsException {
+        Marque example = new Marque();
+        final int toyotaUID = 1;
+        example.getUidMarque().permittedValues(toyotaUID);
+
+        Marque toyota = marques.getOnlyRowByExample(example);
+        toyota.uidMarque.setValue(999999);
+
+        example.clear();
+        example.name.permittedValuesIgnoreCase("ford");
+        Marque ford = marques.getOnlyRowByExample(example);
+        final Integer fordOriginalUpdateCount = ford.updateCount.intValue();
+        ford.updateCount.setValue(fordOriginalUpdateCount + 10);
+
+        DBActionList dataChanges = database.update(toyota, ford);
+
+        Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
+        dataChanges.addAll(database.insert(marque));
+
+        example.clear();
+        example.name.permittedValuesIgnoreCase("honda");
+        List<Marque> foundToyota = database.get(example);
+        Assert.assertThat(foundToyota.size(), is(1));
+
+        dataChanges.addAll(database.delete(example));
+
+        dataChanges.getRevertActionList().execute(database);
+
+        example.clear();
+        example.name.permittedValuesIgnoreCase("toyota");
+        toyota = database.getDBTable(example).getOnlyRowByExample(example);
+        Assert.assertThat(toyota.uidMarque.intValue(), is(toyotaUID));
+        
+        example.clear();
+        example.name.permittedValuesIgnoreCase("ford");
+        ford = database.getDBTable(example).getOnlyRowByExample(example);
+        Assert.assertThat(ford.updateCount.intValue(), is(fordOriginalUpdateCount));
+        
+        example.clear();
+        example.name.permittedValuesIgnoreCase("tvr");
+        DBTable<Marque> rowsByExample = database.getDBTable(example).getRowsByExample(example);
+        Assert.assertThat(rowsByExample.toList().size(), is(0));
+        
+        example.clear();
+        example.name.permittedValuesIgnoreCase("honda");
+        rowsByExample = database.getDBTable(example).getRowsByExample(example);
+        Assert.assertThat(rowsByExample.toList().size(), is(1));
     }
 }

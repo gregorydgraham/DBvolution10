@@ -1,7 +1,7 @@
 package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.DBSave;
+import nz.co.gregs.dbvolution.actions.DBInsert;
 import java.io.PrintStream;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -457,7 +457,7 @@ public class DBTable<E extends DBRow> {
     public DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : newRows) {
-            actions.addAll(DBSave.save(database, row));
+            actions.addAll(DBInsert.save(database, row));
         }
         return actions;
     }
@@ -465,7 +465,7 @@ public class DBTable<E extends DBRow> {
     public DBActionList insert(List<E> newRows) throws SQLException {
         DBActionList changes = new DBActionList();
         for (DBRow row : newRows) {
-            changes.addAll(DBSave.save(database, row));
+            changes.addAll(DBInsert.save(database, row));
         }
         return changes;
     }
@@ -631,7 +631,7 @@ public class DBTable<E extends DBRow> {
 
     private DBActionList getInsertDBChangeList(E row) {
         DBActionList changes = new DBActionList();
-        changes.add(new DBSave(row));
+        changes.add(new DBInsert(row));
         return changes;
     }
 }
