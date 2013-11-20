@@ -15,11 +15,14 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.*;
+import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import org.junit.Assert;
@@ -112,6 +115,25 @@ public class DBActionListCreationTest extends AbstractTest {
         Assert.assertThat(foundTVR.size(), is(0));
 
     }
+    
+    @Test
+    public void insertLargeObjectAndRevertTest() throws SQLException, FileNotFoundException, IOException {
+        CompanyLogo logo = new CompanyLogo();
+        logo.carCompany.setValue(2);
+        logo.imageFilename.setValue("some logo file.jpg");
+        logo.logoID.setValue(798);
+        logo.imageBytes.setFromFileSystem("found_toyota_logo.jpg");
+        DBActionList insertActions = database.insert(logo);
+        CompanyLogo example = new CompanyLogo();
+        example.logoID.permittedValues(798);
+        List<CompanyLogo> foundLogo = database.get(example);
+        Assert.assertThat(foundLogo.size(), is(1));
+        DBActionList revertActionList = insertActions.getRevertActionList();
+        revertActionList.execute(database);
+        foundLogo = database.get(example);
+        Assert.assertThat(foundLogo.size(), is(0));
+
+    }
 
     @Test
     public void deleteAndRevertTest() throws SQLException {
@@ -163,8 +185,19 @@ public class DBActionListCreationTest extends AbstractTest {
         Assert.assertThat(foundToyota.size(), is(1));
 
         dataChanges.addAll(database.delete(example));
+        
+        System.out.println("Data Changes: ");
+        for(String sql : dataChanges.getSQL(database)){
+            System.out.println(sql);
+        }
 
-        dataChanges.getRevertActionList().execute(database);
+        final DBActionList revertActionList = dataChanges.getRevertActionList();
+        System.out.println("Revert Actions: ");
+        for(String sql : revertActionList.getSQL(database)){
+            System.out.println(sql);
+        }
+
+        revertActionList.execute(database);
 
         example.clear();
         example.name.permittedValuesIgnoreCase("toyota");
