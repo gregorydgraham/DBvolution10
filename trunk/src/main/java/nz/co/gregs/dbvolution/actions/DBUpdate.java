@@ -35,16 +35,9 @@ public abstract class DBUpdate extends DBAction {
     }
 
     public static DBActionList update(DBDatabase db, DBRow row) throws SQLException {
-        DBActionList updates = new DBActionList();
-        if (row.hasChangedSimpleTypes()) {
-            if (row.getPrimaryKey() == null) {
-                updates.addAll(notsosimpleUpdate.execute(db, row));
-            } else {
-                updates.addAll(simpleUpdate.execute(db, row));
-            }
-        }
-        if (row.hasChangedLargeObjects()) {
-            updates.addAll(blobUpdate.execute(db, row));
+        DBActionList updates = getUpdates(row);
+        for (DBAction act : updates) {
+            act.execute(db, row);
         }
         return updates;
     }
@@ -65,5 +58,4 @@ public abstract class DBUpdate extends DBAction {
         }
         return updates;
     }
-
 }
