@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 public class DBDeleteByPrimaryKey extends DBDelete {
+
     private List<DBRow> savedRows = new ArrayList<DBRow>();
 
     public <R extends DBRow> DBDeleteByPrimaryKey(R row) {
@@ -73,4 +74,10 @@ public class DBDeleteByPrimaryKey extends DBDelete {
         }
         return reverts;
     }
+
+    @Override
+    protected DBActionList getActions(DBRow row) {
+        return new DBActionList(new DBDeleteByPrimaryKey(row));
+    }
+
 }

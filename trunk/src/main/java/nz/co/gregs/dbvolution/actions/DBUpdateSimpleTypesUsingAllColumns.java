@@ -30,6 +30,10 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
         super();
     }
 
+    DBUpdateSimpleTypesUsingAllColumns(DBRow row) {
+        super(row);
+    }
+
     @Override
     public List<String> getSQLStatements(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();

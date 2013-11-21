@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
@@ -26,8 +27,18 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
         super();
     }
 
+    public DBInsertLargeObjects(DBRow row) {
+        super(row);
+    }
+
     @Override
     protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
         return row.getLargeObjects();
     }
+    
+    @Override
+    protected DBActionList getActions(DBRow row) {
+        return new DBActionList(new DBInsertLargeObjects(row));
+    }
+
 }

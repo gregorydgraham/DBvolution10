@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.actions;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.example.Marque;
 
 public abstract class DBUpdate extends DBAction {
 
@@ -47,4 +48,22 @@ public abstract class DBUpdate extends DBAction {
         }
         return updates;
     }
+
+    public static DBActionList getUpdates(DBRow... rows) throws SQLException {
+        DBActionList updates = new DBActionList();
+        for (DBRow row : rows) {
+            if (row.hasChangedSimpleTypes()) {
+                if (row.getPrimaryKey() == null) {
+                    updates.add(new DBUpdateSimpleTypesUsingAllColumns(row));
+                } else {
+                    updates.add(new DBUpdateSimpleTypes(row));
+                }
+            }
+            if (row.hasChangedLargeObjects()) {
+                updates.add(new DBUpdateLargeObjects(row));
+            }
+        }
+        return updates;
+    }
+
 }

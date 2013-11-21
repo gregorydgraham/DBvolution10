@@ -219,4 +219,30 @@ public class DBActionListCreationTest extends AbstractTest {
         rowsByExample = database.getDBTable(example).getRowsByExample(example);
         Assert.assertThat(rowsByExample.toList().size(), is(1));
     }
+
+    @Test
+    public void simpleDeferredActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
+        Marque marqueExample = new Marque();
+        marqueExample.getUidMarque().permittedValues(1);
+        Marque toyota = marques.getOnlyRowByExample(marqueExample);
+
+        toyota.uidMarque.permittedValues(99999);
+        DBActionList updateList = DBUpdate.getUpdates(toyota);
+        Assert.assertThat(updateList.size(), is(1));
+
+        final DBAction firstAction = updateList.get(0);
+        final DBActionList revertList = firstAction.getRevertDBActionList();
+        Assert.assertThat(firstAction, instanceOf(DBUpdateSimpleTypes.class));
+        Assert.assertThat(revertList.size(), is(1));
+        Assert.assertThat(revertList.get(0), instanceOf(DBUpdateToPreviousValues.class));
+        List<String> revertStrings = revertList.get(0).getSQLStatements(database);
+        Assert.assertThat(revertStrings.size(), is(1));
+        Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
+                is(this.testableSQLWithoutColumnAliases("UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;")));
+        System.out.println("REVERT:");
+        for (String revert : revertStrings) {
+            System.out.println(revert);
+        }
+    }
+
 }
