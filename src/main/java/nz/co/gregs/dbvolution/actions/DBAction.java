@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.DBStatement;
 
 /**
  *
@@ -28,6 +27,10 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 public abstract class DBAction {
 
     protected final DBRow row;
+
+    protected abstract List<String> getSQLStatements(DBDatabase db, DBRow row);
+    public abstract DBActionList getRevertDBActionList();
+    protected abstract DBActionList getActions(DBRow row);
 
     DBAction() {
         super();
@@ -43,17 +46,13 @@ public abstract class DBAction {
         return getSQLStatements(db, row);
     }
 
-    protected abstract List<String> getSQLStatements(DBDatabase db, DBRow row);
-
-    public abstract DBActionList getRevertDBActionList();
-
     /**
      *
      * This method performs the DB action and returns a list of all actions
      * perform in the process.
      *
      * The supplied row will be changed by the action in an appropriate way,
-     * however the Actions will contain an unchanged and unchangeable copy of
+     * however the Action's will contain an unchanged and unchangeable copy of
      * the row for internal use.
      *
      * @param db
@@ -63,9 +62,16 @@ public abstract class DBAction {
      */
     protected abstract DBActionList execute(DBDatabase db, DBRow row) throws SQLException;
 
+    /**
+     * This method performs the DB action.
+     *
+     * The Action's internal information will not be changed and can be repeated
+     *
+     * @param database
+     * @throws SQLException
+     */
     protected final void execute(DBDatabase database) throws SQLException{
-        this.execute(database, row);
+        this.execute(database,DBRow.copyDBRow(row));
     }
 
-    protected abstract DBActionList getActions(DBRow row);
 }
