@@ -84,4 +84,9 @@ public class DBDeleteUsingAllColumns extends DBDelete {
         return reverts;
     }
 
+    @Override
+    protected DBActionList getActions(DBRow row) {
+        return new DBActionList(new DBDeleteUsingAllColumns(row));
+    }
+
 }

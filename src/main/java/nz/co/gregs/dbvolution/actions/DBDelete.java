@@ -44,18 +44,5 @@ public abstract class DBDelete extends DBAction {
         }else{
             return example.execute(database, row);
         }
-    }
-    
-//    @Override
-//    public boolean canBeBatched() {
-//        return true;
-//    }
-
-
-//    @Override
-//    public void hasBeenApplied() {
-//        getRow().setUndefined();
-//    }
-    
-    
+    }    
 }

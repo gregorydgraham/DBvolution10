@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 public class DBUpdateLargeObjects extends DBUpdate {
 
-    private DBUpdateLargeObjects(DBRow row){
+    DBUpdateLargeObjects(DBRow row){
         super(row);
     }
 
@@ -84,5 +84,10 @@ public class DBUpdateLargeObjects extends DBUpdate {
     @Override
     public DBActionList getRevertDBActionList() {
         return new DBActionList();
+    }
+
+    @Override
+    protected DBActionList getActions(DBRow row) {
+        return new DBActionList(new DBUpdateLargeObjects(row));
     }
 }

@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
@@ -628,11 +629,5 @@ public class DBTable<E extends DBRow> {
             return orderByClause.toString();
         }
         return "";
-    }
-
-    private DBActionList getInsertDBChangeList(E row) {
-        DBActionList changes = new DBActionList();
-        changes.add(new DBInsert(row));
-        return changes;
     }
 }

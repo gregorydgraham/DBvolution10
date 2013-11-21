@@ -108,11 +108,17 @@ public class DBInsert extends DBAction {
     @Override
     public DBActionList getRevertDBActionList() {
         DBActionList reverts = new DBActionList();
-        if (this.row.getPrimaryKey()==null){
+        if (this.row.getPrimaryKey() == null) {
             reverts.add(new DBDeleteUsingAllColumns(row));
-        }else{
+        } else {
             reverts.add(new DBDeleteByPrimaryKey(row));
         }
         return reverts;
     }
+
+    @Override
+    protected DBActionList getActions(DBRow row) {
+        return new DBActionList(new DBInsert(row));
+    }
+
 }

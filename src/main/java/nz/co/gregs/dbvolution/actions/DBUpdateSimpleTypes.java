@@ -105,4 +105,9 @@ public class DBUpdateSimpleTypes extends DBUpdate {
                 + defn.getEqualsComparator()
                 + pkOriginalValue;
     }
+
+    @Override
+    protected DBActionList getActions(DBRow row){
+       return new DBActionList(new DBUpdateSimpleTypes(row));
+    }
 }
