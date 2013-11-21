@@ -146,6 +146,7 @@ public class DBTable<E extends DBRow> {
      * throws AccidentalBlankQueryException if you haven't specifically allowed
      * blank queries with setBlankQueryAllowed(boolean)
      *
+     * @return 
      * @throws SQLException, AccidentalBlankQueryException
      */
     public DBTable<E> getAllRows() throws SQLException {
