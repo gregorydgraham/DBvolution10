@@ -37,12 +37,13 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 
     @Override
     public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
-        DBActionList actions = new DBActionList(new DBDeleteByPrimaryKey(row));
+        final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(row);
+        DBActionList actions = new DBActionList(newDeleteAction);
         DBRow example = DBRow.getDBRow(row.getClass());
         example.getPrimaryKey().setValue(row.getPrimaryKey());
         List<DBRow> rowsToBeDeleted = db.get(example);
         for (DBRow deletingRow : rowsToBeDeleted) {
-            savedRows.add(DBRow.copyDBRow(deletingRow));
+            newDeleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
         }
         DBStatement statement = db.getDBStatement();
         for (String str : getSQLStatements(db, row)) {
