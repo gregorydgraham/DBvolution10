@@ -245,4 +245,49 @@ public class DBActionListCreationTest extends AbstractTest {
         }
     }
 
+
+    @Test
+    public void revertListIsReversedTest() throws SQLException, UnexpectedNumberOfRowsException, FileNotFoundException, IOException {
+        Marque example = new Marque();
+        DBActionList dataChanges = new DBActionList();
+
+        Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
+        dataChanges.addAll(database.insert(marque));
+
+        example.clear();
+        example.name.permittedValuesIgnoreCase("TVR");
+        List<Marque> foundTVR = database.get(example);
+        Assert.assertThat(foundTVR.size(), is(1));
+        Marque tvr = foundTVR.get(0);
+        tvr.name.setValue("TVR ROCKS!!!");
+
+        dataChanges.addAll(database.update(tvr));
+        
+        dataChanges.addAll(database.delete(tvr));
+        
+        CompanyLogo logo = new CompanyLogo();
+        logo.carCompany.setValue(2);
+        logo.imageFilename.setValue("some logo file.jpg");
+        logo.logoID.setValue(798);
+        logo.imageBytes.setFromFileSystem("found_toyota_logo.jpg");
+        dataChanges.addAll(database.insert(logo));
+        
+        System.out.println("Data Changes: ");
+        for(String sql : dataChanges.getSQL(database)){
+            System.out.println(sql);
+        }
+
+        final DBActionList revertActionList = dataChanges.getRevertActionList();
+        System.out.println("Revert Actions: ");
+        for(String sql : revertActionList.getSQL(database)){
+            System.out.println(sql);
+        }
+        
+        Assert.assertThat(revertActionList.get(0), instanceOf(DBDelete.class));
+        Assert.assertThat(revertActionList.get(1), instanceOf(DBInsert.class));
+        Assert.assertThat(revertActionList.get(2), instanceOf(DBUpdate.class));
+        Assert.assertThat(revertActionList.get(3), instanceOf(DBDelete.class));
+
+        revertActionList.execute(database);
+    }
 }
