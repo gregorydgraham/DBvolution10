@@ -85,10 +85,10 @@ public class DBNumber extends QueryableDatatype {
         }
     }
 
-    @Override
-    public String toString() {
-        return (doubleValue() == null ? null : doubleValue().toString());
-    }
+//    @Override
+//    public String toString() {
+//        return (doubleValue() == null ? "" : doubleValue().toString());
+//    }
 
     /**
      *
