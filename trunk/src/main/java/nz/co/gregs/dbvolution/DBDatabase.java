@@ -397,7 +397,7 @@ public abstract class DBDatabase {
     }
 
     /**
-     * Convenience method to run a DBScript on this database
+     * Convenience method to implement a DBScript on this database
      *
      * equivalent to script.implement(this);
      *
@@ -405,7 +405,7 @@ public abstract class DBDatabase {
      * @return
      * @throws Exception
      */
-    public List<String> implement(DBScript script) throws Exception {
+    public DBActionList implement(DBScript script) throws Exception {
         return script.implement(this);
     }
 
@@ -419,7 +419,7 @@ public abstract class DBDatabase {
      * @return
      * @throws Exception
      */
-    public List<String> test(DBScript script) throws Exception {
+    public DBActionList test(DBScript script) throws Exception {
         return script.test(this);
     }
 
