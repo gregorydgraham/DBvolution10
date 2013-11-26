@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import java.util.List;
+import nz.co.gregs.dbvolution.actions.DBActionList;
 
 /**
  * A convenient method of implement a database script in DBvolution
@@ -37,10 +38,12 @@ public abstract class DBScript {
      * @return List<String>
      * @throws Exception
      */
-    public abstract List<String> script(DBDatabase db) throws Exception;
+    public abstract DBActionList script(DBDatabase db) throws Exception;
 
     /**
      * Run the script in a committed transaction.
+     * 
+     * Implement() wraps the script() method in a transaction and commits it.
      * 
      * Any exceptions will cause the script to abort and rollback safely.
      * 
@@ -50,14 +53,16 @@ public abstract class DBScript {
      * @return
      * @throws Exception
      */
-    public final List<String> implement(DBDatabase db) throws Exception {
-        DBTransaction<List<String>> trans = getDBTransaction();
-        List<String> revertScript = db.doTransaction(trans);
+    public final DBActionList implement(DBDatabase db) throws Exception {
+        DBTransaction<DBActionList> trans = getDBTransaction();
+        DBActionList revertScript = db.doTransaction(trans);
         return revertScript;
     }
 
     /**
      * Run the script in a read-only transaction.
+     * 
+     * Test() wraps the script() method in a transaction but rolls it back.
      * 
      * Any changes will be safely rolled back.
      *
@@ -65,17 +70,17 @@ public abstract class DBScript {
      * @return
      * @throws Exception
      */
-    public final List<String> test(DBDatabase db) throws Exception {
-        DBTransaction<List<String>> trans = getDBTransaction();
-        List<String> revertScript = db.doReadOnlyTransaction(trans);
+    public final DBActionList test(DBDatabase db) throws Exception {
+        DBTransaction<DBActionList> trans = getDBTransaction();
+        DBActionList revertScript = db.doReadOnlyTransaction(trans);
         return revertScript;
     }
 
-    public final DBTransaction<List<String>> getDBTransaction() {
-        return new DBTransaction<List<String>>() {
+    public final DBTransaction<DBActionList> getDBTransaction() {
+        return new DBTransaction<DBActionList>() {
             @Override
-            public List<String> doTransaction(DBDatabase dbd) throws Exception {
-                List<String> revertScript = script(dbd);
+            public DBActionList doTransaction(DBDatabase dbd) throws Exception {
+                DBActionList revertScript = script(dbd);
                 return revertScript;
             }
         };
