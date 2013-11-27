@@ -91,8 +91,9 @@ public class DBQuery {
      * automatically included in the query and an instance of this DBRow class
      * will be created for each DBQueryRow returned.
      *
-     * @param table: an extension of DBRow that defines a required table and
+     * @param tables: a list of DBRow objects that defines required tables and
      * criteria
+     * @return this
      */
     public DBQuery add(DBRow... tables) {
         for (DBRow table : tables) {
@@ -114,7 +115,8 @@ public class DBQuery {
      * Criteria (permitted and excluded values) specified in the supplied
      * instance will be added to the query.
      *
-     * @param table
+     * @param tables: a list of DBRow objects that defines optional tables and
+     * criteria
      *
      * @return this DBQuery instance
      */
@@ -132,7 +134,8 @@ public class DBQuery {
      *
      * Remove optional or required tables from the query
      *
-     * @param table
+     * @param tables
+     * @return this
      */
     public DBQuery remove(DBRow... tables) {
         for (DBRow table : tables) {
