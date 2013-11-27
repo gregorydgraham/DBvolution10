@@ -53,7 +53,7 @@ public class SortingTest extends AbstractTest {
         Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
         Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
         Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
-        marque.name.setSortOrder(QueryableDatatype.SORT_DESCENDING);
+        marque.name.setSortOrderDescending();
         dbTable.getAllRows().print();
         sortedMarques = dbTable.toList();
         Assert.assertThat(sortedMarques.size(), is(22));
@@ -85,7 +85,7 @@ public class SortingTest extends AbstractTest {
         Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
         Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
         Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
-        marque.name.setSortOrder(QueryableDatatype.SORT_DESCENDING);
+        marque.name.setSortOrderDescending();
 //        query.getAllRows();
         query.print();
         sortedMarques = query.getAllInstancesOf(marque);

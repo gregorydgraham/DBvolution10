@@ -741,9 +741,36 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return previousValueAsQDT.toSQLString(db);
     }
 
-    public QueryableDatatype setSortOrder(Boolean order) {
+    /**
+     * Used to switch the direction of the column's sort order
+     * 
+     * Use Boolean.TRUE for Ascending
+     * Use Boolean.FALSE for Descending
+     *
+     * @param order
+     * @return
+     */
+    private QueryableDatatype setSortOrder(Boolean order) {
         sort = order;
         return this;
+    }
+    
+    /**
+     * Used to switch the direction of the column's sort order
+     * 
+     * @return this object
+     */
+    public QueryableDatatype setSortOrderAscending(){
+        return this.setSortOrder(true);
+    }
+
+    /**
+     * Used to switch the direction of the column's sort order
+     * 
+     * @return this object
+     */
+    public QueryableDatatype setSortOrderDescending(){
+        return this.setSortOrder(false);
     }
 
     public Boolean getSortOrder() {

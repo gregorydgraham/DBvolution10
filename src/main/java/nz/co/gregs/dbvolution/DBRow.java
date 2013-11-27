@@ -312,7 +312,7 @@ abstract public class DBRow implements Serializable {
      *
      * @return a list of all foreign keys, MINUS the ignored foreign keys
      */
-        protected List<PropertyWrapper> getForeignKeyPropertyWrappers() {
+    protected List<PropertyWrapper> getForeignKeyPropertyWrappers() {
         if (fkFields.isEmpty()) {
             List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
 
@@ -502,7 +502,7 @@ abstract public class DBRow implements Serializable {
 
     /**
      * Limits the returned columns by the specified properties (fields and/or
-     * methods) given the properties' object references.
+     * methods) given the properties object references.
      *
      * <p>
      * For example the following code snippet will include only the uid and name
@@ -515,15 +515,16 @@ abstract public class DBRow implements Serializable {
      * <p>
      * Requires the field to be from this instance to work.
      *
-     * @param qdt
+     * @param properties a list of fields/methods from this object
      */
-    public void returnFieldsLimitedTo(Object... qdts) {
-        for (Object qdt : qdts) {
-            PropertyWrapper prop = getPropertyWrapperOf(qdt);
-            if (prop == null) {
-                throw new IncorrectDBRowInstanceSuppliedException(this, qdt);
+    public void returnFieldsLimitedTo(Object... properties) {
+        PropertyWrapper propWrapper;
+        for (Object property : properties) {
+            propWrapper = getPropertyWrapperOf(property);
+            if (propWrapper == null) {
+                throw new IncorrectDBRowInstanceSuppliedException(this, property);
             }
-            returnColumns.add(prop.getDefinition());
+            returnColumns.add(propWrapper.getDefinition());
         }
     }
 
