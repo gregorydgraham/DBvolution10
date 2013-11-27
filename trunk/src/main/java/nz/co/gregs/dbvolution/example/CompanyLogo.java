@@ -36,11 +36,14 @@ public class CompanyLogo extends DBRow {
     @DBPrimaryKey
     @DBColumn("logo_id")
     public DBInteger logoID = new DBInteger();
+    
     @DBForeignKey(CarCompany.class)
     @DBColumn("car_company_fk")
     public DBInteger carCompany = new DBInteger();
+    
     @DBColumn("image_file")
     public DBByteArray imageBytes = new DBByteArray();
+    
     @DBColumn("image_name")
     public DBString imageFilename = new DBString();
 }
