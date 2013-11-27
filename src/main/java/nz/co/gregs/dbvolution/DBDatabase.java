@@ -282,6 +282,7 @@ public abstract class DBDatabase {
      * creates a query and fetches the rows automatically
      *
      * @param rows
+     * @return 
      * @throws SQLException
      */
     public List<DBQueryRow> get(DBRow... rows) throws SQLException {
@@ -305,8 +306,11 @@ public abstract class DBDatabase {
      *
      * creates a query and fetches the rows automatically
      *
+     * @param expectedNumberOfRows
      * @param rows
+     * @return 
      * @throws SQLException
+     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
      */
     public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
         if (expectedNumberOfRows == null) {
