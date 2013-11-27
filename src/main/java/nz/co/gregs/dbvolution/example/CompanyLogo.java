@@ -19,14 +19,16 @@ import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBForeignKey;
-import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.*;
 
 /**
  *
  * @author gregorygraham
  */
+
+
+
+@DBTableName("CompanyLogo")
 public class CompanyLogo extends DBRow {
 
     public static final long serialVersionUID = 1L;
