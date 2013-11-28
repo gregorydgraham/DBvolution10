@@ -3,6 +3,7 @@ package nz.co.gregs.dbvolution;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -704,5 +705,18 @@ abstract public class DBRow implements Serializable {
         } else {
             return blobColumns;
         }
+    }
+
+    public <R extends DBRow> List<R> getRelatedInstances(DBQuery query, R example) throws SQLException {
+        List<R> instances = new ArrayList<R>();
+        for (DBQueryRow qrow : query.getAllRows()) {
+            DBRow versionOfThis = qrow.get(this);
+            R versionOfThat = qrow.get(example);
+            if (versionOfThis.equals(this) && versionOfThat != null) {
+                instances.add(versionOfThat);
+            }
+        }
+
+        return instances;
     }
 }

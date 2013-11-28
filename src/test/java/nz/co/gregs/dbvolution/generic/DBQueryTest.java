@@ -91,7 +91,7 @@ public class DBQueryTest extends AbstractTest {
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        Assert.assertThat(testableSQLWithoutColumnAliases(expectedResult), 
+        Assert.assertThat(testableSQLWithoutColumnAliases(expectedResult),
                 is(testableSQLWithoutColumnAliases(generateSQLString)));
     }
 
@@ -164,6 +164,31 @@ public class DBQueryTest extends AbstractTest {
         CarCompany firstCarCo = rows[0].get(carCompany);
         CarCompany secondCarCo = rows[1].get(carCompany);
         assertTrue(firstCarCo == secondCarCo);
+    }
+
+    @Test
+    public void testGettingRelatedInstances() throws SQLException {
+        CarCompany carCompany = new CarCompany();
+//        carCompany.name.permittedValues("TOYOTA");
+        DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
+        dbQuery.setBlankQueryAllowed(true);
+
+        List<DBQueryRow> results = dbQuery.getAllRows();
+
+        DBQueryRow[] rows = results.toArray(new DBQueryRow[]{});
+
+        CarCompany toyota = null;
+        for (CarCompany carco : dbQuery.getAllInstancesOf(carCompany)) {
+            if (carco.name.stringValue().equalsIgnoreCase("toyota")) {
+                toyota = carco;
+            }
+        }
+
+        List<Marque> relatedInstances = toyota.getRelatedInstances(dbQuery, new Marque());
+
+        database.print(relatedInstances);
+        Assert.assertThat(relatedInstances.size(), is(2));
+
     }
 
     @Test
