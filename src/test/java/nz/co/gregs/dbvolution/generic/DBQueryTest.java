@@ -184,7 +184,7 @@ public class DBQueryTest extends AbstractTest {
             }
         }
 
-        List<Marque> relatedInstances = toyota.getRelatedInstances(dbQuery, new Marque());
+        List<Marque> relatedInstances = toyota.getRelatedInstancesFromQuery(dbQuery, new Marque());
 
         database.print(relatedInstances);
         Assert.assertThat(relatedInstances.size(), is(2));
