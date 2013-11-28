@@ -707,7 +707,7 @@ abstract public class DBRow implements Serializable {
         }
     }
 
-    public <R extends DBRow> List<R> getRelatedInstances(DBQuery query, R example) throws SQLException {
+    public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQuery query, R example) throws SQLException {
         List<R> instances = new ArrayList<R>();
         for (DBQueryRow qrow : query.getAllRows()) {
             DBRow versionOfThis = qrow.get(this);
@@ -716,7 +716,6 @@ abstract public class DBRow implements Serializable {
                 instances.add(versionOfThat);
             }
         }
-
         return instances;
     }
 }
