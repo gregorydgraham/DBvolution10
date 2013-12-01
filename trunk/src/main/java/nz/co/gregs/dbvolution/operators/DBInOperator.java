@@ -32,8 +32,8 @@ public class DBInOperator extends DBOperator {
 
     public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
         super();
-        for(QueryableDatatype qdt : listOfPossibleValues){
-            this.listOfPossibleValues.add(qdt==null?qdt:qdt.copy());
+        for (QueryableDatatype qdt : listOfPossibleValues) {
+            this.listOfPossibleValues.add(qdt == null ? null : qdt.copy());
         }
     }
 
@@ -82,5 +82,29 @@ public class DBInOperator extends DBOperator {
     @Override
     public DBOperator getInverseOperator() {
         return this;
+    }
+
+    @Override
+    public boolean equals(DBOperator other) {
+
+        if (super.equals(other) == false) {
+            return false;
+        } else {
+            if (other instanceof DBInOperator) {
+                DBInOperator otherIn = (DBInOperator) other;
+                if (listOfPossibleValues.size() != otherIn.listOfPossibleValues.size()) {
+                    return false;
+                } else {
+                    for (QueryableDatatype qdt : listOfPossibleValues) {
+                        if (!otherIn.listOfPossibleValues.contains(qdt)) {
+                            return false;
+                        }
+                    }
+                }
+            } else {
+                return false;
+            }
+            return true;
+        }
     }
 }

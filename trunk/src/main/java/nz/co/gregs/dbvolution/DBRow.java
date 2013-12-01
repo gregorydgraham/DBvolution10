@@ -518,9 +518,9 @@ abstract public class DBRow implements Serializable {
      *
      * @param properties a list of fields/methods from this object
      */
-    public void returnFieldsLimitedTo(Object... properties) {
+    public <T> void returnFieldsLimitedTo(T... properties) {
         PropertyWrapper propWrapper;
-        for (Object property : properties) {
+        for (T property : properties) {
             propWrapper = getPropertyWrapperOf(property);
             if (propWrapper == null) {
                 throw new IncorrectDBRowInstanceSuppliedException(this, property);

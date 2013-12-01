@@ -45,6 +45,6 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
     
     @Override
     public DBOperator getInverseOperator() {
-        return new DBLessThanOperator(greaterThanThis);
+        return new DBLessThanOperator(firstValue);
     }
 }

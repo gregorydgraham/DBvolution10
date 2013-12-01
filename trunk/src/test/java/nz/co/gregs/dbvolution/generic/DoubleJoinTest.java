@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.example.CarCompany;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DoubleJoinTest extends AbstractTest {
@@ -37,7 +38,8 @@ public class DoubleJoinTest extends AbstractTest {
     @Test
     public void fake() throws SQLException {}
     
-//    @Test
+    @Ignore // not working yet
+    @Test
     public void doubleJoinTest() throws SQLException {
         database.createTable(new DoubleJoinTest.DoubleLinked());
         final DoubleLinked doubleLinked = new DoubleJoinTest.DoubleLinked();
@@ -68,12 +70,6 @@ public class DoubleJoinTest extends AbstractTest {
         public DoubleLinked() {
             super();
         }
-//        public DoubleLinked(int uid, int fkmanufacturer, int marketer) {
-//            this();
-//            this.uidDoubleLink.setValue(uid);
-//            this.manufacturer.setValue(fkmanufacturer);
-//            this.marketer.setValue(marketer);
-//        }
     }
 
     public static class Manufacturer extends CarCompany {

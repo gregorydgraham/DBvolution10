@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.generic;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -55,6 +56,11 @@ public class ByteArrayTest extends AbstractTest {
         companyLogo.imageFilename.setValue("ford_logo.jpg");
         companyLogo.imageBytes.setFromFileSystem("ford_logo.jpg");
         database.insert(companyLogo);
+        
+        CompanyLogo logoExample = new CompanyLogo();
+        logoExample.carCompany.permittedValues(ford.uidCarCompany);
+        List<CompanyLogo> foundLogo = database.get(logoExample);
+        database.print(foundLogo);
     }
 
     @Test

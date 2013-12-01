@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  *
@@ -26,9 +27,33 @@ abstract public class DBOperator implements Serializable {
 
     Boolean invertOperator = false;
     Boolean includeNulls = false;
+    protected QueryableDatatype firstValue;
+    protected QueryableDatatype secondValue;
+    protected QueryableDatatype thirdValue;
 
     public DBOperator() {
+        firstValue = null;
+        secondValue = null;
+        thirdValue = null;
     }
+
+//    public void init(QueryableDatatype value) {
+//        firstValue = (value == null ? null : value.copy());
+//        secondValue = null;
+//        thirdValue = null;
+//    }
+//
+//    public DBOperator(QueryableDatatype value, QueryableDatatype otherValue) {
+//        firstValue = (value == null ? null : value.copy());
+//        secondValue = (otherValue == null ? null : otherValue.copy());
+//        thirdValue = null;
+//    }
+//
+//    public DBOperator(QueryableDatatype value, QueryableDatatype otherValue, QueryableDatatype finalValue) {
+//        firstValue = (value == null ? null : value.copy());
+//        secondValue = (otherValue == null ? null : otherValue.copy());
+//        thirdValue = (finalValue == null ? null : finalValue.copy());
+//    }
 
     /**
      *
@@ -53,5 +78,14 @@ abstract public class DBOperator implements Serializable {
     // TODO
     public void includeNulls() {
         includeNulls = true;
+    }
+
+    public boolean equals(DBOperator other) {
+        return this.getClass() == other.getClass()
+                && this.invertOperator == other.invertOperator
+                && this.includeNulls == other.includeNulls
+                && firstValue.equals(other.firstValue)
+                && secondValue.equals(other.secondValue)
+                && thirdValue.equals(other.thirdValue);
     }
 }

@@ -53,7 +53,7 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
      * @throws IncorrectDBRowInstanceSuppliedExceptionliteral{@code qdtOfTheRow}
      * is not frliteralhe {@code tableRow} instance
      */
-    public DBExistsOperator(E tableRow, Object qdtOfTheRow) {
+    public DBExistsOperator(E tableRow, Object qdtOfTheRow) throws IncorrectDBRowInstanceSuppliedException{
         this.tableRow = DBRow.copyDBRow(tableRow);
         PropertyWrapper qdtField = tableRow.getPropertyWrapperOf(qdtOfTheRow);
         if (qdtField == null) {

@@ -145,12 +145,14 @@ public abstract class DBDatabase {
      *
      * Inserts DBRows and lists of DBRows into the correct tables automatically
      *
+     * @param <T>
      * @param objs
+     * @return 
      * @throws SQLException
      */
-    public DBActionList insert(Object... objs) throws SQLException {
+    public <T> DBActionList insert(T... objs) throws SQLException {
         DBActionList changes = new DBActionList();
-        for (Object obj : objs) {
+        for (T obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
@@ -172,12 +174,14 @@ public abstract class DBDatabase {
      *
      * Deletes DBRows and lists of DBRows from the correct tables automatically
      *
+     * @param <T>
      * @param objs
+     * @return 
      * @throws SQLException
      */
-    public DBActionList delete(Object... objs) throws SQLException {
+    public <T> DBActionList delete(T... objs) throws SQLException {
         DBActionList changes =new DBActionList();
-        for (Object obj : objs) {
+        for (T obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
@@ -202,9 +206,9 @@ public abstract class DBDatabase {
      * @param objs
      * @throws SQLException
      */
-    public DBActionList update(Object... objs) throws SQLException {
+    public <T> DBActionList update(T... objs) throws SQLException {
         DBActionList actions = new DBActionList();
-        for (Object obj : objs) {
+        for (T obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {

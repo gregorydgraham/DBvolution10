@@ -9,6 +9,7 @@ import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /*
@@ -34,7 +35,8 @@ public class MySQLMXJDBInitialisationTest {
 
     private static int nextPort = 43215;
 
-//    @Test
+    @Ignore
+    @Test
     public void testInstance() throws SQLException, IOException {
         DBDatabase database = getMySQLDBInstance();
         database.setPrintSQLBeforeExecuting(true);

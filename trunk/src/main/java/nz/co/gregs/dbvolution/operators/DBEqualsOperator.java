@@ -26,7 +26,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBEqualsOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    protected final QueryableDatatype equalTo;
     protected DBDefinition defn;
 
     /**
@@ -34,12 +33,10 @@ public class DBEqualsOperator extends DBOperator {
      */
     public DBEqualsOperator() {
         super();
-        equalTo = null;
     }
 
     public DBEqualsOperator(QueryableDatatype equalTo) {
-        super();
-        this.equalTo = (equalTo == null ? equalTo : equalTo.copy());
+        this.firstValue = (equalTo == null ? equalTo : equalTo.copy());
     }
 
     public String getInverse() {
@@ -60,11 +57,11 @@ public class DBEqualsOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
         defn = db.getDefinition();
         String whereLine;
-        if (equalTo.isNull()) {
+        if (firstValue.isNull()) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
         } else {
-            whereLine = defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + equalTo.toSQLString(db) + " ";
+            whereLine = defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
         }
         defn = null;
         return whereLine;

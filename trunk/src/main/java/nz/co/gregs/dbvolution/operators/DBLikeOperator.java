@@ -26,23 +26,23 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBLikeOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    private final QueryableDatatype likeableValue;
+//    private final QueryableDatatype firstValue;
 
     public DBLikeOperator(QueryableDatatype likeableValue) {
         super();
-        this.likeableValue = likeableValue == null ? likeableValue : likeableValue.copy();
+        this.firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
     }
 
     public DBLikeOperator() {
         super();
-        this.likeableValue = null;
+        this.firstValue = null;
     }
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        likeableValue.setDatabase(db);
         DBDefinition defn = db.getDefinition();
-        return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.formatColumnName(columnName) + getOperator() + likeableValue.toSQLString(db) + ")";
+        return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
     }
 
     private String getOperator() {

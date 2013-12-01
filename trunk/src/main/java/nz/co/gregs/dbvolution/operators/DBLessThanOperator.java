@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 public class DBLessThanOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    protected final QueryableDatatype lessThanThis;
+//    protected final QueryableDatatype firstValue;
 
     /**
      *
@@ -34,15 +34,15 @@ public class DBLessThanOperator extends DBOperator {
     public DBLessThanOperator(QueryableDatatype lessThanThis) {
         super();
         if (lessThanThis != null) {
-            this.lessThanThis = lessThanThis.copy();
+            this.firstValue = lessThanThis.copy();
         } else {
-            this.lessThanThis = null;
+            this.firstValue = null;
         }
     }
 
     public DBLessThanOperator() {
         super();
-        this.lessThanThis = null;
+        this.firstValue = null;
     }
 
     public String getInverse() {
@@ -55,8 +55,8 @@ public class DBLessThanOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-//        lessThanThis.setDatabase(database);
-        return db.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + lessThanThis.toSQLString(db) + " ";
+//        firstValue.setDatabase(database);
+        return db.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
     }
 
     @Override
@@ -66,6 +66,6 @@ public class DBLessThanOperator extends DBOperator {
 
     @Override
     public DBOperator getInverseOperator() {
-        return new DBGreaterThanOrEqualsOperator(lessThanThis);
+        return new DBGreaterThanOrEqualsOperator(firstValue);
     }
 }
