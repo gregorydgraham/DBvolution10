@@ -26,19 +26,19 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBGreaterThanOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    protected final QueryableDatatype greaterThanThis;
+//    protected final QueryableDatatype firstValue;
 
     /**
      *
      */
     public DBGreaterThanOperator() {
         super();
-        this.greaterThanThis = null;
+        this.firstValue = null;
     }
 
     public DBGreaterThanOperator(QueryableDatatype greaterThanThis) {
         super();
-        this.greaterThanThis = greaterThanThis == null ? greaterThanThis : greaterThanThis.copy();
+        this.firstValue = greaterThanThis == null ? greaterThanThis : greaterThanThis.copy();
     }
 
     public String getInverse() {
@@ -51,9 +51,9 @@ public class DBGreaterThanOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-//        greaterThanThis.setDatabase(database);
+//        firstValue.setDatabase(database);
         DBDefinition defn = db.getDefinition();
-        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + greaterThanThis.toSQLString(db) + " ";
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
     }
 
     @Override
@@ -64,6 +64,6 @@ public class DBGreaterThanOperator extends DBOperator {
 
     @Override
     public DBOperator getInverseOperator() {
-        return new DBLessThanOrEqualOperator(greaterThanThis);
+        return new DBLessThanOrEqualOperator(firstValue);
     }
 }

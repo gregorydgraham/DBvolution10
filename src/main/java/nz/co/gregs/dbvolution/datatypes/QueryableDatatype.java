@@ -234,7 +234,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
-    public void permittedValues(Object... permitted) {
+    public <T> void permittedValues(T... permitted) {
         if (permitted == null) {
             useNullOperator();
         } else if (permitted.length == 1) {
@@ -339,7 +339,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param excluded
      */
-    public void excludedValues(Object... excluded) {
+    public <T> void excludedValues(T... excluded) {
         if (excluded == null) {
             useNullOperator().not();
         } else if (excluded.length == 1) {
@@ -553,7 +553,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param inValues the inValues to set
      */
-    protected DBOperator useInOperator(Object... inValues) {
+    protected <T> DBOperator useInOperator(T... inValues) {
         blankQuery();
         ArrayList<QueryableDatatype> inVals = new ArrayList<QueryableDatatype>();
         for (Object obj : inValues) {
@@ -743,9 +743,8 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      * Used to switch the direction of the column's sort order
-     * 
-     * Use Boolean.TRUE for Ascending
-     * Use Boolean.FALSE for Descending
+     *
+     * Use Boolean.TRUE for Ascending Use Boolean.FALSE for Descending
      *
      * @param order
      * @return
@@ -754,22 +753,22 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         sort = order;
         return this;
     }
-    
+
     /**
      * Used to switch the direction of the column's sort order
-     * 
+     *
      * @return this object
      */
-    public QueryableDatatype setSortOrderAscending(){
+    public QueryableDatatype setSortOrderAscending() {
         return this.setSortOrder(true);
     }
 
     /**
      * Used to switch the direction of the column's sort order
-     * 
+     *
      * @return this object
      */
-    public QueryableDatatype setSortOrderDescending(){
+    public QueryableDatatype setSortOrderDescending() {
         return this.setSortOrder(false);
     }
 
@@ -779,5 +778,19 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     public void clear() {
         blankQuery();
+    }
+
+    public boolean equals(QueryableDatatype other) {
+        if (other == null) {
+            return false;
+        } else if (this.operator == null && other.operator == null) {
+            return true;
+        } else if (this.operator != null && other.operator == null) {
+            return false;
+        } else if (this.operator == null && other.operator != null) {
+            return false;
+        } else {
+            return this.getOperator().equals(other.getOperator());
+        }
     }
 }

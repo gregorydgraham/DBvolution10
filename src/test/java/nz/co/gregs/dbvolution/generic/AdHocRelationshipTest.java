@@ -52,7 +52,7 @@ public class AdHocRelationshipTest extends AbstractTest {
         assertTrue("There should only be a row for TOYOTA", allRows.size() == 1);
     }
 
-//    @Test
+    @Test
     public void testAdHocRelationshipWithOperator() throws SQLException{
         Marque marque = new Marque();
         CarCompany carCompany = new CarCompany();
@@ -61,6 +61,7 @@ public class AdHocRelationshipTest extends AbstractTest {
         marque.ignoreAllForeignKeys();
 
         DBQuery query = database.getDBQuery(carCompany, marque);
+        query.setBlankQueryAllowed(true);
         List<DBQueryRow> allRows = query.getAllRows();
         query.print();
 
