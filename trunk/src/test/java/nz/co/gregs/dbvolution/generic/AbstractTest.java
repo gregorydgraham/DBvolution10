@@ -115,7 +115,7 @@ public class AbstractTest {
         database.createTable(myMarqueRow);
 
         database.dropTableNoExceptions(myCarCompanyRow);
-        database.createTable(myCarCompanyRow);
+    database.createTable(myCarCompanyRow);
 
         marques = DBTable.getInstance(database, myMarqueRow);
         carCompanies = DBTable.getInstance(database, myCarCompanyRow);
