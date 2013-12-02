@@ -250,6 +250,7 @@ public class DBQuery {
             }
             if (!useANSISyntax) {
                 fromClause.append(separator).append(tableName);
+//.append(defn.beginTableAlias()).append(defn.getTableAlias(tabRow)).append(defn.endTableAlias());
             } else {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
@@ -260,6 +261,31 @@ public class DBQuery {
             }
 
             if (!useANSISyntax) {
+                buildNonANSIJoin(tabRow, whereClause, defn, queryGraph, joinedTables, tableName, lineSep);
+            }
+
+            separator = ", " + lineSep;
+            otherTables.addAll(allQueryTables);
+        }
+        final String sqlString = selectClause.append(lineSep)
+                .append(fromClause).append(lineSep)
+                .append(whereClause).append(lineSep)
+                .append(getOrderByClause()).append(lineSep)
+                .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
+                .append(defn.endSQLStatement())
+                .toString();
+        if (database.isPrintSQLBeforeExecuting()) {
+            System.out.println(sqlString);
+        }
+        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
+            throw new AccidentalCartesianJoinException();
+        }
+
+        return sqlString;
+    }
+   
+    private void buildNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep){
+        
                 for (DBRelationship rel : tabRow.getAdHocRelationships()) {
                     whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
                     queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
@@ -288,26 +314,6 @@ public class DBQuery {
                         }
                     }
                 }
-            }
-
-            separator = ", " + lineSep;
-            otherTables.addAll(allQueryTables);
-        }
-        final String sqlString = selectClause.append(lineSep)
-                .append(fromClause).append(lineSep)
-                .append(whereClause).append(lineSep)
-                .append(getOrderByClause()).append(lineSep)
-                .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
-                .append(defn.endSQLStatement())
-                .toString();
-        if (database.isPrintSQLBeforeExecuting()) {
-            System.out.println(sqlString);
-        }
-        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
-            throw new AccidentalCartesianJoinException();
-        }
-
-        return sqlString;
     }
 
     public String getSQLForCount() throws SQLException {

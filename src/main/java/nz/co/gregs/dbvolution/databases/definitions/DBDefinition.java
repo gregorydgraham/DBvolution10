@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -360,11 +361,15 @@ public abstract class DBDefinition {
         return ",";
     }
 
-    public String getTableAliasStart() {
+    public String beginTableAlias() {
         return " AS ";
     }
 
-    public String getTableAliasEnd() {
+    public String endTableAlias() {
         return " ";
+    }
+
+    public Object getTableAlias(DBRow tabRow) {
+        return ("_"+tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
     }
 }
