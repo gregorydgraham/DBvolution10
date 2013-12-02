@@ -243,15 +243,15 @@ public class DBStatement implements Statement {
         return realStatement.isPoolable();
     }
 
-    @Override
-    public void closeOnCompletion() throws SQLException {
-        realStatement.closeOnCompletion();
-    }
-
-    @Override
-    public boolean isCloseOnCompletion() throws SQLException {
-        return realStatement.isCloseOnCompletion();
-    }
+//    @Override
+//    public void closeOnCompletion() throws SQLException {
+//        realStatement.closeOnCompletion();
+//    }
+//
+//    @Override
+//    public boolean isCloseOnCompletion() throws SQLException {
+//        return realStatement.isCloseOnCompletion();
+//    }
 
     @Override
     public <T> T unwrap(Class<T> type) throws SQLException {

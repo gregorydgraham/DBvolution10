@@ -359,4 +359,12 @@ public abstract class DBDefinition {
     public String getValuesClauseColumnSeparator() {
         return ",";
     }
+
+    public String getTableAliasStart() {
+        return " AS ";
+    }
+
+    public String getTableAliasEnd() {
+        return " ";
+    }
 }

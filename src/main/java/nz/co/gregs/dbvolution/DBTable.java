@@ -19,7 +19,6 @@ import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
@@ -95,9 +94,11 @@ public class DBTable<E extends DBRow> {
             if (rowLimit != null) {
                 selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
             }
+            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
             selectStatement.append(getAllFieldsForSelect())
-                    .append(" from ")
+                    .append(defn.beginFromClause())
                     .append(defn.formatTableName(dummy.getTableName()))
+//                    .append(defn.getTableAliasStart()).append(tableAlias).append(defn.getTableAliasEnd())
                     .append(getOrderByClause())
                     .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
                     .append(defn.endSQLStatement());
@@ -127,10 +128,12 @@ public class DBTable<E extends DBRow> {
                 selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
             }
 
+            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
             selectStatement
                     .append(getAllFieldsForSelect())
                     .append(defn.beginFromClause())
                     .append(defn.formatTableName(dummy.getTableName()))
+//                    .append(defn.getTableAliasStart()).append(tableAlias).append(defn.getTableAliasEnd())
                     .append(defn.beginWhereClause())
                     .append(defn.getTrueOperation());
         }
@@ -155,9 +158,9 @@ public class DBTable<E extends DBRow> {
 
         String selectStatement = this.getSQLForSelectAll();
 
-        if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-            System.out.println(selectStatement);
-        }
+//        if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
+//            System.out.println(selectStatement);
+//        }
 
         DBStatement statement = null;
         ResultSet resultSet = null;
