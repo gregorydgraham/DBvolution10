@@ -293,9 +293,6 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
-        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
-            throw new AccidentalCartesianJoinException();
-        }
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
@@ -305,6 +302,9 @@ public class DBQuery {
                 .toString();
         if (database.isPrintSQLBeforeExecuting()) {
             System.out.println(sqlString);
+        }
+        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
+            throw new AccidentalCartesianJoinException();
         }
 
         return sqlString;

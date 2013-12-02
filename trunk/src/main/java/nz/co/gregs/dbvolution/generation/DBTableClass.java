@@ -29,7 +29,7 @@ public class DBTableClass {
 
     private final String unknownDatatype = new DBUnknownDatatype().getClass().getSimpleName();
     String packageName;
-    String className;
+    public String className;
     String tableName;
     public String javaSource;
     List<DBTableField> fields = new ArrayList<DBTableField>();

@@ -37,6 +37,7 @@ abstract public class DBRow implements Serializable {
     private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
     private transient DBRowInstanceWrapper wrapper = null;
     private transient ArrayList<Class<? extends DBRow>> referencedTables;
+    private String tableAlias;
 
     public DBRow() {
     }
@@ -72,23 +73,19 @@ abstract public class DBRow implements Serializable {
         for (DBRelationship adhoc : originalRow.adHocRelationships) {
             newRow.adHocRelationships.add(adhoc);
         }
-
-        Field[] subclassFields = originalRow.getClass().getDeclaredFields();
-        for (Field field : subclassFields) {
-            if (!Modifier.isStatic(field.getModifiers())) {
-                try {
-                    Object originalValue = field.get(originalRow);
-                    if (originalValue instanceof QueryableDatatype) {
-                        QueryableDatatype originalQDT = (QueryableDatatype) originalValue;
-                        field.set(newRow, originalQDT.copy());
-                    } else {
-                        field.set(newRow, originalValue);
-                    }
-                } catch (IllegalArgumentException ex) {
-                    throw new RuntimeException(ex);
-                } catch (IllegalAccessException ex) {
-                    throw new RuntimeException(ex);
+        
+        List<PropertyWrapper> subclassFields = originalRow.getPropertyWrappers();
+        for (PropertyWrapper field : subclassFields) {
+            try {
+                Object originalValue = field.rawJavaValue();
+                if (originalValue instanceof QueryableDatatype) {
+                    QueryableDatatype originalQDT = (QueryableDatatype) originalValue;
+                    field.getDefinition().setRawJavaValue(newRow, originalQDT.copy());
+                } else {
+                    field.getDefinition().setRawJavaValue(newRow, originalValue);
                 }
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException(ex);
             }
         }
         return newRow;
@@ -717,5 +714,13 @@ abstract public class DBRow implements Serializable {
             }
         }
         return instances;
+    }
+
+    public void setTableAlias(String alias) {
+        tableAlias = alias;
+    }
+
+    String getTableAlias() {
+        return tableAlias==null? getTableName(): tableAlias;
     }
 }
