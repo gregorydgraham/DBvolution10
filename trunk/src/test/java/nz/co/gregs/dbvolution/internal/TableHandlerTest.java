@@ -82,6 +82,12 @@ public class TableHandlerTest {
         assertThat(handler.getTableName(), is("NonAnnotatedSubclassOfNonAnnotatedDBRow"));
     }
 
+    @Test
+    public void tableNameOverriddenGivenAnnotatedSubclassOfNonAnnotatedDBRowClass() {
+        TableHandler handler = new TableHandler(AnnotatedSubclassOfAnnotatedDBRow.class);
+        assertThat(handler.getTableName(), is("bar"));
+    }
+    
     @DBTableName("foo")
     public static class MyAnnotatedDBRow extends DBRow {
     }
@@ -101,6 +107,11 @@ public class TableHandlerTest {
     }
     
     public static class NonAnnotatedSubclassOfNonAnnotatedDBRow extends MyNonAnnotatedDBRow {
+        
+    }
+
+    @DBTableName("bar")
+    public static class AnnotatedSubclassOfAnnotatedDBRow extends MyAnnotatedDBRow {
         
     }
 }
