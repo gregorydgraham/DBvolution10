@@ -41,15 +41,38 @@ public class DoubleJoinTest extends AbstractTest {
     @Ignore // not working yet
     @Test
     public void doubleJoinTest() throws SQLException {
+        database.setPrintSQLBeforeExecuting(true);
         database.createTable(new DoubleJoinTest.DoubleLinked());
         final DoubleLinked doubleLinked = new DoubleJoinTest.DoubleLinked();
         doubleLinked.uidDoubleLink.setValue(1);
         doubleLinked.manufacturer.setValue(1);
         doubleLinked.marketer.setValue(4);
         database.insert(doubleLinked);
-        DBQuery query = database.getDBQuery(new DoubleJoinTest.DoubleLinked(), new DoubleJoinTest.Manufacturer(), new DoubleJoinTest.Marketer());
+        final DoubleLinked doubleLinked1 = new DoubleJoinTest.DoubleLinked();
+        final Manufacturer manufacturer = new DoubleJoinTest.Manufacturer();
+        manufacturer.setTableAlias("manufacturer");
+        final Marketer marketer = new DoubleJoinTest.Marketer();
+        marketer.setTableAlias("marketer");
+        DBQuery query = database.getDBQuery(doubleLinked1, manufacturer, marketer);
         query.setBlankQueryAllowed(true);
         List<DBQueryRow> allRows = query.getAllRows();
+        /*
+        
+SELECT 
+    DOUBLE_LINKED.UID_DOUBLELLINK DB1343557695, 
+    DOUBLE_LINKED.FKMANUFACTURER DB136664381, 
+    DOUBLE_LINKED.FKMARKETER DB_354660011, 
+    CAR_COMPANY.NAME DB1064314813, 
+    CAR_COMPANY.UID_CARCOMPANY DB819159114, 
+    CAR_COMPANY.NAME DB1064314813, 
+    CAR_COMPANY.UID_CARCOMPANY DB819159114
+FROM  
+    double_linked  
+    INNER JOIN car_company ON(DOUBLE_LINKED.FKMANUFACTURER = CAR_COMPANY.UID_CARCOMPANY )  
+    INNER JOIN car_company ON(DOUBLE_LINKED.FKMARKETER = CAR_COMPANY.UID_CARCOMPANY ) 
+ WHERE  1=1 
+;
+        */
 
         database.print(allRows);
     }
@@ -60,10 +83,10 @@ public class DoubleJoinTest extends AbstractTest {
         @DBPrimaryKey()
         @DBColumn("uid_doublellink")
         DBInteger uidDoubleLink = new DBInteger();
-        @DBForeignKey(CarCompany.class)
+        @DBForeignKey(Manufacturer.class)
         @DBColumn("fkmanufacturer")
         DBInteger manufacturer = new DBInteger();
-        @DBForeignKey(CarCompany.class)
+        @DBForeignKey(Marketer.class)
         @DBColumn("fkmarketer")
         DBInteger marketer = new DBInteger();
 
@@ -72,15 +95,15 @@ public class DoubleJoinTest extends AbstractTest {
         }
     }
 
+    @DBTableName("car_company")
     public static class Manufacturer extends CarCompany {
-
         public Manufacturer() {
             super();
         }
     }
 
+    @DBTableName("car_company")
     public static class Marketer extends CarCompany {
-
         public Marketer() {
             super();
         }
