@@ -1,29 +1,31 @@
 package nz.co.gregs.dbvolution.annotations;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
- * DBTableName indicates the name of the database table that this DBRow implementation refers to.
- * 
- * \@DBTableName("my_table")
+ * {@code DBTableName} indicates the name of the database table that this {@code DBRow} implementation refers to.
+ * <code>
+ * &#64;DBTableName("my_table")
  * public class MyTable extends DBRow {
+ * </code>
  * 
-* DBTableName allows you to change the class name without affecting database functionality and is highly recommended.
+ * <p> {@code DBTableName} allows you to change the class name without affecting database functionality and is highly recommended.
+ *  * Extending DBRow is sufficient to indicate that class is associated with a table, 
+ * however this causes the class to be tightly bound to the database and subtracts from the benefits of DBvolution.
  * 
- * Extending DBRow is sufficient to indicate that class is associated with a table, 
- * however this causes the class to be tightly bound to the database and subtracts from the benefits of DBvolution
+ * <p> This annotation is inherited by subclasses.
  * 
- * DBTableName is generated automatically by DBTableClassGenerator.
+ * <p> DBTableName is generated automatically by DBTableClassGenerator.
  *
  * @author gregory.graham
  */
 @Target(ElementType.TYPE)
+@Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBTableName {
-    String value();
-    
+    String value();    
 }
