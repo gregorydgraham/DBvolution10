@@ -57,7 +57,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
         DBDefinition defn = db.getDefinition();
 
         String sql = defn.beginUpdateLine()
-                + defn.formatTableName(row.getTableName())
+                + defn.formatTableName(row)
                 + defn.beginSetClause()
                 + getSetClause(db, row)
                 + defn.beginWhereClause()

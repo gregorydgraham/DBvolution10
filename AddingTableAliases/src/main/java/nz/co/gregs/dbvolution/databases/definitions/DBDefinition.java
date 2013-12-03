@@ -60,11 +60,15 @@ public abstract class DBDefinition {
      * @return
      */
     public String formatTableAndColumnName(DBRow table, String columnName) {
+        return formatTableName(table) + "." + formatColumnName(columnName);
+    }
+
+    public String formatTableAliasAndColumnName(DBRow table, String columnName) {
         return getTableAlias(table) + "." + formatColumnName(columnName);
     }
 
-    public String formatTableName(String tableName) {
-        return tableName;
+    public String formatTableName(DBRow table) {
+        return table.getTableName();
     }
 
     /**

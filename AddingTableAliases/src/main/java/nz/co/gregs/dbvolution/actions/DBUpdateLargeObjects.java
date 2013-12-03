@@ -47,7 +47,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
             final DBLargeObject largeObject = (DBLargeObject) prop.getQueryableDatatype();
 
             String sqlString = defn.beginUpdateLine()
-                    + defn.formatTableName(row.getTableName())
+                    + defn.formatTableName(row)
                     + defn.beginSetClause()
                     + defn.formatColumnName(col)
                     + defn.getEqualsComparator()

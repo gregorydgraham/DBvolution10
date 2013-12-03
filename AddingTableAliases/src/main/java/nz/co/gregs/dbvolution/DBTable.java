@@ -97,7 +97,7 @@ public class DBTable<E extends DBRow> {
 //            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
             selectStatement.append(getAllFieldsForSelect())
                     .append(defn.beginFromClause())
-                    .append(defn.formatTableName(dummy.getTableName()))
+                    .append(defn.formatTableName(dummy))
                     .append(defn.beginTableAlias()).append(defn.getTableAlias(dummy)).append(defn.endTableAlias())
                     .append(getOrderByClause())
                     .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
@@ -132,7 +132,7 @@ public class DBTable<E extends DBRow> {
             selectStatement
                     .append(getAllFieldsForSelect())
                     .append(defn.beginFromClause())
-                    .append(defn.formatTableName(dummy.getTableName()))
+                    .append(defn.formatTableName(dummy))
                     .append(defn.beginTableAlias()).append(defn.getTableAlias(dummy)).append(defn.endTableAlias())
                     .append(defn.beginWhereClause())
                     .append(defn.getTrueOperation());

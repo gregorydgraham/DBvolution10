@@ -58,7 +58,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
         DBDefinition defn = db.getDefinition();
 
         String sql = defn.beginDeleteLine()
-                + defn.formatTableName(row.getTableName())+defn.beginTableAlias()+defn.getTableAlias(row)+defn.endTableAlias()
+                + defn.formatTableName(row)
                 + defn.beginWhereClause()
                 + defn.getTrueOperation();
         for (PropertyWrapper prop : row.getPropertyWrappers()) {

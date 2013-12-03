@@ -58,7 +58,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 
         ArrayList<String> strs = new ArrayList<String>();
         strs.add(defn.beginDeleteLine()
-                + defn.formatTableName(row.getTableName())+defn.beginTableAlias()+defn.getTableAlias(row)+defn.endTableAlias()
+                + defn.formatTableName(row)
                 + defn.beginWhereClause()
                 + defn.formatColumnName(row.getPrimaryKeyColumnName())
                 + defn.getEqualsComparator()
