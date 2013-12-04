@@ -101,14 +101,12 @@ _1000112490.FKMARKETER = _311617033.UID_CARCOMPANY )
         }
     }
 
-    @DBTableName("car_company")
     public static class Manufacturer extends CarCompany {
         public Manufacturer() {
             super();
         }
     }
 
-    @DBTableName("car_company")
     public static class Marketer extends CarCompany {
         public Marketer() {
             super();

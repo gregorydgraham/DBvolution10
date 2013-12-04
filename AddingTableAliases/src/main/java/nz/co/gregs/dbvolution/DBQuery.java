@@ -339,7 +339,7 @@ public class DBQuery {
                         List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
                         for (PropertyWrapper newProp : newProperties) {
                             QueryableDatatype qdt = newProp.getQueryableDatatype();
-                            String resultSetColumnName = defn.formatColumnNameForResultSet(newInstance, newProp.columnName());
+                            String resultSetColumnName = defn.formatColumnNameForDBQueryResultSet(newInstance, newProp.columnName());
                             qdt.setFromResultSet(resultSet, resultSetColumnName);
                         }
                         newInstance.setDefined(true); // Actually came from the database so it is a defined row.

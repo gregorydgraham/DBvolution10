@@ -68,7 +68,7 @@ public abstract class DBDefinition {
     }
 
     public String formatTableAliasAndColumnNameForSelectClause(DBRow table, String columnName) {
-        return formatTableAliasAndColumnName(table, columnName) + " " + formatColumnNameForResultSet(table, columnName);
+        return formatTableAliasAndColumnName(table, columnName) + " " + formatColumnNameForDBQueryResultSet(table, columnName);
     }
 
     public String formatTableName(DBRow table) {
@@ -86,6 +86,11 @@ public abstract class DBDefinition {
      */
     public String formatColumnNameForResultSet(DBRow table, String columnName) {
         String formattedName = formatTableAndColumnName(table, columnName).replaceAll("\\.", "__");
+        return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
+    }
+
+    public String formatColumnNameForDBQueryResultSet(DBRow table, String columnName) {
+        String formattedName = formatTableAliasAndColumnName(table, columnName).replaceAll("\\.", "__");
         return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
     }
 
