@@ -271,12 +271,10 @@ public class DBStatement implements Statement {
         return batchHasEntries;
     }
 
-    @Override
     public void closeOnCompletion() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
     public boolean isCloseOnCompletion() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
