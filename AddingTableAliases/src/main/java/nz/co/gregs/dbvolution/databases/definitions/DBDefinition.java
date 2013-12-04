@@ -67,6 +67,10 @@ public abstract class DBDefinition {
         return getTableAlias(table) + "." + formatColumnName(columnName);
     }
 
+    public String formatTableAliasAndColumnNameForSelectClause(DBRow table, String columnName) {
+        return formatTableAliasAndColumnName(table, columnName) + " " + formatColumnNameForResultSet(table, columnName);
+    }
+
     public String formatTableName(DBRow table) {
         return table.getTableName();
     }

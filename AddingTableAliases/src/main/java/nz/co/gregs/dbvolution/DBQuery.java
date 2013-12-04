@@ -42,11 +42,11 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
 public class DBQuery {
 
     DBDatabase database;
-    private List<DBRow> queryTables;
-    private List<Class<? extends DBRow>> optionalQueryTables;
-    private List<DBRow> allQueryTables;
+    private final List<DBRow> queryTables;
+    private final List<Class<? extends DBRow>> optionalQueryTables;
+    private final List<DBRow> allQueryTables;
     private List<DBQueryRow> results;
-    private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
+    private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private Long rowLimit;
     private List<PropertyWrapper> sortOrder = null;
     private String resultSQL;
@@ -241,7 +241,7 @@ public class DBQuery {
             if (providedSelectClause == null) {
                 List<String> columnNames = tabRow.getColumnNames();
                 for (String columnName : columnNames) {
-                    String formattedColumnName = defn.formatTableAndColumnNameForSelectClause(tabRow, columnName);
+                    String formattedColumnName = defn.formatTableAliasAndColumnNameForSelectClause(tabRow, columnName);
                     selectClause.append(colSep).append(formattedColumnName);
                     colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
                 }
@@ -255,7 +255,7 @@ public class DBQuery {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
             }
-            String tabRowCriteria = tabRow.getWhereClause(database);
+            String tabRowCriteria = tabRow.getWhereClause(database, true);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
             }
@@ -296,13 +296,13 @@ public class DBQuery {
                     for (DBRow otherTab : otherTables) {
                         List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
                         for (PropertyWrapper fk : fks) {
-                            String formattedPK = defn.formatTableAndColumnName(tabRow, tabRowPK);
+                            String formattedPK = defn.formatTableAliasAndColumnName(tabRow, tabRowPK);
                             Class<? extends DBRow> pkClass = fk.referencedClass();
                             DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                            String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable, fkReferencesTable.getPrimaryKeyColumnName());
+                            String fkReferencesColumn = defn.formatTableAliasAndColumnName(fkReferencesTable, fkReferencesTable.getPrimaryKeyColumnName());
                             if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                                 String fkColumnName = fk.columnName();
-                                String formattedFK = defn.formatTableAndColumnName(otherTab, fkColumnName);
+                                String formattedFK = defn.formatTableAliasAndColumnName(otherTab, fkColumnName);
                                 whereClause
                                         .append(lineSep)
                                         .append(defn.beginAndLine())
@@ -626,7 +626,7 @@ public class DBQuery {
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (PropertyWrapper prop : sortOrder) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
-                final String dbColumnName = defn.formatTableAndColumnName(DBRow.getDBRow(prop.referencedClass()), prop.columnName());
+                final String dbColumnName = defn.formatTableAliasAndColumnName(DBRow.getDBRow(prop.referencedClass()), prop.columnName());
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();

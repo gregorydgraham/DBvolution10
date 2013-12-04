@@ -133,7 +133,6 @@ public class DBTable<E extends DBRow> {
                     .append(getAllFieldsForSelect())
                     .append(defn.beginFromClause())
                     .append(defn.formatTableName(dummy))
-                    .append(defn.beginTableAlias()).append(defn.getTableAlias(dummy)).append(defn.endTableAlias())
                     .append(defn.beginWhereClause())
                     .append(defn.getTrueOperation());
         }
