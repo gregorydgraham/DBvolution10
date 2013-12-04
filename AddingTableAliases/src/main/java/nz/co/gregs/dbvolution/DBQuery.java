@@ -626,7 +626,7 @@ public class DBQuery {
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (PropertyWrapper prop : sortOrder) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
-                final String dbColumnName = defn.formatTableAliasAndColumnName(DBRow.getDBRow(prop.referencedClass()), prop.columnName());
+                final String dbColumnName = defn.formatTableAliasAndColumnName(prop.getDBRowInstanceWrapper().adapteeDBRow(), prop.columnName());
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -25,7 +26,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
  */
 public class DBRowInstanceWrapper {
     private final DBRowClassWrapper classWrapper;
-    private final Object target;
+    private final DBRow target;
     private final List<PropertyWrapper> allProperties;
     private final List<PropertyWrapper> foreignKeyProperties;
 
@@ -38,7 +39,7 @@ public class DBRowInstanceWrapper {
      * @param target the target object of the same type as analysed by
      * {@code classAdaptor}
      */
-    DBRowInstanceWrapper(DBRowClassWrapper classWrapper, Object target) {
+    DBRowInstanceWrapper(DBRowClassWrapper classWrapper, DBRow target) {
         if (target == null) {
             throw new DBRuntimeException("Target object is null");
         }
@@ -86,11 +87,11 @@ public class DBRowInstanceWrapper {
     }
 
     /**
-     * Gets the object wrapped by this {@code ObjectAdaptor}.
+     * Gets the DBRow instance wrapped by this {@code ObjectAdaptor}.
      *
      * @return
      */
-    public Object adapteeObject() {
+    public DBRow adapteeDBRow() {
         return target;
     }
 

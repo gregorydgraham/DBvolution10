@@ -2,6 +2,7 @@ package nz.co.gregs.dbvolution.internal;
 
 import java.util.HashMap;
 import java.util.Map;
+import nz.co.gregs.dbvolution.DBRow;
 
 /**
  * Constructs class adaptors for DB table classes and maintains an in-memory cache for re-use.
@@ -55,7 +56,7 @@ public class DBRowWrapperFactory {
 	 * @param object the object to wrap
 	 * @return the object adaptor for the given object
 	 */
-	public DBRowInstanceWrapper instanceWrapperFor(Object object) {
+	public DBRowInstanceWrapper instanceWrapperFor(DBRow object) {
 		return classWrapperFor(object.getClass()).instanceWrapperFor(object);
 	}
 }
