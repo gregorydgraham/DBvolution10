@@ -73,16 +73,15 @@ public class DoubleJoinTest extends AbstractTest {
         @DBPrimaryKey()
         @DBColumn("uid_doublellink")
         DBInteger uidDoubleLink = new DBInteger();
+        
         @DBForeignKey(Manufacturer.class)
         @DBColumn("fkmanufacturer")
         DBInteger manufacturer = new DBInteger();
+        
         @DBForeignKey(Marketer.class)
         @DBColumn("fkmarketer")
         DBInteger marketer = new DBInteger();
 
-        public DoubleLinked() {
-            super();
-        }
     }
 
     public static class Manufacturer extends CarCompany {}
