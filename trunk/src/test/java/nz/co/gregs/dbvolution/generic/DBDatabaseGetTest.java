@@ -133,7 +133,8 @@ public class DBDatabaseGetTest extends AbstractTest {
         Assert.assertThat(gotMarques.size(), is(2));
     }
 
-    @Test
+    @Test       
+    @SuppressWarnings("unchecked")
     public void testIsInWithList() throws SQLException {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
@@ -149,6 +150,7 @@ public class DBDatabaseGetTest extends AbstractTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testIsExcludedWithList() throws SQLException {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
