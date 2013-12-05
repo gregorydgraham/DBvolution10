@@ -42,11 +42,11 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
 public class DBQuery {
 
     DBDatabase database;
-    private List<DBRow> queryTables;
-    private List<Class<? extends DBRow>> optionalQueryTables;
-    private List<DBRow> allQueryTables;
+    private final List<DBRow> queryTables;
+    private final List<Class<? extends DBRow>> optionalQueryTables;
+    private final List<DBRow> allQueryTables;
     private List<DBQueryRow> results;
-    private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
+    private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private Long rowLimit;
     private List<PropertyWrapper> sortOrder = null;
     private String resultSQL;
@@ -183,7 +183,7 @@ public class DBQuery {
         }
         String sqlToReturn;
         if (previousTables.isEmpty()) {
-            sqlToReturn = " " + newTable.getTableName() + " ";
+            sqlToReturn = " " + newTable.getTableName() + defn.beginTableAlias()+defn.getTableAlias(newTable)+defn.endTableAlias();
         } else {
             if (isFullOuterJoin) {
                 sqlToReturn = defn.beginFullOuterJoin();
@@ -192,7 +192,7 @@ public class DBQuery {
             } else {
                 sqlToReturn = defn.beginInnerJoin();
             }
-            sqlToReturn += newTable.getTableName();
+            sqlToReturn += newTable.getTableName() + defn.beginTableAlias()+defn.getTableAlias(newTable)+defn.endTableAlias();
             if (joinClauses.isEmpty()) {
                 sqlToReturn += defn.beginOnClause() + defn.getTrueOperation() + defn.endOnClause();
             } else {
@@ -241,7 +241,7 @@ public class DBQuery {
             if (providedSelectClause == null) {
                 List<String> columnNames = tabRow.getColumnNames();
                 for (String columnName : columnNames) {
-                    String formattedColumnName = defn.formatTableAndColumnNameForSelectClause(tableName, columnName);
+                    String formattedColumnName = defn.formatTableAliasAndColumnNameForSelectClause(tabRow, columnName);
                     selectClause.append(colSep).append(formattedColumnName);
                     colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
                 }
@@ -255,13 +255,13 @@ public class DBQuery {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
             }
-            String tabRowCriteria = tabRow.getWhereClause(database);
+            String tabRowCriteria = tabRow.getWhereClause(database, true);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
             }
 
             if (!useANSISyntax) {
-                buildNonANSIJoin(tabRow, whereClause, defn, queryGraph, joinedTables, tableName, lineSep);
+                getNonANSIJoin(tabRow, whereClause, defn, queryGraph, joinedTables, tableName, lineSep);
             }
 
             separator = ", " + lineSep;
@@ -284,7 +284,7 @@ public class DBQuery {
         return sqlString;
     }
    
-    private void buildNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep){
+    private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep){
         
                 for (DBRelationship rel : tabRow.getAdHocRelationships()) {
                     whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
@@ -296,13 +296,13 @@ public class DBQuery {
                     for (DBRow otherTab : otherTables) {
                         List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
                         for (PropertyWrapper fk : fks) {
-                            String formattedPK = defn.formatTableAndColumnName(tableName, tabRowPK);
+                            String formattedPK = defn.formatTableAliasAndColumnName(tabRow, tabRowPK);
                             Class<? extends DBRow> pkClass = fk.referencedClass();
                             DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                            String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyColumnName());
+                            String fkReferencesColumn = defn.formatTableAliasAndColumnName(fkReferencesTable, fkReferencesTable.getPrimaryKeyColumnName());
                             if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
                                 String fkColumnName = fk.columnName();
-                                String formattedFK = defn.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
+                                String formattedFK = defn.formatTableAliasAndColumnName(otherTab, fkColumnName);
                                 whereClause
                                         .append(lineSep)
                                         .append(defn.beginAndLine())
@@ -339,7 +339,7 @@ public class DBQuery {
                         List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
                         for (PropertyWrapper newProp : newProperties) {
                             QueryableDatatype qdt = newProp.getQueryableDatatype();
-                            String resultSetColumnName = defn.formatColumnNameForResultSet(newInstance.getTableName(), newProp.columnName());
+                            String resultSetColumnName = defn.formatColumnNameForDBQueryResultSet(newInstance, newProp.columnName());
                             qdt.setFromResultSet(resultSet, resultSetColumnName);
                         }
                         newInstance.setDefined(true); // Actually came from the database so it is a defined row.
@@ -626,7 +626,7 @@ public class DBQuery {
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (PropertyWrapper prop : sortOrder) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
-                final String dbColumnName = defn.formatTableAndColumnName(prop.tableName(), prop.columnName());
+                final String dbColumnName = defn.formatTableAliasAndColumnName(prop.getDBRowInstanceWrapper().adapteeDBRow(), prop.columnName());
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();

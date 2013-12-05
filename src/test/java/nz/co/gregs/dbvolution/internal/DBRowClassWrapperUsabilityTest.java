@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.internal;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
@@ -61,7 +62,7 @@ public class DBRowClassWrapperUsabilityTest {
     }
 
     @DBTableName("table")
-    public static class MyExampleTableClass {
+    public static class MyExampleTableClass extends DBRow{
 
         @DBPrimaryKey
         @DBColumn("column1")

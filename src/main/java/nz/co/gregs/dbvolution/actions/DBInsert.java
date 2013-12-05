@@ -56,7 +56,7 @@ public class DBInsert extends DBAction {
 
         ArrayList<String> strs = new ArrayList<String>();
         strs.add(defn.beginInsertLine()
-                + defn.formatTableName(row.getTableName())
+                + defn.formatTableName(row)
                 + defn.beginInsertColumnList()
                 + allColumns
                 + defn.endInsertColumnList()

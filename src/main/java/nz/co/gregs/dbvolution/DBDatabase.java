@@ -512,7 +512,7 @@ public abstract class DBDatabase {
         String lineSeparator = System.getProperty("line.separator");
         // table name
 
-        sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow.getTableName())).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
+        sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow)).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
 
         // columns
         String sep = "";
@@ -564,7 +564,7 @@ public abstract class DBDatabase {
     public <TR extends DBRow> void dropTable(TR tableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
 
-        sqlScript.append(definition.getDropTableStart()).append(definition.formatTableName(tableRow.getTableName())).append(definition.endSQLStatement());
+        sqlScript.append(definition.getDropTableStart()).append(definition.formatTableName(tableRow)).append(definition.endSQLStatement());
         String sqlString = sqlScript.toString();
         printSQLIfRequested(sqlString);
         getDBStatement().execute(sqlString);

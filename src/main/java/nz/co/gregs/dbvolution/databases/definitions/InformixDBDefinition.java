@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBRow;
 
 
 public class InformixDBDefinition extends DBDefinition {
@@ -43,8 +44,8 @@ public class InformixDBDefinition extends DBDefinition {
      * @return
      */
     @Override
-    public String formatTableAndColumnName(String tableName, String columnName) {
-        return "" + tableName + "." + columnName + "";
+    public String formatTableAndColumnName(DBRow table, String columnName) {
+        return "" + table + "." + columnName + "";
     }
 
     @Override

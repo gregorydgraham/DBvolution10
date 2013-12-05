@@ -26,8 +26,8 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.example.CarCompany;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.hamcrest.Matchers.is;
+import org.junit.*;
 
 public class DoubleJoinTest extends AbstractTest {
 
@@ -38,7 +38,7 @@ public class DoubleJoinTest extends AbstractTest {
     @Test
     public void fake() throws SQLException {}
     
-    @Ignore // not working yet
+//    @Ignore // not working yet
     @Test
     public void doubleJoinTest() throws SQLException {
         database.setPrintSQLBeforeExecuting(true);
@@ -55,25 +55,15 @@ public class DoubleJoinTest extends AbstractTest {
         marketer.setTableAlias("marketer");
         DBQuery query = database.getDBQuery(doubleLinked1, manufacturer, marketer);
         query.setBlankQueryAllowed(true);
+        System.out.println(query.getSQLForQuery());
         List<DBQueryRow> allRows = query.getAllRows();
-        /*
+        Assert.assertThat(allRows.size(), 
+                is(1));
+        Assert.assertThat(allRows.get(0).get(marketer).uidCarCompany.intValue(), 
+                is(doubleLinked.marketer.intValue()));
+        Assert.assertThat(allRows.get(0).get(manufacturer).uidCarCompany.intValue(), 
+                is(doubleLinked.manufacturer.intValue()));
         
-SELECT 
-    DOUBLE_LINKED.UID_DOUBLELLINK DB1343557695, 
-    DOUBLE_LINKED.FKMANUFACTURER DB136664381, 
-    DOUBLE_LINKED.FKMARKETER DB_354660011, 
-    CAR_COMPANY.NAME DB1064314813, 
-    CAR_COMPANY.UID_CARCOMPANY DB819159114, 
-    CAR_COMPANY.NAME DB1064314813, 
-    CAR_COMPANY.UID_CARCOMPANY DB819159114
-FROM  
-    double_linked  
-    INNER JOIN car_company ON(DOUBLE_LINKED.FKMANUFACTURER = CAR_COMPANY.UID_CARCOMPANY )  
-    INNER JOIN car_company ON(DOUBLE_LINKED.FKMARKETER = CAR_COMPANY.UID_CARCOMPANY ) 
- WHERE  1=1 
-;
-        */
-
         database.print(allRows);
     }
 
@@ -95,17 +85,6 @@ FROM
         }
     }
 
-    @DBTableName("car_company")
-    public static class Manufacturer extends CarCompany {
-        public Manufacturer() {
-            super();
-        }
-    }
-
-    @DBTableName("car_company")
-    public static class Marketer extends CarCompany {
-        public Marketer() {
-            super();
-        }
-    }
+    public static class Manufacturer extends CarCompany {}
+    public static class Marketer extends CarCompany {}
 }
