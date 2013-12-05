@@ -70,6 +70,7 @@ public class DoubleJoinTest extends AbstractTest {
     @DBTableName("double_linked")
     public static class DoubleLinked extends DBRow {
 
+        public static final long serialVersionUID = 1L;
         @DBPrimaryKey()
         @DBColumn("uid_doublellink")
         DBInteger uidDoubleLink = new DBInteger();
@@ -84,6 +85,11 @@ public class DoubleJoinTest extends AbstractTest {
 
     }
 
-    public static class Manufacturer extends CarCompany {}
-    public static class Marketer extends CarCompany {}
+    public static class Manufacturer extends CarCompany {
+        public static final long serialVersionUID = 1L;
+    }
+    
+    public static class Marketer extends CarCompany {
+        public static final long serialVersionUID = 1L;
+    }
 }

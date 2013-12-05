@@ -69,6 +69,7 @@ public class DBTableDeleteTest extends AbstractTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDeleteByExampleUsingList() throws SQLException {
         List<Marque> beforeList = marques.getAllRows().toList();
         System.out.println("rowList.size()==" + marques.toList().size());
@@ -86,6 +87,7 @@ public class DBTableDeleteTest extends AbstractTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDeleteByExampleUsingSet() throws SQLException {
         List<Marque> beforeList = marques.getAllRows().toList();
         System.out.println("rowList.size()==" + marques.toList().size());
