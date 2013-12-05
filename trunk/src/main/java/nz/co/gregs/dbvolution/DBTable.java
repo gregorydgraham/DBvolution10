@@ -94,11 +94,11 @@ public class DBTable<E extends DBRow> {
             if (rowLimit != null) {
                 selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
             }
-            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
+//            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
             selectStatement.append(getAllFieldsForSelect())
                     .append(defn.beginFromClause())
-                    .append(defn.formatTableName(dummy.getTableName()))
-//                    .append(defn.getTableAliasStart()).append(tableAlias).append(defn.getTableAliasEnd())
+                    .append(defn.formatTableName(dummy))
+                    .append(defn.beginTableAlias()).append(defn.getTableAlias(dummy)).append(defn.endTableAlias())
                     .append(getOrderByClause())
                     .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
                     .append(defn.endSQLStatement());
@@ -128,12 +128,11 @@ public class DBTable<E extends DBRow> {
                 selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
             }
 
-            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
+//            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
             selectStatement
                     .append(getAllFieldsForSelect())
                     .append(defn.beginFromClause())
-                    .append(defn.formatTableName(dummy.getTableName()))
-//                    .append(defn.getTableAliasStart()).append(tableAlias).append(defn.getTableAliasEnd())
+                    .append(defn.formatTableName(dummy))
                     .append(defn.beginWhereClause())
                     .append(defn.getTrueOperation());
         }

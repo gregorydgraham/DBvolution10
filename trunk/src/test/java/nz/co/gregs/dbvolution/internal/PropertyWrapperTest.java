@@ -69,7 +69,7 @@ public class PropertyWrapperTest {
 	}
 	
 	// note: intentionally doesn't use a wrapper factory for tests on equals() methods
-	private PropertyWrapper propertyOf(Object target, String javaPropertyName) {
+	private PropertyWrapper propertyOf(DBRow target, String javaPropertyName) {
 		DBRowClassWrapper classWrapper = new DBRowClassWrapper(target.getClass());
 		return classWrapper.instanceWrapperFor(target).getPropertyByName(javaPropertyName);
 	}

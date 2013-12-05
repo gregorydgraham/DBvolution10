@@ -73,7 +73,7 @@ abstract public class DBRow implements Serializable {
         for (DBRelationship adhoc : originalRow.adHocRelationships) {
             newRow.adHocRelationships.add(adhoc);
         }
-        
+
         List<PropertyWrapper> subclassFields = originalRow.getPropertyWrappers();
         for (PropertyWrapper field : subclassFields) {
             try {
@@ -200,13 +200,21 @@ abstract public class DBRow implements Serializable {
      *
      */
     public String getWhereClause(DBDatabase db) {
+        return getWhereClause(db, false);
+    }
+
+    public String getWhereClause(DBDatabase db, boolean useTableAlias) {
         DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
         for (PropertyWrapper prop : props) {
             if (prop.isColumn()) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
-                whereClause.append(qdt.getWhereClause(db, defn.formatTableAndColumnName(this.getTableName(), prop.columnName())));
+                if (useTableAlias) {
+                    whereClause.append(qdt.getWhereClause(db, defn.formatTableAliasAndColumnName(this, prop.columnName())));
+                } else {
+                    whereClause.append(qdt.getWhereClause(db, defn.formatTableAndColumnName(this, prop.columnName())));
+                }
             }
         }
         return whereClause.toString();
@@ -556,11 +564,11 @@ abstract public class DBRow implements Serializable {
             PropertyWrapperDefinition referencedProp = fk.referencedPropertyDefinitionIdentity();
 
             if (newTable.getClass().equals(referencedClass)) {
-                String formattedForeignKey = defn.formatTableAndColumnName(
-                        fk.tableName(), fk.columnName());
+                String formattedForeignKey = defn.formatTableAliasAndColumnName(
+                        this, fk.columnName());
 
-                String formattedReferencedColumn = defn.formatTableAndColumnName(
-                        referencedProp.tableName(), referencedProp.columnName());
+                String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
+                        newTable, referencedProp.columnName());
 
                 rels.append(lineSeparator)
                         .append(joinSeparator)
@@ -628,12 +636,12 @@ abstract public class DBRow implements Serializable {
             if (this.getClass().equals(value)) {
 
                 String fkColumnName = fk.columnName();
-                String formattedForeignKey = defn.formatTableAndColumnName(
-                        newTable.getTableName(),
+                String formattedForeignKey = defn.formatTableAliasAndColumnName(
+                        newTable,
                         fkColumnName);
 
-                String formattedPrimaryKey = defn.formatTableAndColumnName(
-                        this.getTableName(),
+                String formattedPrimaryKey = defn.formatTableAliasAndColumnName(
+                        this,
                         this.getPrimaryKeyColumnName());
 
                 rels.append(lineSeparator)
@@ -721,6 +729,6 @@ abstract public class DBRow implements Serializable {
     }
 
     String getTableAlias() {
-        return tableAlias==null? getTableName(): tableAlias;
+        return tableAlias == null ? getTableName() : tableAlias;
     }
 }

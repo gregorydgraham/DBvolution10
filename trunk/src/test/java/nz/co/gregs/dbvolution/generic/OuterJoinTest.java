@@ -51,9 +51,9 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq));
 
-        String expectedString = "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY";
+        String expectedString = "__1997432637.fk_carcompany = __78874071.uid_carcompany";
         Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo)), is(testableSQL(expectedString)));
-        expectedString = "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY";
+        expectedString = "__78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY";
         Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq)), is(testableSQL(expectedString)));
 
 //        mrq.ignoreAllForeignKeys();
@@ -61,28 +61,28 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq));
 
-        expectedString = "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY" + lineSep + " and  lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)";
+        expectedString = "__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY" + lineSep + " and  lower(__1997432637.NAME) =  lower(__78874071.NAME)";
         Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo)), is(testableSQL(expectedString)));
-        expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY";
+        expectedString = "lower(__78874071.NAME) =  lower(__1997432637.NAME)" + lineSep + " and __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY";
         Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq)), is(testableSQL(expectedString)));
 
-        Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo)), is(testableSQL("MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY and lower(MARQUE.NAME) = lower(CAR_COMPANY.NAME)")));
-        Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq)), is(testableSQL("lower(CAR_COMPANY.NAME) = lower(MARQUE.NAME) and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY")));
+        Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo)), is(testableSQL("__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY and lower(__1997432637.NAME) = lower(__78874071.NAME)")));
+        Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq)), is(testableSQL("lower(__78874071.NAME) = lower(__1997432637.NAME) and __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY")));
 
         mrq.ignoreAllForeignKeys();
         System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq));
-        expectedString = "lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)";
+        expectedString = "lower(__1997432637.NAME) =  lower(__78874071.NAME)";
         Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo)), is(testableSQL(expectedString)));
-        expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)";
+        expectedString = "lower(__78874071.NAME) =  lower(__1997432637.NAME)";
         Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq)), is(testableSQL(expectedString)));
 
         mrq.addRelationship(mrq.name, carCo, carCo.name, new DBGreaterThanOperator());
         System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq));
-        expectedString = "lower(MARQUE.NAME) =  lower(CAR_COMPANY.NAME)" + lineSep + " and MARQUE.NAME > CAR_COMPANY.NAME";
+        expectedString = "lower(__1997432637.NAME) =  lower(__78874071.NAME)" + lineSep + " and __1997432637.NAME > __78874071.NAME";
         Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo)), is(testableSQL(expectedString)));
-        expectedString = "lower(CAR_COMPANY.NAME) =  lower(MARQUE.NAME)" + lineSep + " and CAR_COMPANY.NAME <= MARQUE.NAME";
+        expectedString = "lower(__78874071.NAME) =  lower(__1997432637.NAME)" + lineSep + " and __78874071.NAME <= __1997432637.NAME";
         Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq)), is(testableSQL(expectedString)));
 
     }
@@ -102,7 +102,7 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("=============");
         System.out.println(ansiJoinClause);
         System.out.println("=============");
-        String expectedCarCoJoin = "car_company";
+        String expectedCarCoJoin = "car_company as __78874071";
         Assert.assertThat(testableSQL(ansiJoinClause.toString()),
                 is(testableSQL(expectedCarCoJoin)));
 
@@ -112,8 +112,7 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("=============");
         System.out.println(ansiJoinClause);
         System.out.println("=============");
-        String expectedMarqueJoin = "car_company  INNER JOIN marque ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ) ";
+        String expectedMarqueJoin = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany )";
         Assert.assertThat(
                 testableSQL(ansiJoinClause.toString()),
                 is(testableSQL(expectedMarqueJoin)));
@@ -125,9 +124,7 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("=============");
         System.out.println(ansiJoinClause);
         System.out.println("=============");
-        String expectedLinkJoin = " car_company  INNER JOIN marque ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  INNER JOIN lt_carco_logo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY ) ";
+        String expectedLinkJoin = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company )";
         Assert.assertThat(
                 testableSQL(ansiJoinClause.toString()),
                 is(testableSQL(expectedLinkJoin)));
@@ -140,11 +137,7 @@ public class OuterJoinTest extends AbstractTest {
         System.out.println("=============");
         System.out.println(ansiJoinClause);
         System.out.println("=============");
-        String expectedLogoJoin = "car_company  INNER JOIN marque ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  INNER JOIN lt_carco_logo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY )  INNER JOIN CompanyLogo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = COMPANYLOGO.CAR_COMPANY_FK and \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO = COMPANYLOGO.LOGO_ID ) ";
+        String expectedLogoJoin = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) inner join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk and _1617907935.fk_company_logo = _1159239592.logo_id )";
         Assert.assertThat(
                 testableSQL(ansiJoinClause.toString()),
                 is(testableSQL(expectedLogoJoin)));
@@ -157,26 +150,7 @@ public class OuterJoinTest extends AbstractTest {
         dbQuery.setBlankQueryAllowed(true);
         String sqlForQuery = dbQuery.getSQLForQuery();
         String expected2TableQuery =
-                " SELECT CAR_COMPANY.NAME DB1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
-                + "MARQUE.NUMERIC_CODE DB_570915006, \n"
-                + "MARQUE.UID_MARQUE DB_768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
-                + "MARQUE.UPD_COUNT DB1497912790, \n"
-                + "MARQUE.AUTO_CREATED DB332721019, \n"
-                + "MARQUE.NAME DB_1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
-                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
-                + "MARQUE.CREATION_DATE DB_1712481749, \n"
-                + "MARQUE.ENABLED DB_637053442, \n"
-                + "MARQUE.FK_CARCOMPANY DB1664116480\n"
-                + " FROM  car_company  INNER JOIN marque ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ) \n"
-                + " WHERE  1=1 \n"
-                + "\n"
-                + ";";
+                "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) where 1=1 ;";
         System.out.println(sqlForQuery);
         Assert.assertThat(
                 testableSQLWithoutColumnAliases(sqlForQuery),
@@ -188,29 +162,7 @@ public class OuterJoinTest extends AbstractTest {
         dbQuery.add(linkCoAndLogo);
         sqlForQuery = dbQuery.getSQLForQuery();
         String expected3TableQuery =
-                " SELECT CAR_COMPANY.NAME DB1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
-                + "MARQUE.NUMERIC_CODE DB_570915006, \n"
-                + "MARQUE.UID_MARQUE DB_768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
-                + "MARQUE.UPD_COUNT DB1497912790, \n"
-                + "MARQUE.AUTO_CREATED DB332721019, \n"
-                + "MARQUE.NAME DB_1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
-                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
-                + "MARQUE.CREATION_DATE DB_1712481749, \n"
-                + "MARQUE.ENABLED DB_637053442, \n"
-                + "MARQUE.FK_CARCOMPANY DB1664116480, \n"
-                + "LT_CARCO_LOGO.FK_CAR_COMPANY DB_1988359495, \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO DB1707036998\n"
-                + " FROM  car_company  INNER JOIN marque ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  INNER JOIN lt_carco_logo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY ) \n"
-                + " WHERE  1=1 \n"
-                + "\n"
-                + ";";
+                "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) where 1=1 ;";
         System.out.println(sqlForQuery);
         Assert.assertThat(
                 testableSQLWithoutColumnAliases(sqlForQuery),
@@ -222,29 +174,7 @@ public class OuterJoinTest extends AbstractTest {
         dbQuery.addOptional(linkCoAndLogo);
         sqlForQuery = dbQuery.getSQLForQuery();
         String expected1OptionalTableQuery =
-                " SELECT CAR_COMPANY.NAME DB1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
-                + "MARQUE.NUMERIC_CODE DB_570915006, \n"
-                + "MARQUE.UID_MARQUE DB_768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
-                + "MARQUE.UPD_COUNT DB1497912790, \n"
-                + "MARQUE.AUTO_CREATED DB332721019, \n"
-                + "MARQUE.NAME DB_1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
-                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
-                + "MARQUE.CREATION_DATE DB_1712481749, \n"
-                + "MARQUE.ENABLED DB_637053442, \n"
-                + "MARQUE.FK_CARCOMPANY DB1664116480, \n"
-                + "LT_CARCO_LOGO.FK_CAR_COMPANY DB_1988359495, \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO DB1707036998\n"
-                + " FROM  car_company  INNER JOIN marque ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  LEFT OUTER JOIN lt_carco_logo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY ) \n"
-                + " WHERE  1=1 \n"
-                + "\n"
-                + ";";
+                "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) left outer join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) where 1=1 ;";
         System.out.println(sqlForQuery);
         Assert.assertThat(
                 testableSQLWithoutColumnAliases(sqlForQuery),
@@ -255,35 +185,7 @@ public class OuterJoinTest extends AbstractTest {
         dbQuery.addOptional(new CompanyLogo());
         sqlForQuery = dbQuery.getSQLForQuery();
         String expected2OptionalTableQuery =
-                " SELECT CAR_COMPANY.NAME DB1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
-                + "MARQUE.NUMERIC_CODE DB_570915006, \n"
-                + "MARQUE.UID_MARQUE DB_768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
-                + "MARQUE.UPD_COUNT DB1497912790, \n"
-                + "MARQUE.AUTO_CREATED DB332721019, \n"
-                + "MARQUE.NAME DB_1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
-                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
-                + "MARQUE.CREATION_DATE DB_1712481749, \n"
-                + "MARQUE.ENABLED DB_637053442, \n"
-                + "MARQUE.FK_CARCOMPANY DB1664116480, \n"
-                + "LT_CARCO_LOGO.FK_CAR_COMPANY DB_1988359495, \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO DB1707036998, \n"
-                + "COMPANYLOGO.LOGO_ID DB1189023175, \n"
-                + "COMPANYLOGO.CAR_COMPANY_FK DB1247307962, \n"
-                + "COMPANYLOGO.IMAGE_FILE DB402667880, \n"
-                + "COMPANYLOGO.IMAGE_NAME DB402898551\n"
-                + " FROM  car_company  INNER JOIN marque ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY )  LEFT OUTER JOIN lt_carco_logo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY )  LEFT OUTER JOIN CompanyLogo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = COMPANYLOGO.CAR_COMPANY_FK and \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO = COMPANYLOGO.LOGO_ID ) \n"
-                + " WHERE  1=1 \n"
-                + "\n"
-                + ";";
+                "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) left outer join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) left outer join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk and _1617907935.fk_company_logo = _1159239592.logo_id ) where 1=1 ;";
         System.out.println(sqlForQuery);
         Assert.assertThat(
                 testableSQLWithoutColumnAliases(sqlForQuery),
@@ -307,35 +209,7 @@ public class OuterJoinTest extends AbstractTest {
         String sqlForQuery = dbQuery.getSQLForQuery();
         System.out.println(sqlForQuery);
         String expectedFullOuterQuery =
-                " SELECT MARQUE.NUMERIC_CODE DB_570915006, \n"
-                + "MARQUE.UID_MARQUE DB_768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
-                + "MARQUE.UPD_COUNT DB1497912790, \n"
-                + "MARQUE.AUTO_CREATED DB332721019, \n"
-                + "MARQUE.NAME DB_1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
-                + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
-                + "MARQUE.CREATION_DATE DB_1712481749, \n"
-                + "MARQUE.ENABLED DB_637053442, \n"
-                + "MARQUE.FK_CARCOMPANY DB1664116480, \n"
-                + "CAR_COMPANY.NAME DB1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
-                + "LT_CARCO_LOGO.FK_CAR_COMPANY DB_1988359495, \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO DB1707036998, \n"
-                + "COMPANYLOGO.LOGO_ID DB1189023175, \n"
-                + "COMPANYLOGO.CAR_COMPANY_FK DB1247307962, \n"
-                + "COMPANYLOGO.IMAGE_FILE DB402667880, \n"
-                + "COMPANYLOGO.IMAGE_NAME DB402898551\n"
-                + " FROM  marque  FULL OUTER JOIN car_company ON( \n"
-                + "MARQUE.FK_CARCOMPANY = CAR_COMPANY.UID_CARCOMPANY )  FULL OUTER JOIN lt_carco_logo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = LT_CARCO_LOGO.FK_CAR_COMPANY )  FULL OUTER JOIN CompanyLogo ON( \n"
-                + "CAR_COMPANY.UID_CARCOMPANY = COMPANYLOGO.CAR_COMPANY_FK and \n"
-                + "LT_CARCO_LOGO.FK_COMPANY_LOGO = COMPANYLOGO.LOGO_ID ) \n"
-                + " WHERE  1=1 \n"
-                + "\n"
-                + ";";
+                "select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name from marque as __1997432637 full outer join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) full outer join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) full outer join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk and _1617907935.fk_company_logo = _1159239592.logo_id ) where 1=1 ;";
         System.out.println(testableSQLWithoutColumnAliases(sqlForQuery));
         System.out.println(testableSQLWithoutColumnAliases(expectedFullOuterQuery));
         Assert.assertThat(

@@ -55,16 +55,24 @@ public abstract class DBDefinition {
      *
      * e.g table, column => TABLE.COLUMN
      *
-     * @param tableName
+     * @param table
      * @param columnName
      * @return
      */
-    public String formatTableAndColumnName(String tableName, String columnName) {
-        return formatTableName(tableName) + "." + formatColumnName(columnName);
+    public String formatTableAndColumnName(DBRow table, String columnName) {
+        return formatTableName(table) + "." + formatColumnName(columnName);
     }
 
-    public String formatTableName(String tableName) {
-        return tableName;
+    public String formatTableAliasAndColumnName(DBRow table, String columnName) {
+        return getTableAlias(table) + "." + formatColumnName(columnName);
+    }
+
+    public String formatTableAliasAndColumnNameForSelectClause(DBRow table, String columnName) {
+        return formatTableAliasAndColumnName(table, columnName) + " " + formatColumnNameForDBQueryResultSet(table, columnName);
+    }
+
+    public String formatTableName(DBRow table) {
+        return table.getTableName();
     }
 
     /**
@@ -72,17 +80,22 @@ public abstract class DBDefinition {
      * Specifies the column alias used within the JDBC ResultSet to identify the
      * column.
      *
-     * @param tableName
+     * @param table
      * @param columnName
      * @return
      */
-    public String formatColumnNameForResultSet(String tableName, String columnName) {
-        String formattedName = formatTableAndColumnName(tableName, columnName).replaceAll("\\.", "__");
+    public String formatColumnNameForResultSet(DBRow table, String columnName) {
+        String formattedName = formatTableAndColumnName(table, columnName).replaceAll("\\.", "__");
         return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
     }
 
-    public String formatTableAndColumnNameForSelectClause(String tableName, String columnName) {
-        return formatTableAndColumnName(tableName, columnName) + " " + formatColumnNameForResultSet(tableName, columnName);
+    public String formatColumnNameForDBQueryResultSet(DBRow table, String columnName) {
+        String formattedName = formatTableAliasAndColumnName(table, columnName).replaceAll("\\.", "__");
+        return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
+    }
+
+    public String formatTableAndColumnNameForSelectClause(DBRow table, String columnName) {
+        return formatTableAndColumnName(table, columnName) + " " + formatColumnNameForResultSet(table, columnName);
     }
 
     public String safeString(String toString) {

@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBRow;
 
 public class MSSQLServerDBDefinition extends DBDefinition {
 
@@ -29,8 +30,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
     }
 
     @Override
-    public String formatTableName(String tableName) {
-        return "["+tableName+"]";
+    public String formatTableName(DBRow table) {
+        return "["+table.getTableName()+"]";
     }
 
     @Override
