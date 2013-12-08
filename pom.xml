@@ -188,4 +188,10 @@
             <!-- Sonatype JIRA ticket: https://issues.sonatype.org/browse/OSSRH-6397 -->
         </repository>
     </distributionManagement>
+    <repositories>
+        <repository>
+            <id>SourceForge</id>
+            <url>http://csvjdbc.sourceforge.net/maven2</url>
+        </repository>
+    </repositories>
 </project>

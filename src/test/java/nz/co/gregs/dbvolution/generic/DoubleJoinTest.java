@@ -38,21 +38,18 @@ public class DoubleJoinTest extends AbstractTest {
     @Test
     public void fake() throws SQLException {}
     
-//    @Ignore // not working yet
     @Test
     public void doubleJoinTest() throws SQLException {
         database.setPrintSQLBeforeExecuting(true);
-        database.createTable(new DoubleJoinTest.DoubleLinked());
-        final DoubleLinked doubleLinked = new DoubleJoinTest.DoubleLinked();
+        database.createTable(new DoubleJoinTest.DoubleLinkedWithSubclasses());
+        final DoubleLinkedWithSubclasses doubleLinked = new DoubleJoinTest.DoubleLinkedWithSubclasses();
         doubleLinked.uidDoubleLink.setValue(1);
         doubleLinked.manufacturer.setValue(1);
         doubleLinked.marketer.setValue(4);
         database.insert(doubleLinked);
-        final DoubleLinked doubleLinked1 = new DoubleJoinTest.DoubleLinked();
+        final DoubleLinkedWithSubclasses doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithSubclasses();
         final Manufacturer manufacturer = new DoubleJoinTest.Manufacturer();
-        manufacturer.setTableAlias("manufacturer");
         final Marketer marketer = new DoubleJoinTest.Marketer();
-        marketer.setTableAlias("marketer");
         DBQuery query = database.getDBQuery(doubleLinked1, manufacturer, marketer);
         query.setBlankQueryAllowed(true);
         System.out.println(query.getSQLForQuery());
@@ -67,8 +64,56 @@ public class DoubleJoinTest extends AbstractTest {
         database.print(allRows);
     }
 
+    @Test
+    public void doubleJoinWithSameClassTest() throws SQLException {
+        database.setPrintSQLBeforeExecuting(true);
+        database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
+        final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
+        doubleLinked.uidDoubleLink.setValue(1);
+        doubleLinked.manufacturer.setValue(1);
+        doubleLinked.marketer.setValue(4);
+        database.insert(doubleLinked);
+        final DoubleLinkedWithClass doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithClass();
+        final CarCompany carco = new CarCompany();
+        DBQuery query = database.getDBQuery(doubleLinked1, carco);
+        query.setBlankQueryAllowed(true);
+        System.out.println(query.getSQLForQuery());
+        List<DBQueryRow> allRows = query.getAllRows();
+        
+        Assert.assertThat(
+                allRows.size(), 
+                is(0));
+        
+        database.print(allRows);
+        database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
+    }
+
+    @Test
+    public void doubleJoinWithSameClassAndIDTest() throws SQLException {
+        database.setPrintSQLBeforeExecuting(true);
+        database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
+        final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
+        doubleLinked.uidDoubleLink.setValue(1);
+        doubleLinked.manufacturer.setValue(1);
+        doubleLinked.marketer.setValue(1);
+        database.insert(doubleLinked);
+        final DoubleLinkedWithClass doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithClass();
+        final CarCompany carco = new CarCompany();
+        DBQuery query = database.getDBQuery(doubleLinked1, carco);
+        query.setBlankQueryAllowed(true);
+        System.out.println(query.getSQLForQuery());
+        List<DBQueryRow> allRows = query.getAllRows();
+        
+        Assert.assertThat(
+                allRows.size(), 
+                is(1));
+        
+        database.print(allRows);
+        database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
+    }
+
     @DBTableName("double_linked")
-    public static class DoubleLinked extends DBRow {
+    public static class DoubleLinkedWithSubclasses extends DBRow {
 
         public static final long serialVersionUID = 1L;
         @DBPrimaryKey()
@@ -80,6 +125,24 @@ public class DoubleJoinTest extends AbstractTest {
         DBInteger manufacturer = new DBInteger();
         
         @DBForeignKey(Marketer.class)
+        @DBColumn("fkmarketer")
+        DBInteger marketer = new DBInteger();
+
+    }
+
+    @DBTableName("double_linked_carco")
+    public static class DoubleLinkedWithClass extends DBRow {
+
+        public static final long serialVersionUID = 1L;
+        @DBPrimaryKey()
+        @DBColumn("uid_doublellink")
+        DBInteger uidDoubleLink = new DBInteger();
+        
+        @DBForeignKey(CarCompany.class)
+        @DBColumn("fkmanufacturer")
+        DBInteger manufacturer = new DBInteger();
+        
+        @DBForeignKey(CarCompany.class)
         @DBColumn("fkmarketer")
         DBInteger marketer = new DBInteger();
 
