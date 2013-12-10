@@ -84,7 +84,7 @@ public class DBNumber extends QueryableDatatype {
     }
 
     @Override
-    public <T> DBOperator useInOperator(T... literalOptions) {
+    public DBOperator useInOperator(Object... literalOptions) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
         for (Object str : literalOptions) {
             intOptions.add(new DBNumber(str));

@@ -1,13 +1,11 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javassist.Modifier;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -521,9 +519,11 @@ abstract public class DBRow implements Serializable {
      * <p>
      * Requires the field to be from this instance to work.
      *
+     * @param <T>
      * @param properties a list of fields/methods from this object
      */
-    public <T> void returnFieldsLimitedTo(T... properties) {
+    @SafeVarargs
+    public final <T> void returnFieldsLimitedTo(T... properties) {
         PropertyWrapper propWrapper;
         for (T property : properties) {
             propWrapper = getPropertyWrapperOf(property);
@@ -730,5 +730,15 @@ abstract public class DBRow implements Serializable {
 
     String getTableAlias() {
         return tableAlias == null ? getTableName() : tableAlias;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends DBRow> T getDBRowExampleWithSetFields(T baseRow, QueryableDatatype... qdts) {
+        T example = (T) DBRow.getDBRow(baseRow.getClass());
+        for (QueryableDatatype qdt : qdts){
+            PropertyWrapperDefinition definition = baseRow.getPropertyWrapperOf(qdt).getDefinition();
+            definition.setQueryableDatatype(example, qdt);
+        }
+        return example;
     }
 }
