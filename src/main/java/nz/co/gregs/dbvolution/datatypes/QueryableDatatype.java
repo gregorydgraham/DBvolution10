@@ -234,7 +234,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param permitted
      */
-    public <T> void permittedValues(T... permitted) {
+    public void permittedValues(Object... permitted) {
         if (permitted == null) {
             useNullOperator();
         } else if (permitted.length == 1) {
@@ -339,7 +339,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param excluded
      */
-    public <T> void excludedValues(T... excluded) {
+    public void excludedValues(Object... excluded) {
         if (excluded == null) {
             useNullOperator().not();
         } else if (excluded.length == 1) {
@@ -553,7 +553,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      *
      * @param inValues the inValues to set
      */
-    protected <T> DBOperator useInOperator(T... inValues) {
+    protected DBOperator useInOperator(Object... inValues) {
         blankQuery();
         ArrayList<QueryableDatatype> inVals = new ArrayList<QueryableDatatype>();
         for (Object obj : inValues) {
