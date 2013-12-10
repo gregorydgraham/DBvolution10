@@ -449,6 +449,7 @@ public class DBTable<E extends DBRow> {
      * there is more than 1 row available
      *
      * @return
+     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
      */
     public E getOnlyRow() throws UnexpectedNumberOfRowsException {
         if (this.listOfRows.size() > 0) {
@@ -458,7 +459,8 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    public DBActionList insert(E... newRows) throws SQLException {
+    @SafeVarargs
+    public final DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : newRows) {
             actions.addAll(DBInsert.save(database, row));
@@ -474,7 +476,8 @@ public class DBTable<E extends DBRow> {
         return changes;
     }
 
-    public DBActionList delete(E... oldRows) throws SQLException {
+    @SafeVarargs
+    public final DBActionList delete(E... oldRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : oldRows) {
             actions.addAll(DBDelete.delete(database, row));
