@@ -105,6 +105,16 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     @Test
+    public void testIsWhileIgnoringCase() throws SQLException {
+        Marque literalQuery = new Marque();
+        literalQuery.name.permittedValuesIgnoreCase("toYOTA");
+        marques = marques.getRowsByExample(literalQuery);
+        marques.print();
+        Assert.assertEquals(marques.toList().size(), 1);
+        Assert.assertEquals("TOYOTA", marques.toList().get(0).name.stringValue());
+    }
+
+    @Test
     public void testMultiplePermittedValues() throws SQLException {
         Marque literalQuery = new Marque();
         literalQuery.getUidMarque().permittedValues(4893059, 4893090);
