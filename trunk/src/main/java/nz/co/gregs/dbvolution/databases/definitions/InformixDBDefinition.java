@@ -45,7 +45,7 @@ public class InformixDBDefinition extends DBDefinition {
      */
     @Override
     public String formatTableAndColumnName(DBRow table, String columnName) {
-        return "" + table + "." + columnName + "";
+        return "" + formatTableName(table) + "." + formatColumnName(columnName) + "";
     }
 
     @Override
