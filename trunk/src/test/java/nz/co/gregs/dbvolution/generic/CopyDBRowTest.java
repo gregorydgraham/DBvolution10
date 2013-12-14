@@ -19,6 +19,7 @@ package nz.co.gregs.dbvolution.generic;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.Marque;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -33,8 +34,9 @@ public class CopyDBRowTest extends AbstractTest {
     
     @Test
     public void copyDBRowTest() throws SQLException{
-        List<Marque> marqs = database.get(new Marque());
-        Marque first = marqs.get(0);
+        DBTable<Marque> marqs = database.getDBTable(new Marque());
+        marqs.setBlankQueryAllowed(true);
+        Marque first = marqs.getAllRows().toList().get(0);
         Marque firstCopy = DBRow.copyDBRow(first);
         System.out.println(first);
         System.out.println(firstCopy);
