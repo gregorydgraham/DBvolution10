@@ -49,7 +49,7 @@ public class DBTableGetTest extends AbstractTest {
 
     @Test
     public void testGetAllRows() throws SQLException {
-        marques.getAllRows();
+        marques.setBlankQueryAllowed(true).getAllRows();
         for (DBRow row : marques.toList()) {
             System.out.println(row);
         }
@@ -200,7 +200,7 @@ public class DBTableGetTest extends AbstractTest {
 
     @Test
     public void testDBSelectQuery() throws SQLException {
-        DBTable<MarqueSelectQuery> msq = DBTable.getInstance(database, new MarqueSelectQuery());
+        DBTable<MarqueSelectQuery> msq = DBTable.getInstance(database, new MarqueSelectQuery()).setBlankQueryAllowed(true);
         msq.getAllRows();
         msq.print();
 
@@ -213,7 +213,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testIgnoringColumnsOnTable() throws SQLException {
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
-        List<Marque> rowsByExample = database.getDBTable(myMarqueRow).getRowsByExample(myMarqueRow).toList();
+        List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getRowsByExample(myMarqueRow).toList();
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);
             Assert.assertThat(marq.auto_created.isNull(), is(true));
@@ -235,7 +235,7 @@ public class DBTableGetTest extends AbstractTest {
     public void testUnignoringColumnsOnTable() throws SQLException {
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
-        List<Marque> rowsByExample = database.getDBTable(myMarqueRow).getRowsByExample(myMarqueRow).toList();
+        List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getRowsByExample(myMarqueRow).toList();
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);
             Assert.assertThat(marq.auto_created.isNull(), is(false));

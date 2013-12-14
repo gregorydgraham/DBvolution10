@@ -38,7 +38,7 @@ public class SelectTopTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
         DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
         carCoTable.setRowLimit(2);
-        DBTable<CarCompany> allRows = carCoTable.getAllRows();
+        DBTable<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
         allRows.print();
         Assert.assertThat(allRows.toList().size(), is(2));
     }
@@ -48,7 +48,7 @@ public class SelectTopTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
         DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
         carCoTable.setRowLimit(3);
-        DBTable<CarCompany> allRows = carCoTable.getAllRows();
+        DBTable<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
         allRows.print();
         Assert.assertThat(allRows.toList().size(), is(3));
     }
@@ -59,7 +59,7 @@ public class SelectTopTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
         DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
         carCoTable.setRowLimit(2);
-        DBTable<CarCompany> allRows = carCoTable.getAllRows();
+        DBTable<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
         allRows.print();
         carCoTable.clearRowLimit();
         allRows = carCoTable.getAllRows();

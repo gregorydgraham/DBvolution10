@@ -38,7 +38,7 @@ public class SortingTest extends AbstractTest {
         final Marque marque = new Marque();
         DBTable<Marque> dbTable = database.getDBTable(marque);
         dbTable.setSortOrder(marque, marque.carCompany, marque.name);
-        dbTable.getAllRows().print();
+        dbTable.setBlankQueryAllowed(true).getAllRows().print();
         List<Marque> sortedMarques = dbTable.toList();
         Assert.assertThat(sortedMarques.size(), is(22));
         Assert.assertThat(sortedMarques.get(0).name.toString(), is("HYUNDAI"));
