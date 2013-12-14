@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
@@ -33,11 +34,13 @@ public class DBTable<E extends DBRow> {
 
     private static final long serialVersionUID = 1L;
     private static boolean printSQLBeforeExecuting = false;
-    E dummy;
+    E template;
     private DBDatabase database = null;
+    ResultSet resultSet = null;
     private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
     private Long rowLimit;
     private List<PropertyWrapper> sortOrder = null;
+    private boolean blankQueryAllowed = false;
 
     /**
      *
@@ -59,7 +62,7 @@ public class DBTable<E extends DBRow> {
      */
     private DBTable(DBDatabase myDatabase, E dummyObject) {
         this.database = myDatabase;
-        dummy = dummyObject;
+        template = dummyObject;
     }
 
     /**
@@ -73,7 +76,7 @@ public class DBTable<E extends DBRow> {
 
     private String getAllFieldsForSelect() {
         StringBuilder allFields = new StringBuilder();
-        List<String> columnNames = dummy.getColumnNames();
+        List<String> columnNames = template.getColumnNames();
         String separator = "";
         for (String column : columnNames) {
             allFields.append(separator).append(" ").append(database.getDefinition().formatColumnName(column));
@@ -86,7 +89,7 @@ public class DBTable<E extends DBRow> {
     private String getSQLForSelectAll() {
         DBDefinition defn = database.getDefinition();
         StringBuilder selectStatement = new StringBuilder();
-        DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
+        DBSelectQuery selectQueryAnnotation = template.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation != null) {
             selectStatement.append(selectQueryAnnotation.value());
         } else {
@@ -97,8 +100,8 @@ public class DBTable<E extends DBRow> {
 //            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
             selectStatement.append(getAllFieldsForSelect())
                     .append(defn.beginFromClause())
-                    .append(defn.formatTableName(dummy))
-                    .append(defn.beginTableAlias()).append(defn.getTableAlias(dummy)).append(defn.endTableAlias())
+                    .append(defn.formatTableName(template))
+                    .append(defn.beginTableAlias()).append(defn.getTableAlias(template)).append(defn.endTableAlias())
                     .append(getOrderByClause())
                     .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
                     .append(defn.endSQLStatement());
@@ -116,7 +119,7 @@ public class DBTable<E extends DBRow> {
     public String getSQLForSelect() {
         DBDefinition defn = database.getDefinition();
         StringBuilder selectStatement = new StringBuilder();
-        DBSelectQuery selectQueryAnnotation = dummy.getClass().getAnnotation(DBSelectQuery.class);
+        DBSelectQuery selectQueryAnnotation = template.getClass().getAnnotation(DBSelectQuery.class);
         if (selectQueryAnnotation != null) {
             selectStatement
                     .append(selectQueryAnnotation.value())
@@ -132,7 +135,7 @@ public class DBTable<E extends DBRow> {
             selectStatement
                     .append(getAllFieldsForSelect())
                     .append(defn.beginFromClause())
-                    .append(defn.formatTableName(dummy))
+                    .append(defn.formatTableName(template))
                     .append(defn.beginWhereClause())
                     .append(defn.getTrueOperation());
         }
@@ -149,21 +152,20 @@ public class DBTable<E extends DBRow> {
      * throws AccidentalBlankQueryException if you haven't specifically allowed
      * blank queries with setBlankQueryAllowed(boolean)
      *
-     * @return 
+     * @return
      * @throws SQLException, AccidentalBlankQueryException
      */
-    public DBTable<E> getAllRows() throws SQLException {
+    public DBTable<E> getAllRows() throws SQLException, AccidentalBlankQueryException {
+        if (!this.blankQueryAllowed){
+            throw new AccidentalBlankQueryException();
+        }
+        resultSet = null;
         this.listOfRows.clear();
 
         String selectStatement = this.getSQLForSelectAll();
 
-//        if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-//            System.out.println(selectStatement);
-//        }
-
-        DBStatement statement = null;
-        ResultSet resultSet = null;
-        statement = this.database.getDBStatement();
+        resultSet = null;
+        DBStatement statement = this.database.getDBStatement();
         try {
             try {
                 try {
@@ -198,7 +200,7 @@ public class DBTable<E extends DBRow> {
 
         while (resultSet.next()) {
             @SuppressWarnings("unchecked")
-            E tableRow = (E) DBRow.getDBRow(dummy.getClass());
+            E tableRow = (E) DBRow.getDBRow(template.getClass());
 
             List<PropertyWrapper> fields = tableRow.getPropertyWrappers();
 
@@ -257,15 +259,16 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    private String getPrimaryKeyColumn() {
-        String columnName = dummy.getPrimaryKeyColumnName();
+    private String getPrimaryKeyColumnName() {
+        String columnName = template.getPrimaryKeyColumnName();
         if (columnName == null) {
-            throw new UndefinedPrimaryKeyException(dummy.getClass());
+            throw new UndefinedPrimaryKeyException(template.getClass());
         } else {
             return columnName;
         }
     }
 
+    
     private String escapeSingleQuotes(String str) {
         if (str == null) {
             return "";
@@ -282,7 +285,7 @@ public class DBTable<E extends DBRow> {
         DBStatement statement = database.getDBStatement();
         try {
             boolean executed = statement.execute(selectStatement);
-            ResultSet resultSet = statement.getResultSet();
+            resultSet = statement.getResultSet();
             try {
                 addAllFields(this, resultSet);
             } finally {
@@ -307,7 +310,7 @@ public class DBTable<E extends DBRow> {
     public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
 
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumn()) + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
+        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -315,7 +318,7 @@ public class DBTable<E extends DBRow> {
 
     public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumn()) + defn.getEqualsComparator() + pkValue + " ";
+        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + pkValue + " ";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -323,7 +326,7 @@ public class DBTable<E extends DBRow> {
 
     public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumn()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
+        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -343,19 +346,19 @@ public class DBTable<E extends DBRow> {
      * @return
      * @throws SQLException
      */
-    public DBTable<E> getRowsByExample(E queryTemplate) throws SQLException {
-        dummy = queryTemplate;
+    public DBTable<E> getRowsByExample(E queryTemplate) throws SQLException, AccidentalBlankQueryException {
+        template = queryTemplate;
         String whereClause = getSQLForExample(queryTemplate);
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
 
         return getRows(selectStatement);
     }
 
-    public E getOnlyRowByExample(E queryTemplate) throws SQLException, UnexpectedNumberOfRowsException {
+    public E getOnlyRowByExample(E queryTemplate) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
         return getRowsByExample(queryTemplate, 1).listOfRows.get(0);
     }
 
-    public DBTable<E> getRowsByExample(E queryTemplate, int expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException {
+    public DBTable<E> getRowsByExample(E queryTemplate, int expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
         DBTable<E> rowsByExample = getRowsByExample(queryTemplate);
         int actualNumberOfRows = rowsByExample.toList().size();
         if (actualNumberOfRows == expectedNumberOfRows) {
@@ -375,7 +378,10 @@ public class DBTable<E extends DBRow> {
      * @param row
      * @return
      */
-    public String getSQLForExample(E row) {
+    public String getSQLForExample(E row) throws AccidentalBlankQueryException {
+        if (!this.blankQueryAllowed && row.willCreateBlankQuery(database)) {
+            throw new AccidentalBlankQueryException();
+        }
         return row.getWhereClause(database);
     }
 
@@ -408,7 +414,10 @@ public class DBTable<E extends DBRow> {
      * Equivalent to: print(System.out)
      *
      */
-    public void print() {
+    public void print() throws SQLException {
+        if (resultSet==null){
+            getRowsByExample(template);
+        }
         print(System.out);
     }
 
@@ -419,7 +428,10 @@ public class DBTable<E extends DBRow> {
      *
      * @param ps
      */
-    public void print(PrintStream ps) {
+    public void print(PrintStream ps) throws SQLException {
+        if (resultSet==null){
+            getRowsByExample(template);
+        }
         for (E row : this.listOfRows) {
             ps.println(row);
         }
@@ -433,7 +445,10 @@ public class DBTable<E extends DBRow> {
      *
      * @return
      */
-    public E getFirstRow() {
+    public E getFirstRow() throws SQLException {
+        if (resultSet==null){
+            getRowsByExample(template);
+        }
         if (this.listOfRows.size() > 0) {
             return this.listOfRows.get(0);
         } else {
@@ -451,7 +466,10 @@ public class DBTable<E extends DBRow> {
      * @return
      * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
      */
-    public E getOnlyRow() throws UnexpectedNumberOfRowsException {
+    public E getOnlyRow() throws UnexpectedNumberOfRowsException, SQLException {
+        if (resultSet==null){
+            getRowsByExample(template);
+        }
         if (this.listOfRows.size() > 0) {
             return this.listOfRows.get(0);
         } else {
@@ -530,11 +548,17 @@ public class DBTable<E extends DBRow> {
      *
      * @return
      */
-    public List<E> toList() {
+    public List<E> toList() throws SQLException {
+        if (resultSet==null){
+            getRowsByExample(template);
+        }
         return new java.util.ArrayList<E>(listOfRows);
     }
 
-    public List<Long> getPrimaryKeysAsLong() {
+    public List<Long> getPrimaryKeysAsLong() throws SQLException {
+        if (resultSet==null){
+            getRowsByExample(template);
+        }
         List<Long> primaryKeys = new ArrayList<Long>();
         for (E e : listOfRows) {
             primaryKeys.add(e.getPrimaryKey().longValue());
@@ -542,7 +566,10 @@ public class DBTable<E extends DBRow> {
         return primaryKeys;
     }
 
-    public List<String> getPrimaryKeysAsString() {
+    public List<String> getPrimaryKeysAsString() throws SQLException {
+        if (resultSet==null){
+            getRowsByExample(template);
+        }
         List<String> primaryKeys = new ArrayList<String>();
         for (E e : listOfRows) {
             primaryKeys.add(e.getPrimaryKey().toString());
@@ -558,7 +585,7 @@ public class DBTable<E extends DBRow> {
      *
      * @param secondTable : a comparable table
      */
-    public void compare(DBTable<E> secondTable) {
+    public void compare(DBTable<E> secondTable) throws SQLException {
         HashMap<Long, E> secondMap = new HashMap<Long, E>();
         for (E row : secondTable.toList()) {
             secondMap.put(row.getPrimaryKey().longValue(), row);
@@ -574,12 +601,16 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    public void setRowLimit(int i) {
+    public DBTable<E> setRowLimit(int i) {
+        resultSet = null;
         rowLimit = new Long(i);
+        return this;
     }
 
-    public void clearRowLimit() {
+    public DBTable<E> clearRowLimit() {
+        resultSet = null;
         rowLimit = null;
+        return this;
     }
 
     /**
@@ -602,7 +633,8 @@ public class DBTable<E extends DBRow> {
      *
      * @param orderColumns
      */
-    public void setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
+    public DBTable<E> setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
+        resultSet = null;
         sortOrder = new ArrayList<PropertyWrapper>();
         for (QueryableDatatype qdt : orderColumns) {
             PropertyWrapper prop = baseRow.getPropertyWrapperOf(qdt);
@@ -611,10 +643,13 @@ public class DBTable<E extends DBRow> {
             }
             sortOrder.add(prop);
         }
+        return this;
     }
 
-    public void clearSortOrder() {
+    public DBTable<E> clearSortOrder() {
+        resultSet = null;
         sortOrder = null;
+        return this;
     }
 
     private String getOrderByClause() {
@@ -634,5 +669,10 @@ public class DBTable<E extends DBRow> {
             return orderByClause.toString();
         }
         return "";
+    }
+
+    public DBTable<E> setBlankQueryAllowed(boolean allow) {
+        this.blankQueryAllowed = allow;
+        return this;
     }
 }
