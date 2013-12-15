@@ -555,7 +555,7 @@ abstract public class DBRow implements Serializable {
     public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable) {
         StringBuilder rels = new StringBuilder();
         DBDefinition defn = db.getDefinition();
-        final String lineSeparator = System.getProperty("line.separator");
+//        final String lineSeparator = System.getProperty("line.separator");
 
         List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
         String joinSeparator = "";
@@ -570,7 +570,7 @@ abstract public class DBRow implements Serializable {
                 String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
                         newTable, referencedProp.columnName());
 
-                rels.append(lineSeparator)
+                rels//.append(lineSeparator)
                         .append(joinSeparator)
                         .append(formattedForeignKey)
                         .append(defn.getEqualsComparator())
@@ -597,7 +597,7 @@ abstract public class DBRow implements Serializable {
                 operator = operator.getInverseOperator();
             }
 
-            rels.append(lineSeparator)
+            rels//.append(lineSeparator)
                     .append(joinSeparator)
                     .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
@@ -622,7 +622,7 @@ abstract public class DBRow implements Serializable {
                 operator = operator.getInverseOperator();
             }
 
-            rels.append(lineSeparator)
+            rels//.append(lineSeparator)
                     .append(joinSeparator)
                     .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
@@ -644,7 +644,7 @@ abstract public class DBRow implements Serializable {
                         this,
                         this.getPrimaryKeyColumnName());
 
-                rels.append(lineSeparator)
+                rels//.append(lineSeparator)
                         .append(joinSeparator)
                         .append(formattedPrimaryKey)
                         .append(defn.getEqualsComparator())
