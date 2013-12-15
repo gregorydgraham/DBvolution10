@@ -166,6 +166,7 @@ public class DBQuery {
 
     public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables, QueryGraph queryGraph) {
         List<String> joinClauses = new ArrayList<String>();
+        String lineSep = System.getProperty("line.separator");
         DBDefinition defn = database.getDefinition();
         boolean isLeftOuterJoin = false;
         boolean isFullOuterJoin = false;
@@ -186,11 +187,11 @@ public class DBQuery {
             sqlToReturn = " " + newTable.getTableName() + defn.beginTableAlias()+defn.getTableAlias(newTable)+defn.endTableAlias();
         } else {
             if (isFullOuterJoin) {
-                sqlToReturn = defn.beginFullOuterJoin();
+                sqlToReturn = lineSep+defn.beginFullOuterJoin();
             } else if (isLeftOuterJoin) {
-                sqlToReturn = defn.beginLeftOuterJoin();
+                sqlToReturn = lineSep+defn.beginLeftOuterJoin();
             } else {
-                sqlToReturn = defn.beginInnerJoin();
+                sqlToReturn = lineSep+defn.beginInnerJoin();
             }
             sqlToReturn += newTable.getTableName() + defn.beginTableAlias()+defn.getTableAlias(newTable)+defn.endTableAlias();
             if (joinClauses.isEmpty()) {
