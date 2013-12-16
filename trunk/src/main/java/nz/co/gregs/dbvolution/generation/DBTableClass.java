@@ -31,6 +31,7 @@ public class DBTableClass {
     String packageName;
     public String className;
     String tableName;
+    long serialversionUIDBValue = 1L;
     public String javaSource;
     List<DBTableField> fields = new ArrayList<DBTableField>();
     String lineSeparator = System.getProperty("line.separator");
@@ -66,6 +67,9 @@ public class DBTableClass {
         javaSrc.append("@").append(tableNameAnnotation).append("(\"").append(this.tableName).append("\") ");
         javaSrc.append(lineSeparator);
         javaSrc.append("public class ").append(this.className).append(" extends ").append(dbRowClassName).append(" {");
+        javaSrc.append(conceptBreak);
+
+        javaSrc.append("    public static final long serialVersionUID = ").append(serialversionUIDBValue).append("L;");
         javaSrc.append(conceptBreak);
 
         for (DBTableField field : fields) {
