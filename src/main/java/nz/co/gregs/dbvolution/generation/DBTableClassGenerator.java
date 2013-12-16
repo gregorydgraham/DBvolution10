@@ -47,10 +47,9 @@ public class DBTableClassGenerator {
      *
      * Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
-     *
+     * 
      * convenience method which calls
-     * generateClasses(jdbcURL,username,password,packageName,baseDirectory,new
-     * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+     * generateClasses(jdbcURL, username, password, packageName, 1L, baseDirectory,new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
      *
      * @param database
      * @param packageName
@@ -60,7 +59,31 @@ public class DBTableClassGenerator {
      * @throws IOException
      */
     public static void generateClasses(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
-        generateClasses(database, packageName, baseDirectory, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+        generateClasses(database, packageName, baseDirectory, 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+    }
+
+    /**
+     *
+     * Creates DBTableRow classes corresponding to all the tables and views
+     * accessible to the user specified in the database supplied.
+     *
+     * Classes are placed in the correct subdirectory of the base directory as
+     * defined by the package name supplied.
+     *
+     * convenience method which calls
+     * generateClasses(jdbcURL,username,password,packageName,baseDirectory,new
+     * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+     *
+     * @param database
+     * @param packageName
+     * @param versionNumber - the value to use for serialVersionUID
+     * @param baseDirectory
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber) throws SQLException, FileNotFoundException, IOException {
+        generateClasses(database, packageName, baseDirectory, versionNumber, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
     }
 
     /**
@@ -76,6 +99,7 @@ public class DBTableClassGenerator {
      *
      * @param database
      * @param packageName
+     * @param versionNumber
      * @param baseDirectory
      * @param pkRecog
      * @param fkRecog
@@ -83,14 +107,14 @@ public class DBTableClassGenerator {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, FileNotFoundException, IOException {
+    public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, FileNotFoundException, IOException {
         String viewsPackage = packageName + ".views";
         String viewsPath = viewsPackage.replaceAll("[.]", "/");
-        List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, pkRecog, fkRecog);
+        List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, versionNumber, pkRecog, fkRecog);
 
         String tablesPackage = packageName + ".tables";
         String tablesPath = tablesPackage.replaceAll("[.]", "/");
-        List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, pkRecog, fkRecog);
+        List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, versionNumber, pkRecog, fkRecog);
         List<DBTableClass> allGeneratedClasses = new ArrayList<DBTableClass>();
         allGeneratedClasses.addAll(generatedViews);
         allGeneratedClasses.addAll(generatedTables);
@@ -147,22 +171,28 @@ public class DBTableClassGenerator {
      *
      * @param database
      * @param packageName
+     * @param versionNumber
+     * @param pkRecog
+     * @param fkRecog
      * @return
      * @throws SQLException
      */
-    public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "TABLE");
+    public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
+        return generateClassesOfObjectTypes(database, packageName, versionNumber, pkRecog, fkRecog, "TABLE");
     }
 
     /**
      *
      * @param database
      * @param packageName
+     * @param versionNumber
+     * @param pkRecog
+     * @param fkRecog
      * @return
      * @throws SQLException
      */
-    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "VIEW");
+    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
+        return generateClassesOfObjectTypes(database, packageName, versionNumber, pkRecog, fkRecog, "VIEW");
     }
 
     /**
@@ -173,7 +203,7 @@ public class DBTableClassGenerator {
      * @return
      * @throws SQLException
      */
-    private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
+    private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
 
         DBStatement dbStatement = database.getDBStatement();
@@ -198,6 +228,7 @@ public class DBTableClassGenerator {
                 while (tables.next()) {
                     DBTableClass dbTableClass = new DBTableClass();
                     dbTableClass.packageName = packageName;
+                    dbTableClass.serialversionUIDBValue = versionNumber;
                     dbTableClass.tableName = tables.getString("TABLE_NAME");
 //            System.out.println(dbTableClass.tableName);
                     dbTableClass.className = toClassCase(dbTableClass.tableName);
