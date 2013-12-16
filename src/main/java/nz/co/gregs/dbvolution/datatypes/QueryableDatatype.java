@@ -118,7 +118,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @return
      */
     public String stringValue() {
-        return (literalValue == null ? null : literalValue.toString());
+        return (literalValue == null ? "" : literalValue.toString());
     }
 
     public Long longValue() {
