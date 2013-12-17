@@ -396,6 +396,7 @@ public class DBTable<E extends DBRow> {
      *
      * @param sqlWhereClause
      * @return
+     * @throws java.sql.SQLException
      */
     public DBTable<E> getRowsByRawSQL(String sqlWhereClause) throws SQLException {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
@@ -413,8 +414,9 @@ public class DBTable<E extends DBRow> {
      * Convenience method to print all the rows in the current collection
      * Equivalent to: print(System.out)
      *
+     * @throws java.sql.SQLException
      */
-    public void print() throws SQLException {
+    public void print() throws SQLException, AccidentalBlankQueryException {
         if (resultSet==null){
             getRowsByExample(template);
         }
@@ -427,8 +429,9 @@ public class DBTable<E extends DBRow> {
      * myTable.printAllRows(System.err);
      *
      * @param ps
+     * @throws java.sql.SQLException
      */
-    public void print(PrintStream ps) throws SQLException {
+    public void print(PrintStream ps) throws SQLException, AccidentalBlankQueryException {
         if (resultSet==null){
             getRowsByExample(template);
         }
@@ -444,8 +447,9 @@ public class DBTable<E extends DBRow> {
      * particularly helpful when you know there is only one row
      *
      * @return
+     * @throws java.sql.SQLException
      */
-    public E getFirstRow() throws SQLException {
+    public E getFirstRow() throws SQLException, AccidentalBlankQueryException {
         if (resultSet==null){
             getRowsByExample(template);
         }
@@ -465,6 +469,7 @@ public class DBTable<E extends DBRow> {
      *
      * @return
      * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+     * @throws java.sql.SQLException
      */
     public E getOnlyRow() throws UnexpectedNumberOfRowsException, SQLException {
         if (resultSet==null){
@@ -506,6 +511,7 @@ public class DBTable<E extends DBRow> {
     /**
      *
      * @param oldRows
+     * @return 
      * @throws SQLException
      */
     public DBActionList delete(List<E> oldRows) throws SQLException {
@@ -547,8 +553,9 @@ public class DBTable<E extends DBRow> {
     /**
      *
      * @return
+     * @throws java.sql.SQLException
      */
-    public List<E> toList() throws SQLException {
+    public List<E> toList() throws SQLException, AccidentalBlankQueryException {
         if (resultSet==null){
             getRowsByExample(template);
         }
@@ -584,6 +591,7 @@ public class DBTable<E extends DBRow> {
      * Should be updated to return the varying rows somehow
      *
      * @param secondTable : a comparable table
+     * @throws java.sql.SQLException
      */
     public void compare(DBTable<E> secondTable) throws SQLException {
         HashMap<Long, E> secondMap = new HashMap<Long, E>();
@@ -632,6 +640,7 @@ public class DBTable<E extends DBRow> {
      * @param baseRow
      *
      * @param orderColumns
+     * @return this
      */
     public DBTable<E> setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
         resultSet = null;
