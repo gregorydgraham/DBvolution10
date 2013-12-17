@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 public class DBTable<E extends DBRow> {
 
     private static final long serialVersionUID = 1L;
-    private static boolean printSQLBeforeExecuting = false;
+//    private static boolean printSQLBeforeExecuting = false;
     E template;
     private DBDatabase database = null;
     ResultSet resultSet = null;
@@ -63,15 +63,6 @@ public class DBTable<E extends DBRow> {
     private DBTable(DBDatabase myDatabase, E dummyObject) {
         this.database = myDatabase;
         template = dummyObject;
-    }
-
-    /**
-     * Set this to TRUE to see the actual SQL that is executed.
-     *
-     * @param aPrintSQLBeforeExecuting the printSQLBeforeExecuting to set
-     */
-    public static void setPrintSQLBeforeExecuting(boolean aPrintSQLBeforeExecuting) {
-        printSQLBeforeExecuting = aPrintSQLBeforeExecuting;
     }
 
     private String getAllFieldsForSelect() {
@@ -278,9 +269,9 @@ public class DBTable<E extends DBRow> {
 
     private DBTable<E> getRows(String selectStatement) throws SQLException {
         this.listOfRows.clear();
-        if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-            System.out.println(selectStatement);
-        }
+//        if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
+//            System.out.println(selectStatement);
+//        }
 
         DBStatement statement = database.getDBStatement();
         try {
