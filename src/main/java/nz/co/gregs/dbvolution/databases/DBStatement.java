@@ -49,7 +49,13 @@ public class DBStatement implements Statement {
 
     @Override
     public void close() throws SQLException {
-        realStatement.close();
+        try {
+            realStatement.close();
+        }catch(SQLException e){
+            // Someone please tell me how you are supposed to cope 
+            // with an exception during the close method????????
+            e.printStackTrace(System.err);
+        }
     }
 
     @Override
@@ -252,7 +258,6 @@ public class DBStatement implements Statement {
 //    public boolean isCloseOnCompletion() throws SQLException {
 //        return realStatement.isCloseOnCompletion();
 //    }
-
     @Override
     public <T> T unwrap(Class<T> type) throws SQLException {
         return realStatement.unwrap(type);
