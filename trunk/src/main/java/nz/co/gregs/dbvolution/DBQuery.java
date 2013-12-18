@@ -50,10 +50,6 @@ public class DBQuery {
     private Long rowLimit;
     private List<PropertyWrapper> sortOrder = null;
     private String resultSQL;
-//    private final int INNER_JOIN = 0;
-//    private final int LEFT_JOIN = 1;
-//    private final int RIGHT_JOIN = 2;
-//    private final int FULL_OUTER_JOIN = 4;
     private boolean useANSISyntax = true;
     private boolean cartesianJoinAllowed = false;
     private boolean blankQueryAllowed = false;
@@ -67,12 +63,6 @@ public class DBQuery {
         this.resultSQL = null;
     }
 
-//    private DBQuery(DBDatabase database, DBRow... examples) {
-//        this(database);
-//        for (DBRow example : examples) {
-//            this.add(example);
-//        }
-//    }
     public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
         DBQuery dbQuery = new DBQuery(database);
         for (DBRow example : examples) {
@@ -394,7 +384,7 @@ public class DBQuery {
 
     /**
      *
-     * @param <>>: A Java Object that extends DBRow
+     * @param <R>
      * @param exemplar: The DBRow class that you would like returned.
      * @param expected: The expected number of rows, an exception will be thrown
      * if this expectation is not met.
@@ -702,5 +692,18 @@ public class DBQuery {
             }
         }
         addOptional(tablesToAdd.toArray(new DBRow[]{}));
+    }
+
+    public List<DBQueryRow> getAllRowsContaining(DBRow exemplar) throws SQLException {
+        if (this.needsResults()) {
+            getAllRows();
+        }
+        List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+        for(DBQueryRow row : results){
+            if (row.get(exemplar)==exemplar){
+                returnList.add(row);
+            }
+        }
+        return returnList;
     }
 }
