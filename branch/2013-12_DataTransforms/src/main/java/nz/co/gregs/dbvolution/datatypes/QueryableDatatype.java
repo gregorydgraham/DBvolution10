@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.operators.*;
+import nz.co.gregs.dbvolution.datatransforms.*;
 
 /**
  *
@@ -44,6 +45,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
+    private DataTransform transform = new NonTransform();
 
     QueryableDatatype() {
     }
@@ -103,6 +105,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             }
             newQDT.isPrimaryKey = this.isPrimaryKey;
             newQDT.sort = this.sort;
+            newQDT.transform = this.transform.copy();
         } catch (InstantiationException ex) {
             throw new UnableInstantiateQueryableDatatypeException(this, ex);
         } catch (IllegalAccessException ex) {
@@ -632,7 +635,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         if (this.isDBNull || literalValue == null) {
             return def.getNull();
         }
-        return formatValueForSQLStatement(db);
+        return transform.transform(formatValueForSQLStatement(db));
     }
 
     /**
@@ -792,5 +795,19 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         } else {
             return this.getOperator().equals(other.getOperator());
         }
+    }
+
+    /**
+     * @return the tranform
+     */
+    public DataTransform getTranform() {
+        return transform;
+    }
+
+    /**
+     * @param tranform the tranform to set
+     */
+    public void setTranform(DataTransform tranform) {
+        this.transform = tranform;
     }
 }

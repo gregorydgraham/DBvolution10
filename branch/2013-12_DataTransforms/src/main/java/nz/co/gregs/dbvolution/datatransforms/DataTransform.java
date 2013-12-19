@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 greg.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatypes;
-
-import java.io.InputStream;
+package nz.co.gregs.dbvolution.datatransforms;
 
 /**
  *
- * @author gregorygraham
+ * @author greg
  */
-public abstract class DBLargeObject extends QueryableDatatype {
+public interface DataTransform {
 
-    public DBLargeObject() {
-        super();
-    }
-
-    public abstract InputStream getInputStream() ;
-
-    /**
-     *
-     * @return
-     */
-    public abstract int getSize();
-
-    @Override
-    public String toString(){
-        return "/*BINARY DATA*/";
-    }
+    public String transform(String formattedValueForSQLStatement);
+    public void setTransform(DataTransform innerTransform);
+    public DataTransform getTransform();
+    public DataTransform copy();
     
 }

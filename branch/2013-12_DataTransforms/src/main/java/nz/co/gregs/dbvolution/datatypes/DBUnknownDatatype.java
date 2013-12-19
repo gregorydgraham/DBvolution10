@@ -40,13 +40,5 @@ public class DBUnknownDatatype extends QueryableDatatype {
     public DBUnknownDatatype() {
         super();
     }
-
-    public DBUnknownDatatype(String str) {
-        super(str);
-    }
-
-    public DBUnknownDatatype(Object str) {
-        super(str);
-    }
     
 }

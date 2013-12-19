@@ -25,10 +25,6 @@ public class DBBoolean extends QueryableDatatype {
     public DBBoolean() {
     }
 
-    public DBBoolean(Boolean value) {
-        super(value);
-    }
-
     @Override
     public String getSQLDatatype() {
         return "BIT(1)";
