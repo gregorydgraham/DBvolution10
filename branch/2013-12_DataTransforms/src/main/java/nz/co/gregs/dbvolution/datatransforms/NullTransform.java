@@ -15,12 +15,16 @@
  */
 package nz.co.gregs.dbvolution.datatransforms;
 
+import java.io.Serializable;
+
 /**
  *
  * @author gregory.graham
  */
-public class NullTransform implements DataTransform{
+public class NullTransform implements DataTransform, Serializable{
 
+    public static final long serialVersionUID = 1L;
+    
     public NullTransform(DataTransform innerTransform) {
     }
 

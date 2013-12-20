@@ -458,7 +458,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             } else {
                 setChanged(newLiteralValue);
                 this.literalValue = newLiteralValue;
-                this.setOperator(new DBEqualsOperator(this));
+                // Avoid basing on transforms to the test value
+                QueryableDatatype copy = this.copy();
+                copy.setTransform(null);
+                this.setOperator(new DBEqualsOperator(copy));
             }
         }
         return getOperator();

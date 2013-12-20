@@ -19,6 +19,8 @@ package nz.co.gregs.dbvolution.datatransforms;
 
 public class RightTrimTransform extends BaseTransform {
 
+    public static final long serialVersionUID = 1L;
+    
     public RightTrimTransform() {
         super();
     }

@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatransforms;
 
+import java.io.Serializable;
+
 /**
  *
  * @author greg
@@ -22,7 +24,9 @@ package nz.co.gregs.dbvolution.datatransforms;
 public interface DataTransform {
 
     public String transform(String formattedValueForSQLStatement);
+
     public void setInnerTransform(DataTransform innerTransform);
-    public DataTransform copy();
-    
+
+    public DataTransform copy() throws InstantiationException, IllegalAccessException;
+
 }

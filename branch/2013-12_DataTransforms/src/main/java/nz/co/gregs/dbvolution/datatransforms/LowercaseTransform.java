@@ -19,6 +19,8 @@ package nz.co.gregs.dbvolution.datatransforms;
 
 public class LowercaseTransform extends BaseTransform {
 
+    public static final long serialVersionUID = 1L;
+    
     @Override
     protected String insertAfterValue() {
         return ") ";

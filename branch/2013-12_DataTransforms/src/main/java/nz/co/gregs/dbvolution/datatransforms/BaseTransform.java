@@ -15,15 +15,16 @@
  */
 package nz.co.gregs.dbvolution.datatransforms;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.Serializable;
 
 /**
  *
  * @author greg
  */
-public abstract class BaseTransform implements DataTransform {
+public abstract class BaseTransform implements DataTransform, Serializable{
 
+    public static final long serialVersionUID = 1L;
+    
     protected DataTransform innerTransform = new NullTransform();
 
     public BaseTransform(DataTransform innerTransform) {
@@ -54,14 +55,14 @@ public abstract class BaseTransform implements DataTransform {
     }
 
     @Override
-    public DataTransform copy() {
+    public DataTransform copy() throws InstantiationException, IllegalAccessException{
         DataTransform newCopy = this;
         try {
             newCopy = (DataTransform) this.getClass().newInstance();
         } catch (InstantiationException ex) {
-            Logger.getLogger(BaseTransform.class.getName()).log(Level.SEVERE, null, ex);
+            throw new InstantiationException("Unable To Create A New Instance Of "+this.getClass().getSimpleName()+": please ensure there is a basic public constructor i.e. public MyTransform()");
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(BaseTransform.class.getName()).log(Level.SEVERE, null, ex);
+            throw new IllegalAccessException("Unable To Create A New Instance Of "+this.getClass().getSimpleName()+": please ensure there is a basic public constructor i.e. public MyTransform()");
         }
         if (this.innerTransform != null) {
             newCopy.setInnerTransform(this.innerTransform.copy());

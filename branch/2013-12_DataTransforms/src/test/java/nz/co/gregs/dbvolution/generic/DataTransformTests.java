@@ -21,6 +21,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.datatransforms.LeftTrimTransform;
 import nz.co.gregs.dbvolution.datatransforms.LowercaseTransform;
 import nz.co.gregs.dbvolution.datatransforms.RightTrimTransform;
+import nz.co.gregs.dbvolution.datatransforms.SubstringTransform;
 import nz.co.gregs.dbvolution.datatransforms.TrimTransform;
 import nz.co.gregs.dbvolution.datatransforms.UppercaseTransform;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -94,6 +95,30 @@ public class DataTransformTests extends AbstractTest {
         marq.name.permittedValues("HUMMER");
         marq.name.setTransform(new UppercaseTransform(new LowercaseTransform()));
         got = database.get(marq);
+        Assert.assertThat(got.size(), is(1));
+    }
+    
+    @Test
+    public void testSubstringTransform() throws SQLException{
+        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        marq.name.permittedValues("HUMMER".substring(0, 3));
+        List<Marque> got = database.get(marq);
+        Assert.assertThat(got.size(), is(0));
+        
+        marq.name.setTransform(new SubstringTransform(0,3));
+        got = database.get(marq);
+        Assert.assertThat(got.size(), is(1));
+        Assert.assertThat(got.get(0).name.stringValue(), is("HUMMER"));
+        
+        marq.name.permittedValues("HUM");
+        marq.name.setTransform(new SubstringTransform(3,6));
+        got = database.get(marq);
+        Assert.assertThat(got.size(), is(0));
+        
+        marq.name.permittedValues("HUMMER".substring(3, 6));
+        got = database.get(marq);
+        database.print(got);
         Assert.assertThat(got.size(), is(1));
     }
     
