@@ -19,8 +19,10 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatransforms.LeftTrimTransform;
+import nz.co.gregs.dbvolution.datatransforms.LowercaseTransform;
 import nz.co.gregs.dbvolution.datatransforms.RightTrimTransform;
 import nz.co.gregs.dbvolution.datatransforms.TrimTransform;
+import nz.co.gregs.dbvolution.datatransforms.UppercaseTransform;
 import nz.co.gregs.dbvolution.example.Marque;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -48,7 +50,7 @@ public class DataTransformTests extends AbstractTest {
     }
     
     @Test
-    public void testLeftAndRightTrimTransform() throws SQLException{
+    public void testLeftAndRightTrimTransforms() throws SQLException{
         database.setPrintSQLBeforeExecuting(true);
         database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
         Marque marq = new Marque();
@@ -67,6 +69,32 @@ public class DataTransformTests extends AbstractTest {
         marq.name.setTransform(new LeftTrimTransform(new RightTrimTransform()));
         got = database.get(marq);
         Assert.assertThat(got.size(), is(2));
+    }
+    
+    @Test
+    public void testUpperAndLowercaseTransforms() throws SQLException{
+        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        marq.name.permittedValues("HUMMER");
+        List<Marque> got = database.get(marq);
+        Assert.assertThat(got.size(), is(1));
+        
+        marq.name.setTransform(new LowercaseTransform());
+        got = database.get(marq);
+        Assert.assertThat(got.size(), is(0));
+        
+        marq.name.permittedValues("hummer");
+        got = database.get(marq);
+        Assert.assertThat(got.size(), is(1));
+
+        marq.name.setTransform(new UppercaseTransform());
+        got = database.get(marq);
+        Assert.assertThat(got.size(), is(0));
+
+        marq.name.permittedValues("HUMMER");
+        marq.name.setTransform(new UppercaseTransform(new LowercaseTransform()));
+        got = database.get(marq);
+        Assert.assertThat(got.size(), is(1));
     }
     
 }
