@@ -45,7 +45,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
-    private DataTransform transform = new NonTransform();
+    private DataTransform transform = new NullTransform();
 
     QueryableDatatype() {
     }
@@ -206,6 +206,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
+     * @param db
      * @param columnName
      * @return
      */
@@ -217,7 +218,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         String whereClause = "";
         DBOperator op = this.getOperator();
         if (op != null) {
-            whereClause = op.generateWhereLine(db, columnName);
+            whereClause = op.generateWhereLine(db, transform.transform(columnName));
         }
         return whereClause;
     }
@@ -798,16 +799,20 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     /**
-     * @return the tranform
+     * @return the transform
      */
-    public DataTransform getTranform() {
+    public DataTransform getTransform() {
         return transform;
     }
 
     /**
-     * @param tranform the tranform to set
+     * @param transform the DataTransform to be used during query execution
      */
-    public void setTranform(DataTransform tranform) {
-        this.transform = tranform;
+    public void setTransform(DataTransform transform) {
+        if (transform == null) {
+            this.transform = new NullTransform();
+        } else {
+            this.transform = transform;
+        }
     }
 }

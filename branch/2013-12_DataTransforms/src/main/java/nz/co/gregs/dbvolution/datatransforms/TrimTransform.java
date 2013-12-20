@@ -15,14 +15,32 @@
  */
 package nz.co.gregs.dbvolution.datatransforms;
 
-/**
- *
- * @author greg
- */
-public interface DataTransform {
+public class TrimTransform extends BaseTransform {
 
-    public String transform(String formattedValueForSQLStatement);
-    public void setInnerTransform(DataTransform innerTransform);
-    public DataTransform copy();
-    
+    public TrimTransform(DataTransform innerTransform) {
+        super(innerTransform);
+    }
+
+    public TrimTransform() {
+        super(new NullTransform());
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    protected String insertAfterValue() {
+        return ")";
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    protected String insertBeforeValue() {
+        return " trim(";
+    }
+
 }

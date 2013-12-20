@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 greg.
+ * Copyright 2013 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package nz.co.gregs.dbvolution.datatransforms;
 
-/**
- *
- * @author greg
- */
-public interface DataTransform {
 
-    public String transform(String formattedValueForSQLStatement);
-    public void setInnerTransform(DataTransform innerTransform);
-    public DataTransform copy();
+public class RightTrimTransform extends BaseTransform {
+
+    public RightTrimTransform() {
+        super();
+    }
+
+    public RightTrimTransform(DataTransform innerTransform) {
+        super(innerTransform);
+    }
     
+    @Override
+    protected String insertAfterValue() {
+        return ") ";
+    }
+
+    @Override
+    protected String insertBeforeValue() {
+    return " RTRIM(";
+    }
+
 }

@@ -22,15 +22,15 @@ import java.util.logging.Logger;
  *
  * @author greg
  */
-public class NonTransform implements DataTransform {
+public abstract class BaseTransform implements DataTransform {
 
-    protected DataTransform innerTransform = null;
+    protected DataTransform innerTransform = new NullTransform();
 
-    public NonTransform(DataTransform innerTransform) {
+    public BaseTransform(DataTransform innerTransform) {
         this.innerTransform = innerTransform;
     }
 
-    public NonTransform() {
+    public BaseTransform() {
     }
 
     @Override
@@ -38,18 +38,19 @@ public class NonTransform implements DataTransform {
         if (innerTransform == null) {
             return formattedValueForSQLStatement;
         } else {
-            return innerTransform.transform(formattedValueForSQLStatement);
+            return insertBeforeValue()
+                    + innerTransform.transform(formattedValueForSQLStatement)
+                    + insertAfterValue();
         }
     }
 
     @Override
-    public void setTransform(DataTransform innerTransform) {
-        this.innerTransform = innerTransform;
-    }
-
-    @Override
-    public DataTransform getTransform() {
-        return innerTransform;
+    public void setInnerTransform(DataTransform innerTransform) {
+        if (innerTransform == null) {
+            this.innerTransform = new NullTransform();
+        } else {
+            this.innerTransform = innerTransform;
+        }
     }
 
     @Override
@@ -58,13 +59,17 @@ public class NonTransform implements DataTransform {
         try {
             newCopy = (DataTransform) this.getClass().newInstance();
         } catch (InstantiationException ex) {
-            Logger.getLogger(NonTransform.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BaseTransform.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(NonTransform.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BaseTransform.class.getName()).log(Level.SEVERE, null, ex);
         }
         if (this.innerTransform != null) {
-            newCopy.setTransform(this.innerTransform.copy());
+            newCopy.setInnerTransform(this.innerTransform.copy());
         }
         return newCopy;
     }
+
+    protected abstract String insertAfterValue();
+
+    protected abstract String insertBeforeValue();
 }
