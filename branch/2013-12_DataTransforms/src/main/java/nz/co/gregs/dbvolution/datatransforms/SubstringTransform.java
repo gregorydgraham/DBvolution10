@@ -23,7 +23,7 @@ public class SubstringTransform extends BaseTransform {
     private Integer startingPosition;
     private Integer length;
 
-    public SubstringTransform(Integer startingIndex0Based, Integer endIndex0Based, DataTransform innerTransform) {
+    public SubstringTransform(DataTransform innerTransform, Integer startingIndex0Based, Integer endIndex0Based) {
         super(innerTransform);
         this.startingPosition = startingIndex0Based;
         this.length = endIndex0Based;
@@ -37,7 +37,7 @@ public class SubstringTransform extends BaseTransform {
      * @param endIndex0Based
      */
     public SubstringTransform(Integer startingIndex0Based, Integer endIndex0Based) {
-        this(startingIndex0Based, endIndex0Based, new NullTransform());
+        this(new NullTransform(), startingIndex0Based, endIndex0Based);
     }
 
     public SubstringTransform() {

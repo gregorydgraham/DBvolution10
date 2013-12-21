@@ -120,6 +120,25 @@ public class DataTransformTests extends AbstractTest {
         got = database.get(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(1));
+        
+        marq.name.permittedValues("HUMMER".substring(3, 6));
+        marq.name.setTransform(new LowercaseTransform(marq.name.getTransform()));
+        got = database.get(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(0));
+        
+        marq.name.permittedValues("HUMMER".substring(3, 6));
+        marq.name.setTransform(new UppercaseTransform(marq.name.getTransform()));
+        got = database.get(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(1));
+        
+        database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
+        marq.name.permittedValues("HUMMER".substring(3, 6));
+        marq.name.setTransform(new SubstringTransform(new UppercaseTransform(new TrimTransform()),3,6));
+        got = database.get(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(2));
     }
     
 }
