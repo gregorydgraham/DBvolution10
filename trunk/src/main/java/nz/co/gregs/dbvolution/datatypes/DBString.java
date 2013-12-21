@@ -17,10 +17,6 @@ public class DBString extends QueryableDatatype {
 
     private static final long serialVersionUID = 1L;
 
-    public DBString(String string) {
-        super(string);
-    }
-
     public DBString() {
         super();
     }
@@ -37,9 +33,7 @@ public class DBString extends QueryableDatatype {
     @Override
     public String formatValueForSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
-//        if (this.isDBNull || literalValue == null) {
-//            return defn.getNull();
-//        } else {
+        
         if (literalValue instanceof Date) {
             return defn.getDateFormattedForQuery((Date) literalValue);
         } else {
@@ -49,8 +43,4 @@ public class DBString extends QueryableDatatype {
 //    }
     }
 
-//    @Deprecated
-//    public DBOperator useGreaterThanOperator(String literalValue) {
-//        return this.useGreaterThanOperator(new DBString(literalValue));
-//    }
 }

@@ -26,10 +26,6 @@ public abstract class DBLargeObject extends QueryableDatatype {
     public DBLargeObject() {
         super();
     }
-    
-    public DBLargeObject(Object obj){
-        super(obj);
-    }
 
     public abstract InputStream getInputStream() ;
 

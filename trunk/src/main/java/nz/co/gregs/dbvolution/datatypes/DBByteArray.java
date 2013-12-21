@@ -34,10 +34,6 @@ public class DBByteArray extends DBLargeObject {
     public static final long serialVersionUID = 1;
     InputStream byteStream = null;
 
-    public DBByteArray(Object object) {
-        super(object);
-    }
-
     public DBByteArray() {
         super();
     }
