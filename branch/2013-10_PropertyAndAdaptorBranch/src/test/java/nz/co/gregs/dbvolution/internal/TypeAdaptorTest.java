@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -141,11 +142,14 @@ public class TypeAdaptorTest {
 	
 	@Test
 	public void queriesWithoutFilteringOnNullSimpleFieldGivenTypeAdaptor() throws SQLException {
-		CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
-		query.uid.clear();
-		query.year = null;
+		CustomerWithStringIntegerTypeAdaptor exemplar = new CustomerWithStringIntegerTypeAdaptor();
+		exemplar.uid.clear();
+		exemplar.year = null;
 		
-		List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
+		DBQuery query = DBQuery.getInstance(db, exemplar);
+		query.setBlankQueryAllowed(true);
+		
+		List<CustomerWithStringIntegerTypeAdaptor> rows = query.getAllInstancesOf(exemplar);
 		assertThat(rows.size(), is(2));
 	}
 	
