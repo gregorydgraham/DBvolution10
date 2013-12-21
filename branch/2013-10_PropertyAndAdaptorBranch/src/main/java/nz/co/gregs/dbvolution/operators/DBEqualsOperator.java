@@ -28,7 +28,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBEqualsOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    protected DBDefinition defn;
+//    protected DBDefinition defn;
 
     /**
      *
@@ -41,14 +41,14 @@ public class DBEqualsOperator extends DBOperator {
         this.firstValue = (equalTo == null ? equalTo : equalTo.copy());
     }
 
-    public String getInverse() {
+    public String getInverse(DBDefinition defn) {
         if (defn != null) {
             return defn.getNotEqualsComparator();
         }
         return " <> ";
     }
 
-    public String getOperator() {
+    public String getOperator(DBDefinition defn) {
         if (defn != null) {
             return defn.getEqualsComparator();
         }
@@ -57,13 +57,13 @@ public class DBEqualsOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-        defn = db.getDefinition();
+        DBDefinition defn = db.getDefinition();
         String whereLine;
         if (firstValue.isNull()) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
         } else {
-            whereLine = defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
+            whereLine = defn.beginAndLine() + columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + firstValue.toSQLString(db) + " ";
         }
         defn = null;
         return whereLine;
@@ -71,8 +71,8 @@ public class DBEqualsOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        defn = database.getDefinition();
-        String relationStr = columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
+        DBDefinition defn = database.getDefinition();
+        String relationStr = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + otherColumnName;
         defn = null;
         return relationStr;
     }
