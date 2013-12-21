@@ -147,7 +147,7 @@
         <dependency>
             <groupId>net.sourceforge.tedhi</groupId>
             <artifactId>tedhi</artifactId>
-            <version>0.7</version>
+            <version>0.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>
