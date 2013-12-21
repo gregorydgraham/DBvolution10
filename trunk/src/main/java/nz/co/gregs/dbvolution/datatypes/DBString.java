@@ -21,6 +21,10 @@ public class DBString extends QueryableDatatype {
         super();
     }
 
+    public DBString(String string) {
+        super(string);
+    }
+    
     public void setValue(String str) {
         super.setValue(str);
     }

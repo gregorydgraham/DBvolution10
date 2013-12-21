@@ -22,11 +22,11 @@ public class DBInteger extends DBNumber {
     }
 
     public DBInteger(int anInt) {
-        this(Integer.valueOf(anInt));
+    	this(Long.valueOf(anInt));
     }
 
     public DBInteger(Integer anInt) {
-        super(anInt);
+        this(anInt == null ? null : anInt.longValue());
     }
 
     public DBInteger(long aLong) {
@@ -42,7 +42,7 @@ public class DBInteger extends DBNumber {
     }
 
     public DBInteger(Double aDouble) {
-        this(aDouble.longValue());
+        this(aDouble == null ? null : aDouble.longValue());
     }
 
     public DBInteger() {

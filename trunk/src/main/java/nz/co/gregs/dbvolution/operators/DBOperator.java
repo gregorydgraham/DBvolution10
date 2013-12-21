@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
 /**
  *
@@ -88,4 +89,6 @@ abstract public class DBOperator implements Serializable {
                 && secondValue.equals(other.secondValue)
                 && thirdValue.equals(other.thirdValue);
     }
+    
+    abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
 }

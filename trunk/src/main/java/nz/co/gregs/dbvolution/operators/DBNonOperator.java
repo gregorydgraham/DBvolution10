@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
 public class DBNonOperator extends DBOperator {
 
@@ -34,5 +35,10 @@ public class DBNonOperator extends DBOperator {
     @Override
     public DBOperator getInverseOperator() {
         return this;
+    }
+    
+    @Override
+    public DBNonOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+    	return this;
     }
 }

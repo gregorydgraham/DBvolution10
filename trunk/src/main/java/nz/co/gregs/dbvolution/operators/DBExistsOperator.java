@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
@@ -62,8 +63,6 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
         this.referencedColumnName = qdtField.columnName();
     }
     
-    
-
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         DBDefinition defn = database.getDefinition();
@@ -86,5 +85,10 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
     @Override
     public DBOperator getInverseOperator() {
         throw new InappropriateRelationshipOperator(this);
+    }
+
+    @Override
+    public DBExistsOperator<E> copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+    	return this;
     }
 }
