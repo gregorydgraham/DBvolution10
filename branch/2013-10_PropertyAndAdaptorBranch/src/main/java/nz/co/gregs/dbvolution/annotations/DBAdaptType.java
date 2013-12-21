@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
@@ -31,6 +32,26 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBAdaptType {
+	
+    /**
+     * Indicates that the 'type' is implied by other details.
+     */
+    static class Implicit extends QueryableDatatype {
+        private static final long serialVersionUID = 1L;
+
+        private Implicit() {
+        }
+
+		@Override
+		public String getSQLDatatype() {
+			return null;
+		}
+
+		@Override
+		protected String formatValueForSQLStatement(DBDatabase db) {
+			return null;
+		}
+    }	
 
     /**
      * The custom type adaptor to use to convert between the type of the
@@ -48,5 +69,5 @@ public @interface DBAdaptType {
      *
      * @return the QueryableDatatype class used internally for DB communication
      */
-    Class<? extends QueryableDatatype> type() default QueryableDatatype.class;
+    Class<? extends QueryableDatatype> type() default Implicit.class;
 }

@@ -121,6 +121,7 @@ public class SafeOneWaySimpleTypeAdaptor {
         	}
         	else if (sourceBounds != null && !sourceBounds.isUpperMulti()) {
         		this.sourceType = sourceBounds.upperClass();
+        		//this.sourceCast = (this.sourceType == null) ? null : getSimpleCastFor(this.sourceType, null);
             }
         	
         	if (targetType != null && targetBounds != null) {
@@ -142,6 +143,7 @@ public class SafeOneWaySimpleTypeAdaptor {
         	}
         	else if (targetBounds != null && !targetBounds.isUpperMulti()) {
         		this.targetType = targetBounds.upperClass();
+        		//this.targetCast = (this.targetType == null) ? null : getSimpleCastFor(null, this.targetType);
             }
         	
         } catch (UnsupportedType dropped) {
@@ -223,9 +225,18 @@ public class SafeOneWaySimpleTypeAdaptor {
 	
 	private Object convertInternal(Object value) {
 		// validate source
-		if (sourceType != null && value != null) {
+		if (sourceCast != null && value != null) {
+			if (!sourceCast.acceptsSource(value)) {
+				throw new ClassCastException("Cannot pass "+value.getClass().getSimpleName()+
+						" to "+methodName()+
+						", on property "+propertyName);
+			}
+		}
+		else if (sourceType != null && value != null) {
 			if (!sourceType.isInstance(value)) {
-				throw new ClassCastException("Cannot pass "+value.getClass().getSimpleName()+" to "+methodName());
+				throw new ClassCastException("Cannot pass "+value.getClass().getSimpleName()+
+						" to "+methodName()+
+						", on property "+propertyName);
 			}
 		}
 		
@@ -263,7 +274,9 @@ public class SafeOneWaySimpleTypeAdaptor {
 		// validate result
 		if (targetType != null && result != null) {
 			if (!targetType.isInstance(result)) {
-				throw new ClassCastException("Cannot cast "+result.getClass().getSimpleName()+" to "+targetType.getSimpleName());
+				throw new ClassCastException("Cannot cast "+result.getClass().getSimpleName()+
+						" to "+targetType.getSimpleName()+
+						", on property "+propertyName);
 			}
 		}
 		return result;
@@ -278,11 +291,18 @@ public class SafeOneWaySimpleTypeAdaptor {
 		}
 	}
 	
-	/** Gets the appropriate simple cast or null if one doesn't exist */
+	/**
+	 * Gets the appropriate simple cast or null if one doesn't exist
+	 * @param sourceType the required source type, null to select by targetType only
+	 * @param targetType the required target type, null to select by sourceType only
+	 */
 	static SimpleCast getSimpleCastFor(Class<?> sourceType, Class<?> targetType) {
+		if (sourceType == null && targetType == null) {
+			throw new NullPointerException("at least one of sourceType or targetType must be specified");
+		}
 		for (SimpleCast cast: SIMPLE_CASTS) {
-			if (cast.sourceType().isAssignableFrom(sourceType) &&
-					targetType.isAssignableFrom(cast.targetType())) {
+			if ((sourceType == null || cast.sourceType().isAssignableFrom(sourceType)) &&
+					(targetType == null || targetType.isAssignableFrom(cast.targetType()))) {
 				return cast;
 			}
 		}
@@ -293,6 +313,8 @@ public class SafeOneWaySimpleTypeAdaptor {
 	 * Used internally to handle automatic casting
 	 */
 	static interface SimpleCast {
+		public boolean acceptsSource(Object value);
+		public boolean acceptsSource(Class<?> type);
 		public Object cast(Object value);
 		public Class<?> sourceType();
 		public Class<?> targetType();
@@ -313,6 +335,16 @@ public class SafeOneWaySimpleTypeAdaptor {
 				throw new RuntimeException(unexpected);
 			}
 		}
+		
+		@Override
+		public String toString() {
+//			StringBuilder buf = new StringBuilder();
+//			buf.append(sourceType == null ? "null" : sourceType.getSimpleName());
+//			buf.append("-->");
+//			buf.append(targetType == null ? "null" : targetType.getSimpleName());
+//			return buf.toString();
+			return getClass().getSimpleName();
+		}
 
 		@Override
 		public Class<?> sourceType() {
@@ -322,6 +354,19 @@ public class SafeOneWaySimpleTypeAdaptor {
 		@Override
 		public Class<?> targetType() {
 			return targetType;
+		}
+
+		@Override
+		public boolean acceptsSource(Object value) {
+			if (value == null) {
+				return true;
+			}
+			return acceptsSource(value.getClass());
+		}
+		
+		@Override
+		public boolean acceptsSource(Class<?> type) {
+			return sourceType.isAssignableFrom(type);
 		}
 		
 		@Override

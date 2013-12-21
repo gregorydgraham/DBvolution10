@@ -21,7 +21,9 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.internal.TypeAdaptorTest.CustomerWithStringIntegerTypeAdaptor;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * Focuses on low-level functionality of type adaptors.
@@ -30,18 +32,36 @@ import org.junit.Test;
  */
 @SuppressWarnings({"serial","unused"})
 public class PropertyTypeHandlerTest {
-	@Test(expected=DBPebkacException.class)
-	public void errorsOnConstructionGivenTypeAdaptorWithWrongExplicitDBvType() {
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+	
+	@Test
+	public void errorsOnConstructionGivenValidTypeAdaptorWithWrongExplicitDBvType() {
 		class MyClass extends DBRow {
 			@DBColumn
-			@DBAdaptType(value=IntegerDBIntegerAdaptor.class, type=DBString.class)
+			@DBAdaptType(value=StringLongAdaptor.class, type=DBString.class)
 			public DBString field = new DBString();
 		}
 		
-		propertyHandlerOf(MyClass.class, "field");
+		thrown.expect(DBPebkacException.class);
+		thrown.expectMessage("internal Long type is not compatible");
+		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
 
-	@Test(expected=DBPebkacException.class)
+	@Test
+	public void errorsOnConstructionGivenTypeAdaptorWithWrongExternalType() {
+		class MyClass extends DBRow {
+			@DBColumn
+			@DBAdaptType(value=LongStringAdaptor.class)
+			public DBString field = new DBString();
+		}
+		
+		thrown.expect(DBPebkacException.class);
+		thrown.expectMessage("external Long type is not compatible");
+		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
+	}
+	
+	@Test
 	public void errorsOnConstructionGivenInvalidAdaptorWithNonSimpleFirstType() {
 		class MyClass extends DBRow {
 			@DBColumn
@@ -49,10 +69,12 @@ public class PropertyTypeHandlerTest {
 			public DBString field = new DBString();
 		}
 		
-		propertyHandlerOf(MyClass.class, "field");
+		thrown.expect(DBPebkacException.class);
+		thrown.expectMessage("external type must not");
+		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
 	
-	@Test(expected=DBPebkacException.class)
+	@Test
 	public void errorsOnConstructionGivenInvalidAdaptorWithNonSimpleSecondType() {
 		class MyClass extends DBRow {
 			@DBColumn
@@ -60,7 +82,9 @@ public class PropertyTypeHandlerTest {
 			public DBString field = new DBString();
 		}
 		
-		propertyHandlerOf(MyClass.class, "field");
+		thrown.expect(DBPebkacException.class);
+		thrown.expectMessage("internal type must not");
+		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
 	
 	@Test(expected=DBPebkacException.class)
@@ -71,26 +95,89 @@ public class PropertyTypeHandlerTest {
 			public DBInteger field;
 		}
 		
-		propertyHandlerOf(MyClass.class, "field");
+		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
 	
 	@Test
-	public void acceptsOnConstructionGivenTypeAdaptorWithCorrectDBvType() {
+	public void errorsOnConstructionGivenTypeAdaptorWithAbstractExplicitType() {
 		class MyClass extends DBRow {
 			@DBColumn
-			@DBAdaptType(value=IntegerDBIntegerAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(value=IntegerLongAdaptor.class, type=QueryableDatatype.class)
 			public Integer field;
 		}
 		
-		assertThat(propertyHandlerOf(MyClass.class, "field"), is(not(nullValue())));
+		thrown.expect(DBPebkacException.class);
+		thrown.expectMessage("must be");
+		thrown.expectMessage("concrete");
+		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
 
+	@Test
+	public void acceptsOnConstructionGivenValidTypeAdaptorWithImplicitDBvType() {
+		class MyClass extends DBRow {
+			@DBColumn
+			@DBAdaptType(value=IntegerLongAdaptor.class)
+			public Integer field;
+		}
+		
+		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
+		assertThat(propertyHandler, is(not(nullValue())));
+	}
+	
+	@Test
+	public void acceptsOnConstructionGivenValidTypeAdaptorWithCorrectExplicitDBvType() {
+		class MyClass extends DBRow {
+			@DBColumn
+			@DBAdaptType(value=IntegerLongAdaptor.class, type=DBInteger.class)
+			public Integer field;
+		}
+		
+		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
+		assertThat(propertyHandler, is(not(nullValue())));
+	}
+
+	@Test
+	public void acceptsOnConstructionGivenValidTypeAdaptorWithExternalSimpleTypeUpcast() {
+		class MyClass extends DBRow {
+			@DBColumn
+			@DBAdaptType(value=IntegerStringAdaptor.class)
+			public Long field;
+		}
+		
+		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
+		assertThat(propertyHandler, is(not(nullValue())));
+	}
+
+	@Test
+	public void acceptsOnConstructionGivenValidTypeAdaptorWithExternalSimpleTypeDowncast() {
+		class MyClass extends DBRow {
+			@DBColumn
+			@DBAdaptType(value=LongStringAdaptor.class)
+			public Integer field;
+		}
+		
+		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
+		assertThat(propertyHandler, is(not(nullValue())));
+	}
+	
+	@Test
+	public void acceptsOnConstructionGivenValidTypeAdaptorWithInternalSimpleTypeUpcast() {
+		class MyClass extends DBRow {
+			@DBColumn
+			@DBAdaptType(value=StringIntegerAdaptor.class)
+			public String field;
+		}
+		
+		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
+		assertThat(propertyHandler, is(not(nullValue())));
+	}
+	
 	@Test
 	public void infersDBIntegerGivenStringLongAdaptorOnDBStringField() {
 		class MyClass extends DBRow {
 			@DBAdaptType(value=StringLongAdaptor.class)
 			@DBColumn
-			public DBString field = new DBString();
+			public DBString field = new DBString("23");
 		}
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
@@ -106,7 +193,7 @@ public class PropertyTypeHandlerTest {
 		class MyClass extends DBRow {
 			@DBAdaptType(value=StringLongAdaptor.class)
 			@DBColumn
-			public String field;
+			public String field = "23";
 		}
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
@@ -122,7 +209,7 @@ public class PropertyTypeHandlerTest {
 		class MyClass extends DBRow {
 			@DBAdaptType(value=StringIntegerAdaptor.class)
 			@DBColumn
-			public DBString field = new DBString();
+			public DBString field = new DBString("23");
 		}
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
@@ -138,7 +225,7 @@ public class PropertyTypeHandlerTest {
 		class MyClass extends DBRow {
 			@DBAdaptType(value=StringIntegerAdaptor.class)
 			@DBColumn
-			public String field;
+			public String field = "23";
 		}
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
@@ -154,7 +241,7 @@ public class PropertyTypeHandlerTest {
 		class MyClass extends DBRow {
 			@DBAdaptType(value=LongStringAdaptor.class)
 			@DBColumn
-			public DBInteger field = new DBInteger();
+			public DBInteger field = new DBInteger(23);
 		}
 		
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
@@ -549,11 +636,13 @@ public class PropertyTypeHandlerTest {
 			@DBColumn
 			public DBString field = new DBString();
 		}
+		
+		thrown.expect(ClassCastException.class);
 
 		MyClass obj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		propertyHandler.setJavaPropertyAsQueryableDatatype(obj, new DBInteger(42L));
-		assertThat(obj.field.getValue(), is((Object)"42"));
+		//assertThat(obj.field.getValue(), is((Object)"42"));
 	}
 	
 	@Test
@@ -564,10 +653,12 @@ public class PropertyTypeHandlerTest {
 			public DBString field = new DBString();
 		}
 
+		thrown.expect(ClassCastException.class);
+		
 		MyClass obj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		propertyHandler.setJavaPropertyAsQueryableDatatype(obj, new DBInteger(42));
-		assertThat(obj.field.getValue(), is((Object)"42"));
+		//assertThat(obj.field.getValue(), is((Object)"42"));
 	}
 	
 	@Test
@@ -702,6 +793,16 @@ public class PropertyTypeHandlerTest {
 				c.set(Calendar.YEAR, objectValue.intValue());
 				return c.getTime();
 			}
+			return null;
+		}
+	}
+	
+	public static class IntegerLongAdaptor implements DBTypeAdaptor<Integer, Long> {
+		public Integer fromDatabaseValue(Long dbvValue) {
+			return null;
+		}
+
+		public Long toDatabaseValue(Integer objectValue) {
 			return null;
 		}
 	}

@@ -14,8 +14,8 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	 * @param typeAdaptor
 	 */
 	public SimpleValueQueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype> internalQdtType,
-			DBTypeAdaptor<Object, Object> typeAdaptor) {
-		super(propertyName, internalQdtType, typeAdaptor);
+			Class<?> internalQdtLiteralType, Class<?> externalSimpleType, DBTypeAdaptor<Object, Object> typeAdaptor) {
+		super(propertyName, internalQdtType, internalQdtLiteralType, externalSimpleType, typeAdaptor);
 	}
 
 	/**

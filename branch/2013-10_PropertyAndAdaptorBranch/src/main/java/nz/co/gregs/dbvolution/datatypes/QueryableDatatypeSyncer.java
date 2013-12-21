@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor.Direction;
@@ -35,7 +36,7 @@ public class QueryableDatatypeSyncer {
 	 * @param typeAdaptor
 	 */
 	public QueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype> internalQdtType,
-			DBTypeAdaptor<Object, Object> typeAdaptor) {
+			Class<?> internalQdtLiteralType, Class<?> externalSimpleType, DBTypeAdaptor<Object, Object> typeAdaptor) {
 		if (typeAdaptor == null) {
 			throw new DBRuntimeException("Null typeAdaptor was passed, this is an internal bug");
 		}
@@ -43,13 +44,14 @@ public class QueryableDatatypeSyncer {
 		this.typeAdaptor = typeAdaptor;
 		this.internalQdtType = internalQdtType;
 		this.toExternalSimpleTypeAdaptor = new SafeOneWaySimpleTypeAdaptor(propertyName,
-				typeAdaptor, Direction.TO_EXTERNAL, null, null);
+				typeAdaptor, Direction.TO_EXTERNAL, internalQdtLiteralType, externalSimpleType);
 		
 		this.toInternalSimpleTypeAdaptor = new SafeOneWaySimpleTypeAdaptor(propertyName,
-				typeAdaptor, Direction.TO_INTERNAL, null, null);
+				typeAdaptor, Direction.TO_INTERNAL, externalSimpleType, internalQdtLiteralType);
 		
 		try {
 			this.internalQdt = internalQdtType.newInstance();
+			//this.internalQdt.
 		} catch (InstantiationException e) {
 			// TODO produce a better error message that is consistent with how this is handled elsewhere
 			throw new DBRuntimeException("Instantiation error creating internal "
@@ -72,7 +74,9 @@ public class QueryableDatatypeSyncer {
 	 */
 	public void setInternalQueryableDatatype(QueryableDatatype internalQdt) {
 		if (internalQdt != null && !internalQdt.getClass().equals(internalQdtType)) {
-			throw new RuntimeException("Don't know what to do here: targetQdtType:"+internalQdt.getClass().getSimpleName()+" != "+internalQdtType+":"+internalQdtType.getSimpleName());
+			//throw new RuntimeException("Don't know what to do here: targetQdtType:"+internalQdt.getClass().getSimpleName()+" != "+internalQdtType+":"+internalQdtType.getSimpleName());
+			throw new ClassCastException("Cannot assign "+internalQdt.getClass().getSimpleName()+
+					" to "+internalQdtType.getSimpleName()+" property "+propertyName);
 		}
 		this.internalQdt = internalQdt;
 	}
