@@ -17,7 +17,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Focuses on ensuring that at a high level these different scenarios
+ * Focuses on ensuring that at a high level API interface these different scenarios
  * are supported by the library. 
  */
 @SuppressWarnings("serial")
