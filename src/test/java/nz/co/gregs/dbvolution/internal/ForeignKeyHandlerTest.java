@@ -148,7 +148,7 @@ public class ForeignKeyHandlerTest {
 			public DBInteger badFKColumn;
 			
 			@DBColumn
-			@DBAdaptType(adaptor=MyIntegerStringTypeAdaptor.class, type=DBDate.class)
+			@DBAdaptType(value=MyIntegerStringTypeAdaptor.class, type=DBDate.class)
 			public List<Object> date;
 		}
 		
@@ -181,7 +181,7 @@ public class ForeignKeyHandlerTest {
 		class TestAddress extends DBRow {
 			@DBPrimaryKey
 			@DBColumn
-			@DBAdaptType(adaptor=MyStringIntegerTypeAdaptor.class)
+			@DBAdaptType(value=MyStringIntegerTypeAdaptor.class)
 			public String addressUid2;
 
 			@DBColumn
@@ -189,7 +189,7 @@ public class ForeignKeyHandlerTest {
 			public DBInteger badFKColumn;
 			
 			@DBColumn
-			@DBAdaptType(adaptor=MyStringIntegerTypeAdaptor.class, type=DBDate.class)
+			@DBAdaptType(value=MyStringIntegerTypeAdaptor.class, type=DBDate.class)
 			public List<Object> date;
 
 			@DBColumn
@@ -234,7 +234,7 @@ public class ForeignKeyHandlerTest {
 		class TestAddress extends DBRow {
 			@DBPrimaryKey
 			@DBColumn
-			@DBAdaptType(adaptor=MyStringDateTypeAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(value=MyStringDateTypeAdaptor.class, type=DBInteger.class)
 			public List<Object> badColumn;
 		}
 		

@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
@@ -83,7 +84,7 @@ public class DBInOperator extends DBOperator {
     public DBOperator getInverseOperator() {
         return this;
     }
-
+    
     @Override
     public boolean equals(DBOperator other) {
 
@@ -106,5 +107,17 @@ public class DBInOperator extends DBOperator {
             }
             return true;
         }
+    }
+
+    @Override
+    public DBInOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+    	List<QueryableDatatype> list = new ArrayList<QueryableDatatype>();
+    	for (QueryableDatatype item: listOfPossibleValues) {
+    		list.add(typeAdaptor.convert(item));
+    	}
+    	DBInOperator op = new DBInOperator(list);
+    	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
+    	return op;
     }
 }

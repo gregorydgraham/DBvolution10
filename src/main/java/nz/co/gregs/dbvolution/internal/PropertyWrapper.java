@@ -51,7 +51,38 @@ public class PropertyWrapper {
 	 */
 	@Override
 	public String toString() {
-		return propertyDefinition.toString();
+		StringBuilder buf = new StringBuilder();
+		buf.append(type().getSimpleName());
+		buf.append(" ");
+		buf.append(javaName());
+		if (!javaName().equalsIgnoreCase(columnName())) {
+			buf.append("<").append(columnName()).append(">");
+		}
+		if (isReadable()) {
+			buf.append(" = [");
+			try {
+				buf.append(getQueryableDatatype());
+			} catch (Exception e) {
+				buf.append("<exception occurred>");
+			}
+			buf.append("]");
+		}
+		
+		if (isTypeAdapted()) {
+			buf.append(" (");
+			buf.append(getRawJavaType().getSimpleName());
+			if (isReadable()) {
+				buf.append(" = [");
+				try {
+					buf.append(rawJavaValue());
+				} catch (Exception e) {
+					buf.append("<exception occurred>");
+				}
+				buf.append("]");
+			}
+			buf.append(")");
+		}
+		return buf.toString();
 	}
 	
 	/**
@@ -267,6 +298,17 @@ public class PropertyWrapper {
 		return propertyDefinition.isWritable();
 	}
 
+    /**
+     * Indicates whether the property's type is adapted by an explicit or
+     * implicit type adaptor. (Note: at present there is no support for implicit
+     * type adaptors)
+     *
+     * @return {@code true} if a type adaptor is being used
+     */
+    public boolean isTypeAdapted() {
+        return propertyDefinition.isTypeAdapted();
+    }
+	
 	/**
 	 * Gets the DBvolution-centric value of the property.
 	 * The value returned may have undergone type conversion from the target object's

@@ -491,12 +491,12 @@ public class JavaPropertyTest {
     	}
     	
         class TestClass {
-            @DBAdaptType(adaptor=MyAdaptor.class, type=DBString.class)
+            @DBAdaptType(value=MyAdaptor.class, type=DBString.class)
             public int getProperty() {
                 return 0;
             }
 
-            @DBAdaptType(adaptor=MyAdaptor.class, type=DBInteger.class)
+            @DBAdaptType(value=MyAdaptor.class, type=DBInteger.class)
             public void setProperty(int value) {
             }
         }
@@ -517,12 +517,12 @@ public class JavaPropertyTest {
     	}
     	
         class TestClass {
-            @DBAdaptType(adaptor=MyAdaptor.class)
+            @DBAdaptType(value=MyAdaptor.class)
             public int getProperty() {
                 return 0;
             }
 
-            @DBAdaptType(adaptor=MyAdaptor.class, type=DBInteger.class)
+            @DBAdaptType(value=MyAdaptor.class, type=DBInteger.class)
             public void setProperty(int value) {
             }
         }
