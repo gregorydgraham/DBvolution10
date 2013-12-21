@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 greg.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatypes;
+package nz.co.gregs.dbvolution.datatransforms;
 
-import java.io.InputStream;
+public class TrimTransform extends BaseTransform {
 
-/**
- *
- * @author gregorygraham
- */
-public abstract class DBLargeObject extends QueryableDatatype {
-
-    public DBLargeObject() {
-        super();
+    public static final long serialVersionUID = 1L;
+    
+    public TrimTransform(DataTransform innerTransform) {
+        super(innerTransform);
     }
 
-    public abstract InputStream getInputStream() ;
+    public TrimTransform() {
+        super(new NullTransform());
+    }
 
     /**
      *
      * @return
      */
-    public abstract int getSize();
-
     @Override
-    public String toString(){
-        return "/*BINARY DATA*/";
+    protected String insertAfterValue() {
+        return ")";
     }
-    
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    protected String insertBeforeValue() {
+        return " trim(";
+    }
+
 }

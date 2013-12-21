@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.operators.*;
+import nz.co.gregs.dbvolution.datatransforms.*;
 
 /**
  *
@@ -44,6 +45,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
+    private DataTransform transform = new NullTransform();
 
     protected QueryableDatatype() {
     }
@@ -103,6 +105,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             }
             newQDT.isPrimaryKey = this.isPrimaryKey;
             newQDT.sort = this.sort;
+            newQDT.transform = this.transform.copy();
         } catch (InstantiationException ex) {
             throw new UnableInstantiateQueryableDatatypeException(this, ex);
         } catch (IllegalAccessException ex) {
@@ -203,6 +206,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
+     * @param db
      * @param columnName
      * @return
      */
@@ -214,7 +218,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         String whereClause = "";
         DBOperator op = this.getOperator();
         if (op != null) {
-            whereClause = op.generateWhereLine(db, columnName);
+            whereClause = op.generateWhereLine(db, transform.transform(columnName));
         }
         return whereClause;
     }
@@ -462,7 +466,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             } else {
                 setChanged(newLiteralValue);
                 this.literalValue = newLiteralValue;
-                this.setOperator(new DBEqualsOperator(this));
+                // Avoid basing on transforms to the test value
+                QueryableDatatype copy = this.copy();
+                copy.setTransform(null);
+                this.setOperator(new DBEqualsOperator(copy));
             }
         }
         return getOperator();
@@ -640,7 +647,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         if (this.isDBNull || literalValue == null) {
             return def.getNull();
         }
-        return formatValueForSQLStatement(db);
+        return transform.transform(formatValueForSQLStatement(db));
     }
 
     /**
@@ -800,6 +807,24 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             return false;
         } else {
             return this.getOperator().equals(other.getOperator());
+        }
+    }
+
+    /**
+     * @return the transform
+     */
+    public DataTransform getTransform() {
+        return transform;
+    }
+
+    /**
+     * @param transform the DataTransform to be used during query execution
+     */
+    public void setTransform(DataTransform transform) {
+        if (transform == null) {
+            this.transform = new NullTransform();
+        } else {
+            this.transform = transform;
         }
     }
 }

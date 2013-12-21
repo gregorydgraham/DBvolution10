@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatypes;
 
-import java.io.InputStream;
+package nz.co.gregs.dbvolution.datatransforms;
 
-/**
- *
- * @author gregorygraham
- */
-public abstract class DBLargeObject extends QueryableDatatype {
 
-    public DBLargeObject() {
-        super();
+public class LowercaseTransform extends BaseTransform {
+
+    public static final long serialVersionUID = 1L;
+    
+    @Override
+    protected String insertAfterValue() {
+        return ") ";
     }
 
-    public abstract InputStream getInputStream() ;
-
-    /**
-     *
-     * @return
-     */
-    public abstract int getSize();
-
     @Override
-    public String toString(){
-        return "/*BINARY DATA*/";
+    protected String insertBeforeValue() {
+        return " LOWER(";
+    }
+
+    public LowercaseTransform(DataTransform innerTransform) {
+        super(innerTransform);
+    }
+
+    public LowercaseTransform() {
     }
     
 }
