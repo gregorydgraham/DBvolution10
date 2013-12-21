@@ -66,32 +66,12 @@ public class DBQueryTest extends AbstractTest {
                 + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
                 + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ;";
         if (dbQuery.isUseANSISyntax()) {
-            expectedResult = " SELECT CAR_COMPANY.NAME DB1064314813, \n"
-                    + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
-                    + "MARQUE.NUMERIC_CODE DB_570915006, \n"
-                    + "MARQUE.UID_MARQUE DB_768788587, \n"
-                    + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
-                    + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
-                    + "MARQUE.INTINDALLOCALLOWED DB_1405397146, \n"
-                    + "MARQUE.UPD_COUNT DB1497912790, \n"
-                    + "MARQUE.AUTO_CREATED DB332721019, \n"
-                    + "MARQUE.NAME DB_1359288114, \n"
-                    + "MARQUE.PRICINGCODEPREFIX DB_443037310, \n"
-                    + "MARQUE.RESERVATIONSALWD DB_1860726622, \n"
-                    + "MARQUE.CREATION_DATE DB_1712481749, \n"
-                    + "MARQUE.ENABLED DB_637053442, \n"
-                    + "MARQUE.FK_CARCOMPANY DB1664116480\n"
-                    + " FROM  car_company  INNER JOIN marque ON( \n"
-                    + "CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ) \n"
-                    + " WHERE  1=1 \n"
-                    + " and CAR_COMPANY.NAME = 'TOYOTA' \n"
-                    + "\n"
-                    + ";";
+            expectedResult = "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) where 1=1 and __78874071.name = 'toyota' ;";
         }
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        Assert.assertThat(testableSQLWithoutColumnAliases(expectedResult), 
+        Assert.assertThat(testableSQLWithoutColumnAliases(expectedResult),
                 is(testableSQLWithoutColumnAliases(generateSQLString)));
     }
 
@@ -164,6 +144,31 @@ public class DBQueryTest extends AbstractTest {
         CarCompany firstCarCo = rows[0].get(carCompany);
         CarCompany secondCarCo = rows[1].get(carCompany);
         assertTrue(firstCarCo == secondCarCo);
+    }
+
+    @Test
+    public void testGettingRelatedInstances() throws SQLException {
+        CarCompany carCompany = new CarCompany();
+//        carCompany.name.permittedValues("TOYOTA");
+        DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
+        dbQuery.setBlankQueryAllowed(true);
+
+        List<DBQueryRow> results = dbQuery.getAllRows();
+
+        DBQueryRow[] rows = results.toArray(new DBQueryRow[]{});
+
+        CarCompany toyota = null;
+        for (CarCompany carco : dbQuery.getAllInstancesOf(carCompany)) {
+            if (carco.name.stringValue().equalsIgnoreCase("toyota")) {
+                toyota = carco;
+            }
+        }
+
+        List<Marque> relatedInstances = toyota.getRelatedInstancesFromQuery(dbQuery, new Marque());
+
+        database.print(relatedInstances);
+        Assert.assertThat(relatedInstances.size(), is(2));
+
     }
 
     @Test

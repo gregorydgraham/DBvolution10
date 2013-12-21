@@ -66,13 +66,6 @@ public class DBNumber extends QueryableDatatype {
         initDBNumber(newLiteralValue);
     }
 
-    /**
-     *
-     * @param aNumber
-     */
-//    public DBNumber(String aNumber) {
-//        this(Double.parseDouble(aNumber));
-//    }
     private void initDBNumber(Object aNumber) {
         if (aNumber == null) {
             super.setValue(null);
@@ -86,20 +79,8 @@ public class DBNumber extends QueryableDatatype {
     }
 
     @Override
-    public String toString() {
-        return (doubleValue() == null ? null : doubleValue().toString());
-    }
-
-    /**
-     *
-     */
-    @Override
     public void blankQuery() {
         super.blankQuery();
-//        this.numberValue = null;
-//        this.lowerBoundNumber = null;
-//        this.upperBoundNumber = null;
-//        this.inValuesNumber = new DBNumber[]{};
     }
 
     @Override
@@ -114,6 +95,7 @@ public class DBNumber extends QueryableDatatype {
     /**
      *
      * @param inValues
+     * @return 
      */
     public DBOperator useInOperator(Number... inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();
@@ -126,6 +108,7 @@ public class DBNumber extends QueryableDatatype {
     /**
      *
      * @param inValues
+     * @return 
      */
     public DBOperator useInOperator(List<Number> inValues) {
         ArrayList<DBNumber> intOptions = new ArrayList<DBNumber>();

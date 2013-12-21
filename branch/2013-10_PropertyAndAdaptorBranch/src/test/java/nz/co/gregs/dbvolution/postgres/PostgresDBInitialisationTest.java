@@ -4,6 +4,7 @@ package nz.co.gregs.dbvolution.postgres;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.example.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /*
@@ -27,7 +28,8 @@ import org.junit.Test;
  */
 public class PostgresDBInitialisationTest {
 
-//    @Test
+    @Ignore
+    @Test
     public void createMySQLInstance() throws SQLException {
         final Marque marque = new Marque();
         final CarCompany carCompany = new CarCompany();

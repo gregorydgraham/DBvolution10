@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBRow;
 
 
 public class H2DBDefinition extends DBDefinition {
@@ -37,8 +38,8 @@ public class H2DBDefinition extends DBDefinition {
     }
 
     @Override
-    public String formatTableName(String tableName) {
-        return tableName.toUpperCase();
+    public String formatTableName(DBRow table) {
+        return table.getTableName().toUpperCase();
     }
 
     @Override

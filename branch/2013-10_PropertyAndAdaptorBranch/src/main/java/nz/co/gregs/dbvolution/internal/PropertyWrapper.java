@@ -168,7 +168,7 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * Convenience method for testing the type.
+	 * Convenience method for testing the type of the QueryableDatatype.
 	 * Equivalent to {@code refType.isAssignableFrom(this.type())}.
 	 * @param refType
 	 * @return

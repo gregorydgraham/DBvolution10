@@ -20,9 +20,11 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.DBTransactionStatement;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
@@ -40,7 +42,7 @@ public abstract class DBDatabase {
     private DataSource dataSource = null;
     private boolean printSQLBeforeExecuting;
     private boolean isInATransaction;
-    private Statement transactionStatement;
+    private DBTransactionStatement transactionStatement;
     private final DBDefinition definition;
     private String databaseName;
     private boolean batchIfPossible = true;
@@ -72,13 +74,22 @@ public abstract class DBDatabase {
         this.username = username;
     }
 
+    private DBTransactionStatement getDBTransactionStatement() {
+        final DBStatement dbStatement = getDBStatement();
+        if (dbStatement instanceof DBTransactionStatement) {
+            return (DBTransactionStatement) dbStatement;
+        } else {
+            return new DBTransactionStatement(this, dbStatement);
+        }
+    }
+
     /**
      *
      * @return
      */
-    public synchronized Statement getDBStatement() {
+    public synchronized DBStatement getDBStatement() {
         Connection connection;
-        Statement statement;
+        DBStatement statement;
         if (isInATransaction) {
             statement = this.transactionStatement;
         } else {
@@ -102,7 +113,7 @@ public abstract class DBDatabase {
                 }
             }
             try {
-                statement = connection.createStatement();
+                statement = new DBStatement(this, connection.createStatement());
             } catch (SQLException noConnection) {
                 throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
             }
@@ -134,50 +145,58 @@ public abstract class DBDatabase {
      *
      * Inserts DBRows and lists of DBRows into the correct tables automatically
      *
+     * @param <T>
      * @param objs
+     * @return 
      * @throws SQLException
      */
-    public void insert(Object... objs) throws SQLException {
-        for (Object obj : objs) {
+    public <T> DBActionList insert(T... objs) throws SQLException {
+        DBActionList changes = new DBActionList();
+        for (T obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
                     for (DBRow row : rowList) {
-                        this.getDBTable(row).insert(row);
+                        changes.addAll(this.getDBTable(row).insert(row));
                     }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
-                this.getDBTable(row).insert(row);
+                changes.addAll(this.getDBTable(row).insert(row));
             }
         }
+        return changes;
     }
 
     /**
      *
      * Deletes DBRows and lists of DBRows from the correct tables automatically
      *
+     * @param <T>
      * @param objs
+     * @return 
      * @throws SQLException
      */
-    public void delete(Object... objs) throws SQLException {
-        for (Object obj : objs) {
+    public <T> DBActionList delete(T... objs) throws SQLException {
+        DBActionList changes =new DBActionList();
+        for (T obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
                     for (DBRow row : rowList) {
-                        this.getDBTable(row).delete(row);
+                        changes.addAll(this.getDBTable(row).delete(row));
                     }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
-                this.getDBTable(row).delete(row);
+                changes.addAll(this.getDBTable(row).delete(row));
             }
         }
+        return changes;
     }
 
     /**
@@ -187,40 +206,42 @@ public abstract class DBDatabase {
      * @param objs
      * @throws SQLException
      */
-    public void updateRowsAndListsOfRows(Object... objs) throws SQLException {
-        for (Object obj : objs) {
+    public <T> DBActionList update(T... objs) throws SQLException {
+        DBActionList actions = new DBActionList();
+        for (T obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
                     @SuppressWarnings("unchecked")
                     List<DBRow> rowList = (List<DBRow>) list;
                     for (DBRow row : rowList) {
-                        this.getDBTable(row).update(row);
+                        actions.addAll(this.getDBTable(row).update(row));
                     }
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
-                this.getDBTable(row).update(row);
+                actions.addAll(this.getDBTable(row).update(row));;
             }
         }
+        return actions;
     }
 
-    public void update(DBRow row) throws SQLException {
+    private void updateARow(DBRow row) throws SQLException {
         this.getDBTable(row).update(row);
     }
 
-    public void update(List<DBRow> list) throws SQLException {
+    public void updateAList(List<DBRow> list) throws SQLException {
         if (list.size() > 0 && list.get(0) instanceof DBRow) {
             for (DBRow row : list) {
-                this.update(row);
+                this.updateARow(row);
             }
         }
     }
 
-    public void update(DBRow[] list) throws SQLException {
+    public void updateAnArray(DBRow[] list) throws SQLException {
         if (list.length > 0) {
-            for (int i = 0; i < list.length; i++) {
-                this.update(list[i]);
+            for (DBRow list1 : list) {
+                this.updateARow(list1);
             }
         }
     }
@@ -230,7 +251,9 @@ public abstract class DBDatabase {
      * Automatically selects the correct table and returns the selected rows as
      * a list
      *
-     * @param rows
+     * @param <R>
+     * @param row
+     * @return 
      * @throws SQLException
      */
     public <R extends DBRow> List<R> get(R row) throws SQLException {
@@ -263,6 +286,7 @@ public abstract class DBDatabase {
      * creates a query and fetches the rows automatically
      *
      * @param rows
+     * @return 
      * @throws SQLException
      */
     public List<DBQueryRow> get(DBRow... rows) throws SQLException {
@@ -278,11 +302,6 @@ public abstract class DBDatabase {
      */
     public void print(List<?> rows) {
         for (Object row : rows) {
-//            if (row instanceof DBRow) {
-//                System.out.println(((DBRow) row).toString());
-//            } else if (row instanceof DBQueryRow) {
-//                System.out.println(((DBQueryRow) row).toString());
-//            }
             System.out.println(row.toString());
         }
     }
@@ -291,8 +310,11 @@ public abstract class DBDatabase {
      *
      * creates a query and fetches the rows automatically
      *
+     * @param expectedNumberOfRows
      * @param rows
+     * @return 
      * @throws SQLException
+     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
      */
     public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
         if (expectedNumberOfRows == null) {
@@ -313,24 +335,28 @@ public abstract class DBDatabase {
     synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
         V returnValues = null;
         Connection connection;
-        this.transactionStatement = getDBStatement();
-        this.isInATransaction = true;
-        connection = transactionStatement.getConnection();
-        connection.setAutoCommit(false);
+        this.transactionStatement = getDBTransactionStatement();
         try {
-            returnValues = dbTransaction.doTransaction(this);
-            connection.commit();
-            System.err.println("Transaction Successful: Commit Performed");
-            connection.setAutoCommit(true);
+            this.isInATransaction = true;
+            connection = transactionStatement.getConnection();
+            connection.setAutoCommit(false);
+            try {
+                returnValues = dbTransaction.doTransaction(this);
+                connection.commit();
+                System.err.println("Transaction Successful: Commit Performed");
+                connection.setAutoCommit(true);
+            } catch (Exception ex) {
+                connection.rollback();
+                System.err.println("Exception Occurred: ROLLBACK Performed");
+                throw ex;
+            } finally {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        } finally {
+            this.transactionStatement.transactionFinished();
             this.isInATransaction = false;
             transactionStatement = null;
-        } catch (Exception ex) {
-            connection.rollback();
-            System.err.println("Exception Occurred: ROLLBACK Performed");
-            connection.setAutoCommit(true);
-            this.isInATransaction = false;
-            transactionStatement = null;
-            throw ex;
         }
         return returnValues;
     }
@@ -349,37 +375,37 @@ public abstract class DBDatabase {
         boolean wasReadOnly = false;
         boolean wasAutoCommit = true;
 
-        this.transactionStatement = getDBStatement();
-        this.isInATransaction = true;
-
-        connection = transactionStatement.getConnection();
-        wasReadOnly = connection.isReadOnly();
-        wasAutoCommit = connection.getAutoCommit();
-
-//        connection.setReadOnly(true);
-        connection.setAutoCommit(false);
+        this.transactionStatement = getDBTransactionStatement();
         try {
-            returnValues = dbTransaction.doTransaction(this);
-            connection.rollback();
-            System.err.println("Transaction Successful: ROLLBACK Performed");
-            connection.setAutoCommit(wasAutoCommit);
-//            connection.setReadOnly(wasReadOnly);
+            this.isInATransaction = true;
+
+            connection = transactionStatement.getConnection();
+            wasReadOnly = connection.isReadOnly();
+            wasAutoCommit = connection.getAutoCommit();
+
+            connection.setAutoCommit(false);
+            try {
+                returnValues = dbTransaction.doTransaction(this);
+                connection.rollback();
+                System.err.println("Transaction Successful: ROLLBACK Performed");
+            } catch (Exception ex) {
+                connection.rollback();
+                System.err.println("Exception Occurred: ROLLBACK Performed");
+                throw ex;
+            } finally {
+                connection.setAutoCommit(wasAutoCommit);
+                connection.close();
+            }
+        } finally {
+            this.transactionStatement.transactionFinished();
             this.isInATransaction = false;
             transactionStatement = null;
-        } catch (Exception ex) {
-            connection.rollback();
-            System.err.println("Exception Occurred: ROLLBACK Performed");
-            connection.setAutoCommit(wasAutoCommit);
-//            connection.setReadOnly(wasReadOnly);
-            this.isInATransaction = false;
-            transactionStatement = null;
-            throw ex;
         }
         return returnValues;
     }
 
     /**
-     * Convenience method to run a DBScript on this database
+     * Convenience method to implement a DBScript on this database
      *
      * equivalent to script.implement(this);
      *
@@ -387,7 +413,7 @@ public abstract class DBDatabase {
      * @return
      * @throws Exception
      */
-    public List<String> implement(DBScript script) throws Exception {
+    public DBActionList implement(DBScript script) throws Exception {
         return script.implement(this);
     }
 
@@ -401,7 +427,7 @@ public abstract class DBDatabase {
      * @return
      * @throws Exception
      */
-    public List<String> test(DBScript script) throws Exception {
+    public DBActionList test(DBScript script) throws Exception {
         return script.test(this);
     }
 
@@ -486,7 +512,7 @@ public abstract class DBDatabase {
         String lineSeparator = System.getProperty("line.separator");
         // table name
 
-        sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow.getTableName())).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
+        sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow)).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
 
         // columns
         String sep = "";
@@ -496,11 +522,11 @@ public abstract class DBDatabase {
             if (field.isColumn()) {
                 QueryableDatatype qdt = field.getQueryableDatatype();
                 if (qdt == null) {
-                	// this is inefficient since the new qdt will be thrown away,
-                	// but it's only for creating tables, which doesn't happen often.
-					qdt = QueryableDatatype.getQueryableDatatypeInstance(field.type());
+                    // this is inefficient since the new qdt will be thrown away,
+                    // but it's only for creating tables, which doesn't happen often.
+                    qdt = QueryableDatatype.getQueryableDatatypeInstance(field.type());
                 }
-                
+
                 String colName = field.columnName();
                 sqlScript
                         .append(sep)
@@ -538,7 +564,7 @@ public abstract class DBDatabase {
     public <TR extends DBRow> void dropTable(TR tableRow) throws SQLException {
         StringBuilder sqlScript = new StringBuilder();
 
-        sqlScript.append(definition.getDropTableStart()).append(definition.formatTableName(tableRow.getTableName())).append(definition.endSQLStatement());
+        sqlScript.append(definition.getDropTableStart()).append(definition.formatTableName(tableRow)).append(definition.endSQLStatement());
         String sqlString = sqlScript.toString();
         printSQLIfRequested(sqlString);
         getDBStatement().execute(sqlString);
@@ -580,7 +606,7 @@ public abstract class DBDatabase {
         return this.databaseName = databaseName;
     }
 
-    public boolean getBatchSQLStatementsWhenPossible() {
+    public boolean batchSQLStatementsWhenPossible() {
         return batchIfPossible;
     }
 

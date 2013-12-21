@@ -38,7 +38,7 @@ public class SortingTest extends AbstractTest {
         final Marque marque = new Marque();
         DBTable<Marque> dbTable = database.getDBTable(marque);
         dbTable.setSortOrder(marque, marque.carCompany, marque.name);
-        dbTable.getAllRows().print();
+        dbTable.setBlankQueryAllowed(true).getAllRows().print();
         List<Marque> sortedMarques = dbTable.toList();
         Assert.assertThat(sortedMarques.size(), is(22));
         Assert.assertThat(sortedMarques.get(0).name.toString(), is("HYUNDAI"));
@@ -53,7 +53,7 @@ public class SortingTest extends AbstractTest {
         Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
         Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
         Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
-        marque.name.setSortOrder(QueryableDatatype.SORT_DESCENDING);
+        marque.name.setSortOrderDescending();
         dbTable.getAllRows().print();
         sortedMarques = dbTable.toList();
         Assert.assertThat(sortedMarques.size(), is(22));
@@ -85,7 +85,7 @@ public class SortingTest extends AbstractTest {
         Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
         Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
         Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
-        marque.name.setSortOrder(QueryableDatatype.SORT_DESCENDING);
+        marque.name.setSortOrderDescending();
 //        query.getAllRows();
         query.print();
         sortedMarques = query.getAllInstancesOf(marque);

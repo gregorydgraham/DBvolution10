@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 public class DBLessThanOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    protected final QueryableDatatype lessThanThis;
+//    protected final QueryableDatatype firstValue;
 
     /**
      *
@@ -34,12 +34,16 @@ public class DBLessThanOperator extends DBOperator {
      */
     public DBLessThanOperator(QueryableDatatype lessThanThis) {
         super();
-        this.lessThanThis = lessThanThis;
+        if (lessThanThis != null) {
+            this.firstValue = lessThanThis.copy();
+        } else {
+            this.firstValue = null;
+        }
     }
 
     public DBLessThanOperator() {
         super();
-        this.lessThanThis = null;
+        this.firstValue = null;
     }
 
     public String getInverse() {
@@ -52,8 +56,8 @@ public class DBLessThanOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-//        lessThanThis.setDatabase(database);
-        return db.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + lessThanThis.toSQLString(db) + " ";
+//        firstValue.setDatabase(database);
+        return db.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
     }
 
     @Override
@@ -63,13 +67,14 @@ public class DBLessThanOperator extends DBOperator {
 
     @Override
     public DBOperator getInverseOperator() {
-        return new DBGreaterThanOrEqualsOperator(lessThanThis);
+        return new DBGreaterThanOrEqualsOperator(firstValue);
     }
     
     @Override
     public DBLessThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBLessThanOperator op = new DBLessThanOperator(typeAdaptor.convert(lessThanThis));
+    	DBLessThanOperator op = new DBLessThanOperator(typeAdaptor.convert(firstValue));
     	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
     	return op;
     }
 }

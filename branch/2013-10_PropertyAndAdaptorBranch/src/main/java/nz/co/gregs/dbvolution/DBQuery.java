@@ -18,13 +18,13 @@ package nz.co.gregs.dbvolution;
 import java.io.PrintStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -42,18 +42,14 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
 public class DBQuery {
 
     DBDatabase database;
-    private List<DBRow> queryTables;
-    private List<Class<? extends DBRow>> optionalQueryTables;
-    private List<DBRow> allQueryTables;
+    private final List<DBRow> queryTables;
+    private final List<Class<? extends DBRow>> optionalQueryTables;
+    private final List<DBRow> allQueryTables;
     private List<DBQueryRow> results;
-    private Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
+    private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private Long rowLimit;
     private List<PropertyWrapper> sortOrder = null;
     private String resultSQL;
-//    private final int INNER_JOIN = 0;
-//    private final int LEFT_JOIN = 1;
-//    private final int RIGHT_JOIN = 2;
-//    private final int FULL_OUTER_JOIN = 4;
     private boolean useANSISyntax = true;
     private boolean cartesianJoinAllowed = false;
     private boolean blankQueryAllowed = false;
@@ -67,12 +63,6 @@ public class DBQuery {
         this.resultSQL = null;
     }
 
-//    private DBQuery(DBDatabase database, DBRow... examples) {
-//        this(database);
-//        for (DBRow example : examples) {
-//            this.add(example);
-//        }
-//    }
     public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
         DBQuery dbQuery = new DBQuery(database);
         for (DBRow example : examples) {
@@ -91,8 +81,9 @@ public class DBQuery {
      * automatically included in the query and an instance of this DBRow class
      * will be created for each DBQueryRow returned.
      *
-     * @param table: an extension of DBRow that defines a required table and
+     * @param tables: a list of DBRow objects that defines required tables and
      * criteria
+     * @return this
      */
     public DBQuery add(DBRow... tables) {
         for (DBRow table : tables) {
@@ -114,7 +105,8 @@ public class DBQuery {
      * Criteria (permitted and excluded values) specified in the supplied
      * instance will be added to the query.
      *
-     * @param table
+     * @param tables: a list of DBRow objects that defines optional tables and
+     * criteria
      *
      * @return this DBQuery instance
      */
@@ -132,7 +124,8 @@ public class DBQuery {
      *
      * Remove optional or required tables from the query
      *
-     * @param table
+     * @param tables
+     * @return this
      */
     public DBQuery remove(DBRow... tables) {
         for (DBRow table : tables) {
@@ -163,6 +156,7 @@ public class DBQuery {
 
     public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables, QueryGraph queryGraph) {
         List<String> joinClauses = new ArrayList<String>();
+        String lineSep = System.getProperty("line.separator");
         DBDefinition defn = database.getDefinition();
         boolean isLeftOuterJoin = false;
         boolean isFullOuterJoin = false;
@@ -180,16 +174,16 @@ public class DBQuery {
         }
         String sqlToReturn;
         if (previousTables.isEmpty()) {
-            sqlToReturn = " " + newTable.getTableName() + " ";
+            sqlToReturn = " " + newTable.getTableName() + defn.beginTableAlias()+defn.getTableAlias(newTable)+defn.endTableAlias();
         } else {
             if (isFullOuterJoin) {
-                sqlToReturn = defn.beginFullOuterJoin();
+                sqlToReturn = lineSep+defn.beginFullOuterJoin();
             } else if (isLeftOuterJoin) {
-                sqlToReturn = defn.beginLeftOuterJoin();
+                sqlToReturn = lineSep+defn.beginLeftOuterJoin();
             } else {
-                sqlToReturn = defn.beginInnerJoin();
+                sqlToReturn = lineSep+defn.beginInnerJoin();
             }
-            sqlToReturn += newTable.getTableName();
+            sqlToReturn += newTable.getTableName() + defn.beginTableAlias()+defn.getTableAlias(newTable)+defn.endTableAlias();
             if (joinClauses.isEmpty()) {
                 sqlToReturn += defn.beginOnClause() + defn.getTrueOperation() + defn.endOnClause();
             } else {
@@ -238,7 +232,7 @@ public class DBQuery {
             if (providedSelectClause == null) {
                 List<String> columnNames = tabRow.getColumnNames();
                 for (String columnName : columnNames) {
-                    String formattedColumnName = defn.formatTableAndColumnNameForSelectClause(tableName, columnName);
+                    String formattedColumnName = defn.formatTableAliasAndColumnNameForSelectClause(tabRow, columnName);
                     selectClause.append(colSep).append(formattedColumnName);
                     colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
                 }
@@ -247,51 +241,22 @@ public class DBQuery {
             }
             if (!useANSISyntax) {
                 fromClause.append(separator).append(tableName);
+//.append(defn.beginTableAlias()).append(defn.getTableAlias(tabRow)).append(defn.endTableAlias());
             } else {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
             }
-            String tabRowCriteria = tabRow.getWhereClause(database);
+            String tabRowCriteria = tabRow.getWhereClause(database, true);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 whereClause.append(lineSep).append(tabRowCriteria);
             }
 
             if (!useANSISyntax) {
-                for (DBRelationship rel : tabRow.getAdHocRelationships()) {
-                    whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
-                    queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
-                }
-
-                final String tabRowPK = tabRow.getPrimaryKeyName();
-                if (tabRowPK != null) {
-                    for (DBRow otherTab : otherTables) {
-                        List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
-                        for (PropertyWrapper fk : fks) {
-                            String formattedPK = defn.formatTableAndColumnName(tableName, tabRowPK);
-                            Class<? extends DBRow> pkClass = fk.referencedClass();
-                            DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                            String fkReferencesColumn = defn.formatTableAndColumnName(fkReferencesTable.getTableName(), fkReferencesTable.getPrimaryKeyName());
-                            if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
-                                String fkColumnName = fk.columnName();
-                                String formattedFK = defn.formatTableAndColumnName(otherTab.getTableName(), fkColumnName);
-                                whereClause
-                                        .append(lineSep)
-                                        .append(defn.beginAndLine())
-                                        .append(formattedPK)
-                                        .append(defn.getEqualsComparator())
-                                        .append(formattedFK);
-                                queryGraph.add(tabRow.getClass(), otherTab.getClass());
-                            }
-                        }
-                    }
-                }
+                getNonANSIJoin(tabRow, whereClause, defn, queryGraph, joinedTables, tableName, lineSep);
             }
 
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
-        }
-        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
-            throw new AccidentalCartesianJoinException();
         }
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
@@ -303,8 +268,43 @@ public class DBQuery {
         if (database.isPrintSQLBeforeExecuting()) {
             System.out.println(sqlString);
         }
+        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
+            throw new AccidentalCartesianJoinException();
+        }
 
         return sqlString;
+    }
+   
+    private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep){
+        
+                for (DBRelationship rel : tabRow.getAdHocRelationships()) {
+                    whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
+                    queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
+                }
+
+                final String tabRowPK = tabRow.getPrimaryKeyColumnName();
+                if (tabRowPK != null) {
+                    for (DBRow otherTab : otherTables) {
+                        List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
+                        for (PropertyWrapper fk : fks) {
+                            String formattedPK = defn.formatTableAliasAndColumnName(tabRow, tabRowPK);
+                            Class<? extends DBRow> pkClass = fk.referencedClass();
+                            DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
+                            String fkReferencesColumn = defn.formatTableAliasAndColumnName(fkReferencesTable, fkReferencesTable.getPrimaryKeyColumnName());
+                            if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
+                                String fkColumnName = fk.columnName();
+                                String formattedFK = defn.formatTableAliasAndColumnName(otherTab, fkColumnName);
+                                whereClause
+                                        .append(lineSep)
+                                        .append(defn.beginAndLine())
+                                        .append(formattedPK)
+                                        .append(defn.getEqualsComparator())
+                                        .append(formattedFK);
+                                queryGraph.add(tabRow.getClass(), otherTab.getClass());
+                            }
+                        }
+                    }
+                }
     }
 
     public String getSQLForCount() throws SQLException {
@@ -317,41 +317,49 @@ public class DBQuery {
         resultSQL = this.getSQLForQuery();
         DBQueryRow queryRow;
 
-        Statement dbStatement = database.getDBStatement();
-        ResultSet resultSet = dbStatement.executeQuery(resultSQL);
-        while (resultSet.next()) {
-            queryRow = new DBQueryRow();
-            for (DBRow tableRow : allQueryTables) {
-                DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
+        DBStatement dbStatement = database.getDBStatement();
+        try {
+            ResultSet resultSet = dbStatement.executeQuery(resultSQL);
+            try {
+                while (resultSet.next()) {
+                    queryRow = new DBQueryRow();
+                    for (DBRow tableRow : allQueryTables) {
+                        DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
-                DBDefinition defn = database.getDefinition();
-                List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
-                for (PropertyWrapper newProp : newProperties) {
-                    QueryableDatatype qdt = newProp.getQueryableDatatype();
-                    String resultSetColumnName = defn.formatColumnNameForResultSet(newInstance.getTableName(), newProp.columnName());
-                    qdt.setFromResultSet(resultSet, resultSetColumnName);
-                }
-                newInstance.setDefined(true); // Actually came from the database so it is a defined row.
-                Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
-                if (existingInstancesOfThisTableRow == null) {
-                    existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
-                    existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
-                }
-                DBRow existingInstance = newInstance;
-                final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
-                if (primaryKey != null) {
-                    final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
-                    if (qdt != null) {
-                        existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
-                        if (existingInstance == null) {
-                            existingInstance = newInstance;
-                            existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
+                        DBDefinition defn = database.getDefinition();
+                        List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
+                        for (PropertyWrapper newProp : newProperties) {
+                            QueryableDatatype qdt = newProp.getQueryableDatatype();
+                            String resultSetColumnName = defn.formatColumnNameForDBQueryResultSet(newInstance, newProp.columnName());
+                            qdt.setFromResultSet(resultSet, resultSetColumnName);
                         }
+                        newInstance.setDefined(true); // Actually came from the database so it is a defined row.
+                        Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
+                        if (existingInstancesOfThisTableRow == null) {
+                            existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
+                            existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
+                        }
+                        DBRow existingInstance = newInstance;
+                        final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
+                        if (primaryKey != null) {
+                            final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
+                            if (qdt != null) {
+                                existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
+                                if (existingInstance == null) {
+                                    existingInstance = newInstance;
+                                    existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
+                                }
+                            }
+                        }
+                        queryRow.put(existingInstance.getClass(), existingInstance);
                     }
+                    results.add(queryRow);
                 }
-                queryRow.put(existingInstance.getClass(), existingInstance);
+            } finally {
+                resultSet.close();
             }
-            results.add(queryRow);
+        } finally {
+            dbStatement.close();
         }
         return results;
     }
@@ -376,7 +384,7 @@ public class DBQuery {
 
     /**
      *
-     * @param <>>: A Java Object that extends DBRow
+     * @param <R>
      * @param exemplar: The DBRow class that you would like returned.
      * @param expected: The expected number of rows, an exception will be thrown
      * if this expectation is not met.
@@ -502,7 +510,7 @@ public class DBQuery {
                     final QueryableDatatype primaryKey = rowPart.getPrimaryKey();
                     if (primaryKey != null) {
                         String rowPartStr = primaryKey.toSQLString(this.database);
-                        ps.print(" " + rowPart.getPrimaryKeyName() + ": " + rowPartStr);
+                        ps.print(" " + rowPart.getPrimaryKeyColumnName() + ": " + rowPartStr);
                     }
                 }
             }
@@ -525,10 +533,18 @@ public class DBQuery {
         } else {
             Long result = 0L;
 
-            Statement dbStatement = database.getDBStatement();
-            ResultSet resultSet = dbStatement.executeQuery(this.getSQLForCount());
-            while (resultSet.next()) {
-                result = resultSet.getLong(1);
+            DBStatement dbStatement = database.getDBStatement();
+            try {
+                ResultSet resultSet = dbStatement.executeQuery(this.getSQLForCount());
+                try {
+                    while (resultSet.next()) {
+                        result = resultSet.getLong(1);
+                    }
+                } finally {
+                    resultSet.close();
+                }
+            } finally {
+                dbStatement.close();
             }
             return result;
         }
@@ -554,38 +570,39 @@ public class DBQuery {
     }
 
     /**
-     * Sets the sort order of properties (field and/or method)
-     * by the given property object references.
-     * 
-     * <p> For example the following code snippet will sort
-     * by just the name column:
+     * Sets the sort order of properties (field and/or method) by the given
+     * property object references.
+     *
+     * <p>
+     * For example the following code snippet will sort by just the name column:
      * <pre>
      * Customer customer = ...;
      * query.setSortOrder(new DBRow[]{customer}, customer.name);
      * </pre>
      *
-     * <p> Requires that each {@code baseRowColumn) be from one of the
+     * <p>
+     * Requires that each {@code baseRowColumn) be from one of the
      * {@code baseRow) instances to work.
      * @param baseRows
      * @param baseRowColumns
      */
     public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {
         results = null;
-        
+
         sortOrder = new ArrayList<PropertyWrapper>();
-        for (QueryableDatatype qdt: baseRowColumns) {
-        	PropertyWrapper prop = null;
-	        for (DBRow baseRow: baseRows) {
-	            prop = baseRow.getPropertyWrapperOf(qdt);
-	            if (prop != null) {
-	            	break;
-	            }
-	        }
-	        if (prop == null) {
-	        	throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
-	        }
-	        
-        	sortOrder.add(prop);
+        for (QueryableDatatype qdt : baseRowColumns) {
+            PropertyWrapper prop = null;
+            for (DBRow baseRow : baseRows) {
+                prop = baseRow.getPropertyWrapperOf(qdt);
+                if (prop != null) {
+                    break;
+                }
+            }
+            if (prop == null) {
+                throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
+            }
+
+            sortOrder.add(prop);
         }
     }
 
@@ -599,8 +616,8 @@ public class DBQuery {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (PropertyWrapper prop : sortOrder) {
-            	QueryableDatatype qdt = prop.getQueryableDatatype();
-            	final String dbColumnName = defn.formatTableAndColumnName(prop.tableName(), prop.columnName());
+                QueryableDatatype qdt = prop.getQueryableDatatype();
+                final String dbColumnName = defn.formatTableAliasAndColumnName(prop.getDBRowInstanceWrapper().adapteeDBRow(), prop.columnName());
                 if (dbColumnName != null) {
                     orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                     sortSeparator = defn.getSubsequentOrderByClauseSeparator();
@@ -675,5 +692,18 @@ public class DBQuery {
             }
         }
         addOptional(tablesToAdd.toArray(new DBRow[]{}));
+    }
+
+    public List<DBQueryRow> getAllRowsContaining(DBRow exemplar) throws SQLException {
+        if (this.needsResults()) {
+            getAllRows();
+        }
+        List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+        for(DBQueryRow row : results){
+            if (row.get(exemplar)==exemplar){
+                returnList.add(row);
+            }
+        }
+        return returnList;
     }
 }

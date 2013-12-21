@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
@@ -223,7 +224,7 @@ public class DBRowClassWrapper {
      * @param target the {@code DBRow} instance
      * @return
      */
-    public DBRowInstanceWrapper instanceWrapperFor(Object target) {
+    public DBRowInstanceWrapper instanceWrapperFor(DBRow target) {
     	if (identityOnly) {
     		throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
     	}

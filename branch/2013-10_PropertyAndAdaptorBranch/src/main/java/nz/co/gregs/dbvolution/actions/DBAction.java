@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 
@@ -24,35 +24,54 @@ import nz.co.gregs.dbvolution.DBRow;
  *
  * @author gregorygraham
  */
-public  abstract class DBAction {
+public abstract class DBAction {
 
-    private DBRow row;
-    protected String sql = "";
-//    protected final DBDatabase database;
-    
+    protected final DBRow row;
+
+    protected abstract List<String> getSQLStatements(DBDatabase db, DBRow row);
+    public abstract DBActionList getRevertDBActionList();
+    protected abstract DBActionList getActions(DBRow row);
+
+    DBAction() {
+        super();
+        row = null;
+    }
+
     public <R extends DBRow> DBAction(R row) {
         super();
-        this.row = row;
-    }
-    
-    public <R extends DBRow> DBAction(R row, String sql) {
-        this(row);
-        this.sql = sql;
-    }
-    
-    public String getSQLStatement(DBDatabase db){
-        return sql;
+        this.row = DBRow.copyDBRow(row);
     }
 
-    public abstract boolean canBeBatched();
-
-    public abstract void execute(DBDatabase db, Statement statement) throws SQLException ;
+    public final List<String> getSQLStatements(DBDatabase db) {
+        return getSQLStatements(db, row);
+    }
 
     /**
-     * @return the row
+     *
+     * This method performs the DB action and returns a list of all actions
+     * perform in the process.
+     *
+     * The supplied row will be changed by the action in an appropriate way,
+     * however the Action's will contain an unchanged and unchangeable copy of
+     * the row for internal use.
+     *
+     * @param db
+     * @param row
+     * @return
+     * @throws SQLException
      */
-    public DBRow getRow() {
-        return row;
+    protected abstract DBActionList execute(DBDatabase db, DBRow row) throws SQLException;
+
+    /**
+     * This method performs the DB action.
+     *
+     * The Action's internal information will not be changed and can be repeated
+     *
+     * @param database
+     * @throws SQLException
+     */
+    protected final void execute(DBDatabase database) throws SQLException{
+        this.execute(database,DBRow.copyDBRow(row));
     }
-    
+
 }

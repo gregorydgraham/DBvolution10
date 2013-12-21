@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -54,16 +55,24 @@ public abstract class DBDefinition {
      *
      * e.g table, column => TABLE.COLUMN
      *
-     * @param tableName
+     * @param table
      * @param columnName
      * @return
      */
-    public String formatTableAndColumnName(String tableName, String columnName) {
-        return formatTableName(tableName) + "." + formatColumnName(columnName);
+    public String formatTableAndColumnName(DBRow table, String columnName) {
+        return formatTableName(table) + "." + formatColumnName(columnName);
     }
 
-    public String formatTableName(String tableName) {
-        return tableName;
+    public String formatTableAliasAndColumnName(DBRow table, String columnName) {
+        return getTableAlias(table) + "." + formatColumnName(columnName);
+    }
+
+    public String formatTableAliasAndColumnNameForSelectClause(DBRow table, String columnName) {
+        return formatTableAliasAndColumnName(table, columnName) + " " + formatColumnNameForDBQueryResultSet(table, columnName);
+    }
+
+    public String formatTableName(DBRow table) {
+        return table.getTableName();
     }
 
     /**
@@ -71,17 +80,22 @@ public abstract class DBDefinition {
      * Specifies the column alias used within the JDBC ResultSet to identify the
      * column.
      *
-     * @param tableName
+     * @param table
      * @param columnName
      * @return
      */
-    public String formatColumnNameForResultSet(String tableName, String columnName) {
-        String formattedName = formatTableAndColumnName(tableName, columnName).replaceAll("\\.", "__");
+    public String formatColumnNameForResultSet(DBRow table, String columnName) {
+        String formattedName = formatTableAndColumnName(table, columnName).replaceAll("\\.", "__");
         return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
     }
 
-    public String formatTableAndColumnNameForSelectClause(String tableName, String columnName) {
-        return formatTableAndColumnName(tableName, columnName) + " " + formatColumnNameForResultSet(tableName, columnName);
+    public String formatColumnNameForDBQueryResultSet(DBRow table, String columnName) {
+        String formattedName = formatTableAliasAndColumnName(table, columnName).replaceAll("\\.", "__");
+        return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
+    }
+
+    public String formatTableAndColumnNameForSelectClause(DBRow table, String columnName) {
+        return formatTableAndColumnName(table, columnName) + " " + formatColumnNameForResultSet(table, columnName);
     }
 
     public String safeString(String toString) {
@@ -334,5 +348,41 @@ public abstract class DBDefinition {
 
     public boolean isColumnNamesCaseSensitive() {
 		return false;
+    }
+
+    public String startMultilineComment() {
+        return "/*";
+    }
+
+    public String endMultilineComment() {
+        return "*/";
+    }
+
+    public String beginValueClause() {
+        return " VALUES ( ";
+    }
+
+    public Object endValueClause() {
+        return ")";
+    }
+
+    public String getValuesClauseValueSeparator() {
+        return ",";
+    }
+
+    public String getValuesClauseColumnSeparator() {
+        return ",";
+    }
+
+    public String beginTableAlias() {
+        return " AS ";
+    }
+
+    public String endTableAlias() {
+        return " ";
+    }
+
+    public Object getTableAlias(DBRow tabRow) {
+        return ("_"+tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
     }
 }

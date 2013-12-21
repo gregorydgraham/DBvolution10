@@ -39,7 +39,7 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-                DBDefinition defn = db.getDefinition();
+        DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
         whereClause.append(defn.beginAndLine());
         if (listOfPossibleValues.isEmpty()) {
@@ -74,6 +74,7 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
     	}
     	DBInCaseInsensitiveOperator op = new DBInCaseInsensitiveOperator(list);
     	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
     	return op;
     }
 }

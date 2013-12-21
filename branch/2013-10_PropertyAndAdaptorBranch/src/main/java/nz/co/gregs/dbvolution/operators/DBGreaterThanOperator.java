@@ -27,19 +27,19 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBGreaterThanOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    protected final QueryableDatatype greaterThanThis;
+//    protected final QueryableDatatype firstValue;
 
     /**
      *
      */
     public DBGreaterThanOperator() {
         super();
-        this.greaterThanThis = null;
+        this.firstValue = null;
     }
 
     public DBGreaterThanOperator(QueryableDatatype greaterThanThis) {
         super();
-        this.greaterThanThis = greaterThanThis;
+        this.firstValue = greaterThanThis == null ? greaterThanThis : greaterThanThis.copy();
     }
 
     public String getInverse() {
@@ -52,26 +52,27 @@ public class DBGreaterThanOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-//        greaterThanThis.setDatabase(database);
+//        firstValue.setDatabase(database);
         DBDefinition defn = db.getDefinition();
-        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + greaterThanThis.toSQLString(db) + " ";
+        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
     }
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
+//        DBDefinition defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ";
     }
 
     @Override
     public DBOperator getInverseOperator() {
-        return new DBLessThanOrEqualOperator(greaterThanThis);
+        return new DBLessThanOrEqualOperator(firstValue);
     }
 
     @Override
     public DBGreaterThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBGreaterThanOperator op = new DBGreaterThanOperator(typeAdaptor.convert(greaterThanThis));
+    	DBGreaterThanOperator op = new DBGreaterThanOperator(typeAdaptor.convert(firstValue));
     	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
     	return op;
     }
 }

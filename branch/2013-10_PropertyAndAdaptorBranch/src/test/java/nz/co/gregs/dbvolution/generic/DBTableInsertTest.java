@@ -40,7 +40,7 @@ public class DBTableInsertTest extends AbstractTest {
         myTableRow.getName().permittedValues("TOYOTA");
         myTableRow.getNumericCode().permittedValues(10);
         marques.insert(myTableRow);
-        marques.getAllRows();
+        marques.setBlankQueryAllowed(true).getAllRows();
         marques.print();
 
         Date creationDate = new Date();

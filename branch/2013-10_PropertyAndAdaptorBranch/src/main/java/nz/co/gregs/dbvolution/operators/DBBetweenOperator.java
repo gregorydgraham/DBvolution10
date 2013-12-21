@@ -27,21 +27,21 @@ import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 public class DBBetweenOperator extends DBOperator{
     public static final long serialVersionUID = 1L;
 
-    private final QueryableDatatype lowValue;
-    private final QueryableDatatype highValue;
+//    private final QueryableDatatype firstValue;
+//    private final QueryableDatatype secondValue;
     
     public DBBetweenOperator(QueryableDatatype lowValue, QueryableDatatype highValue){
         super();
-        this.lowValue =lowValue;
-        this.highValue = highValue;
+        this.firstValue = lowValue==null?lowValue:lowValue.copy();
+        this.secondValue = highValue==null?highValue:highValue.copy();
     }
     
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        lowValue.setDatabase(database);
-        String lowerSQLValue = lowValue.toSQLString(db);
+        String lowerSQLValue = firstValue.toSQLString(db);
 //        highValue.setDatabase(db);
-        String upperSQLValue = highValue.toSQLString(db);
+        String upperSQLValue = secondValue.toSQLString(db);
         String beginWhereLine = db.getDefinition().beginAndLine();
         return beginWhereLine + (invertOperator?"!(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
     }
@@ -58,8 +58,9 @@ public class DBBetweenOperator extends DBOperator{
     
     @Override
     public DBBetweenOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBBetweenOperator op = new DBBetweenOperator(typeAdaptor.convert(lowValue), typeAdaptor.convert(highValue));
+    	DBBetweenOperator op = new DBBetweenOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
     	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
     	return op;
     }
 }

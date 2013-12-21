@@ -42,13 +42,14 @@ public class DBLessThanOrEqualOperator extends DBLessThanOperator {
     
     @Override
     public DBOperator getInverseOperator() {
-        return new DBGreaterThanOperator(lessThanThis);
+        return new DBGreaterThanOperator(firstValue);
     }
     
     @Override
     public DBLessThanOrEqualOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBLessThanOrEqualOperator op = new DBLessThanOrEqualOperator(typeAdaptor.convert(lessThanThis));
+    	DBLessThanOrEqualOperator op = new DBLessThanOrEqualOperator(typeAdaptor.convert(firstValue));
     	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
     	return op;
     }
 }

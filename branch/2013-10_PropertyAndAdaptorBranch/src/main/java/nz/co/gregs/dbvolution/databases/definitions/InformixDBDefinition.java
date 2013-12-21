@@ -17,12 +17,13 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBRow;
 
 
 public class InformixDBDefinition extends DBDefinition {
     
     private SimpleDateFormat dateFormat;
-    private String DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    private String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
     public String informixDateFormat = "%Y-%m-%d %H:%M:%S";
 
@@ -43,8 +44,8 @@ public class InformixDBDefinition extends DBDefinition {
      * @return
      */
     @Override
-    public String formatTableAndColumnName(String tableName, String columnName) {
-        return "" + tableName + "." + columnName + "";
+    public String formatTableAndColumnName(DBRow table, String columnName) {
+        return "" + formatTableName(table) + "." + formatColumnName(columnName) + "";
     }
 
     @Override

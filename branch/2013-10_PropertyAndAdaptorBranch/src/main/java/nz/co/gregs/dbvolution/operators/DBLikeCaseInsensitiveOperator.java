@@ -27,16 +27,16 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBLikeCaseInsensitiveOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    private final QueryableDatatype likeableValue;
+//    private final QueryableDatatype firstValue;
 
     public DBLikeCaseInsensitiveOperator(QueryableDatatype likeableValue) {
         super();
-        this.likeableValue = likeableValue;
+        firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
     }
 
     public DBLikeCaseInsensitiveOperator() {
         super();
-        this.likeableValue = null;
+        firstValue = null;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
 //        likeableValue.setDatabase(db);
         if (db == null) {
             throw new RuntimeException("Database Cannot Be NULL: Please supply a proper DBDatabase instance.");
-        } else if (likeableValue.toSQLString(db) == null) {
+        } else if (firstValue.toSQLString(db) == null) {
             throw new RuntimeException("Actual Comparison Is Required: please supply an actual object to compare against");
         } else if (columnName == null) {
             throw new RuntimeException("MalFormed DBRow: please supply a column name using the DBColumn annotation");
@@ -54,7 +54,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
             throw new RuntimeException("Get Operator Returns NULL: the getOperator() method returned null when it should return a String of the database's operator.");
         } else {
             DBDefinition defn = db.getDefinition();
-            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(likeableValue.toSQLString(db)) + ")";
+            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(firstValue.toSQLString(db)) + ")";
         }
     }
 
@@ -75,8 +75,9 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
 
     @Override
     public DBLikeCaseInsensitiveOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBLikeCaseInsensitiveOperator op = new DBLikeCaseInsensitiveOperator(typeAdaptor.convert(likeableValue));
+    	DBLikeCaseInsensitiveOperator op = new DBLikeCaseInsensitiveOperator(typeAdaptor.convert(firstValue));
     	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
     	return op;
     }
 }

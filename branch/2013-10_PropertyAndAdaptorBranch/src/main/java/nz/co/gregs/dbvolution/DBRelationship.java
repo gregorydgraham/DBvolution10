@@ -68,8 +68,8 @@ public class DBRelationship implements Serializable {
      * the {@code otherTable} instance
      */
     public DBRelationship(DBRow thisTable, Object thisTableField, DBRow otherTable, Object otherTableField, DBOperator operator) {
-        this.firstTable = thisTable;
-        this.secondTable = otherTable;
+        this.firstTable = DBRow.copyDBRow(thisTable);
+        this.secondTable = DBRow.copyDBRow(otherTable);
         this.operation = operator;
         
         this.firstColumnPropertyWrapper = thisTable.getPropertyWrapperOf(thisTableField);
@@ -86,15 +86,15 @@ public class DBRelationship implements Serializable {
     public String generateSQL(DBDatabase database) {
         final DBDefinition definition = database.getDefinition();
         return getOperation().generateRelationship(database,
-                definition.formatTableAndColumnName(firstTable.getTableName(), firstColumnPropertyWrapper.columnName()),
-                definition.formatTableAndColumnName(secondTable.getTableName(), secondColumnPropertyWrapper.columnName()));
+                definition.formatTableAliasAndColumnName(firstTable, firstColumnPropertyWrapper.columnName()),
+                definition.formatTableAliasAndColumnName(secondTable, secondColumnPropertyWrapper.columnName()));
     }
 
     static public String generateSQL(DBDatabase database, DBRow firstTable, PropertyWrapper firstColumnProp, DBOperator operation, DBRow secondTable, PropertyWrapper secondColumnProp) {
         final DBDefinition definition = database.getDefinition();
         return operation.generateRelationship(database,
-                definition.formatTableAndColumnName(firstTable.getTableName(), firstColumnProp.columnName()),
-                definition.formatTableAndColumnName(secondTable.getTableName(), secondColumnProp.columnName()));
+                definition.formatTableAliasAndColumnName(firstTable, firstColumnProp.columnName()),
+                definition.formatTableAliasAndColumnName(secondTable, secondColumnProp.columnName()));
     }
 
     /**

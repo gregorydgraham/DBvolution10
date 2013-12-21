@@ -36,7 +36,7 @@ public class DBTableDeleteTest extends AbstractTest {
 
     @Test
     public void testDeleteListOfRows() throws SQLException {
-        marques.getAllRows();
+        marques.setBlankQueryAllowed(true).getAllRows();
         List<Marque> rowList = marques.toList();
         int originalSize = rowList.size();
         System.out.println("rowList.size()==" + rowList.size());
@@ -56,7 +56,7 @@ public class DBTableDeleteTest extends AbstractTest {
 
     @Test
     public void testDeleteByExample() throws SQLException {
-        List<Marque> beforeList = marques.getAllRows().toList();
+        List<Marque> beforeList = marques.setBlankQueryAllowed(true).getAllRows().toList();
         System.out.println("rowList.size()==" + marques.toList().size());
         Marque marq = new Marque();
         marq.name.permittedValues("PEUGEOT", "HUMMER");
@@ -69,8 +69,9 @@ public class DBTableDeleteTest extends AbstractTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDeleteByExampleUsingList() throws SQLException {
-        List<Marque> beforeList = marques.getAllRows().toList();
+        List<Marque> beforeList = marques.setBlankQueryAllowed(true).getAllRows().toList();
         System.out.println("rowList.size()==" + marques.toList().size());
         Marque marq = new Marque();
         ArrayList<String> arrayList = new ArrayList<String>();
@@ -86,8 +87,9 @@ public class DBTableDeleteTest extends AbstractTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDeleteByExampleUsingSet() throws SQLException {
-        List<Marque> beforeList = marques.getAllRows().toList();
+        List<Marque> beforeList = marques.setBlankQueryAllowed(true).getAllRows().toList();
         System.out.println("rowList.size()==" + marques.toList().size());
         Marque marq = new Marque();
         HashSet<String> hashSet = new HashSet<String>();

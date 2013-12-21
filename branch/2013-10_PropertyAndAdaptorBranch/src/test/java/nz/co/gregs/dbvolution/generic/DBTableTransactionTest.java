@@ -40,7 +40,7 @@ public class DBTableTransactionTest extends AbstractTest {
 
     @Test
     public void testInsertRowsSucceeds() throws SQLException, Exception{
-        List<Marque> original = marques.getRowsByExample(new Marque()).toList();
+        List<Marque> original = marques.setBlankQueryAllowed(true).getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
         DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
             @Override
@@ -51,7 +51,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 myTableRow.getName().permittedValues("TOYOTA");
                 myTableRow.getNumericCode().permittedValues(10);
                 marques.insert(myTableRow);
-                marques.getAllRows();
+                marques.setBlankQueryAllowed(true).getAllRows();
                 marques.print();
 
                 List<Marque> myTableRows = new ArrayList<Marque>();
@@ -73,7 +73,7 @@ public class DBTableTransactionTest extends AbstractTest {
 
     @Test
     public void testInsertRowsFailure() throws SQLException {
-        List<Marque> original = marques.getRowsByExample(new Marque()).toList();
+        List<Marque> original = marques.setBlankQueryAllowed(true).getRowsByExample(new Marque()).toList();
         System.out.println("original.toList().size(): " + original.size());
         try{
         DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {

@@ -29,16 +29,17 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBInOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
-    protected final List<QueryableDatatype> listOfPossibleValues;
+    protected final List<QueryableDatatype> listOfPossibleValues = new ArrayList<QueryableDatatype>();
 
     public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
         super();
-        this.listOfPossibleValues = listOfPossibleValues;
+        for (QueryableDatatype qdt : listOfPossibleValues) {
+            this.listOfPossibleValues.add(qdt == null ? null : qdt.copy());
+        }
     }
 
     public DBInOperator() {
         super();
-        this.listOfPossibleValues = new ArrayList<QueryableDatatype>();
     }
 
     @Override
@@ -75,7 +76,7 @@ public class DBInOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
+//        DBDefinition defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
     }
 
@@ -85,6 +86,30 @@ public class DBInOperator extends DBOperator {
     }
     
     @Override
+    public boolean equals(DBOperator other) {
+
+        if (super.equals(other) == false) {
+            return false;
+        } else {
+            if (other instanceof DBInOperator) {
+                DBInOperator otherIn = (DBInOperator) other;
+                if (listOfPossibleValues.size() != otherIn.listOfPossibleValues.size()) {
+                    return false;
+                } else {
+                    for (QueryableDatatype qdt : listOfPossibleValues) {
+                        if (!otherIn.listOfPossibleValues.contains(qdt)) {
+                            return false;
+                        }
+                    }
+                }
+            } else {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    @Override
     public DBInOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	List<QueryableDatatype> list = new ArrayList<QueryableDatatype>();
     	for (QueryableDatatype item: listOfPossibleValues) {
@@ -92,6 +117,7 @@ public class DBInOperator extends DBOperator {
     	}
     	DBInOperator op = new DBInOperator(list);
     	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
     	return op;
     }
 }

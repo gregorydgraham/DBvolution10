@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor.Direction;
@@ -51,7 +50,6 @@ public class QueryableDatatypeSyncer {
 		
 		try {
 			this.internalQdt = internalQdtType.newInstance();
-			//this.internalQdt.
 		} catch (InstantiationException e) {
 			// TODO produce a better error message that is consistent with how this is handled elsewhere
 			throw new DBRuntimeException("Instantiation error creating internal "
@@ -223,7 +221,6 @@ public class QueryableDatatypeSyncer {
 			// copy simple fields
 			targetQdt.changed = sourceQdt.changed;
 			targetQdt.includingNulls = sourceQdt.includingNulls;
-			targetQdt.invertOperator = sourceQdt.invertOperator;
 			targetQdt.isDBNull = sourceQdt.isDBNull;
 			targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
 			targetQdt.undefined = sourceQdt.undefined;

@@ -4,7 +4,7 @@
 
     <groupId>nz.co.gregs</groupId>
     <artifactId>dbvolution</artifactId>
-    <version>0.8.28-SNAPSHOT</version>
+    <version>0.8.35-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <name>DBvolution</name>
@@ -201,4 +201,10 @@
             <!-- Sonatype JIRA ticket: https://issues.sonatype.org/browse/OSSRH-6397 -->
         </repository>
     </distributionManagement>
+    <repositories>
+        <repository>
+            <id>SourceForge</id>
+            <url>http://csvjdbc.sourceforge.net/maven2</url>
+        </repository>
+    </repositories>
 </project>

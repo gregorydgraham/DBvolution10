@@ -17,26 +17,31 @@ package nz.co.gregs.dbvolution.transactions;
 
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
-
+import nz.co.gregs.dbvolution.databases.DBStatement;
 
 public class DBRawSQLTransaction implements DBTransaction<Boolean> {
+
     private final String sql;
-    
-    public DBRawSQLTransaction(String rawSQL){
+
+    public DBRawSQLTransaction(String rawSQL) {
         this.sql = rawSQL;
     }
 
     @Override
     public Boolean doTransaction(DBDatabase dbDatabase) throws Exception {
-        Statement dbStatement = dbDatabase.getDBStatement();
-        dbStatement.addBatch(sql);
-        int[] executeBatchResults = dbStatement.executeBatch();
-        for (int result: executeBatchResults){
-            if (result == Statement.EXECUTE_FAILED){
-                return Boolean.FALSE;
+        DBStatement dbStatement = dbDatabase.getDBStatement();
+        try {
+            dbStatement.addBatch(sql);
+            int[] executeBatchResults = dbStatement.executeBatch();
+            for (int result : executeBatchResults) {
+                if (result == Statement.EXECUTE_FAILED) {
+                    return Boolean.FALSE;
+                }
             }
+        } finally {
+            dbStatement.close();
         }
         return Boolean.TRUE;
     }
-    
+
 }

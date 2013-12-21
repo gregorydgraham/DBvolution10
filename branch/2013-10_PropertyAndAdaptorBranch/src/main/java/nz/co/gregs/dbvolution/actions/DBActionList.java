@@ -15,8 +15,9 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 
@@ -24,16 +25,35 @@ import nz.co.gregs.dbvolution.DBDatabase;
  *
  * @author gregorygraham
  */
-public class DBActionList extends ArrayList<DBAction>{
+public class DBActionList extends ArrayList<DBAction> {
+
     private static final long serialVersionUID = 1L;
-    
-    public List<String> getSQL(DBDatabase db){
+
+    public DBActionList(DBAction... actions) {
+        super();
+        this.addAll(Arrays.asList(actions));
+    }
+
+    public synchronized List<String> getSQL(DBDatabase db) {
         List<String> sqlList = new ArrayList<String>();
-        for (Iterator<DBAction> it = this.iterator(); it.hasNext();) {
-            DBAction act = it.next();
-            sqlList.add(act.getSQLStatement(db));
+        for (DBAction act : this) {
+            sqlList.addAll(act.getSQLStatements(db));
         }
         return sqlList;
     }
-        
+
+    public synchronized void execute(DBDatabase database) throws SQLException {
+        for (DBAction action : this) {
+            action.execute(database);
+        }
+    }
+
+    public DBActionList getRevertActionList() {
+        DBAction[] toArray = this.toArray(new DBAction[]{});
+        DBActionList reverts = new DBActionList();
+        for (int i = toArray.length-1 ;  i >= 0 ; i--) {
+            reverts.addAll(toArray[i].getRevertDBActionList());
+        }
+        return reverts;
+    }
 }

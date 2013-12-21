@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
+import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.operators.*;
 
 /**
@@ -31,11 +33,9 @@ import nz.co.gregs.dbvolution.operators.*;
 public abstract class QueryableDatatype extends Object implements Serializable {
 
     public static final long serialVersionUID = 1L;
-//    protected transient DBDatabase database = null;
     protected Object literalValue = null;
     protected boolean isDBNull = false;
     protected boolean includingNulls = false;
-    protected boolean invertOperator;
     protected DBOperator operator = null;
     protected boolean undefined = true;
     protected boolean changed = false;
@@ -65,10 +65,51 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             this.operator = new DBEqualsOperator(this);
         }
     }
-    
+
     @Override
     public String toString() {
         return (literalValue == null ? "" : literalValue.toString());
+    }
+
+    /**
+     * Copies a QueryableDatatype and returns the copy.
+     *
+     * Used internally to provide immutability to DBOperator objects.
+     *
+     * The intention is that this method will provide a snapshot of the QDT at
+     * this moment in time and copy or clone any internal objects that might
+     * change.
+     *
+     * Subclasses should extend this method if they have fields that maintain
+     * the state of the QDT.
+     *
+     * Always use the super.copy() method first when overriding this method.
+     *
+     * @return
+     */
+    public QueryableDatatype copy() {
+        QueryableDatatype newQDT = this;
+        try {
+            newQDT = this.getClass().newInstance();
+
+            newQDT.literalValue = this.literalValue;
+            newQDT.isDBNull = this.isDBNull;
+            newQDT.includingNulls = this.includingNulls;
+            newQDT.operator = this.operator;
+            newQDT.undefined = this.undefined;
+            newQDT.changed = this.changed;
+            if (this.previousValueAsQDT != null) {
+                newQDT.previousValueAsQDT = this.previousValueAsQDT.copy();
+            }
+            newQDT.isPrimaryKey = this.isPrimaryKey;
+            newQDT.sort = this.sort;
+        } catch (InstantiationException ex) {
+            throw new UnableInstantiateQueryableDatatypeException(this, ex);
+        } catch (IllegalAccessException ex) {
+            throw new UnableToCopyQueryableDatatypeException(this, ex);
+        }
+
+        return newQDT;
     }
 
     /**
@@ -77,11 +118,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @return
      */
     public String stringValue() {
-        return (literalValue == null ? null : literalValue.toString());
+        return (literalValue == null ? "" : literalValue.toString());
     }
 
     public Long longValue() {
-//        return (literalValue == null ? null : Long.parseLong(literalValue.toString()));
         if (isDBNull || literalValue == null) {
             return null;
         } else if (literalValue instanceof Long) {
@@ -95,7 +135,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public Integer intValue() {
-//        return (literalValue == null ? null : Integer.parseInt(literalValue.toString()));
         if (isDBNull || literalValue == null) {
             return null;
         } else if (literalValue instanceof Integer) {
@@ -181,9 +220,8 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public void negateOperator() {
-        invertOperator = true;
         if (getOperator() != null) {
-            getOperator().invertOperator(invertOperator);
+            getOperator().invertOperator(true);
         } else {
             throw new RuntimeException("No Operator Has Been Defined Yet: please use the query methods before inverting the operation");
         }
@@ -214,32 +252,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
-    /**
-     *
-     * @param permitted
-     */
-//    public void permittedValues(List<Object> permitted) {
-//        if (permitted == null) {
-//            useNullOperator();
-//        } else if (permitted.size() == 1) {
-//            useEqualsOperator(permitted.get(0));
-//        } else {
-//            useInOperator(permitted.toArray());
-//        }
-//    }
-    /**
-     *
-     * @param permitted
-     */
-//    public void permittedValues(Set<Object> permitted) {
-//        if (permitted == null) {
-//            useNullOperator();
-////        } else if (permitted.size() == 1) {
-////            useEqualsOperator(permitted.get(0));
-//        } else {
-//            useInOperator(permitted.toArray());
-//        }
-//    }
     /**
      *
      * @param permitted
@@ -275,8 +287,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     public void permittedValuesIgnoreCase(Set<String> permitted) {
         if (permitted == null) {
             useNullOperator();
-//        } else if (permitted.size() == 1) {
-//            useEqualsCaseInsensitiveOperator(permitted.get(0));
         } else {
             useInCaseInsensitiveOperator(permitted.toArray(new String[]{}));
         }
@@ -317,25 +327,8 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     public void excludedValuesIgnoreCase(Set<String> excluded) {
         if (excluded == null) {
             useNullOperator();
-//        } else if (permitted.size() == 1) {
-//            useEqualsCaseInsensitiveOperator(permitted.get(0)).not();
         } else {
             useInCaseInsensitiveOperator(excluded.toArray(new String[]{})).not();
-        }
-    }
-
-    /**
-     *
-     * @param permitted
-     */
-    @Deprecated
-    public void permittedValuesCaseInsensitive(String... permitted) {
-        if (permitted == null) {
-            useNullOperator();
-        } else if (permitted.length == 1) {
-            useEqualsCaseInsensitiveOperator(permitted[0]);
-        } else {
-            useInCaseInsensitiveOperator(permitted);
         }
     }
 
@@ -364,24 +357,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         }
     }
 
-//    public void excludedValues(List<Object> excluded) {
-//        if (excluded == null) {
-//            useNullOperator().not();
-////        } else if (permitted.size() == 1) {
-////            useEqualsOperator(permitted.get(0)).not();
-//        } else {
-//            useInOperator(excluded.toArray()).not();
-//        }
-//    }
-//    public void excludedValues(Set<Object> excluded) {
-//        if (excluded == null) {
-//            useNullOperator().not();
-////        } else if (permitted.size() == 1) {
-////            useEqualsOperator(permitted.get(0)).not();
-//        } else {
-//            useInOperator(excluded.toArray()).not();
-//        }
-//    }
     public void permittedRange(Object lowerBound, Object upperBound) {
         if (lowerBound != null && upperBound != null) {
             useBetweenOperator(lowerBound, upperBound);
@@ -486,7 +461,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
                 this.setOperator(new DBEqualsOperator(new DBDate((Timestamp) newLiteralValue)));
             } else {
                 setChanged(newLiteralValue);
-                this.literalValue = newLiteralValue;//.toString();
+                this.literalValue = newLiteralValue;
                 this.setOperator(new DBEqualsOperator(this));
             }
         }
@@ -576,11 +551,8 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return getOperator();
     }
 
-    /**
-     * TODO
-     */
     public void includingNulls() {
-        this.includingNulls = true;
+        this.operator.includeNulls();
     }
 
     /**
@@ -669,7 +641,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             return def.getNull();
         }
         return formatValueForSQLStatement(db);
-        //return def.beginStringValue() + this.toString().replace("'", "\'") + def.endStringValue();
     }
 
     /**
@@ -682,30 +653,18 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * return a string representation of the object formatted for use within a
      * SQL select, insert, update, or delete statement.
      *
-     * For Example: 
-     * 
-     * DBString{yada} => 'yada' 
-     * 
+     * For Example:
+     *
+     * DBString{yada} => 'yada'
+     *
      * DBInteger{1234} => 123
-     * 
+     *
      * DBDate{1/March/2013} => TO_DATE('20130301', 'YYYYMMDD')
      *
      * @param db
      * @return
      */
     protected abstract String formatValueForSQLStatement(DBDatabase db);
-//    {
-//        if (this.isDBNull) {
-//            return database.getNull();
-//        } else {
-//            if (literalValue instanceof Date) {
-//                return database.getDateFormattedForQuery((Date) literalValue);
-//            } else {
-//                String unsafeValue = literalValue.toString();
-//                return database.beginStringValue() + database.safeString(unsafeValue) + database.endStringValue();
-//            }
-//        }
-//    }
 
     /**
      * @return the operator
@@ -788,13 +747,38 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public String getPreviousSQLValue(DBDatabase db) {
-//        previousValueAsQDT.setDatabase(database);
         return previousValueAsQDT.toSQLString(db);
     }
 
-    public QueryableDatatype setSortOrder(Boolean order) {
+    /**
+     * Used to switch the direction of the column's sort order
+     *
+     * Use Boolean.TRUE for Ascending Use Boolean.FALSE for Descending
+     *
+     * @param order
+     * @return
+     */
+    private QueryableDatatype setSortOrder(Boolean order) {
         sort = order;
         return this;
+    }
+
+    /**
+     * Used to switch the direction of the column's sort order
+     *
+     * @return this object
+     */
+    public QueryableDatatype setSortOrderAscending() {
+        return this.setSortOrder(true);
+    }
+
+    /**
+     * Used to switch the direction of the column's sort order
+     *
+     * @return this object
+     */
+    public QueryableDatatype setSortOrderDescending() {
+        return this.setSortOrder(false);
     }
 
     public Boolean getSortOrder() {
@@ -803,5 +787,19 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     public void clear() {
         blankQuery();
+    }
+
+    public boolean equals(QueryableDatatype other) {
+        if (other == null) {
+            return false;
+        } else if (this.operator == null && other.operator == null) {
+            return true;
+        } else if (this.operator != null && other.operator == null) {
+            return false;
+        } else if (this.operator == null && other.operator != null) {
+            return false;
+        } else {
+            return this.getOperator().equals(other.getOperator());
+        }
     }
 }

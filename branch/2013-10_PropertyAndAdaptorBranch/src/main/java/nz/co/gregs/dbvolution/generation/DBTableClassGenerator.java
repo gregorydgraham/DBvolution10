@@ -25,13 +25,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.datatypes.*;
 
 /**
@@ -47,10 +47,9 @@ public class DBTableClassGenerator {
      *
      * Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
-     *
+     * 
      * convenience method which calls
-     * generateClasses(jdbcURL,username,password,packageName,baseDirectory,new
-     * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+     * generateClasses(jdbcURL, username, password, packageName, 1L, baseDirectory,new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
      *
      * @param database
      * @param packageName
@@ -60,22 +59,47 @@ public class DBTableClassGenerator {
      * @throws IOException
      */
     public static void generateClasses(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
-        generateClasses(database, packageName, baseDirectory, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+        generateClasses(database, packageName, baseDirectory, 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
     }
 
     /**
-     * 
+     *
      * Creates DBTableRow classes corresponding to all the tables and views
      * accessible to the user specified in the database supplied.
      *
      * Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
-     * 
+     *
+     * convenience method which calls
+     * generateClasses(jdbcURL,username,password,packageName,baseDirectory,new
+     * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+     *
+     * @param database
+     * @param packageName
+     * @param versionNumber - the value to use for serialVersionUID
+     * @param baseDirectory
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber) throws SQLException, FileNotFoundException, IOException {
+        generateClasses(database, packageName, baseDirectory, versionNumber, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+    }
+
+    /**
+     *
+     * Creates DBTableRow classes corresponding to all the tables and views
+     * accessible to the user specified in the database supplied.
+     *
+     * Classes are placed in the correct subdirectory of the base directory as
+     * defined by the package name supplied.
+     *
      * Primary keys and foreign keys are created based on the definitions within
      * the database and the results from the PK and FK recognisors.
      *
      * @param database
      * @param packageName
+     * @param versionNumber
      * @param baseDirectory
      * @param pkRecog
      * @param fkRecog
@@ -83,14 +107,14 @@ public class DBTableClassGenerator {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, FileNotFoundException, IOException {
+    public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, FileNotFoundException, IOException {
         String viewsPackage = packageName + ".views";
         String viewsPath = viewsPackage.replaceAll("[.]", "/");
-        List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, pkRecog, fkRecog);
+        List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, versionNumber, pkRecog, fkRecog);
 
         String tablesPackage = packageName + ".tables";
         String tablesPath = tablesPackage.replaceAll("[.]", "/");
-        List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, pkRecog, fkRecog);
+        List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, versionNumber, pkRecog, fkRecog);
         List<DBTableClass> allGeneratedClasses = new ArrayList<DBTableClass>();
         allGeneratedClasses.addAll(generatedViews);
         allGeneratedClasses.addAll(generatedTables);
@@ -147,22 +171,28 @@ public class DBTableClassGenerator {
      *
      * @param database
      * @param packageName
+     * @param versionNumber
+     * @param pkRecog
+     * @param fkRecog
      * @return
      * @throws SQLException
      */
-    public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "TABLE");
+    public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
+        return generateClassesOfObjectTypes(database, packageName, versionNumber, pkRecog, fkRecog, "TABLE");
     }
 
     /**
      *
      * @param database
      * @param packageName
+     * @param versionNumber
+     * @param pkRecog
+     * @param fkRecog
      * @return
      * @throws SQLException
      */
-    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-        return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "VIEW");
+    public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
+        return generateClassesOfObjectTypes(database, packageName, versionNumber, pkRecog, fkRecog, "VIEW");
     }
 
     /**
@@ -173,79 +203,101 @@ public class DBTableClassGenerator {
      * @return
      * @throws SQLException
      */
-    private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
+    private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
         List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
 
-        Statement dbStatement = database.getDBStatement();
-        Connection connection = dbStatement.getConnection();
-        String catalog = connection.getCatalog();
-        String schema = null;
+        DBStatement dbStatement = database.getDBStatement();
         try {
-            Method method = connection.getClass().getMethod("getSchema");
-            schema = (String) method.invoke(connection);
-            //schema = connection.getSchema();
-        } catch (java.lang.AbstractMethodError exp) {
-            // NOT USING Java 1.7+ apparently
-        } catch (Exception ex) {
-            // NOT USING Java 1.7+ apparently
-        }
+            Connection connection = dbStatement.getConnection();
+            String catalog = connection.getCatalog();
+            String schema = null;
+            try {
+                Method method = connection.getClass().getMethod("getSchema");
+                schema = (String) method.invoke(connection);
+                //schema = connection.getSchema();
+            } catch (java.lang.AbstractMethodError exp) {
+                // NOT USING Java 1.7+ apparently
+            } catch (Exception ex) {
+                // NOT USING Java 1.7+ apparently
+            }
 
-        DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet tables = metaData.getTables(catalog, schema, null, dbObjectTypes);
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet tables = metaData.getTables(catalog, schema, null, dbObjectTypes);
 
-        while (tables.next()) {
-            DBTableClass dbTableClass = new DBTableClass();
-            dbTableClass.packageName = packageName;
-            dbTableClass.tableName = tables.getString("TABLE_NAME");
+            try {
+                while (tables.next()) {
+                    DBTableClass dbTableClass = new DBTableClass();
+                    dbTableClass.packageName = packageName;
+                    dbTableClass.serialversionUIDBValue = versionNumber;
+                    dbTableClass.tableName = tables.getString("TABLE_NAME");
 //            System.out.println(dbTableClass.tableName);
-            dbTableClass.className = toClassCase(dbTableClass.tableName);
+                    dbTableClass.className = toClassCase(dbTableClass.tableName);
 
-            ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.tableName);
-            List<String> pkNames = new ArrayList<String>();
-            while (primaryKeysRS.next()) {
-                String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
-                pkNames.add(pkColumnName);
-            }
+                    ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.tableName);
+                    List<String> pkNames = new ArrayList<String>();
+                    try {
+                        while (primaryKeysRS.next()) {
+                            String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
+                            pkNames.add(pkColumnName);
+                        }
+                    } finally {
+                        primaryKeysRS.close();
+                    }
 
-            ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.tableName);
-            Map<String, String[]> fkNames = new HashMap<String, String[]>();
-            while (foreignKeysRS.next()) {
-                String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
-                String pkColumnName = foreignKeysRS.getString("PKCOLUMN_NAME");
-                String fkColumnName = foreignKeysRS.getString("FKCOLUMN_NAME");
-                fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
-            }
+                    ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.tableName);
+                    Map<String, String[]> fkNames = new HashMap<String, String[]>();
+                    try {
+                        while (foreignKeysRS.next()) {
+                            String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
+                            String pkColumnName = foreignKeysRS.getString("PKCOLUMN_NAME");
+                            String fkColumnName = foreignKeysRS.getString("FKCOLUMN_NAME");
+                            fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
+                        }
+                    } finally {
+                        foreignKeysRS.close();
+                    }
 
-            ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.tableName, null);
-            while (columns.next()) {
-                DBTableField dbTableField = new DBTableField();
-                dbTableField.columnName = columns.getString("COLUMN_NAME");
-                dbTableField.fieldName = toFieldCase(dbTableField.columnName);
-                dbTableField.precision = columns.getInt("COLUMN_SIZE");
-                try {
-                    dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
-                } catch (UnknownJavaSQLTypeException ex) {
-                    dbTableField.columnType = DBUnknownDatatype.class.getSimpleName();
-                    dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
+                    ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.tableName, null);
+                    try {
+                        while (columns.next()) {
+                            DBTableField dbTableField = new DBTableField();
+                            dbTableField.columnName = columns.getString("COLUMN_NAME");
+                            dbTableField.fieldName = toFieldCase(dbTableField.columnName);
+                            dbTableField.precision = columns.getInt("COLUMN_SIZE");
+                            try {
+                                dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
+                            } catch (UnknownJavaSQLTypeException ex) {
+                                dbTableField.columnType = DBUnknownDatatype.class.getSimpleName();
+                                dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
+                            }
+                            if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
+                                dbTableField.isPrimaryKey = true;
+                            }
+                            String[] pkData = fkNames.get(dbTableField.columnName);
+                            if (pkData != null && pkData.length == 2) {
+                                dbTableField.isForeignKey = true;
+                                dbTableField.referencesClass = toClassCase(pkData[0]);
+                                dbTableField.referencesField = pkData[1];
+                            } else if (fkRecog.isForeignKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
+                                dbTableField.isForeignKey = true;
+                                dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.tableName, dbTableField.columnName);
+                                dbTableField.referencesClass = fkRecog.getReferencedTable(dbTableClass.tableName, dbTableField.columnName);
+                            }
+                            dbTableClass.fields.add(dbTableField);
+                        }
+                    } finally {
+                        columns.close();
+                    }
+
+                    dbTableClasses.add(dbTableClass);
                 }
-                if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
-                    dbTableField.isPrimaryKey = true;
-                }
-                String[] pkData = fkNames.get(dbTableField.columnName);
-                if (pkData != null && pkData.length == 2) {
-                    dbTableField.isForeignKey = true;
-                    dbTableField.referencesClass = toClassCase(pkData[0]);
-                    dbTableField.referencesField = pkData[1];
-                } else if (fkRecog.isForeignKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
-                    dbTableField.isForeignKey = true;
-                    dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.tableName, dbTableField.columnName);
-                    dbTableField.referencesClass = fkRecog.getReferencedTable(dbTableClass.tableName, dbTableField.columnName);
-                }
-                dbTableClass.fields.add(dbTableField);
+            } finally {
+                tables.close();
             }
-            dbTableClasses.add(dbTableClass);
+            generateAllJavaSource(dbTableClasses);
+        } finally {
+            dbStatement.close();
         }
-        generateAllJavaSource(dbTableClasses);
         return dbTableClasses;
     }
 

@@ -25,24 +25,25 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * @author gregorygraham
  */
 public class DBLikeOperator extends DBOperator {
+
     public static final long serialVersionUID = 1L;
-    private final QueryableDatatype likeableValue;
+//    private final QueryableDatatype firstValue;
 
     public DBLikeOperator(QueryableDatatype likeableValue) {
         super();
-        this.likeableValue = likeableValue;
+        this.firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
     }
 
     public DBLikeOperator() {
         super();
-        this.likeableValue = null;
+        this.firstValue = null;
     }
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        likeableValue.setDatabase(db);
         DBDefinition defn = db.getDefinition();
-        return defn.beginAndLine() +(invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+likeableValue.toSQLString(db)+")";
+        return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
     }
 
     private String getOperator() {
@@ -52,19 +53,20 @@ public class DBLikeOperator extends DBOperator {
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
-        return (invertOperator?"!(":"(")+ defn.formatColumnName(columnName) + getOperator()+otherColumnName+")";
+        return (invertOperator ? "!(" : "(") + defn.formatColumnName(columnName) + getOperator() + otherColumnName + ")";
     }
 
     @Override
     public DBOperator getInverseOperator() {
         return this;
     }
-    
+
     
     @Override
     public DBLikeOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBLikeOperator op = new DBLikeOperator(typeAdaptor.convert(likeableValue));
+    	DBLikeOperator op = new DBLikeOperator(typeAdaptor.convert(firstValue));
     	op.invertOperator = this.invertOperator;
+    	op.includeNulls = this.includeNulls;
     	return op;
     }
 }

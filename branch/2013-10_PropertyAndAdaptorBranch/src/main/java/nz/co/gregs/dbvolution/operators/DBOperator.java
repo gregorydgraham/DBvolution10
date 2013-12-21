@@ -17,19 +17,45 @@ package nz.co.gregs.dbvolution.operators;
 
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
 /**
  *
  * @author gregorygraham
  */
-abstract public class DBOperator implements Serializable{
+abstract public class DBOperator implements Serializable {
 
     Boolean invertOperator = false;
+    Boolean includeNulls = false;
+    protected QueryableDatatype firstValue;
+    protected QueryableDatatype secondValue;
+    protected QueryableDatatype thirdValue;
 
     public DBOperator() {
+        firstValue = null;
+        secondValue = null;
+        thirdValue = null;
     }
-    
+
+//    public void init(QueryableDatatype value) {
+//        firstValue = (value == null ? null : value.copy());
+//        secondValue = null;
+//        thirdValue = null;
+//    }
+//
+//    public DBOperator(QueryableDatatype value, QueryableDatatype otherValue) {
+//        firstValue = (value == null ? null : value.copy());
+//        secondValue = (otherValue == null ? null : otherValue.copy());
+//        thirdValue = null;
+//    }
+//
+//    public DBOperator(QueryableDatatype value, QueryableDatatype otherValue, QueryableDatatype finalValue) {
+//        firstValue = (value == null ? null : value.copy());
+//        secondValue = (otherValue == null ? null : otherValue.copy());
+//        thirdValue = (finalValue == null ? null : finalValue.copy());
+//    }
+
     /**
      *
      * @param database
@@ -37,17 +63,32 @@ abstract public class DBOperator implements Serializable{
      * @return
      */
     abstract public String generateWhereLine(DBDatabase database, String columnName);
+
     abstract public String generateRelationship(DBDatabase database, String columnName, String otherColumnName);
 
     public void invertOperator(Boolean invertOperator) {
         this.invertOperator = invertOperator;
     }
-    
-    public void not(){
+
+    public void not() {
         invertOperator = true;
     }
 
-    abstract public DBOperator getInverseOperator() ;
+    abstract public DBOperator getInverseOperator();
+
+    // TODO
+    public void includeNulls() {
+        includeNulls = true;
+    }
+
+    public boolean equals(DBOperator other) {
+        return this.getClass() == other.getClass()
+                && this.invertOperator == other.invertOperator
+                && this.includeNulls == other.includeNulls
+                && firstValue.equals(other.firstValue)
+                && secondValue.equals(other.secondValue)
+                && thirdValue.equals(other.thirdValue);
+    }
     
     abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
 }

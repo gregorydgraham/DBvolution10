@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.internal;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
@@ -23,7 +24,7 @@ public class DBRowClassWrapperUsabilityTest {
         database = new H2MemoryDB("dbvolutionTest", "", "", false);
     }
 
-	@Test
+    @Test
     public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
         QueryableDatatype qdt = new DBRowClassWrapper(MyExampleTableClass.class)
                 .instanceWrapperFor(obj)
@@ -61,8 +62,9 @@ public class DBRowClassWrapperUsabilityTest {
     }
 
     @DBTableName("table")
-    public static class MyExampleTableClass {
+    public static class MyExampleTableClass extends DBRow {
 
+        public static final long serialVersionUID = 1L;
         @DBPrimaryKey
         @DBColumn("column1")
         public DBInteger uid = new DBInteger();
