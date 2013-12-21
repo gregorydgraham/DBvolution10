@@ -34,18 +34,18 @@ public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        firstValue.setDatabase(database);
-        defn = db.getDefinition();
+        DBDefinition defn = db.getDefinition();
         if (firstValue.toSQLString(db).equals(defn.getNull())) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             return dbIsNullOperator.generateWhereLine(db, columnName);
         }
-        return defn.beginAndLine() + defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
+        return defn.beginAndLine() + defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
     }
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        defn = database.getDefinition();
-        return defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName);
+        DBDefinition defn = database.getDefinition();
+        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(otherColumnName);
     }
     
     
