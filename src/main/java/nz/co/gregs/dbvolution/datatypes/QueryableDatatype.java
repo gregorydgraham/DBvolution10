@@ -47,30 +47,79 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     protected Boolean sort = SORT_ASCENDING;
     private DataTransform transform = new NullTransform();
 
+    /**
+     *
+     */
     protected QueryableDatatype() {
     }
 
-    protected QueryableDatatype(String str) {
-        if (str == null) {
+    /**
+     *
+     * @param trans
+     */
+    protected QueryableDatatype(DataTransform trans) {
+        this(trans, null);
+    }
+    
+    /**
+     *
+     * @param obj
+     */
+    protected QueryableDatatype(Object obj) {
+        this(null, obj);
+    }
+    
+    /**
+     *
+     * @param trans
+     * @param obj
+     */
+    protected QueryableDatatype(DataTransform trans, Object obj) {
+        if (trans!=null){
+            this.transform = trans;
+        }
+        if (obj == null) {
             this.isDBNull = true;
-        } else if (!str.isEmpty()) {
-            this.literalValue = str;
+        } else if (!obj.toString().isEmpty()) {
+            this.literalValue = obj;
             this.operator = new DBEqualsOperator(this);
         }
     }
 
-    protected QueryableDatatype(Object str) {
-        if (str == null) {
-            this.isDBNull = true;
-        } else if (!str.toString().isEmpty()) {
-            this.literalValue = str;
-            this.operator = new DBEqualsOperator(this);
+    public static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
+        try {
+            return requiredQueryableDatatype.getConstructor().newInstance();
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (SecurityException ex) {
+            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (InstantiationException ex) {
+            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
         }
     }
 
-    @Override
-    public String toString() {
-        return (literalValue == null ? "" : literalValue.toString());
+    static QueryableDatatype getQueryableDatatypeForObject(Object o) {
+        if (o instanceof Integer) {
+            return new DBInteger();
+        } else if (o instanceof Number) {
+            return new DBNumber();
+        } else if (o instanceof String) {
+            return new DBString();
+        } else if (o instanceof Date) {
+            return new DBDate();
+        } else if (o instanceof Byte[]) {
+            return new DBByteArray();
+        } else if (o instanceof Boolean) {
+            return new DBBoolean();
+        } else {
+            return new DBJavaObject();
+        }
     }
 
     /**
@@ -115,9 +164,14 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         return newQDT;
     }
 
+    @Override
+    public String toString() {
+        return (literalValue == null ? "" : literalValue.toString());
+    }
+
     /**
      * Returns the raw value as a String
-     *
+     * 
      * @return
      */
     public String stringValue() {
@@ -166,42 +220,6 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         includingNulls = false;
         isDBNull = false;
         this.operator = null;
-    }
-
-    public static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
-        try {
-            return requiredQueryableDatatype.getConstructor().newInstance();
-        } catch (NoSuchMethodException ex) {
-            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (SecurityException ex) {
-            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (InstantiationException ex) {
-            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (IllegalArgumentException ex) {
-            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        } catch (InvocationTargetException ex) {
-            throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-        }
-    }
-
-    static QueryableDatatype getQueryableDatatypeForObject(Object o) {
-        if (o instanceof Integer) {
-            return new DBInteger();
-        } else if (o instanceof Number) {
-            return new DBNumber();
-        } else if (o instanceof String) {
-            return new DBString();
-        } else if (o instanceof Date) {
-            return new DBDate();
-        } else if (o instanceof Byte[]) {
-            return new DBByteArray();
-        } else if (o instanceof Boolean) {
-            return new DBBoolean();
-        } else {
-            return new DBJavaObject();
-        }
     }
 
     /**

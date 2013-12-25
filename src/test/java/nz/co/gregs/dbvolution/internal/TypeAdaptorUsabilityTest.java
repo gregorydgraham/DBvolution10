@@ -218,10 +218,12 @@ public class TypeAdaptorUsabilityTest {
 		}
 		
 		class MyTypeAdaptor implements DBTypeAdaptor<String, Integer> {
+                        @Override
 			public String fromDatabaseValue(Integer dbvValue) {
 				return (dbvValue == null) ? null : dbvValue.toString();
 			}
 
+                        @Override
 			public Integer toDatabaseValue(String objectValue) {
 				return (objectValue == null) ? null : Integer.parseInt(objectValue);
 			}
@@ -268,10 +270,12 @@ public class TypeAdaptorUsabilityTest {
 		}
 		
 		class MyTypeAdaptor implements DBTypeAdaptor<String, MyDataType> {
+                        @Override
 			public String fromDatabaseValue(MyDataType dbvValue) {
 				return (dbvValue == null) ? null : dbvValue.toString();
 			}
 
+                        @Override
 			public MyDataType toDatabaseValue(String objectValue) {
 				return (objectValue == null) ? null : new MyDataType().parse(objectValue);
 			}
