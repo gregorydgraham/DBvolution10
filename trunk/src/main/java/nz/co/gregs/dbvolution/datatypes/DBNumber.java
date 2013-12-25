@@ -18,17 +18,10 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  *
  * @author gregory.graham
  */
-// FIXME (comment from Malcolm): I think the use of numberValue, lowerBoundNumber, upperBoundNumber, inValuesNumber
-// in this class will cause bugs because they aren't settable via QueryableDatatype.
-// eg: calls to QueryableDatatype.permittedValues(null) currently won't change any of the local fields
-// because useNullOperator() isn't overridden. 
+
 public class DBNumber extends QueryableDatatype {
 
     public static final long serialVersionUID = 1;
-//    protected Number numberValue = null;
-//    protected DBNumber lowerBoundNumber = null;
-//    protected DBNumber upperBoundNumber = null;
-//    protected DBNumber[] inValuesNumber = new DBNumber[]{};
 
     public DBNumber() {
         super();
@@ -40,14 +33,6 @@ public class DBNumber extends QueryableDatatype {
      */
     public DBNumber(Number aNumber) {
         super(aNumber);
-        if (aNumber == null) {
-//            numberValue = 0L;
-//            this.isDBNull = true;
-//            this.usingNullComparison = true;
-        } else {
-//            super.isLiterally(aNumber);
-//            numberValue = aNumber;
-        }
     }
 
     /**
@@ -123,7 +108,6 @@ public class DBNumber extends QueryableDatatype {
      * @param inValues
      */
     public DBOperator useInOperator(DBNumber... inValues) {
-//        this.inValuesNumber = inValues;
         return super.useInOperator(inValues);
     }
 
@@ -167,7 +151,6 @@ public class DBNumber extends QueryableDatatype {
     public DBOperator useEqualsOperator(Object literal) {
         if (literal == null || literal.toString().isEmpty()) {
             super.useEqualsOperator(null);
-//            this.numberValue = null;
         } else {
             this.useEqualsOperator(Double.parseDouble(literal.toString()));
         }
@@ -180,7 +163,6 @@ public class DBNumber extends QueryableDatatype {
      */
     public DBOperator useEqualsOperator(Number literal) {
         DBOperator useEqualsOperator = super.useEqualsOperator(literal);
-//        this.numberValue = literal;
         return useEqualsOperator;
     }
 
@@ -195,12 +177,8 @@ public class DBNumber extends QueryableDatatype {
 
     @Override
     protected DBOperator useNullOperator() {
-        DBOperator operator = super.useNullOperator();
-//        numberValue = null;
-//        lowerBoundNumber = null;
-//        upperBoundNumber = null;
-//        inValuesNumber = new DBNumber[]{};
-        return operator;
+        DBOperator op = super.useNullOperator();
+        return op;
     }
 
     /**
@@ -212,19 +190,6 @@ public class DBNumber extends QueryableDatatype {
         return "NUMERIC(15,5)";
     }
 
-    /**
-     *
-     * @return the literal value as it would appear in an SQL statement i.e.
-     * {123} => 123
-     *
-     */
-//    @Override
-//    public String toSQLString(DBDatabase db) {
-//        if (this.isDBNull || this.numberValue == null) {
-//            return db.getDefinition().getNull();
-//        }
-//        return this.numberValue.toString();
-//    }
     /**
      *
      * @param db
