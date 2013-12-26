@@ -18,9 +18,15 @@ package nz.co.gregs.dbvolution.generic;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatransforms.CurrentDateSource;
+import nz.co.gregs.dbvolution.datatransforms.CurrentTimeSource;
 import nz.co.gregs.dbvolution.datatransforms.LeftTrimTransform;
 import nz.co.gregs.dbvolution.datatransforms.LowercaseTransform;
 import nz.co.gregs.dbvolution.datatransforms.RightTrimTransform;
+import nz.co.gregs.dbvolution.datatransforms.StringLengthTransform;
 import nz.co.gregs.dbvolution.datatransforms.SubstringTransform;
 import nz.co.gregs.dbvolution.datatransforms.TrimTransform;
 import nz.co.gregs.dbvolution.datatransforms.UppercaseTransform;
@@ -140,6 +146,45 @@ public class DataTransformTests extends AbstractTest {
         marq.name.setTransform(new SubstringTransform(new UppercaseTransform(new TrimTransform()),3,6));
         got = database.get(marq);
         database.print(got);
+        Assert.assertThat(got.size(), is(2));
+    }
+    
+    @Test
+    public void testSources() throws SQLException{
+        /*
+         * Currently a completely useless test :(
+         */
+        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        marq.name.permittedPattern("%W%");
+        marq.creationDate.setTransform(new CurrentDateSource());
+        List<Marque> got = database.get(marq);
+        database.print(got);
+    }
+    
+    @Test
+    public void testStringLengthTransform() throws SQLException{
+        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        marq.name.permittedRangeInclusive(1,3);
+        marq.name.setTransform(new StringLengthTransform());
+        DBQuery query = database.getDBQuery(marq);
+        query.setSortOrder(new DBRow[]{marq}, marq.name);
+        List<Marque> got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(2));
+        Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
+        Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
+        Assert.assertThat(got.size(), is(2));
+
+        marq.name.permittedRangeInclusive("1","3");
+        query = database.getDBQuery(marq);
+        query.setSortOrder(new DBRow[]{marq}, marq.name);
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(2));
+        Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
+        Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
         Assert.assertThat(got.size(), is(2));
     }
     
