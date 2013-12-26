@@ -16,22 +16,13 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.PrintStream;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBStatement;
+import java.sql.*;
+import java.util.*;
 
+import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryGraph;
 
@@ -138,18 +129,6 @@ public class DBQuery {
         return this;
     }
 
-//    /**
-//     *
-//     * @param table
-//     * @return
-//     */
-//    public DBQuery removeOptionalTable(DBRow table) {
-//        optionalQueryTables.remove(table.getClass());
-//        allQueryTables.remove(table);
-//        results = null;
-//        resultSQL = null;
-//        return this;
-//    }
     public String getSQLForQuery() throws SQLException {
         return getSQLForQuery(null);
     }
