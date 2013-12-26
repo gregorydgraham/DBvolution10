@@ -24,11 +24,16 @@ import java.io.Serializable;
 public class NullTransform implements DataTransform, Serializable{
 
     public static final long serialVersionUID = 1L;
+    private static NullTransform instance = new NullTransform();
     
     public NullTransform(DataTransform innerTransform) {
     }
 
     public NullTransform() {
+    }
+    
+    public static NullTransform getInstance(){
+        return instance;
     }
 
     @Override
