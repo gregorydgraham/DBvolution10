@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatransforms;
+package nz.co.gregs.dbvolution.datagenerators;
 
-/**
- *
- * @author greg
- */
-interface StringOutputTransform {
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+
+
+public class CurrentUserGenerator implements StringGenerator {
+
+    public static final long serialVersionUID = 1L;
+
+    public CurrentUserGenerator() {
+    }
+    
+    @Override
+    public String generate(DBDefinition defn) {
+        return defn.getCurrentUserFunction();
+    }
     
 }

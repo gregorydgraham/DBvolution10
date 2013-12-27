@@ -15,8 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatransforms;
 
-
-public class StringLengthTransform extends BaseTransform implements NumberOutputTransform{
+public class StringLengthTransform extends BaseTransform{
 
     public static final long serialVersionUID = 1L;
 

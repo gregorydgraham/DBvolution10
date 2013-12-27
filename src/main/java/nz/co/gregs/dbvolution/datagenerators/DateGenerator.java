@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatransforms;
+package nz.co.gregs.dbvolution.datagenerators;
 
-
-public class CurrentDateSource extends NullTransform implements DateOutputTransform {
-
-    public static final long serialVersionUID = 1L;
-
-    public CurrentDateSource() {
-    }
-
-    @Override
-    public String transform(String formattedValueForSQLStatement) {
-        return " CURRENT_DATE "; //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
+/**
+ *
+ * @author greg
+ */
+public interface DateGenerator extends DataGenerator{
     
 }

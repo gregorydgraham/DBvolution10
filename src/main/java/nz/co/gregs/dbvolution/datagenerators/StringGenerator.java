@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatransforms;
+package nz.co.gregs.dbvolution.datagenerators;
 
 /**
  *
  * @author greg
  */
-interface NumberOutputTransform {
+public interface StringGenerator extends DataGenerator{
     
 }

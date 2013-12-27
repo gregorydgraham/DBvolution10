@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatransforms;
+package nz.co.gregs.dbvolution.datagenerators;
 
-
-public class CurrentTimeSource extends NullTransform {
-
-    public static final long serialVersionUID = 1L;
-
-    public CurrentTimeSource() {
-    }
-
-    @Override
-    public String transform(String formattedValueForSQLStatement) {
-        return " CURRENT_TIME ";
-    }
-    
-    
+/**
+ *
+ * @author greg
+ */
+public interface NumberGenerator extends DataGenerator{
     
 }

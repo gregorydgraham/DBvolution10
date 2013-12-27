@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatransforms;
+package nz.co.gregs.dbvolution.datagenerators;
+
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 
-public class CurrentUserSource extends NullTransform implements StringOutputTransform {
+public class CurrentDateGenerator implements DateGenerator {
 
     public static final long serialVersionUID = 1L;
 
-    public CurrentUserSource() {
+    public CurrentDateGenerator() {
+    }
+
+    @Override
+    public String generate(DBDefinition defn) {
+        return defn.getCurrentDateFunction(); //To change body of generated methods, choose Tools | Templates.
     }
     
-    @Override
-    public String transform(String formattedValueForSQLStatement) {
-        return " CURRENT_USER ";
-    }
+    
     
 }
