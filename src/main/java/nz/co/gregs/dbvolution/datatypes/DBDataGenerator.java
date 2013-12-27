@@ -26,15 +26,15 @@ import nz.co.gregs.dbvolution.datagenerators.StringGenerator;
  *
  * @author gregory.graham
  */
-public class DBDataSource extends QueryableDatatype {
+public class DBDataGenerator extends QueryableDatatype {
 
     public static final long serialVersionUID = 1L;
 
-    public DBDataSource(DataGenerator dataGenerator) {
+    public DBDataGenerator(DataGenerator dataGenerator) {
         super(dataGenerator);
     }
 
-    public DBDataSource() {
+    public DBDataGenerator() {
     }
 
     @Override

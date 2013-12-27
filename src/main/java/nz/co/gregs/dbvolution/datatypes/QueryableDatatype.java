@@ -108,7 +108,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     static QueryableDatatype getQueryableDatatypeForObject(Object o) {
 
         if (o instanceof DataGenerator) {
-            return new DBDataSource();
+            return new DBDataGenerator();
         } else if (o instanceof Integer) {
             return new DBInteger();
         } else if (o instanceof Number) {
@@ -501,7 +501,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
             if (newLiteralValue instanceof DataGenerator) {
                 setChanged((DataGenerator) newLiteralValue);
                 this.literalValue = newLiteralValue;
-                this.setOperator(new DBEqualsOperator(new DBDataSource((DataGenerator) newLiteralValue)));
+                this.setOperator(new DBEqualsOperator(new DBDataGenerator((DataGenerator) newLiteralValue)));
             } else if (newLiteralValue instanceof Date) {
                 setChanged((Date) newLiteralValue);
                 this.literalValue = newLiteralValue;
