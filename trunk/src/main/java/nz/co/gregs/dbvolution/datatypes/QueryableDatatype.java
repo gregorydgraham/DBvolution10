@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.operators.*;
@@ -60,7 +61,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     protected QueryableDatatype(DataTransform trans) {
         this(trans, null);
     }
-    
+
     /**
      *
      * @param obj
@@ -68,14 +69,14 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     protected QueryableDatatype(Object obj) {
         this(null, obj);
     }
-    
+
     /**
      *
      * @param trans
      * @param obj
      */
     protected QueryableDatatype(DataTransform trans, Object obj) {
-        if (trans!=null){
+        if (trans != null) {
             this.transform = trans;
         }
         if (obj == null) {
@@ -105,7 +106,10 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     static QueryableDatatype getQueryableDatatypeForObject(Object o) {
-        if (o instanceof Integer) {
+
+        if (o instanceof DataGenerator) {
+            return new DBDataSource();
+        } else if (o instanceof Integer) {
             return new DBInteger();
         } else if (o instanceof Number) {
             return new DBNumber();
@@ -171,7 +175,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      * Returns the raw value as a String
-     * 
+     *
      * @return
      */
     public String stringValue() {
@@ -257,6 +261,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param permitted
      */
     public void permittedValues(Object... permitted) {
+        this.setTransform(NullTransform.getInstance());
         if (permitted == null) {
             useNullOperator();
         } else if (permitted.length == 1) {
@@ -279,6 +284,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param permitted
      */
     public void permittedValuesIgnoreCase(String... permitted) {
+        this.setTransform(NullTransform.getInstance());
         if (permitted == null) {
             useNullOperator();
         } else if (permitted.length == 1) {
@@ -293,6 +299,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param permitted
      */
     public void permittedValuesIgnoreCase(List<String> permitted) {
+        this.setTransform(NullTransform.getInstance());
         if (permitted == null) {
             useNullOperator();
         } else if (permitted.size() == 1) {
@@ -307,6 +314,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param permitted
      */
     public void permittedValuesIgnoreCase(Set<String> permitted) {
+        this.setTransform(NullTransform.getInstance());
         if (permitted == null) {
             useNullOperator();
         } else {
@@ -316,29 +324,31 @@ public abstract class QueryableDatatype extends Object implements Serializable {
 
     /**
      *
-     * @param permitted
+     * @param excluded
      */
-    public void excludedValuesIgnoreCase(String... permitted) {
-        if (permitted == null) {
+    public void excludedValuesIgnoreCase(String... excluded) {
+        setTransform(NullTransform.getInstance());
+        if (excluded == null) {
             useNullOperator();
-        } else if (permitted.length == 1) {
-            useEqualsCaseInsensitiveOperator(permitted[0]).not();
+        } else if (excluded.length == 1) {
+            useEqualsCaseInsensitiveOperator(excluded[0]).not();
         } else {
-            useInCaseInsensitiveOperator(permitted).not();
+            useInCaseInsensitiveOperator(excluded).not();
         }
     }
 
     /**
      *
-     * @param permitted
+     * @param excluded
      */
-    public void excludedValuesIgnoreCase(List<String> permitted) {
-        if (permitted == null) {
+    public void excludedValuesIgnoreCase(List<String> excluded) {
+        setTransform(NullTransform.getInstance());
+        if (excluded == null) {
             useNullOperator();
-        } else if (permitted.size() == 1) {
-            useEqualsCaseInsensitiveOperator(permitted.get(0)).not();
+        } else if (excluded.size() == 1) {
+            useEqualsCaseInsensitiveOperator(excluded.get(0)).not();
         } else {
-            useInCaseInsensitiveOperator(permitted.toArray(new String[]{})).not();
+            useInCaseInsensitiveOperator(excluded.toArray(new String[]{})).not();
         }
     }
 
@@ -347,6 +357,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param excluded
      */
     public void excludedValuesIgnoreCase(Set<String> excluded) {
+        setTransform(NullTransform.getInstance());
         if (excluded == null) {
             useNullOperator();
         } else {
@@ -362,6 +373,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * @param excluded
      */
     public void excludedValues(Object... excluded) {
+        setTransform(NullTransform.getInstance());
         if (excluded == null) {
             useNullOperator().not();
         } else if (excluded.length == 1) {
@@ -380,6 +392,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public void permittedRange(Object lowerBound, Object upperBound) {
+        this.setTransform(NullTransform.getInstance());
         if (lowerBound != null && upperBound != null) {
             useBetweenOperator(lowerBound, upperBound);
         } else if (lowerBound == null && upperBound != null) {
@@ -394,6 +407,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public void permittedRangeInclusive(Object lowerBound, Object upperBound) {
+        this.setTransform(NullTransform.getInstance());
         if (lowerBound != null && upperBound != null) {
             useBetweenOperator(lowerBound, upperBound);
         } else if (lowerBound == null && upperBound != null) {
@@ -408,6 +422,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public void excludedRange(Object lowerBound, Object upperBound) {
+        setTransform(NullTransform.getInstance());
         if (lowerBound != null && upperBound != null) {
             useBetweenOperator(lowerBound, upperBound).not();
         } else if (lowerBound == null && upperBound != null) {
@@ -422,6 +437,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public void excludedRangeInclusive(Object lowerBound, Object upperBound) {
+        setTransform(NullTransform.getInstance());
         if (lowerBound != null && upperBound != null) {
             useBetweenOperator(lowerBound, upperBound).not();
         } else if (lowerBound == null && upperBound != null) {
@@ -436,20 +452,29 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     public void permittedPattern(String pattern) {
+        setTransform(NullTransform.getInstance());
         useLikeOperator(pattern);
     }
 
+    public void permittedComparison(DBDataComparison comparison) {
+        setOperator(comparison.getOperator());
+        setTransform(comparison.getTransform());
+    }
+
     public void excludedPattern(String pattern) {
+        setTransform(NullTransform.getInstance());
         useLikeOperator(pattern).not();
     }
 
     /**
-     * Gets the current literal value of this queryable data type, without any formatting.
-     * The returned value <i>should/<i> be in the correct type as appropriate
-     * for the type of queryable data type.
-     * 
-     * <p> The literal value is undefined (and {@code null}) if using an operator
+     * Gets the current literal value of this queryable data type, without any
+     * formatting. The returned value <i>should/<i> be in the correct type as
+     * appropriate for the type of queryable data type.
+     *
+     * <p>
+     * The literal value is undefined (and {@code null}) if using an operator
      * other than {@code equals}.
+     *
      * @return the literal value, if defined, which may be null
      */
     // FIXME sometimes strings are returned for DBNumber types
@@ -458,9 +483,9 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     }
 
     /**
-     * Sets the literal value of this queryable data type.
-     * Replaces any assigned operator with an {@code equals} operator on the
-     * given value.
+     * Sets the literal value of this queryable data type. Replaces any assigned
+     * operator with an {@code equals} operator on the given value.
+     *
      * @param newLiteralValue the literalValue to set
      */
     public void setValue(Object newLiteralValue) {
@@ -473,7 +498,11 @@ public abstract class QueryableDatatype extends Object implements Serializable {
         if (newLiteralValue == null) {
             return useNullOperator();
         } else {
-            if (newLiteralValue instanceof Date) {
+            if (newLiteralValue instanceof DataGenerator) {
+                setChanged((DataGenerator) newLiteralValue);
+                this.literalValue = newLiteralValue;
+                this.setOperator(new DBEqualsOperator(new DBDataSource((DataGenerator) newLiteralValue)));
+            } else if (newLiteralValue instanceof Date) {
                 setChanged((Date) newLiteralValue);
                 this.literalValue = newLiteralValue;
                 this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
@@ -560,6 +589,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * Sets the value of this column to DBNull Also changes the operator to
      * DBIsNullOperator for comparisons
      *
+     * @return 
      */
     protected DBOperator useNullOperator() {
         blankQuery();
@@ -585,6 +615,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
      * isIn(QueryableDatatype... inValues) with them
      *
      * @param inValues the inValues to set
+     * @return 
      */
     protected DBOperator useInOperator(Object... inValues) {
         blankQuery();
@@ -613,6 +644,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     /**
      *
      * @param inValues
+     * @return 
      */
     protected DBOperator useInOperator(QueryableDatatype... inValues) {
         blankQuery();
@@ -625,6 +657,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     /**
      * @param lowerBound the lower bound to set
      * @param upperBound the upper bound to set
+     * @return 
      */
     protected DBOperator useBetweenOperator(QueryableDatatype lowerBound, QueryableDatatype upperBound) {
         blankQuery();
@@ -838,7 +871,7 @@ public abstract class QueryableDatatype extends Object implements Serializable {
     /**
      * @param transform the DataTransform to be used during query execution
      */
-    public void setTransform(DataTransform transform) {
+    protected void setTransform(DataTransform transform) {
         if (transform == null) {
             this.transform = new NullTransform();
         } else {

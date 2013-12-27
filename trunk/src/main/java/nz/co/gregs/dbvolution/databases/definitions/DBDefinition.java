@@ -385,4 +385,20 @@ public abstract class DBDefinition {
     public Object getTableAlias(DBRow tabRow) {
         return ("_"+tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
     }
+
+    public String getCurrentDateFunction() {
+        return " CURRENT_DATE "; 
+    }
+
+    public String getCurrentTimestampFunction() {
+        return " CURRENT_TIMESTAMP ";
+    }
+
+    public String getCurrentTimeFunction() {
+        return " CURRENT_TIMESTAMP "; 
+    }
+
+    public String getCurrentUserFunction() {
+        return " CURRENT_USER ";
+    }
 }

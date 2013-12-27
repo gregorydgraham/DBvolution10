@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatransforms;
+package nz.co.gregs.dbvolution.datagenerators;
 
-/**
- *
- * @author greg
- */
-interface DateOutputTransform {
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+
+
+public class CurrentDateTimeGenerator implements DateGenerator{
+
+    public static final long serialVersionUID = 1L;
+
+    public CurrentDateTimeGenerator() {
+    }
+    
+    public String generate(DBDefinition defn) {
+        return defn.getCurrentTimestampFunction(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
     
 }
