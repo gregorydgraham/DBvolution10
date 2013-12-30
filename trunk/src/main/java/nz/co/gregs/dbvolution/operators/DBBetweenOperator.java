@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 
 /**
@@ -30,7 +31,7 @@ public class DBBetweenOperator extends DBOperator{
 //    private final QueryableDatatype firstValue;
 //    private final QueryableDatatype secondValue;
     
-    public DBBetweenOperator(QueryableDatatype lowValue, QueryableDatatype highValue){
+    public DBBetweenOperator(DataGenerator lowValue, DataGenerator highValue){
         super();
         this.firstValue = lowValue==null?lowValue:lowValue.copy();
         this.secondValue = highValue==null?highValue:highValue.copy();

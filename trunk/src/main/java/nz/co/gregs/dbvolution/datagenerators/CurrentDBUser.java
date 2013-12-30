@@ -13,20 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatransforms;
+package nz.co.gregs.dbvolution.datagenerators;
 
-import java.io.Serializable;
+import nz.co.gregs.dbvolution.DBDatabase;
 
-/**
- *
- * @author greg
- */
-public interface DataTransform {
 
-    public String transform(String formattedValueForSQLStatement);
+public class CurrentDBUser implements StringGenerator {
 
-    public void setInnerTransform(DataTransform innerTransform);
+    public static final long serialVersionUID = 1L;
 
-    public DataTransform copy() throws InstantiationException, IllegalAccessException;
+    public CurrentDBUser() {
+    }
+    
+    @Override
+    public String toSQLString(DBDatabase db) {
+        return db.getDefinition().getCurrentUserFunction();
+    }
 
+    @Override
+    public DataGenerator copy() {
+        return this;
+    }
+    
+    @Override
+    public boolean isNull() {
+        return false;
+    }
+    
 }

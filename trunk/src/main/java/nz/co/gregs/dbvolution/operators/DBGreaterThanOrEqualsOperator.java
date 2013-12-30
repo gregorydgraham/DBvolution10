@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
@@ -30,7 +31,7 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
         super();
     }
 
-    public DBGreaterThanOrEqualsOperator(QueryableDatatype greaterThanThis) {
+    public DBGreaterThanOrEqualsOperator(DataGenerator greaterThanThis) {
         super(greaterThanThis);
     }
 

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.datatransforms;
 
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
-public class UppercaseTransform extends BaseTransform {
+public class Uppercase extends BaseTransform {
 
     public static final long serialVersionUID = 1L;
-    
+
     @Override
     protected String insertAfterValue() {
         return ") ";
@@ -31,11 +31,16 @@ public class UppercaseTransform extends BaseTransform {
         return " UPPER(";
     }
 
-    public UppercaseTransform(DataTransform innerTransform) {
+    public Uppercase(DataGenerator innerTransform) {
         super(innerTransform);
     }
 
-    public UppercaseTransform() {
+    public Uppercase() {
     }
-    
+
+    @Override
+    public boolean isNull() {
+        return false;
+    }
+
 }

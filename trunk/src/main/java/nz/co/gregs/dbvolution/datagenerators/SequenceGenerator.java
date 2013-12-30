@@ -13,30 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatransforms;
+package nz.co.gregs.dbvolution.datagenerators;
 
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datagenerators.NumberGenerator;
 
-public class SequenceSource extends NullTransform {
-
+public class SequenceGenerator implements NumberGenerator {
+    
     public static final long serialVersionUID = 1L;
-
+    
     private final String sequenceName;
     private String schemaName = null;
-
-    public SequenceSource(String sequenceName) {
+    
+    public SequenceGenerator(String sequenceName) {
         this.sequenceName = sequenceName;
     }
-
-    public SequenceSource(String schemaName, String sequenceName) {
+    
+    public SequenceGenerator(String schemaName, String sequenceName) {
         this.schemaName = schemaName;
         this.sequenceName = sequenceName;
     }
-
+    
     @Override
-    public String transform(String formattedValueForSQLStatement) {
-        return " NEXTVAL( "+(schemaName==null?"":schemaName+", ")+sequenceName+" ) ";
+    public String toSQLString(DBDatabase db) {
+        return " NEXTVAL( " + (schemaName == null ? "" : schemaName + ", ") + sequenceName + " ) ";
     }
     
+    @Override
+    public DataGenerator copy() {
+        return new SequenceGenerator(schemaName, sequenceName);
+    }
     
+    @Override
+    public boolean isNull() {
+        return false;
+    }
     
 }

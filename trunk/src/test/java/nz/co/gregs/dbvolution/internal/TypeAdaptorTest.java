@@ -213,10 +213,12 @@ public class TypeAdaptorTest {
 	@DBTableName("Customer")
 	public static class CustomerWithDBStringIntegerTypeAdaptor extends DBRow {
 		public static class MyTypeAdaptor implements DBTypeAdaptor<String, Long> {
+                        @Override
 			public String fromDatabaseValue(Long dbvValue) {
 				return (dbvValue == null) ? null : dbvValue.toString();
 			}
 
+                        @Override
 			public Long toDatabaseValue(String objectValue) {
 				return (objectValue == null) ? null : Long.parseLong(objectValue);
 			}

@@ -16,6 +16,7 @@
 
 package nz.co.gregs.dbvolution.datatransforms;
 
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -24,11 +25,11 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  */
 public class DBDataComparison {
     private final DBOperator operator;
-    private final DataTransform transformForQDT;
+    private final DataGenerator leftHandSide;
 
-    public DBDataComparison(DataTransform transformForQDT, DBOperator operator) {
-        this.operator = operator;
-        this.transformForQDT = transformForQDT;
+    public DBDataComparison(DataGenerator transformForLeftHandSide, DBOperator operatorWithRightHandSideValues) {
+        this.operator = operatorWithRightHandSideValues;
+        this.leftHandSide = transformForLeftHandSide;
     }
     
     
@@ -37,8 +38,8 @@ public class DBDataComparison {
         return operator;
     }
 
-    public DataTransform getTransform() {
-        return transformForQDT;
+    public DataGenerator getLeftHandSide() {
+        return leftHandSide;
     }
     
 }

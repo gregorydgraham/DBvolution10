@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.datatransforms;
 
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
-public class RightTrimTransform extends BaseTransform {
+public class Lowercase extends BaseTransform {
 
     public static final long serialVersionUID = 1L;
-    
-    public RightTrimTransform() {
-        super();
-    }
 
-    public RightTrimTransform(DataTransform innerTransform) {
-        super(innerTransform);
-    }
-    
     @Override
     protected String insertAfterValue() {
         return ") ";
@@ -36,7 +28,16 @@ public class RightTrimTransform extends BaseTransform {
 
     @Override
     protected String insertBeforeValue() {
-    return " RTRIM(";
+        return " LOWER(";
+    }
+
+    public Lowercase(DataGenerator innerTransform) {
+        super(innerTransform);
+    }
+
+    @Override
+    public boolean isNull() {
+        return false;
     }
 
 }

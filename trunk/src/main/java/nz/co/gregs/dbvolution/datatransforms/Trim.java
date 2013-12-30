@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2013 greg.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.datatransforms;
 
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
-public class LeftTrimTransform extends BaseTransform {
+public class Trim extends BaseTransform {
 
     public static final long serialVersionUID = 1L;
     
-    public LeftTrimTransform() {
+    public Trim(DataGenerator innerTransform) {
+        super(innerTransform);
     }
 
-    public LeftTrimTransform(DataTransform transform) {
-        super(transform);
+    public Trim() {
+        super(new NonGenerator());
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     protected String insertAfterValue() {
-        return ") ";
+        return ")";
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    protected String insertBeforeValue() {
+        return " trim(";
     }
 
     @Override
-    protected String insertBeforeValue() {
-        return " LTRIM("; 
+    public boolean isNull() {
+        return false;
     }
-
+    
 }

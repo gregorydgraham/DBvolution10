@@ -36,18 +36,18 @@ public class DataGeneratorTests extends AbstractTest {
     public void testSources() throws SQLException{
         database.setPrintSQLBeforeExecuting(true);
         Marque marq = new Marque();
-        marq.creationDate.permittedRangeInclusive(new CurrentDateGenerator(), null);
+        marq.creationDate.permittedRangeInclusive(new CurrentDBDate(), null);
         List<Marque> got = database.get(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(0));
         
         database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-        marq.creationDate.permittedRangeInclusive(new CurrentDateGenerator(), null);
+        marq.creationDate.permittedRangeInclusive(new CurrentDBDate(), null);
         got = database.get(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(1));
         
-        marq.creationDate.permittedRangeInclusive(null, new CurrentDateGenerator());
+        marq.creationDate.permittedRangeInclusive(null, new CurrentDBDate());
         got = database.get(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(21));

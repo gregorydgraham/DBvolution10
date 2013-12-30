@@ -68,7 +68,7 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
     public DBInCaseInsensitiveOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	List<QueryableDatatype> list = new ArrayList<QueryableDatatype>();
     	for (QueryableDatatype item: listOfPossibleValues) {
-    		list.add(typeAdaptor.convert(item));
+    		list.add((QueryableDatatype)typeAdaptor.convert(item));
     	}
     	DBInCaseInsensitiveOperator op = new DBInCaseInsensitiveOperator(list);
     	op.invertOperator = this.invertOperator;

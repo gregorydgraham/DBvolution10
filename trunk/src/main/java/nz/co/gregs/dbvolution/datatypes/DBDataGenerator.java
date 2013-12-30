@@ -52,7 +52,7 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     protected String formatValueForSQLStatement(DBDatabase db) {
-        return ((DataGenerator)literalValue).generate(db.getDefinition());
+        return ((DataGenerator)literalValue).toSQLString(db);
     }
     
 }

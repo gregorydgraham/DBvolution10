@@ -4,6 +4,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor;
@@ -140,20 +141,22 @@ public class QueryableDatatypeSyncer {
      * One-shot cycle-aware recursive QDT adaptor. Converts from existing QDT to
      * brand new one, and copies from one QDT to another.
      *
-     * <p> DBOperators can reference the same QDT that own the operator
-     * instance, such as:
+     * <p>
+     * DBOperators can reference the same QDT that own the operator instance,
+     * such as:
      * <code>QueryableDatatype.setValue{this.operator = new DBEqualsOperator(this)}</code>.
      * Cycles are handled by tracking source QDTs observed and returning the
      * previously mapped target QDT when re-observed.
      *
-     * <p> Must be used only once for a given read or write of a field.
+     * <p>
+     * Must be used only once for a given read or write of a field.
      */
     public static class DBSafeInternalQDTAdaptor {
 
         private Class<? extends QueryableDatatype> targetQdtType;
         private SafeOneWaySimpleTypeAdaptor simpleTypeAdaptor;
-        private List<Map.Entry<QueryableDatatype, QueryableDatatype>> observedSourcesAndTargets =
-                new ArrayList<Map.Entry<QueryableDatatype, QueryableDatatype>>();
+        private List<Map.Entry<QueryableDatatype, QueryableDatatype>> observedSourcesAndTargets
+                = new ArrayList<Map.Entry<QueryableDatatype, QueryableDatatype>>();
 
         public DBSafeInternalQDTAdaptor(
                 Class<? extends QueryableDatatype> targetQdtType,
@@ -167,34 +170,39 @@ public class QueryableDatatypeSyncer {
          * converted values from the given QDT. Recursively traverses the
          * operators and inner QDT references within the given QDT.
          *
-         * <p> If {@code sourceQdt} is null, returns {
+         * <p>
+         * If {@code sourceQdt} is null, returns {@code null}.
          *
-         * @cod null}.
-         * @param qdt the QDT to convert to the target type, may be null
+         * @param sourceQdt the QDT to convert to the target type, may be null
          * @return the newly created QDT of the target type, or null if
          * {@code sourceQdt} was null
          */
-        public QueryableDatatype convert(QueryableDatatype sourceQdt) {
-            try {
+        public DataGenerator convert(DataGenerator source) {
+            if (!(source instanceof QueryableDatatype)) {
+                return source;
+            } else {
+                QueryableDatatype sourceQDT = (QueryableDatatype)source;
+                try {
                 // cycle-detection
-                // (note: important that it uses reference equality, not object equality)
-                for (Map.Entry<QueryableDatatype, QueryableDatatype> sourceAndTarget : observedSourcesAndTargets) {
-                    if (sourceAndTarget.getKey() == sourceQdt) {
-                        // re-use existing value
-                        return sourceAndTarget.getValue();
+                    // (note: important that it uses reference equality, not object equality)
+                    for (Map.Entry<QueryableDatatype, QueryableDatatype> sourceAndTarget : observedSourcesAndTargets) {
+                        if (sourceAndTarget.getKey() == sourceQDT) {
+                            // re-use existing value
+                            return sourceAndTarget.getValue();
+                        }
                     }
-                }
 
-                QueryableDatatype targetQdt = null;
-                if (sourceQdt != null) {
-                    targetQdt = newTargetQDT();
-                    setTargetQDTFromSourceQDT(targetQdt, sourceQdt);
+                    QueryableDatatype targetQdt = null;
+                    if (sourceQDT != null) {
+                        targetQdt = newTargetQDT();
+                        setTargetQDTFromSourceQDT(targetQdt, sourceQDT);
+                    }
+                    log.info(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + qdtToString(targetQdt));
+                    return targetQdt;
+                } catch (RuntimeException e) {
+                    log.info(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + e.getClass().getSimpleName());
+                    throw e;
                 }
-                log.info(simpleTypeAdaptor + " converting " + qdtToString(sourceQdt) + " ==> " + qdtToString(targetQdt));
-                return targetQdt;
-            } catch (RuntimeException e) {
-                log.info(simpleTypeAdaptor + " converting " + qdtToString(sourceQdt) + " ==> " + e.getClass().getSimpleName());
-                throw e;
             }
         }
 
@@ -236,7 +244,7 @@ public class QueryableDatatypeSyncer {
             targetQdt.literalValue = simpleTypeAdaptor.convert(sourceQdt.literalValue);
 
             // copy previous value with translation
-            targetQdt.previousValueAsQDT = convert(sourceQdt.previousValueAsQDT);
+            targetQdt.previousValueAsQDT = (QueryableDatatype)convert(sourceQdt.previousValueAsQDT);
 
             // copy operator with translation
             if (sourceQdt.operator == null) {

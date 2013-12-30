@@ -13,29 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nz.co.gregs.dbvolution.datagenerators;
 
-package nz.co.gregs.dbvolution.datatransforms;
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
+public class Value implements DataGenerator {
 
-public class LowercaseTransform extends BaseTransform {
+    private final QueryableDatatype qdt;
+    private Object object;
 
-    public static final long serialVersionUID = 1L;
-    
-    @Override
-    protected String insertAfterValue() {
-        return ") ";
+    public Value(Object obj) {
+        this.object = obj;
+        qdt = QueryableDatatype.getQueryableDatatypeForObject(obj);
+        qdt.setValue(object);
     }
 
     @Override
-    protected String insertBeforeValue() {
-        return " LOWER(";
+    public String toSQLString(DBDatabase db) {
+        return qdt.toSQLString(db);
     }
 
-    public LowercaseTransform(DataTransform innerTransform) {
-        super(innerTransform);
+    @Override
+    public DataGenerator copy() {
+        return new Value(object);
     }
 
-    public LowercaseTransform() {
+    @Override
+    public boolean isNull() {
+        return false;
     }
     
 }

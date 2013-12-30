@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
@@ -28,9 +29,9 @@ abstract public class DBOperator implements Serializable {
 
     Boolean invertOperator = false;
     Boolean includeNulls = false;
-    protected QueryableDatatype firstValue;
-    protected QueryableDatatype secondValue;
-    protected QueryableDatatype thirdValue;
+    protected DataGenerator firstValue;
+    protected DataGenerator secondValue;
+    protected DataGenerator thirdValue;
 
     public DBOperator() {
         firstValue = null;
