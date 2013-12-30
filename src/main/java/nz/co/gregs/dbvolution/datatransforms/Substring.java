@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 greg.
+ * Copyright 2013 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,38 @@
  */
 package nz.co.gregs.dbvolution.datatransforms;
 
-public class TrimTransform extends BaseTransform {
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
+
+public class Substring extends BaseTransform {
 
     public static final long serialVersionUID = 1L;
-    
-    public TrimTransform(DataTransform innerTransform) {
+
+    private Integer startingPosition;
+    private Integer length;
+
+    public Substring(DataGenerator innerTransform, Integer startingIndex0Based, Integer endIndex0Based) {
         super(innerTransform);
+        this.startingPosition = startingIndex0Based;
+        this.length = endIndex0Based;
     }
 
-    public TrimTransform() {
-        super(new NullTransform());
+    public Substring() {
+        super();
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     protected String insertAfterValue() {
-        return ")";
+        return " FROM " + (startingPosition + 1) + (length != null ? " for " + (length - startingPosition) : "") + ") ";
     }
 
-    /**
-     *
-     * @return
-     */
     @Override
     protected String insertBeforeValue() {
-        return " trim(";
+        return " SUBSTRING(";
+    }
+
+    @Override
+    public boolean isNull() {
+        return false;
     }
 
 }

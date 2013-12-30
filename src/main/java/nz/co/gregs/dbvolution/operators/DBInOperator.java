@@ -113,7 +113,7 @@ public class DBInOperator extends DBOperator {
     public DBInOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	List<QueryableDatatype> list = new ArrayList<QueryableDatatype>();
     	for (QueryableDatatype item: listOfPossibleValues) {
-    		list.add(typeAdaptor.convert(item));
+    		list.add((QueryableDatatype)typeAdaptor.convert(item));
     	}
     	DBInOperator op = new DBInOperator(list);
     	op.invertOperator = this.invertOperator;

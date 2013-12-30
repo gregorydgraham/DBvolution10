@@ -16,38 +16,38 @@
 package nz.co.gregs.dbvolution.datatransforms;
 
 import java.io.Serializable;
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
 /**
  *
  * @author gregory.graham
  */
-public class NullTransform implements DataTransform, Serializable{
+public class NonGenerator implements DataGenerator, Serializable{
 
     public static final long serialVersionUID = 1L;
-    private static NullTransform instance = new NullTransform();
+    private static NonGenerator instance = new NonGenerator();
     
-    public NullTransform(DataTransform innerTransform) {
-    }
-
-    public NullTransform() {
+    public NonGenerator() {
     }
     
-    public static NullTransform getInstance(){
+    public static NonGenerator getInstance(){
         return instance;
     }
 
     @Override
-    public String transform(String formattedValueForSQLStatement) {
-        return formattedValueForSQLStatement;
+    public String toSQLString(DBDatabase db) {
+        return "";
     }
-
+    
     @Override
-    public void setInnerTransform(DataTransform innerTransform) {
-    }
-
-    @Override
-    public DataTransform copy() {
+    public DataGenerator copy() {
         return this;
     }
 
+    @Override
+    public boolean isNull() {
+        return false;
+    }
+    
 }

@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
 public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
 
@@ -28,7 +29,7 @@ public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
         super();
     }
 
-    public DBEqualsCaseInsensitiveOperator(QueryableDatatype equalTo) {
+    public DBEqualsCaseInsensitiveOperator(DataGenerator equalTo) {
         super(equalTo);
     }
 

@@ -16,12 +16,20 @@
 
 package nz.co.gregs.dbvolution.datagenerators;
 
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.DBDatabase;
 
 /**
  *
  * @author gregory.graham
  */
 public interface DataGenerator {
-    public String generate(DBDefinition defn);
+
+    /**
+     *
+     * @param db
+     * @return
+     */
+    public String toSQLString(DBDatabase db);
+    public boolean isNull();
+    public DataGenerator copy();
 }

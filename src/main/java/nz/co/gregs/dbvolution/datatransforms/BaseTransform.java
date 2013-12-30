@@ -16,18 +16,20 @@
 package nz.co.gregs.dbvolution.datatransforms;
 
 import java.io.Serializable;
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
 /**
  *
  * @author greg
  */
-public abstract class BaseTransform implements DataTransform, Serializable{
+public abstract class BaseTransform implements DataGenerator, Serializable {
 
     public static final long serialVersionUID = 1L;
-    
-    protected DataTransform innerTransform = new NullTransform();
 
-    public BaseTransform(DataTransform innerTransform) {
+    protected DataGenerator innerTransform = new NonGenerator();
+
+    public BaseTransform(DataGenerator innerTransform) {
         this.innerTransform = innerTransform;
     }
 
@@ -35,39 +37,19 @@ public abstract class BaseTransform implements DataTransform, Serializable{
     }
 
     @Override
-    public String transform(String formattedValueForSQLStatement) {
+    public String toSQLString(DBDatabase db) {
         if (innerTransform == null) {
-            return formattedValueForSQLStatement;
+            return "";
         } else {
             return insertBeforeValue()
-                    + innerTransform.transform(formattedValueForSQLStatement)
+                    + innerTransform.toSQLString(db)
                     + insertAfterValue();
         }
     }
 
     @Override
-    public void setInnerTransform(DataTransform innerTransform) {
-        if (innerTransform == null) {
-            this.innerTransform = new NullTransform();
-        } else {
-            this.innerTransform = innerTransform;
-        }
-    }
-
-    @Override
-    public DataTransform copy() throws InstantiationException, IllegalAccessException{
-        DataTransform newCopy = this;
-        try {
-            newCopy = (DataTransform) this.getClass().newInstance();
-        } catch (InstantiationException ex) {
-            throw new InstantiationException("Unable To Create A New Instance Of "+this.getClass().getSimpleName()+": please ensure there is a basic public constructor i.e. public MyTransform()");
-        } catch (IllegalAccessException ex) {
-            throw new IllegalAccessException("Unable To Create A New Instance Of "+this.getClass().getSimpleName()+": please ensure there is a basic public constructor i.e. public MyTransform()");
-        }
-        if (this.innerTransform != null) {
-            newCopy.setInnerTransform(this.innerTransform.copy());
-        }
-        return newCopy;
+    public DataGenerator copy() {
+        return this;
     }
 
     protected abstract String insertAfterValue();

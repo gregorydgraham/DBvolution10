@@ -15,21 +15,28 @@
  */
 package nz.co.gregs.dbvolution.datagenerators;
 
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.DBDatabase;
 
-
-public class CurrentDateGenerator implements DateGenerator {
+public class CurrentDBDateTime implements DateGenerator {
 
     public static final long serialVersionUID = 1L;
 
-    public CurrentDateGenerator() {
+    public CurrentDBDateTime() {
     }
 
     @Override
-    public String generate(DBDefinition defn) {
-        return defn.getCurrentDateFunction(); //To change body of generated methods, choose Tools | Templates.
+    public String toSQLString(DBDatabase db) {
+        return db.getDefinition().getCurrentTimestampFunction(); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
+
+    @Override
+    public DataGenerator copy() {
+        return this;
+    }
+
+    @Override
+    public boolean isNull() {
+        return false;
+    }
     
 }

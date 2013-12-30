@@ -21,9 +21,12 @@ import java.util.*;
 
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
+import nz.co.gregs.dbvolution.datatransforms.DBDataComparison;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
 
 /**
@@ -44,6 +47,7 @@ public class DBQuery {
     private boolean useANSISyntax = true;
     private boolean cartesianJoinAllowed = false;
     private boolean blankQueryAllowed = false;
+    private List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -236,6 +240,9 @@ public class DBQuery {
 
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
+        }
+        for (DBDataComparison comp : comparisons){
+            whereClause.append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database)));
         }
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
@@ -502,6 +509,7 @@ public class DBQuery {
         this.queryTables.clear();
         this.optionalQueryTables.clear();
         this.allQueryTables.clear();
+        this.comparisons.clear();
         results = null;
         return this;
     }
@@ -534,7 +542,7 @@ public class DBQuery {
         for (DBRow table : allQueryTables) {
             willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
         }
-        return willCreateBlankQuery;
+        return willCreateBlankQuery && (comparisons.size()==0);
     }
 
     public void setRowLimit(int i) {
@@ -684,5 +692,9 @@ public class DBQuery {
             }
         }
         return returnList;
+    }
+
+    public void addComparison(DataGenerator leftHandSide, DBOperator operatorWithRightHandSideValues) {
+        comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
     }
 }

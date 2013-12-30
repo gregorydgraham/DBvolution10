@@ -13,23 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datagenerators;
+package nz.co.gregs.dbvolution.datatransforms;
 
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
-
-public class CurrentTimeGenerator implements DateGenerator{
+public class StringLength extends BaseTransform{
 
     public static final long serialVersionUID = 1L;
 
-    public CurrentTimeGenerator() {
+    @Override
+    protected String insertBeforeValue() {
+        return " CHAR_LENGTH( ";
     }
 
     @Override
-    public String generate(DBDefinition defn) {
-        return defn.getCurrentTimeFunction();
+    protected String insertAfterValue() {
+        return " ) ";
+    }
+
+    public StringLength(DataGenerator innerTransform) {
+        super(innerTransform);
     }
     
-    
+    @Override
+    public boolean isNull() {
+        return false;
+    }
     
 }
