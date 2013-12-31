@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -32,6 +33,20 @@ public class DBInOperator extends DBOperator {
     protected final List<QueryableDatatype> listOfPossibleValues = new ArrayList<QueryableDatatype>();
 
     public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
+        super();
+        for (QueryableDatatype qdt : listOfPossibleValues) {
+            this.listOfPossibleValues.add(qdt == null ? null : qdt.copy());
+        }
+    }
+
+    public DBInOperator(Set<QueryableDatatype> listOfPossibleValues) {
+        super();
+        for (QueryableDatatype qdt : listOfPossibleValues) {
+            this.listOfPossibleValues.add(qdt == null ? null : qdt.copy());
+        }
+    }
+
+    public DBInOperator(QueryableDatatype[] listOfPossibleValues) {
         super();
         for (QueryableDatatype qdt : listOfPossibleValues) {
             this.listOfPossibleValues.add(qdt == null ? null : qdt.copy());

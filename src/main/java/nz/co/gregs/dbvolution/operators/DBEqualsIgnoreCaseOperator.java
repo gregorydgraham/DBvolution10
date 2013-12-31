@@ -21,15 +21,15 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
 
-public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
+public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 
     public static final long serialVersionUID = 1L;
 
-    public DBEqualsCaseInsensitiveOperator() {
+    public DBEqualsIgnoreCaseOperator() {
         super();
     }
 
-    public DBEqualsCaseInsensitiveOperator(DataGenerator equalTo) {
+    public DBEqualsIgnoreCaseOperator(DataGenerator equalTo) {
         super(equalTo);
     }
 
@@ -51,8 +51,8 @@ public class DBEqualsCaseInsensitiveOperator extends DBEqualsOperator {
     }
 
     @Override
-    public DBEqualsCaseInsensitiveOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBEqualsCaseInsensitiveOperator op = new DBEqualsCaseInsensitiveOperator(typeAdaptor.convert(firstValue));
+    public DBEqualsIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+    	DBEqualsIgnoreCaseOperator op = new DBEqualsIgnoreCaseOperator(typeAdaptor.convert(firstValue));
     	op.invertOperator = this.invertOperator;
     	op.includeNulls = this.includeNulls;
     	return op;

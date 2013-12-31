@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.example.*;
-import nz.co.gregs.dbvolution.operators.DBEqualsCaseInsensitiveOperator;
+import nz.co.gregs.dbvolution.operators.DBEqualsIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
 import org.junit.Assert;
@@ -55,7 +55,7 @@ public class OuterJoinTest extends AbstractTest {
         Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq)), is(testableSQL(expectedString)));
 
 //        mrq.ignoreAllForeignKeys();
-        mrq.addRelationship(mrq.name, carCo, carCo.name, new DBEqualsCaseInsensitiveOperator());
+        mrq.addRelationship(mrq.name, carCo, carCo.name, new DBEqualsIgnoreCaseOperator());
         System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo));
         System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq));
 

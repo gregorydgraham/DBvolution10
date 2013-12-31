@@ -47,9 +47,9 @@ public class DBTableTransactionTest extends AbstractTest {
             public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException {
                 Marque myTableRow = new Marque();
                 DBTable<Marque> marques = DBTable.getInstance(dbDatabase, myTableRow);
-                myTableRow.getUidMarque().permittedValues(999);
-                myTableRow.getName().permittedValues("TOYOTA");
-                myTableRow.getNumericCode().permittedValues(10);
+                myTableRow.getUidMarque().setValue(999);
+                myTableRow.getName().setValue("TOYOTA");
+                myTableRow.getNumericCode().setValue(10);
                 marques.insert(myTableRow);
                 marques.setBlankQueryAllowed(true).getAllRows();
                 marques.print();

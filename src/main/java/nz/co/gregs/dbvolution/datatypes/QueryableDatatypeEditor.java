@@ -4,7 +4,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.beans.PropertyEditorSupport;
 
 /**
@@ -27,10 +26,9 @@ public class QueryableDatatypeEditor extends PropertyEditorSupport {
         Object value = getValue();
         if (value instanceof QueryableDatatype) {
             QueryableDatatype qdt = (QueryableDatatype) value;
-            qdt.useEqualsOperator(text);
+            qdt.setValue(text);
         } else {
             QueryableDatatype type = QueryableDatatype.getQueryableDatatypeForObject(value);
-            type.useEqualsOperator(text);
             setValue(type);
         }
     }

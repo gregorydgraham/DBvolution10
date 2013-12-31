@@ -7,11 +7,9 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
-import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
  *
@@ -66,54 +64,15 @@ public class DBDate extends QueryableDatatype {
     }
 
     public void setValue(Date date) {
-        useEqualsOperator(date);
-    }
-
-    public DBOperator useEqualsOperator(Date date) {
-        return super.useEqualsOperator(date);
+        super.setValue(date);
     }
 
     @SuppressWarnings("deprecation")
-    public DBOperator useEqualsOperator(String dateStr) {
+    public void setValue(String dateStr) {
         final long dateLong = Date.parse(dateStr);
         Date date = new Date();
         date.setTime(dateLong);
-        super.useEqualsOperator(date);
-        return getOperator();
-    }
-
-    @Override
-    public DBOperator useLikeOperator(Object obj) {
-        throw new RuntimeException("LIKE Comparison Cannot Be Used With Date Fields: " + obj);
-    }
-
-    public DBOperator isGreaterThan(Date literalValue) {
-        return this.useGreaterThanOperator(new DBDate(literalValue));
-    }
-
-    /**
-     *
-     * @param lower
-     * @param upper
-     */
-    public DBOperator useBetweenOperator(Date lower, Date upper) {
-        DBDate lowerDate = new DBDate(lower);
-        DBDate upperDate = new DBDate(upper);
-        super.useBetweenOperator(lowerDate, upperDate);
-        return getOperator();
-    }
-
-    /**
-     *
-     * @param dates
-     */
-    public DBOperator useInOperator(Date... dates) {
-        ArrayList<DBDate> dbDates = new ArrayList<DBDate>();
-        for (Date date : dates) {
-            dbDates.add(new DBDate(date));
-        }
-        super.useInOperator(dbDates.toArray(new DBDate[]{}));
-        return getOperator();
+        setValue(date);
     }
 
     @Override
@@ -137,7 +96,7 @@ public class DBDate extends QueryableDatatype {
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
-            this.useNullOperator();
+            this.setToNull();
         } else {
             java.sql.Date dbValue;
             try {
@@ -149,9 +108,9 @@ public class DBDate extends QueryableDatatype {
                 dbValue = null;
             }
             if (dbValue == null) {
-                this.useNullOperator();
+                this.setToNull();
             } else {
-                this.useEqualsOperator(dbValue);
+                this.setValue(dbValue);
             }
         }
     }

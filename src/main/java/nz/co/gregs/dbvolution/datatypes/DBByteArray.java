@@ -65,7 +65,7 @@ public class DBByteArray extends DBLargeObject {
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         InputStream dbValue;
         if (resultSet == null || fullColumnName == null) {
-            this.useNullOperator();
+            this.setToNull();
         } else {
 
             try {
@@ -77,7 +77,7 @@ public class DBByteArray extends DBLargeObject {
                 dbValue = null;
             }
             if (dbValue == null) {
-                this.useNullOperator();
+                this.setToNull();
             } else {
                 InputStream input = new BufferedInputStream(dbValue);
                 List<byte[]> byteArrays = new ArrayList<byte[]>();

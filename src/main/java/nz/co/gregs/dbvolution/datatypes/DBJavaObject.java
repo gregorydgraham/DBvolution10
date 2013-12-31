@@ -30,7 +30,6 @@ public class DBJavaObject extends QueryableDatatype {
 
     public static final long serialVersionUID = 1;
 
-    // TODO
     @Override
     public String getSQLDatatype() {
         return "JAVA_OBJECT";
@@ -39,7 +38,7 @@ public class DBJavaObject extends QueryableDatatype {
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
-            this.useNullOperator();
+            this.setToNull();
         } else {
             Object dbValue;
             try {
@@ -51,9 +50,9 @@ public class DBJavaObject extends QueryableDatatype {
                 dbValue = null;
             }
             if (dbValue == null) {
-                this.useNullOperator();
+                this.setToNull();
             } else {
-                this.useEqualsOperator(dbValue);
+                this.setValue(dbValue);
             }
         }
     }

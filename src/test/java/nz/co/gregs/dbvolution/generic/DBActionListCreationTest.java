@@ -41,7 +41,7 @@ public class DBActionListCreationTest extends AbstractTest {
         marqueExample.getUidMarque().permittedValues(1);
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
 
-        toyota.uidMarque.permittedValues(99999);
+        toyota.uidMarque.setValue(99999);
         DBActionList updateList = marques.update(toyota);
         Assert.assertThat(updateList.size(), is(1));
 
@@ -226,7 +226,7 @@ public class DBActionListCreationTest extends AbstractTest {
         marqueExample.getUidMarque().permittedValues(1);
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
 
-        toyota.uidMarque.permittedValues(99999);
+        toyota.uidMarque.setValue(99999);
         DBActionList updateList = DBUpdate.getUpdates(toyota);
         Assert.assertThat(updateList.size(), is(1));
 

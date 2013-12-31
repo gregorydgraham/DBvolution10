@@ -4,7 +4,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.datatypes.DBString;
 import java.beans.PropertyEditorSupport;
 
 /**
@@ -37,7 +36,7 @@ public class DBStringEditor extends PropertyEditorSupport {
             type = new DBString();
         }
         if (text != null && !text.isEmpty()) {
-            type.useEqualsOperator(text);
+            type.setValue(text);
         }
         setValue(type);
     }

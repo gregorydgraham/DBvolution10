@@ -4,7 +4,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import java.beans.PropertyEditorSupport;
 
 /**
@@ -34,7 +33,7 @@ public class DBNumberEditor extends PropertyEditorSupport {
             type = new DBNumber();
         } else {
             type = new DBNumber();
-            type.useEqualsOperator(text);
+            type.setValue(text);
         }
         setValue(type);
     }

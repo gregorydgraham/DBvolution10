@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import java.beans.PropertyEditorSupport;
 
 /**
@@ -45,7 +44,7 @@ public class DBBooleanEditor extends PropertyEditorSupport {
             type = new DBBoolean();
         } else {
             type = new DBBoolean();
-            type.useEqualsOperator(text.toLowerCase().matches("true"));
+            type.setValue(text.toLowerCase().matches("true"));
         }
         setValue(type);
     }
