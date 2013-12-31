@@ -30,10 +30,10 @@ public class UpdateTest extends AbstractTest {
 
     @Test
     public void updateNewRow() throws SQLException {
-        myMarqueRow.uidMarque.permittedValues(4);
+        myMarqueRow.uidMarque.setValue(4);
         marques.insert(myMarqueRow);
         Marque insertedRow = marques.getRowsByPrimaryKey(4).getFirstRow();
-        insertedRow.individualAllocationsAllowed.permittedValues("Y");
+        insertedRow.individualAllocationsAllowed.setValue("Y");
         String sqlForUpdate = marques.update(insertedRow).get(0).getSQLStatements(database).get(0);
         Assert.assertThat(sqlForUpdate.toLowerCase(),
                 is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;".toLowerCase()));
@@ -50,7 +50,7 @@ public class UpdateTest extends AbstractTest {
         Assert.assertThat(rowsByExample.size(), is(1));
         Marque peugeot = rowsByExample.get(0);
         System.out.println(peugeot);
-        peugeot.individualAllocationsAllowed.permittedValues("Y");
+        peugeot.individualAllocationsAllowed.setValue("Y");
         String sqlForUpdate = marques.update(peugeot).get(0).getSQLStatements(database).get(0);
         Assert.assertThat(sqlForUpdate.toLowerCase(),
                 is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;".toLowerCase()));

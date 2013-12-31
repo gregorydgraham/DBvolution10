@@ -36,9 +36,9 @@ public class DBTableInsertTest extends AbstractTest {
 
     @Test
     public void testInsertRows() throws SQLException {
-        myTableRow.getUidMarque().permittedValues(999);
-        myTableRow.getName().permittedValues("TOYOTA");
-        myTableRow.getNumericCode().permittedValues(10);
+        myTableRow.getUidMarque().setValue(999);
+        myTableRow.getName().setValue("TOYOTA");
+        myTableRow.getNumericCode().setValue(10);
         marques.insert(myTableRow);
         marques.setBlankQueryAllowed(true).getAllRows();
         marques.print();

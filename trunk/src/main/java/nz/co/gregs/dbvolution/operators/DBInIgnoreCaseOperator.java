@@ -23,15 +23,15 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
-public class DBInCaseInsensitiveOperator extends DBInOperator {
+public class DBInIgnoreCaseOperator extends DBInOperator {
 
     public static final long serialVersionUID = 1L;
 
-    public DBInCaseInsensitiveOperator(List<QueryableDatatype> listOfPossibleValues) {
+    public DBInIgnoreCaseOperator(List<QueryableDatatype> listOfPossibleValues) {
         super(listOfPossibleValues);
     }
 
-    public DBInCaseInsensitiveOperator() {
+    public DBInIgnoreCaseOperator() {
         super();
     }
 
@@ -65,12 +65,12 @@ public class DBInCaseInsensitiveOperator extends DBInOperator {
     }
     
     @Override
-    public DBInCaseInsensitiveOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+    public DBInIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	List<QueryableDatatype> list = new ArrayList<QueryableDatatype>();
     	for (QueryableDatatype item: listOfPossibleValues) {
     		list.add((QueryableDatatype)typeAdaptor.convert(item));
     	}
-    	DBInCaseInsensitiveOperator op = new DBInCaseInsensitiveOperator(list);
+    	DBInIgnoreCaseOperator op = new DBInIgnoreCaseOperator(list);
     	op.invertOperator = this.invertOperator;
     	op.includeNulls = this.includeNulls;
     	return op;

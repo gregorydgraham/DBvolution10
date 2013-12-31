@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.operators;
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
 /**
@@ -38,24 +37,6 @@ abstract public class DBOperator implements Serializable {
         secondValue = null;
         thirdValue = null;
     }
-
-//    public void init(QueryableDatatype value) {
-//        firstValue = (value == null ? null : value.copy());
-//        secondValue = null;
-//        thirdValue = null;
-//    }
-//
-//    public DBOperator(QueryableDatatype value, QueryableDatatype otherValue) {
-//        firstValue = (value == null ? null : value.copy());
-//        secondValue = (otherValue == null ? null : otherValue.copy());
-//        thirdValue = null;
-//    }
-//
-//    public DBOperator(QueryableDatatype value, QueryableDatatype otherValue, QueryableDatatype finalValue) {
-//        firstValue = (value == null ? null : value.copy());
-//        secondValue = (otherValue == null ? null : otherValue.copy());
-//        thirdValue = (finalValue == null ? null : finalValue.copy());
-//    }
 
     /**
      *

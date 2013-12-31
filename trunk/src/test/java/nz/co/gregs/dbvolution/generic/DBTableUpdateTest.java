@@ -37,12 +37,12 @@ public class DBTableUpdateTest extends AbstractTest {
         marques.getRowsByExample(marqueExample);
         marques.print();
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
-        toyota.uidMarque.permittedValues(99999);
+        toyota.uidMarque.setValue(99999);
         DBActionList updateList = marques.update(toyota);
         Assert.assertThat(testableSQL(updateList.get(0).getSQLStatements(database).get(0)),
                 is(testableSQL("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;")));
         marques.update(toyota);
-        toyota.name.permittedValues("NOTOYOTA");
+        toyota.name.setValue("NOTOYOTA");
         Assert.assertThat(testableSQL(marques.update(toyota).get(0).getSQLStatements(database).get(0)), 
                 is(testableSQL("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;")));
         
@@ -63,7 +63,7 @@ public class DBTableUpdateTest extends AbstractTest {
         System.out.println("===" + toyota.name.toString());
         Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
-        toyota.name.permittedValues("NOTTOYOTA");
+        toyota.name.setValue("NOTTOYOTA");
         String sqlForUpdate = marques.update(toyota).get(0).getSQLStatements(database).get(0);
         Assert.assertEquals("Update statement doesn't look right:", testableSQL("UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;"), testableSQL(sqlForUpdate));
 
