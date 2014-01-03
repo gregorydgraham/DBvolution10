@@ -15,20 +15,17 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
+import nz.co.gregs.dbvolution.transforms.*;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datagenerators.Column;
-import nz.co.gregs.dbvolution.datagenerators.Value;
-import nz.co.gregs.dbvolution.datatransforms.*;
+import nz.co.gregs.dbvolution.generators.Column;
+import nz.co.gregs.dbvolution.generators.Value;
 import nz.co.gregs.dbvolution.example.Marque;
-import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
-import nz.co.gregs.dbvolution.operators.DBOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
+import nz.co.gregs.dbvolution.generators.StringValue;
+import nz.co.gregs.dbvolution.operators.*;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -213,7 +210,6 @@ public class DataTransformTests extends AbstractTest {
         Assert.assertThat(got.size(), is(2));
         Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
         Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
-        Assert.assertThat(got.size(), is(2));
 
         final DBOperator rangeFrom1to3 = new DBPermittedRangeInclusiveOperator("1", "3");
         marq.name.clear();
@@ -225,7 +221,72 @@ public class DataTransformTests extends AbstractTest {
         Assert.assertThat(got.size(), is(2));
         Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
         Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
-        Assert.assertThat(got.size(), is(2));
     }
 
+    @Test
+    public void testReplaceTransform() throws SQLException {
+        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        DBQuery query = database.getDBQuery(marq);
+        final Column nameColumn = new Column(marq, marq.name);
+        
+        query.addComparison(nameColumn, new DBPermittedValuesOperator("TOY"));
+        List<Marque> got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(0));
+
+        query = database.getDBQuery(marq);
+        query.addComparison(new Replace(nameColumn,"OTA",""), new DBPermittedValuesOperator("TOY"));
+        query.setSortOrder(new DBRow[]{marq}, marq.name);
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(1));
+        Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+        
+        query = database.getDBQuery(marq);
+        query.addComparison(new Replace(nameColumn,"BM","V"), new DBPermittedValuesOperator("VW"));
+        query.setSortOrder(new DBRow[]{marq}, marq.name);
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(2));
+        Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
+        Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
+        
+        // A rather compilicated way to find out how many marques start with V
+        query = database.getDBQuery(marq);
+        query.addComparison(new Replace(nameColumn, new Substring(nameColumn,1),new StringValue("")), new DBPermittedValuesOperator("V"));
+        query.setSortOrder(new DBRow[]{marq}, marq.name);
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(2));
+        Assert.assertThat(got.get(0).name.stringValue(), is("VOLVO"));
+        Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
+    }
+
+    @Test
+    public void testConcatTransform() throws SQLException {
+        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        DBQuery query;
+        List<Marque> got;
+        final Column nameColumn = new Column(marq, marq.name);
+        
+        query = database.getDBQuery(marq);
+        query.addComparison(new Concat(new Replace(new Replace(nameColumn,"BM","V"),"W",""),"W"), new DBPermittedValuesOperator("VW"));
+        query.setSortOrder(new DBRow[]{marq}, marq.name);
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(2));
+        Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
+        Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
+        
+        query = database.getDBQuery(marq);
+        query.addComparison(new StringLength(nameColumn), new DBPermittedValuesOperator(6));
+        query.addComparison(new Concat(new Substring(nameColumn, 3,6), new Substring(nameColumn, 0,3)),  new DBPermittedValuesOperator("OTATOY"));
+        query.setSortOrder(new DBRow[]{marq}, marq.name);
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(1));
+        Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+    }
 }

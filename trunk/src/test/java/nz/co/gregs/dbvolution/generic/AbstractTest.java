@@ -52,14 +52,14 @@ public class AbstractTest {
     public String firstDateStr = "23/March/2013";
     public String secondDateStr = "2/April/2013";
 
-    @Parameters(name="{0}")
+    @Parameters(name = "{0}")
     public static List<Object[]> data() throws IOException {
         Object[][] data = new Object[][]{
-//            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")}
-//            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
-//            {"MySQLDB" new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
-//            {"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
-            {"H2MemoryDB", new H2MemoryDB("dbvolutionTest","","", false)}
+            //            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")}
+            //            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
+            //            {"MySQLDB" new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
+            //            {"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
+            {"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)}
         };
         return Arrays.asList(data);
     }
@@ -128,7 +128,6 @@ public class AbstractTest {
         Date firstDate = tedhiFormat.parse(firstDateStr).asDate();
         Date secondDate = tedhiFormat.parse(secondDateStr).asDate();
 
-
         marqueRows.add(new Marque(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, null));
         marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", firstDate, 2, null));
         marqueRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", firstDate, 3, null));
@@ -179,6 +178,10 @@ public class AbstractTest {
         database.dropTableNoExceptions(new CompanyLogo());
         database.dropTableNoExceptions(myMarqueRow);
         database.dropTableNoExceptions(myCarCompanyRow);
-        database.dropDatabase();
+        try {
+            database.dropDatabase();
+        } catch (UnsupportedOperationException unsupported) {
+            ;
+        }
     }
 }

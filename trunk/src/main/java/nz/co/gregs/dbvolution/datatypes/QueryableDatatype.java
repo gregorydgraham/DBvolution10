@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
+import nz.co.gregs.dbvolution.generators.DataGenerator;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.operators.*;
@@ -52,7 +52,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     protected QueryableDatatype(Object obj) {
         if (obj == null) {
             this.isDBNull = true;
-        } else if (!obj.toString().isEmpty()) {
+        } else{
             this.literalValue = obj;
             this.operator = new DBEqualsOperator(this);
         }

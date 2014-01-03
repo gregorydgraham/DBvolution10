@@ -25,9 +25,10 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.DBTransactionStatement;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
 
 /**
  *
@@ -41,7 +42,8 @@ public abstract class DBDatabase {
     private String password = null;
     private DataSource dataSource = null;
     private boolean printSQLBeforeExecuting;
-    private boolean isInATransaction;
+    private boolean isInATransaction = false;
+    private boolean isInAReadOnlyTransaction = false;
     private DBTransactionStatement transactionStatement;
     private final DBDefinition definition;
     private String databaseName;
@@ -147,7 +149,7 @@ public abstract class DBDatabase {
      *
      * @param <T>
      * @param objs
-     * @return 
+     * @return
      * @throws SQLException
      */
     public <T> DBActionList insert(T... objs) throws SQLException {
@@ -176,11 +178,11 @@ public abstract class DBDatabase {
      *
      * @param <T>
      * @param objs
-     * @return 
+     * @return
      * @throws SQLException
      */
     public <T> DBActionList delete(T... objs) throws SQLException {
-        DBActionList changes =new DBActionList();
+        DBActionList changes = new DBActionList();
         for (T obj : objs) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
@@ -226,26 +228,25 @@ public abstract class DBDatabase {
         return actions;
     }
 
-    private void updateARow(DBRow row) throws SQLException {
-        this.getDBTable(row).update(row);
-    }
-
-    public void updateAList(List<DBRow> list) throws SQLException {
-        if (list.size() > 0 && list.get(0) instanceof DBRow) {
-            for (DBRow row : list) {
-                this.updateARow(row);
-            }
-        }
-    }
-
-    public void updateAnArray(DBRow[] list) throws SQLException {
-        if (list.length > 0) {
-            for (DBRow list1 : list) {
-                this.updateARow(list1);
-            }
-        }
-    }
-
+//    private void updateARow(DBRow row) throws SQLException {
+//        this.getDBTable(row).update(row);
+//    }
+//
+//    public void updateAList(List<DBRow> list) throws SQLException {
+//        if (list.size() > 0 && list.get(0) instanceof DBRow) {
+//            for (DBRow row : list) {
+//                this.updateARow(row);
+//            }
+//        }
+//    }
+//
+//    public void updateAnArray(DBRow[] list) throws SQLException {
+//        if (list.length > 0) {
+//            for (DBRow list1 : list) {
+//                this.updateARow(list1);
+//            }
+//        }
+//    }
     /**
      *
      * Automatically selects the correct table and returns the selected rows as
@@ -253,7 +254,7 @@ public abstract class DBDatabase {
      *
      * @param <R>
      * @param row
-     * @return 
+     * @return
      * @throws SQLException
      */
     public <R extends DBRow> List<R> get(R row) throws SQLException {
@@ -286,7 +287,7 @@ public abstract class DBDatabase {
      * creates a query and fetches the rows automatically
      *
      * @param rows
-     * @return 
+     * @return
      * @throws SQLException
      */
     public List<DBQueryRow> get(DBRow... rows) throws SQLException {
@@ -312,7 +313,7 @@ public abstract class DBDatabase {
      *
      * @param expectedNumberOfRows
      * @param rows
-     * @return 
+     * @return
      * @throws SQLException
      * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
      */
@@ -378,6 +379,7 @@ public abstract class DBDatabase {
         this.transactionStatement = getDBTransactionStatement();
         try {
             this.isInATransaction = true;
+            this.isInAReadOnlyTransaction = true;
 
             connection = transactionStatement.getConnection();
             wasReadOnly = connection.isReadOnly();
@@ -398,6 +400,7 @@ public abstract class DBDatabase {
             }
         } finally {
             this.transactionStatement.transactionFinished();
+            this.isInAReadOnlyTransaction = false;
             this.isInATransaction = false;
             transactionStatement = null;
         }
@@ -501,12 +504,13 @@ public abstract class DBDatabase {
 
     /**
      *
-     * @param <TR>
      * @param newTableRow
-     * @return
      * @throws SQLException
      */
-    public <TR extends DBRow> void createTable(TR newTableRow) throws SQLException {
+    public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringReadOnlyTransactionException {
+        if (isInAReadOnlyTransaction) {
+            throw new AutoCommitActionDuringReadOnlyTransactionException("DBDatabase.dropTable()");
+        }
         StringBuilder sqlScript = new StringBuilder();
         List<PropertyWrapper> pkFields = new ArrayList<PropertyWrapper>();
         String lineSeparator = System.getProperty("line.separator");
@@ -561,7 +565,10 @@ public abstract class DBDatabase {
         getDBStatement().execute(sqlString);
     }
 
-    public <TR extends DBRow> void dropTable(TR tableRow) throws SQLException {
+    public void dropTable(DBRow tableRow) throws SQLException , AutoCommitActionDuringReadOnlyTransactionException{
+        if (isInAReadOnlyTransaction) {
+            throw new AutoCommitActionDuringReadOnlyTransactionException("DBDatabase.dropTable()");
+        }
         StringBuilder sqlScript = new StringBuilder();
 
         sqlScript.append(definition.getDropTableStart()).append(definition.formatTableName(tableRow)).append(definition.endSQLStatement());
@@ -594,8 +601,15 @@ public abstract class DBDatabase {
         return row.willCreateBlankQuery(this);
     }
 
-    public void dropDatabase() throws Exception {
-        ;
+    public void dropDatabase() throws Exception, UnsupportedOperationException, AutoCommitActionDuringReadOnlyTransactionException {
+        if (isInAReadOnlyTransaction) {
+            throw new AutoCommitActionDuringReadOnlyTransactionException("DBDatabase.dropDatabase()");
+        }
+
+        String dropStr = getDefinition().getDropDatabase(getDatabaseName());//;
+        printSQLIfRequested(dropStr);
+
+        this.doTransaction(new DBRawSQLTransaction(dropStr));
     }
 
     public String getDatabaseName() {

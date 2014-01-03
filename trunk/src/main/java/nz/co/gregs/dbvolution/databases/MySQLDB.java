@@ -16,8 +16,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import java.sql.SQLException;
-import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 
 /**
@@ -40,20 +38,6 @@ public class MySQLDB extends DBDatabase{
                 username, 
                 password);
         this.databaseName = databaseName;
-    }
-
-    @Override
-    public void dropDatabase() {
-        String dropStr = "DROP DATABASE IF EXISTS "+getDatabaseName()+";";
-        printSQLIfRequested(dropStr);
-        try {
-            this.doTransaction(new DBRawSQLTransaction(dropStr));
-        } catch (SQLException ex) {
-            ;
-        } catch (Exception ex) {
-            
-        }
-                
     }
 
     @Override

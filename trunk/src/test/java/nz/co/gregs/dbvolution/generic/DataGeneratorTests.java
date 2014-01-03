@@ -16,10 +16,10 @@
 
 package nz.co.gregs.dbvolution.generic;
 
+import nz.co.gregs.dbvolution.generators.CurrentDBDate;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
-import nz.co.gregs.dbvolution.datagenerators.*;
 import nz.co.gregs.dbvolution.example.Marque;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;

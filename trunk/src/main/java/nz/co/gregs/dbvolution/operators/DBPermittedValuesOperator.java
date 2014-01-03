@@ -27,6 +27,7 @@ public class DBPermittedValuesOperator extends DBMetaOperator {
 
     public static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unchecked")
     public DBPermittedValuesOperator(Object... permitted) {
         ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
         for (Object obj : permitted) {
