@@ -49,5 +49,17 @@ public class MSSQLServerDBDefinition extends DBDefinition {
         return "";
     }
 
+    @Override
+    public String doTrimTransform(String enclosedValue) {
+        return " LTRIM(RTRIM("+enclosedValue+")) "; //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+
+    @Override
+    public String doConcatTransform(String firstString, String secondString) {
+        return firstString+"+"+secondString;
+    }
+
 
 }

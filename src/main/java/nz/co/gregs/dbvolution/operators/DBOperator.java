@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.datagenerators.DataGenerator;
+import nz.co.gregs.dbvolution.generators.DataGenerator;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
 /**

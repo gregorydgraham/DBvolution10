@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nz.co.gregs.dbvolution.transforms;
 
-package nz.co.gregs.dbvolution.datatypes;
-
+import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.generators.DataGenerator;
-import nz.co.gregs.dbvolution.generators.DateGenerator;
 import nz.co.gregs.dbvolution.generators.NumberGenerator;
 import nz.co.gregs.dbvolution.generators.StringGenerator;
 
@@ -26,33 +25,31 @@ import nz.co.gregs.dbvolution.generators.StringGenerator;
  *
  * @author gregory.graham
  */
-public class DBDataGenerator extends QueryableDatatype {
+public class NonGenerator implements Serializable, StringGenerator, NumberGenerator, DataGenerator {
 
     public static final long serialVersionUID = 1L;
-
-    public DBDataGenerator(DataGenerator dataGenerator) {
-        super(dataGenerator);
+    private static NonGenerator instance = new NonGenerator();
+    
+    public NonGenerator() {
     }
-
-    public DBDataGenerator() {
-    }
-
-    @Override
-    public String getSQLDatatype() {
-        if(literalValue instanceof DateGenerator){
-            return new DBDate().getSQLDatatype();
-        } else if(literalValue instanceof NumberGenerator){
-            return new DBNumber().getSQLDatatype();
-        } else if(literalValue instanceof StringGenerator){
-            return new DBString().getSQLDatatype();
-        } else {
-            return new DBUnknownDatatype().getSQLDatatype();
-        }
+    
+    public static NonGenerator getInstance(){
+        return instance;
     }
 
     @Override
-    protected String formatValueForSQLStatement(DBDatabase db) {
-        return ((DataGenerator)literalValue).toSQLString(db);
+    public String toSQLString(DBDatabase db) {
+        return "";
+    }
+    
+    @Override
+    public DataGenerator copy() {
+        return this;
+    }
+
+    @Override
+    public boolean isNull() {
+        return false;
     }
     
 }

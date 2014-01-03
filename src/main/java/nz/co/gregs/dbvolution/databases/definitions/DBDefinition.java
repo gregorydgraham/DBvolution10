@@ -17,7 +17,9 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.generators.StringValue;
 
 /**
  *
@@ -400,5 +402,46 @@ public abstract class DBDefinition {
 
     public String getCurrentUserFunction() {
         return " CURRENT_USER ";
+    }
+
+    public String getDropDatabase(String databaseName) {
+        throw new UnsupportedOperationException("DROP DATABASE is not supported by this DBDatabase implementation");
+    }
+
+    public String doLeftTrimTransform(String enclosedValue) {
+        return " LTRIM("+enclosedValue+") ";
+    }
+
+    public String doLowercaseTransform(String enclosedValue) {
+        return " LOWER("+enclosedValue+") ";
+    }
+
+    public String doRightTrimTransform(String enclosedValue) {
+        return " RTRIM("+ enclosedValue+" )";
+    }
+
+    public String doStringLengthTransform(String enclosedValue) {
+        return " CHAR_LENGTH( "+enclosedValue+" ) ";
+    }
+
+    public String doSubstringTransform(String enclosedValue, DBInteger startingPosition, DBInteger length) {
+        return " SUBSTRING("
+                +enclosedValue
+                +" FROM " 
+                +(startingPosition.intValue() + 1) 
+                +( (length!=null && !length.isNull()) ? " for " + (length.intValue() - startingPosition.intValue()) : "")
+                + ") ";
+    }
+
+    public String doTrimTransform(String enclosedValue) {
+        return " TRIM("+enclosedValue+") ";
+    }
+
+    public String doUppercaseTransform(String enclosedValue) {
+        return " UPPER("+enclosedValue+") ";
+    }
+
+    public String doConcatTransform(String firstString, String secondString) {
+        return firstString+"||"+secondString;
     }
 }

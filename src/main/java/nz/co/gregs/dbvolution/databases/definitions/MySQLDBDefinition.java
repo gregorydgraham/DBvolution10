@@ -74,4 +74,16 @@ public class MySQLDBDefinition extends DBDefinition {
         }else
             return "";
     }
+
+    @Override
+    public String getDropDatabase(String databaseName) {
+        return "DROP DATABASE IF EXISTS "+databaseName+";";
+    }
+
+    @Override
+    public String doConcatTransform(String firstString, String secondString) {
+        return " CONCAT("+firstString+", "+secondString+") ";
+    }
+    
+    
 }
