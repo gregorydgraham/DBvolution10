@@ -17,8 +17,6 @@
 package nz.co.gregs.dbvolution.transforms;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.generators.Column;
 import nz.co.gregs.dbvolution.generators.StringGenerator;
 import nz.co.gregs.dbvolution.generators.StringValue;
 import nz.co.gregs.dbvolution.generators.Value;
@@ -78,10 +76,5 @@ public class Replace extends BaseTransform implements StringGenerator {
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return " REPLACE( "+enclosedValue+", "+find.toSQLString(db)+", "+replace.toSQLString(db)+") ";
-    }
-
-    @Override
-    public boolean isNull() {
-        return false;
     }
 }

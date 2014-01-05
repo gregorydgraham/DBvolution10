@@ -37,10 +37,5 @@ public class Trim extends BaseTransform implements StringGenerator {
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doTrimTransform(enclosedValue);
     }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
     
 }

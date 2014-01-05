@@ -66,9 +66,4 @@ public class Substring extends BaseTransform implements StringGenerator{
         return db.getDefinition().doSubstringTransform(enclosedValue, startingPosition, length);
     }
 
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
 }

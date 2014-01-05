@@ -77,7 +77,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     }
 
     static public QueryableDatatype getQueryableDatatypeForObject(Object o) {
-        QueryableDatatype qdt = null;
+        QueryableDatatype qdt;
         if (o instanceof DataGenerator) {
             qdt = new DBDataGenerator();
         } else if (o instanceof Integer) {
@@ -115,6 +115,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * @return
      */
+    @Override
     public QueryableDatatype copy() {
         QueryableDatatype newQDT = this;
         try {
@@ -492,10 +493,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
                 this.setValue(dbValue);
             }
         }
-    }
-
-    void setIsPrimaryKey(boolean b) {
-        this.isPrimaryKey = b;
     }
 
     private void preventChangeOfPrimaryKey() {

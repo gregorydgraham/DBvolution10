@@ -33,10 +33,4 @@ public class Uppercase extends BaseTransform implements StringGenerator{
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doUppercaseTransform(enclosedValue);
     }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
 }

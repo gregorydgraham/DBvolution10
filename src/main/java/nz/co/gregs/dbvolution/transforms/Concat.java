@@ -49,8 +49,4 @@ public class Concat extends BaseTransform implements StringGenerator{
         return db.getDefinition().doConcatTransform(enclosedValue, secondString.toSQLString(db));
     }
 
-    @Override
-    public boolean isNull() {
-        return false;
-    }
 }

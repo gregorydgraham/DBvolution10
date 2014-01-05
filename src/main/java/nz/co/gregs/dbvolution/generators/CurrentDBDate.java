@@ -34,9 +34,4 @@ public class CurrentDBDate implements DateGenerator {
         return this;
     }
 
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-    
 }

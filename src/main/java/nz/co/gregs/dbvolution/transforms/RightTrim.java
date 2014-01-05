@@ -35,10 +35,5 @@ public class RightTrim extends BaseTransform implements StringGenerator{
     protected String doTransform(DBDatabase db, String enclosedValue) {
     return db.getDefinition().doRightTrimTransform(enclosedValue);
     }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
     
 }
