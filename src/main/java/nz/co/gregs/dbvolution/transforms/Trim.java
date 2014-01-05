@@ -31,6 +31,8 @@ public class Trim extends BaseTransform implements StringGenerator {
 
     /**
      *
+     * @param db
+     * @param enclosedValue
      * @return
      */
     @Override
