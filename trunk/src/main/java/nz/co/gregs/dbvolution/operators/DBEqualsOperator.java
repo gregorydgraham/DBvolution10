@@ -15,10 +15,10 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generators.DataGenerator;
 
 /**
@@ -59,7 +59,7 @@ public class DBEqualsOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
         DBDefinition defn = db.getDefinition();
         String whereLine;
-        if (firstValue.isNull()) {
+        if ((firstValue instanceof QueryableDatatype) && ((QueryableDatatype)firstValue).isNull()) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
         } else {

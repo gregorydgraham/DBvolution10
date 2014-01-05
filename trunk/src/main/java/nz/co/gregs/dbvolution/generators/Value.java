@@ -38,10 +38,4 @@ public class Value implements DataGenerator {
     public DataGenerator copy() {
         return new Value(object);
     }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-    
 }

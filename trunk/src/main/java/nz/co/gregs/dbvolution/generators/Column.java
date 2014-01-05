@@ -41,9 +41,4 @@ public class Column implements DataGenerator, StringGenerator {
         return new Column(dbrow, field);
     }
 
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
 }

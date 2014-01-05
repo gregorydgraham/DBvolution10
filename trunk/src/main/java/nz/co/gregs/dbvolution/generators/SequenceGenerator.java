@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.generators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.NumberGenerator;
 
 public class SequenceGenerator implements NumberGenerator {
     
@@ -42,11 +41,6 @@ public class SequenceGenerator implements NumberGenerator {
     @Override
     public DataGenerator copy() {
         return new SequenceGenerator(schemaName, sequenceName);
-    }
-    
-    @Override
-    public boolean isNull() {
-        return false;
     }
     
 }

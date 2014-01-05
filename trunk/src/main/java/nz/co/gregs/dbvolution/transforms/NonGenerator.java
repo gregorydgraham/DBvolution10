@@ -46,10 +46,5 @@ public class NonGenerator implements Serializable, StringGenerator, NumberGenera
     public DataGenerator copy() {
         return this;
     }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
     
 }

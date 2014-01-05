@@ -35,10 +35,4 @@ public class LeftTrim extends BaseTransform implements StringGenerator {
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doLeftTrimTransform(enclosedValue);
     }
-
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
 }

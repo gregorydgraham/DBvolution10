@@ -34,9 +34,4 @@ public class Lowercase extends BaseTransform implements StringGenerator {
         return db.getDefinition().doLowercaseTransform(enclosedValue);
     }
 
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-
 }

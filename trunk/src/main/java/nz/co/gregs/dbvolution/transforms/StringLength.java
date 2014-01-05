@@ -34,9 +34,4 @@ public class StringLength extends BaseTransform implements StringGenerator {
         return db.getDefinition().doStringLengthTransform(enclosedValue);
     }
     
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-    
 }

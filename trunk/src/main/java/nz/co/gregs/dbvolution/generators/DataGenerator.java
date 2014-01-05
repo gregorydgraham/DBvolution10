@@ -30,6 +30,5 @@ public interface DataGenerator {
      * @return
      */
     public String toSQLString(DBDatabase db);
-    public boolean isNull();
     public DataGenerator copy();
 }

@@ -35,9 +35,4 @@ public class CurrentDBUser implements StringGenerator {
         return this;
     }
     
-    @Override
-    public boolean isNull() {
-        return false;
-    }
-    
 }
