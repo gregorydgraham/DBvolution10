@@ -113,7 +113,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * Always use the super.copy() method first when overriding this method.
      *
-     * @return
+     * @return a complete copy of the QDT with all values set.
      */
     @Override
     public QueryableDatatype copy() {
@@ -149,7 +149,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     /**
      * Returns the raw value as a String
      *
-     * @return
+     * @return the literal value as a String
      */
     public String stringValue() {
         return (literalValue == null ? "" : literalValue.toString());
@@ -203,7 +203,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * @param db
      * @param columnName
-     * @return
+     * @return the section of the SQL query between WHERE and ORDER BY
      */
     public String getWhereClause(DBDatabase db, String columnName) {
         return getWhereClauseUsingOperators(db, columnName);
@@ -379,7 +379,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      * Sets the value of this column to DBNull Also changes the operator to
      * DBIsNullOperator for comparisons
      *
-     * @return
+     * @return the DBOperator that will be used with this QDT
      */
     protected DBOperator setToNull() {
         this.literalValue = null;
@@ -400,7 +400,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * Example return value: "VARCHAR(1000)"
      *
-     * @return
+     * @return the standard SQL datatype that corresponds to this QDT as a String
      */
     public abstract String getSQLDatatype();
 
@@ -438,7 +438,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      * DBDate{1/March/2013} => TO_DATE('20130301', 'YYYYMMDD')
      *
      * @param db
-     * @return
+     * @return the literal value translated to a String ready to insert into an SQL statement
      */
     protected abstract String formatValueForSQLStatement(DBDatabase db);
 
@@ -525,11 +525,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Used to switch the direction of the column's sort order
+     * 
+     * use setSortOrderAscending() and setSortOrderDescending() where possible
      *
      * Use Boolean.TRUE for Ascending Use Boolean.FALSE for Descending
      *
      * @param order
-     * @return
+     * @return this object
      */
     private QueryableDatatype setSortOrder(Boolean order) {
         sort = order;
