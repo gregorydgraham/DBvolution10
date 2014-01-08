@@ -37,11 +37,26 @@ public abstract class DBAction {
         row = null;
     }
 
+    /**
+     * Standard action constructor
+     * 
+     * saves a copy of the row to ensure immutability
+     *
+     * @param <R>
+     * @param row
+     */
     public <R extends DBRow> DBAction(R row) {
         super();
         this.row = DBRow.copyDBRow(row);
     }
 
+    /**
+     * Actions happen all by themselves but when you want to know what will actually happen on the database
+     * use this method to get a complete list of all the SQL required.
+     *
+     * @param db
+     * @return the list of SQL strings that equates to this action.
+     */
     public final List<String> getSQLStatements(DBDatabase db) {
         return getSQLStatements(db, row);
     }
@@ -57,7 +72,7 @@ public abstract class DBAction {
      *
      * @param db
      * @param row
-     * @return
+     * @return The complete list of all actions performed to complete this action on the database
      * @throws SQLException
      */
     protected abstract DBActionList execute(DBDatabase db, DBRow row) throws SQLException;
