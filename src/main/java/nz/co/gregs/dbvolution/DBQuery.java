@@ -359,7 +359,7 @@ public class DBQuery {
      *
      * @param <R>
      * @param exemplar
-     * @return
+     * @return the ONLY instance found using this query
      * @throws SQLException
      * @throws UnexpectedNumberOfRowsException
      */
@@ -374,7 +374,7 @@ public class DBQuery {
      * @param exemplar: The DBRow class that you would like returned.
      * @param expected: The expected number of rows, an exception will be thrown
      * if this expectation is not met.
-     * @return
+     * @return a list of all the instances of the exemplar found by this query
      * @throws SQLException
      * @throws UnexpectedNumberOfRowsException
      */

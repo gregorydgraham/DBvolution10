@@ -23,7 +23,7 @@ import org.junit.Test;
 @SuppressWarnings("unused")
 public class JavaPropertyTest {
 
-    private JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
+    private final JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
             Visibility.PRIVATE, Visibility.PUBLIC, null, (PropertyType[]) null);
 
     // check basic field and property retrieval
