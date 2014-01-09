@@ -525,7 +525,7 @@ abstract public class DBRow implements Serializable {
      * @param <T>
      * @param properties a list of fields/methods from this object
      */
-    @SafeVarargs
+//    @SafeVarargs // wait for Java8 before using Java7
     public final <T> void returnFieldsLimitedTo(T... properties) {
         PropertyWrapper propWrapper;
         for (T property : properties) {
