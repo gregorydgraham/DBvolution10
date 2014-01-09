@@ -627,9 +627,8 @@ public class DBTable<E extends DBRow> {
      * </pre>
      *
      * <p>
-     * Requires that all {@literal orderColumns) be from the {@code baseRow)
+     * Requires that all {@literal orderColumns} be from the {@code baseRow}
      * instance to work.
-     * }
      *
      * @param baseRow
      *

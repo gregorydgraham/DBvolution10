@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generators.StringValue;
+import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
  *
@@ -315,8 +316,13 @@ public abstract class DBDefinition {
     public String endOnClause() {
         return " ) ";
     }
+    
+    
+    public final Object getSQLTypeOfDBDatatype(PropertyWrapper field) {
+        return getSQLTypeOfDBDatatype(field.getQueryableDatatype());
+    }
 
-    public Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+    protected Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         return qdt.getSQLDatatype();
     }
 

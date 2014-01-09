@@ -30,8 +30,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
     /**
      *
+     * @param <E>
      * @param exemplar
-     * @return
+     * @return the instance of exemplar that is in the DBQueryRow instance
      */
     @SuppressWarnings("unchecked")
     public <E extends DBRow> E get(E exemplar) {
@@ -44,6 +45,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
         }
         ps.println();
     }
+    
     public void print(PrintStream ps) {
         for (DBRow row : values()) {
             ps.print("" + row);

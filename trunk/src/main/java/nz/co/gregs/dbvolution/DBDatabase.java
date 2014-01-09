@@ -87,7 +87,7 @@ public abstract class DBDatabase {
 
     /**
      *
-     * @return
+     * @return the DBStatement to be used: either a new one, or the current transaction statement.
      */
     public synchronized DBStatement getDBStatement() {
         Connection connection;
@@ -125,31 +125,11 @@ public abstract class DBDatabase {
 
     /**
      *
-     * Convenience method to simplify switching from READONLY to COMMITTED
-     * transaction
-     *
-     * @param <V>
-     * @param dbTransaction
-     * @param commit
-     * @return
-     * @throws SQLException
-     * @throws Exception
-     */
-    synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
-        if (commit) {
-            return doTransaction(dbTransaction);
-        } else {
-            return doReadOnlyTransaction(dbTransaction);
-        }
-    }
-
-    /**
-     *
      * Inserts DBRows and lists of DBRows into the correct tables automatically
      *
      * @param <T>
      * @param objs
-     * @return
+     * @return a DBActionList of all the actions performed
      * @throws SQLException
      */
     public <T> DBActionList insert(T... objs) throws SQLException {
@@ -178,7 +158,7 @@ public abstract class DBDatabase {
      *
      * @param <T>
      * @param objs
-     * @return
+     * @return a DBActionList of all the actions performed
      * @throws SQLException
      */
     public <T> DBActionList delete(T... objs) throws SQLException {
@@ -254,7 +234,7 @@ public abstract class DBDatabase {
      *
      * @param <R>
      * @param row
-     * @return
+     * @return a list of the selected rows
      * @throws SQLException
      */
     public <R extends DBRow> List<R> get(R row) throws SQLException {
@@ -270,7 +250,7 @@ public abstract class DBDatabase {
      * @param <R>
      * @param expectedNumberOfRows
      * @param row
-     * @return
+     * @return a list of the selected rows
      * @throws SQLException
      * @throws UnexpectedNumberOfRowsException
      */
@@ -287,7 +267,7 @@ public abstract class DBDatabase {
      * creates a query and fetches the rows automatically
      *
      * @param rows
-     * @return
+     * @return a list of DBQueryRows relating to the selected rows
      * @throws SQLException
      */
     public List<DBQueryRow> get(DBRow... rows) throws SQLException {
@@ -313,7 +293,7 @@ public abstract class DBDatabase {
      *
      * @param expectedNumberOfRows
      * @param rows
-     * @return
+     * @return a list of DBQueryRows relating to the selected rows
      * @throws SQLException
      * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
      */
@@ -327,9 +307,29 @@ public abstract class DBDatabase {
 
     /**
      *
+     * Convenience method to simplify switching from READONLY to COMMITTED
+     * transaction
+     *
      * @param <V>
      * @param dbTransaction
-     * @return
+     * @param commit
+     * @return the object returned by the transaction
+     * @throws SQLException
+     * @throws Exception
+     */
+    synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
+        if (commit) {
+            return doTransaction(dbTransaction);
+        } else {
+            return doReadOnlyTransaction(dbTransaction);
+        }
+    }
+
+    /**
+     *
+     * @param <V>
+     * @param dbTransaction
+     * @return the object returned by the transaction
      * @throws SQLException
      * @throws Exception
      */
@@ -366,7 +366,7 @@ public abstract class DBDatabase {
      *
      * @param <V>
      * @param dbTransaction
-     * @return
+     * @return the object returned by the transaction
      * @throws SQLException
      * @throws Exception
      */
@@ -413,7 +413,7 @@ public abstract class DBDatabase {
      * equivalent to script.implement(this);
      *
      * @param script
-     * @return
+     * @return a DBActionList provided by the script
      * @throws Exception
      */
     public DBActionList implement(DBScript script) throws Exception {
@@ -427,7 +427,7 @@ public abstract class DBDatabase {
      * equivalent to script.test(this);
      *
      * @param script
-     * @return
+     * @return a DBActionList provided by the script
      * @throws Exception
      */
     public DBActionList test(DBScript script) throws Exception {
@@ -466,7 +466,7 @@ public abstract class DBDatabase {
      *
      * @param <R>
      * @param example
-     * @return
+     * @return a DBTable instance for the example provided
      */
     public <R extends DBRow> DBTable<R> getDBTable(R example) {
         return DBTable.getInstance(this, example);
@@ -475,7 +475,7 @@ public abstract class DBDatabase {
     /**
      *
      * @param examples
-     * @return
+     * @return a DBQuery with the examples as required tables
      */
     public DBQuery getDBQuery(DBRow... examples) {
         return DBQuery.getInstance(this, examples);
@@ -524,19 +524,12 @@ public abstract class DBDatabase {
         List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
         for (PropertyWrapper field : fields) {
             if (field.isColumn()) {
-                QueryableDatatype qdt = field.getQueryableDatatype();
-                if (qdt == null) {
-                    // this is inefficient since the new qdt will be thrown away,
-                    // but it's only for creating tables, which doesn't happen often.
-                    qdt = QueryableDatatype.getQueryableDatatypeInstance(field.type());
-                }
-
                 String colName = field.columnName();
                 sqlScript
                         .append(sep)
                         .append(definition.formatColumnName(colName))
                         .append(definition.getCreateTableColumnsNameAndTypeSeparator())
-                        .append(definition.getSQLTypeOfDBDatatype(qdt));
+                        .append(definition.getSQLTypeOfDBDatatype(field));
                 sep = nextSep + lineSeparator;
 
                 if (field.isPrimaryKey()) {
