@@ -14,7 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class InterfaceInfo {
+/**
+ * Used internally to extract information about generics in reflected classes.
+ */
+class InterfaceInfo {
 	private boolean interfaceImplementedByImplementation = false;
 	private ParameterBounds[] typeArgumentBounds;
 

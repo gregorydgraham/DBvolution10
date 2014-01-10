@@ -16,7 +16,7 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * Low-level internal abstraction layer over java fields and bean-properties.
  * @author Malcolm Lett
  */
-public interface JavaProperty {
+interface JavaProperty {
 	
 	/**
 	 * Gets a string representation suitable for debugging and logging.
