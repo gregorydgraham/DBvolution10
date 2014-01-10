@@ -564,14 +564,13 @@ abstract public class DBRow implements Serializable {
         String joinSeparator = "";
         for (PropertyWrapper fk : fks) {
             Class<? extends DBRow> referencedClass = fk.referencedClass();
-            PropertyWrapperDefinition referencedProp = fk.referencedPropertyDefinitionIdentity();
 
             if (newTable.getClass().equals(referencedClass)) {
                 String formattedForeignKey = defn.formatTableAliasAndColumnName(
                         this, fk.columnName());
 
                 String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
-                        newTable, referencedProp.columnName());
+                        newTable, fk.referencedColumnName());
 
                 rels//.append(lineSeparator)
                         .append(joinSeparator)

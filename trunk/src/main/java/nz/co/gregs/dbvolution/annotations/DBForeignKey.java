@@ -36,7 +36,7 @@ public @interface DBForeignKey {
 
 	/**
 	 * Identifies the foreign table by its {@code DBRow} implementation class.
-	 * @return
+	 * @return the DBRow subclass that this foreign key references.
 	 */
     Class<? extends DBRow> value();
     
@@ -48,7 +48,7 @@ public @interface DBForeignKey {
      * the primary key of the foreign class is used.
      * <p> Must be specified if the foreign class has no primary key,
      * or if it has multiple primary key columns (not supported yet).
-     * @return
+     * @return the name of the column this foreign key references.
      */
     String column() default "";
 
