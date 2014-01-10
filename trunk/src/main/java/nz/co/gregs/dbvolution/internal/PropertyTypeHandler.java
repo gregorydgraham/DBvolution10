@@ -63,7 +63,7 @@ class PropertyTypeHandler {
      * @param javaProperty the annotated property
      */
     @SuppressWarnings("unchecked")
-    public PropertyTypeHandler(JavaProperty javaProperty, boolean processIdentityOnly) {
+    PropertyTypeHandler(JavaProperty javaProperty, boolean processIdentityOnly) {
         this.javaProperty = javaProperty;
     	this.identityOnly = processIdentityOnly;
     	this.annotation = javaProperty.getAnnotation(DBAdaptType.class);

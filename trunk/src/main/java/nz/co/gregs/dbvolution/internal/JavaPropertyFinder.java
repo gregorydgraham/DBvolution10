@@ -75,7 +75,7 @@ class JavaPropertyFinder {
 	 * @param clazz the type to inspect
 	 * @return the non-null list of properties found on the given class
 	 */
-	public List<JavaProperty> getPropertiesOf(Class<?> clazz) {
+	List<JavaProperty> getPropertiesOf(Class<?> clazz) {
 		List<JavaProperty> properties = new ArrayList<JavaProperty>();
 		
 		// retrieve fields

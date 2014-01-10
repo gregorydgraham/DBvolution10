@@ -18,7 +18,7 @@ class ColumnHandler {
 	private final DBColumn columnAnnotation; // null if not present on property
 	private final DBPrimaryKey primaryKeyAnnotation; // null if not present on property
 	
-	public ColumnHandler(JavaProperty adaptee) {
+	ColumnHandler(JavaProperty adaptee) {
 		this.columnAnnotation = adaptee.getAnnotation(DBColumn.class);
 		this.primaryKeyAnnotation = adaptee.getAnnotation(DBPrimaryKey.class);
 		

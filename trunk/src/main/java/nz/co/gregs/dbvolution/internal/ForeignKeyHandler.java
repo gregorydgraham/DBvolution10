@@ -25,7 +25,7 @@ class ForeignKeyHandler {
 	private final PropertyWrapperDefinition identityOnlyReferencedProperty; // stores identity info only
 	private final DBForeignKey foreignKeyAnnotation; // null if not present on property
 	
-	public ForeignKeyHandler(JavaProperty adaptee, boolean processIdentityOnly) {
+	ForeignKeyHandler(JavaProperty adaptee, boolean processIdentityOnly) {
 		if (processIdentityOnly) {
 			// skip processing of foreign keys
 			this.foreignKeyAnnotation = null;
