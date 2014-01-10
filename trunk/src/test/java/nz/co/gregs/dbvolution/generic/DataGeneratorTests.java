@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
-import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generators.DBMath;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
@@ -133,7 +133,7 @@ public class DataGeneratorTests extends AbstractTest {
         Marque marq = new Marque();
         DBQuery dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
-                DBMath.acos(DBMath.column(marq, marq.uidMarque)),
+                DBMath.arccos(DBMath.column(marq, marq.uidMarque)),
                 new DBEqualsOperator(0));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
@@ -154,5 +154,19 @@ public class DataGeneratorTests extends AbstractTest {
         Assert.assertThat(allRows.size(), is(1));
         Marque marque = allRows.get(0).get(marq);
         Assert.assertThat(marque.uidMarque.intValue(), is(1));
+    }
+
+    @Test
+    public void testEXP() throws SQLException {
+        CarCompany carCo = new CarCompany();
+        DBQuery dbQuery = database.getDBQuery(carCo);
+        dbQuery.addComparison(
+                DBMath.trunc(DBMath.exp(DBMath.column(carCo, carCo.uidCarCompany)).times(1000)),
+                new DBEqualsOperator(7389));
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+        CarCompany carCompany = allRows.get(0).get(carCo);
+        Assert.assertThat(carCompany.uidCarCompany.intValue(), is(2));
     }
 }

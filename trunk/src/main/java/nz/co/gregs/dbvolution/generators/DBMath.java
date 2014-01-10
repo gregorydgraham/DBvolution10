@@ -55,6 +55,16 @@ public class DBMath implements NumberGenerator {
         });
     }
 
+    public static DBMath exp(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "exp";
+            }
+        });
+    }
+
     public static DBMath cos(DBMath equation) {
         return new DBMath(new DBUnaryFunction(equation) {
 
@@ -95,7 +105,7 @@ public class DBMath implements NumberGenerator {
         });
     }
 
-    public static DBMath acos(DBMath equation) {
+    public static DBMath arccos(DBMath equation) {
         return new DBMath(new DBUnaryFunction(equation) {
 
             @Override
@@ -105,7 +115,7 @@ public class DBMath implements NumberGenerator {
         });
     }
 
-    public static DBMath asin(DBMath equation) {
+    public static DBMath arcsin(DBMath equation) {
         return new DBMath(new DBUnaryFunction(equation) {
 
             @Override
@@ -115,7 +125,7 @@ public class DBMath implements NumberGenerator {
         });
     }
 
-    public static DBMath atan(DBMath equation) {
+    public static DBMath arctan(DBMath equation) {
         return new DBMath(new DBUnaryFunction(equation) {
 
             @Override
