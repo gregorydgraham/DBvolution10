@@ -18,29 +18,32 @@ package nz.co.gregs.dbvolution.generators;
 import nz.co.gregs.dbvolution.DBDatabase;
 
 public class SequenceGenerator implements NumberGenerator {
-    
+
     public static final long serialVersionUID = 1L;
-    
+
     private final String sequenceName;
     private String schemaName = null;
-    
+
     public SequenceGenerator(String sequenceName) {
+        if (sequenceName == null) {
+            throw new NullPointerException("SequenceName Cannot Be Null: please supply a non-null value for the sequence name.");
+        }
         this.sequenceName = sequenceName;
     }
-    
+
     public SequenceGenerator(String schemaName, String sequenceName) {
+        this(sequenceName);
         this.schemaName = schemaName;
-        this.sequenceName = sequenceName;
     }
-    
+
     @Override
     public String toSQLString(DBDatabase db) {
-        return " NEXTVAL( " + (schemaName == null ? "" : schemaName + ", ") + sequenceName + " ) ";
+        return db.getDefinition().getNextSequenceValue(schemaName, sequenceName);
     }
-    
+
     @Override
     public DataGenerator copy() {
         return new SequenceGenerator(schemaName, sequenceName);
     }
-    
+
 }

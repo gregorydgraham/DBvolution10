@@ -17,21 +17,22 @@ package nz.co.gregs.dbvolution.generators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 
-public class CurrentDBTime implements DateGenerator {
+
+public class DBCurrentUser implements StringGenerator {
 
     public static final long serialVersionUID = 1L;
 
-    public CurrentDBTime() {
+    public DBCurrentUser() {
     }
-
+    
     @Override
     public String toSQLString(DBDatabase db) {
-        return db.getDefinition().getCurrentTimeFunction();
+        return db.getDefinition().getCurrentUserFunction();
     }
 
     @Override
     public DataGenerator copy() {
         return this;
     }
-
+    
 }

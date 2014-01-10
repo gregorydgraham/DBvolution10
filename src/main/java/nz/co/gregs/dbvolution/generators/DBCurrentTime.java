@@ -17,16 +17,16 @@ package nz.co.gregs.dbvolution.generators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 
-public class CurrentDBDate implements DateGenerator {
+public class DBCurrentTime implements DateGenerator {
 
     public static final long serialVersionUID = 1L;
 
-    public CurrentDBDate() {
+    public DBCurrentTime() {
     }
 
     @Override
     public String toSQLString(DBDatabase db) {
-        return db.getDefinition().getCurrentDateFunction(); //To change body of generated methods, choose Tools | Templates.
+        return db.getDefinition().getCurrentTimeFunction();
     }
 
     @Override

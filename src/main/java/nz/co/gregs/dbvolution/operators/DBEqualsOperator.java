@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.generators.Value;
 
 /**
  *
@@ -39,6 +40,11 @@ public class DBEqualsOperator extends DBOperator {
 
     public DBEqualsOperator(DataGenerator equalTo) {
         this.firstValue = (equalTo == null ? equalTo : equalTo.copy());
+    }
+
+    public DBEqualsOperator(Object equalTo) {
+        Value first = new Value(equalTo);
+        this.firstValue = (first == null ? first : first.copy());
     }
 
     public String getInverse(DBDefinition defn) {

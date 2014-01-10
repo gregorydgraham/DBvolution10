@@ -322,6 +322,15 @@ public abstract class DBDefinition {
         return getSQLTypeOfDBDatatype(field.getQueryableDatatype());
     }
 
+    /**
+     * Supplied to allow the DBDefintion to override the standard QDT datatype.
+     * 
+     * <p>
+     * When the 
+     *
+     * @param qdt
+     * @return
+     */
     protected Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         return qdt.getSQLDatatype();
     }
@@ -449,5 +458,9 @@ public abstract class DBDefinition {
 
     public String doConcatTransform(String firstString, String secondString) {
         return firstString+"||"+secondString;
+    }
+
+    public String getNextSequenceValue(String schemaName, String sequenceName) {
+        return " NEXTVAL( " + (schemaName == null ? "" : schemaName + ", ") + sequenceName + " ) ";
     }
 }

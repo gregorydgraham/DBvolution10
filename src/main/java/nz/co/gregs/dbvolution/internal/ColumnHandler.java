@@ -50,11 +50,12 @@ class ColumnHandler {
 	
 	/**
 	 * Gets the explicitly or implicitly indicated column name.
-	 * Defaulted to the value of the class if {@link DBColumn} annotation is present
+         * 
+	 * <p> Defaults to the name of the field if the {@link DBColumn} annotation is present
 	 * but doesn't explicitly specify the column name.
 	 * 
 	 * <p> If the {@link DBColumn} annotation is missing, this method returns {@code null}.
-	 * @return the column name, if specified explicitly or implicitly.
+	 * @return the column name, if {@code DBColumn} annotation is present, or {@code null}.
 	 */
 	public String getColumnName() {
 		return columnName;

@@ -528,6 +528,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      * 
      * use setSortOrderAscending() and setSortOrderDescending() where possible
      *
+     * use setSortOrderAscending() and setSortOrderDescending() where possible
+     *
      * Use Boolean.TRUE for Ascending Use Boolean.FALSE for Descending
      *
      * @param order
