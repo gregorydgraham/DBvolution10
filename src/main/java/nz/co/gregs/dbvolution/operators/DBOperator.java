@@ -39,13 +39,33 @@ abstract public class DBOperator implements Serializable {
     }
 
     /**
+     * Formats the operator into SQL for comparing a column to pre-supplied values
+     * 
+     * <p>Within this function you need to transform the column name, operator and values into a where clause line.
+     * <p>The line should formatted as " AND this = that" and should make use of the DBDefinition with DBDatabase to 
+     * ensure compatibility with all databases.
+     * 
+     * <p>Remember to use defn.beginAndLine() to get the " AND "
      *
      * @param database
      * @param columnName
-     * @return
+     * @return the column name, operator and values as a where clause snippet
      */
     abstract public String generateWhereLine(DBDatabase database, String columnName);
 
+    /**
+     * Formats the operator into SQL for comparing 2 columns
+     * 
+     * <p>Within this function you need to transform the column names and operator into a where clause line.
+     * <p>The line should formatted as " AND this = that" and should make use of the DBDefinition with DBDatabase to 
+     * ensure compatibility with all databases.
+     * 
+     * <p>Remember to use defn.beginAndLine() to get the " AND "
+     *
+     * @param database
+     * @param columnName
+     * @return the column name, operator and values as a where clause snippet
+     */
     abstract public String generateRelationship(DBDatabase database, String columnName, String otherColumnName);
 
     public void invertOperator(Boolean invertOperator) {

@@ -47,7 +47,7 @@ public class DBQuery {
     private boolean useANSISyntax = true;
     private boolean cartesianJoinAllowed = false;
     private boolean blankQueryAllowed = false;
-    private List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
+    private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -224,7 +224,6 @@ public class DBQuery {
             }
             if (!useANSISyntax) {
                 fromClause.append(separator).append(tableName);
-//.append(defn.beginTableAlias()).append(defn.getTableAlias(tabRow)).append(defn.endTableAlias());
             } else {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
@@ -260,7 +259,7 @@ public class DBQuery {
 
         return sqlString;
     }
-   
+
     private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep){
         
                 for (DBRelationship rel : tabRow.getAdHocRelationships()) {

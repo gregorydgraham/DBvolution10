@@ -19,6 +19,14 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.generators.StringGenerator;
 import nz.co.gregs.dbvolution.generators.Value;
 
+/**
+ * Implements the TRIM() function for String values
+ * 
+ * <p>use this transform to remove the leading antrailing spaces from strings 
+ * and to ensure the CHAR columns are not padded with spaces.
+ *
+ * @author gregory.graham
+ */
 public class Trim extends BaseTransform implements StringGenerator {
     
     public Trim(String value) {
@@ -29,12 +37,6 @@ public class Trim extends BaseTransform implements StringGenerator {
         super(innerTransform);
     }
 
-    /**
-     *
-     * @param db
-     * @param enclosedValue
-     * @return
-     */
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doTrimTransform(enclosedValue);

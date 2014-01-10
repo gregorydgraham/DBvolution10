@@ -27,8 +27,21 @@ public interface DataGenerator {
     /**
      *
      * @param db
-     * @return
+     * @return the DataGenerator formatted as a SQL snippet
      */
     public String toSQLString(DBDatabase db);
+
+    /**
+     * A Complete Copy Of This DataGenerator
+     * 
+     * <p>Immutability in DBvolution is maintain by internally copying objects. 
+     * 
+     * <p>This method enables immutability by performing a deep copy of the object.
+     * 
+     * <p>Singletons may return themselves but all other objects must return 
+     * a new instance with copies of all mutable fields.
+     *
+     * @return a copy of this {@code DataGenerator}
+     */
     public DataGenerator copy();
 }
