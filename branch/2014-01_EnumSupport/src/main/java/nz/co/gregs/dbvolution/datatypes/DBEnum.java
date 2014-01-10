@@ -32,6 +32,7 @@ public class DBEnum<E extends Enum<E> & DBEnumValue> extends QueryableDatatype {
 	 * </ul>
 	 */
 	//@Override
+	// OR: public String getSQLDatatype(DBPropertyMetaData property) {
 	public String getSQLDatatype(PropertyWrapper property) {
 		if (property.getEnumCodeType() == Integer.class) {
 			return new DBInteger().getSQLDatatype();
@@ -45,6 +46,7 @@ public class DBEnum<E extends Enum<E> & DBEnumValue> extends QueryableDatatype {
 	}
 	
 	//@Override
+	// OR: protected String formatValueForSQLStatement(DBDatabase db, DBPropertyMetaData property) {
 	protected String formatValueForSQLStatement(DBDatabase db, PropertyWrapper property) {
 		DBEnumValue enumValue = (DBEnumValue)enumValue();
 		QueryableDatatype qdt;

@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal;
 
+import nz.co.gregs.dbvolution.DBPropertyMetaData;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
@@ -30,7 +31,7 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * 
  * <p> This class is <i>thread-safe</i>.
  */
-public class PropertyWrapper {
+public class PropertyWrapper implements DBPropertyMetaData {
 	private final DBRowInstanceWrapper dbRowInstanceWrapper;
 	private final PropertyWrapperDefinition propertyDefinition;
 	private final Object target;
