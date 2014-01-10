@@ -2,6 +2,7 @@ package nz.co.gregs.dbvolution.internal;
 
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
@@ -41,6 +42,7 @@ public class PropertyWrapperDefinition {
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
+	private final EnumTypeHandler enumTypeHandler;
 	
 	public PropertyWrapperDefinition(DBRowClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
@@ -50,6 +52,7 @@ public class PropertyWrapperDefinition {
 		this.columnHandler = new ColumnHandler(javaProperty);
 		this.typeHandler = new PropertyTypeHandler(javaProperty, processIdentityOnly);
 		this.foreignKeyHandler = new ForeignKeyHandler(javaProperty, processIdentityOnly);
+		this.enumTypeHandler = new EnumTypeHandler(javaProperty, this.typeHandler);
 	}
 	
 	JavaProperty getRawJavaProperty() {
@@ -254,6 +257,23 @@ public class PropertyWrapperDefinition {
 	 */
 	public PropertyWrapperDefinition referencedPropertyDefinitionIdentity() {
 		return foreignKeyHandler.getReferencedPropertyDefinitionIdentity();
+	}
+	
+	/**
+	 * Gets the enum type, or null if not appropriate
+	 * @return the enum type, which may also implement {@link DBEnumValue}
+	 */
+	public Class<? extends Enum<?>> getEnumType() {
+		return enumTypeHandler.getEnumType();
+	}
+	
+	/**
+	 * Gets the type of the code supplied by enum values.
+	 * This is derived from the {@link DBEnumValue} implementation in the enum.
+	 * @return null if not known or not appropriate
+	 */
+	public Class<?> getEnumCodeType() {
+		return enumTypeHandler.getEnumCodeType();
 	}
 
 	/**

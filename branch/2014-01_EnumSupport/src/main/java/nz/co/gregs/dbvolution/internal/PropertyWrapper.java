@@ -2,6 +2,7 @@ package nz.co.gregs.dbvolution.internal;
 
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
@@ -276,6 +277,23 @@ public class PropertyWrapper {
 	 */
 	public PropertyWrapperDefinition referencedPropertyDefinitionIdentity() {
 		return propertyDefinition.referencedPropertyDefinitionIdentity();
+	}
+	
+	/**
+	 * Gets the enum type, or null if not appropriate
+	 * @return the enum type, which may also implement {@link DBEnumValue}
+	 */
+	public Class<? extends Enum<?>> getEnumType() {
+		return propertyDefinition.getEnumType();
+	}
+	
+	/**
+	 * Gets the type of the code supplied by enum values.
+	 * This is derived from the {@link DBEnumValue} implementation in the enum.
+	 * @return null if not known or not appropriate
+	 */
+	public Class<?> getEnumCodeType() {
+		return propertyDefinition.getEnumCodeType();
 	}
 	
 	/**
