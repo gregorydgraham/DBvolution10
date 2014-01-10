@@ -17,11 +17,11 @@ package nz.co.gregs.dbvolution.generators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 
-public class CurrentDBDateTime implements DateGenerator {
+public class DBCurrentDateTime implements DateGenerator {
 
     public static final long serialVersionUID = 1L;
 
-    public CurrentDBDateTime() {
+    public DBCurrentDateTime() {
     }
 
     @Override
