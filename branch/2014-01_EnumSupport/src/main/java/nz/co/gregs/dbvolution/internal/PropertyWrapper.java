@@ -1,6 +1,5 @@
 package nz.co.gregs.dbvolution.internal;
 
-import nz.co.gregs.dbvolution.DBPropertyMetaData;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
@@ -31,7 +30,7 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * 
  * <p> This class is <i>thread-safe</i>.
  */
-public class PropertyWrapper implements DBPropertyMetaData {
+public class PropertyWrapper {
 	private final DBRowInstanceWrapper dbRowInstanceWrapper;
 	private final PropertyWrapperDefinition propertyDefinition;
 	private final Object target;
@@ -284,18 +283,18 @@ public class PropertyWrapper implements DBPropertyMetaData {
 	 * Gets the enum type, or null if not appropriate
 	 * @return the enum type, which may also implement {@link DBEnumValue}
 	 */
-	public Class<? extends Enum<?>> getEnumType() {
-		return propertyDefinition.getEnumType();
-	}
+//	public Class<? extends Enum<?>> getEnumType() {
+//		return propertyDefinition.getEnumType();
+//	}
 	
 	/**
 	 * Gets the type of the code supplied by enum values.
 	 * This is derived from the {@link DBEnumValue} implementation in the enum.
 	 * @return null if not known or not appropriate
 	 */
-	public Class<?> getEnumCodeType() {
-		return propertyDefinition.getEnumCodeType();
-	}
+//	public Class<?> getEnumCodeType() {
+//		return propertyDefinition.getEnumCodeType();
+//	}
 	
 	/**
 	 * Indicates whether the value of the property can be retrieved.

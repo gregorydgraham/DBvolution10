@@ -42,7 +42,7 @@ public class PropertyWrapperDefinition {
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
-	private final EnumTypeHandler enumTypeHandler;
+//	private final EnumTypeHandler enumTypeHandler;
 	
 	public PropertyWrapperDefinition(DBRowClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
@@ -52,7 +52,7 @@ public class PropertyWrapperDefinition {
 		this.columnHandler = new ColumnHandler(javaProperty);
 		this.typeHandler = new PropertyTypeHandler(javaProperty, processIdentityOnly);
 		this.foreignKeyHandler = new ForeignKeyHandler(javaProperty, processIdentityOnly);
-		this.enumTypeHandler = new EnumTypeHandler(javaProperty, this.typeHandler);
+//		this.enumTypeHandler = new EnumTypeHandler(javaProperty, this.typeHandler);
 	}
 	
 	JavaProperty getRawJavaProperty() {
@@ -263,18 +263,18 @@ public class PropertyWrapperDefinition {
 	 * Gets the enum type, or null if not appropriate
 	 * @return the enum type, which may also implement {@link DBEnumValue}
 	 */
-	public Class<? extends Enum<?>> getEnumType() {
-		return enumTypeHandler.getEnumType();
-	}
+//	public Class<? extends Enum<?>> getEnumType() {
+//		return enumTypeHandler.getEnumType();
+//	}
 	
 	/**
 	 * Gets the type of the code supplied by enum values.
 	 * This is derived from the {@link DBEnumValue} implementation in the enum.
 	 * @return null if not known or not appropriate
 	 */
-	public Class<?> getEnumCodeType() {
-		return enumTypeHandler.getEnumCodeType();
-	}
+//	public Class<?> getEnumCodeType() {
+//		return enumTypeHandler.getEnumCodeType();
+//	}
 
 	/**
 	 * Indicates whether the value of the property can be retrieved.

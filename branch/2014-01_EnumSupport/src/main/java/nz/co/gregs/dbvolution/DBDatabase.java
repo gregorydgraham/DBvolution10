@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.DBTransactionStatement;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
@@ -127,14 +126,13 @@ public abstract class DBDatabase {
      *
      * Inserts DBRows and lists of DBRows into the correct tables automatically
      *
-     * @param <T>
-     * @param objs
+     * @param rows DBRows or a list of DBRows
      * @return a DBActionList of all the actions performed
      * @throws SQLException
      */
-    public <T> DBActionList insert(T... objs) throws SQLException {
+    public DBActionList insert(Object... rows) throws SQLException {
         DBActionList changes = new DBActionList();
-        for (T obj : objs) {
+        for (Object obj : rows) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
@@ -156,14 +154,13 @@ public abstract class DBDatabase {
      *
      * Deletes DBRows and lists of DBRows from the correct tables automatically
      *
-     * @param <T>
-     * @param objs
+     * @param rows DBRows or a list of DBRows
      * @return a DBActionList of all the actions performed
      * @throws SQLException
      */
-    public <T> DBActionList delete(T... objs) throws SQLException {
+    public DBActionList delete(Object... rows) throws SQLException {
         DBActionList changes = new DBActionList();
-        for (T obj : objs) {
+        for (Object obj : rows) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {
@@ -185,12 +182,12 @@ public abstract class DBDatabase {
      *
      * Updates DBRows and lists of DBRows in the correct tables automatically
      *
-     * @param objs
+     * @param rows
      * @throws SQLException
      */
-    public <T> DBActionList update(T... objs) throws SQLException {
+    public DBActionList update(Object... rows) throws SQLException {
         DBActionList actions = new DBActionList();
-        for (T obj : objs) {
+        for (Object obj : rows) {
             if (obj instanceof List) {
                 List<?> list = (List<?>) obj;
                 if (list.size() > 0 && list.get(0) instanceof DBRow) {

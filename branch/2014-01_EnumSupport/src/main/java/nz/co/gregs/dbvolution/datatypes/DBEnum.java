@@ -1,65 +1,54 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
  * Experimental representation of an enum-aware QDT.
- * Must be used in conjunction with either a type adaptor an a {@link @DBEnumType} annotation.
+ *
  * @param <E>
  */
-public class DBEnum<E extends Enum<E> & DBEnumValue> extends QueryableDatatype {
-	
-	public DBEnum() {
-	}
-	
-	public DBEnum(E value) {
-		super(value);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public E enumValue() {
-		return (E)super.getValue();
-	}
+public abstract class DBEnum<E extends DBEnumValue<?>> extends QueryableDatatype {
 
-	/**
-	 * There are number ways of handling the different database types in use:
-	 * <ul>
-	 * <li> create separate DBIntegerEnum and DBStringEnum which respectively extend DBInteger and DBString
-	 * <li> modify DBvolution's internals to work off PropertyWrapper instances instead of QDT instances so
-	 * that it has the extra meta-information available when analysing the property
-	 * <li> inject all per-property meta-info into QDT instances before using them 
-	 * </ul>
-	 */
-	//@Override
-	// OR: public String getSQLDatatype(DBPropertyMetaData property) {
-	public String getSQLDatatype(PropertyWrapper property) {
-		if (property.getEnumCodeType() == Integer.class) {
-			return new DBInteger().getSQLDatatype();
-		}
-		else if (property.getEnumCodeType() == String.class) {
-			return new DBString().getSQLDatatype();
-		}
-		else {
-			throw new UnsupportedOperationException("Unsupported enum code type "+property.getEnumCodeType());
-		}
-	}
-	
-	//@Override
-	// OR: protected String formatValueForSQLStatement(DBDatabase db, DBPropertyMetaData property) {
-	protected String formatValueForSQLStatement(DBDatabase db, PropertyWrapper property) {
-		DBEnumValue enumValue = (DBEnumValue)enumValue();
-		QueryableDatatype qdt;
-		if (property.getEnumCodeType() == Integer.class) {
-			qdt = (enumValue == null) ? new DBInteger() : new DBInteger((Integer)enumValue.getCode());
-		}
-		else if (property.getEnumCodeType() == String.class) {
-			qdt = (enumValue == null) ? new DBString() : new DBString((String)enumValue.getCode());
-		}
-		else {
-			throw new UnsupportedOperationException("Unsupported enum code type "+property.getEnumCodeType());
-		}
-		
-		return qdt.formatValueForSQLStatement(db);
-	}
+    public DBEnum() {
+    }
+
+    public DBEnum(E value) {
+        super(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public DBEnumValue<?> getDBEnumValue() {
+        Object value = super.getValue();
+        if (value instanceof DBEnumValue<?>) {
+            DBEnumValue<?> enumVal = (DBEnumValue<?>) value;
+            return enumVal;
+        } else {
+            throw new IncompatibleClassChangeError("Set Value Is Not A DBEnumValue: getValue() needs to return a DBEnumValue but it returned a " + value.getClass().getSimpleName() + " instead.");
+        }
+    }
+
+    /**
+     * Gets the DBEnum's literal value.
+     *
+     * <p> For example, if the database column uses integers (e.g.: 1,2,3) as
+     * values, then this method should return literal values of type
+     * {@code Integer}. Alternatively, if the database column uses strings
+     * (e.g.: "READY", "PROCESSING", "DONE") as values, then this method should
+     * return literal values of type {@code String}.
+     *
+     * @return the literal value in the appropriate type for the value in the
+     * database
+     */
+    public abstract Object getEnumLiteralValue();
+
+    @Override
+    protected String formatValueForSQLStatement(DBDatabase db) {
+        final Object databaseValue = getEnumLiteralValue();
+        if (databaseValue == null) {
+            return db.getDefinition().getNull();
+        } else {
+            QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(databaseValue);
+            return qdt.formatValueForSQLStatement(db);
+        }
+    }
 }
