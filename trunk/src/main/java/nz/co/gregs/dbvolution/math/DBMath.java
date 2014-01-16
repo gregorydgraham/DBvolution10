@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generators;
+package nz.co.gregs.dbvolution.math;
 
+import java.util.Arrays;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.generators.Column;
+import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.generators.NumberGenerator;
+import nz.co.gregs.dbvolution.generators.Value;
 
 public class DBMath implements NumberGenerator {
 
@@ -75,6 +80,16 @@ public class DBMath implements NumberGenerator {
         });
     }
 
+    public static DBMath cosh(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "cosh";
+            }
+        });
+    }
+
     public static DBMath sin(DBMath equation) {
         return new DBMath(new DBUnaryFunction(equation) {
 
@@ -85,12 +100,32 @@ public class DBMath implements NumberGenerator {
         });
     }
 
+    public static DBMath sinh(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "sinh";
+            }
+        });
+    }
+
     public static DBMath tan(DBMath equation) {
         return new DBMath(new DBUnaryFunction(equation) {
 
             @Override
             String getFunctionName(DBDatabase db) {
                 return "tan";
+            }
+        });
+    }
+
+    public static DBMath tanh(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "tanh";
             }
         });
     }
@@ -131,6 +166,125 @@ public class DBMath implements NumberGenerator {
             @Override
             String getFunctionName(DBDatabase db) {
                 return "atan";
+            }
+        });
+    }
+
+    public static DBMath arctan2(DBMath m, DBMath n) {
+        return new DBMath(new DBBinaryFunction(m, n) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "atn2";
+            }
+        });
+    }
+
+    public static DBMath cotangent(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "cot";
+            }
+        });
+    }
+
+    public static DBMath degrees(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "degrees";
+            }
+        });
+    }
+
+    public static DBMath radians(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "radians";
+            }
+        });
+    }
+
+    public static DBMath log(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "log";
+            }
+        });
+    }
+
+    public static DBMath logBase10(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "log10";
+            }
+        });
+    }
+
+    public static DBMath power(DBMath m, DBMath n) {
+        return new DBMath(new DBBinaryFunction(m,n) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "power";
+            }
+        });
+    }
+
+    public static DBMath random(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "rand";
+            }
+        });
+    }
+
+    public static DBMath sign(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "sign";
+            }
+        });
+    }
+
+    public static DBMath squareRoot(DBMath equation) {
+        return new DBMath(new DBUnaryFunction(equation) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "sqrt";
+            }
+        });
+    }
+
+    public static DBMath standardDev(DBMath num) {
+        return new DBMath(new DBUnaryFunction(num) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "stddev";
+            }
+        });
+    }
+
+    public static DBMath variance(DBMath num) {
+        return new DBMath(new DBUnaryFunction(num) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "var";
             }
         });
     }
@@ -302,7 +456,7 @@ public class DBMath implements NumberGenerator {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
-                return " % ";
+                return "%";
             }
         });
     }
@@ -344,6 +498,10 @@ public class DBMath implements NumberGenerator {
         
         private DataGenerator only;
 
+        public DBUnaryFunction() {
+            this.only = null;
+        }
+
         public DBUnaryFunction(DataGenerator only) {
             this.only = only;
         }
@@ -351,16 +509,16 @@ public class DBMath implements NumberGenerator {
         abstract String getFunctionName(DBDatabase db);
 
         protected String beforeValue(DBDatabase db) {
-            return " " + getFunctionName(db) + "( ";
+            return "" + getFunctionName(db) + "( ";
         }
         
         protected String afterValue(DBDatabase db) {
-            return " ) ";
+            return ") ";
         }
 
         @Override
         public String toSQLString(DBDatabase db) {
-            return this.beforeValue(db) + only.toSQLString(db) + this.afterValue(db);
+            return this.beforeValue(db) + (only==null?"":only.toSQLString(db)) + this.afterValue(db);
         }
 
         @Override
@@ -376,5 +534,112 @@ public class DBMath implements NumberGenerator {
             newInstance.only = only.copy();
             return newInstance;
         }
+    }
+
+    private static abstract class DBBinaryFunction implements DataGenerator {
+
+        private DataGenerator first;
+        private DataGenerator second;
+
+        public DBBinaryFunction(DataGenerator first) {
+            this.first = first;
+            this.second = null;
+        }
+
+        public DBBinaryFunction(DataGenerator first, DataGenerator second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db)+first.toSQLString(db) + this.getSeparator(db) + (second==null?"":second.toSQLString(db))+this.afterValue(db);
+        }
+
+        @Override
+        public DataGenerator copy() {
+            DBBinaryFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first.copy();
+            newInstance.second = second.copy();
+            return newInstance;
+        }
+        
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return " " + getFunctionName(db) + "( ";
+        }
+        
+        protected String getSeparator(DBDatabase db) {
+            return ", ";
+        }
+        
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+    }
+
+    
+    /**
+     * Implemented to support STDDEV and VARIANCE but they're aggregators so now it's unused
+     * 
+     */
+    private static abstract class DBNnaryFunction implements DataGenerator {
+
+        private DataGenerator[] nums;
+
+        public DBNnaryFunction(DataGenerator... nums) {
+            this.nums = nums;
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            StringBuilder str = new StringBuilder();
+            str.append(this.beforeValue(db));
+            String sep = "";
+            for(DataGenerator dg : nums){
+                    str.append(sep).append(dg.toSQLString(db));
+                    sep = getSeparator(db);
+            }
+            str.append(this.afterValue(db));
+            return str.toString();
+        }
+
+        @Override
+        public DataGenerator copy() {
+            DBNnaryFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.nums = Arrays.copyOf(nums, nums.length);
+            return newInstance;
+        }
+        
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return " " + getFunctionName(db) + "( ";
+        }
+        
+        protected String getSeparator(DBDatabase db) {
+            return ", ";
+        }
+        
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
     }
 }
