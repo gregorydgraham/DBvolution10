@@ -43,7 +43,7 @@ public class NonGenerator implements Serializable, StringGenerator, NumberGenera
     }
     
     @Override
-    public DataGenerator copy() {
+    public NonGenerator copy() {
         return this;
     }
     

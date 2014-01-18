@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2014 gregorygraham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,14 @@
  */
 package nz.co.gregs.dbvolution.generators;
 
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+public class NumberValue extends Value implements NumberGenerator {
 
-public class Value implements DataGenerator {
-
-    private final QueryableDatatype qdt;
-//    protected Object object;
-
-    public Value(Object obj) {
-        qdt = QueryableDatatype.getQueryableDatatypeForObject(obj);
+    public NumberValue(Number obj) {
+        super(obj);
     }
 
     @Override
-    public String toSQLString(DBDatabase db) {
-        return qdt.toSQLString(db);
-    }
-
-    @Override
-    public DataGenerator copy() {
-        return new Value(this.qdt);
+    public NumberGenerator copy() {
+        return (NumberValue)super.copy();
     }
 }
