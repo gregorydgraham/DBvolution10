@@ -189,4 +189,23 @@ public class DataGeneratorTests extends AbstractTest {
                     is(true));
         }
     }
+
+    @Test
+    public void testRadians() throws SQLException {
+        CarCompany carCo = new CarCompany();
+        DBQuery dbQuery = database.getDBQuery(carCo);
+        dbQuery.addComparison(
+                DBMath.tan(DBMath.degrees(DBMath.radians(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))))),
+                new DBGreaterThanOperator(DBMath.value(0)));
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(2));
+        for(CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)){
+            System.out.println(""
+                    +carCompany.uidCarCompany.intValue()+": "
+                    +Math.round(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue()))));
+            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue()))>0,
+                    is(true));
+        }
+    }
 }
