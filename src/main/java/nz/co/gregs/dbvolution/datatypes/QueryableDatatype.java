@@ -52,7 +52,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     protected QueryableDatatype(Object obj) {
         if (obj == null) {
             this.isDBNull = true;
-        } else{
+        } else {
             this.literalValue = obj;
             this.operator = new DBEqualsOperator(this);
         }
@@ -78,24 +78,29 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     static public QueryableDatatype getQueryableDatatypeForObject(Object o) {
         QueryableDatatype qdt;
-        if (o instanceof DataGenerator) {
-            qdt = new DBDataGenerator();
-        } else if (o instanceof Integer) {
-            qdt = new DBInteger();
-        } else if (o instanceof Number) {
-            qdt = new DBNumber();
-        } else if (o instanceof String) {
-            qdt = new DBString();
-        } else if (o instanceof Date) {
-            qdt = new DBDate();
-        } else if (o instanceof Byte[]) {
-            qdt = new DBByteArray();
-        } else if (o instanceof Boolean) {
-            qdt = new DBBoolean();
+        if (o instanceof QueryableDatatype) {
+            qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype)o).getClass());
+            qdt.setValue(((QueryableDatatype) o).literalValue);
         } else {
-            qdt = new DBJavaObject();
+            if (o instanceof DataGenerator) {
+                qdt = new DBDataGenerator();
+            } else if (o instanceof Integer) {
+                qdt = new DBInteger();
+            } else if (o instanceof Number) {
+                qdt = new DBNumber();
+            } else if (o instanceof String) {
+                qdt = new DBString();
+            } else if (o instanceof Date) {
+                qdt = new DBDate();
+            } else if (o instanceof Byte[]) {
+                qdt = new DBByteArray();
+            } else if (o instanceof Boolean) {
+                qdt = new DBBoolean();
+            } else {
+                qdt = new DBJavaObject();
+            }
+            qdt.setValue(o);
         }
-        qdt.setValue(o);
         return qdt;
     }
 
@@ -373,7 +378,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         previousValueAsQDT = null;
     }
 
-
     /**
      *
      * Sets the value of this column to DBNull Also changes the operator to
@@ -400,7 +404,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * Example return value: "VARCHAR(1000)"
      *
-     * @return the standard SQL datatype that corresponds to this QDT as a String
+     * @return the standard SQL datatype that corresponds to this QDT as a
+     * String
      */
     public abstract String getSQLDatatype();
 
@@ -438,7 +443,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      * DBDate{1/March/2013} => TO_DATE('20130301', 'YYYYMMDD')
      *
      * @param db
-     * @return the literal value translated to a String ready to insert into an SQL statement
+     * @return the literal value translated to a String ready to insert into an
+     * SQL statement
      */
     protected abstract String formatValueForSQLStatement(DBDatabase db);
 
@@ -525,7 +531,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Used to switch the direction of the column's sort order
-     * 
+     *
      * use setSortOrderAscending() and setSortOrderDescending() where possible
      *
      * use setSortOrderAscending() and setSortOrderDescending() where possible

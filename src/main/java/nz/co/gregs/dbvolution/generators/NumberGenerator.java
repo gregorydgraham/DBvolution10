@@ -21,4 +21,7 @@ package nz.co.gregs.dbvolution.generators;
  */
 public interface NumberGenerator extends DataGenerator{
     
+    @Override
+    public NumberGenerator copy();
+    
 }

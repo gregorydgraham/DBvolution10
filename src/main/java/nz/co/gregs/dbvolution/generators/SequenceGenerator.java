@@ -42,7 +42,7 @@ public class SequenceGenerator implements NumberGenerator {
     }
 
     @Override
-    public DataGenerator copy() {
+    public SequenceGenerator copy() {
         return new SequenceGenerator(schemaName, sequenceName);
     }
 
