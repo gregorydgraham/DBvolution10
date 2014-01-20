@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.transforms;
+
+package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.generators.StringGenerator;
 import nz.co.gregs.dbvolution.generators.Value;
 
-public class LeftTrim extends BaseTransform implements StringGenerator {
 
-    public static final long serialVersionUID = 1L;
+public class RightTrim extends BaseTransform implements StringGenerator{
 
-    public LeftTrim(StringGenerator transform) {
-        super(transform);
+    public RightTrim(StringGenerator innerTransform) {
+        super(innerTransform);
     }
-
-    public LeftTrim(String value) {
+    
+    public RightTrim(String value) {
         super(new Value(value));
     }
-
+    
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
-        return db.getDefinition().doLeftTrimTransform(enclosedValue);
+    return db.getDefinition().doRightTrimTransform(enclosedValue);
     }
+    
 }

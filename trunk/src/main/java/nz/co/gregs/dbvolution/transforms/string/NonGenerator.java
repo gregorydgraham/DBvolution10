@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.transforms;
+package nz.co.gregs.dbvolution.transforms.string;
 
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;

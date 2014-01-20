@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 greg.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.transforms;
+package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.generators.NumberGenerator;
 import nz.co.gregs.dbvolution.generators.StringGenerator;
 import nz.co.gregs.dbvolution.generators.Value;
 
-public class StringLength extends BaseTransform implements StringGenerator {
+public class StringLength extends BaseTransform implements NumberGenerator {
 
     public StringLength(StringGenerator innerTransform) {
         super(innerTransform);
@@ -33,5 +34,9 @@ public class StringLength extends BaseTransform implements StringGenerator {
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doStringLengthTransform(enclosedValue);
     }
-    
+
+    @Override
+    public StringLength copy() {
+        return (StringLength)super.copy();
+    }
 }

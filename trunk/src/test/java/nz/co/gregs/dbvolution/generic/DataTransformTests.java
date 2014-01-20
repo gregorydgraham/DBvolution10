@@ -15,7 +15,15 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
-import nz.co.gregs.dbvolution.transforms.*;
+import nz.co.gregs.dbvolution.transforms.string.LeftTrim;
+import nz.co.gregs.dbvolution.transforms.string.StringLength;
+import nz.co.gregs.dbvolution.transforms.string.Replace;
+import nz.co.gregs.dbvolution.transforms.string.Uppercase;
+import nz.co.gregs.dbvolution.transforms.string.Trim;
+import nz.co.gregs.dbvolution.transforms.string.Lowercase;
+import nz.co.gregs.dbvolution.transforms.string.RightTrim;
+import nz.co.gregs.dbvolution.transforms.string.Substring;
+import nz.co.gregs.dbvolution.transforms.string.Concat;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;

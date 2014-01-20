@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nz.co.gregs.dbvolution.transforms;
+package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.generators.DataGenerator;
 import nz.co.gregs.dbvolution.operators.DBOperator;

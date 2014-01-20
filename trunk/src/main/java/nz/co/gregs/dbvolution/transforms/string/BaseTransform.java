@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.transforms;
+package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.generators.DataGenerator;
 
 /**
@@ -44,10 +45,18 @@ public abstract class BaseTransform implements DataGenerator {
 
     @Override
     public DataGenerator copy() {
-        return this;
+        BaseTransform newInstance = null;
+        try {
+            newInstance = this.getClass().newInstance();
+            newInstance.innerTransform = this.innerTransform.copy();
+        } catch (InstantiationException ex) {
+            throw new DBRuntimeException("Unable To Copy BaseTransform: please ensure it has a public no-parameter constructor.", ex);
+        } catch (IllegalAccessException ex) {
+            throw new DBRuntimeException("Unable To Copy BaseTransform: please ensure it has a public no-parameter constructor.", ex);
+        }
+        return newInstance;
     }
 
 //    protected abstract String insertAfterValue();
-
     protected abstract String doTransform(DBDatabase db, String enclosedValue);
 }
