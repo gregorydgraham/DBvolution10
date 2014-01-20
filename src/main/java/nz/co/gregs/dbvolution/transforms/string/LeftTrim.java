@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.transforms;
+package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.generators.StringGenerator;
 import nz.co.gregs.dbvolution.generators.Value;
 
-public class Uppercase extends BaseTransform implements StringGenerator{
+public class LeftTrim extends BaseTransform implements StringGenerator {
 
-    public Uppercase(String value) {
-        super(new Value(value));
+    public static final long serialVersionUID = 1L;
+
+    public LeftTrim(StringGenerator transform) {
+        super(transform);
     }
 
-    public Uppercase(StringGenerator innerTransform) {
-        super(innerTransform);
+    public LeftTrim(String value) {
+        super(new Value(value));
     }
 
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
-        return db.getDefinition().doUppercaseTransform(enclosedValue);
+        return db.getDefinition().doLeftTrimTransform(enclosedValue);
     }
 }

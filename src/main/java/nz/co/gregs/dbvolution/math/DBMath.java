@@ -50,6 +50,10 @@ public class DBMath implements NumberGenerator {
         return new DBMath(new NumberValue(value));
     }
 
+    public static DBMath value(NumberGenerator value) {
+        return new DBMath(value);
+    }
+
     public static DBMath bracket(DBMath equation) {
         return new DBMath(new DBUnaryFunction(equation) {
             @Override

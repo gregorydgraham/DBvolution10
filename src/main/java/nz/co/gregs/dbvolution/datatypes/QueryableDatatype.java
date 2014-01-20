@@ -244,16 +244,33 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
+     *
      * @param permitted
      */
     public void permittedValuesIgnoreCase(String... permitted) {
         this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
     }
 
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
+     *
+     * @param permitted
+     */
     public void permittedValuesIgnoreCase(List<String> permitted) {
         this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
     }
 
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
+     *
+     * @param permitted
+     */
     public void permittedValuesIgnoreCase(Set<String> permitted) {
         this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
     }

@@ -23,9 +23,11 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.generators.Column;
 import nz.co.gregs.dbvolution.math.DBMath;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
+import nz.co.gregs.dbvolution.transforms.string.StringLength;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -182,9 +184,6 @@ public class DataGeneratorTests extends AbstractTest {
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
         for(CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)){
-            System.out.println(""
-                    +carCompany.uidCarCompany.intValue()+": "
-                    +Math.round(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue()))));
             Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue()))>0,
                     is(true));
         }
@@ -201,11 +200,23 @@ public class DataGeneratorTests extends AbstractTest {
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
         for(CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)){
-            System.out.println(""
-                    +carCompany.uidCarCompany.intValue()+": "
-                    +Math.round(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue()))));
             Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue()))>0,
                     is(true));
+        }
+    }
+    
+    @Test
+    public void testPermittedValues() throws SQLException {
+        CarCompany carCo = new CarCompany();
+        carCo.uidCarCompany.permittedValues(
+                DBMath.value(new StringLength(new Column(carCo, carCo.name))).minus(1));
+        DBQuery dbQuery = database.getDBQuery(carCo);
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+        for(CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)){
+            Assert.assertThat(carCompany.uidCarCompany.intValue(),
+                    is(4));
         }
     }
 }
