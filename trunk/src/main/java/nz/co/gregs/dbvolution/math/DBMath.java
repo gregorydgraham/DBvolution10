@@ -19,17 +19,17 @@ import java.util.Arrays;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.generators.NumberColumn;
-import nz.co.gregs.dbvolution.generators.NumberGenerator;
-import nz.co.gregs.dbvolution.generators.NumberValue;
+import nz.co.gregs.dbvolution.columns.NumberColumn;
+import nz.co.gregs.dbvolution.variables.NumberVariable;
+import nz.co.gregs.dbvolution.variables.NumberValue;
 
-public class DBMath implements NumberGenerator {
+public class DBMath implements NumberVariable {
 
-    private final NumberGenerator innerGenerator;
+    private final NumberVariable innerGenerator;
 
-    private DBMath(NumberGenerator dataGenerator) {
+    private DBMath(NumberVariable number) {
         super();
-        innerGenerator = dataGenerator;
+        innerGenerator = number;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class DBMath implements NumberGenerator {
         return new DBMath(new NumberValue(value));
     }
 
-    public static DBMath value(NumberGenerator value) {
+    public static DBMath value(NumberVariable value) {
         return new DBMath(value);
     }
 
@@ -384,7 +384,7 @@ public class DBMath implements NumberGenerator {
         });
     }
 
-    public DBMath plus(NumberGenerator number) {
+    public DBMath plus(NumberVariable number) {
         return new DBMath(new DBBinaryArithmetic(innerGenerator, number) {
 
             @Override
@@ -404,7 +404,7 @@ public class DBMath implements NumberGenerator {
         });
     }
 
-    public DBMath times(NumberGenerator number) {
+    public DBMath times(NumberVariable number) {
         return new DBMath(new DBBinaryArithmetic(innerGenerator, number) {
 
             @Override
@@ -424,7 +424,7 @@ public class DBMath implements NumberGenerator {
         });
     }
 
-    public DBMath dividedBy(NumberGenerator number) {
+    public DBMath dividedBy(NumberVariable number) {
         return new DBMath(new DBBinaryArithmetic(innerGenerator, number) {
 
             @Override
@@ -444,7 +444,7 @@ public class DBMath implements NumberGenerator {
         });
     }
 
-    public DBMath mod(NumberGenerator number) {
+    public DBMath mod(NumberVariable number) {
         return new DBMath(new DBBinaryArithmetic(innerGenerator, number) {
 
             @Override
@@ -464,12 +464,12 @@ public class DBMath implements NumberGenerator {
         });
     }
 
-    private static abstract class DBBinaryArithmetic implements NumberGenerator {
+    private static abstract class DBBinaryArithmetic implements NumberVariable {
 
-        private NumberGenerator first;
-        private NumberGenerator second;
+        private NumberVariable first;
+        private NumberVariable second;
 
-        public DBBinaryArithmetic(NumberGenerator first, NumberGenerator second) {
+        public DBBinaryArithmetic(NumberVariable first, NumberVariable second) {
             this.first = first;
             this.second = second;
         }
@@ -497,15 +497,15 @@ public class DBMath implements NumberGenerator {
         protected abstract String getEquationOperator(DBDatabase db);
     }
 
-    private static abstract class DBUnaryFunction implements NumberGenerator{
+    private static abstract class DBUnaryFunction implements NumberVariable{
         
-        private NumberGenerator only;
+        private NumberVariable only;
 
         public DBUnaryFunction() {
             this.only = null;
         }
 
-        public DBUnaryFunction(NumberGenerator only) {
+        public DBUnaryFunction(NumberVariable only) {
             this.only = only;
         }
 
@@ -539,17 +539,17 @@ public class DBMath implements NumberGenerator {
         }
     }
 
-    private static abstract class DBBinaryFunction implements NumberGenerator {
+    private static abstract class DBBinaryFunction implements NumberVariable {
 
-        private NumberGenerator first;
-        private NumberGenerator second;
+        private NumberVariable first;
+        private NumberVariable second;
 
-        public DBBinaryFunction(NumberGenerator first) {
+        public DBBinaryFunction(NumberVariable first) {
             this.first = first;
             this.second = null;
         }
 
-        public DBBinaryFunction(NumberGenerator first, NumberGenerator second) {
+        public DBBinaryFunction(NumberVariable first, NumberVariable second) {
             this.first = first;
             this.second = second;
         }
@@ -595,11 +595,11 @@ public class DBMath implements NumberGenerator {
      * Implemented to support STDDEV and VARIANCE but they're aggregators so now it's unused
      * 
      */
-    private static abstract class DBNnaryFunction implements NumberGenerator {
+    private static abstract class DBNnaryFunction implements NumberVariable {
 
-        private NumberGenerator[] nums;
+        private NumberVariable[] nums;
 
-        public DBNnaryFunction(NumberGenerator... nums) {
+        public DBNnaryFunction(NumberVariable... nums) {
             this.nums = nums;
         }
 
@@ -608,7 +608,7 @@ public class DBMath implements NumberGenerator {
             StringBuilder str = new StringBuilder();
             str.append(this.beforeValue(db));
             String sep = "";
-            for(NumberGenerator dg : nums){
+            for(NumberVariable dg : nums){
                     str.append(sep).append(dg.toSQLString(db));
                     sep = getSeparator(db);
             }
@@ -617,7 +617,7 @@ public class DBMath implements NumberGenerator {
         }
 
         @Override
-        public NumberGenerator copy() {
+        public NumberVariable copy() {
             DBNnaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();

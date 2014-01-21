@@ -17,29 +17,30 @@
 package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.StringGenerator;
-import nz.co.gregs.dbvolution.generators.StringValue;
+import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.variables.StringValue;
 
 
-public class Concat extends BaseTransform implements StringGenerator{
-    private final StringGenerator secondString;
+public class Append extends BaseTransform implements StringVariable{
+    
+    private StringVariable secondString;
 
-    public Concat(String firstString, String secondString) {
+    public Append(String firstString, String secondString) {
         super(new StringValue(firstString));
         this.secondString = new StringValue(secondString);
     }
     
-    public Concat(StringGenerator firstString, String secondString) {
+    public Append(StringVariable firstString, String secondString) {
         super(firstString);
         this.secondString = new StringValue(secondString);
     }
     
-    public Concat(String firstString, StringGenerator secondString) {
+    public Append(String firstString, StringVariable secondString) {
         super(new StringValue(firstString));
         this.secondString = secondString;
     }
     
-    public Concat(StringGenerator firstString, StringGenerator secondString) {
+    public Append(StringVariable firstString, StringVariable secondString) {
         super(firstString);
         this.secondString = secondString;
     }
@@ -47,6 +48,13 @@ public class Concat extends BaseTransform implements StringGenerator{
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doConcatTransform(enclosedValue, secondString.toSQLString(db));
+    }
+
+    @Override
+    public Append copy() {
+        Append copy = (Append)super.copy();
+        copy.secondString = secondString.copy();
+        return copy;
     }
 
 }

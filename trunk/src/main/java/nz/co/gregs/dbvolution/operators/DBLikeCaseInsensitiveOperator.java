@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.variables.DBValue;
 
 /**
  *
@@ -29,7 +29,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
     public static final long serialVersionUID = 1L;
 //    private final QueryableDatatype firstValue;
 
-    public DBLikeCaseInsensitiveOperator(DataGenerator likeableValue) {
+    public DBLikeCaseInsensitiveOperator(DBValue likeableValue) {
         super();
         firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
     }

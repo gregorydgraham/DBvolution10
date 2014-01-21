@@ -16,23 +16,28 @@
 package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.StringGenerator;
-import nz.co.gregs.dbvolution.generators.Value;
+import nz.co.gregs.dbvolution.variables.StringValue;
+import nz.co.gregs.dbvolution.variables.StringVariable;
 
-public class LeftTrim extends BaseTransform implements StringGenerator {
+public class LeftTrim extends BaseTransform implements StringVariable {
 
     public static final long serialVersionUID = 1L;
 
-    public LeftTrim(StringGenerator transform) {
+    public LeftTrim(StringVariable transform) {
         super(transform);
     }
 
     public LeftTrim(String value) {
-        super(new Value(value));
+        super(new StringValue(value));
     }
 
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doLeftTrimTransform(enclosedValue);
+    }
+
+    @Override
+    public LeftTrim copy() {
+        return (LeftTrim)super.copy();
     }
 }

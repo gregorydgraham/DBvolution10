@@ -21,10 +21,11 @@ import java.util.*;
 
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.variables.DBValue;
 import nz.co.gregs.dbvolution.transforms.string.DBDataComparison;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
+import nz.co.gregs.dbvolution.columns.Column;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
@@ -157,16 +158,16 @@ public class DBQuery {
         }
         String sqlToReturn;
         if (previousTables.isEmpty()) {
-            sqlToReturn = " " + newTable.getTableName() + defn.beginTableAlias()+defn.getTableAlias(newTable)+defn.endTableAlias();
+            sqlToReturn = " " + newTable.getTableName() + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
         } else {
             if (isFullOuterJoin) {
-                sqlToReturn = lineSep+defn.beginFullOuterJoin();
+                sqlToReturn = lineSep + defn.beginFullOuterJoin();
             } else if (isLeftOuterJoin) {
-                sqlToReturn = lineSep+defn.beginLeftOuterJoin();
+                sqlToReturn = lineSep + defn.beginLeftOuterJoin();
             } else {
-                sqlToReturn = lineSep+defn.beginInnerJoin();
+                sqlToReturn = lineSep + defn.beginInnerJoin();
             }
-            sqlToReturn += newTable.getTableName() + defn.beginTableAlias()+defn.getTableAlias(newTable)+defn.endTableAlias();
+            sqlToReturn += newTable.getTableName() + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
             if (joinClauses.isEmpty()) {
                 sqlToReturn += defn.beginOnClause() + defn.getTrueOperation() + defn.endOnClause();
             } else {
@@ -240,7 +241,7 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
-        for (DBDataComparison comp : comparisons){
+        for (DBDataComparison comp : comparisons) {
             whereClause.append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database)));
         }
         final String sqlString = selectClause.append(lineSep)
@@ -260,36 +261,36 @@ public class DBQuery {
         return sqlString;
     }
 
-    private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep){
-        
-                for (DBRelationship rel : tabRow.getAdHocRelationships()) {
-                    whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
-                    queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
-                }
+    private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep) {
 
-                final String tabRowPK = tabRow.getPrimaryKeyColumnName();
-                if (tabRowPK != null) {
-                    for (DBRow otherTab : otherTables) {
-                        List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
-                        for (PropertyWrapper fk : fks) {
-                            String formattedPK = defn.formatTableAliasAndColumnName(tabRow, tabRowPK);
-                            Class<? extends DBRow> pkClass = fk.referencedClass();
-                            DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                            String fkReferencesColumn = defn.formatTableAliasAndColumnName(fkReferencesTable, fkReferencesTable.getPrimaryKeyColumnName());
-                            if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
-                                String fkColumnName = fk.columnName();
-                                String formattedFK = defn.formatTableAliasAndColumnName(otherTab, fkColumnName);
-                                whereClause
-                                        .append(lineSep)
-                                        .append(defn.beginAndLine())
-                                        .append(formattedPK)
-                                        .append(defn.getEqualsComparator())
-                                        .append(formattedFK);
-                                queryGraph.add(tabRow.getClass(), otherTab.getClass());
-                            }
-                        }
+        for (DBRelationship rel : tabRow.getAdHocRelationships()) {
+            whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
+            queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
+        }
+
+        final String tabRowPK = tabRow.getPrimaryKeyColumnName();
+        if (tabRowPK != null) {
+            for (DBRow otherTab : otherTables) {
+                List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
+                for (PropertyWrapper fk : fks) {
+                    String formattedPK = defn.formatTableAliasAndColumnName(tabRow, tabRowPK);
+                    Class<? extends DBRow> pkClass = fk.referencedClass();
+                    DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
+                    String fkReferencesColumn = defn.formatTableAliasAndColumnName(fkReferencesTable, fkReferencesTable.getPrimaryKeyColumnName());
+                    if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
+                        String fkColumnName = fk.columnName();
+                        String formattedFK = defn.formatTableAliasAndColumnName(otherTab, fkColumnName);
+                        whereClause
+                                .append(lineSep)
+                                .append(defn.beginAndLine())
+                                .append(formattedPK)
+                                .append(defn.getEqualsComparator())
+                                .append(formattedFK);
+                        queryGraph.add(tabRow.getClass(), otherTab.getClass());
                     }
                 }
+            }
+        }
     }
 
     public String getSQLForCount() throws SQLException {
@@ -541,7 +542,7 @@ public class DBQuery {
         for (DBRow table : allQueryTables) {
             willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
         }
-        return willCreateBlankQuery && (comparisons.size()==0);
+        return willCreateBlankQuery && (comparisons.size() == 0);
     }
 
     public void setRowLimit(int i) {
@@ -569,26 +570,39 @@ public class DBQuery {
      * <p>
      * Requires that each {@code baseRowColumn) be from one of the
      * {@code baseRow) instances to work.
+     *
      * @param baseRows
      * @param baseRowColumns
      */
-    public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {
+//    public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {
+//        results = null;
+//
+//        sortOrder = new ArrayList<PropertyWrapper>();
+//        for (QueryableDatatype qdt : baseRowColumns) {
+//            PropertyWrapper prop = null;
+//            for (DBRow baseRow : baseRows) {
+//                prop = baseRow.getPropertyWrapperOf(qdt);
+//                if (prop != null) {
+//                    break;
+//                }
+//            }
+//            if (prop == null) {
+//                throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
+//            }
+//
+//            sortOrder.add(prop);
+//        }
+//    }
+    public void setSortOrder(Column... sortColumns) {
         results = null;
 
         sortOrder = new ArrayList<PropertyWrapper>();
-        for (QueryableDatatype qdt : baseRowColumns) {
-            PropertyWrapper prop = null;
-            for (DBRow baseRow : baseRows) {
-                prop = baseRow.getPropertyWrapperOf(qdt);
-                if (prop != null) {
-                    break;
-                }
+        PropertyWrapper prop;
+        for (Column col : sortColumns) {
+            prop = col.getPropertyWrapper();
+            if (prop != null) {
+                sortOrder.add(prop);
             }
-            if (prop == null) {
-                throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
-            }
-
-            sortOrder.add(prop);
         }
     }
 
@@ -685,15 +699,15 @@ public class DBQuery {
             getAllRows();
         }
         List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
-        for(DBQueryRow row : results){
-            if (row.get(exemplar)==exemplar){
+        for (DBQueryRow row : results) {
+            if (row.get(exemplar) == exemplar) {
                 returnList.add(row);
             }
         }
         return returnList;
     }
 
-    public void addComparison(DataGenerator leftHandSide, DBOperator operatorWithRightHandSideValues) {
+    public void addComparison(DBValue leftHandSide, DBOperator operatorWithRightHandSideValues) {
         comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
     }
 }

@@ -16,30 +16,35 @@
 package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.StringGenerator;
-import nz.co.gregs.dbvolution.generators.Value;
+import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.variables.StringValue;
 
 /**
  * Implements the TRIM() function for String values
  * 
- * <p>use this transform to remove the leading antrailing spaces from strings 
+ * <p>use this transform to remove the leading any trailing spaces from strings 
  * and to ensure the CHAR columns are not padded with spaces.
  *
  * @author gregory.graham
  */
-public class Trim extends BaseTransform implements StringGenerator {
+public class Trim extends BaseTransform implements StringVariable {
     
     public Trim(String value) {
-        super(new Value(value));
+        super(new StringValue(value));
     }
 
-    public Trim(StringGenerator innerTransform) {
+    public Trim(StringVariable innerTransform) {
         super(innerTransform);
     }
 
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doTrimTransform(enclosedValue);
+    }
+
+    @Override
+    public Trim copy() {
+        return (Trim)super.copy();
     }
     
 }

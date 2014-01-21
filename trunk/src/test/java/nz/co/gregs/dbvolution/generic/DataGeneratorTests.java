@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
-import nz.co.gregs.dbvolution.generators.DBCurrentDate;
+import nz.co.gregs.dbvolution.variables.DBCurrentDate;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +23,6 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
-import nz.co.gregs.dbvolution.generators.Column;
 import nz.co.gregs.dbvolution.math.DBMath;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
@@ -209,7 +208,7 @@ public class DataGeneratorTests extends AbstractTest {
     public void testPermittedValues() throws SQLException {
         CarCompany carCo = new CarCompany();
         carCo.uidCarCompany.permittedValues(
-                DBMath.value(new StringLength(new Column(carCo, carCo.name))).minus(1));
+                DBMath.value(new StringLength(carCo.column(carCo.name))).minus(1));
         DBQuery dbQuery = database.getDBQuery(carCo);
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);

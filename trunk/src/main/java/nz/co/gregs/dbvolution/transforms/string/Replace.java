@@ -17,57 +17,56 @@
 package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.StringGenerator;
-import nz.co.gregs.dbvolution.generators.StringValue;
-import nz.co.gregs.dbvolution.generators.Value;
+import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.variables.StringValue;
 
-public class Replace extends BaseTransform implements StringGenerator {
-    private final StringGenerator find;
-    private final StringGenerator replace;
+public class Replace extends BaseTransform implements StringVariable {
+    private final StringVariable find;
+    private final StringVariable replace;
 
-    public Replace(StringGenerator innerTransform, String find, String replace) {
+    public Replace(StringVariable innerTransform, String find, String replace) {
         super(innerTransform);
         this.find = new StringValue(find);
         this.replace = new StringValue(replace);
     }
     
     public Replace(String value, String find, String replace) {
-        super(new Value(value));
+        super(new StringValue(value));
         this.find = new StringValue(find);
         this.replace = new StringValue(replace);
     }
     
-    public Replace(String value, StringGenerator find, String replace) {
-        super(new Value(value));
+    public Replace(String value, StringVariable find, String replace) {
+        super(new StringValue(value));
         this.find = find;
         this.replace = new StringValue(replace);
     }
     
-    public Replace(String value, String find, StringGenerator replace) {
-        super(new Value(value));
+    public Replace(String value, String find, StringVariable replace) {
+        super(new StringValue(value));
         this.find = new StringValue(find);
         this.replace = replace;
     }
     
-    public Replace(StringGenerator transform, StringGenerator find, String replace) {
+    public Replace(StringVariable transform, StringVariable find, String replace) {
         super(transform);
         this.find = find;
         this.replace = new StringValue(replace);
     }
     
-    public Replace(String value, StringGenerator find, StringGenerator replace) {
-        super(new Value(value));
+    public Replace(String value, StringVariable find, StringVariable replace) {
+        super(new StringValue(value));
         this.find = find;
         this.replace = replace;
     }
     
-    public Replace(StringGenerator transform, String find, StringGenerator replace) {
+    public Replace(StringVariable transform, String find, StringVariable replace) {
         super(transform);
         this.find = new StringValue(find);
         this.replace = replace;
     }
     
-    public Replace(StringGenerator transform, StringGenerator find, StringGenerator replace) {
+    public Replace(StringVariable transform, StringVariable find, StringVariable replace) {
         super(transform);
         this.find = find;
         this.replace = replace;
@@ -76,5 +75,10 @@ public class Replace extends BaseTransform implements StringGenerator {
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return " REPLACE( "+enclosedValue+", "+find.toSQLString(db)+", "+replace.toSQLString(db)+") ";
+    }
+
+    @Override
+    public Replace copy() {
+        return (Replace)super.copy();
     }
 }

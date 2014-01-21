@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.variables.DBValue;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.operators.*;
@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.operators.*;
  *
  * @author gregory.graham
  */
-public abstract class QueryableDatatype extends Object implements Serializable, DataGenerator {
+public abstract class QueryableDatatype extends Object implements Serializable, DBValue {
 
     public static final long serialVersionUID = 1L;
     protected Object literalValue = null;
@@ -82,7 +82,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype)o).getClass());
             qdt.setValue(((QueryableDatatype) o).literalValue);
         } else {
-            if (o instanceof DataGenerator) {
+            if (o instanceof DBValue) {
                 qdt = new DBDataGenerator();
             } else if (o instanceof Integer) {
                 qdt = new DBInteger();
@@ -370,10 +370,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         if (newLiteralValue == null) {
             setToNull();
         } else {
-            if (newLiteralValue instanceof DataGenerator) {
-                setChanged((DataGenerator) newLiteralValue);
+            if (newLiteralValue instanceof DBValue) {
+                setChanged((DBValue) newLiteralValue);
                 this.literalValue = newLiteralValue;
-                this.setOperator(new DBEqualsOperator(new DBDataGenerator((DataGenerator) newLiteralValue)));
+                this.setOperator(new DBEqualsOperator(new DBDataGenerator((DBValue) newLiteralValue)));
             } else if (newLiteralValue instanceof Date) {
                 setChanged((Date) newLiteralValue);
                 this.literalValue = newLiteralValue;

@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.variables.DBValue;
 
 /**
  *
@@ -38,7 +38,7 @@ public class DBGreaterThanOperator extends DBOperator {
         this.firstValue = null;
     }
 
-    public DBGreaterThanOperator(DataGenerator greaterThanThis) {
+    public DBGreaterThanOperator(DBValue greaterThanThis) {
         super();
         this.firstValue = greaterThanThis == null ? greaterThanThis : greaterThanThis.copy();
     }
