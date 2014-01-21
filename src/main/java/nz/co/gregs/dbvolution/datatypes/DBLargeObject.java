@@ -31,7 +31,7 @@ public abstract class DBLargeObject extends QueryableDatatype {
 
     /**
      *
-     * @return
+     * @return the size of the Large Object as an int
      */
     public abstract int getSize();
 

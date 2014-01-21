@@ -48,7 +48,7 @@ public class OracleDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+    public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         if (qdt instanceof DBBoolean) {
             return " NUMBER(1)";
         } else if (qdt instanceof DBString) {

@@ -48,7 +48,7 @@ public class MySQLDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+    public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         if (qdt instanceof DBString) {
             return " VARCHAR(1000) CHARACTER SET latin1 COLLATE latin1_general_cs ";
         } else if (qdt instanceof DBDate) {

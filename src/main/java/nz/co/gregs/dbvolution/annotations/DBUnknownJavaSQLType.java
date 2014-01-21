@@ -30,7 +30,7 @@ public  @interface DBUnknownJavaSQLType {
 
     /**
      *
-     * @return
+     * @return the java.sql.Types constant that has not been recognised
      */
     int value();
 }

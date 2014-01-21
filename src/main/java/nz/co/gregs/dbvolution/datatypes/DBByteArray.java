@@ -40,7 +40,8 @@ public class DBByteArray extends DBLargeObject {
 
     /**
      *
-     * @return 
+     * @return the standard SQL datatype that corresponds to this QDT as a
+     * String
      */
     @Override
     public String getSQLDatatype() {
