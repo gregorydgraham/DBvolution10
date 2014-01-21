@@ -60,7 +60,7 @@ public abstract class DBDefinition {
      *
      * @param table
      * @param columnName
-     * @return
+     * @return a string of the table and column name for the select clause
      */
     public String formatTableAndColumnName(DBRow table, String columnName) {
         return formatTableName(table) + "." + formatColumnName(columnName);
@@ -85,7 +85,7 @@ public abstract class DBDefinition {
      *
      * @param table
      * @param columnName
-     * @return
+     * @return a string of the column alias for the select clause
      */
     public String formatColumnNameForResultSet(DBRow table, String columnName) {
         String formattedName = formatTableAndColumnName(table, columnName).replaceAll("\\.", "__");
@@ -111,7 +111,7 @@ public abstract class DBDefinition {
      *
      * usually, but not always " and "
      *
-     * @return
+     * @return a string for the start of a where clause line
      */
     public String beginAndLine() {
         return " and ";
@@ -267,7 +267,7 @@ public abstract class DBDefinition {
      * this method should return ""
      * 
      * @param rowLimit
-     * @return
+     * @return a string for the row limit sub-clause or ""
      */
     abstract public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit);
 
@@ -318,7 +318,7 @@ public abstract class DBDefinition {
     }
     
     
-    public final Object getSQLTypeOfDBDatatype(PropertyWrapper field) {
+    public final String getSQLTypeOfDBDatatype(PropertyWrapper field) {
         return getSQLTypeOfDBDatatype(field.getQueryableDatatype());
     }
 
@@ -329,9 +329,9 @@ public abstract class DBDefinition {
      * When the 
      *
      * @param qdt
-     * @return
+     * @return the databases type for the QDT as a string
      */
-    protected Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+    protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         return qdt.getSQLDatatype();
     }
 
@@ -349,7 +349,7 @@ public abstract class DBDefinition {
      * this method should return ""
      * 
      * @param rowLimit
-     * @return
+     * @return the row limiting sub-clause or ""
      */
     abstract public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit);
 
@@ -357,7 +357,7 @@ public abstract class DBDefinition {
      *
      * The place holder for variables inserted into a prepared statement, usually " ? "
      * 
-     * @return 
+     * @return the place holder for variables as a string
      */
     public String getPreparedVariableSymbol() {
         return " ? ";
