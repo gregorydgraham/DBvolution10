@@ -4,13 +4,21 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import nz.co.gregs.dbvolution.columns.Column;
+import nz.co.gregs.dbvolution.columns.DateColumn;
+import nz.co.gregs.dbvolution.columns.NumberColumn;
+import nz.co.gregs.dbvolution.columns.StringColumn;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.internal.DBRowInstanceWrapper;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
@@ -87,6 +95,34 @@ abstract public class DBRow implements Serializable {
             }
         }
         return newRow;
+    }
+    
+    public Column column(Object fieldOfThisInstance){
+        return new Column(this, fieldOfThisInstance);
+    }
+
+    public StringColumn column(DBString fieldOfThisInstance){
+        return new StringColumn(this, fieldOfThisInstance);
+    }
+
+    public StringColumn column(String fieldOfThisInstance){
+        return new StringColumn(this, fieldOfThisInstance);
+    }
+
+    public NumberColumn column(DBNumber fieldOfThisInstance){
+        return new NumberColumn(this, fieldOfThisInstance);
+    }
+
+    public NumberColumn column(Number fieldOfThisInstance){
+        return new NumberColumn(this, fieldOfThisInstance);
+    }
+
+    public DateColumn column(DBDate fieldOfThisInstance){
+        return new DateColumn(this, fieldOfThisInstance);
+    }
+
+    public DateColumn column(Date fieldOfThisInstance){
+        return new DateColumn(this, fieldOfThisInstance);
     }
 
     /**

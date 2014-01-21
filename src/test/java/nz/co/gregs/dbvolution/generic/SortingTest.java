@@ -20,7 +20,6 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.Assert;
@@ -68,7 +67,7 @@ public class SortingTest extends AbstractTest {
         final Marque marque = new Marque();
         final CarCompany carCo = new CarCompany();
         DBQuery query = database.getDBQuery(marque, carCo);
-        query.setSortOrder(new DBRow[]{marque}, marque.carCompany, marque.name);
+        query.setSortOrder(marque.column(marque.carCompany), marque.column(marque.name));
         query.setBlankQueryAllowed(true);
         query.print();
         List<Marque> sortedMarques = query.getAllInstancesOf(marque);
@@ -77,7 +76,7 @@ public class SortingTest extends AbstractTest {
         Assert.assertThat(sortedMarques.get(1).name.toString(), is("TOYOTA"));
         Assert.assertThat(sortedMarques.get(2).name.toString(), is("FORD"));
         Assert.assertThat(sortedMarques.get(3).name.toString(), is("HOLDEN"));
-        query.setSortOrder(new DBRow[]{marque}, marque.name);
+        query.setSortOrder(marque.column(marque.name));
         query.print();
         sortedMarques = query.getAllInstancesOf(marque);
         Assert.assertThat(sortedMarques.size(), is(22));

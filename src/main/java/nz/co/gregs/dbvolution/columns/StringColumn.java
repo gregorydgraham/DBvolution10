@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2014 gregorygraham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.transforms.string;
+package nz.co.gregs.dbvolution.columns;
 
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.variables.StringVariable;
-import nz.co.gregs.dbvolution.variables.StringValue;
 
-public class Lowercase extends BaseTransform implements StringVariable {
 
-    public Lowercase(StringVariable innerTransform) {
-        super(innerTransform);
-    }
+public class StringColumn extends Column implements StringVariable{
 
-    public Lowercase(String value) {
-        super(new StringValue(value));
+    public StringColumn(DBRow row, Object field) {
+        super(row, field);
     }
 
     @Override
-    protected String doTransform(DBDatabase db, String enclosedValue) {
-        return db.getDefinition().doLowercaseTransform(enclosedValue);
+    public StringColumn copy() {
+        return (StringColumn)super.copy();
     }
-
-    @Override
-    public Lowercase copy() {
-        return (Lowercase) super.copy();
-    }
+    
 }

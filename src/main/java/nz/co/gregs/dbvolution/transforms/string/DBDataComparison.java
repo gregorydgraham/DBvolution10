@@ -16,7 +16,7 @@
 
 package nz.co.gregs.dbvolution.transforms.string;
 
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.variables.DBValue;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
@@ -25,9 +25,9 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  */
 public class DBDataComparison {
     private final DBOperator operator;
-    private final DataGenerator leftHandSide;
+    private final DBValue leftHandSide;
 
-    public DBDataComparison(DataGenerator transformForLeftHandSide, DBOperator operatorWithRightHandSideValues) {
+    public DBDataComparison(DBValue transformForLeftHandSide, DBOperator operatorWithRightHandSideValues) {
         this.operator = operatorWithRightHandSideValues;
         this.leftHandSide = transformForLeftHandSide;
     }
@@ -38,7 +38,7 @@ public class DBDataComparison {
         return operator;
     }
 
-    public DataGenerator getLeftHandSide() {
+    public DBValue getLeftHandSide() {
         return leftHandSide;
     }
     

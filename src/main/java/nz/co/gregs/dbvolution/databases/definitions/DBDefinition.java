@@ -19,7 +19,7 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.generators.StringValue;
+import nz.co.gregs.dbvolution.variables.StringValue;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**

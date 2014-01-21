@@ -16,8 +16,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  *
  * @author gregory.graham
  */
-
-public class DBNumber extends QueryableDatatype {
+public class DBNumber extends QueryableDatatype{
 
     public static final long serialVersionUID = 1;
 
@@ -42,6 +41,11 @@ public class DBNumber extends QueryableDatatype {
         if (!(aNumber instanceof Number)) {
             initDBNumber(aNumber);
         }
+    }
+
+    @Override
+    public DBNumber copy() {
+        return (DBNumber) super.copy();
     }
 
     @Override

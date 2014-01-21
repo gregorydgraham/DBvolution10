@@ -16,18 +16,18 @@
 package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.NumberGenerator;
-import nz.co.gregs.dbvolution.generators.StringGenerator;
-import nz.co.gregs.dbvolution.generators.Value;
+import nz.co.gregs.dbvolution.variables.NumberVariable;
+import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.variables.StringValue;
 
-public class StringLength extends BaseTransform implements NumberGenerator {
+public class StringLength extends BaseTransform implements NumberVariable {
 
-    public StringLength(StringGenerator innerTransform) {
+    public StringLength(StringVariable innerTransform) {
         super(innerTransform);
     }
 
     public StringLength(String value) {
-        super(new Value(value));
+        super(new StringValue(value));
     }
 
     @Override

@@ -17,23 +17,27 @@
 package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.StringGenerator;
-import nz.co.gregs.dbvolution.generators.Value;
+import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.variables.StringValue;
 
 
-public class RightTrim extends BaseTransform implements StringGenerator{
+public class RightTrim extends BaseTransform implements StringVariable{
 
-    public RightTrim(StringGenerator innerTransform) {
+    public RightTrim(StringVariable innerTransform) {
         super(innerTransform);
     }
     
     public RightTrim(String value) {
-        super(new Value(value));
+        super(new StringValue(value));
     }
     
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
     return db.getDefinition().doRightTrimTransform(enclosedValue);
+    }    
+
+    @Override
+    public RightTrim copy() {
+        return (RightTrim)super.copy();
     }
-    
 }

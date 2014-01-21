@@ -15,23 +15,21 @@
  */
 package nz.co.gregs.dbvolution.transforms.string;
 
+import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.variables.DBValue;
 
 /**
  *
  * @author greg
  */
-public abstract class BaseTransform implements DataGenerator {
+public abstract class BaseTransform implements DBValue {
 
-    protected DataGenerator innerTransform = new NonGenerator();
+    protected final DBValue innerTransform;
 
-    public BaseTransform(DataGenerator innerTransform) {
+    public BaseTransform(DBValue innerTransform) {
         this.innerTransform = innerTransform;
-    }
-
-    public BaseTransform() {
     }
 
     @Override
@@ -44,19 +42,25 @@ public abstract class BaseTransform implements DataGenerator {
     }
 
     @Override
-    public DataGenerator copy() {
+    public DBValue copy() {
         BaseTransform newInstance = null;
         try {
-            newInstance = this.getClass().newInstance();
-            newInstance.innerTransform = this.innerTransform.copy();
+            newInstance = this.getClass().getConstructor(this.innerTransform.getClass()).newInstance(this.innerTransform);
         } catch (InstantiationException ex) {
-            throw new DBRuntimeException("Unable To Copy BaseTransform: please ensure it has a public no-parameter constructor.", ex);
+            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public single parameter constructor.", ex);
         } catch (IllegalAccessException ex) {
-            throw new DBRuntimeException("Unable To Copy BaseTransform: please ensure it has a public no-parameter constructor.", ex);
+            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public single parameter constructor.", ex);
+        } catch (NoSuchMethodException ex) {
+            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public single parameter constructor.", ex);
+        } catch (SecurityException ex) {
+            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public single parameter constructor.", ex);
+        } catch (IllegalArgumentException ex) {
+            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public single parameter constructor.", ex);
+        } catch (InvocationTargetException ex) {
+            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public single parameter constructor.", ex);
         }
         return newInstance;
     }
 
-//    protected abstract String insertAfterValue();
     protected abstract String doTransform(DBDatabase db, String enclosedValue);
 }

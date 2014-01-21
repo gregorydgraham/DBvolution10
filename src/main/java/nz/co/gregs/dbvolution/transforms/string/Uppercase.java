@@ -16,21 +16,26 @@
 package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.StringGenerator;
-import nz.co.gregs.dbvolution.generators.Value;
+import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.variables.StringValue;
 
-public class Uppercase extends BaseTransform implements StringGenerator{
+public class Uppercase extends BaseTransform implements StringVariable{
 
     public Uppercase(String value) {
-        super(new Value(value));
+        super(new StringValue(value));
     }
 
-    public Uppercase(StringGenerator innerTransform) {
+    public Uppercase(StringVariable innerTransform) {
         super(innerTransform);
     }
 
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
         return db.getDefinition().doUppercaseTransform(enclosedValue);
+    }
+
+    @Override
+    public Uppercase copy() {
+        return (Uppercase)super.copy();
     }
 }

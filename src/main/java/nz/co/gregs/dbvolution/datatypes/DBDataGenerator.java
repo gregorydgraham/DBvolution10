@@ -17,10 +17,10 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
-import nz.co.gregs.dbvolution.generators.DateGenerator;
-import nz.co.gregs.dbvolution.generators.NumberGenerator;
-import nz.co.gregs.dbvolution.generators.StringGenerator;
+import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DateVariable;
+import nz.co.gregs.dbvolution.variables.NumberVariable;
+import nz.co.gregs.dbvolution.variables.StringVariable;
 
 /**
  *
@@ -30,7 +30,7 @@ public class DBDataGenerator extends QueryableDatatype {
 
     public static final long serialVersionUID = 1L;
 
-    public DBDataGenerator(DataGenerator dataGenerator) {
+    public DBDataGenerator(DBValue dataGenerator) {
         super(dataGenerator);
     }
 
@@ -39,11 +39,11 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     public String getSQLDatatype() {
-        if(literalValue instanceof DateGenerator){
+        if(literalValue instanceof DateVariable){
             return new DBDate().getSQLDatatype();
-        } else if(literalValue instanceof NumberGenerator){
+        } else if(literalValue instanceof NumberVariable){
             return new DBNumber().getSQLDatatype();
-        } else if(literalValue instanceof StringGenerator){
+        } else if(literalValue instanceof StringVariable){
             return new DBString().getSQLDatatype();
         } else {
             return new DBUnknownDatatype().getSQLDatatype();
@@ -52,7 +52,7 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     protected String formatValueForSQLStatement(DBDatabase db) {
-        return ((DataGenerator)literalValue).toSQLString(db);
+        return ((DBValue)literalValue).toSQLString(db);
     }
     
 }
