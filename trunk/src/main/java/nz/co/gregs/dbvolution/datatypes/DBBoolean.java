@@ -17,12 +17,17 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.variables.BooleanVariable;
 
-public class DBBoolean extends QueryableDatatype {
+public class DBBoolean extends QueryableDatatype implements BooleanVariable{
 
     private static final long serialVersionUID = 1L;
 
     public DBBoolean() {
+    }
+
+    public DBBoolean(Boolean bool) {
+        super(bool);
     }
 
     @Override
@@ -49,5 +54,10 @@ public class DBBoolean extends QueryableDatatype {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public DBBoolean copy() {
+        return (DBBoolean) (BooleanVariable) super.copy();
     }
 }

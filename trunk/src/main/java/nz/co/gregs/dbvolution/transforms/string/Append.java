@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.variables.StringVariable;
-import nz.co.gregs.dbvolution.variables.StringValue;
+import nz.co.gregs.dbvolution.variables.StringExpression;
 
 
 public class Append extends BaseTransform implements StringVariable{
@@ -26,17 +26,17 @@ public class Append extends BaseTransform implements StringVariable{
     private StringVariable secondString;
 
     public Append(String firstString, String secondString) {
-        super(new StringValue(firstString));
-        this.secondString = new StringValue(secondString);
+        super(new StringExpression(firstString));
+        this.secondString = new StringExpression(secondString);
     }
     
     public Append(StringVariable firstString, String secondString) {
         super(firstString);
-        this.secondString = new StringValue(secondString);
+        this.secondString = new StringExpression(secondString);
     }
     
     public Append(String firstString, StringVariable secondString) {
-        super(new StringValue(firstString));
+        super(new StringExpression(firstString));
         this.secondString = secondString;
     }
     

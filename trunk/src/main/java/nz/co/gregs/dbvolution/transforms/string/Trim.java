@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.variables.StringVariable;
-import nz.co.gregs.dbvolution.variables.StringValue;
+import nz.co.gregs.dbvolution.variables.StringExpression;
 
 /**
  * Implements the TRIM() function for String values
@@ -30,7 +30,7 @@ import nz.co.gregs.dbvolution.variables.StringValue;
 public class Trim extends BaseTransform implements StringVariable {
     
     public Trim(String value) {
-        super(new StringValue(value));
+        super(new StringExpression(value));
     }
 
     public Trim(StringVariable innerTransform) {

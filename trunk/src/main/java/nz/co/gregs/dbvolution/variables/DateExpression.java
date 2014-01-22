@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregorygraham.
+ * Copyright 2014 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package nz.co.gregs.dbvolution.variables;
 
+import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
 
-public class NumberValue implements NumberVariable {
 
-    private final NumberVariable qdt;
+public class DateExpression implements DateVariable {
 
-    public NumberValue(Number obj) {
-        qdt = new DBNumber(obj);
+    private DateVariable date1;
+
+    protected DateExpression() {
     }
-
-    public NumberValue(NumberVariable copy) {
-        qdt = copy;
+    
+    public DateExpression(DateVariable dateVariable) {
+        date1 = dateVariable;
     }
-
+    
+    public DateExpression(Date date) {
+        date1 = new DBDate(date);
+    }
+    
     @Override
     public String toSQLString(DBDatabase db) {
-        return qdt.toSQLString(db);
+        return date1.toSQLString(db);
     }
 
     @Override
-    public NumberValue copy() {
-        return new NumberValue(qdt.copy());
+    public DateExpression copy() {
+        return new DateExpression(this.date1);
     }
+    
 }

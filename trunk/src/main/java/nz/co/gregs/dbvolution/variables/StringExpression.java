@@ -19,16 +19,23 @@ import java.util.Arrays;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 
-public class StringValue implements StringVariable {
+public class StringExpression implements StringVariable {
 
-    private final StringVariable string1;
+    private StringVariable string1;
 
-    public StringValue(StringVariable stringVariable) {
+    protected StringExpression() {
+    }
+
+    public StringExpression(StringVariable stringVariable) {
         string1 = stringVariable;
     }
 
-    public StringValue(String stringVariable) {
+    public StringExpression(String stringVariable) {
         string1 = new DBString(stringVariable);
+    }
+
+    public StringExpression(DBString stringVariable) {
+        string1 = stringVariable.copy();
     }
 
     @Override
@@ -37,12 +44,12 @@ public class StringValue implements StringVariable {
     }
 
     @Override
-    public StringValue copy() {
-        return new StringValue(this.string1);
+    public StringExpression copy() {
+        return new StringExpression(this);
     }
 
-    public StringValue append(StringVariable string2) {
-        return new StringValue(new DBBinaryStringArithmetic(this.string1, string2) {
+    public StringExpression append(StringVariable string2) {
+        return new StringExpression(new DBBinaryStringArithmetic(this, string2) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
@@ -51,8 +58,8 @@ public class StringValue implements StringVariable {
         });
     }
 
-    public StringValue append(String string2) {
-        return new StringValue(new DBBinaryStringArithmetic(this.string1, new StringValue(string2)) {
+    public StringExpression append(String string2) {
+        return new StringExpression(new DBBinaryStringArithmetic(this, new StringExpression(string2)) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
@@ -61,9 +68,9 @@ public class StringValue implements StringVariable {
         });
     }
 
-    public StringValue replace(String findString, String replaceWith) {
-        return new StringValue(
-                new DBNnaryStringFunction(new StringVariable[]{this.string1, new StringValue(findString), new StringValue(replaceWith)}) {
+    public StringExpression replace(String findString, String replaceWith) {
+        return new StringExpression(
+                new DBTrinaryStringFunction(this, new StringExpression(findString), new StringExpression(replaceWith)) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getReplaceFunctionName();
@@ -71,9 +78,9 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public StringValue replace(StringVariable findString, String replaceWith) {
-        return new StringValue(
-                new DBNnaryStringFunction(new StringVariable[]{this.string1, findString, new StringValue(replaceWith)}) {
+    public StringExpression replace(StringVariable findString, String replaceWith) {
+        return new StringExpression(
+                new DBTrinaryStringFunction(this, findString, new StringExpression(replaceWith)) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getReplaceFunctionName();
@@ -81,9 +88,9 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public StringValue replace(String findString, StringVariable replaceWith) {
-        return new StringValue(
-                new DBNnaryStringFunction(new StringVariable[]{this.string1, new StringValue(findString), replaceWith}) {
+    public StringExpression replace(String findString, StringVariable replaceWith) {
+        return new StringExpression(
+                new DBTrinaryStringFunction(this, new StringExpression(findString), replaceWith) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getReplaceFunctionName();
@@ -91,9 +98,9 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public StringValue replace(StringVariable findString, StringVariable replaceWith) {
-        return new StringValue(
-                new DBNnaryStringFunction(new StringVariable[]{this.string1, findString, replaceWith}) {
+    public StringExpression replace(StringVariable findString, StringVariable replaceWith) {
+        return new StringExpression(
+                new DBTrinaryStringFunction(this, findString, replaceWith) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getReplaceFunctionName();
@@ -101,9 +108,9 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public StringValue trim() {
-        return new StringValue(
-                new DBUnaryStringFunction(this.string1) {
+    public StringExpression trim() {
+        return new StringExpression(
+                new DBUnaryStringFunction(this) {
 
                     @Override
                     public String toSQLString(DBDatabase db) {
@@ -117,9 +124,9 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public StringValue leftTrim() {
-        return new StringValue(
-                new DBUnaryStringFunction(this.string1) {
+    public StringExpression leftTrim() {
+        return new StringExpression(
+                new DBUnaryStringFunction(this) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getLeftTrimFunctionName();
@@ -127,9 +134,9 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public StringValue rightTrim() {
-        return new StringValue(
-                new DBUnaryStringFunction(this.string1) {
+    public StringExpression rightTrim() {
+        return new StringExpression(
+                new DBUnaryStringFunction(this) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getRightTrimFunctionName();
@@ -137,9 +144,9 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public StringValue lowercase() {
-        return new StringValue(
-                new DBUnaryStringFunction(this.string1) {
+    public StringExpression lowercase() {
+        return new StringExpression(
+                new DBUnaryStringFunction(this) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getLowercaseFunctionName();
@@ -147,9 +154,9 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public DBValue uppercase() {
-        return new StringValue(
-                new DBUnaryStringFunction(this.string1) {
+    public DBExpression uppercase() {
+        return new StringExpression(
+                new DBUnaryStringFunction(this) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getUppercaseFunctionName();
@@ -157,12 +164,22 @@ public class StringValue implements StringVariable {
                 });
     }
 
-    public NumberValue length() {
-        return new NumberValue(
-                new DBUnaryNumberFunction(this.string1) {
+    public NumberExpression length() {
+        return new NumberExpression(
+                new DBUnaryNumberFunction(this) {
                     @Override
                     String getFunctionName(DBDatabase db) {
                         return db.getDefinition().getStringLengthFunctionName();
+                    }
+                });
+    }
+
+    public static StringExpression currentUser() {
+        return new StringExpression(
+                new DBNonaryStringFunction() {
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getCurrentUserFunctionName();
                     }
                 });
     }
@@ -198,6 +215,40 @@ public class StringValue implements StringVariable {
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
+    }
+
+    private static abstract class DBNonaryStringFunction implements StringVariable {
+
+        public DBNonaryStringFunction() {
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return " " + getFunctionName(db) + "";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return " ";
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db) + this.afterValue(db);
+        }
+
+        @Override
+        public DBNonaryStringFunction copy() {
+            DBNonaryStringFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            return newInstance;
+        }
     }
 
     private static abstract class DBUnaryStringFunction implements StringVariable {
@@ -286,8 +337,8 @@ public class StringValue implements StringVariable {
 
     private static abstract class DBBinaryStringFunction implements StringVariable {
 
-        private DBValue first;
-        private DBValue second;
+        private DBExpression first;
+        private DBExpression second;
 
         public DBBinaryStringFunction(StringVariable first) {
             this.first = first;
@@ -335,6 +386,69 @@ public class StringValue implements StringVariable {
 
     }
 
+
+    private static abstract class DBTrinaryStringFunction implements StringVariable {
+
+        private DBExpression first;
+        private DBExpression second;
+        private DBExpression third;
+
+        public DBTrinaryStringFunction(DBExpression first) {
+            this.first = first;
+            this.second = null;
+            this.third = null;
+        }
+
+        public DBTrinaryStringFunction(DBExpression first, DBExpression second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        public DBTrinaryStringFunction(DBExpression first, DBExpression second, DBExpression third) {
+            this.first = first;
+            this.second = second;
+            this.third = third;
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db) + first.toSQLString(db) 
+                    + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))  
+                    + this.getSeparator(db) + (third == null ? "" : third.toSQLString(db)) 
+                    + this.afterValue(db);
+        }
+
+        @Override
+        public DBTrinaryStringFunction copy() {
+            DBTrinaryStringFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first.copy();
+            newInstance.second = second.copy();
+            return newInstance;
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return " " + getFunctionName(db) + "( ";
+        }
+
+        protected String getSeparator(DBDatabase db) {
+            return ", ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+    }
+
     /**
      * Implemented to support STDDEV and VARIANCE but they're aggregators so now
      * it's unused
@@ -342,9 +456,9 @@ public class StringValue implements StringVariable {
      */
     private static abstract class DBNnaryStringFunction implements StringVariable {
 
-        protected DBValue[] values;
+        protected DBExpression[] values;
 
-        public DBNnaryStringFunction(DBValue... values) {
+        public DBNnaryStringFunction(DBExpression... values) {
             this.values = values;
         }
 
@@ -353,7 +467,7 @@ public class StringValue implements StringVariable {
             StringBuilder str = new StringBuilder();
             str.append(this.beforeValue(db));
             String sep = "";
-            for (DBValue dg : values) {
+            for (DBExpression dg : values) {
                 str.append(sep).append(dg.toSQLString(db));
                 sep = getSeparator(db);
             }

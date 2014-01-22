@@ -19,7 +19,7 @@ package nz.co.gregs.dbvolution.variables;
  *
  * @author greg
  */
-public interface StringVariable extends DBValue{
+public interface StringVariable extends DBExpression{
     
     @Override
     public StringVariable copy();

@@ -16,14 +16,14 @@
 
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 
 
 public class DBPermittedPatternOperator extends DBLikeOperator {
     
     public static final long serialVersionUID = 1L;
 
-    public DBPermittedPatternOperator(DBValue likeableValue) {
+    public DBPermittedPatternOperator(DBExpression likeableValue) {
         super(likeableValue);
     }
 

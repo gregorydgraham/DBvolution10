@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.variables.NumberVariable;
-import nz.co.gregs.dbvolution.variables.NumberValue;
+import nz.co.gregs.dbvolution.variables.NumberExpression;
 
 public class DBMath implements NumberVariable {
 
@@ -47,7 +47,7 @@ public class DBMath implements NumberVariable {
     }
 
     public static DBMath value(Number value) {
-        return new DBMath(new NumberValue(value));
+        return new DBMath(new NumberExpression(value));
     }
 
     public static DBMath value(NumberVariable value) {
@@ -375,7 +375,7 @@ public class DBMath implements NumberVariable {
     }
 
     public DBMath minus(Number num) {
-        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberValue(num)) {
+        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberExpression(num)) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
@@ -395,7 +395,7 @@ public class DBMath implements NumberVariable {
     }
 
     public DBMath plus(Number num) {
-        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberValue(num)) {
+        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberExpression(num)) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
@@ -415,7 +415,7 @@ public class DBMath implements NumberVariable {
     }
 
     public DBMath times(Number num) {
-        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberValue(num)) {
+        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberExpression(num)) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
@@ -435,7 +435,7 @@ public class DBMath implements NumberVariable {
     }
 
     public DBMath dividedBy(Number num) {
-        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberValue(num)) {
+        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberExpression(num)) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
@@ -455,7 +455,7 @@ public class DBMath implements NumberVariable {
     }
 
     public DBMath mod(Number num) {
-        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberValue(num)) {
+        return new DBMath(new DBBinaryArithmetic(innerGenerator, new NumberExpression(num)) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {

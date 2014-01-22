@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQD
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 
 /**
  *
@@ -37,7 +37,7 @@ public class DBEqualsOperator extends DBOperator {
         super();
     }
 
-    public DBEqualsOperator(DBValue equalTo) {
+    public DBEqualsOperator(DBExpression equalTo) {
         this.firstValue = (equalTo == null ? equalTo : equalTo.copy());
     }
 

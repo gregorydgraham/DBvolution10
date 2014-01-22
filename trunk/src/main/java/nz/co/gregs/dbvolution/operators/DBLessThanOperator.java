@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 
 /**
  *
@@ -33,7 +33,7 @@ public class DBLessThanOperator extends DBOperator {
      *
      * @param lessThanThis
      */
-    public DBLessThanOperator(DBValue lessThanThis) {
+    public DBLessThanOperator(DBExpression lessThanThis) {
         super();
         if (lessThanThis != null) {
             this.firstValue = lessThanThis.copy();

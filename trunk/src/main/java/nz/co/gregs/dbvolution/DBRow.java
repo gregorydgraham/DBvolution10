@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution;
 
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import nz.co.gregs.dbvolution.columns.BooleanColumn;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -14,10 +16,12 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.columns.Column;
+import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.DateColumn;
+import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
 import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.columns.StringColumn;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.internal.DBRowInstanceWrapper;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
@@ -98,8 +102,16 @@ abstract public class DBRow implements Serializable {
         return newRow;
     }
     
-    public Column column(DBLargeObject fieldOfThisInstance){
+    public LargeObjectColumn column(DBLargeObject fieldOfThisInstance){
         return new LargeObjectColumn(this, fieldOfThisInstance);
+    }
+
+    public BooleanColumn column(DBBoolean fieldOfThisInstance){
+        return new BooleanColumn(this, fieldOfThisInstance);
+    }
+
+    public BooleanColumn column(Boolean fieldOfThisInstance){
+        return new BooleanColumn(this, fieldOfThisInstance);
     }
 
     public StringColumn column(DBString fieldOfThisInstance){

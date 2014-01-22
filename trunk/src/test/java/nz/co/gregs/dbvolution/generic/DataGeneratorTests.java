@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.math.DBMath;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
 import nz.co.gregs.dbvolution.transforms.string.StringLength;
+import nz.co.gregs.dbvolution.variables.StringExpression;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class DataGeneratorTests extends AbstractTest {
     }
 
     @Test
-    public void testSources() throws SQLException {
+    public void testDateFunctions() throws SQLException {
 //        database.setPrintSQLBeforeExecuting(true);
         Marque marq = new Marque();
         marq.creationDate.permittedRangeInclusive(new DBCurrentDate(), null);
@@ -56,6 +57,18 @@ public class DataGeneratorTests extends AbstractTest {
         got = database.get(marq);
 //        database.print(got);
         Assert.assertThat(got.size(), is(21));
+    }
+
+    @Test
+    public void testUserFunctions() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        marq.name.permittedValues(StringExpression.currentUser());
+        DBQuery query = database.getDBQuery(marq);
+        List<Marque> got = query.getAllInstancesOf(marq);
+        database.print(got);
+        System.out.println(query.getSQLForQuery());
+        Assert.assertThat(got.size(), is(0));
     }
 
     @Test

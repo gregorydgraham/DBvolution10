@@ -15,25 +15,35 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.variables.StringValue;
-import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.variables.StringExpression;
 
+public class StringColumn extends StringExpression implements ColumnProvider{
 
-public class StringColumn extends Column implements StringVariable{
+    private final AbstractColumn column;
 
-    public StringColumn(DBRow row, Object field) {
-        super(row, field);
+    public StringColumn(DBRow row, String field) {
+        this.column = new AbstractColumn(row, field);
+    }
+    
+    public StringColumn(DBRow row, DBString field) {
+        this.column = new AbstractColumn(row, field);
+    }
+    
+    @Override
+    public String toSQLString(DBDatabase db) {
+        return column.toSQLString(db);
     }
 
     @Override
     public StringColumn copy() {
         return (StringColumn)super.copy();
     }
-    
+
     @Override
-    public StringValue asValue(){
-        return new StringValue(this);
+    public AbstractColumn getColumn() {
+        return column;
     }
-    
 }
