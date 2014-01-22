@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.variables.LargeObjectVariable;
 
 import org.reflections.Reflections;
 
@@ -97,8 +98,8 @@ abstract public class DBRow implements Serializable {
         return newRow;
     }
     
-    public Column column(Object fieldOfThisInstance){
-        return new Column(this, fieldOfThisInstance);
+    public Column column(DBLargeObject fieldOfThisInstance){
+        return new LargeObjectColumn(this, fieldOfThisInstance);
     }
 
     public StringColumn column(DBString fieldOfThisInstance){

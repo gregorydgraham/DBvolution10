@@ -88,7 +88,7 @@ public class DBNumber extends QueryableDatatype implements NumberVariable{
 
     /**
      *
-     * @return
+     * @return the default database type as a string, may be gazumped by the DBDefinition
      */
     @Override
     public String getSQLDatatype() {
@@ -98,7 +98,7 @@ public class DBNumber extends QueryableDatatype implements NumberVariable{
     /**
      *
      * @param db
-     * @return
+     * @return the underlying number formatted for a SQL statement
      */
     @Override
     public String formatValueForSQLStatement(DBDatabase db) {
@@ -111,7 +111,7 @@ public class DBNumber extends QueryableDatatype implements NumberVariable{
 
     /**
      *
-     * @return
+     * @return the number as a Double
      */
     @Override
     public Double doubleValue() {
@@ -126,7 +126,7 @@ public class DBNumber extends QueryableDatatype implements NumberVariable{
 
     /**
      *
-     * @return
+     * @return the number as a Long
      */
     @Override
     public Long longValue() {
@@ -141,7 +141,7 @@ public class DBNumber extends QueryableDatatype implements NumberVariable{
 
     /**
      *
-     * @return
+     * @return the number as an iInteger
      */
     @Override
     public Integer intValue() {
@@ -155,6 +155,7 @@ public class DBNumber extends QueryableDatatype implements NumberVariable{
     }
 
     /**
+     * Internal method to automatically set the value using information from the database
      *
      * @param resultSet
      * @param fullColumnName

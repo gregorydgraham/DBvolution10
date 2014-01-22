@@ -46,7 +46,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      *
-     * @param trans
      * @param obj
      */
     protected QueryableDatatype(Object obj) {
