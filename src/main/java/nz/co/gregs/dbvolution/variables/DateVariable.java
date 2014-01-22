@@ -19,6 +19,6 @@ package nz.co.gregs.dbvolution.variables;
  *
  * @author greg
  */
-public interface DateVariable extends DBValue{
+public interface DateVariable extends DBExpression{
     
 }

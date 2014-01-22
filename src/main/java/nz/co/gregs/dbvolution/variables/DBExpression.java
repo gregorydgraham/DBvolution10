@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
  *
  * @author gregory.graham
  */
-public interface DBValue {
+public interface DBExpression {
 
     /**
      *
@@ -43,5 +43,5 @@ public interface DBValue {
      *
      * @return a copy of this {@code DBValue}
      */
-    public DBValue copy();
+    public DBExpression copy();
 }

@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.transforms.string;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.variables.NumberVariable;
 import nz.co.gregs.dbvolution.variables.StringVariable;
-import nz.co.gregs.dbvolution.variables.StringValue;
+import nz.co.gregs.dbvolution.variables.StringExpression;
 
 public class StringLength extends BaseTransform implements NumberVariable {
 
@@ -27,7 +27,7 @@ public class StringLength extends BaseTransform implements NumberVariable {
     }
 
     public StringLength(String value) {
-        super(new StringValue(value));
+        super(new StringExpression(value));
     }
 
     @Override

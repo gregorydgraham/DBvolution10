@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.variables.StringVariable;
-import nz.co.gregs.dbvolution.variables.StringValue;
+import nz.co.gregs.dbvolution.variables.StringExpression;
 
 public class Replace extends BaseTransform implements StringVariable {
     private final StringVariable find;
@@ -26,43 +26,43 @@ public class Replace extends BaseTransform implements StringVariable {
 
     public Replace(StringVariable innerTransform, String find, String replace) {
         super(innerTransform);
-        this.find = new StringValue(find);
-        this.replace = new StringValue(replace);
+        this.find = new StringExpression(find);
+        this.replace = new StringExpression(replace);
     }
     
     public Replace(String value, String find, String replace) {
-        super(new StringValue(value));
-        this.find = new StringValue(find);
-        this.replace = new StringValue(replace);
+        super(new StringExpression(value));
+        this.find = new StringExpression(find);
+        this.replace = new StringExpression(replace);
     }
     
     public Replace(String value, StringVariable find, String replace) {
-        super(new StringValue(value));
+        super(new StringExpression(value));
         this.find = find;
-        this.replace = new StringValue(replace);
+        this.replace = new StringExpression(replace);
     }
     
     public Replace(String value, String find, StringVariable replace) {
-        super(new StringValue(value));
-        this.find = new StringValue(find);
+        super(new StringExpression(value));
+        this.find = new StringExpression(find);
         this.replace = replace;
     }
     
     public Replace(StringVariable transform, StringVariable find, String replace) {
         super(transform);
         this.find = find;
-        this.replace = new StringValue(replace);
+        this.replace = new StringExpression(replace);
     }
     
     public Replace(String value, StringVariable find, StringVariable replace) {
-        super(new StringValue(value));
+        super(new StringExpression(value));
         this.find = find;
         this.replace = replace;
     }
     
     public Replace(StringVariable transform, String find, StringVariable replace) {
         super(transform);
-        this.find = new StringValue(find);
+        this.find = new StringExpression(find);
         this.replace = replace;
     }
     

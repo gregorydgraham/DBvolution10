@@ -19,7 +19,7 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 
 /**
  *
@@ -31,7 +31,7 @@ public class DBBetweenInclusiveExclusiveOperator  extends DBOperator{
 //    private final QueryableDatatype firstValue;
 //    private final QueryableDatatype secondValue;
     
-    public DBBetweenInclusiveExclusiveOperator(DBValue lowValue, DBValue highValue){
+    public DBBetweenInclusiveExclusiveOperator(DBExpression lowValue, DBExpression highValue){
         super();
         this.firstValue = lowValue==null?lowValue:lowValue.copy();
         this.secondValue = highValue==null?highValue:highValue.copy();

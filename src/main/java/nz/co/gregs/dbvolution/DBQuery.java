@@ -21,11 +21,12 @@ import java.util.*;
 
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 import nz.co.gregs.dbvolution.transforms.string.DBDataComparison;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.columns.Column;
+import nz.co.gregs.dbvolution.columns.AbstractColumn;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
@@ -573,13 +574,13 @@ public class DBQuery {
      *
      * @param sortColumns
      */
-    public void setSortOrder(Column... sortColumns) {
+    public void setSortOrder(ColumnProvider... sortColumns) {
         results = null;
 
         sortOrder = new ArrayList<PropertyWrapper>();
         PropertyWrapper prop;
-        for (Column col : sortColumns) {
-            prop = col.getPropertyWrapper();
+        for (ColumnProvider col : sortColumns) {
+            prop = col.getColumn().getPropertyWrapper();
             if (prop != null) {
                 sortOrder.add(prop);
             }
@@ -687,7 +688,7 @@ public class DBQuery {
         return returnList;
     }
 
-    public void addComparison(DBValue leftHandSide, DBOperator operatorWithRightHandSideValues) {
+    public void addComparison(DBExpression leftHandSide, DBOperator operatorWithRightHandSideValues) {
         comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
     }
 }

@@ -4,7 +4,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor;
@@ -177,7 +177,7 @@ public class QueryableDatatypeSyncer {
          * @return the newly created QDT of the target type, or null if
          * {@code sourceQdt} was null
          */
-        public DBValue convert(DBValue source) {
+        public DBExpression convert(DBExpression source) {
             if (!(source instanceof QueryableDatatype)) {
                 return source;
             } else {

@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.transforms.string;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.variables.StringVariable;
-import nz.co.gregs.dbvolution.variables.StringValue;
+import nz.co.gregs.dbvolution.variables.StringExpression;
 
 public class Substring extends BaseTransform implements StringVariable{
 
@@ -44,7 +44,7 @@ public class Substring extends BaseTransform implements StringVariable{
     }
 
     public Substring(String value, Integer startingIndex0Based, Integer endIndex0Based) {
-        super(new StringValue(value));
+        super(new StringExpression(value));
         this.startingPosition = new DBInteger(startingIndex0Based);
         this.length = new DBInteger(endIndex0Based);
     }
@@ -56,7 +56,7 @@ public class Substring extends BaseTransform implements StringVariable{
     }
 
     public Substring(String value, DBInteger startingIndex0Based, DBInteger endIndex0Based) {
-        super(new StringValue(value));
+        super(new StringExpression(value));
         this.startingPosition = (DBInteger) startingIndex0Based.copy();
         this.length = (DBInteger)endIndex0Based.copy();
     }

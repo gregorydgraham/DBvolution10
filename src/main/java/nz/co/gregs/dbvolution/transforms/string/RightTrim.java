@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.variables.StringVariable;
-import nz.co.gregs.dbvolution.variables.StringValue;
+import nz.co.gregs.dbvolution.variables.StringExpression;
 
 
 public class RightTrim extends BaseTransform implements StringVariable{
@@ -28,7 +28,7 @@ public class RightTrim extends BaseTransform implements StringVariable{
     }
     
     public RightTrim(String value) {
-        super(new StringValue(value));
+        super(new StringExpression(value));
     }
     
     @Override

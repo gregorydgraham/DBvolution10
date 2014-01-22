@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 
 public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 
@@ -29,7 +29,7 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
         super();
     }
 
-    public DBEqualsIgnoreCaseOperator(DBValue equalTo) {
+    public DBEqualsIgnoreCaseOperator(DBExpression equalTo) {
         super(equalTo);
     }
 

@@ -30,7 +30,7 @@ public class DBCurrentDateTime implements DateVariable {
     }
 
     @Override
-    public DBValue copy() {
+    public DBExpression copy() {
         return this;
     }
 

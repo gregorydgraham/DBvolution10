@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 
 /**
  *
@@ -29,7 +29,7 @@ public class DBLikeOperator extends DBOperator {
     public static final long serialVersionUID = 1L;
 //    private final QueryableDatatype firstValue;
 
-    public DBLikeOperator(DBValue likeableValue) {
+    public DBLikeOperator(DBExpression likeableValue) {
         super();
         this.firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
     }

@@ -490,4 +490,8 @@ public abstract class DBDefinition {
     public String getStringLengthFunctionName() {
         return "CHAR_LENGTH";
     }
+
+    public String getCurrentUserFunctionName() {
+        return "CURRENT_USER";
+    }
 }

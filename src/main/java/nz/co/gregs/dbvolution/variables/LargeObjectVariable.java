@@ -17,7 +17,7 @@
 package nz.co.gregs.dbvolution.variables;
 
 
-public interface LargeObjectVariable extends DBValue {
+public interface LargeObjectVariable extends DBExpression {
 
     @Override
     public LargeObjectVariable copy();

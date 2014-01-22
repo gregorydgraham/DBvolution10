@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
@@ -23,7 +23,7 @@ public class DBLessThanOrEqualOperator extends DBLessThanOperator {
 
     public static final long serialVersionUID = 1L;
 
-    public DBLessThanOrEqualOperator(DBValue lessThanThis) {
+    public DBLessThanOrEqualOperator(DBExpression lessThanThis) {
         super(lessThanThis);
     }
 

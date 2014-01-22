@@ -18,17 +18,17 @@ package nz.co.gregs.dbvolution.transforms.string;
 import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 
 /**
  *
  * @author greg
  */
-public abstract class BaseTransform implements DBValue {
+public abstract class BaseTransform implements DBExpression {
 
-    protected final DBValue innerTransform;
+    protected final DBExpression innerTransform;
 
-    public BaseTransform(DBValue innerTransform) {
+    public BaseTransform(DBExpression innerTransform) {
         this.innerTransform = innerTransform;
     }
 
@@ -42,7 +42,7 @@ public abstract class BaseTransform implements DBValue {
     }
 
     @Override
-    public DBValue copy() {
+    public DBExpression copy() {
         BaseTransform newInstance = null;
         try {
             newInstance = this.getClass().getConstructor(this.innerTransform.getClass()).newInstance(this.innerTransform);

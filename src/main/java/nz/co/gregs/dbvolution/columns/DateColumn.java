@@ -16,30 +16,35 @@
 package nz.co.gregs.dbvolution.columns;
 
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.variables.DateValue;
-import nz.co.gregs.dbvolution.variables.DateVariable;
+import nz.co.gregs.dbvolution.variables.DateExpression;
 
+public class DateColumn extends DateExpression implements ColumnProvider {
 
-public class DateColumn extends Column implements DateVariable{
+    private final AbstractColumn column;
+
+    public DateColumn(DBRow row, Date field) {
+        this.column = new AbstractColumn(row, field);
+    }
 
     public DateColumn(DBRow row, DBDate field) {
-        super(row, field);
+        this.column = new AbstractColumn(row, field);
     }
-    
-    public DateColumn(DBRow row, Date field) {
-        super(row, field);
+
+    @Override
+    public String toSQLString(DBDatabase db) {
+        return column.toSQLString(db);
     }
 
     @Override
     public DateColumn copy() {
-        return (DateColumn)super.copy();
+        return (DateColumn) super.copy();
     }
 
     @Override
-    public DateValue asValue() {
-        return new DateValue(this);
+    public AbstractColumn getColumn() {
+        return column;
     }
-    
 }

@@ -21,34 +21,34 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
-public abstract class Column implements DBValue {
+public class AbstractColumn implements DBExpression {
 
-    private final PropertyWrapper propertyWrapperOfQDT;
+    private final PropertyWrapper propertyWrapper;
     protected final DBRow dbrow;
     protected final Object field;
 
-    public Column(DBRow row, Object field) {
+    public AbstractColumn(DBRow row, Object field) {
         this.dbrow = row;
         this.field = field;
-        this.propertyWrapperOfQDT = row.getPropertyWrapperOf(field);
-        if (propertyWrapperOfQDT == null) {
+        this.propertyWrapper = row.getPropertyWrapperOf(field);
+        if (propertyWrapper == null) {
             throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(field);
         }
     }
 
     @Override
     public String toSQLString(DBDatabase db) {
-        return db.getDefinition().formatTableAliasAndColumnName(this.dbrow, getPropertyWrapper().columnName());
+        return db.getDefinition().formatTableAliasAndColumnName(this.dbrow, propertyWrapper.columnName());
     }
-
+    
     @Override
-    public DBValue copy() {
+    public DBExpression copy() {
         try {
-            Constructor<? extends Column> constructor = this.getClass().getConstructor(dbrow.getClass(), field.getClass());
-            Column newInstance = constructor.newInstance(dbrow, field);
+            Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(dbrow.getClass(), field.getClass());
+            AbstractColumn newInstance = constructor.newInstance(dbrow, field);
             return newInstance;
         } catch (NoSuchMethodException ex) {
             throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public "+this.getClass().getSimpleName()+"(DBRow, Object) constructor.", ex);
@@ -69,7 +69,7 @@ public abstract class Column implements DBValue {
      * @return the propertyWrapperOfQDT
      */
     public PropertyWrapper getPropertyWrapper() {
-        return propertyWrapperOfQDT;
+        return propertyWrapper;
     }
     
     /**
@@ -80,5 +80,7 @@ public abstract class Column implements DBValue {
      *
      * @return this instance as a StringValue, NumberValue, DateValue, or LargeObjectValue as appropriate
      */
-    public abstract DBValue asValue();
+    public DBExpression asValue(){
+        return this;
+    }
 }

@@ -14,30 +14,35 @@
  * limitations under the License.
  */
 
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.variables;
 
-import nz.co.gregs.dbvolution.columns.Column;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.variables.LargeObjectVariable;
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 
-/**
- *
- * @author gregory.graham
- */
-class LargeObjectColumn extends Column implements LargeObjectVariable{
 
-    public LargeObjectColumn(DBRow aThis, DBLargeObject fieldOfThisInstance) {
-        super(aThis, fieldOfThisInstance);
+public class BooleanExpression implements BooleanVariable {
+
+    private BooleanVariable bool1;
+
+    public BooleanExpression() {
+    }
+    
+    public BooleanExpression(BooleanVariable dateVariable) {
+        bool1 = dateVariable;
+    }
+    
+    public BooleanExpression(Boolean bool) {
+        bool1 = new DBBoolean(bool);
+    }
+    
+    @Override
+    public String toSQLString(DBDatabase db) {
+        return bool1.toSQLString(db);
     }
 
     @Override
-    public LargeObjectColumn asValue() {
-        return (LargeObjectColumn)super.copy();
+    public BooleanExpression copy() {
+        return new BooleanExpression(this.bool1);
     }
-
-    @Override
-    public LargeObjectColumn copy() {
-        return (LargeObjectColumn) super.copy();
-    }
-
+    
 }

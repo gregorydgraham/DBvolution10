@@ -17,7 +17,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DBExpression;
 import nz.co.gregs.dbvolution.variables.DateVariable;
 import nz.co.gregs.dbvolution.variables.NumberVariable;
 import nz.co.gregs.dbvolution.variables.StringVariable;
@@ -30,7 +30,7 @@ public class DBDataGenerator extends QueryableDatatype {
 
     public static final long serialVersionUID = 1L;
 
-    public DBDataGenerator(DBValue dataGenerator) {
+    public DBDataGenerator(DBExpression dataGenerator) {
         super(dataGenerator);
     }
 
@@ -52,7 +52,7 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     protected String formatValueForSQLStatement(DBDatabase db) {
-        return ((DBValue)literalValue).toSQLString(db);
+        return ((DBExpression)literalValue).toSQLString(db);
     }
     
 }
