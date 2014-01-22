@@ -39,7 +39,7 @@ public class Trim extends BaseTransform implements StringVariable {
 
     @Override
     protected String doTransform(DBDatabase db, String enclosedValue) {
-        return db.getDefinition().doTrimTransform(enclosedValue);
+        return db.getDefinition().doTrimFunction(enclosedValue);
     }
 
     @Override

@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.columns;
 
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.variables.NumberValue;
 import nz.co.gregs.dbvolution.variables.NumberVariable;
 
 public class NumberColumn extends Column implements NumberVariable {
@@ -32,5 +33,10 @@ public class NumberColumn extends Column implements NumberVariable {
     @Override
     public NumberVariable copy() {
         return (NumberColumn) super.copy();
+    }
+
+    @Override
+    public NumberValue asValue() {
+        return new NumberValue(this);
     }
 }

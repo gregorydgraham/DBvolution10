@@ -18,10 +18,11 @@ package nz.co.gregs.dbvolution.columns;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.variables.DBValue;
+import nz.co.gregs.dbvolution.variables.DateValue;
+import nz.co.gregs.dbvolution.variables.DateVariable;
 
 
-public class DateColumn extends Column {
+public class DateColumn extends Column implements DateVariable{
 
     public DateColumn(DBRow row, DBDate field) {
         super(row, field);
@@ -34,6 +35,11 @@ public class DateColumn extends Column {
     @Override
     public DateColumn copy() {
         return (DateColumn)super.copy();
+    }
+
+    @Override
+    public DateValue asValue() {
+        return new DateValue(this);
     }
     
 }

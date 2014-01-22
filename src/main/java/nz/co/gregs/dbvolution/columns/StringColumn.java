@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.columns;
 
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.variables.StringValue;
 import nz.co.gregs.dbvolution.variables.StringVariable;
 
 
@@ -28,6 +29,11 @@ public class StringColumn extends Column implements StringVariable{
     @Override
     public StringColumn copy() {
         return (StringColumn)super.copy();
+    }
+    
+    @Override
+    public StringValue asValue(){
+        return new StringValue(this);
     }
     
 }

@@ -19,7 +19,6 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.variables.StringValue;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 
 /**
@@ -448,7 +447,7 @@ public abstract class DBDefinition {
                 + ") ";
     }
 
-    public String doTrimTransform(String enclosedValue) {
+    public String doTrimFunction(String enclosedValue) {
         return " TRIM("+enclosedValue+") ";
     }
 
@@ -465,10 +464,30 @@ public abstract class DBDefinition {
     }
 
     public String getConcatOperator() {
-        return " || ";
+        return "||";
     }
 
     public String getReplaceFunctionName() {
-        return " REPLACE";
+        return "REPLACE";
+    }
+
+    public String getLeftTrimFunctionName() {
+        return "LTRIM";
+    }
+
+    public String getRightTrimFunctionName() {
+        return "RTRIM";
+    }
+
+    public String getLowercaseFunctionName() {
+        return "LOWER";
+    }
+
+    public String getUppercaseFunctionName() {
+        return "UPPER";
+    }
+
+    public String getStringLengthFunctionName() {
+        return "CHAR_LENGTH";
     }
 }

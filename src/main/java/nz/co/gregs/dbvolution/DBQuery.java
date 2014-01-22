@@ -71,15 +71,15 @@ public class DBQuery {
      *
      * Add a table to the query.
      *
-     * This method adds the DBRow to the list of required (INNER) tables.
+     * <p>This method adds the DBRow to the list of required (INNER) tables.
      *
-     * Criteria (permitted and excluded values) from this instance will be
+     * <p>Criteria (permitted and excluded values) from this instance will be
      * automatically included in the query and an instance of this DBRow class
      * will be created for each DBQueryRow returned.
      *
-     * @param tables: a list of DBRow objects that defines required tables and
+     * @param tables a list of DBRow objects that defines required tables and
      * criteria
-     * @return this
+     * @return this DBQuery instance
      */
     public DBQuery add(DBRow... tables) {
         for (DBRow table : tables) {
@@ -101,7 +101,7 @@ public class DBQuery {
      * Criteria (permitted and excluded values) specified in the supplied
      * instance will be added to the query.
      *
-     * @param tables: a list of DBRow objects that defines optional tables and
+     * @param tables a list of DBRow objects that defines optional tables and
      * criteria
      *
      * @return this DBQuery instance
@@ -121,7 +121,7 @@ public class DBQuery {
      * Remove optional or required tables from the query
      *
      * @param tables
-     * @return this
+     * @return this DBQuery instance
      */
     public DBQuery remove(DBRow... tables) {
         for (DBRow table : tables) {
@@ -357,8 +357,8 @@ public class DBQuery {
      * An UnexpectedNumberOfRowsException is thrown if there is zero or more
      * than one row.
      *
-     * @param <R>
-     * @param exemplar
+     * @param <R> a subclass of DBRow
+     * @param exemplar an instance of R
      * @return the ONLY instance found using this query
      * @throws SQLException
      * @throws UnexpectedNumberOfRowsException
@@ -371,8 +371,8 @@ public class DBQuery {
     /**
      *
      * @param <R>
-     * @param exemplar: The DBRow class that you would like returned.
-     * @param expected: The expected number of rows, an exception will be thrown
+     * @param exemplar The DBRow class that you would like returned.
+     * @param expected The expected number of rows, an exception will be thrown
      * if this expectation is not met.
      * @return a list of all the instances of the exemplar found by this query
      * @throws SQLException
@@ -423,6 +423,7 @@ public class DBQuery {
      * Convenience method to print all the rows in the current collection
      * Equivalent to: printAll(System.out);
      *
+     * @throws java.sql.SQLException
      */
     public void print() throws SQLException {
         print(System.out);
@@ -434,6 +435,7 @@ public class DBQuery {
      * myTable.printRows(System.err);
      *
      * @param ps
+     * @throws java.sql.SQLException
      */
     public void print(PrintStream ps) throws SQLException {
         if (needsResults()) {
@@ -458,6 +460,7 @@ public class DBQuery {
      * myTable.printRows(System.err);
      *
      * @param printStream
+     * @throws java.sql.SQLException
      */
     public void printAllDataColumns(PrintStream printStream) throws SQLException {
         if (needsResults()) {
@@ -483,6 +486,7 @@ public class DBQuery {
      * myTable.printAllPrimaryKeys(System.err);
      *
      * @param ps
+     * @throws java.sql.SQLException
      */
     public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
         if (needsResults()) {
@@ -542,7 +546,7 @@ public class DBQuery {
         for (DBRow table : allQueryTables) {
             willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
         }
-        return willCreateBlankQuery && (comparisons.size() == 0);
+        return willCreateBlankQuery && (comparisons.isEmpty());
     }
 
     public void setRowLimit(int i) {
@@ -564,35 +568,11 @@ public class DBQuery {
      * For example the following code snippet will sort by just the name column:
      * <pre>
      * Customer customer = ...;
-     * query.setSortOrder(new DBRow[]{customer}, customer.name);
+     * query.setSortOrder(customer.column(customer.name));
      * </pre>
      *
-     * <p>
-     * Requires that each {@code baseRowColumn) be from one of the
-     * {@code baseRow) instances to work.
-     *
-     * @param baseRows
-     * @param baseRowColumns
+     * @param sortColumns
      */
-//    public void setSortOrder(DBRow[] baseRows, QueryableDatatype... baseRowColumns) {
-//        results = null;
-//
-//        sortOrder = new ArrayList<PropertyWrapper>();
-//        for (QueryableDatatype qdt : baseRowColumns) {
-//            PropertyWrapper prop = null;
-//            for (DBRow baseRow : baseRows) {
-//                prop = baseRow.getPropertyWrapperOf(qdt);
-//                if (prop != null) {
-//                    break;
-//                }
-//            }
-//            if (prop == null) {
-//                throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(qdt);
-//            }
-//
-//            sortOrder.add(prop);
-//        }
-//    }
     public void setSortOrder(Column... sortColumns) {
         results = null;
 
@@ -647,14 +627,14 @@ public class DBQuery {
     }
 
     /**
-     * @return the useANSISyntax
+     * @return the useANSISyntax flag
      */
     public boolean isUseANSISyntax() {
         return useANSISyntax;
     }
 
     /**
-     * @param useANSISyntax the useANSISyntax to set
+     * @param useANSISyntax the useANSISyntax flag to set
      */
     public void setUseANSISyntax(boolean useANSISyntax) {
         this.useANSISyntax = useANSISyntax;
