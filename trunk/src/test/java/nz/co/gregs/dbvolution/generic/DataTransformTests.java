@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.variables.StringValue;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.variables.StringValue;
@@ -279,7 +278,8 @@ public class DataTransformTests extends AbstractTest {
         final StringColumn nameColumn = marq.column(marq.name);
         
         query = database.getDBQuery(marq);
-        query.addComparison(new Append(new Replace(new Replace(nameColumn,"BM","V"),"W",""),"W"), new DBPermittedValuesOperator("VW"));
+        // Find VW and BMW by appending V and W around the replaced brands
+        query.addComparison(new StringValue("V").append(new StringValue(nameColumn).replace("BMW","").replace("VW", "")).append("W"), new DBPermittedValuesOperator("VW"));
         query.setSortOrder(marq.column(marq.name));
         got = query.getAllInstancesOf(marq);
         database.print(got);

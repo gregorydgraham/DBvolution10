@@ -7,12 +7,13 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.variables.StringVariable;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBString extends QueryableDatatype {
+public class DBString extends QueryableDatatype implements StringVariable{
 
     private static final long serialVersionUID = 1L;
 
@@ -44,6 +45,11 @@ public class DBString extends QueryableDatatype {
             return defn.beginStringValue() + defn.safeString(unsafeValue) + defn.endStringValue();
         }
 //    }
+    }
+
+    @Override
+    public DBString copy() {
+        return (DBString)super.copy();
     }
 
 }
