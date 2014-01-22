@@ -16,12 +16,14 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.InputStream;
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.variables.LargeObjectVariable;
 
 /**
  *
  * @author gregorygraham
  */
-public abstract class DBLargeObject extends QueryableDatatype {
+public abstract class DBLargeObject extends QueryableDatatype implements LargeObjectVariable{
 
     public DBLargeObject() {
         super();
@@ -38,6 +40,11 @@ public abstract class DBLargeObject extends QueryableDatatype {
     @Override
     public String toString(){
         return "/*BINARY DATA*/";
+    }
+
+    @Override
+    public DBLargeObject copy() {
+        return (DBLargeObject)super.copy();
     }
     
 }

@@ -11,12 +11,13 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.variables.NumberVariable;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBNumber extends QueryableDatatype{
+public class DBNumber extends QueryableDatatype implements NumberVariable{
 
     public static final long serialVersionUID = 1;
 

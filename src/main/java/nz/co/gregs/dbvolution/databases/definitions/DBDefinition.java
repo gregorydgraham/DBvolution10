@@ -463,4 +463,12 @@ public abstract class DBDefinition {
     public String getNextSequenceValue(String schemaName, String sequenceName) {
         return " NEXTVAL( " + (schemaName == null ? "" : schemaName + ", ") + sequenceName + " ) ";
     }
+
+    public String getConcatOperator() {
+        return " || ";
+    }
+
+    public String getReplaceFunctionName() {
+        return " REPLACE";
+    }
 }

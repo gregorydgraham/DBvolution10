@@ -10,12 +10,13 @@ import java.sql.Timestamp;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
+import nz.co.gregs.dbvolution.variables.DateVariable;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBDate extends QueryableDatatype {
+public class DBDate extends QueryableDatatype implements DateVariable{
 
     private static final long serialVersionUID = 1L;
 
@@ -114,4 +115,11 @@ public class DBDate extends QueryableDatatype {
             }
         }
     }
+
+    @Override
+    public DBDate copy() {
+        return (DBDate)super.copy(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 }
