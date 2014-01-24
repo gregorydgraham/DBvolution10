@@ -244,6 +244,7 @@ abstract public class DBRow implements Serializable {
 
     /**
      *
+     * @param db The DBDatabase instance that this query is to be executed on.
      * @return the WHERE clause that will be used with the current parameters
      *
      */
@@ -277,18 +278,12 @@ abstract public class DBRow implements Serializable {
      */
     public boolean willCreateBlankQuery(DBDatabase db) {
         String whereClause = getWhereClause(db);
-        if (whereClause == null || whereClause.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return whereClause == null || whereClause.isEmpty();
     }
 
     /**
      * Probably not needed by the programmer, this is the convenience function
-     * to find the table name specified by
-     *
-     * @DBTableName
+     * to find the table name specified by {@code @DBTableName}
      *
      * @return the name of the table in the database specified to correlate with
      * the specified type
@@ -301,7 +296,6 @@ abstract public class DBRow implements Serializable {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
-        Class<? extends DBRow> thisClass = this.getClass();
         List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
 
         String separator = "";
@@ -321,7 +315,6 @@ abstract public class DBRow implements Serializable {
 
     public String toStringMinusFKs() {
         StringBuilder string = new StringBuilder();
-        Class<? extends DBRow> thisClass = this.getClass();
         List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
 
         String separator = "";
@@ -569,10 +562,10 @@ abstract public class DBRow implements Serializable {
      * <p>
      * Requires the field to be from this instance to work.
      *
-     * @param <T>
+     * @param <T> A list or List of fields of this DBRow
      * @param properties a list of fields/methods from this object
      */
-//    @SafeVarargs // wait for Java8 before using Java7
+    @SafeVarargs
     public final <T> void returnFieldsLimitedTo(T... properties) {
         PropertyWrapper propWrapper;
         for (T property : properties) {
@@ -708,8 +701,7 @@ abstract public class DBRow implements Serializable {
     /**
      * Returns all the DBRow subclasses referenced by foreign keys
      *
-     * @return A list of DBRow subclasses referenced with
-     * @DBForeignKey
+     * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
      *
      */
     @SuppressWarnings("unchecked")

@@ -50,7 +50,7 @@ public abstract class DBScript {
      * When the script executes without exceptions the changes will be committed and made permanent.
      *
      * @param db
-     * @return
+     * @return a DBActionList of all the actions performed on the database
      * @throws Exception
      */
     public final DBActionList implement(DBDatabase db) throws Exception {
@@ -67,7 +67,7 @@ public abstract class DBScript {
      * Any changes will be safely rolled back.
      *
      * @param db
-     * @return
+     * @return a DBActionList of all the actions performed on the database
      * @throws Exception
      */
     public final DBActionList test(DBDatabase db) throws Exception {

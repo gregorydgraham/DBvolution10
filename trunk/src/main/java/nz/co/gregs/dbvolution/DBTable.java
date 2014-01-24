@@ -147,7 +147,7 @@ public class DBTable<E extends DBRow> {
      * @throws SQLException, AccidentalBlankQueryException
      */
     public DBTable<E> getAllRows() throws SQLException, AccidentalBlankQueryException {
-        if (!this.blankQueryAllowed){
+        if (!this.blankQueryAllowed) {
             throw new AccidentalBlankQueryException();
         }
         resultSet = null;
@@ -244,9 +244,9 @@ public class DBTable<E extends DBRow> {
             case Types.BLOB:
             case Types.OTHER:
                 qdt.setFromResultSet(resultSet, dbColumnName);
-                
+
                 // ensure field set when using type adaptors
-            	field.setQueryableDatatype(qdt);
+                field.setQueryableDatatype(qdt);
                 break;
             default:
                 throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));
@@ -262,7 +262,6 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    
     private String escapeSingleQuotes(String str) {
         if (str == null) {
             return "";
@@ -411,7 +410,7 @@ public class DBTable<E extends DBRow> {
      * @throws java.sql.SQLException
      */
     public void print() throws SQLException, AccidentalBlankQueryException {
-        if (resultSet==null){
+        if (resultSet == null) {
             getRowsByExample(template);
         }
         print(System.out);
@@ -426,7 +425,7 @@ public class DBTable<E extends DBRow> {
      * @throws java.sql.SQLException
      */
     public void print(PrintStream ps) throws SQLException, AccidentalBlankQueryException {
-        if (resultSet==null){
+        if (resultSet == null) {
             getRowsByExample(template);
         }
         for (E row : this.listOfRows) {
@@ -444,7 +443,7 @@ public class DBTable<E extends DBRow> {
      * @throws java.sql.SQLException
      */
     public E getFirstRow() throws SQLException, AccidentalBlankQueryException {
-        if (resultSet==null){
+        if (resultSet == null) {
             getRowsByExample(template);
         }
         if (this.listOfRows.size() > 0) {
@@ -466,7 +465,7 @@ public class DBTable<E extends DBRow> {
      * @throws java.sql.SQLException
      */
     public E getOnlyRow() throws UnexpectedNumberOfRowsException, SQLException {
-        if (resultSet==null){
+        if (resultSet == null) {
             getRowsByExample(template);
         }
         if (this.listOfRows.size() > 0) {
@@ -476,11 +475,11 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-//    @SafeVarargs
+    @SafeVarargs
     public final DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : newRows) {
-            actions.addAll(DBInsert.save(database, row));
+                actions.addAll(DBInsert.save(database, row));
         }
         return actions;
     }
@@ -488,12 +487,12 @@ public class DBTable<E extends DBRow> {
     public DBActionList insert(List<E> newRows) throws SQLException {
         DBActionList changes = new DBActionList();
         for (DBRow row : newRows) {
-            changes.addAll(DBInsert.save(database, row));
+                changes.addAll(DBInsert.save(database, row));
         }
         return changes;
     }
 
-//    @SafeVarargs
+    @SafeVarargs
     public final DBActionList delete(E... oldRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : oldRows) {
@@ -505,7 +504,7 @@ public class DBTable<E extends DBRow> {
     /**
      *
      * @param oldRows
-     * @return 
+     * @return
      * @throws SQLException
      */
     public DBActionList delete(List<E> oldRows) throws SQLException {
@@ -546,18 +545,17 @@ public class DBTable<E extends DBRow> {
 
     /**
      *
-     * @return
-     * @throws java.sql.SQLException
+     * @return @throws java.sql.SQLException
      */
     public List<E> toList() throws SQLException, AccidentalBlankQueryException {
-        if (resultSet==null){
+        if (resultSet == null) {
             getRowsByExample(template);
         }
         return new java.util.ArrayList<E>(listOfRows);
     }
 
     public List<Long> getPrimaryKeysAsLong() throws SQLException {
-        if (resultSet==null){
+        if (resultSet == null) {
             getRowsByExample(template);
         }
         List<Long> primaryKeys = new ArrayList<Long>();
@@ -568,7 +566,7 @@ public class DBTable<E extends DBRow> {
     }
 
     public List<String> getPrimaryKeysAsString() throws SQLException {
-        if (resultSet==null){
+        if (resultSet == null) {
             getRowsByExample(template);
         }
         List<String> primaryKeys = new ArrayList<String>();
