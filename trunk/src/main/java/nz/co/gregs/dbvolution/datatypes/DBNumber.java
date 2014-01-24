@@ -45,18 +45,6 @@ public class DBNumber extends QueryableDatatype implements NumberVariable{
         super(aNumber);
     }
 
-    /**
-     *
-     * @param aNumber
-     */
-    @Deprecated
-    public DBNumber(Object aNumber) {
-        super(aNumber);
-        if (!(aNumber instanceof Number)) {
-            initDBNumber(aNumber);
-        }
-    }
-
     @Override
     public DBNumber copy() {
         return (DBNumber) super.copy();
