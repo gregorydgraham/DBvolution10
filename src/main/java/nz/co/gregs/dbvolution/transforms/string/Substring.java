@@ -16,59 +16,74 @@
 package nz.co.gregs.dbvolution.transforms.string;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.variables.NumberResult;
+import nz.co.gregs.dbvolution.variables.StringResult;
 import nz.co.gregs.dbvolution.variables.StringExpression;
 
-public class Substring extends BaseTransform implements StringVariable{
+public class Substring extends StringExpression implements StringResult{
+    
+    private final NumberResult startingPosition;
+    private final NumberResult length;
 
-    private final DBInteger startingPosition;
-    private final DBInteger length;
-
-    public Substring(StringVariable innerTransform, Integer startingIndex0Based) {
-        super(innerTransform);
-        this.startingPosition = new DBInteger(startingIndex0Based);
+    public Substring(StringResult stringInput, Number startingIndex0Based) {
+        super(stringInput);
+        this.startingPosition = new DBNumber(startingIndex0Based);
         this.length = null;
     }
 
-    public Substring(StringVariable innerTransform, DBInteger startingIndex0Based) {
-        super(innerTransform);
-        this.startingPosition = (DBInteger) startingIndex0Based.copy();
+    public Substring(StringResult stringInput, NumberResult startingIndex0Based) {
+        super(stringInput);
+        this.startingPosition = startingIndex0Based.copy();
         this.length = null;
     }
 
-    public Substring(StringVariable innerTransform, Integer startingIndex0Based, Integer endIndex0Based) {
-        super(innerTransform);
-        this.startingPosition = new DBInteger(startingIndex0Based);
-        this.length = new DBInteger(endIndex0Based);
+    public Substring(StringResult stringInput, Number startingIndex0Based, Number endIndex0Based) {
+        super(stringInput);
+        this.startingPosition = new DBNumber(startingIndex0Based);
+        this.length = new DBNumber(endIndex0Based);
     }
+//
+//    @Deprecated
+//    public Substring(String stringInput, Number startingIndex0Based, Number endIndex0Based) {
+//        super(new StringExpression(stringInput));
+//        this.startingPosition = new DBNumber(startingIndex0Based);
+//        this.length = new DBNumber(endIndex0Based);
+//    }
 
-    public Substring(String value, Integer startingIndex0Based, Integer endIndex0Based) {
-        super(new StringExpression(value));
-        this.startingPosition = new DBInteger(startingIndex0Based);
-        this.length = new DBInteger(endIndex0Based);
+    public Substring(StringResult stringInput, NumberResult startingIndex0Based, NumberResult endIndex0Based) {
+        super(stringInput);
+        this.startingPosition = startingIndex0Based.copy();
+        this.length = endIndex0Based.copy();
     }
-
-    public Substring(StringVariable innerTransform, DBInteger startingIndex0Based, DBInteger endIndex0Based) {
-        super(innerTransform);
-        this.startingPosition = (DBInteger) startingIndex0Based.copy();
-        this.length = (DBInteger)endIndex0Based.copy();
-    }
-
-    public Substring(String value, DBInteger startingIndex0Based, DBInteger endIndex0Based) {
-        super(new StringExpression(value));
-        this.startingPosition = (DBInteger) startingIndex0Based.copy();
-        this.length = (DBInteger)endIndex0Based.copy();
-    }
-
-    @Override
-    protected String doTransform(DBDatabase db, String enclosedValue) {
-        return db.getDefinition().doSubstringTransform(enclosedValue, startingPosition, length);
-    }
+    
+//    @Deprecated
+//    public Substring(String value, NumberVariable startingIndex0Based, NumberVariable endIndex0Based) {
+//        super(new DBString(value));
+//        this.startingPosition = startingIndex0Based.copy();
+//        this.length = endIndex0Based.copy();
+//    }
 
     @Override
     public Substring copy() {
         return (Substring)super.copy();
     }
 
+    @Override
+    public String toSQLString(DBDatabase db) {
+        if (getStringInput() == null) {
+            return "";
+        } else {
+            return doSubstringTransform(db, getStringInput(), startingPosition, length);
+        }
+    }
+    
+        public String doSubstringTransform(DBDatabase db, StringResult enclosedValue, NumberResult startingPosition, NumberResult substringLength){
+            return " SUBSTRING("
+                +enclosedValue.toSQLString(db)
+                +" FROM " 
+                +(startingPosition.toSQLString(db)+" + 1") 
+                +( substringLength != null ? " for " + (substringLength.toSQLString(db)+" - "+startingPosition.toSQLString(db)) : "")
+                + ") ";
+    }
 }

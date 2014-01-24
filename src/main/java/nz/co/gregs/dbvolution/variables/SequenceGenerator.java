@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.variables;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 
-public class SequenceGenerator implements NumberVariable {
+public class SequenceGenerator implements NumberResult {
 
     public static final long serialVersionUID = 1L;
 

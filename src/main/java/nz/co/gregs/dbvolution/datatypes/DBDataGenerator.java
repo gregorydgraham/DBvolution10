@@ -18,9 +18,9 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.variables.DBExpression;
-import nz.co.gregs.dbvolution.variables.DateVariable;
-import nz.co.gregs.dbvolution.variables.NumberVariable;
-import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.variables.DateResult;
+import nz.co.gregs.dbvolution.variables.NumberResult;
+import nz.co.gregs.dbvolution.variables.StringResult;
 
 /**
  *
@@ -39,11 +39,11 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     public String getSQLDatatype() {
-        if(literalValue instanceof DateVariable){
+        if(literalValue instanceof DateResult){
             return new DBDate().getSQLDatatype();
-        } else if(literalValue instanceof NumberVariable){
+        } else if(literalValue instanceof NumberResult){
             return new DBNumber().getSQLDatatype();
-        } else if(literalValue instanceof StringVariable){
+        } else if(literalValue instanceof StringResult){
             return new DBString().getSQLDatatype();
         } else {
             return new DBUnknownDatatype().getSQLDatatype();

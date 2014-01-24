@@ -21,12 +21,12 @@ import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
-import nz.co.gregs.dbvolution.math.DBMath;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
-import nz.co.gregs.dbvolution.transforms.string.StringLength;
+import nz.co.gregs.dbvolution.variables.NumberExpression;
 import nz.co.gregs.dbvolution.variables.StringExpression;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
@@ -78,9 +78,7 @@ public class DataGeneratorTests extends AbstractTest {
         Marque marq = new Marque();
         DBQuery dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
-                DBMath
-                .column(marq, marq.uidMarque)
-                .mod(2),
+                marq.column(marq.uidMarque).mod(2),
                 new DBEqualsOperator(0));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
@@ -96,8 +94,7 @@ public class DataGeneratorTests extends AbstractTest {
         Marque marq = new Marque();
         DBQuery dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
-                DBMath
-                .column(marq, marq.uidMarque)
+                marq.column(marq.uidMarque)
                 .plus(2)
                 .minus(4)
                 .times(6)
@@ -116,11 +113,7 @@ public class DataGeneratorTests extends AbstractTest {
         Marque marq = new Marque();
         DBQuery dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
-                DBMath.bracket(
-                        DBMath.bracket(
-                                DBMath.column(marq, marq.uidMarque).plus(2).minus(4)
-                        ).times(6))
-                .dividedBy(3),
+                marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3),
                 new DBEqualsOperator(-2));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
@@ -130,11 +123,10 @@ public class DataGeneratorTests extends AbstractTest {
 
         dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
-                DBMath.bracket(
-                        DBMath.bracket(
-                                DBMath.column(marq, marq.uidMarque).plus(2).minus(4)
-                        ).times(6))
-                .dividedBy(3),
+                marq.column(marq.uidMarque)
+                        .plus(2).minus(4).bracket()
+                        .times(6).bracket()
+                        .dividedBy(3),
                 new DBEqualsOperator(-2));
         allRows = dbQuery.getAllRows();
 //        database.print(allRows);
@@ -148,7 +140,7 @@ public class DataGeneratorTests extends AbstractTest {
         Marque marq = new Marque();
         DBQuery dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
-                DBMath.arccos(DBMath.column(marq, marq.uidMarque)),
+                marq.column(marq.uidMarque).arccos(),
                 new DBEqualsOperator(0));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
@@ -162,7 +154,7 @@ public class DataGeneratorTests extends AbstractTest {
         Marque marq = new Marque();
         DBQuery dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
-                DBMath.cos(DBMath.column(marq, marq.uidMarque).minus(1)),
+                marq.column(marq.uidMarque).minus(1).cos(),
                 new DBEqualsOperator(1));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
@@ -176,7 +168,8 @@ public class DataGeneratorTests extends AbstractTest {
         CarCompany carCo = new CarCompany();
         DBQuery dbQuery = database.getDBQuery(carCo);
         dbQuery.addComparison(
-                DBMath.trunc(DBMath.exp(DBMath.column(carCo, carCo.uidCarCompany)).times(1000)),
+//                DBMath.trunc(DBMath.exp(DBMath.column(carCo, carCo.uidCarCompany)).times(1000)),
+                carCo.column(carCo.uidCarCompany).exp().times(1000).trunc(),
                 new DBEqualsOperator(7389));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
@@ -190,8 +183,9 @@ public class DataGeneratorTests extends AbstractTest {
         CarCompany carCo = new CarCompany();
         DBQuery dbQuery = database.getDBQuery(carCo);
         dbQuery.addComparison(
-                DBMath.tan(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))),
-                new DBGreaterThanOperator(DBMath.value(0)));
+//                DBMath.tan(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))),
+                carCo.column(carCo.uidCarCompany).degrees().tan(),
+                new DBGreaterThanOperator(new DBNumber(0)));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
@@ -206,8 +200,9 @@ public class DataGeneratorTests extends AbstractTest {
         CarCompany carCo = new CarCompany();
         DBQuery dbQuery = database.getDBQuery(carCo);
         dbQuery.addComparison(
-                DBMath.tan(DBMath.degrees(DBMath.radians(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))))),
-                new DBGreaterThanOperator(DBMath.value(0)));
+//                DBMath.tan(DBMath.degrees(DBMath.radians(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))))),
+                carCo.column(carCo.uidCarCompany).degrees().radians().degrees().tan(),
+                new DBGreaterThanOperator(new DBNumber(0)));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
@@ -220,8 +215,7 @@ public class DataGeneratorTests extends AbstractTest {
     @Test
     public void testPermittedValues() throws SQLException {
         CarCompany carCo = new CarCompany();
-        carCo.uidCarCompany.permittedValues(
-                DBMath.value(new StringLength(carCo.column(carCo.name))).minus(1));
+        carCo.uidCarCompany.permittedValues(carCo.column(carCo.name).length().minus(1));
         DBQuery dbQuery = database.getDBQuery(carCo);
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);

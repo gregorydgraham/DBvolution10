@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.variables.DBExpression;
  *
  * @author greg
  */
+@Deprecated
 public abstract class BaseTransform implements DBExpression {
 
     protected final DBExpression innerTransform;

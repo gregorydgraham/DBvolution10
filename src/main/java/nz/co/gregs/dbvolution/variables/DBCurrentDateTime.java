@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.variables;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 
-public class DBCurrentDateTime implements DateVariable {
+public class DBCurrentDateTime implements DateResult {
 
     public static final long serialVersionUID = 1L;
 

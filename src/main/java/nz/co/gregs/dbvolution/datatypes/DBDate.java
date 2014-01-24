@@ -21,13 +21,13 @@ import java.sql.Timestamp;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
-import nz.co.gregs.dbvolution.variables.DateVariable;
+import nz.co.gregs.dbvolution.variables.DateResult;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBDate extends QueryableDatatype implements DateVariable{
+public class DBDate extends QueryableDatatype implements DateResult{
 
     private static final long serialVersionUID = 1L;
 
