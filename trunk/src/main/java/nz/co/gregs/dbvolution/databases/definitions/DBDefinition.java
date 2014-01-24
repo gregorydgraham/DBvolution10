@@ -20,6 +20,8 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.variables.NumberResult;
+import nz.co.gregs.dbvolution.variables.StringResult;
 
 /**
  *
@@ -436,15 +438,6 @@ public abstract class DBDefinition {
 
     public String doStringLengthTransform(String enclosedValue) {
         return " CHAR_LENGTH( "+enclosedValue+" ) ";
-    }
-
-    public String doSubstringTransform(String enclosedValue, DBInteger startingPosition, DBInteger length) {
-        return " SUBSTRING("
-                +enclosedValue
-                +" FROM " 
-                +(startingPosition.intValue() + 1) 
-                +( (length!=null && !length.isNull()) ? " for " + (length.intValue() - startingPosition.intValue()) : "")
-                + ") ";
     }
 
     public String doTrimFunction(String enclosedValue) {

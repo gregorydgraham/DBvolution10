@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.variables;
 import nz.co.gregs.dbvolution.DBDatabase;
 
 
-public class DBCurrentUser implements StringVariable {
+public class DBCurrentUser implements StringResult {
 
     public static final long serialVersionUID = 1L;
 

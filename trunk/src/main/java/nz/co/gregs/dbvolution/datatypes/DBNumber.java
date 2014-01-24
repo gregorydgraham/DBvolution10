@@ -23,13 +23,13 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
-import nz.co.gregs.dbvolution.variables.NumberVariable;
+import nz.co.gregs.dbvolution.variables.NumberResult;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBNumber extends QueryableDatatype implements NumberVariable{
+public class DBNumber extends QueryableDatatype implements NumberResult{
 
     public static final long serialVersionUID = 1;
 

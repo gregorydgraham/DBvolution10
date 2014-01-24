@@ -18,13 +18,13 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.variables.StringVariable;
+import nz.co.gregs.dbvolution.variables.StringResult;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBString extends QueryableDatatype implements StringVariable{
+public class DBString extends QueryableDatatype implements StringResult{
 
     private static final long serialVersionUID = 1L;
 

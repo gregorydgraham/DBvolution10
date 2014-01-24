@@ -15,21 +15,13 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
-import nz.co.gregs.dbvolution.transforms.string.LeftTrim;
-import nz.co.gregs.dbvolution.transforms.string.StringLength;
-import nz.co.gregs.dbvolution.transforms.string.Replace;
-import nz.co.gregs.dbvolution.transforms.string.Uppercase;
-import nz.co.gregs.dbvolution.transforms.string.Trim;
-import nz.co.gregs.dbvolution.transforms.string.Lowercase;
-import nz.co.gregs.dbvolution.transforms.string.RightTrim;
-import nz.co.gregs.dbvolution.transforms.string.Substring;
-import nz.co.gregs.dbvolution.transforms.string.Append;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.variables.StringExpression;
 import nz.co.gregs.dbvolution.operators.*;
 import static org.hamcrest.Matchers.*;
@@ -159,43 +151,38 @@ public class DataTransformTests extends AbstractTest {
         DBOperator first3LettersOfHUMMER = new DBPermittedValuesOperator("HUMMER".substring(0, 3));
 
         dbQuery = database.getDBQuery(marq);
-        dbQuery.addComparison(new Substring(marq.column(marq.name), 0, 3), first3LettersOfHUMMER);
+        dbQuery.addComparison(marq.column(marq.name).substring(0, 3), first3LettersOfHUMMER);
         got = dbQuery.getAllInstancesOf(marq);
         Assert.assertThat(got.size(), is(1));
         Assert.assertThat(got.get(0).name.stringValue(), is("HUMMER"));
 
-//        marq.name.permittedValues(new Substring(3,6), "HUM");dbQuery = database.getDBQuery(marq);
         dbQuery = database.getDBQuery(marq);
-        dbQuery.addComparison(new Substring(marq.column(marq.name), 3, 6), first3LettersOfHUMMER);
+        dbQuery.addComparison(marq.column(marq.name).substring(3, 6), first3LettersOfHUMMER);
         got = dbQuery.getAllInstancesOf(marq);
         Assert.assertThat(got.size(), is(0));
 
-//        marq.name.permittedValues(new Substring(3,6), "HUMMER".substring(3, 6));dbQuery = database.getDBQuery(marq);
         dbQuery = database.getDBQuery(marq);
-        dbQuery.addComparison(new Substring(marq.column(marq.name), 3, 6), last3LettersOfHUMMER);
+        dbQuery.addComparison(marq.column(marq.name).substring(3, 6), last3LettersOfHUMMER);
         got = dbQuery.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(1));
 
-//        marq.name.permittedValues(new Lowercase(marq.name.getLeftHandSide()), "HUMMER".substring(3, 6));dbQuery = database.getDBQuery(marq);
         dbQuery = database.getDBQuery(marq);
-        dbQuery.addComparison(new Lowercase(new Substring(marq.column(marq.name), 3, 6)), last3LettersOfHUMMER);
+        dbQuery.addComparison(marq.column(marq.name).substring(3, 6).lowercase(), last3LettersOfHUMMER);
         got = dbQuery.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(0));
 
-//        marq.name.permittedValues(new Uppercase(marq.name.getLeftHandSide()), "HUMMER".substring(3, 6));dbQuery = database.getDBQuery(marq);
         dbQuery = database.getDBQuery(marq);
-        dbQuery.addComparison(new Uppercase(new Lowercase(new Substring(marq.column(marq.name), 3, 6))), last3LettersOfHUMMER);
+        dbQuery.addComparison(marq.column(marq.name).substring(3, 6).lowercase().uppercase(), last3LettersOfHUMMER);
         got = dbQuery.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(1));
 
         database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-//        marq.name.permittedValues(new Substring(new Uppercase(new Trim()),3,6), "HUMMER".substring(3, 6));dbQuery = database.getDBQuery(marq);
 
         dbQuery = database.getDBQuery(marq);
-        dbQuery.addComparison(new Substring(new Uppercase(new Trim(marq.column(marq.name))), 3, 6), last3LettersOfHUMMER);
+        dbQuery.addComparison(marq.column(marq.name).trim().uppercase().substring(3, 6), last3LettersOfHUMMER);
         got = dbQuery.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(2));
@@ -261,7 +248,8 @@ public class DataTransformTests extends AbstractTest {
         
         // A rather compilicated way to find out how many marques start with V
         query = database.getDBQuery(marq);
-        query.addComparison(nameValue.replace(new Substring(nameValue,1),new StringExpression("")), new DBPermittedValuesOperator("V"));
+        System.out.println("VALUE OF DBInteger(1): "+(new DBInteger(1)).toSQLString(database));
+        query.addComparison(nameValue.replace(nameValue.substring(1),new StringExpression("")), new DBPermittedValuesOperator("V"));
         query.setSortOrder(nameColumn);
         got = query.getAllInstancesOf(marq);
         database.print(got);
@@ -291,8 +279,9 @@ public class DataTransformTests extends AbstractTest {
         
         query = database.getDBQuery(marq);
         query.addComparison(nameValue.length(), new DBPermittedValuesOperator(6));
-        query.addComparison(new Append(new Substring(nameValue, 3,6), new Substring(nameValue, 0,3)),  new DBPermittedValuesOperator("OTATOY"));
+        query.addComparison(nameValue.substring(3,6).append(nameValue.substring(0,3)),  new DBPermittedValuesOperator("OTATOY"));
         query.setSortOrder(nameColumn);
+        System.out.println(query.getSQLForQuery());
         got = query.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(1));

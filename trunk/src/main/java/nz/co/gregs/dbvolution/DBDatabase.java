@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.DBTransactionStatement;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
@@ -127,7 +126,6 @@ public abstract class DBDatabase {
      *
      * Inserts DBRows and lists of DBRows into the correct tables automatically
      *
-     * @param <T>
      * @param objs
      * @return a DBActionList of all the actions performed
      * @throws SQLException
@@ -156,7 +154,6 @@ public abstract class DBDatabase {
      *
      * Deletes DBRows and lists of DBRows from the correct tables automatically
      *
-     * @param <T>
      * @param objs
      * @return a DBActionList of all the actions performed
      * @throws SQLException
@@ -186,6 +183,7 @@ public abstract class DBDatabase {
      * Updates DBRows and lists of DBRows in the correct tables automatically
      *
      * @param objs
+     * @return a DBActionList of the actions performed on the database
      * @throws SQLException
      */
     public <T> DBActionList update(T... objs) throws SQLException {

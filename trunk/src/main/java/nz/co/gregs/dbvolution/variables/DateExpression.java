@@ -21,14 +21,14 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 
 
-public class DateExpression implements DateVariable {
+public class DateExpression implements DateResult {
 
-    private DateVariable date1;
+    private DateResult date1;
 
     protected DateExpression() {
     }
     
-    public DateExpression(DateVariable dateVariable) {
+    public DateExpression(DateResult dateVariable) {
         date1 = dateVariable;
     }
     

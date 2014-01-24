@@ -16,7 +16,6 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.DateColumn;
 import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
 import nz.co.gregs.dbvolution.columns.NumberColumn;
@@ -28,7 +27,6 @@ import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBOperator;
-import nz.co.gregs.dbvolution.variables.LargeObjectVariable;
 
 import org.reflections.Reflections;
 
@@ -246,7 +244,7 @@ abstract public class DBRow implements Serializable {
 
     /**
      *
-     * @return
+     * @return the WHERE clause that will be used with the current parameters
      *
      */
     public String getWhereClause(DBDatabase db) {
@@ -345,7 +343,7 @@ abstract public class DBRow implements Serializable {
 
     /**
      *
-     * @return
+     * @return A list of all raw, unformatted column names
      */
     protected List<String> getColumnNames() {
         ArrayList<String> columnNames = new ArrayList<String>();
@@ -398,7 +396,7 @@ abstract public class DBRow implements Serializable {
      * </pre>
      *
      * @param qdt
-     * @return
+     * @return the PropertyWrapper associated with the Object suppled.
      */
     public PropertyWrapper getPropertyWrapperOf(Object qdt) {
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();

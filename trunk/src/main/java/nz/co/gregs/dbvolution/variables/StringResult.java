@@ -16,9 +16,13 @@
 package nz.co.gregs.dbvolution.variables;
 
 /**
+ * Useful for adding type information to the various DBExpression implementations
  *
  * @author greg
  */
-public interface DateVariable extends DBExpression{
+public interface StringResult extends DBExpression{
+    
+    @Override
+    public StringResult copy();
     
 }

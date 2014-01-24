@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Gregory Graham.
+ * Copyright 2013 greg.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,8 @@ package nz.co.gregs.dbvolution.variables;
 
 /**
  *
- * @author Gregory Graham
+ * @author greg
  */
-public interface NumberVariable extends DBExpression{
+public interface DateResult extends DBExpression{
     
-    @Override
-    public NumberVariable copy();
 }
