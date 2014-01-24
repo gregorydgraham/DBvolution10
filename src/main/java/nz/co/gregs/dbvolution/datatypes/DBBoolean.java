@@ -48,7 +48,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanVariable{
         return defn.getNull();
     }
 
-    public Boolean getBoolean() {
+    public Boolean booleanValue() {
         if (this.literalValue instanceof Boolean) {
             return (Boolean) this.literalValue;
         } else {
