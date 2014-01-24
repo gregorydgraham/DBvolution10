@@ -28,9 +28,9 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DataTransformTests extends AbstractTest {
+public class StringExpressionTests extends AbstractTest {
 
-    public DataTransformTests(Object testIterationName, Object db) {
+    public StringExpressionTests(Object testIterationName, Object db) {
         super(testIterationName, db);
     }
 

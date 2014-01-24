@@ -126,11 +126,13 @@ public abstract class DBDatabase {
      *
      * Inserts DBRows and lists of DBRows into the correct tables automatically
      *
+     * @param <T>  a list of DBRows or a List of DBRows
      * @param objs
      * @return a DBActionList of all the actions performed
      * @throws SQLException
      */
-    public <T> DBActionList insert(T... objs) throws SQLException {
+    @SafeVarargs
+    public final <T> DBActionList insert(T... objs) throws SQLException {
         DBActionList changes = new DBActionList();
         for (T obj : objs) {
             if (obj instanceof List) {
@@ -154,11 +156,13 @@ public abstract class DBDatabase {
      *
      * Deletes DBRows and lists of DBRows from the correct tables automatically
      *
+     * @param <T>  a list of DBRows or a List of DBRows
      * @param objs
      * @return a DBActionList of all the actions performed
      * @throws SQLException
      */
-    public <T> DBActionList delete(T... objs) throws SQLException {
+    @SafeVarargs
+    public final <T> DBActionList delete(T... objs) throws SQLException {
         DBActionList changes = new DBActionList();
         for (T obj : objs) {
             if (obj instanceof List) {
@@ -182,11 +186,13 @@ public abstract class DBDatabase {
      *
      * Updates DBRows and lists of DBRows in the correct tables automatically
      *
+     * @param <T>  a list of DBRows or a List of DBRows
      * @param objs
      * @return a DBActionList of the actions performed on the database
      * @throws SQLException
      */
-    public <T> DBActionList update(T... objs) throws SQLException {
+    @SafeVarargs
+    public final <T> DBActionList update(T... objs) throws SQLException {
         DBActionList actions = new DBActionList();
         for (T obj : objs) {
             if (obj instanceof List) {

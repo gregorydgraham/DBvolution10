@@ -26,15 +26,14 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
-import nz.co.gregs.dbvolution.variables.NumberExpression;
 import nz.co.gregs.dbvolution.variables.StringExpression;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DataGeneratorTests extends AbstractTest {
+public class NumberExpressionTests extends AbstractTest {
 
-    public DataGeneratorTests(Object testIterationName, Object db) {
+    public NumberExpressionTests(Object testIterationName, Object db) {
         super(testIterationName, db);
     }
 

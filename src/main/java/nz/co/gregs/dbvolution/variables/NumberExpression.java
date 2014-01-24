@@ -291,9 +291,8 @@ public class NumberExpression implements NumberResult {
      * Implements support for CEIL()
      *
      * <p>
-     * Note: CEIL(-1.5) == -1
+     * Note: (new DBNumber(-1.5)).ceil() == -1
      *
-     * @param equation
      * @return the value of the equation rounded up to the nearest integer.
      */
     public NumberExpression roundUp() {
@@ -309,7 +308,6 @@ public class NumberExpression implements NumberResult {
     /**
      * Implements support for ROUND()
      *
-     * @param equation
      * @return the equation rounded to the nearest integer.
      */
     public NumberExpression round() {
@@ -326,10 +324,9 @@ public class NumberExpression implements NumberResult {
      * Implements support for FLOOR()
      *
      * <p>
-     * note that this is not the same as trunc() as roundDown(-1.5) == -2 and
-     * trunc(-1.5) == -1
+     * note that this is not the same as {@code trunc()} as
+     * {@code roundDown(-1.5) == -2} and {@code trunc(-1.5) == -1}
      *
-     * @param equation
      * @return the value of the equation rounded down to the nearest integer.
      */
     public NumberExpression roundDown() {
@@ -346,10 +343,9 @@ public class NumberExpression implements NumberResult {
      * Implements support for TRUNC()
      *
      * <p>
-     * note that this is not the same as roundDown() as roundDown(-1.5) == -2
-     * and trunc(-1.5) == -1
+     * note that this is not the same as roundDown() as
+     * {@code roundDown(-1.5) == -2} and {@code trunc(-1.5) == -1}
      *
-     * @param equation
      * @return the value of the equation with the decimal part removed.
      */
     public NumberExpression trunc() {
@@ -488,9 +484,7 @@ public class NumberExpression implements NumberResult {
             DBBinaryArithmetic newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.first = first.copy();
@@ -526,9 +520,7 @@ public class NumberExpression implements NumberResult {
             DBNonaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             return newInstance;
@@ -567,15 +559,15 @@ public class NumberExpression implements NumberResult {
             DBUnaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.only = only.copy();
             return newInstance;
         }
-    }    private static abstract class DBBinaryFunction implements NumberResult {
+    }
+
+    private static abstract class DBBinaryFunction implements NumberResult {
 
         private DBExpression first;
         private DBExpression second;
@@ -600,9 +592,7 @@ public class NumberExpression implements NumberResult {
             DBBinaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.first = first.copy();
@@ -625,7 +615,6 @@ public class NumberExpression implements NumberResult {
         }
 
     }
-
 
     private static abstract class DBTrinaryFunction implements NumberResult {
 
@@ -652,9 +641,9 @@ public class NumberExpression implements NumberResult {
 
         @Override
         public String toSQLString(DBDatabase db) {
-            return this.beforeValue(db) + first.toSQLString(db) 
-                    + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))  
-                    + this.getSeparator(db) + (third == null ? "" : third.toSQLString(db)) 
+            return this.beforeValue(db) + first.toSQLString(db)
+                    + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))
+                    + this.getSeparator(db) + (third == null ? "" : third.toSQLString(db))
                     + this.afterValue(db);
         }
 
@@ -663,13 +652,11 @@ public class NumberExpression implements NumberResult {
             DBTrinaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
+            } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
-            newInstance.first = first==null?null:first.copy();
-            newInstance.second = second==null?null:second.copy();
+            newInstance.first = first == null ? null : first.copy();
+            newInstance.second = second == null ? null : second.copy();
             return newInstance;
         }
 
