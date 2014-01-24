@@ -44,7 +44,7 @@ public class DBBooleanEditor extends PropertyEditorSupport {
             type = new DBBoolean();
         } else {
             type = new DBBoolean();
-            type.setValue(text.toLowerCase().matches("true"));
+            type.setValue(text.equalsIgnoreCase("true"));
         }
         setValue(type);
     }

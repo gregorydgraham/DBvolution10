@@ -34,10 +34,6 @@ public class DBDateOnly extends DBDate {
         super(timestamp);
     }
 
-    public DBDateOnly(String str) {
-        super(str);
-    }
-    
     @Override
     public String getSQLDatatype() {
         return "DATE";
