@@ -63,10 +63,10 @@ public class DBQueryTest extends AbstractTest {
                 + "MARQUE.CREATION_DATE DB1712481749, \n"
                 + "MARQUE.ENABLED DB637053442, \n"
                 + "MARQUE.FK_CARCOMPANY DB1664116480 FROM car_company, \n"
-                + "marque WHERE 1=1 and CAR_COMPANY.NAME = 'TOYOTA' \n"
-                + "and CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY ;";
+                + "marque WHERE 1=1 and (CAR_COMPANY.NAME = 'TOYOTA') \n"
+                + "and (CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY) ;";
         if (dbQuery.isUseANSISyntax()) {
-            expectedResult = "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) where 1=1 and __78874071.name = 'toyota' ;";
+            expectedResult = "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
         }
 
         System.out.println(expectedResult);

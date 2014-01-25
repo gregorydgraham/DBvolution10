@@ -25,8 +25,8 @@ public class BooleanExpression implements BooleanResult {
     public BooleanExpression() {
     }
 
-    public BooleanExpression(BooleanResult dateVariable) {
-        bool1 = dateVariable;
+    public BooleanExpression(BooleanResult booleanResult) {
+        bool1 = booleanResult;
     }
 
     public BooleanExpression(Boolean bool) {

@@ -267,7 +267,7 @@ abstract public class DBRow implements Serializable {
                     possibleWhereClause = qdt.getWhereClause(db, defn.formatTableAndColumnName(this, prop.columnName()));
                 }
                 if (!possibleWhereClause.replaceAll(" ", "").isEmpty()){
-                    whereClause.add(possibleWhereClause);
+                    whereClause.add("("+possibleWhereClause+")");
                 }
             }
         }
