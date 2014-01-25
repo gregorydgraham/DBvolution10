@@ -13,28 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 
+public class BooleanExpression implements BooleanResult {
 
-public class BooleanExpression implements BooleanVariable {
-
-    private BooleanVariable bool1;
+    private BooleanResult bool1;
 
     public BooleanExpression() {
     }
-    
-    public BooleanExpression(BooleanVariable dateVariable) {
+
+    public BooleanExpression(BooleanResult dateVariable) {
         bool1 = dateVariable;
     }
-    
+
     public BooleanExpression(Boolean bool) {
         bool1 = new DBBoolean(bool);
     }
-    
+
     @Override
     public String toSQLString(DBDatabase db) {
         return bool1.toSQLString(db);
@@ -44,5 +42,31 @@ public class BooleanExpression implements BooleanVariable {
     public BooleanExpression copy() {
         return new BooleanExpression(this.bool1);
     }
-    
+
+    /**
+     * Create An Appropriate BooleanExpression Object For This Object
+     *
+     * <p>The expression framework requires a *Expression to work with. The
+     * easiest way to get that is the {@code DBRow.column()} method.
+     *
+     * <p>However if you wish your expression to start with a literal value it
+     * is a little trickier.
+     *
+     * <p>This method provides the easy route to a *Expression from a literal
+     * value. Just call, for instance,
+     * {@code StringExpression.value("STARTING STRING")} to get a
+     * StringExpression and start the expression chain.
+     *
+     * <ul>
+     * <li>Only object classes that are appropriate need to be handle by the
+     * DBExpression subclass.<li>
+     * <li>The implementation should be {@code static}</li>
+     *
+     * @param bool
+     * @return a DBExpression instance that is appropriate to the subclass and
+     * the value supplied.
+     */
+    public static BooleanExpression value(Boolean bool) {
+        return new BooleanExpression(bool);
+    }
 }

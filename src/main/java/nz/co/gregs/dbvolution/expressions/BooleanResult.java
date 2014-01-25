@@ -19,9 +19,9 @@ package nz.co.gregs.dbvolution.expressions;
  *
  * @author greg
  */
-public interface BooleanVariable extends DBExpression{
+public interface BooleanResult extends DBExpression{
     
     @Override
-    public BooleanVariable copy();
+    public BooleanResult copy();
     
 }
