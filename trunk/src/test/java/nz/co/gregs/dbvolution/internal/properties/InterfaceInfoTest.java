@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -13,8 +13,8 @@ import java.util.Map;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.InterfaceInfo.ParameterBounds;
-import nz.co.gregs.dbvolution.internal.InterfaceInfo.UnsupportedType;
+import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.ParameterBounds;
+import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
 
 import org.junit.Test;
 

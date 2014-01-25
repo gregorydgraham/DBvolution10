@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -17,8 +17,8 @@ import nz.co.gregs.dbvolution.datatypes.SimpleValueQueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
-import nz.co.gregs.dbvolution.internal.InterfaceInfo.ParameterBounds;
-import nz.co.gregs.dbvolution.internal.InterfaceInfo.UnsupportedType;
+import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.ParameterBounds;
+import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
 
 /**
  * Handles annotation processing, business logic, validation rules, defaulting,

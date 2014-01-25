@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,8 +11,8 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.PropertyType;
-import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
+import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
+import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 
 /**
  * Wraps the class-type of an end-user's data model object. Generally it's

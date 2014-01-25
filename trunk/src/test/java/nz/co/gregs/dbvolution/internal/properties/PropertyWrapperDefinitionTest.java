@@ -1,5 +1,7 @@
 package nz.co.gregs.dbvolution.internal;
 
+import nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import nz.co.gregs.dbvolution.DBRow;

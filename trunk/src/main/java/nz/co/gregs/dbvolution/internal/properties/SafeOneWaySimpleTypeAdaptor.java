@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
 import java.lang.reflect.Method;
 
@@ -7,8 +7,8 @@ import org.apache.commons.logging.LogFactory;
 
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
-import nz.co.gregs.dbvolution.internal.InterfaceInfo.ParameterBounds;
-import nz.co.gregs.dbvolution.internal.InterfaceInfo.UnsupportedType;
+import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.ParameterBounds;
+import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
 
 /**
  * Internal class that wraps one direction of a {@link DBTypeAdaptor}

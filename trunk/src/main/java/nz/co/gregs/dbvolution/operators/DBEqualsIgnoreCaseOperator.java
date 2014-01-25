@@ -41,7 +41,7 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             return dbIsNullOperator.generateWhereLine(db, columnName);
         }
-        return defn.beginAndLine() + defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
+        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
     }
 
     @Override

@@ -1,5 +1,9 @@
 package nz.co.gregs.dbvolution.internal;
 
+import nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapper;
+import nz.co.gregs.dbvolution.internal.properties.DBRowInstanceWrapper;
+import nz.co.gregs.dbvolution.internal.properties.DBRowWrapperFactory;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;

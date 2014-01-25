@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;

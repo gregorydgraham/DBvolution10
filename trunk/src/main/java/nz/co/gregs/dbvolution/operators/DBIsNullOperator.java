@@ -27,7 +27,7 @@ public class DBIsNullOperator extends DBOperator {
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
-        return database.getDefinition().beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator());
+        return  columnName + (invertOperator ? getInverse() : getOperator());
     }
 
     private String getOperator() {

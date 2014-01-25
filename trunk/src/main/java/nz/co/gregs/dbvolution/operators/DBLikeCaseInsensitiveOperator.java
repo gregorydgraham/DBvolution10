@@ -54,7 +54,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
             throw new RuntimeException("Get Operator Returns NULL: the getOperator() method returned null when it should return a String of the database's operator.");
         } else {
             DBDefinition defn = db.getDefinition();
-            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(firstValue.toSQLString(db)) + ")";
+            return (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(firstValue.toSQLString(db)) + ")";
         }
     }
 
