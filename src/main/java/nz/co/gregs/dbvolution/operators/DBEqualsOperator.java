@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQD
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.variables.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *

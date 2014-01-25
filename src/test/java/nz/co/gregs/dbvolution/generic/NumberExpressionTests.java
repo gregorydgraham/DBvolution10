@@ -15,9 +15,7 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
-import nz.co.gregs.dbvolution.variables.DBCurrentDate;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -26,7 +24,7 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
-import nz.co.gregs.dbvolution.variables.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,27 +33,6 @@ public class NumberExpressionTests extends AbstractTest {
 
     public NumberExpressionTests(Object testIterationName, Object db) {
         super(testIterationName, db);
-    }
-
-    @Test
-    public void testDateFunctions() throws SQLException {
-//        database.setPrintSQLBeforeExecuting(true);
-        Marque marq = new Marque();
-        marq.creationDate.permittedRangeInclusive(new DBCurrentDate(), null);
-        List<Marque> got = database.get(marq);
-//        database.print(got);
-        Assert.assertThat(got.size(), is(0));
-
-        database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-        marq.creationDate.permittedRangeInclusive(new DBCurrentDate(), null);
-        got = database.get(marq);
-//        database.print(got);
-        Assert.assertThat(got.size(), is(1));
-
-        marq.creationDate.permittedRangeInclusive(null, new DBCurrentDate());
-        got = database.get(marq);
-//        database.print(got);
-        Assert.assertThat(got.size(), is(21));
     }
 
     @Test

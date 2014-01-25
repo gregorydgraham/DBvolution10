@@ -21,8 +21,8 @@ import java.util.*;
 
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.variables.DBExpression;
-import nz.co.gregs.dbvolution.transforms.string.DBDataComparison;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DBDataComparison;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;

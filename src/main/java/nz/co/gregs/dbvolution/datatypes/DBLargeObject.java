@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.InputStream;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.variables.LargeObjectVariable;
+import nz.co.gregs.dbvolution.expressions.LargeObjectVariable;
 
 /**
  *

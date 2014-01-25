@@ -17,10 +17,10 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.variables.DBExpression;
-import nz.co.gregs.dbvolution.variables.DateResult;
-import nz.co.gregs.dbvolution.variables.NumberResult;
-import nz.co.gregs.dbvolution.variables.StringResult;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *

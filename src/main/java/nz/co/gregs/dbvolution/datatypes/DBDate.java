@@ -21,7 +21,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
-import nz.co.gregs.dbvolution.variables.DateResult;
+import nz.co.gregs.dbvolution.expressions.DateResult;
 
 /**
  *

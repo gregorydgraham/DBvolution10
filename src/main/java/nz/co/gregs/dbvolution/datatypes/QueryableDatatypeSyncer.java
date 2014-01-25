@@ -19,7 +19,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import nz.co.gregs.dbvolution.variables.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor;
