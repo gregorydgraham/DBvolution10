@@ -19,7 +19,7 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.variables.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
 
 public class DateColumn extends DateExpression implements ColumnProvider {
 

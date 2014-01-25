@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.columns;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.variables.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 public class StringColumn extends StringExpression implements ColumnProvider{
 

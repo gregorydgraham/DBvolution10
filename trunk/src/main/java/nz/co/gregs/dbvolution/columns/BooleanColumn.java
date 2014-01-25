@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.columns;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.variables.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 public class BooleanColumn extends BooleanExpression implements ColumnProvider {
     private final AbstractColumn column;

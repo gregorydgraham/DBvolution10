@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.variables.BooleanVariable;
+import nz.co.gregs.dbvolution.expressions.BooleanVariable;
 
 public class DBBoolean extends QueryableDatatype implements BooleanVariable{
 

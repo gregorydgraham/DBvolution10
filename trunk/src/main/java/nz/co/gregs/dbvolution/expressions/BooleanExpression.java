@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregorygraham.
+ * Copyright 2014 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.columns;
+
+package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 
-public class LargeObjectColumn extends LargeObjectExpression implements ColumnProvider {
 
-    private final AbstractColumn column;
+public class BooleanExpression implements BooleanVariable {
 
-    public LargeObjectColumn(DBRow row, DBLargeObject field) {
-        this.column = new AbstractColumn(row, field);
+    private BooleanVariable bool1;
+
+    public BooleanExpression() {
+    }
+    
+    public BooleanExpression(BooleanVariable dateVariable) {
+        bool1 = dateVariable;
+    }
+    
+    public BooleanExpression(Boolean bool) {
+        bool1 = new DBBoolean(bool);
     }
     
     @Override
     public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
+        return bool1.toSQLString(db);
     }
 
     @Override
-    public LargeObjectColumn copy() {
-        return (LargeObjectColumn)super.copy();
+    public BooleanExpression copy() {
+        return new BooleanExpression(this.bool1);
     }
-
-    @Override
-    public AbstractColumn getColumn() {
-        return column;
-    }}
+    
+}

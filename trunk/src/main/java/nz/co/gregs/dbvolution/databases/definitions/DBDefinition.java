@@ -20,8 +20,8 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
-import nz.co.gregs.dbvolution.variables.NumberResult;
-import nz.co.gregs.dbvolution.variables.StringResult;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *
@@ -404,7 +404,7 @@ public abstract class DBDefinition {
         return ("_"+tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
     }
 
-    public String getCurrentDateFunction() {
+    public String getCurrentDateFunctionName() {
         return " CURRENT_DATE "; 
     }
 
@@ -416,6 +416,7 @@ public abstract class DBDefinition {
         return " CURRENT_TIMESTAMP "; 
     }
 
+    @Deprecated
     public String getCurrentUserFunction() {
         return " CURRENT_USER ";
     }

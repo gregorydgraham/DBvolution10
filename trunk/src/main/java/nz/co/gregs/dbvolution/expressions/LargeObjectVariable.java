@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package nz.co.gregs.dbvolution.operators;
-
-import nz.co.gregs.dbvolution.expressions.DBExpression;
+package nz.co.gregs.dbvolution.expressions;
 
 
-public class DBPermittedPatternOperator extends DBLikeOperator {
-    
-    public static final long serialVersionUID = 1L;
+public interface LargeObjectVariable extends DBExpression {
 
-    public DBPermittedPatternOperator(DBExpression likeableValue) {
-        super(likeableValue);
-    }
-
-    public DBPermittedPatternOperator() {
-    }
+    @Override
+    public LargeObjectVariable copy();
     
 }

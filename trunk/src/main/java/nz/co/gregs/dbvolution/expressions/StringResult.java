@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregory.graham.
+ * Copyright 2013 greg.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nz.co.gregs.dbvolution.expressions;
 
-package nz.co.gregs.dbvolution.operators;
-
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-
-
-public class DBPermittedPatternOperator extends DBLikeOperator {
+/**
+ * Useful for adding type information to the various DBExpression implementations
+ *
+ * @author greg
+ */
+public interface StringResult extends DBExpression{
     
-    public static final long serialVersionUID = 1L;
-
-    public DBPermittedPatternOperator(DBExpression likeableValue) {
-        super(likeableValue);
-    }
-
-    public DBPermittedPatternOperator() {
-    }
+    @Override
+    public StringResult copy();
     
 }

@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
-import nz.co.gregs.dbvolution.variables.NumberResult;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
 
 /**
  *
