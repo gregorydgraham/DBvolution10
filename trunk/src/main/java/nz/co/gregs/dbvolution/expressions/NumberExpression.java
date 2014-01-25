@@ -47,20 +47,45 @@ public class NumberExpression implements NumberResult {
         return new NumberExpression(getInputNumber());
     }
 
+    /**
+     * Create An Appropriate Expression Object For This Object
+     *
+     * <p>The expression framework requires a *Expression to work with. The
+     * easiest way to get that is the {@code DBRow.column()} method.
+     *
+     * <p>However if you wish your expression to start with a literal value it
+     * is a little trickier.
+     *
+     * <p>This method provides the easy route to a *Expression from a literal
+     * value. Just call, for instance,
+     * {@code StringExpression.value("STARTING STRING")} to get a
+     * StringExpression and start the expression chain.
+     *
+     * <ul>
+     * <li>Only object classes that are appropriate need to be handle by the
+     * DBExpression subclass.<li>
+     * <li>The implementation should be {@code static}</li>
+     *
+     * @param object
+     * @return a DBExpression instance that is appropriate to the subclass and
+     * the value supplied.
+     */
+    public static NumberExpression value(Number object) {
+        return new NumberExpression(object);
+    }
+
     public NumberExpression bracket() {
         return new NumberExpression(
                 new DBUnaryFunction(this) {
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return "";
-                    }
-                }
-        );
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "";
+            }
+        });
     }
 
     public NumberExpression exp() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "exp";
@@ -70,7 +95,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression cos() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "cos";
@@ -80,7 +104,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression cosh() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "cosh";
@@ -90,7 +113,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression sin() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "sin";
@@ -100,7 +122,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression sinh() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "sinh";
@@ -110,7 +131,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression tan() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "tan";
@@ -120,7 +140,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression tanh() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "tanh";
@@ -130,7 +149,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression abs() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "abs";
@@ -140,7 +158,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression arccos() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "acos";
@@ -150,7 +167,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression arcsin() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "asin";
@@ -160,7 +176,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression arctan() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "atan";
@@ -179,7 +194,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression cotangent() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "cot";
@@ -189,7 +203,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression degrees() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "degrees";
@@ -199,7 +212,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression radians() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "radians";
@@ -209,7 +221,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression log() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "log";
@@ -219,7 +230,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression logBase10() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "log10";
@@ -229,7 +239,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression power(NumberExpression n) {
         return new NumberExpression(new DBBinaryFunction(this, n) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "power";
@@ -239,7 +248,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression random() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "rand";
@@ -249,7 +257,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression sign() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "sign";
@@ -259,7 +266,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression squareRoot() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "sqrt";
@@ -269,7 +275,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression standardDev() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "stddev";
@@ -279,7 +284,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression variance() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "var";
@@ -297,7 +301,6 @@ public class NumberExpression implements NumberResult {
      */
     public NumberExpression roundUp() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "ceil";
@@ -312,7 +315,6 @@ public class NumberExpression implements NumberResult {
      */
     public NumberExpression round() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "round";
@@ -331,7 +333,6 @@ public class NumberExpression implements NumberResult {
      */
     public NumberExpression roundDown() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "floor";
@@ -350,7 +351,6 @@ public class NumberExpression implements NumberResult {
      */
     public NumberExpression trunc() {
         return new NumberExpression(new DBUnaryFunction(this) {
-
             @Override
             String getFunctionName(DBDatabase db) {
                 return "trunc";
@@ -360,7 +360,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression minus(NumberExpression equation) {
         return new NumberExpression(new DBBinaryArithmetic(this, equation) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " - ";
@@ -371,7 +370,6 @@ public class NumberExpression implements NumberResult {
     public NumberExpression minus(Number num) {
         final NumberExpression minusThisExpression = new NumberExpression(num);
         final DBBinaryArithmetic minusExpression = new DBBinaryArithmetic(this, minusThisExpression) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " - ";
@@ -382,7 +380,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression plus(NumberResult number) {
         return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " + ";
@@ -392,7 +389,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression plus(Number num) {
         return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(num)) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " + ";
@@ -402,7 +398,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression times(NumberResult number) {
         return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " * ";
@@ -412,7 +407,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression times(Number num) {
         return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(num)) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " * ";
@@ -422,7 +416,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression dividedBy(NumberResult number) {
         return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " / ";
@@ -432,7 +425,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression dividedBy(Number num) {
         return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(num)) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " / ";
@@ -442,7 +434,6 @@ public class NumberExpression implements NumberResult {
 
     public NumberExpression mod(NumberResult number) {
         return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " % ";
@@ -613,7 +604,6 @@ public class NumberExpression implements NumberResult {
         protected String afterValue(DBDatabase db) {
             return ") ";
         }
-
     }
 
     private static abstract class DBTrinaryFunction implements NumberResult {
@@ -673,6 +663,5 @@ public class NumberExpression implements NumberResult {
         protected String afterValue(DBDatabase db) {
             return ") ";
         }
-
     }
 }

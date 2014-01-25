@@ -43,5 +43,5 @@ public interface DBExpression {
      *
      * @return a copy of this {@code DBValue}
      */
-    public DBExpression copy();
+    public DBExpression copy();    
 }

@@ -47,6 +47,32 @@ public class StringExpression implements StringResult {
         return new StringExpression(this);
     }
 
+    /**
+     * Create An Appropriate Expression Object For This Object
+     *
+     * <p>The expression framework requires a *Expression to work with. The
+     * easiest way to get that is the {@code DBRow.column()} method.
+     *
+     * <p>However if you wish your expression to start with a literal value it
+     * is a little trickier.
+     *
+     * <p>This method provides the easy route to a *Expression from a literal
+     * value. Just call, for instance,
+     * {@code StringExpression.value("STARTING STRING")} to get a
+     * StringExpression and start the expression chain.
+     *
+     * <ul>
+     * <li>Only object classes that are appropriate need to be handle by the
+     * DBExpression subclass.<li>
+     * <li>The implementation should be {@code static}</li>
+     *
+     * @param string
+     * @return a DBExpression instance that is appropriate to the subclass and
+     * the value supplied.
+     */
+    public static StringExpression value(String string) {
+            return new StringExpression(string);
+    }
     public StringExpression append(StringResult string2) {
         return new StringExpression(new DBBinaryStringArithmetic(this, string2) {
 
