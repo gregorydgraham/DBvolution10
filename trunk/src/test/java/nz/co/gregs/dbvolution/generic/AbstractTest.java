@@ -48,7 +48,7 @@ public class AbstractTest {
     DBTable<CarCompany> carCompanies;
     public List<Marque> marqueRows = new ArrayList<Marque>();
     public List<CarCompany> carTableRows = new ArrayList<CarCompany>();
-    static final FlexibleDateFormat tedhiFormat = FlexibleDateFormat.getPatternInstance("dd/M/yyyy", Locale.UK);
+    static final FlexibleDateFormat tedhiFormat = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
     static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
     public String firstDateStr = "23/March/2013";
     public String secondDateStr = "2/April/2013";

@@ -17,11 +17,8 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.PropertyWrapper;
-import nz.co.gregs.dbvolution.expressions.NumberResult;
-import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *
@@ -487,5 +484,33 @@ public abstract class DBDefinition {
 
     public String getCurrentUserFunctionName() {
         return "CURRENT_USER";
+    }
+
+    public String getYearFunction(String dateExpression) {
+        return "EXTRACT(YEAR FROM "+dateExpression+")";
+    }
+
+    public String getMonthFunction(String dateExpression) {
+        return "EXTRACT(MONTH FROM "+dateExpression+")";
+    }
+
+    public String getDayFunction(String dateExpression) {
+        return "EXTRACT(DAY FROM "+dateExpression+")";
+    }
+
+    public String getHourFunction(String dateExpression) {
+        return "EXTRACT(HOUR FROM "+dateExpression+")";
+    }
+
+    public String getMinuteFunction(String dateExpression) {
+        return "EXTRACT(MINUTE FROM "+dateExpression+")";
+    }
+
+    public String getSecondFunction(String dateExpression) {
+        return "EXTRACT(SECOND FROM "+dateExpression+")";
+    }
+
+    public String getPositionFunction(String originalString, String stringToFind) {
+        return "POSITION("+stringToFind+" IN "+originalString+")";
     }
 }

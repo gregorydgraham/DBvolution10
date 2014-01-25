@@ -241,6 +241,15 @@ public class StringExpression implements StringResult {
         return string1;
     }
 
+    public NumberExpression locationOf(String searchString) {
+        return new NumberExpression(new BinaryComplicatedNumberFunction(this, value(searchString)) {
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getPositionFunction(this.first.toSQLString(db), this.second.toSQLString(db));
+            }
+        });
+    }
+
     private static abstract class DBBinaryStringArithmetic implements StringResult {
 
         private StringResult first;
@@ -442,5 +451,36 @@ public class StringExpression implements StringResult {
             return ") ";
         }
 
+    }
+    
+    private static abstract class BinaryComplicatedNumberFunction implements NumberResult {
+
+        protected StringExpression first;
+        protected StringExpression second;
+
+        public BinaryComplicatedNumberFunction() {
+            this.first = null;
+        }
+
+        public BinaryComplicatedNumberFunction(StringExpression first, StringExpression second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public abstract String toSQLString(DBDatabase db);
+
+        @Override
+        public StringExpression.BinaryComplicatedNumberFunction copy() {
+            StringExpression.BinaryComplicatedNumberFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (    InstantiationException | IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first.copy();
+            newInstance.second = second.copy();
+            return newInstance;
+        }
     }
 }
