@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,18 +32,6 @@ public class NumberExpressionTests extends AbstractTest {
 
     public NumberExpressionTests(Object testIterationName, Object db) {
         super(testIterationName, db);
-    }
-
-    @Test
-    public void testUserFunctions() throws SQLException {
-//        database.setPrintSQLBeforeExecuting(true);
-        Marque marq = new Marque();
-        marq.name.permittedValues(StringExpression.currentUser());
-        DBQuery query = database.getDBQuery(marq);
-        List<Marque> got = query.getAllInstancesOf(marq);
-        database.print(got);
-        System.out.println(query.getSQLForQuery());
-        Assert.assertThat(got.size(), is(0));
     }
 
     @Test
@@ -100,9 +87,9 @@ public class NumberExpressionTests extends AbstractTest {
         dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
                 marq.column(marq.uidMarque)
-                        .plus(2).minus(4).bracket()
-                        .times(6).bracket()
-                        .dividedBy(3),
+                .plus(2).minus(4).bracket()
+                .times(6).bracket()
+                .dividedBy(3),
                 new DBEqualsOperator(-2));
         allRows = dbQuery.getAllRows();
 //        database.print(allRows);
@@ -144,7 +131,7 @@ public class NumberExpressionTests extends AbstractTest {
         CarCompany carCo = new CarCompany();
         DBQuery dbQuery = database.getDBQuery(carCo);
         dbQuery.addComparison(
-//                DBMath.trunc(DBMath.exp(DBMath.column(carCo, carCo.uidCarCompany)).times(1000)),
+                //                DBMath.trunc(DBMath.exp(DBMath.column(carCo, carCo.uidCarCompany)).times(1000)),
                 carCo.column(carCo.uidCarCompany).exp().times(1000).trunc(),
                 new DBEqualsOperator(7389));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -159,14 +146,14 @@ public class NumberExpressionTests extends AbstractTest {
         CarCompany carCo = new CarCompany();
         DBQuery dbQuery = database.getDBQuery(carCo);
         dbQuery.addComparison(
-//                DBMath.tan(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))),
+                //                DBMath.tan(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))),
                 carCo.column(carCo.uidCarCompany).degrees().tan(),
                 new DBGreaterThanOperator(new DBNumber(0)));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
-        for(CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)){
-            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue()))>0,
+        for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
+            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue())) > 0,
                     is(true));
         }
     }
@@ -176,29 +163,43 @@ public class NumberExpressionTests extends AbstractTest {
         CarCompany carCo = new CarCompany();
         DBQuery dbQuery = database.getDBQuery(carCo);
         dbQuery.addComparison(
-//                DBMath.tan(DBMath.degrees(DBMath.radians(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))))),
+                //                DBMath.tan(DBMath.degrees(DBMath.radians(DBMath.degrees(DBMath.column(carCo, carCo.uidCarCompany))))),
                 carCo.column(carCo.uidCarCompany).degrees().radians().degrees().tan(),
                 new DBGreaterThanOperator(new DBNumber(0)));
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
-        for(CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)){
-            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue()))>0,
+        for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
+            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue())) > 0,
                     is(true));
         }
     }
-    
+
     @Test
-    public void testPermittedValues() throws SQLException {
+    public void testLength() throws SQLException {
         CarCompany carCo = new CarCompany();
         carCo.uidCarCompany.permittedValues(carCo.column(carCo.name).length().minus(1));
         DBQuery dbQuery = database.getDBQuery(carCo);
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
-        for(CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)){
+        for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
             Assert.assertThat(carCompany.uidCarCompany.intValue(),
                     is(4));
+        }
+    }
+
+    @Test
+    public void testLocationOf() throws SQLException {
+        CarCompany carCo = new CarCompany();
+        carCo.uidCarCompany.permittedValues(carCo.column(carCo.name).locationOf("ord"));
+        DBQuery dbQuery = database.getDBQuery(carCo);
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+        for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
+            Assert.assertThat(carCompany.uidCarCompany.intValue(),
+                    is(2));
         }
     }
 }

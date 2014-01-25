@@ -100,6 +100,66 @@ public class DateExpression implements DateResult {
             }
         });
     }
+    
+    public NumberExpression year(){
+        return new NumberExpression(
+                new UnaryComplicatedNumberFunction(this) {
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getYearFunction(this.only.toSQLString(db));
+            }
+        });
+    }
+
+    public NumberExpression month(){
+        return new NumberExpression(
+                new UnaryComplicatedNumberFunction(this) {
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getMonthFunction(this.only.toSQLString(db));
+            }
+        });
+    }
+
+    public NumberExpression day(){
+        return new NumberExpression(
+                new UnaryComplicatedNumberFunction(this) {
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getDayFunction(this.only.toSQLString(db));
+            }
+        });
+    }
+
+    public NumberExpression hour(){
+        return new NumberExpression(
+                new UnaryComplicatedNumberFunction(this) {
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getHourFunction(this.only.toSQLString(db));
+            }
+        });
+    }
+
+    public NumberExpression minute(){
+        return new NumberExpression(
+                new UnaryComplicatedNumberFunction(this) {
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getMinuteFunction(this.only.toSQLString(db));
+            }
+        });
+    }
+
+    public NumberExpression second(){
+        return new NumberExpression(
+                new UnaryComplicatedNumberFunction(this) {
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getSecondFunction(this.only.toSQLString(db));
+            }
+        });
+    }
 
     private static abstract class DBNonaryFunction implements DateResult {
 
@@ -129,6 +189,34 @@ public class DateExpression implements DateResult {
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
+            return newInstance;
+        }
+    }
+
+    private static abstract class UnaryComplicatedNumberFunction implements NumberResult {
+
+        protected DateExpression only;
+
+        public UnaryComplicatedNumberFunction() {
+            this.only = null;
+        }
+
+        public UnaryComplicatedNumberFunction(DateExpression only) {
+            this.only = only;
+        }
+
+        @Override
+        public abstract String toSQLString(DBDatabase db);
+
+        @Override
+        public DateExpression.UnaryComplicatedNumberFunction copy() {
+            DateExpression.UnaryComplicatedNumberFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (    InstantiationException | IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.only = only.copy();
             return newInstance;
         }
     }

@@ -18,21 +18,22 @@ package nz.co.gregs.dbvolution.generic;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
-
 
 public class DateExpressionTest extends AbstractTest {
 
     public DateExpressionTest(Object testIterationName, Object db) {
         super(testIterationName, db);
     }
-    
+
     @Test
-    public void testDateFunctions() throws SQLException {
+    public void testCurrentDateFunction() throws SQLException {
 //        database.setPrintSQLBeforeExecuting(true);
         Marque marq = new Marque();
         marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
@@ -52,4 +53,69 @@ public class DateExpressionTest extends AbstractTest {
         Assert.assertThat(got.size(), is(21));
     }
 
+    @Test
+    public void testYearFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        DBQuery query = database.getDBQuery(marq);
+        query.addComparison(
+                marq.column(marq.creationDate).year(),
+                new DBEqualsOperator(2014));
+        List<Marque> got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(0));
+
+        query = database.getDBQuery(marq);
+        query.addComparison(
+                marq.column(marq.creationDate).year(),
+                new DBEqualsOperator(2013));
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(21));
+
+    }
+
+    @Test
+    public void testMonthFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        DBQuery query = database.getDBQuery(marq);
+        query.addComparison(
+                marq.column(marq.creationDate).month(),
+                new DBEqualsOperator(3));
+        List<Marque> got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(18));
+
+        query = database.getDBQuery(marq);
+        query.addComparison(
+                marq.column(marq.creationDate).month(),
+                new DBEqualsOperator(4));
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(3));
+
+    }
+
+    @Test
+    public void testDayFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        DBQuery query = database.getDBQuery(marq);
+        query.addComparison(
+                marq.column(marq.creationDate).day(),
+                new DBEqualsOperator(23));
+        List<Marque> got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(18));
+
+        query = database.getDBQuery(marq);
+        query.addComparison(
+                marq.column(marq.creationDate).day(),
+                new DBEqualsOperator(2));
+        got = query.getAllInstancesOf(marq);
+        database.print(got);
+        Assert.assertThat(got.size(), is(3));
+
+    }
 }

@@ -35,6 +35,18 @@ public class StringExpressionTests extends AbstractTest {
     }
 
     @Test
+    public void testUserFunctions() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+        Marque marq = new Marque();
+        marq.name.permittedValues(StringExpression.currentUser());
+        DBQuery query = database.getDBQuery(marq);
+        List<Marque> got = query.getAllInstancesOf(marq);
+        database.print(got);
+        System.out.println(query.getSQLForQuery());
+        Assert.assertThat(got.size(), is(0));
+    }
+
+    @Test
     public void testTrimTransform() throws SQLException {
         database.setPrintSQLBeforeExecuting(true);
         database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
