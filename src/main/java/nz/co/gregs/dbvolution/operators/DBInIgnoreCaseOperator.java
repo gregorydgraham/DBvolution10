@@ -39,7 +39,7 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
         DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append(defn.beginAndLine());
+        whereClause.append("");
         if (listOfPossibleValues.isEmpty()) {
             // prevent any rows from returning as an empty list means no rows can match
             whereClause.append(defn.getFalseOperation());

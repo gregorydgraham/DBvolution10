@@ -1,6 +1,6 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
-import static nz.co.gregs.dbvolution.internal.PropertyMatchers.*;
+import static nz.co.gregs.dbvolution.internal.properties.PropertyMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -137,7 +137,12 @@ public class TypeAdaptorTest {
         query.year.permittedRange("25", "3000");
 
         List<CustomerWithDBStringIntegerTypeAdaptor> rows = db.get(query);
-        assertThat(query.getWhereClause(db), matchesRegex(".*between 25 and 3000.*"));
+        List<String> whereClauses = query.getWhereClause(db);
+        String allClauses = "";
+        for(String clause: whereClauses){
+            allClauses += " and "+clause;
+        }
+        assertThat(allClauses, matchesRegex(".*between 25 and 3000.*"));
         assertThat(rows.size(), is(2));
     }
 

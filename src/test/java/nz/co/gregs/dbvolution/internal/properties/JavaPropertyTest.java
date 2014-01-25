@@ -1,6 +1,6 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
-import static nz.co.gregs.dbvolution.internal.PropertyMatchers.*;
+import static nz.co.gregs.dbvolution.internal.properties.PropertyMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -15,8 +15,8 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
-import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.PropertyType;
-import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
+import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
+import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 
 import org.junit.Test;
 

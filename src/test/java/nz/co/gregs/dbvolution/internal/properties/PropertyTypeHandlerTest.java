@@ -1,6 +1,6 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
-import static nz.co.gregs.dbvolution.internal.PropertyMatchers.*;
+import static nz.co.gregs.dbvolution.internal.properties.PropertyMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -19,7 +19,6 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
-import nz.co.gregs.dbvolution.internal.TypeAdaptorTest.CustomerWithStringIntegerTypeAdaptor;
 
 import org.junit.Rule;
 import org.junit.Test;

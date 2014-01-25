@@ -61,7 +61,7 @@ public class DBInOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
         DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append(defn.beginAndLine());
+//        whereClause.append(defn.beginWhereClauseLine());
         if (listOfPossibleValues.isEmpty()) {
             // prevent any rows from returning as an empty list means no rows can match
             whereClause.append(defn.getFalseOperation());

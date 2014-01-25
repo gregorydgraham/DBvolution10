@@ -23,7 +23,8 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
  *
@@ -41,6 +42,7 @@ public class DBTable<E extends DBRow> {
     private Long rowLimit;
     private List<PropertyWrapper> sortOrder = null;
     private boolean blankQueryAllowed = false;
+    private QueryOptions options = new QueryOptions();
 
     /**
      *
@@ -115,7 +117,7 @@ public class DBTable<E extends DBRow> {
             selectStatement
                     .append(selectQueryAnnotation.value())
                     .append(defn.beginWhereClause())
-                    .append(defn.getTrueOperation());
+                    .append(defn.getWhereClauseBeginningCondition(options));
         } else {
             selectStatement.append(defn.beginSelectStatement());
             if (rowLimit != null) {
@@ -128,7 +130,7 @@ public class DBTable<E extends DBRow> {
                     .append(defn.beginFromClause())
                     .append(defn.formatTableName(template))
                     .append(defn.beginWhereClause())
-                    .append(defn.getTrueOperation());
+                    .append(defn.getWhereClauseBeginningCondition(options));
         }
 
         return selectStatement.toString();
@@ -303,7 +305,7 @@ public class DBTable<E extends DBRow> {
     public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
 
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
+        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -311,7 +313,7 @@ public class DBTable<E extends DBRow> {
 
     public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + pkValue + " ";
+        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + pkValue + " ";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -319,7 +321,7 @@ public class DBTable<E extends DBRow> {
 
     public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginAndLine() + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
+        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
         String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -375,7 +377,16 @@ public class DBTable<E extends DBRow> {
         if (!this.blankQueryAllowed && row.willCreateBlankQuery(database)) {
             throw new AccidentalBlankQueryException();
         }
-        return row.getWhereClause(database);
+        StringBuilder whereClause = new StringBuilder();
+        String lineSep = System.getProperty("line.separator");
+        DBDefinition defn = database.getDefinition();
+        List<String> tabRowCriteria = row.getWhereClause(database);
+        if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
+            for (String clause : tabRowCriteria) {
+                whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+            }
+        }
+        return whereClause.toString();
     }
 
     /**
@@ -479,7 +490,7 @@ public class DBTable<E extends DBRow> {
     public final DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : newRows) {
-                actions.addAll(DBInsert.save(database, row));
+            actions.addAll(DBInsert.save(database, row));
         }
         return actions;
     }
@@ -487,7 +498,7 @@ public class DBTable<E extends DBRow> {
     public DBActionList insert(List<E> newRows) throws SQLException {
         DBActionList changes = new DBActionList();
         for (DBRow row : newRows) {
-                changes.addAll(DBInsert.save(database, row));
+            changes.addAll(DBInsert.save(database, row));
         }
         return changes;
     }
@@ -674,5 +685,30 @@ public class DBTable<E extends DBRow> {
     public DBTable<E> setBlankQueryAllowed(boolean allow) {
         this.blankQueryAllowed = allow;
         return this;
+    }
+
+    /**
+     * Set the query to return rows that match any conditions
+     *
+     * <p>This means that all permitted*, excluded*, and comparisons are
+     * optional for any rows and rows will be returned if they match any of the
+     * conditions.
+     *
+     * <p>The conditions will be connected by OR in the SQL.
+     */
+    public void setToMatchAnyCondition() {
+        this.options.setMatchAny();
+    }
+
+    /**
+     * Set the query to only return rows that match all conditions
+     *
+     * <p>This is the default state
+     *
+     * <p>This means that all permitted*, excluded*, and comparisons are
+     * required for any rows and the conditions will be connected by AND.
+     */
+    public void setToMatchAllConditions() {
+        this.options.setMatchAll();
     }
 }

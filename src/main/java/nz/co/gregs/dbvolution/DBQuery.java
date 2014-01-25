@@ -25,9 +25,9 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DBDataComparison;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
 
@@ -50,6 +50,7 @@ public class DBQuery {
     private boolean cartesianJoinAllowed = false;
     private boolean blankQueryAllowed = false;
     private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
+    private QueryOptions options = new QueryOptions();
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -151,7 +152,7 @@ public class DBQuery {
             isLeftOuterJoin = true;
         }
         for (DBRow otherTable : previousTables) {
-            String join = otherTable.getRelationshipsAsSQL(this.database, newTable);
+            String join = otherTable.getRelationshipsAsSQL(this.database, newTable, options);
             if (join != null && !join.isEmpty()) {
                 joinClauses.add(join);
                 queryGraph.add(newTable.getClass(), otherTable.getClass());
@@ -170,13 +171,13 @@ public class DBQuery {
             }
             sqlToReturn += newTable.getTableName() + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
             if (joinClauses.isEmpty()) {
-                sqlToReturn += defn.beginOnClause() + defn.getTrueOperation() + defn.endOnClause();
+                sqlToReturn += defn.beginOnClause() + defn.getWhereClauseBeginningCondition(options) + defn.endOnClause();
             } else {
                 sqlToReturn += defn.beginOnClause();
                 String separator = "";
                 for (String join : joinClauses) {
                     sqlToReturn += separator + join;
-                    separator = defn.beginAndLine();
+                    separator = defn.beginWhereClauseLine(options);
                 }
                 sqlToReturn += defn.endOnClause();
             }
@@ -194,7 +195,7 @@ public class DBQuery {
         StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
         StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
         List<DBRow> joinedTables = new ArrayList<DBRow>();
-        StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getTrueOperation());
+        StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options));
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
         QueryGraph queryGraph = new QueryGraph();
@@ -230,9 +231,11 @@ public class DBQuery {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
             }
-            String tabRowCriteria = tabRow.getWhereClause(database, true);
+            List<String> tabRowCriteria = tabRow.getWhereClause(database, true);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
-                whereClause.append(lineSep).append(tabRowCriteria);
+                for(String clause : tabRowCriteria){
+                    whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+                }
             }
 
             if (!useANSISyntax) {
@@ -243,7 +246,7 @@ public class DBQuery {
             otherTables.addAll(allQueryTables);
         }
         for (DBDataComparison comp : comparisons) {
-            whereClause.append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database)));
+            whereClause.append(defn.beginWhereClauseLine(options)).append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database)));
         }
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
@@ -265,7 +268,7 @@ public class DBQuery {
     private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep) {
 
         for (DBRelationship rel : tabRow.getAdHocRelationships()) {
-            whereClause.append(defn.beginAndLine()).append(rel.generateSQL(database));
+            whereClause.append(defn.beginWhereClauseLine(options)).append(rel.generateSQL(database));
             queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
         }
 
@@ -283,7 +286,7 @@ public class DBQuery {
                         String formattedFK = defn.formatTableAliasAndColumnName(otherTab, fkColumnName);
                         whereClause
                                 .append(lineSep)
-                                .append(defn.beginAndLine())
+                                .append(defn.beginWhereClauseLine(options))
                                 .append(formattedPK)
                                 .append(defn.getEqualsComparator())
                                 .append(formattedFK);
@@ -690,5 +693,33 @@ public class DBQuery {
 
     public void addComparison(DBExpression leftHandSide, DBOperator operatorWithRightHandSideValues) {
         comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
+        results = null;
+    }
+    
+    /**
+     * Set the query to return rows that match any conditions
+     * 
+     * <p>This means that all permitted*, excluded*, and comparisons are optional 
+     * for any rows and rows will be returned if they match any of the conditions.
+     * 
+     * <p>The conditions will be connected by OR in the SQL.
+     */
+    public void setToMatchAnyCondition(){
+        options.setMatchAny();
+        results = null;
+    }
+    
+    
+    /**
+     * Set the query to only return rows that match all conditions
+     * 
+     * <p>This is the default state
+     * 
+     * <p>This means that all permitted*, excluded*, and comparisons are required 
+     * for any rows and the conditions will be connected by AND.
+     */
+    public void setToMatchAllConditions(){
+        options.setMatchAll();
+        results = null;
     }
 }

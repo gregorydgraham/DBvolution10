@@ -22,8 +22,8 @@ import java.util.Map;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor;
-import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor.Direction;
+import nz.co.gregs.dbvolution.internal.properties.SafeOneWaySimpleTypeAdaptor;
+import nz.co.gregs.dbvolution.internal.properties.SafeOneWaySimpleTypeAdaptor.Direction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

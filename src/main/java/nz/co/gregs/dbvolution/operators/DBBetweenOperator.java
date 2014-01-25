@@ -43,7 +43,7 @@ public class DBBetweenOperator extends DBOperator{
         String lowerSQLValue = firstValue.toSQLString(db);
 //        highValue.setDatabase(db);
         String upperSQLValue = secondValue.toSQLString(db);
-        String beginWhereLine = db.getDefinition().beginAndLine();
+        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
         return beginWhereLine + (invertOperator?"!(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
     }
 

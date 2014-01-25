@@ -1,9 +1,10 @@
 package nz.co.gregs.dbvolution.internal;
 
+import nz.co.gregs.dbvolution.internal.properties.SafeOneWaySimpleTypeAdaptor;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
-import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor.Direction;
+import nz.co.gregs.dbvolution.internal.properties.SafeOneWaySimpleTypeAdaptor.Direction;
 
 import org.junit.Test;
 

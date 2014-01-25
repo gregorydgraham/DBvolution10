@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 
 public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
@@ -43,7 +43,7 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
                 + defn.beginSetClause()
                 + getSetClause(db, row)
                 + defn.beginWhereClause()
-                + defn.getTrueOperation();
+                + defn.getWhereClauseBeginningCondition();
         for (PropertyWrapper prop : row.getPropertyWrappers()) {
             QueryableDatatype qdt = prop.getQueryableDatatype();
             if (qdt.isNull()) {
@@ -52,7 +52,7 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
                         + isNullOp.generateWhereLine(db, prop.columnName());
             } else {
                 sql = sql
-                        + defn.beginAndLine()
+                        + defn.beginWhereClauseLine()
                         + prop.columnName()
                         + defn.getEqualsComparator()
                         + (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));

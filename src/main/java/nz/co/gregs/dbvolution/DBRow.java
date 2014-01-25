@@ -22,10 +22,11 @@ import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.internal.DBRowInstanceWrapper;
-import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.internal.properties.DBRowInstanceWrapper;
+import nz.co.gregs.dbvolution.internal.properties.DBRowWrapperFactory;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 import org.reflections.Reflections;
@@ -248,25 +249,29 @@ abstract public class DBRow implements Serializable {
      * @return the WHERE clause that will be used with the current parameters
      *
      */
-    public String getWhereClause(DBDatabase db) {
+    public List<String> getWhereClause(DBDatabase db) {
         return getWhereClause(db, false);
     }
 
-    public String getWhereClause(DBDatabase db, boolean useTableAlias) {
+    public List<String> getWhereClause(DBDatabase db, boolean useTableAlias) {
         DBDefinition defn = db.getDefinition();
-        StringBuilder whereClause = new StringBuilder();
+        List<String> whereClause = new ArrayList<String>();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
         for (PropertyWrapper prop : props) {
             if (prop.isColumn()) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
+                String possibleWhereClause;
                 if (useTableAlias) {
-                    whereClause.append(qdt.getWhereClause(db, defn.formatTableAliasAndColumnName(this, prop.columnName())));
+                    possibleWhereClause = qdt.getWhereClause(db, defn.formatTableAliasAndColumnName(this, prop.columnName()));
                 } else {
-                    whereClause.append(qdt.getWhereClause(db, defn.formatTableAndColumnName(this, prop.columnName())));
+                    possibleWhereClause = qdt.getWhereClause(db, defn.formatTableAndColumnName(this, prop.columnName()));
+                }
+                if (!possibleWhereClause.replaceAll(" ", "").isEmpty()){
+                    whereClause.add(possibleWhereClause);
                 }
             }
         }
-        return whereClause.toString();
+        return whereClause;
     }
 
     /**
@@ -277,7 +282,7 @@ abstract public class DBRow implements Serializable {
      *
      */
     public boolean willCreateBlankQuery(DBDatabase db) {
-        String whereClause = getWhereClause(db);
+        List<String> whereClause = getWhereClause(db);
         return whereClause == null || whereClause.isEmpty();
     }
 
@@ -497,14 +502,14 @@ abstract public class DBRow implements Serializable {
         this.adHocRelationships.clear();
     }
 
-    List<String> getAdHocRelationshipSQL(DBDatabase db) {
-        List<String> sqlStrings = new ArrayList<String>();
-        DBDefinition defn = db.getDefinition();
-        for (DBRelationship rel : adHocRelationships) {
-            sqlStrings.add(defn.beginAndLine() + rel.generateSQL(db));
-        }
-        return sqlStrings;
-    }
+//    List<String> getAdHocRelationshipSQL(DBDatabase db) {
+//        List<String> sqlStrings = new ArrayList<String>();
+//        DBDefinition defn = db.getDefinition();
+//        for (DBRelationship rel : adHocRelationships) {
+//            sqlStrings.add(defn.beginWhereClauseLine() + rel.generateSQL(db));
+//        }
+//        return sqlStrings;
+//    }
 
     protected boolean hasLargeObjects() {
         if (hasBlobs == null) {
@@ -595,7 +600,7 @@ abstract public class DBRow implements Serializable {
      * @return the foreign keys and adhoc relationships as an SQL String or a
      * null pointer
      */
-    public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable) {
+    public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
         StringBuilder rels = new StringBuilder();
         DBDefinition defn = db.getDefinition();
 //        final String lineSeparator = System.getProperty("line.separator");
@@ -618,7 +623,7 @@ abstract public class DBRow implements Serializable {
                         .append(defn.getEqualsComparator())
                         .append(formattedReferencedColumn);
 
-                joinSeparator = defn.beginAndLine();
+                joinSeparator = defn.beginWhereClauseLine(options);
             }
         }
         List<DBRelationship> adHocs = getAdHocRelationships();
@@ -643,7 +648,7 @@ abstract public class DBRow implements Serializable {
                     .append(joinSeparator)
                     .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
-            joinSeparator = defn.beginAndLine();
+            joinSeparator = defn.beginWhereClauseLine(options);
         }
 
         adHocs = newTable.getAdHocRelationships();
@@ -668,7 +673,7 @@ abstract public class DBRow implements Serializable {
                     .append(joinSeparator)
                     .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
-            joinSeparator = defn.beginAndLine();
+            joinSeparator = defn.beginWhereClauseLine(options);
         }
 
         fks = newTable.getForeignKeyPropertyWrappers();
@@ -692,7 +697,7 @@ abstract public class DBRow implements Serializable {
                         .append(defn.getEqualsComparator())
                         .append(formattedForeignKey);
 
-                joinSeparator = defn.beginAndLine();
+                joinSeparator = defn.beginWhereClauseLine(options);
             }
         }
         return rels.toString();
