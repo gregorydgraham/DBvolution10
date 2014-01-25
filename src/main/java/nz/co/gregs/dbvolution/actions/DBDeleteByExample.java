@@ -54,7 +54,7 @@ public class DBDeleteByExample extends DBDelete {
     public List<String> getSQLStatements(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();
         String whereClause = "";
-        for (String clause : row.getWhereClause(db)){
+        for (String clause : row.getWhereClauses(db)){
             whereClause+= defn.beginAndLine()+clause;
         }
 

@@ -482,8 +482,8 @@ public abstract class DBDefinition {
         return firstString + "||" + secondString;
     }
 
-    public String getNextSequenceValue(String schemaName, String sequenceName) {
-        return " NEXTVAL( " + (schemaName == null ? "" : schemaName + ", ") + sequenceName + " ) ";
+    public String getNextSequenceValueFunctionName() {
+        return " NEXTVAL";
     }
 
     public String getConcatOperator() {

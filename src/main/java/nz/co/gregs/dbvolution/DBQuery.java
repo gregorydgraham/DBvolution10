@@ -231,7 +231,7 @@ public class DBQuery {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
                 joinedTables.add(tabRow);
             }
-            List<String> tabRowCriteria = tabRow.getWhereClause(database, true);
+            List<String> tabRowCriteria = tabRow.getWhereClauses(database, true);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 for(String clause : tabRowCriteria){
                     whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
