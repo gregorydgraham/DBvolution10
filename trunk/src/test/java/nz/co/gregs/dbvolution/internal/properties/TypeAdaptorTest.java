@@ -137,7 +137,7 @@ public class TypeAdaptorTest {
         query.year.permittedRange("25", "3000");
 
         List<CustomerWithDBStringIntegerTypeAdaptor> rows = db.get(query);
-        List<String> whereClauses = query.getWhereClause(db);
+        List<String> whereClauses = query.getWhereClauses(db);
         String allClauses = "";
         for(String clause: whereClauses){
             allClauses += " and "+clause;

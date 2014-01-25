@@ -74,6 +74,30 @@ public class NumberExpression implements NumberResult {
         return new NumberExpression(object);
     }
 
+    public static NumberExpression getNextSequenceValue(String sequenceName) {
+        return getNextSequenceValue(null, sequenceName);
+    }
+
+    public static NumberExpression getNextSequenceValue(String schemaName, String sequenceName) {
+        if (schemaName != null) {
+            return new NumberExpression(
+                    new DBBinaryFunction(StringExpression.value(schemaName), StringExpression.value(sequenceName)) {
+                @Override
+                String getFunctionName(DBDatabase db) {
+                    return db.getDefinition().getNextSequenceValueFunctionName();
+                }
+            });
+        } else {
+            return new NumberExpression(
+                    new DBUnaryFunction(StringExpression.value(sequenceName)) {
+                @Override
+                String getFunctionName(DBDatabase db) {
+                    return db.getDefinition().getNextSequenceValueFunctionName();
+                }
+            });
+        }
+    }
+
     public NumberExpression bracket() {
         return new NumberExpression(
                 new DBUnaryFunction(this) {
@@ -520,13 +544,13 @@ public class NumberExpression implements NumberResult {
 
     private static abstract class DBUnaryFunction implements NumberResult {
 
-        protected NumberExpression only;
+        protected DBExpression only;
 
         public DBUnaryFunction() {
             this.only = null;
         }
 
-        public DBUnaryFunction(NumberExpression only) {
+        public DBUnaryFunction(DBExpression only) {
             this.only = only;
         }
 
@@ -568,7 +592,7 @@ public class NumberExpression implements NumberResult {
             this.second = null;
         }
 
-        public DBBinaryFunction(NumberExpression first, NumberExpression second) {
+        public DBBinaryFunction(DBExpression first, DBExpression second) {
             this.first = first;
             this.second = second;
         }

@@ -249,11 +249,11 @@ abstract public class DBRow implements Serializable {
      * @return the WHERE clause that will be used with the current parameters
      *
      */
-    public List<String> getWhereClause(DBDatabase db) {
-        return getWhereClause(db, false);
+    public List<String> getWhereClauses(DBDatabase db) {
+        return getWhereClauses(db, false);
     }
 
-    public List<String> getWhereClause(DBDatabase db, boolean useTableAlias) {
+    public List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) {
         DBDefinition defn = db.getDefinition();
         List<String> whereClause = new ArrayList<String>();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
@@ -282,7 +282,7 @@ abstract public class DBRow implements Serializable {
      *
      */
     public boolean willCreateBlankQuery(DBDatabase db) {
-        List<String> whereClause = getWhereClause(db);
+        List<String> whereClause = getWhereClauses(db);
         return whereClause == null || whereClause.isEmpty();
     }
 
