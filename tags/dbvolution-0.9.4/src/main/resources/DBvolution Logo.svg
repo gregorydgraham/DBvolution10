@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg3904"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="DBV Logo1.svg">
+  <defs
+     id="defs3906">
+    <linearGradient
+       gradientTransform="matrix(0.03543307,0,0,0.03543307,-2.734244,-74.854317)"
+       inkscape:collect="always"
+       xlink:href="#Gradient_1"
+       id="linearGradient3879"
+       gradientUnits="userSpaceOnUse"
+       x1="10660"
+       y1="12174"
+       x2="10660"
+       y2="34274" />
+    <linearGradient
+       id="Gradient_1"
+       gradientUnits="userSpaceOnUse"
+       x1="10660"
+       y1="12174"
+       x2="10660"
+       y2="34274">
+      <stop
+         id="stop3833"
+         stop-color="rgb(0,0,0)"
+         offset="0"
+         style="stop-color:#000000;stop-opacity:1;" />
+      <stop
+         style="stop-color:#515151;stop-opacity:1;"
+         offset="1"
+         stop-color="rgb(1,1,1)"
+         id="stop3042" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.6916452"
+     inkscape:cx="375"
+     inkscape:cy="693.4681"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1561"
+     inkscape:window-height="1031"
+     inkscape:window-x="1596"
+     inkscape:window-y="-4"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3909">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       transform="matrix(0.03543307,0,0,0.03543307,-2.734244,-74.854317)"
+       style="visibility:visible"
+       visibility="visible"
+       id="MasterSlide_1_Default">
+      <desc
+         id="desc3022">Master slide
+  </desc>
+      <rect
+         style="fill:none;stroke:none"
+         x="0"
+         y="0"
+         width="21000"
+         height="29700"
+         id="rect3024" />
+    </g>
+    <g
+       transform="matrix(0.03624926,0,0,0.03543307,-4.7328043,-72.854317)"
+       style="visibility:visible"
+       id="g3027">
+      <path
+         style="fill:#ff6633;stroke:#ff6633;stroke-linejoin:round"
+         inkscape:connector-curvature="0"
+         d="M 10500,28700 0,28700 0,0 l 21000,0 0,28700 -10500,0 z"
+         id="Drawing_1_0" />
+    </g>
+    <g
+       transform="matrix(0.03543307,0,0,0.03543307,-2.734244,-74.854317)"
+       style="visibility:visible"
+       id="g3030">
+      <path
+         style="fill:#ffff00;stroke:#ffff00;stroke-linejoin:round"
+         inkscape:connector-curvature="0"
+         d="m 10830,5784 c 1980,0 3493,1512 3493,3492 0,1980 -1513,3493 -3493,3493 -1980,0 -3492,-1513 -3492,-3493 0,-1980 1512,-3492 3492,-3492 z"
+         id="Drawing_2_0" />
+      <rect
+         style="fill:none;stroke:none"
+         id="rect3033"
+         height="6986"
+         width="6986"
+         y="5785"
+         x="7339" />
+    </g>
+    <path
+       id="Drawing_3_0"
+       d="m 837.80904,1139.5787 -925.618085,0 231.413375,-783.07083 462.82676,0 231.37795,783.07083 z"
+       style="fill:url(#linearGradient3879);fill-opacity:1;stroke:#808080;stroke-width:0.03543307;stroke-linejoin:round;visibility:visible"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>
