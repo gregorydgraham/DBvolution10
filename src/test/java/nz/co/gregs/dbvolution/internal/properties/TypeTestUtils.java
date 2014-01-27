@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericArrayType;

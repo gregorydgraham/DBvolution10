@@ -1,4 +1,4 @@
-package nz.co.gregs.dbvolution.internal;
+package nz.co.gregs.dbvolution.internal.properties;
 
 import nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
