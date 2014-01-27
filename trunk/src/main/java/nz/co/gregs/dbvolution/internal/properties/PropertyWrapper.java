@@ -252,7 +252,7 @@ public class PropertyWrapper {
 	 * single primary key of the referenced table if the {@link DBForeignKey#column()}
 	 * attribute is unset.
 	 * 
-	 * @return the referenced column name if this property is a foreign key;
+	 * @return the non-null referenced column name if this property is a foreign key;
 	 * null if not a foreign key
 	 */
 	public String referencedColumnName() {
