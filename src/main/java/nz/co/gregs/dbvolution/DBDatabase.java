@@ -30,6 +30,25 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
 
 /**
+ * DBDatabase is the repository of all knowledge about your database
+ *
+ * <p>
+ * All DBvolution projects need a DBDatabase object to provide the database
+ * connection, login details, and to generate the correct syntax for the
+ * database.
+ *
+ * <p>
+ * It also provides quick methods to get and print database values and perform
+ * transactions.
+ *
+ * <p>
+ * There should be a subclass for your database already in
+ * {@code nz.co.gregs.dbvolution.databases}
+ *
+ * <p>
+ * Very few programmers will need to construct an actual DBDatabase as the
+ * subclasses provide most of the required details for connecting to their
+ * databases.
  *
  * @author gregory.graham
  */
@@ -50,9 +69,21 @@ public abstract class DBDatabase {
     final DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
 
     /**
+     * Define a new DBDatabase.
      *
-     * @param definition
-     * @param ds
+     * <p>
+     * Most programmers should not call this constructor directly. Check the
+     * subclasses in {@code nz.co.gregs.dbvolution} for your particular
+     * database.
+     *
+     * <p>
+     * DBDatabase encapsulates the knowledge of the database, in particular the
+     * syntax of the database in the DBDefinition and the connection details
+     * from a DataSource.
+     *
+     * @param definition - the subclass of DBDefinition that provides the syntax
+     * for your database.
+     * @param ds - connection details for the required database.
      */
     public DBDatabase(DBDefinition definition, DataSource ds) {
         this.definition = definition;
@@ -60,12 +91,23 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Define a new DBDatabase.
      *
-     * @param definition
-     * @param driverName
-     * @param jdbcURL
-     * @param username
-     * @param password
+     * <p>
+     * Most programmers should not call this constructor directly. Check the
+     * subclasses in {@code nz.co.gregs.dbvolution} for your particular
+     * database.
+     *
+     * <p>
+     * Create a new DBDatabase by providing the connection details
+     *
+     * @param definition - the subclass of DBDefinition that provides the syntax
+     * for your database.
+     * @param driverName - The name of the JDBC class that is the Driver for
+     * this database.
+     * @param jdbcURL - The JDBC URL to connect to the database.
+     * @param username - The username to login to the database as.
+     * @param password - The users password for the database.
      */
     public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
         this.definition = definition;
@@ -85,8 +127,10 @@ public abstract class DBDatabase {
     }
 
     /**
-     *
-     * @return the DBStatement to be used: either a new one, or the current transaction statement.
+     * Retrieve the DBStatement used internally.
+     * 
+     * @return the DBStatement to be used: either a new one, or the current
+     * transaction statement.
      */
     public synchronized DBStatement getDBStatement() {
         Connection connection;
@@ -126,7 +170,7 @@ public abstract class DBDatabase {
      *
      * Inserts DBRows and lists of DBRows into the correct tables automatically
      *
-     * @param <T>  a list of DBRows or a List of DBRows
+     * @param <T> a list of DBRows or a List of DBRows
      * @param objs
      * @return a DBActionList of all the actions performed
      * @throws SQLException
@@ -156,7 +200,7 @@ public abstract class DBDatabase {
      *
      * Deletes DBRows and lists of DBRows from the correct tables automatically
      *
-     * @param <T>  a list of DBRows or a List of DBRows
+     * @param <T> a list of DBRows or a List of DBRows
      * @param objs
      * @return a DBActionList of all the actions performed
      * @throws SQLException
@@ -186,7 +230,7 @@ public abstract class DBDatabase {
      *
      * Updates DBRows and lists of DBRows in the correct tables automatically
      *
-     * @param <T>  a list of DBRows or a List of DBRows
+     * @param <T> a list of DBRows or a List of DBRows
      * @param objs
      * @return a DBActionList of the actions performed on the database
      * @throws SQLException
@@ -562,7 +606,7 @@ public abstract class DBDatabase {
         getDBStatement().execute(sqlString);
     }
 
-    public void dropTable(DBRow tableRow) throws SQLException , AutoCommitActionDuringReadOnlyTransactionException{
+    public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringReadOnlyTransactionException {
         if (isInAReadOnlyTransaction) {
             throw new AutoCommitActionDuringReadOnlyTransactionException("DBDatabase.dropTable()");
         }

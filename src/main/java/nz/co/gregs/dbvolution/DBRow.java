@@ -610,7 +610,7 @@ abstract public class DBRow implements Serializable {
         for (PropertyWrapper fk : fks) {
             Class<? extends DBRow> referencedClass = fk.referencedClass();
 
-            if (newTable.getClass().equals(referencedClass)) {
+            if (referencedClass.isAssignableFrom(newTable.getClass())) {
                 String formattedForeignKey = defn.formatTableAliasAndColumnName(
                         this, fk.columnName());
 

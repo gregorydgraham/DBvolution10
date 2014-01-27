@@ -246,7 +246,7 @@ public class DBQuery {
             otherTables.addAll(allQueryTables);
         }
         for (DBDataComparison comp : comparisons) {
-            whereClause.append(defn.beginWhereClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
+            whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
         }
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
