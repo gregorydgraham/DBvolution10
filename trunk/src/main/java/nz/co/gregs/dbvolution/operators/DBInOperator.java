@@ -66,17 +66,15 @@ public class DBInOperator extends DBOperator {
             // prevent any rows from returning as an empty list means no rows can match
             whereClause.append(defn.getFalseOperation());
         } else {
-            whereClause.append("(");
             whereClause.append(columnName);
-            whereClause.append(invertOperator ? " not " : "");
-            whereClause.append(getOperator());
+            whereClause.append(invertOperator ? getInverse() : getOperator() );
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
 //                qdt.setDatabase(database);
                 whereClause.append(sep).append(" ").append(qdt.toSQLString(db)).append(" ");
                 sep = ",";
             }
-            whereClause.append("))");
+            whereClause.append(")");
         }
         return whereClause.toString();
     }
