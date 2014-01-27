@@ -33,7 +33,6 @@ import nz.co.gregs.dbvolution.internal.query.QueryOptions;
  */
 public class DBTable<E extends DBRow> {
 
-    private static final long serialVersionUID = 1L;
 //    private static boolean printSQLBeforeExecuting = false;
     E template;
     private DBDatabase database = null;
@@ -486,7 +485,7 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    @SafeVarargs
+    //@SafeVarargs
     public final DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : newRows) {
@@ -503,7 +502,7 @@ public class DBTable<E extends DBRow> {
         return changes;
     }
 
-    @SafeVarargs
+    //@SafeVarargs
     public final DBActionList delete(E... oldRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : oldRows) {

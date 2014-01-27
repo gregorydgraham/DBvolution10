@@ -18,6 +18,7 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
 @SuppressWarnings("unused")
@@ -30,39 +31,40 @@ public class JavaPropertyTest {
     @Test
     public void getsPublicField() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("publicField")));
+        org.junit.Assert.assertThat(properties, is(nullValue()));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("publicField")));
     }
 
     @Test
     public void getsProtectedField() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("privateField")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("protectedField")));
     }
-
+    
     @Test
     public void getsPrivateField() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("privateField")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("privateField")));
     }
 
     @Test
     public void getsPublicProperty() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("publicProperty")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("publicProperty")));
     }
 
     // doesn't work at present because can't find non-public bean-properties
     @Test
     public void cantGetProtectedProperty() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, not(hasItem(hasJavaPropertyName("protectedProperty"))));
+        assertThat(properties, not(hasItemJava6(hasJavaPropertyName("protectedProperty"))));
     }
 
     // doesn't work at present because can't find non-public bean-properties
     @Test
     public void cantGetPrivateProperty() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, not(hasItem(hasJavaPropertyName("privateProperty"))));
+        assertThat(properties, not(hasItemJava6(hasJavaPropertyName("privateProperty"))));
     }
 
     // finding non-public bean-properties not supported yet
@@ -78,14 +80,14 @@ public class JavaPropertyTest {
     public void getsShadowingPrivateFieldGivenStandardBean() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleStandardBeanClass.class);
         // will contain two 'property' properties, one is java field
-        assertThat(properties, hasItem(allOf(hasJavaPropertyName("property"), isJavaPropertyField())));
+        assertThat(properties, hasItemJava6(allOf(hasJavaPropertyName("property"), isJavaPropertyField())));
     }
 
     @Test
     public void getsShadowingPublicPropertyGivenStandardBean() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleStandardBeanClass.class);
         // will contain two 'property' properties, one is java bean-property
-        assertThat(properties, hasItem(allOf(hasJavaPropertyName("property"), not(isJavaPropertyField()))));
+        assertThat(properties, hasItemJava6(allOf(hasJavaPropertyName("property"), not(isJavaPropertyField()))));
     }
 
     // check visibility control
@@ -95,7 +97,7 @@ public class JavaPropertyTest {
                 Visibility.PUBLIC, Visibility.PUBLIC, null, (PropertyType[]) null);
 
         List<JavaProperty> properties = finder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("publicField")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("publicField")));
     }
 
     @Test
@@ -104,7 +106,7 @@ public class JavaPropertyTest {
                 Visibility.PROTECTED, Visibility.PUBLIC, null, (PropertyType[]) null);
 
         List<JavaProperty> properties = finder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("protectedField")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("protectedField")));
     }
 
     @Test
@@ -113,7 +115,7 @@ public class JavaPropertyTest {
                 Visibility.DEFAULT, Visibility.PUBLIC, null, (PropertyType[]) null);
 
         List<JavaProperty> properties = finder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("protectedField")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("protectedField")));
     }
 
     @Test
@@ -122,7 +124,7 @@ public class JavaPropertyTest {
                 Visibility.PUBLIC, Visibility.PUBLIC, null, (PropertyType[]) null);
 
         List<JavaProperty> properties = finder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, not(hasItem(hasJavaPropertyName("privateField"))));
+        assertThat(properties, not(hasItemJava6(hasJavaPropertyName("privateField"))));
     }
 
     @Test
@@ -131,7 +133,7 @@ public class JavaPropertyTest {
                 Visibility.PUBLIC, Visibility.PUBLIC, null, (PropertyType[]) null);
 
         List<JavaProperty> properties = finder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, not(hasItem(hasJavaPropertyName("privateField"))));
+        assertThat(properties, not(hasItemJava6(hasJavaPropertyName("privateField"))));
     }
 
     @Test
@@ -140,7 +142,7 @@ public class JavaPropertyTest {
                 Visibility.PROTECTED, Visibility.PUBLIC, null, (PropertyType[]) null);
 
         List<JavaProperty> properties = finder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, not(hasItem(hasJavaPropertyName("privateField"))));
+        assertThat(properties, not(hasItemJava6(hasJavaPropertyName("privateField"))));
     }
 
     @Test
@@ -149,7 +151,7 @@ public class JavaPropertyTest {
                 Visibility.DEFAULT, Visibility.PUBLIC, null, (PropertyType[]) null);
 
         List<JavaProperty> properties = finder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        assertThat(properties, not(hasItem(hasJavaPropertyName("privateField"))));
+        assertThat(properties, not(hasItemJava6(hasJavaPropertyName("privateField"))));
     }
 
     // check avoidance of non-properties
@@ -174,19 +176,19 @@ public class JavaPropertyTest {
     @Test
     public void getsArrayProperty() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(WeirdTypesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("arrayField")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("arrayField")));
     }
 
     @Test
     public void getsListProperty() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(WeirdTypesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("listField")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("listField")));
     }
 
     @Test
     public void getsVoidProperty() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(WeirdTypesClass.class);
-        assertThat(properties, hasItem(hasJavaPropertyName("voidField")));
+        assertThat(properties, hasItemJava6(hasJavaPropertyName("voidField")));
     }
 
     @Test
@@ -563,6 +565,39 @@ public class JavaPropertyTest {
         return property;
     }
 
+    /**
+     * Java6-safe Hamcrest matcher for {@code hasItems}.
+     * Creates a matcher for {@link Iterable}s that only matches when a single pass over the
+     * examined {@link Iterable} yields at least one item that is matched by the specified
+     * <code>itemMatcher</code>.  Whilst matching, the traversal of the examined {@link Iterable}
+     * will stop as soon as a matching item is found.
+     * 
+     * <p>For example:
+     * <pre>assertThat(Arrays.asList("foo", "bar"), hasItem(startsWith("ba")))</pre>
+     * 
+     * <p> Note: there's a Hamcrest gotcha going on here with the use of hasItemJava6() that comes up as a
+     * "cannot find symbol: method assertThat(List<JavaProperty>,Matcher<Iterable<? super Object>>)" compiler error.
+     * Apparently it's a bug in the Java 6 JDK, which is resolved in Java 7.
+     * Eclipse doesn't show the problem because it uses its own compiler.
+     * 
+     * <p> A bad solution is to upgrade to Java 7, but that would be bad for DBvolution as a whole.
+     * The better workaround is to do some seemingly unnecessary casting, which is what this method
+     * does.
+     * 
+     * <p> For more reading, see:
+     * <ul>
+     * <li> http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7034548
+     * <li> https://code.google.com/p/hamcrest/issues/detail?id=143
+     * <li> https://weblogs.java.net/blog/johnsmart/archive/2008/04/on_the_subtle_u.html
+     * <li> http://stackoverflow.com/questions/1092981/hamcrests-hasitems
+     * </ul>
+     * @param itemMatcher the matcher to apply to items provided by the examined {@link Iterable}
+     */
+    @SuppressWarnings("unchecked")
+	private static Matcher<java.lang.Iterable<JavaProperty>> hasItemJava6(final Matcher<? super JavaProperty> matcher) {
+    	return (Matcher<java.lang.Iterable<JavaProperty>>)(Matcher<?>)hasItem(matcher);
+    }
+    
     // note: protected/private tests here might not be sufficient because JavaPropertyTest class
     // has direct access anyway
     public static class SimpleIndependentFieldsAndPropertiesClass {
