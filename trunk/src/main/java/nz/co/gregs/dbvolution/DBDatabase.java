@@ -175,7 +175,7 @@ public abstract class DBDatabase {
      * @return a DBActionList of all the actions performed
      * @throws SQLException
      */
-    @SafeVarargs
+    //@SafeVarargs
     public final <T> DBActionList insert(T... objs) throws SQLException {
         DBActionList changes = new DBActionList();
         for (T obj : objs) {
@@ -205,7 +205,7 @@ public abstract class DBDatabase {
      * @return a DBActionList of all the actions performed
      * @throws SQLException
      */
-    @SafeVarargs
+    //@SafeVarargs
     public final <T> DBActionList delete(T... objs) throws SQLException {
         DBActionList changes = new DBActionList();
         for (T obj : objs) {
@@ -235,7 +235,7 @@ public abstract class DBDatabase {
      * @return a DBActionList of the actions performed on the database
      * @throws SQLException
      */
-    @SafeVarargs
+    //@SafeVarargs
     public final <T> DBActionList update(T... objs) throws SQLException {
         DBActionList actions = new DBActionList();
         for (T obj : objs) {

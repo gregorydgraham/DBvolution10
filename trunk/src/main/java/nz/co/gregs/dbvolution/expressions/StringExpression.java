@@ -269,7 +269,9 @@ public class StringExpression implements StringResult {
             DBBinaryStringArithmetic newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.first = first.copy();
@@ -305,7 +307,9 @@ public class StringExpression implements StringResult {
             DBNonaryStringFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             return newInstance;
@@ -344,7 +348,9 @@ public class StringExpression implements StringResult {
             DBUnaryStringFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.only = only.copy();
@@ -384,7 +390,9 @@ public class StringExpression implements StringResult {
             DBUnaryNumberFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.only = (only == null ? null : only.copy());
@@ -428,7 +436,9 @@ public class StringExpression implements StringResult {
             DBTrinaryStringFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.first = first == null ? null : first.copy();
@@ -473,7 +483,9 @@ public class StringExpression implements StringResult {
             StringExpression.BinaryComplicatedNumberFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.first = first.copy();

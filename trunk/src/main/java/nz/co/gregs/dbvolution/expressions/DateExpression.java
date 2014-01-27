@@ -186,7 +186,9 @@ public class DateExpression implements DateResult {
             DateExpression.DBNonaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             return newInstance;
@@ -213,7 +215,9 @@ public class DateExpression implements DateResult {
             DateExpression.UnaryComplicatedNumberFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (    InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.only = only.copy();

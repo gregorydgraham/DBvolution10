@@ -570,7 +570,7 @@ abstract public class DBRow implements Serializable {
      * @param <T> A list or List of fields of this DBRow
      * @param properties a list of fields/methods from this object
      */
-    @SafeVarargs
+    //@SafeVarargs
     public final <T> void returnFieldsLimitedTo(T... properties) {
         PropertyWrapper propWrapper;
         for (T property : properties) {

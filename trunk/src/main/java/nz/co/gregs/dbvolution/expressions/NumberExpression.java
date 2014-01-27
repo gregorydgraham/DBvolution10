@@ -499,7 +499,9 @@ public class NumberExpression implements NumberResult {
             DBBinaryArithmetic newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.first = first.copy();
@@ -535,7 +537,9 @@ public class NumberExpression implements NumberResult {
             DBNonaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             return newInstance;
@@ -574,7 +578,9 @@ public class NumberExpression implements NumberResult {
             DBUnaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.only = only.copy();
@@ -607,7 +613,9 @@ public class NumberExpression implements NumberResult {
             DBBinaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.first = first.copy();
@@ -666,7 +674,9 @@ public class NumberExpression implements NumberResult {
             DBTrinaryFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
             newInstance.first = first == null ? null : first.copy();
