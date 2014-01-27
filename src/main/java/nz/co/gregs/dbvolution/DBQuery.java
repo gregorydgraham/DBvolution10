@@ -266,36 +266,34 @@ public class DBQuery {
     }
 
     private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep) {
-
         for (DBRelationship rel : tabRow.getAdHocRelationships()) {
             whereClause.append(defn.beginWhereClauseLine(options)).append("(").append(rel.generateSQL(database)).append(")");
             queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
         }
 
-        final String tabRowPK = tabRow.getPrimaryKeyColumnName();
-        if (tabRowPK != null) {
-            for (DBRow otherTab : otherTables) {
-                List<PropertyWrapper> fks = otherTab.getForeignKeyPropertyWrappers();
-                for (PropertyWrapper fk : fks) {
-                    String formattedPK = defn.formatTableAliasAndColumnName(tabRow, tabRowPK);
-                    Class<? extends DBRow> pkClass = fk.referencedClass();
-                    DBRow fkReferencesTable = DBRow.getDBRow(pkClass);
-                    String fkReferencesColumn = defn.formatTableAliasAndColumnName(fkReferencesTable, fkReferencesTable.getPrimaryKeyColumnName());
-                    if (formattedPK.equalsIgnoreCase(fkReferencesColumn)) {
-                        String fkColumnName = fk.columnName();
-                        String formattedFK = defn.formatTableAliasAndColumnName(otherTab, fkColumnName);
-                        whereClause
-                                .append(lineSep)
-                                .append(defn.beginWhereClauseLine(options))
-                                .append("(")
-                                .append(formattedPK)
-                                .append(defn.getEqualsComparator())
-                                .append(formattedFK)
-                                .append(")");
-                        queryGraph.add(tabRow.getClass(), otherTab.getClass());
-                    }
-                }
-            }
+        for (DBRow otherTab : otherTables) {
+            List<PropertyWrapper> otherTableFks = otherTab.getForeignKeyPropertyWrappers();
+	        for (PropertyWrapper otherTableFk : otherTableFks) {
+	            Class<? extends DBRow> fkReferencedClass = otherTableFk.referencedClass();
+	            
+	            if (fkReferencedClass.isAssignableFrom(tabRow.getClass())) {
+	                String formattedForeignKey = defn.formatTableAliasAndColumnName(
+	                        otherTab, otherTableFk.columnName());
+
+	            	String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
+	                        tabRow, otherTableFk.referencedColumnName());
+
+                    whereClause
+                    	.append(lineSep)
+	                    .append(defn.beginWhereClauseLine(options))
+	                    .append("(")
+	                    .append(formattedForeignKey)
+	                    .append(defn.getEqualsComparator())
+	                    .append(formattedReferencedColumn)
+	                    .append(")");
+                    queryGraph.add(tabRow.getClass(), otherTab.getClass());
+	            }
+	        }
         }
     }
 

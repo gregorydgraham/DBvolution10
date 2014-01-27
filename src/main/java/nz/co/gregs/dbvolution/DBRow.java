@@ -378,7 +378,7 @@ abstract public class DBRow implements Serializable {
                 }
             }
         }
-        return fkFields;
+        return fkFields; 
     }
 
     /**
@@ -616,7 +616,7 @@ abstract public class DBRow implements Serializable {
 
                 String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
                         newTable, fk.referencedColumnName());
-
+                
                 rels//.append(lineSeparator)
                         .append(joinSeparator)
                         .append(formattedForeignKey)
