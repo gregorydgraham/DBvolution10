@@ -133,7 +133,16 @@ public class QueryableDatatypeSyncer {
 
     // for DEBUG purposes only
     static String qdtToString(QueryableDatatype qdt) {
-        String literalStr = (qdt == null) ? null : qdt.literalValue.getClass().getSimpleName() + "[" + qdt.literalValue + "]";
+    	String literalStr;
+    	if (qdt == null) {
+    		literalStr = null;
+    	}
+    	else if (qdt.literalValue == null) {
+    		literalStr = "null";
+    	}
+    	else {
+    		literalStr = qdt.literalValue.getClass().getSimpleName() + "[" + qdt.literalValue + "]";
+    	}
         StringBuilder buf = new StringBuilder();
         if (qdt == null) {
             buf.append("null");
