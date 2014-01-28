@@ -50,25 +50,23 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-        		 "SELECT __296612642.UIDCOMPANY DB_1165478727, \n"
-        		 + "__296612642.FKSTATISTIC2 DB_779023597, \n"
-        		 + "__77293264.UIDSTATISTIC DB_715138364, \n"
-        		 + "__77293264.STAT2ID DB1041270709\n"
-        		 + " FROM Company AS __296612642 \n"
-        		 + " INNER JOIN Statistic AS __77293264 ON( __296612642.FKSTATISTIC2 = __77293264.UIDSTATISTIC )\n" 
-        		 + " WHERE 1=1 \n"
-        		 + " AND (__296612642.UIDCOMPANY = 234)\n"
-        		 + ";";
+                "SELECT __296612642.UIDCOMPANY DB_1165478727, \n"
+                + "__296612642.FKSTATISTIC2 DB_779023597, \n"
+                + "__77293264.UIDSTATISTIC DB_715138364, \n"
+                + "__77293264.STAT2ID DB1041270709\n"
+                + " FROM Company AS __296612642 \n"
+                + " INNER JOIN Statistic AS __77293264 ON( __296612642.FKSTATISTIC2 = __77293264.UIDSTATISTIC )\n"
+                + " WHERE 1=1 \n"
+                + " AND (__296612642.UIDCOMPANY = 234)\n"
+                + ";";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertThat(dbQuery.isUseANSISyntax(), is(true));
         assertThat(testableSQLWithoutColumnAliases(expectedResult),
-        		is(testableSQLWithoutColumnAliases(generateSQLString)));
+                is(testableSQLWithoutColumnAliases(generateSQLString)));
     }
-    
-    // Currently failing incorrectly from AccidentalCartesianJoinException
-    // cause: bug in queryGraph logic for non-ANSI joins
+
     @Test
     public void testQueryGenerationUsingNonANSIGivenFkToPk() throws SQLException {
         DBQuery dbQuery = database.getDBQuery();
@@ -80,24 +78,23 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-       		 "SELECT __296612642.UIDCOMPANY DB_1165478727, \n"
-       		 + "__296612642.FKSTATISTIC2 DB_779023597, \n"
-       		 + "__77293264.UIDSTATISTIC DB_715138364, \n"
-       		 + "__77293264.STAT2ID DB1041270709\n"
-       		 + " FROM Company AS __296612642, \n"
-       		 + " Statistic AS __77293264\n" 
-       		 + " WHERE 1=1 \n"
-       		 + " AND (__296612642.FKSTATISTIC2 = __77293264.UIDSTATISTIC)\n"
-       		 + " AND (__296612642.UIDCOMPANY = 234)\n"
-       		 + "\n"
-       		 + ";";
+                "select "
+                + "__296612642.uidcompany, "
+                + "__296612642.fkstatistic2, "
+                + "__77293264.uidstatistic, "
+                + "__77293264.stat2id "
+                + "from company, statistic "
+                + "where 1=1 "
+                + "and (__296612642.uidcompany = 234) "
+                + "and (__296612642.fkstatistic2 = __77293264.uidstatistic)"
+                + " ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertThat(testableSQLWithoutColumnAliases(expectedResult),
                 is(testableSQLWithoutColumnAliases(generateSQLString)));
     }
-    
+
     @Test
     public void testQueryGenerationUsingANSIGivenFkToNonPk() throws SQLException {
         DBQuery dbQuery = database.getDBQuery();
@@ -109,24 +106,22 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-        		 " SELECT __1641109531.UIDCOMPANY DB_1808204696, \n"
-        		 + "__1641109531.FKSTATISTIC2 DB36610818, \n"
-        		 + "__77293264.UIDSTATISTIC DB_715138364, \n"
-        		 + "__77293264.STAT2ID DB1041270709\n"
-        		 + " FROM  Company AS __1641109531 \n"
-        		 + " INNER JOIN Statistic AS __77293264  ON( __1641109531.FKSTATISTIC2 = __77293264.STAT2ID )\n" 
-        		 + " WHERE  1=1 \n"
-        		 + " AND (__1641109531.UIDCOMPANY = 234)\n"
-        		 + ";";
+                " SELECT __1641109531.UIDCOMPANY DB_1808204696, \n"
+                + "__1641109531.FKSTATISTIC2 DB36610818, \n"
+                + "__77293264.UIDSTATISTIC DB_715138364, \n"
+                + "__77293264.STAT2ID DB1041270709\n"
+                + " FROM  Company AS __1641109531 \n"
+                + " INNER JOIN Statistic AS __77293264  ON( __1641109531.FKSTATISTIC2 = __77293264.STAT2ID )\n"
+                + " WHERE  1=1 \n"
+                + " AND (__1641109531.UIDCOMPANY = 234)\n"
+                + ";";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertThat(dbQuery.isUseANSISyntax(), is(true));
         assertThat(testableSQLWithoutColumnAliases(expectedResult), is(testableSQLWithoutColumnAliases(generateSQLString)));
     }
-    
-    // Currently failing incorrectly from AccidentalCartesianJoinException
-    // cause: bug in queryGraph logic for non-ANSI joins
+
     @Test
     public void testQueryGenerationUsingNonANSIGivenFkToNonPk() throws SQLException {
         DBQuery dbQuery = database.getDBQuery();
@@ -138,56 +133,53 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-       		 " SELECT __1641109531.UIDCOMPANY DB_1808204696, \n"
-       		 + "__1641109531.FKSTATISTIC2 DB36610818, \n"
-       		 + "__77293264.UIDSTATISTIC DB_715138364, \n"
-       		 + "__77293264.STAT2ID DB1041270709\n"
-       		 + " FROM  Company AS __1641109531 \n"
-       		 + " Statistic AS __77293264 \n" 
-       		 + " WHERE  1=1 \n"
-       		 + " AND( __1641109531.FKSTATISTIC2 = __77293264.STAT2ID )"
-       		 + " AND (__1641109531.UIDCOMPANY = 234)\n"
-       		 + ";";
+                "select"
+                + " __1641109531.uidcompany, "
+                + "__1641109531.fkstatistic2, "
+                + "__77293264.uidstatistic, "
+                + "__77293264.stat2id "
+                + "from company, statistic "
+                + "where 1=1 "
+                + "and (__1641109531.uidcompany = 234) "
+                + "and (__1641109531.fkstatistic2 = __77293264.stat2id) "
+                + ";";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertThat(testableSQLWithoutColumnAliases(expectedResult),
                 is(testableSQLWithoutColumnAliases(generateSQLString)));
     }
-    
+
     @DBTableName("Company")
     public static class CompanyWithFkToPk extends DBRow {
-		private static final long serialVersionUID = 1L;
 
-		@DBColumn("uidCompany")
+        private static final long serialVersionUID = 1L;
+        @DBColumn("uidCompany")
         @DBPrimaryKey
         public DBInteger uid = new DBInteger();
-
-        @DBForeignKey(value=Statistic.class)
+        @DBForeignKey(value = Statistic.class)
         @DBColumn("fkStatistic2")
         public DBInteger carCompany = new DBInteger();
     }
-    
+
     @DBTableName("Company")
     public static class CompanyWithFkToNonPk extends DBRow {
-		private static final long serialVersionUID = 1L;
 
-		@DBColumn("uidCompany")
+        private static final long serialVersionUID = 1L;
+        @DBColumn("uidCompany")
         @DBPrimaryKey
         public DBInteger uid = new DBInteger();
-
-        @DBForeignKey(value=Statistic.class, column="stat2Id")
+        @DBForeignKey(value = Statistic.class, column = "stat2Id")
         @DBColumn("fkStatistic2")
         public DBInteger carCompany = new DBInteger();
     }
 
     public static class Statistic extends DBRow {
-		private static final long serialVersionUID = 1L;
-		
+
+        private static final long serialVersionUID = 1L;
         @DBColumn("uidStatistic")
         @DBPrimaryKey
         public DBInteger uid = new DBInteger();
-
         @DBColumn("stat2Id")
         public DBInteger stat2Id = new DBInteger();
     }
