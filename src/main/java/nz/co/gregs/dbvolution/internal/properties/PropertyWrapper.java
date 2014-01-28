@@ -48,13 +48,14 @@ public class PropertyWrapper {
 	/**
 	 * Gets a string representation of the wrapped property,
 	 * suitable for debugging and logging.
+	 * eg {@code "DBInteger nz.co.mycompany.myproject.Vehicle.fkSpecOptionColour<fk_17> = [15241672]"}
 	 */
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
 		buf.append(type().getSimpleName());
 		buf.append(" ");
-		buf.append(javaName());
+		buf.append(qualifiedJavaName());
 		if (!javaName().equalsIgnoreCase(columnName())) {
 			buf.append("<").append(columnName()).append(">");
 		}
@@ -133,8 +134,10 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * Gets the name of the java property.
+	 * Gets the name of the java property,
+	 * without the containing class name.
 	 * Mainly used within error messages.
+	 * eg: {@code "uid"}
 	 * 
 	 * <p> Use {@link #columnName()} to determine column name.
 	 * @return
@@ -144,8 +147,23 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * Gets the qualified name of the underlying java property.
+	 * Gets the partially qualified name of the underlying java property,
+	 * using the short-name of the containing class.
 	 * Mainly used within logging and error messages.
+	 * eg: {@code "Customer.uid"}
+	 * 
+	 * <p> Use {@link #columnName()} to determine column name.
+	 * @return
+	 */
+	public String shortQualifiedJavaName() {
+		return propertyDefinition.shortQualifiedJavaName();
+	}
+	
+	/**
+	 * Gets the fully qualified name of the underlying java property,
+	 * including the fully qualified name of the containing class.
+	 * Mainly used within logging and error messages.
+	 * eg: {@code "nz.co.mycompany.myproject.Customer.uid"}
 	 * 
 	 * <p> Use {@link #columnName()} to determine column name.
 	 * @return

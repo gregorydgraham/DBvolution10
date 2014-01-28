@@ -36,7 +36,7 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  */
 public class PropertyWrapperDefinition {
 	private final DBRowClassWrapper classWrapper;
-	private final JavaProperty adaptee;
+	private final JavaProperty javaProperty;
 	
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
@@ -44,7 +44,7 @@ public class PropertyWrapperDefinition {
 	
 	PropertyWrapperDefinition(DBRowClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
-		this.adaptee = javaProperty;
+		this.javaProperty = javaProperty;
 		
 		// handlers
 		this.columnHandler = new ColumnHandler(javaProperty);
@@ -53,7 +53,7 @@ public class PropertyWrapperDefinition {
 	}
 	
 	JavaProperty getRawJavaProperty() {
-		return adaptee;
+		return javaProperty;
 	}
 	
 	/**
@@ -63,10 +63,16 @@ public class PropertyWrapperDefinition {
 	@Override
 	public String toString() {
 		StringBuilder buf = new StringBuilder();
-		buf.append(adaptee);
+		buf.append(type().getSimpleName());
+		buf.append(" ");
+		buf.append(qualifiedJavaName());
+		if (!javaName().equalsIgnoreCase(columnName())) {
+			buf.append("<").append(columnName()).append(">");
+		}
+		
 		if (isTypeAdapted()) {
 			buf.append(" (");
-			buf.append(getRawJavaType().getName());
+			buf.append(getRawJavaType().getSimpleName());
 			buf.append(")");
 		}
 		return buf.toString();
@@ -80,7 +86,7 @@ public class PropertyWrapperDefinition {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((adaptee == null) ? 0 : adaptee.hashCode());
+		result = prime * result + ((javaProperty == null) ? 0 : javaProperty.hashCode());
 		return result;
 	}
 
@@ -102,34 +108,53 @@ public class PropertyWrapperDefinition {
 			return false;
 		}
 		PropertyWrapperDefinition other = (PropertyWrapperDefinition) obj;
-		if (adaptee == null) {
-			if (other.adaptee != null) {
+		if (javaProperty == null) {
+			if (other.javaProperty != null) {
 				return false;
 			}
-		} else if (!adaptee.equals(other.adaptee)) {
+		} else if (!javaProperty.equals(other.javaProperty)) {
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Gets the name of the underlying java property.
-	 * Mainly used within logging and error messages.
+	 * Gets the name of the java property,
+	 * without the containing class name.
+	 * Mainly used within error messages.
+	 * eg: {@code "uid"}
 	 * 
 	 * <p> Use {@link #columnName()} to determine column name.
 	 * @return
 	 */
 	public String javaName() {
-		return adaptee.name();
+		return javaProperty.name();
 	}
 	
 	/**
-	 * Gets the qualified name of the underlying java property.
+	 * Gets the partially qualified name of the underlying java property,
+	 * using the short-name of the containing class.
 	 * Mainly used within logging and error messages.
+	 * eg: {@code "Customer.uid"}
+	 * 
+	 * <p> Use {@link #columnName()} to determine column name.
+	 * @return
+	 */
+	public String shortQualifiedJavaName() {
+		return javaProperty.shortQualifiedName();
+	}
+	
+	/**
+	 * Gets the fully qualified name of the underlying java property,
+	 * including the fully qualified name of the containing class.
+	 * Mainly used within logging and error messages.
+	 * eg: {@code "nz.co.mycompany.myproject.Customer.uid"}
+	 * 
+	 * <p> Use {@link #columnName()} to determine column name.
 	 * @return
 	 */
 	public String qualifiedJavaName() {
-		return adaptee.qualifiedName();
+		return javaProperty.qualifiedName();
 	}
 
 	/**
@@ -263,7 +288,7 @@ public class PropertyWrapperDefinition {
 	 * @return
 	 */
 	public boolean isReadable() {
-		return adaptee.isReadable();
+		return javaProperty.isReadable();
 	}
 
 	/**
@@ -273,7 +298,7 @@ public class PropertyWrapperDefinition {
 	 * @return
 	 */
 	public boolean isWritable() {
-		return adaptee.isWritable();
+		return javaProperty.isWritable();
 	}
 	
     /**
@@ -335,7 +360,7 @@ public class PropertyWrapperDefinition {
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
 	public Object rawJavaValue(Object target) {
-		return adaptee.get(target);
+		return javaProperty.get(target);
 	}
 	
 	/**
@@ -354,7 +379,7 @@ public class PropertyWrapperDefinition {
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
 	public void setRawJavaValue(Object target, Object value) {
-		adaptee.set(target, value);
+		javaProperty.set(target, value);
 	}
 	
 	/**
@@ -369,7 +394,7 @@ public class PropertyWrapperDefinition {
 	 * @return
 	 */
 	public Class<?> getRawJavaType() {
-		return adaptee.type();
+		return javaProperty.type();
 	}
 	
     /**
