@@ -46,13 +46,16 @@ public class BooleanExpression implements BooleanResult {
     /**
      * Create An Appropriate BooleanExpression Object For This Object
      *
-     * <p>The expression framework requires a *Expression to work with. The
-     * easiest way to get that is the {@code DBRow.column()} method.
+     * <p>
+     * The expression framework requires a *Expression to work with. The easiest
+     * way to get that is the {@code DBRow.column()} method.
      *
-     * <p>However if you wish your expression to start with a literal value it
-     * is a little trickier.
+     * <p>
+     * However if you wish your expression to start with a literal value it is a
+     * little trickier.
      *
-     * <p>This method provides the easy route to a *Expression from a literal
+     * <p>
+     * This method provides the easy route to a *Expression from a literal
      * value. Just call, for instance,
      * {@code StringExpression.value("STARTING STRING")} to get a
      * StringExpression and start the expression chain.
@@ -69,4 +72,65 @@ public class BooleanExpression implements BooleanResult {
     public static BooleanExpression value(Boolean bool) {
         return new BooleanExpression(bool);
     }
+
+    public static BooleanExpression allOf(BooleanExpression... booleanExpressions) {
+        return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
+
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return db.getDefinition().beginAndLine();
+            }
+        });
+    }
+
+    public static BooleanExpression anyOff(BooleanExpression... booleanExpressions) {
+        return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
+
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return db.getDefinition().beginOrLine();
+            }
+        });
+    }
+
+    private static abstract class DBNnaryBooleanArithmetic implements BooleanResult {
+
+        private BooleanResult[] bools;
+
+        public DBNnaryBooleanArithmetic(BooleanResult... bools) {
+            this.bools = bools;
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            String returnStr = "";
+            String separator = "";
+            String op = this.getEquationOperator(db);
+            for (BooleanResult boo : bools) {
+                returnStr += separator + boo.toSQLString(db);
+                separator = op;
+            }
+            return returnStr;
+        }
+
+        @Override
+        public DBNnaryBooleanArithmetic copy() {
+            DBNnaryBooleanArithmetic newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.bools = new BooleanResult[bools.length];
+            for (int i = 0; i < newInstance.bools.length; i++) {
+                newInstance.bools[i] = bools[i].copy();
+            }
+            return newInstance;
+        }
+
+        protected abstract String getEquationOperator(DBDatabase db);
+    }
+
 }
