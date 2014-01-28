@@ -31,7 +31,6 @@ public class JavaPropertyTest {
     @Test
     public void getsPublicField() {
         List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(SimpleIndependentFieldsAndPropertiesClass.class);
-        org.junit.Assert.assertThat(properties, is(nullValue()));
         assertThat(properties, hasItemJava6(hasJavaPropertyName("publicField")));
     }
 
