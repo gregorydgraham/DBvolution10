@@ -17,7 +17,7 @@ import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
  */
 // TODO exceptions need to reference the field the type adaptor is on
 public class SafeOneWaySimpleTypeAdaptor {
-	public static final Log log = LogFactory.getLog(SafeOneWaySimpleTypeAdaptor.class);
+	private static final Log log = LogFactory.getLog(SafeOneWaySimpleTypeAdaptor.class);
 	
 	public static enum Direction {
 		/** To DBvolution-centric type. toDatabaseValue() method */
@@ -215,10 +215,10 @@ public class SafeOneWaySimpleTypeAdaptor {
 			Object result = convertInternal(value);
 
 			String resultStr = (result == null) ? "null" : result.getClass().getSimpleName()+"["+result+"]";
-			log.info(this+" converting "+valStr+" ==> "+resultStr);
+			log.debug(this+" converting "+valStr+" ==> "+resultStr);
 			return result;
 		} catch (RuntimeException e) {
-			log.info(this+" converting "+valStr+" ==> "+e.getClass().getSimpleName());
+			log.debug(this+" converting "+valStr+" ==> "+e.getClass().getSimpleName());
 			throw e;
 		}
 	}

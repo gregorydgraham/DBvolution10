@@ -36,8 +36,8 @@ import org.apache.commons.logging.LogFactory;
  */
 // TODO come up with a better name
 public class QueryableDatatypeSyncer {
-
-    public static final Log log = LogFactory.getLog(QueryableDatatypeSyncer.class);
+    private static final Log log = LogFactory.getLog(QueryableDatatypeSyncer.class);
+    
     protected final String propertyName;
     protected final DBTypeAdaptor<Object, Object> typeAdaptor;
     protected final Class<? extends QueryableDatatype> internalQdtType;
@@ -221,10 +221,10 @@ public class QueryableDatatypeSyncer {
                         targetQdt = newTargetQDT();
                         setTargetQDTFromSourceQDT(targetQdt, sourceQDT);
                     }
-                    log.info(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + qdtToString(targetQdt));
+                    log.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + qdtToString(targetQdt));
                     return targetQdt;
                 } catch (RuntimeException e) {
-                    log.info(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + e.getClass().getSimpleName());
+                    log.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + e.getClass().getSimpleName());
                     throw e;
                 }
             }
