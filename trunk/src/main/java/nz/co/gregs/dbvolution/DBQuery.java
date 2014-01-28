@@ -239,6 +239,7 @@ public class DBQuery {
             }
 
             if (!useANSISyntax) {
+            	// FIXME BUG: joinedTables is always empty
                 getNonANSIJoin(tabRow, whereClause, defn, queryGraph, joinedTables, tableName, lineSep);
             }
 
