@@ -67,6 +67,8 @@ public class JoinTest extends AbstractTest {
         		is(testableSQLWithoutColumnAliases(generateSQLString)));
     }
     
+    // Currently failing incorrectly from AccidentalCartesianJoinException
+    // cause: bug in queryGraph logic for non-ANSI joins
     @Test
     public void testQueryGenerationUsingNonANSIGivenFkToPk() throws SQLException {
         DBQuery dbQuery = database.getDBQuery();
@@ -123,6 +125,8 @@ public class JoinTest extends AbstractTest {
         assertThat(testableSQLWithoutColumnAliases(expectedResult), is(testableSQLWithoutColumnAliases(generateSQLString)));
     }
     
+    // Currently failing incorrectly from AccidentalCartesianJoinException
+    // cause: bug in queryGraph logic for non-ANSI joins
     @Test
     public void testQueryGenerationUsingNonANSIGivenFkToNonPk() throws SQLException {
         DBQuery dbQuery = database.getDBQuery();
