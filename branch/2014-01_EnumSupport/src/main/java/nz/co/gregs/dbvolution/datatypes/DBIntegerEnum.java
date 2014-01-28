@@ -15,30 +15,32 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-public class DBIntegerEnum<E extends DBEnumValue<Integer>> extends DBEnum<E> {
+public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Integer>> extends DBEnum<E> {
 
     private static final long serialVersionUID = 1L;
-
-    public DBIntegerEnum(E value) {
-        super(value);
-    }
 
     public DBIntegerEnum() {
     }
 
+    public DBIntegerEnum(String value) {
+        super(value);
+    }
+    
+    public DBIntegerEnum(E value) {
+        super(value);
+    }
+
     @Override
-    public Integer getEnumLiteralValue() {
-        DBEnumValue<?> value = getDBEnumValue();
-        if (value == null) {
-            return null;
-        } else {
-            Object literalValue1 = value.getLiteralValue();
-            if (literalValue1 instanceof Integer) {
-                return (Integer) literalValue1;
-            } else {
-                throw new IncompatibleClassChangeError("Enum Literal Type Is Not Integer: getLiteralValue() needs to return an Integer but it returned a " + literalValue1.getClass().getSimpleName() + " instead.");
-            }
-        }
+    protected void validateLiteralValue(E enumValue) {
+    	Object literalValue = enumValue.getLiteralValue();
+    	if (literalValue != null) {
+    		if (!(literalValue instanceof Integer || literalValue instanceof Long)) {
+	    		String enumMethodRef = enumValue.getClass().getName()+"."+enumValue.name()+".getLiteralValue()";
+	    		String literalValueTypeRef = literalValue.getClass().getName();
+	            throw new IncompatibleClassChangeError("Enum literal type is not valid: "+
+	            		enumMethodRef+" returned a "+literalValueTypeRef+", which is not valid for a "+this.getClass().getSimpleName());
+    		}
+    	}
     }
 
     @Override

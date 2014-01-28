@@ -15,30 +15,32 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-public class DBStringEnum<E extends DBEnumValue<String>> extends DBEnum<E> {
+public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnum<E> {
 
     private static final long serialVersionUID = 1L;
 
     public DBStringEnum() {
     }
 
+    public DBStringEnum(String value) {
+    	super(value);
+    }
+    
     public DBStringEnum(E value) {
         super(value);
     }
-
+    
     @Override
-    public String getEnumLiteralValue() {
-        DBEnumValue<?> value = getDBEnumValue();
-        if (value == null) {
-            return null;
-        } else {
-            Object literalValue1 = value.getLiteralValue();
-            if (literalValue1 instanceof String) {
-                return (String) literalValue1;
-            } else {
-                throw new IncompatibleClassChangeError("Enum Literal Type Is Not String: getLiteralValue() needs to return an String but it returned a " + literalValue1.getClass().getSimpleName() + " instead.");
-            }
-        }
+    protected void validateLiteralValue(E enumValue) {
+    	Object literalValue = enumValue.getLiteralValue();
+    	if (literalValue != null) {
+    		if (!(literalValue instanceof String)) {
+	    		String enumMethodRef = enumValue.getClass().getName()+"."+enumValue.name()+".getLiteralValue()";
+	    		String literalValueTypeRef = literalValue.getClass().getName();
+	            throw new IncompatibleClassChangeError("Enum literal type is not valid: "+
+	            		enumMethodRef+" returned a "+literalValueTypeRef+", which is not valid for a "+this.getClass().getSimpleName());
+    		}
+    	}
     }
 
     @Override

@@ -5,19 +5,23 @@ package nz.co.gregs.dbvolution.datatypes;
  * enumerations that are used with {@code DBEnumType} columns must implement
  * this interface.
  */
-public interface DBEnumValue<O extends Object> {
+public interface DBEnumValue<V> {
 
     /**
-     * Gets the enum's literal value.
+     * Gets the enum's database-centric literal value.
      *
      * <p> For example, if the database column uses integers (e.g.: 1,2,3) as
      * values, then this method should return literal values of type
      * {@code Integer}. Alternatively, if the database column uses strings (e.g.:
      * "READY", "PROCESSING", "DONE") as values, then this method should return
      * literal values of type {@code String}.
+     * 
+     * <p> Generally this method should not return null. However it is tolerated
+     * in that a null literal value will translate to a null value in the database.
+     * Null database values are translated to null enum values.
      *
-     * @return the literal value in the appropriate type for the value in the
+     * @return the non-null literal value in the appropriate type for the value in the
      * database.
      */
-    public abstract O getLiteralValue();
+    public V getLiteralValue();
 }
