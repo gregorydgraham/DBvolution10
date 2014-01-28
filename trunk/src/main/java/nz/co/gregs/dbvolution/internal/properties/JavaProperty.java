@@ -44,17 +44,30 @@ interface JavaProperty {
 	public boolean isField();
 	
 	/**
-	 * Gets the property name.
+	 * Gets the property name, without the declaring class.
 	 * For fields this is the same as the field name.
 	 * For bean-properties it's the inferred name that (usually) starts with a lower-case letter.
+	 * eg: {@code "uid"}
 	 * @return the java property name
 	 */
 	public String name();
 	
 	/**
-	 * Gets the fully qualified name of the property in the class that declares it.
+	 * Gets the partially qualified name of the property in the class that declares it,
+	 * including only the short name of the declaring class.
 	 * Fields and bean-properties are both formatted using the name of the property
 	 * without indication of field vs. method.
+	 * eg: {@code "Customer.uid"}
+	 * @return the qualified name of the java property
+	 */
+	public String shortQualifiedName();
+	
+	/**
+	 * Gets the fully qualified name of the property in the class that declares it,
+	 * including the fully qualified name of the declaring class.
+	 * Fields and bean-properties are both formatted using the name of the property
+	 * without indication of field vs. method.
+	 * eg: {@code "nz.co.mycompany.myproject.Customer.uid"}
 	 * @return the qualified name of the java property
 	 */
 	public String qualifiedName();
@@ -159,7 +172,7 @@ interface JavaProperty {
 		
 		@Override
 		public String toString() {
-			return "field "+type().getName()+" "+name();
+			return "field "+type().getSimpleName()+" "+qualifiedName();
 		}
 
 		/**
@@ -208,17 +221,22 @@ interface JavaProperty {
 		public String name() {
 			return field.getName();
 		}
+
+		@Override
+		public String shortQualifiedName() {
+			return field.getDeclaringClass().getSimpleName()+"."+field.getName();
+		}
+		
+		@Override
+		public String qualifiedName() {
+			return field.getDeclaringClass().getName()+"."+field.getName();
+		}
 		
 		@Override
 		public Class<?> type() {
 			return field.getType();
 		}
 
-		@Override
-		public String qualifiedName() {
-			return field.getDeclaringClass().getName()+"."+field.getName();
-		}
-		
 		@Override
 		public boolean isReadable() {
 			return true;
@@ -299,7 +317,7 @@ interface JavaProperty {
 		 */
 		@Override
 		public String toString() {
-			return "property "+type().getName()+" "+name();
+			return "property "+type().getSimpleName()+" "+qualifiedName();
 		}
 		
 		/**
@@ -361,6 +379,32 @@ interface JavaProperty {
 		}
 		
 		@Override
+		public String shortQualifiedName() {
+			if (getter != null) {
+				return getter.getDeclaringClass().getSimpleName()+"."+name;
+			}
+			else if (setter != null) {
+				return setter.getDeclaringClass().getSimpleName()+"."+name;
+			}
+			else {
+				return name;
+			}
+		}
+
+		@Override
+		public String qualifiedName() {
+			if (getter != null) {
+				return getter.getDeclaringClass().getName()+"."+name;
+			}
+			else if (setter != null) {
+				return setter.getDeclaringClass().getName()+"."+name;
+			}
+			else {
+				return name;
+			}
+		}
+		
+		@Override
 		public Class<?> type() {
 			return type;
 		}
@@ -413,19 +457,6 @@ interface JavaProperty {
 //            }
 //		}
 		
-		@Override
-		public String qualifiedName() {
-			if (getter != null) {
-				return getter.getDeclaringClass().getName()+"."+name;
-			}
-			else if (setter != null) {
-				return setter.getDeclaringClass().getName()+"."+name;
-			}
-			else {
-				return name;
-			}
-		}
-
 		@Override
 		public boolean isReadable() {
 			return getter != null;
