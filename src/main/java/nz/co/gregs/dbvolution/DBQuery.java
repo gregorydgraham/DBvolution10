@@ -229,17 +229,17 @@ public class DBQuery {
                 fromClause.append(separator).append(tableName);
             } else {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables, queryGraph));
-                joinedTables.add(tabRow);
             }
+            joinedTables.add(tabRow);
             List<String> tabRowCriteria = tabRow.getWhereClauses(database, true);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
-                for(String clause : tabRowCriteria){
+                for (String clause : tabRowCriteria) {
                     whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
                 }
             }
 
             if (!useANSISyntax) {
-            	// FIXME BUG: joinedTables is always empty
+                // FIXME BUG: joinedTables is always empty
                 getNonANSIJoin(tabRow, whereClause, defn, queryGraph, joinedTables, tableName, lineSep);
             }
 
@@ -274,27 +274,27 @@ public class DBQuery {
 
         for (DBRow otherTab : otherTables) {
             List<PropertyWrapper> otherTableFks = otherTab.getForeignKeyPropertyWrappers();
-	        for (PropertyWrapper otherTableFk : otherTableFks) {
-	            Class<? extends DBRow> fkReferencedClass = otherTableFk.referencedClass();
-	            
-	            if (fkReferencedClass.isAssignableFrom(tabRow.getClass())) {
-	                String formattedForeignKey = defn.formatTableAliasAndColumnName(
-	                        otherTab, otherTableFk.columnName());
+            for (PropertyWrapper otherTableFk : otherTableFks) {
+                Class<? extends DBRow> fkReferencedClass = otherTableFk.referencedClass();
 
-	            	String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
-	                        tabRow, otherTableFk.referencedColumnName());
+                if (fkReferencedClass.isAssignableFrom(tabRow.getClass())) {
+                    String formattedForeignKey = defn.formatTableAliasAndColumnName(
+                            otherTab, otherTableFk.columnName());
+
+                    String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
+                            tabRow, otherTableFk.referencedColumnName());
 
                     whereClause
-                    	.append(lineSep)
-	                    .append(defn.beginWhereClauseLine(options))
-	                    .append("(")
-	                    .append(formattedForeignKey)
-	                    .append(defn.getEqualsComparator())
-	                    .append(formattedReferencedColumn)
-	                    .append(")");
+                            .append(lineSep)
+                            .append(defn.beginWhereClauseLine(options))
+                            .append("(")
+                            .append(formattedForeignKey)
+                            .append(defn.getEqualsComparator())
+                            .append(formattedReferencedColumn)
+                            .append(")");
                     queryGraph.add(tabRow.getClass(), otherTab.getClass());
-	            }
-	        }
+                }
+            }
         }
     }
 
@@ -696,30 +696,30 @@ public class DBQuery {
         comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
         results = null;
     }
-    
+
     /**
      * Set the query to return rows that match any conditions
-     * 
-     * <p>This means that all permitted*, excluded*, and comparisons are optional 
-     * for any rows and rows will be returned if they match any of the conditions.
-     * 
+     *
+     * <p>This means that all permitted*, excluded*, and comparisons are
+     * optional for any rows and rows will be returned if they match any of the
+     * conditions.
+     *
      * <p>The conditions will be connected by OR in the SQL.
      */
-    public void setToMatchAnyCondition(){
+    public void setToMatchAnyCondition() {
         options.setMatchAny();
         results = null;
     }
-    
-    
+
     /**
      * Set the query to only return rows that match all conditions
-     * 
+     *
      * <p>This is the default state
-     * 
-     * <p>This means that all permitted*, excluded*, and comparisons are required 
-     * for any rows and the conditions will be connected by AND.
+     *
+     * <p>This means that all permitted*, excluded*, and comparisons are
+     * required for any rows and the conditions will be connected by AND.
      */
-    public void setToMatchAllConditions(){
+    public void setToMatchAllConditions() {
         options.setMatchAll();
         results = null;
     }
