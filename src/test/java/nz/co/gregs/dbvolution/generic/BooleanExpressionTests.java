@@ -17,6 +17,7 @@
 package nz.co.gregs.dbvolution.generic;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -46,6 +47,93 @@ public class BooleanExpressionTests extends AbstractTest {
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
+    }
+    
+    @Test
+    public void testStringIs() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.name).is("TOYOTA"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+    }
+    
+    @Test
+    public void testStringIsLessThan() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.name).isLessThan("FORD"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(4));
+    }
+    
+    @Test
+    public void testStringIsLessThanOrEqual() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.name).isLessThanOrEqual("FORD"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(5));
+    }
+    
+    @Test
+    public void testStringIsGreaterThan() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.name).isGreaterThan("FORD"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(17));
+    }
+    
+    @Test
+    public void testStringIsGreaterThanOrEqual() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.name).isGreaterThanOrEqual("FORD"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(18));
+    }    
+    
+    @Test
+    public void testStringIsIn() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.name).isIn("TOYOTA","FORD"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(2));
+    }
+    
+    @Test
+    public void testStringIsInList() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        List<String> strs = new ArrayList<String>();
+        strs.add("TOYOTA");
+        strs.add("FORD");
+        
+        dbQuery.addCondition(marque.column(marque.name).isIn(strs));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(2));
     }
     
 }

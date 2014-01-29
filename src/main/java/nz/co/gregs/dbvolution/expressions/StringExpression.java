@@ -15,6 +15,10 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -78,12 +82,102 @@ public class StringExpression implements StringResult {
     public BooleanExpression isLike(String sqlPattern) {
         return isLike(value(sqlPattern));
     }
-    
+
     public BooleanExpression isLike(StringResult sqlPattern) {
         return new BooleanExpression(new DBBinaryBooleanArithmetic(this, sqlPattern) {
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return " LIKE ";
+            }
+        });
+    }
+
+    public BooleanExpression is(String equivalentString) {
+        return is(value(equivalentString));
+    }
+
+    public BooleanExpression is(StringResult equivalentString) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " = ";
+            }
+        });
+    }
+
+    public BooleanExpression isLessThan(String equivalentString) {
+        return isLessThan(value(equivalentString));
+    }
+
+    public BooleanExpression isLessThan(StringResult equivalentString) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " < ";
+            }
+        });
+    }
+
+    public BooleanExpression isLessThanOrEqual(String equivalentString) {
+        return isLessThanOrEqual(value(equivalentString));
+    }
+
+    public BooleanExpression isLessThanOrEqual(StringResult equivalentString) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " <= ";
+            }
+        });
+    }
+
+    public BooleanExpression isGreaterThan(String equivalentString) {
+        return isGreaterThan(value(equivalentString));
+    }
+
+    public BooleanExpression isGreaterThan(StringResult equivalentString) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " > ";
+            }
+        });
+    }
+
+    public BooleanExpression isGreaterThanOrEqual(String equivalentString) {
+        return isGreaterThanOrEqual(value(equivalentString));
+    }
+
+    public BooleanExpression isGreaterThanOrEqual(StringResult equivalentString) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " >= ";
+            }
+        });
+    }
+
+    public BooleanExpression isIn(String... possibleValues) {
+        List<StringExpression> possVals = new ArrayList<StringExpression>();
+        for (String str : possibleValues) {
+            possVals.add(StringExpression.value(str));
+        }
+        return isIn(possVals.toArray(new StringExpression[]{}));
+    }
+
+    public BooleanExpression isIn(Collection<String> possibleValues) {
+        List<StringExpression> possVals = new ArrayList<StringExpression>();
+        for (String str : possibleValues) {
+            possVals.add(StringExpression.value(str));
+        }
+        return isIn(possVals.toArray(new StringExpression[]{}));
+    }
+
+    public BooleanExpression isIn(StringResult... possibleValues) {
+        return new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+            @Override
+            protected String getFunctionName(DBDatabase db) {
+                return " IN ";
             }
         });
     }
@@ -591,5 +685,63 @@ public class StringExpression implements StringResult {
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
+    }
+
+    private static abstract class DBNnaryBooleanFunction implements BooleanResult {
+
+        protected StringExpression column;
+        protected StringResult[] values;
+
+        public DBNnaryBooleanFunction() {
+            this.values = null;
+        }
+
+        public DBNnaryBooleanFunction(StringExpression leftHandSide, StringResult[] rightHandSide) {
+            this.values = new StringResult[rightHandSide.length];
+            this.column = leftHandSide;
+            System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return "( ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            StringBuilder builder = new StringBuilder();
+            builder
+                    .append(column.toSQLString(db))
+                    .append(this.getFunctionName(db))
+                    .append(this.beforeValue(db));
+            String separator = "";
+            for (StringResult val : values) {
+                if (val != null) {
+                    builder.append(separator).append(val.toSQLString(db));
+                }
+                separator = ", ";
+            }
+            builder.append(this.afterValue(db));
+            return builder.toString();
+        }
+
+        @Override
+        public DBNnaryBooleanFunction copy() {
+            DBNnaryBooleanFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.values = this.values;
+            return newInstance;
+        }
     }
 }
