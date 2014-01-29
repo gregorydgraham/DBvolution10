@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generic;
+package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.example.*;
+import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBEqualsIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;

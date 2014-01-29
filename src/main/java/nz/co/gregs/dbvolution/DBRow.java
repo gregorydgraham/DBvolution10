@@ -597,10 +597,13 @@ abstract public class DBRow implements Serializable {
      * the foreign keys and adhoc relationships as an SQL String or a null
      * pointer
      *
+     * @param db
+     * @param newTable
+     * @param options
      * @return the foreign keys and adhoc relationships as an SQL String or a
      * null pointer
      */
-    public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
+    protected String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
         StringBuilder rels = new StringBuilder();
         DBDefinition defn = db.getDefinition();
 //        final String lineSeparator = System.getProperty("line.separator");
@@ -770,14 +773,15 @@ abstract public class DBRow implements Serializable {
         return instances;
     }
 
-    public void setTableAlias(String alias) {
+    protected void setTableAlias(String alias) {
         tableAlias = alias;
     }
 
-    String getTableAlias() {
+    protected String getTableAlias() {
         return tableAlias == null ? getTableName() : tableAlias;
     }
 
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static <T extends DBRow> T getDBRowExampleWithSetFields(T baseRow, QueryableDatatype... qdts) {
         T example = (T) DBRow.getDBRow(baseRow.getClass());

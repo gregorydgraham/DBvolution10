@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generic;
+package nz.co.gregs.dbvolution;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.generic.AbstractTest;
 
 import org.junit.Test;
 

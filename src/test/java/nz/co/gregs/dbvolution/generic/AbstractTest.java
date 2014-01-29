@@ -41,7 +41,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class AbstractTest {
 
-    DBDatabase database;
+    public DBDatabase database;
     Marque myMarqueRow = new Marque();
     CarCompany myCarCompanyRow = new CarCompany();
     DBTable<Marque> marques;
