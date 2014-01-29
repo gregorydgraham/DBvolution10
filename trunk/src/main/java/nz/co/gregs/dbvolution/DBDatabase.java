@@ -383,7 +383,8 @@ public abstract class DBDatabase {
      * @param dbTransaction
      * @return the object returned by the transaction
      * @throws SQLException
-     * @throws Exception
+     * @throws Exception     
+     * @see DBTransaction
      */
     synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
         V returnValues = null;
@@ -426,6 +427,7 @@ public abstract class DBDatabase {
      * @return the object returned by the transaction
      * @throws SQLException
      * @throws Exception
+     * @see DBTransaction
      */
     synchronized public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
         Connection connection;
