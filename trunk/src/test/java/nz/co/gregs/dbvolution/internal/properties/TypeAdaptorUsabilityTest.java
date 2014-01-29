@@ -12,6 +12,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -215,8 +216,8 @@ public class TypeAdaptorUsabilityTest {
 			protected String formatValueForSQLStatement(DBDatabase db) {
 				return "unknown";
 			}
-		}
-		
+                }
+                
 		class MyTypeAdaptor implements DBTypeAdaptor<String, Integer> {
                         @Override
 			public String fromDatabaseValue(Integer dbvValue) {

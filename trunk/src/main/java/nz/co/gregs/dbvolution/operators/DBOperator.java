@@ -40,12 +40,14 @@ abstract public class DBOperator implements Serializable {
 
     /**
      * Formats the operator into SQL for comparing a column to pre-supplied values
-     * 
-     * <p>Within this function you need to transform the column name, operator and values into a where clause line.
-     * <p>The line should formatted as " AND this = that" and should make use of the DBDefinition with DBDatabase to 
-     * ensure compatibility with all databases.
-     * 
-     * <p>Remember to use defn.beginAndLine() to get the " AND "
+     *
+     * <p>
+     * Within this function you need to transform the column name, operator and
+     * values into a where clause line.
+     * <p>
+     * The line should formatted as " this = that " and should make use of
+     * the DBDefinition with DBDatabase to ensure compatibility with all
+     * databases.
      *
      * @param database
      * @param columnName
@@ -55,15 +57,18 @@ abstract public class DBOperator implements Serializable {
 
     /**
      * Formats the operator into SQL for comparing 2 columns
-     * 
-     * <p>Within this function you need to transform the column names and operator into a where clause line.
-     * <p>The line should formatted as " AND this = that" and should make use of the DBDefinition with DBDatabase to 
-     * ensure compatibility with all databases.
-     * 
-     * <p>Remember to use defn.beginAndLine() to get the " AND "
+     *
+     * <p>
+     * Within this function you need to transform the column names and operator
+     * into a where clause line.
+     * <p>
+     * The line should formatted as " this = that " and should make use of
+     * the DBDefinition with DBDatabase to ensure compatibility with all
+     * databases.
      *
      * @param database
      * @param columnName
+     * @param otherColumnName
      * @return the column name, operator and values as a where clause snippet
      */
     abstract public String generateRelationship(DBDatabase database, String columnName, String otherColumnName);
@@ -91,6 +96,6 @@ abstract public class DBOperator implements Serializable {
                 && secondValue.equals(other.secondValue)
                 && thirdValue.equals(other.thirdValue);
     }
-    
+
     abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
 }

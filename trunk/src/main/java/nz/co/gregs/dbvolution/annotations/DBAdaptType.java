@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
  * Adapts a non-DBvolution field or property to a DBvolution type,

@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.expressions.DBDataComparison;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
@@ -50,7 +51,8 @@ public class DBQuery {
     private boolean cartesianJoinAllowed = false;
     private boolean blankQueryAllowed = false;
     private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
-    private QueryOptions options = new QueryOptions();
+    private final QueryOptions options = new QueryOptions();
+    private final List<BooleanExpression> expressions = new ArrayList<BooleanExpression>();
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -73,9 +75,11 @@ public class DBQuery {
      *
      * Add a table to the query.
      *
-     * <p>This method adds the DBRow to the list of required (INNER) tables.
+     * <p>
+     * This method adds the DBRow to the list of required (INNER) tables.
      *
-     * <p>Criteria (permitted and excluded values) from this instance will be
+     * <p>
+     * Criteria (permitted and excluded values) from this instance will be
      * automatically included in the query and an instance of this DBRow class
      * will be created for each DBQueryRow returned.
      *
@@ -248,6 +252,9 @@ public class DBQuery {
         }
         for (DBDataComparison comp : comparisons) {
             whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
+        }
+        for (BooleanExpression expression : expressions) {
+            whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(expression.toSQLString(database)).append(")");
         }
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
@@ -551,7 +558,7 @@ public class DBQuery {
         for (DBRow table : allQueryTables) {
             willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
         }
-        return willCreateBlankQuery && (comparisons.isEmpty());
+        return willCreateBlankQuery && (comparisons.isEmpty()) && (expressions.isEmpty());
     }
 
     public void setRowLimit(int i) {
@@ -692,19 +699,58 @@ public class DBQuery {
         return returnList;
     }
 
+//    @Deprecated
     public void addComparison(DBExpression leftHandSide, DBOperator operatorWithRightHandSideValues) {
         comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
         results = null;
     }
 
     /**
+     * Use this method to add complex conditions to the DBQuery.
+     *
+     * <p>
+     * This method takes a BooleanExpression and adds it to the where clause of
+     * the Query
+     *
+     * <p>
+     * The easiest way to get a BooleanExpression is the DBRow.column() method
+     * and then apply the functions you require until you get a
+     * BooleanExpression back.
+     *
+     * <p>
+     * StringExpression, NumberExpression, DateExpression, and BooleanExpression
+     * all provide methods that will help. In particular they have the value()
+     * method to convert base Java types to expressions.
+     *
+     * <p>
+     * Standard uses of this method are:
+     * <pre>
+     * addCondition(myRow.column(myRow.myColumn).like("%THis%"));
+     * addCondition(myRow.column(myRow.myNumber).cos().greaterThan(0.5));
+     * addCondition(StringExpression.value("THis").like(myRwo.column(myRow.myColumn)));
+     * addCondition(BooleanExpression.anyOf(
+     *                      myRow.column(myRow.myColumn).between("That", "This"),
+     *                      myRow.column(myRow.myColumn).is("Something"))
+     *                      );
+     * </pre>
+     *
+     * @param condition
+     */
+    public void addCondition(BooleanExpression condition) {
+        expressions.add(condition);
+        results = null;
+    }
+
+    /**
      * Set the query to return rows that match any conditions
      *
-     * <p>This means that all permitted*, excluded*, and comparisons are
-     * optional for any rows and rows will be returned if they match any of the
+     * <p>
+     * This means that all permitted*, excluded*, and comparisons are optional
+     * for any rows and rows will be returned if they match any of the
      * conditions.
      *
-     * <p>The conditions will be connected by OR in the SQL.
+     * <p>
+     * The conditions will be connected by OR in the SQL.
      */
     public void setToMatchAnyCondition() {
         options.setMatchAny();
@@ -714,10 +760,12 @@ public class DBQuery {
     /**
      * Set the query to only return rows that match all conditions
      *
-     * <p>This is the default state
+     * <p>
+     * This is the default state
      *
-     * <p>This means that all permitted*, excluded*, and comparisons are
-     * required for any rows and the conditions will be connected by AND.
+     * <p>
+     * This means that all permitted*, excluded*, and comparisons are required
+     * for any rows and the conditions will be connected by AND.
      */
     public void setToMatchAllConditions() {
         options.setMatchAll();
