@@ -83,7 +83,7 @@ public abstract class DBDatabase {
      *
      * @param definition - the subclass of DBDefinition that provides the syntax
      * for your database.
-     * @param ds - connection details for the required database.
+     * @param ds - a DataSource for the required database.
      */
     public DBDatabase(DBDefinition definition, DataSource ds) {
         this.definition = definition;
@@ -128,7 +128,14 @@ public abstract class DBDatabase {
 
     /**
      * Retrieve the DBStatement used internally.
-     * 
+     *
+     * <p>
+     * DBStatement is the internal version of {@code java.sql.Statement}
+     *
+     * <p>
+     * However you will not need a DBStatement to use DBvolution. Your path lies
+     * elsewhere.
+     *
      * @return the DBStatement to be used: either a new one, or the current
      * transaction statement.
      */
@@ -168,7 +175,7 @@ public abstract class DBDatabase {
 
     /**
      *
-     * Inserts DBRows and lists of DBRows into the correct tables automatically
+     * Inserts DBRows and Lists of DBRows into the correct tables automatically
      *
      * @param <T> a list of DBRows or a List of DBRows
      * @param objs
@@ -198,7 +205,7 @@ public abstract class DBDatabase {
 
     /**
      *
-     * Deletes DBRows and lists of DBRows from the correct tables automatically
+     * Deletes DBRows and Lists of DBRows from the correct tables automatically
      *
      * @param <T> a list of DBRows or a List of DBRows
      * @param objs
@@ -228,7 +235,7 @@ public abstract class DBDatabase {
 
     /**
      *
-     * Updates DBRows and lists of DBRows in the correct tables automatically
+     * Updates DBRows and Lists of DBRows in the correct tables automatically
      *
      * @param <T> a list of DBRows or a List of DBRows
      * @param objs
@@ -250,73 +257,60 @@ public abstract class DBDatabase {
                 }
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
-                actions.addAll(this.getDBTable(row).update(row));;
+                actions.addAll(this.getDBTable(row).update(row));
             }
         }
         return actions;
     }
 
-//    private void updateARow(DBRow row) throws SQLException {
-//        this.getDBTable(row).update(row);
-//    }
-//
-//    public void updateAList(List<DBRow> list) throws SQLException {
-//        if (list.size() > 0 && list.get(0) instanceof DBRow) {
-//            for (DBRow row : list) {
-//                this.updateARow(row);
-//            }
-//        }
-//    }
-//
-//    public void updateAnArray(DBRow[] list) throws SQLException {
-//        if (list.length > 0) {
-//            for (DBRow list1 : list) {
-//                this.updateARow(list1);
-//            }
-//        }
-//    }
     /**
      *
-     * Automatically selects the correct table and returns the selected rows as
-     * a list
+     * Automatically selects the correct table based on the example supplied and
+     * returns the selected rows as a list
+     * 
+     * <p>See {@link nz.co.gregs.dbvolution.DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow)}
      *
      * @param <R>
-     * @param row
+     * @param exampleRow
      * @return a list of the selected rows
      * @throws SQLException
      */
-    public <R extends DBRow> List<R> get(R row) throws SQLException {
-        DBTable<R> dbTable = getDBTable(row);
-        return dbTable.getRowsByExample(row).toList();
+    public <R extends DBRow> List<R> get(R exampleRow) throws SQLException {
+        DBTable<R> dbTable = getDBTable(exampleRow);
+        return dbTable.getRowsByExample(exampleRow).toList();
     }
 
     /**
      *
-     * Automatically selects the correct table and returns the selected rows as
-     * a list
+     * Automatically selects the correct table based on the example supplied and
+     * returns the selected rows as a list
+     * 
+     * <p>See {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
      *
      * @param <R>
      * @param expectedNumberOfRows
-     * @param row
+     * @param exampleRow
      * @return a list of the selected rows
      * @throws SQLException
      * @throws UnexpectedNumberOfRowsException
      */
-    public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R row) throws SQLException, UnexpectedNumberOfRowsException {
+    public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
         if (expectedNumberOfRows == null) {
-            return get(row);
+            return get(exampleRow);
         } else {
-            return getDBTable(row).getRowsByExample(row, expectedNumberOfRows.intValue()).toList();
+            return getDBTable(exampleRow).getRowsByExample(exampleRow, expectedNumberOfRows.longValue()).toList();
         }
     }
 
     /**
      *
-     * creates a query and fetches the rows automatically
+     * creates a query and fetches the rows automatically, based on the examples given 
      *
      * @param rows
      * @return a list of DBQueryRows relating to the selected rows
      * @throws SQLException
+     * @see DBQuery
+     * @see DBQuery#getAllRows() 
      */
     public List<DBQueryRow> get(DBRow... rows) throws SQLException {
         DBQuery dbQuery = getDBQuery(rows);
@@ -337,13 +331,15 @@ public abstract class DBDatabase {
 
     /**
      *
-     * creates a query and fetches the rows automatically
+     * creates a query and fetches the rows automatically, based on the examples given
      *
      * @param expectedNumberOfRows
      * @param rows
      * @return a list of DBQueryRows relating to the selected rows
      * @throws SQLException
      * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+     * @see DBQuery
+     * @see DBQuery#getAllRows(long)  
      */
     public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
         if (expectedNumberOfRows == null) {
@@ -364,6 +360,9 @@ public abstract class DBDatabase {
      * @return the object returned by the transaction
      * @throws SQLException
      * @throws Exception
+     * @see DBTransaction
+     * @see DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction) 
+     * @see DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction) 
      */
     synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
         if (commit) {
@@ -374,6 +373,11 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Performs the transaction on this database.
+     * 
+     * <p>If there is an exception of any kind the transaction is rolled back and no changes are made.
+     * 
+     * <p>Otherwise the transaction is committed and changes are made permanent
      *
      * @param <V>
      * @param dbTransaction
@@ -411,6 +415,11 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Performs the transaction on this database without making changes.
+     * 
+     * <p>If there is an exception of any kind the transaction is rolled back and no changes are made.
+     * 
+     * <p>If no exception occurs, the transaction is still rolled back and no changes are made
      *
      * @param <V>
      * @param dbTransaction

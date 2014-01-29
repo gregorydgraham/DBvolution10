@@ -352,7 +352,7 @@ public class DBTable<E extends DBRow> {
         return getRowsByExample(queryTemplate, 1).listOfRows.get(0);
     }
 
-    public DBTable<E> getRowsByExample(E queryTemplate, int expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
+    public DBTable<E> getRowsByExample(E queryTemplate, long expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
         DBTable<E> rowsByExample = getRowsByExample(queryTemplate);
         int actualNumberOfRows = rowsByExample.toList().size();
         if (actualNumberOfRows == expectedNumberOfRows) {
