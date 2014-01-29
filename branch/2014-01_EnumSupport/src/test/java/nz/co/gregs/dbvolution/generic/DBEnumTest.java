@@ -163,7 +163,38 @@ public class DBEnumTest extends AbstractTest {
         	database.dropTable(stringTableExemplar);
         }
     }
+    
+    @Test
+    public void correctlyConvertsLongToIntegerEnum() {
+    	// warm up enum type
+    	IntegerTable row = new IntegerTable();
+    	row.recordType.setValue(IntegerTable.RecordType.SHIPPING_MANIFEST_RECORD);
 
+    	// do test
+    	long code = IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.literalValue;
+    	row.recordType.setValue(code);
+    	assertThat(row.recordType.enumValue(), is(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
+    }
+
+    /*
+     * Not possible because the type declaration of DBIntegerEnum restricts to DBEnumValue<Integer>.
+     * The moral is that the DBIntegerEnum declaration is currently too restrictive.
+     * But if we remove the <Integer> from there, we'll need to add more validation
+     * into the code itself.
+     */
+    @Ignore
+    @Test
+    public void correctlyConvertsIntegerToLongEnum() {
+//    	// warm up enum type
+//    	LongTable row = new LongTable();
+//    	row.recordType.setValue(LongTable.RecordType.SHIPPING_MANIFEST_RECORD);
+//
+//    	// do test
+//    	int code = LongTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.literalValue;
+//    	row.recordType.setValue(code);
+//    	assertThat(row.recordType.enumValue(), is(LongTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
+    }
+    
     @Test
     public void displayInJsp() {
         /*
@@ -244,6 +275,68 @@ public class DBEnumTest extends AbstractTest {
             }
         }
     }
+
+//    public static class LongTable extends DBRow {
+//        private static final long serialVersionUID = 1L;
+//
+//        @DBColumn("uid_202")
+//        @DBPrimaryKey
+//        public DBInteger uid_202 = new DBInteger();
+//        
+//        @DBColumn("c_5")
+//        public DBIntegerEnum<RecordType> recordType = new DBIntegerEnum<RecordType>();
+//        
+//        public LongTable() {
+//        }
+//
+//        public LongTable(Integer uid, RecordType recType) {
+//            this.uid_202.setValue(uid);
+//            this.recordType.setValue(recType);
+//        }
+//
+//        /**
+//         * Valid values for {@link #recordType}
+//         */
+//        // Nested class to make it obvious which table the enum is for
+//        public static enum RecordType implements DBEnumValue<Long> {
+//            SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),
+//            MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
+//            MOVEMENT_CANCELLATION_REQUEST(3, "Movement Cancellation Request");
+//            
+//            private long literalValue;
+//            private String displayName;
+//
+//            private RecordType(int code, String displayName) {
+//                this.literalValue = code;
+//                this.displayName = displayName;
+//            }
+//
+//            @Override
+//            public Long getLiteralValue() {
+//                return literalValue;
+//            }
+//
+//            public String getDisplayName() {
+//                return displayName;
+//            }
+//
+//            public static RecordType valueOfCode(DBInteger code) {
+//                return valueOfCode(code == null ? null : code.longValue());
+//            }
+//
+//            public static RecordType valueOfCode(Long code) {
+//                if (code == null) {
+//                    return null;
+//                }
+//                for (RecordType recordType : values()) {
+//                    if (recordType.getLiteralValue() == code) {
+//                        return recordType;
+//                    }
+//                }
+//                throw new IllegalArgumentException("Invalid " + RecordType.class.getSimpleName() + " code: " + code);
+//            }
+//        }
+//    }
 
     public static class StringTable extends DBRow {
         private static final long serialVersionUID = 1L;

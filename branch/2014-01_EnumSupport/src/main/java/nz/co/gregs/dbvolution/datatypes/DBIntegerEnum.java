@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Integer>> extends DBEnum<E> {
 
     private static final long serialVersionUID = 1L;
@@ -46,5 +49,27 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Integer>> extends DBE
     @Override
     public String getSQLDatatype() {
         return new DBInteger().getSQLDatatype();
+    }
+
+    @Override
+    public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        if (resultSet == null || fullColumnName == null) {
+            this.setToNull();
+        } else {
+            Long dbValue;
+            try {
+                dbValue = resultSet.getLong(fullColumnName);
+                if (resultSet.wasNull()) {
+                    dbValue = null;
+                }
+            } catch (SQLException ex) {
+                dbValue = null;
+            }
+            if (dbValue == null) {
+                this.setToNull();
+            } else {
+                this.setValue(dbValue);
+            }
+        }
     }
 }

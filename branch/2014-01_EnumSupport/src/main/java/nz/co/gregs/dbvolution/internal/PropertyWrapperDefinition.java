@@ -3,6 +3,7 @@ package nz.co.gregs.dbvolution.internal;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
+import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
@@ -42,7 +43,7 @@ public class PropertyWrapperDefinition {
 	private final ColumnHandler columnHandler;
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
-//	private final EnumTypeHandler enumTypeHandler;
+	private final EnumTypeHandler enumTypeHandler;
 	
 	public PropertyWrapperDefinition(DBRowClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
@@ -52,7 +53,7 @@ public class PropertyWrapperDefinition {
 		this.columnHandler = new ColumnHandler(javaProperty);
 		this.typeHandler = new PropertyTypeHandler(javaProperty, processIdentityOnly);
 		this.foreignKeyHandler = new ForeignKeyHandler(javaProperty, processIdentityOnly);
-//		this.enumTypeHandler = new EnumTypeHandler(javaProperty, this.typeHandler);
+		this.enumTypeHandler = new EnumTypeHandler(javaProperty, this.columnHandler);
 	}
 	
 	JavaProperty getRawJavaProperty() {
@@ -263,18 +264,18 @@ public class PropertyWrapperDefinition {
 	 * Gets the enum type, or null if not appropriate
 	 * @return the enum type, which may also implement {@link DBEnumValue}
 	 */
-//	public Class<? extends Enum<?>> getEnumType() {
-//		return enumTypeHandler.getEnumType();
-//	}
+	public Class<? extends Enum<?>> getEnumType() {
+		return enumTypeHandler.getEnumType();
+	}
 	
 	/**
 	 * Gets the type of the code supplied by enum values.
 	 * This is derived from the {@link DBEnumValue} implementation in the enum.
 	 * @return null if not known or not appropriate
 	 */
-//	public Class<?> getEnumCodeType() {
-//		return enumTypeHandler.getEnumCodeType();
-//	}
+	public Class<?> getEnumCodeType() {
+		return enumTypeHandler.getEnumLiteralValueType();
+	}
 
 	/**
 	 * Indicates whether the value of the property can be retrieved.
@@ -320,7 +321,9 @@ public class PropertyWrapperDefinition {
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
 	public QueryableDatatype getQueryableDatatype(Object target) {
-		return typeHandler.getJavaPropertyAsQueryableDatatype(target);
+		QueryableDatatype qdt = typeHandler.getJavaPropertyAsQueryableDatatype(target);
+		new InternalQueryableDatatypeProxy(qdt).setPropertyWrapper(this);
+		return qdt;
 	}
 	
 	/**
@@ -336,6 +339,7 @@ public class PropertyWrapperDefinition {
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
 	public void setQueryableDatatype(Object target, QueryableDatatype value) {
+		new InternalQueryableDatatypeProxy(value).setPropertyWrapper(this);
 		typeHandler.setJavaPropertyAsQueryableDatatype(target, value);
 	}
 	

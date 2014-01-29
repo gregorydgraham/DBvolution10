@@ -16,14 +16,13 @@
 package nz.co.gregs.dbvolution.exceptions;
 
 /**
- * Thrown when a required annotation is missing from a class or property.
- * @author gregorygraham
+ * Thrown when a type is encountered that is not valid in the context in which it is found.
  */
-public class MissingAnnotationException extends RuntimeException {
+public class InvalidDeclaredTypeException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public MissingAnnotationException(String string) {
+    public InvalidDeclaredTypeException(String string) {
     	super(string);
     }
 }

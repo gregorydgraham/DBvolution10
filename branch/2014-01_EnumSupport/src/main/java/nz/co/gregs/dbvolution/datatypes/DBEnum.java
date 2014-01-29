@@ -17,7 +17,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends QueryableDatatype {
 	private static final long serialVersionUID = 1L;
 
-	// values needing to be populated somehow
 	private Class<E> enumType;
 	
 	public DBEnum() {
@@ -36,7 +35,9 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
      * Sets the value based on the given enumeration.
      * @param enumValue
      */
-    public void setValue(E enumValue) {
+    @SuppressWarnings("unchecked")
+	public void setValue(E enumValue) {
+    	this.enumType = (enumValue == null) ? null : (Class<E>)enumValue.getClass();
     	super.setValue(convertToLiteral(enumValue));
     }
     
@@ -86,11 +87,11 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
         }
         
         // attempt conversion
-		E[] enumValues = enumType.getEnumConstants();
+		E[] enumValues = getEnumType().getEnumConstants();
 		for (E enumValue: enumValues) {
 			if (enumValue instanceof DBEnumValue) {
 				Object enumLiteralValue = ((DBEnumValue<?>) enumValue).getLiteralValue();
-				if (literalValue.equals(enumLiteralValue)) {
+				if (areLiteralValuesEqual(literalValue, enumLiteralValue)) {
 					return enumValue;
 				}
 			}
@@ -98,7 +99,122 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 				throw new IllegalArgumentException("Enum type "+enumType.getName()+" must implement "+DBEnumValue.class.getSimpleName());
 			}
 		}
-		throw new IncompatibleClassChangeError("Invalid literal value ["+literalValue+"] encountered when converting to enum type "+enumType.getName());
+		throw new IncompatibleClassChangeError("Invalid literal value ["+literalValue+"] encountered" +
+				" when converting to enum type "+enumType.getName());
+    }
+    
+    /**
+     * Tests whether two objects represent the same value.
+     * Handles subtle differences in type.
+     * @param o1
+     * @param o2
+     * @return {@code true} if both null or equivalent on value,
+     *         {@code false} if not equal
+     * @throws IncompatibleClassChangeError if can't recognise the type
+     */
+    private static boolean areLiteralValuesEqual(Object o1, Object o2) {
+    	if (o1 == null && o2 == null) {
+    		return true;
+    	}
+    	else if (o1 == null ^ o2 == null) {
+    		return false;
+    	}
+    	
+    	// handle same types and related types
+    	// (includes support for: String, BicDecimal, BigInteger, custom types)
+    	if (o1.getClass().isAssignableFrom(o2.getClass())) {
+        	// t2 extends t1: assume t2 knows how to compare them
+    		return o2.equals(o1);
+    	}
+    	else if (o2.getClass().isAssignableFrom(o1.getClass())) {
+        	// t1 extends t2: assume t1 knows how to compare them
+    		return o1.equals(o2);
+    	}
+    	
+    	// handle java.lang.Number variations
+    	// (Get the values at the greatest common precision,
+    	//  then compare them)
+    	if (o1 instanceof Number && o2 instanceof Number &&
+    			isRecognisedRealOrIntegerType((Number) o1) &&
+    			isRecognisedRealOrIntegerType((Number) o2)) {
+    		Number n1 = (Number) o1;
+    		Number n2 = (Number) o2;
+    		Object v1 = null; // value at greatest common precision
+    		Object v2 = null; // value at greatest common precision
+    		
+    		if (n1 instanceof Double || n2 instanceof Double) {
+    			v1 = n1.doubleValue();
+    			v2 = n2.doubleValue();
+    		}
+    		else if (n1 instanceof Float || n2 instanceof Float) {
+    			v1 = n1.floatValue();
+    			v2 = n2.floatValue();
+    		}
+    		else if (n1 instanceof Long || n2 instanceof Long) {
+    			v1 = n1.longValue();
+    			v2 = n2.longValue();
+    		}
+    		else if (n1 instanceof Integer || n2 instanceof Integer) {
+    			v1 = n1.intValue();
+    			v2 = n2.intValue();
+    		}
+    		else if (n1 instanceof Short || n2 instanceof Short) {
+    			v1 = n1.shortValue();
+    			v2 = n2.shortValue();
+    		}
+    		else if (n1 instanceof Float || n2 instanceof Float) {
+    			v1 = n1.floatValue();
+    			v2 = n2.floatValue();
+    		}
+    		
+    		if (v1 != null && v2 != null) {
+    			return v1.equals(v2);
+    		}
+    	}
+    	
+    	throw new IncompatibleClassChangeError("Unable to compare "+o1.getClass().getName()+" with "+o2.getClass().getName());
+    }
+    
+    /**
+     * Checks whether its one of the recognised types
+     * that can be easily converted between each other
+     * in {@link #areLiteralValuesEqual()}.
+     */
+    private static boolean isRecognisedRealOrIntegerType(Number n) {
+    	return
+    			(n instanceof Double) ||
+    			(n instanceof Float) ||
+    			(n instanceof Short) ||
+    			(n instanceof Long) ||
+    			(n instanceof Integer) ||
+    			(n instanceof Short);
+    }
+    
+    /**
+     * Gets the declared type of enumeration that the literal value is to be mapped to.
+     * Dependent on the property wrapper being injected, or the enumType
+     * being set
+     * @return non-null enum type
+     * @throws IllegalStateException if not configured correctly
+     */
+    @SuppressWarnings("unchecked")
+	private Class<E> getEnumType() {
+    	if (enumType == null) {
+    		if (propertyWrapper == null) {
+    			throw new IllegalStateException(
+    					"Unable to convert literal value to enum: enum type unable to be inferred at this point. " +
+    					"Row needs to be queried from database, or value set with an actual enum.");
+    		}
+    		Class<?> type = propertyWrapper.getEnumType();
+    		if (type == null) {
+    			throw new IllegalStateException(
+    					"Unable to convert literal value to enum: enum type unable to be inferred at this point. " +
+    					"Row needs to be queried from database, or value set with an actual enum, "+
+    					"on "+propertyWrapper.qualifiedJavaName()+".");
+    		}
+    		enumType = (Class<E>) type;
+    	}
+    	return enumType;
     }
 
     @Override
