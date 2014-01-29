@@ -22,20 +22,20 @@ package nz.co.gregs.dbvolution.exceptions;
 public class UnexpectedNumberOfRowsException extends Exception {
 
     public static final long serialVersionUID = 1;
-    private int expectedRows;
-    private int actualRows;
-    public UnexpectedNumberOfRowsException(int expected, int actual, String message, Exception cause) {
+    private long expectedRows;
+    private long actualRows;
+    public UnexpectedNumberOfRowsException(long expected, long actual, String message, Exception cause) {
         super(message, cause);
         this.expectedRows = expected;
         this.actualRows = actual;
     }
     
-    public UnexpectedNumberOfRowsException(int expected, int actual, String message) {
+    public UnexpectedNumberOfRowsException(long expected, long actual, String message) {
         this(expected,actual,message,null);
         
     }
 
-    public UnexpectedNumberOfRowsException(int expected, int actual) {
+    public UnexpectedNumberOfRowsException(long expected, long actual) {
         this(expected,actual,"Unexpected Number Of Rows Found: expected "+expected+ " but found "+actual,null);
         
     }
@@ -43,14 +43,14 @@ public class UnexpectedNumberOfRowsException extends Exception {
     /**
      * @return the expectedRows
      */
-    public int getExpectedRows() {
+    public long getExpectedRows() {
         return expectedRows;
     }
 
     /**
      * @return the actualRows
      */
-    public int getActualRows() {
+    public long getActualRows() {
         return actualRows;
     }
     
