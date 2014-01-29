@@ -75,6 +75,19 @@ public class StringExpression implements StringResult {
         return new StringExpression(string);
     }
 
+    public BooleanExpression isLike(String sqlPattern) {
+        return isLike(value(sqlPattern));
+    }
+    
+    public BooleanExpression isLike(StringResult sqlPattern) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, sqlPattern) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " LIKE ";
+            }
+        });
+    }
+
     public StringExpression append(StringResult string2) {
         return new StringExpression(new DBBinaryStringArithmetic(this, string2) {
             @Override
@@ -545,5 +558,38 @@ public class StringExpression implements StringResult {
                     + (substringLength != null ? " for " + (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
                     + ") ";
         }
+    }
+
+    private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+
+        private StringResult first;
+        private StringResult second;
+
+        public DBBinaryBooleanArithmetic(StringResult first, StringResult second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+        }
+
+        @Override
+        public DBBinaryBooleanArithmetic copy() {
+            DBBinaryBooleanArithmetic newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first.copy();
+            newInstance.second = second.copy();
+            return newInstance;
+        }
+
+        protected abstract String getEquationOperator(DBDatabase db);
     }
 }

@@ -56,5 +56,4 @@ abstract class DBMetaOperator extends DBOperator{
     public void not() {
         operator.not();
     }
-    
 }

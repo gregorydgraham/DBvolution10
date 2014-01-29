@@ -21,6 +21,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 /**
  *
  * @author gregory.graham
+ * @param <P>
+ * @param <R>
  */
 public interface DBExpression {
 

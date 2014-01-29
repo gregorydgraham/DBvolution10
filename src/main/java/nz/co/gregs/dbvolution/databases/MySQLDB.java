@@ -37,7 +37,7 @@ public class MySQLDB extends DBDatabase{
                 "jdbc:mysql://"+server+":" + port + "/" + databaseName,
                 username, 
                 password);
-        this.databaseName = databaseName;
+        this.setDatabaseName(databaseName);
     }
 
     @Override

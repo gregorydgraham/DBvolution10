@@ -83,7 +83,7 @@ public class BooleanExpression implements BooleanResult {
         });
     }
 
-    public static BooleanExpression anyOff(BooleanExpression... booleanExpressions) {
+    public static BooleanExpression anyOf(BooleanExpression... booleanExpressions) {
         return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
 
             @Override
