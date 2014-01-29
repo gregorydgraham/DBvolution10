@@ -16,8 +16,20 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
+ * Interface required to be implemented by all DBExpressions that produce
+ * Number results
  *
- * @author Gregory Graham
+ * <p>
+ * DBvolution attempts to maintain type safety using the *Result interfaces.
+ * Most operations requiring a number will not accept anything other than an
+ * actual number or a NumberResult.
+ *
+ * <p>
+ * Add {@code implements NumberResult} to your class and override the copy
+ * method so that it returns your class type.
+ *
+ * @author greg
+ * @see DBExpression
  */
 public interface NumberResult extends DBExpression{
     

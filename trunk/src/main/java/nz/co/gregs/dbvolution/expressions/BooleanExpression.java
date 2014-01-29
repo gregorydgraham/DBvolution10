@@ -20,9 +20,10 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 
 public class BooleanExpression implements BooleanResult {
 
-    private BooleanResult bool1;
+    private final BooleanResult bool1;
 
-    public BooleanExpression() {
+    protected BooleanExpression() {
+        bool1 = new DBBoolean();
     }
 
     public BooleanExpression(BooleanResult booleanResult) {
@@ -73,6 +74,22 @@ public class BooleanExpression implements BooleanResult {
         return new BooleanExpression(bool);
     }
 
+    /**
+     * Collects the expressions together and requires them all to be true.
+     *
+     * <p>
+     * Creates a BooleanExpression of several Boolean Expressions by connecting
+     * them using AND repeatedly.
+     *
+     * <p>
+     * This expression returns true if and only if all the component expressions
+     * are true
+     *
+     * @param booleanExpressions
+     * @return a boolean expression that returns true IFF all the
+     * booleanExpressions are true.
+     * @see #anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
+     */
     public static BooleanExpression allOf(BooleanExpression... booleanExpressions) {
         return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
 
@@ -83,6 +100,23 @@ public class BooleanExpression implements BooleanResult {
         });
     }
 
+
+    /**
+     * Collects the expressions together and only requires one to be true.
+     *
+     * <p>
+     * Creates a BooleanExpression of several Boolean Expressions by connecting
+     * them using OR repeatedly.
+     *
+     * <p>
+     * This expression returns true if any of the component expressions
+     * is true
+     *
+     * @param booleanExpressions
+     * @return a boolean expression that returns true if any of the
+     * booleanExpressions is true.
+     * @see #allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) 
+     */
     public static BooleanExpression anyOf(BooleanExpression... booleanExpressions) {
         return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
 
