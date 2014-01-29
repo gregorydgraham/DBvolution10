@@ -16,9 +16,20 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Useful for adding type information to the various DBExpression implementations
+ * Interface required to be implemented by all DBExpressions that produce
+ * String results
  *
- * @author greg
+ * <p>
+ * DBvolution attempts to maintain type safety using the *Result interfaces.
+ * Most operations requiring a String will not accept anything other than an
+ * actual String or a StringResult.
+ *
+ * <p>
+ * Add {@code implements StringResult} to your class and override the copy
+ * method so that it returns your class type.
+ *
+ * @author Gregory Graham
+ * @see DBExpression
  */
 public interface StringResult extends DBExpression{
     

@@ -17,9 +17,24 @@
 package nz.co.gregs.dbvolution.expressions;
 
 
-public interface LargeObjectVariable extends DBExpression {
+/**
+ * Interface required to be implemented by all DBExpressions that produce
+ * LargeObject results
+ *
+ * <p>
+ * DBvolution attempts to maintain type safety using the *Result interfaces.
+ * Most operations requiring a BLOB will only accept a LargeObjectResult.
+ *
+ * <p>
+ * Add {@code implements LargeObjectResult} to your class and override the copy
+ * method so that it returns your class type.
+ *
+ * @author greg
+ * @see DBExpression
+ */
+public interface LargeObjectResult extends DBExpression {
 
     @Override
-    public LargeObjectVariable copy();
+    public LargeObjectResult copy();
     
 }

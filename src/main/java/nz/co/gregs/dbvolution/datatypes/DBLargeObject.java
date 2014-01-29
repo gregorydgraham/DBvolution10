@@ -16,14 +16,13 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.InputStream;
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.expressions.LargeObjectVariable;
+import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
 
 /**
  *
  * @author gregorygraham
  */
-public abstract class DBLargeObject extends QueryableDatatype implements LargeObjectVariable{
+public abstract class DBLargeObject extends QueryableDatatype implements LargeObjectResult{
 
     public DBLargeObject() {
         super();

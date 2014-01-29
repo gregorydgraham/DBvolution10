@@ -136,4 +136,91 @@ public class BooleanExpressionTests extends AbstractTest {
         Assert.assertThat(allRows.size(), is(2));
     }
     
+    @Test
+    public void testNumberIs() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).is(1));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+    }
+    
+    @Test
+    public void testNumberIsLessThan() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).isLessThan(2));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+    }
+    
+    @Test
+    public void testNumberIsLessThanOrEqual() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).isLessThanOrEqual(2));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(2));
+    }
+    
+    @Test
+    public void testNumberIsGreaterThan() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).isGreaterThan(2));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(20));
+    }
+    
+    @Test
+    public void testNumberIsGreaterThanOrEqual() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).isGreaterThanOrEqual(2));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(21));
+    }    
+    
+    @Test
+    public void testNumberIsIn() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).isIn(1,2));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(2));
+    }
+    
+    @Test
+    public void testNumberIsInList() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        List<Long> longs = new ArrayList<Long>();
+        longs.add(new Long(1));
+        longs.add(new Long(2));
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).isIn(longs));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(2));
+    }
+    
 }

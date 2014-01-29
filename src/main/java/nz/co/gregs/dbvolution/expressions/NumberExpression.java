@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
@@ -72,6 +75,96 @@ public class NumberExpression implements NumberResult {
      */
     public static NumberExpression value(Number object) {
         return new NumberExpression(object);
+    }
+    
+        public BooleanExpression is(Number number) {
+        return is(value(number));
+    }
+
+    public BooleanExpression is(NumberResult numberExpression) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " = ";
+            }
+        });
+    }
+
+    public BooleanExpression isLessThan(Number number) {
+        return isLessThan(value(number));
+    }
+
+    public BooleanExpression isLessThan(NumberResult numberExpression) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " < ";
+            }
+        });
+    }
+
+    public BooleanExpression isLessThanOrEqual(Number number) {
+        return isLessThanOrEqual(value(number));
+    }
+
+    public BooleanExpression isLessThanOrEqual(NumberResult numberExpression) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " <= ";
+            }
+        });
+    }
+
+    public BooleanExpression isGreaterThan(Number number) {
+        return isGreaterThan(value(number));
+    }
+
+    public BooleanExpression isGreaterThan(NumberResult number) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, number) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " > ";
+            }
+        });
+    }
+
+    public BooleanExpression isGreaterThanOrEqual(Number number) {
+        return isGreaterThanOrEqual(value(number));
+    }
+
+    public BooleanExpression isGreaterThanOrEqual(NumberResult number) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, number) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " >= ";
+            }
+        });
+    }
+
+    public BooleanExpression isIn(Number... possibleValues) {
+        List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+        for (Number num : possibleValues) {
+            possVals.add(value(num));
+        }
+        return isIn(possVals.toArray(new NumberExpression[]{}));
+    }
+
+    public BooleanExpression isIn(Collection<? extends Number> possibleValues) {
+        List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+        for (Number num : possibleValues) {
+            possVals.add(value(num));
+        }
+        return isIn(possVals.toArray(new NumberExpression[]{}));
+    }
+
+    public BooleanExpression isIn(NumberResult... possibleValues) {
+        return new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+            @Override
+            protected String getFunctionName(DBDatabase db) {
+                return " IN ";
+            }
+        });
     }
 
     public static NumberExpression getNextSequenceValue(String sequenceName) {
@@ -696,6 +789,97 @@ public class NumberExpression implements NumberResult {
 
         protected String afterValue(DBDatabase db) {
             return ") ";
+        }
+    }
+
+    private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+
+        private NumberExpression first;
+        private NumberResult second;
+
+        public DBBinaryBooleanArithmetic(NumberExpression first, NumberResult second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+        }
+
+        @Override
+        public DBBinaryBooleanArithmetic copy() {
+            DBBinaryBooleanArithmetic newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first.copy();
+            newInstance.second = second.copy();
+            return newInstance;
+        }
+
+        protected abstract String getEquationOperator(DBDatabase db);
+    }
+
+    private static abstract class DBNnaryBooleanFunction implements BooleanResult {
+
+        protected NumberExpression column;
+        protected NumberResult[] values;
+
+        public DBNnaryBooleanFunction() {
+            this.values = null;
+        }
+
+        public DBNnaryBooleanFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
+            this.values = new NumberResult[rightHandSide.length];
+            this.column = leftHandSide;
+            System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return "( ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            StringBuilder builder = new StringBuilder();
+            builder
+                    .append(column.toSQLString(db))
+                    .append(this.getFunctionName(db))
+                    .append(this.beforeValue(db));
+            String separator = "";
+            for (NumberResult val : values) {
+                if (val != null) {
+                    builder.append(separator).append(val.toSQLString(db));
+                }
+                separator = ", ";
+            }
+            builder.append(this.afterValue(db));
+            return builder.toString();
+        }
+
+        @Override
+        public DBNnaryBooleanFunction copy() {
+            DBNnaryBooleanFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.values = this.values;
+            return newInstance;
         }
     }
 }

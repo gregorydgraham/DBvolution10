@@ -18,15 +18,15 @@ package nz.co.gregs.dbvolution.expressions;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 
-public class LargeObjectExpression implements LargeObjectVariable {
+public class LargeObjectExpression implements LargeObjectResult {
 
-    private final LargeObjectVariable qdt;
+    private final LargeObjectResult qdt;
 
-    public LargeObjectExpression() {
+    protected LargeObjectExpression() {
         qdt = new DBByteArray();
     }
 
-    public LargeObjectExpression(LargeObjectVariable copy) {
+    public LargeObjectExpression(LargeObjectResult copy) {
         qdt = copy;
     }
 
