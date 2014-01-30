@@ -152,7 +152,8 @@ public class TypeAdaptorTest {
         exemplar.uid.clear();
         exemplar.year = null;
 
-        DBQuery query = DBQuery.getInstance(db, exemplar);
+        DBQuery query = db.getDBQuery(exemplar);
+//        DBQuery query = DBQuery.getInstance(db, exemplar);
         query.setBlankQueryAllowed(true);
 
         List<CustomerWithStringIntegerTypeAdaptor> rows = query.getAllInstancesOf(exemplar);
