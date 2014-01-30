@@ -77,7 +77,7 @@ public class NumberExpression implements NumberResult {
         return new NumberExpression(object);
     }
     
-        public BooleanExpression is(Number number) {
+    public BooleanExpression is(Number number) {
         return is(value(number));
     }
 
@@ -878,6 +878,7 @@ public class NumberExpression implements NumberResult {
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
+            newInstance.column = this.column.copy();
             newInstance.values = this.values;
             return newInstance;
         }
