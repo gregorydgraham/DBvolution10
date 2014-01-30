@@ -480,7 +480,6 @@ public abstract class DBDatabase {
     }
 
     /**
-     *
      * Convenience method to test a DBScript on this database
      *
      * equivalent to script.test(this);
@@ -555,7 +554,7 @@ public abstract class DBDatabase {
         printSQLIfRequested(sqlString, System.out);
     }
 
-    protected void printSQLIfRequested(String sqlString, PrintStream out) {
+    public void printSQLIfRequested(String sqlString, PrintStream out) {
         if (printSQLBeforeExecuting) {
             out.println(sqlString);
         }
@@ -649,7 +648,7 @@ public abstract class DBDatabase {
         return definition;
     }
 
-    public boolean willCreateBlankQuery(DBRow row) {
+    protected boolean willCreateBlankQuery(DBRow row) {
         return row.willCreateBlankQuery(this);
     }
 

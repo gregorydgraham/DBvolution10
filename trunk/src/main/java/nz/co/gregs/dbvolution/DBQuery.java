@@ -33,6 +33,36 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
 
 /**
+ * The Definition of a Query on a Database
+ *
+ * <p>
+ * DBQuery brings together several DBRow classes into a single database query.
+ *
+ * <p>
+ * Natural joins are created while protecting against accidental Cartesian Joins
+ * and Blank Queries.
+ *
+ * <p>
+ * A DBQuery is most easily created by calling
+ * {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBDatabase's getDBQuery method}.
+ *
+ * <p>
+ * The foreign keys from the DBRow instances will be automatically aligned and
+ * the criteria defined on the DBRows will be seamlessly added to the WHERE
+ * clause.
+ *
+ * <p>
+ * Outer joins are supported using
+ * {@link #addOptional(nz.co.gregs.dbvolution.DBRow...) addOptional}, as well
+ * all OR queries with {@link #setToMatchAnyCondition()}
+ *
+ * <p>
+ * more complicated conditions can be added to the query itself using the
+ * {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition method}.
+ *
+ * <p>
+ * DBQuery can even scan the Class path and find all related DBRow classes and
+ * add them on request.
  *
  * @author gregorygraham
  */
@@ -63,7 +93,7 @@ public class DBQuery {
         this.resultSQL = null;
     }
 
-    public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
+    static DBQuery getInstance(DBDatabase database, DBRow... examples) {
         DBQuery dbQuery = new DBQuery(database);
         for (DBRow example : examples) {
             dbQuery.add(example);
@@ -144,7 +174,7 @@ public class DBQuery {
         return getSQLForQuery(null);
     }
 
-    public String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables, QueryGraph queryGraph) {
+    String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables, QueryGraph queryGraph) {
         List<String> joinClauses = new ArrayList<String>();
         String lineSep = System.getProperty("line.separator");
         DBDefinition defn = database.getDefinition();
@@ -304,11 +334,21 @@ public class DBQuery {
         }
     }
 
+    /**
+     *
+     * @return
+     * @throws SQLException
+     */
     public String getSQLForCount() throws SQLException {
         DBDefinition defn = database.getDefinition();
         return getSQLForQuery(defn.beginSelectStatement() + defn.countStarClause());
     }
 
+    /**
+     *
+     * @return
+     * @throws SQLException
+     */
     public List<DBQueryRow> getAllRows() throws SQLException {
         results = new ArrayList<DBQueryRow>();
         resultSQL = this.getSQLForQuery();
@@ -412,6 +452,13 @@ public class DBQuery {
         }
     }
 
+    /**
+     *
+     * @param <R>
+     * @param exemplar
+     * @return
+     * @throws SQLException
+     */
     public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
         List<R> arrayList = new ArrayList<R>();
         if (this.needsResults()) {
@@ -520,6 +567,10 @@ public class DBQuery {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public DBQuery clear() {
         this.queryTables.clear();
         this.optionalQueryTables.clear();
@@ -529,6 +580,11 @@ public class DBQuery {
         return this;
     }
 
+    /**
+     *
+     * @return
+     * @throws SQLException
+     */
     public Long count() throws SQLException {
         if (results != null) {
             return new Long(results.size());
@@ -552,6 +608,10 @@ public class DBQuery {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean willCreateBlankQuery() {
         boolean willCreateBlankQuery = true;
         for (DBRow table : allQueryTables) {
@@ -560,12 +620,19 @@ public class DBQuery {
         return willCreateBlankQuery && (comparisons.isEmpty()) && (expressions.isEmpty());
     }
 
+    /**
+     *
+     * @param i
+     */
     public void setRowLimit(int i) {
         rowLimit = new Long(i);
         results = null;
 
     }
 
+    /**
+     *
+     */
     public void clearRowLimit() {
         rowLimit = null;
         results = null;
@@ -597,6 +664,9 @@ public class DBQuery {
         }
     }
 
+    /**
+     *
+     */
     public void clearSortOrder() {
         sortOrder = null;
     }
@@ -620,14 +690,29 @@ public class DBQuery {
         return "";
     }
 
+    /**
+     *
+     * @param allow
+     */
     public void setBlankQueryAllowed(boolean allow) {
         this.blankQueryAllowed = allow;
     }
 
+    /**
+     *
+     * @param allow
+     */
     public void setCartesianJoinsAllowed(boolean allow) {
         this.cartesianJoinAllowed = allow;
     }
 
+    /**
+     *
+     * @param expectedRows
+     * @return
+     * @throws UnexpectedNumberOfRowsException
+     * @throws SQLException
+     */
     public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
         List<DBQueryRow> allRows = getAllRows();
         if (allRows.size() != expectedRows) {
@@ -651,6 +736,11 @@ public class DBQuery {
         this.useANSISyntax = useANSISyntax;
     }
 
+    /**
+     *
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public void addAllRelatedTables() throws InstantiationException, IllegalAccessException {
         List<DBRow> tablesToAdd = new ArrayList<DBRow>();
         for (DBRow table : allQueryTables) {
@@ -662,6 +752,11 @@ public class DBQuery {
         add(tablesToAdd.toArray(new DBRow[]{}));
     }
 
+    /**
+     *
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public void addAllRelatedTablesAsOptional() throws InstantiationException, IllegalAccessException {
         Set<DBRow> tablesToAdd = new HashSet<DBRow>();
         List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
@@ -685,6 +780,12 @@ public class DBQuery {
         addOptional(tablesToAdd.toArray(new DBRow[]{}));
     }
 
+    /**
+     *
+     * @param exemplar
+     * @return
+     * @throws SQLException
+     */
     public List<DBQueryRow> getAllRowsContaining(DBRow exemplar) throws SQLException {
         if (this.needsResults()) {
             getAllRows();
