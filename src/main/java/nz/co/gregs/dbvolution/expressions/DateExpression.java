@@ -15,9 +15,13 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import static nz.co.gregs.dbvolution.expressions.NumberExpression.value;
 
 public class DateExpression implements DateResult {
 
@@ -160,6 +164,98 @@ public class DateExpression implements DateResult {
             }
         });
     }
+    
+        public BooleanExpression is(Date date) {
+        return is(value(date));
+    }
+
+    public BooleanExpression is(DateResult dateExpression) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " = ";
+            }
+        });
+    }
+
+    public BooleanExpression isLessThan(Date date) {
+        return isLessThan(value(date));
+    }
+
+    public BooleanExpression isLessThan(DateResult dateExpression) {
+        return new BooleanExpression(new DateExpression.DBBinaryBooleanArithmetic(this, dateExpression) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " < ";
+            }
+        });
+    }
+
+    public BooleanExpression isLessThanOrEqual(Date date) {
+        return isLessThanOrEqual(value(date));
+    }
+
+    public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " <= ";
+            }
+        });
+    }
+
+    public BooleanExpression isGreaterThan(Date date) {
+        return isGreaterThan(value(date));
+    }
+
+    public BooleanExpression isGreaterThan(DateResult dateExpression) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " > ";
+            }
+        });
+    }
+
+    public BooleanExpression isGreaterThanOrEqual(Date date) {
+        return isGreaterThanOrEqual(value(date));
+    }
+
+    public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
+        return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return " >= ";
+            }
+        });
+    }
+
+    public BooleanExpression isIn(Date... possibleValues) {
+        List<DateExpression> possVals = new ArrayList<DateExpression>();
+        for (Date num : possibleValues) {
+            possVals.add(value(num));
+        }
+        return isIn(possVals.toArray(new DateExpression[]{}));
+    }
+
+    public BooleanExpression isIn(Collection<? extends Date> possibleValues) {
+        List<DateExpression> possVals = new ArrayList<DateExpression>();
+        for (Date num : possibleValues) {
+            possVals.add(value(num));
+        }
+        return isIn(possVals.toArray(new DateExpression[]{}));
+    }
+
+    public BooleanExpression isIn(DateResult... possibleValues) {
+        return new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+            @Override
+            protected String getFunctionName(DBDatabase db) {
+                return " IN ";
+            }
+        });
+    }
+
+
 
     private static abstract class DBNonaryFunction implements DateResult {
 
@@ -221,6 +317,98 @@ public class DateExpression implements DateResult {
                 throw new RuntimeException(ex);
             }
             newInstance.only = only.copy();
+            return newInstance;
+        }
+    }
+
+    private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+
+        private DateExpression first;
+        private DateResult second;
+
+        public DBBinaryBooleanArithmetic(DateExpression first, DateResult second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+        }
+
+        @Override
+        public DBBinaryBooleanArithmetic copy() {
+            DBBinaryBooleanArithmetic newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first.copy();
+            newInstance.second = second.copy();
+            return newInstance;
+        }
+
+        protected abstract String getEquationOperator(DBDatabase db);
+    }
+
+    private static abstract class DBNnaryBooleanFunction implements BooleanResult {
+
+        protected DateExpression column;
+        protected DateResult[] values;
+
+        public DBNnaryBooleanFunction() {
+            this.values = null;
+        }
+
+        public DBNnaryBooleanFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
+            this.values = new DateResult[rightHandSide.length];
+            this.column = leftHandSide;
+            System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return "( ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            StringBuilder builder = new StringBuilder();
+            builder
+                    .append(column.toSQLString(db))
+                    .append(this.getFunctionName(db))
+                    .append(this.beforeValue(db));
+            String separator = "";
+            for (DateResult val : values) {
+                if (val != null) {
+                    builder.append(separator).append(val.toSQLString(db));
+                }
+                separator = ", ";
+            }
+            builder.append(this.afterValue(db));
+            return builder.toString();
+        }
+
+        @Override
+        public DBNnaryBooleanFunction copy() {
+            DBNnaryBooleanFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.column = this.column.copy();
+            newInstance.values = this.values;
             return newInstance;
         }
     }

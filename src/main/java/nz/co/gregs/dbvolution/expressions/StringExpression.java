@@ -740,6 +740,7 @@ public class StringExpression implements StringResult {
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
+            newInstance.column = this.column.copy();
             newInstance.values = this.values;
             return newInstance;
         }

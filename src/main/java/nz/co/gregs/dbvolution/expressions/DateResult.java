@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Interface required to be implemented by all DBExpressions that produce
- * Date results
+ * Interface required to be implemented by all DBExpressions that produce Date
+ * results
  *
  * <p>
  * DBvolution attempts to maintain type safety using the *Result interfaces.
@@ -25,12 +25,14 @@ package nz.co.gregs.dbvolution.expressions;
  * actual Date or a DateResult.
  *
  * <p>
- * Add {@code implements DateResult} to your class and override the copy
- * method so that it returns your class type.
+ * Add {@code implements DateResult} to your class and override the copy method
+ * so that it returns your class type.
  *
  * @author greg
  * @see DBExpression
  */
-public interface DateResult extends DBExpression{
-    
+public interface DateResult extends DBExpression {
+
+    @Override
+    public DateResult copy();
 }
