@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
@@ -334,7 +335,7 @@ public class DBQuery {
 
     private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, QueryGraph queryGraph, List<DBRow> otherTables, String tableName, String lineSep) {
         for (DBRelationship rel : tabRow.getAdHocRelationships()) {
-            whereClause.append(defn.beginWhereClauseLine(options)).append("(").append(rel.generateSQL(database)).append(")");
+            whereClause.append(defn.beginWhereClauseLine(options)).append("(").append(rel.toSQLString(database)).append(")");
             queryGraph.add(rel.getFirstTable().getClass(), rel.getSecondTable().getClass());
         }
 

@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.query;
 
 import java.io.Serializable;
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -60,7 +62,7 @@ public class DBRelationship implements Serializable {
      * @param otherTable
      * @param otherTableField
      */
-    protected DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, Object otherTableField) {
+    public DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, Object otherTableField) {
         this(thisTable, thisTableField, otherTable, otherTableField, new DBEqualsOperator(thisTableField));
     }
 
@@ -91,7 +93,7 @@ public class DBRelationship implements Serializable {
      * is not from the {@code thisTable} instance or if {@code otherTableField}
      * is not from the {@code otherTable} instance
      */
-    protected DBRelationship(DBRow thisTable, Object thisTableField, DBRow otherTable, Object otherTableField, DBOperator operator) {
+    public DBRelationship(DBRow thisTable, Object thisTableField, DBRow otherTable, Object otherTableField, DBOperator operator) {
         this.firstTable = DBRow.copyDBRow(thisTable);
         this.secondTable = DBRow.copyDBRow(otherTable);
         this.operation = operator;
@@ -107,14 +109,14 @@ public class DBRelationship implements Serializable {
         }
     }
 
-    String generateSQL(DBDatabase database) {
+    public String toSQLString(DBDatabase database) {
         final DBDefinition definition = database.getDefinition();
         return getOperation().generateRelationship(database,
                 definition.formatTableAliasAndColumnName(firstTable, firstColumnPropertyWrapper.columnName()),
                 definition.formatTableAliasAndColumnName(secondTable, secondColumnPropertyWrapper.columnName()));
     }
 
-    static String generateSQL(DBDatabase database, DBRow firstTable, PropertyWrapper firstColumnProp, DBOperator operation, DBRow secondTable, PropertyWrapper secondColumnProp) {
+    public static String toSQLString(DBDatabase database, DBRow firstTable, PropertyWrapper firstColumnProp, DBOperator operation, DBRow secondTable, PropertyWrapper secondColumnProp) {
         final DBDefinition definition = database.getDefinition();
         return operation.generateRelationship(database,
                 definition.formatTableAliasAndColumnName(firstTable, firstColumnProp.columnName()),
