@@ -61,8 +61,10 @@ public class TypeAdaptorTest {
     @After
     public void tearDown() throws Exception {
         db.setPrintSQLBeforeExecuting(false);
+        db.preventDroppingOfTables(false);
         db.dropTable(new CustomerWithDBInteger());
         try {
+            db.preventDroppingOfDatabases(false);
             db.dropDatabase();
         } catch (UnsupportedOperationException ex) {
             ;

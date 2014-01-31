@@ -20,15 +20,31 @@ import java.io.PrintStream;
 import java.util.HashMap;
 
 /**
+ * Contains all the instances of DBRow that are associated with one line of a
+ * DBQuery request.
+ *
+ * <p>DBQueryRow represents an individual line within the results of a query.
+ * However the results within the line are contained in instances of all the
+ * DBRow subclasses included in the DBQuery.
+ * 
+ * <p>Each instance is accessible thru the {@link #get(nz.co.gregs.dbvolution.DBRow) get(DBRow) method}.
  *
  * @author gregorygraham
  *
  */
 public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
-    public static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     /**
+     * Returns the instance of exemplar contained within this DBQueryRow.
+     *
+     * <p>Finds the instance of the class supplied that is relevant to the DBRow
+     * and returns it.
+     *
+     * <p>Criteria set on the exemplar are ignored.
+     *
+     * <p>For example: Marque thisMarque = myQueryRow.get(new Marque());
      *
      * @param <E>
      * @param exemplar
@@ -39,13 +55,24 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
         return (E) get(exemplar.getClass());
     }
 
+    /**
+     * Print the specified columns to the specified PrintStream as one line.
+     *
+     * @param ps
+     * @param columns
+     */
     public void print(PrintStream ps, QueryableDatatype... columns) {
         for (QueryableDatatype qdt : columns) {
             ps.print("" + qdt + " ");
         }
         ps.println();
     }
-    
+
+    /**
+     * Print the all columns to the specified PrintStream as one line.
+     *
+     * @param ps
+     */
     public void print(PrintStream ps) {
         for (DBRow row : values()) {
             ps.print("" + row);

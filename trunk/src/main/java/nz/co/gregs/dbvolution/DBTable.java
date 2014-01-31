@@ -206,7 +206,7 @@ public class DBTable<E extends DBRow> {
                     }
                 }
             }
-            tableRow.setDefined(true);
+            tableRow.setDefined();
             dbTable.listOfRows.add(tableRow);
         }
     }

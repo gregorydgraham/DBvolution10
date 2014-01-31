@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +40,6 @@ public class DBDatabaseTest {
     @After
     public void tearDown() throws Exception {
     }
-    // TODO add test methods here. The name must begin with 'test'. For example:
-    // public void testHello() {}
 
     @Test
     public void testCreateTable() throws SQLException {
@@ -56,12 +56,30 @@ public class DBDatabaseTest {
     }
 
     @Test
+    public void testDropTableException() throws SQLException {
+        try {
+            myDatabase.createTable(new Marque());
+        } catch (Exception ex) {
+            System.out.println("SETUP: Marque table not created, probably already exists");
+        }
+        try{
+        myDatabase.dropTable(new Marque());
+        myDatabase.preventDroppingOfTables(false);
+        myDatabase.dropTable(new Marque());
+        throw new DBRuntimeException("Drop Table Method failed to throw a AccidentalDroppingOfTableException exception.");
+        }catch(AccidentalDroppingOfTableException oops){
+            System.out.println("AccidentalDroppingOfTableException successfully thrown");
+        }
+    }
+
+    @Test
     public void testDropTable() throws SQLException {
         try {
             myDatabase.createTable(new Marque());
         } catch (Exception ex) {
             System.out.println("SETUP: Marque table not created, probably already exists");
         }
+        myDatabase.preventDroppingOfTables(false);
         myDatabase.dropTable(new Marque());
         System.out.println("Marque table dropped successfully");
 
