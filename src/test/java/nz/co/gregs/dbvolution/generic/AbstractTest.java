@@ -175,11 +175,13 @@ public class AbstractTest {
 
     public void tearDown(DBDatabase database) throws Exception {
         database.setPrintSQLBeforeExecuting(false);
+        database.preventDroppingOfTables(false);
         database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
         database.dropTableNoExceptions(new CompanyLogo());
         database.dropTableNoExceptions(myMarqueRow);
         database.dropTableNoExceptions(myCarCompanyRow);
         try {
+            database.preventDroppingOfDatabases(false);
             database.dropDatabase();
         } catch (UnsupportedOperationException unsupported) {
             ;

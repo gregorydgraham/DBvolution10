@@ -86,6 +86,7 @@ public class DoubleJoinTest extends AbstractTest {
                 is(0));
         
         database.print(allRows);
+        database.preventDroppingOfTables(false);
         database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
     }
 
@@ -110,6 +111,7 @@ public class DoubleJoinTest extends AbstractTest {
                 is(1));
         
         database.print(allRows);
+        database.preventDroppingOfTables(false);
         database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
     }
 

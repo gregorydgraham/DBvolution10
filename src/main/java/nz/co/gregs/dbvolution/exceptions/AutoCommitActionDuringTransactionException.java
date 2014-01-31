@@ -20,12 +20,12 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author gregory.graham
  */
-public class AutoCommitActionDuringReadOnlyTransactionException extends RuntimeException {
+public class AutoCommitActionDuringTransactionException extends RuntimeException {
     
     private static final long serialVersionUID = 1L;
 
-    public AutoCommitActionDuringReadOnlyTransactionException(String ddlMethod) {
-        super("Autocommit Action Attempted During Read-Only Transaction: the method "+ddlMethod+" will cause a commit during your read-only transaction, this is probably not what you want. Remove the call from the transaction.");
+    public AutoCommitActionDuringTransactionException(String ddlMethod) {
+        super("Autocommit Action Attempted During Transaction: the method "+ddlMethod+" will cause a commit during your read-only transaction, this is probably not what you want. Remove the call from the transaction.");
     }
     
 }

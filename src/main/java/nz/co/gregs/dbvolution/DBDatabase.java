@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import java.io.PrintStream;
 import java.sql.*;
@@ -23,6 +25,13 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.DBTransactionStatement;
+import nz.co.gregs.dbvolution.databases.H2DB;
+import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.databases.InformixDB;
+import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
+import nz.co.gregs.dbvolution.databases.OracleDB;
+import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.properties.DBRowWrapperFactory;
@@ -67,6 +76,8 @@ public abstract class DBDatabase {
     private String databaseName;
     private boolean batchIfPossible = true;
     final DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
+    private boolean preventAccidentalDroppingOfTables = true;
+    private boolean preventAccidentalDroppingDatabase = true;
 
     /**
      * Define a new DBDatabase.
@@ -84,6 +95,14 @@ public abstract class DBDatabase {
      * @param definition - the subclass of DBDefinition that provides the syntax
      * for your database.
      * @param ds - a DataSource for the required database.
+     * @see DBDefinition
+     * @see OracleDB
+     * @see MySQLDB
+     * @see MSSQLServerDB
+     * @see H2DB
+     * @see H2MemoryDB
+     * @see InformixDB
+     * @see PostgresDB
      */
     public DBDatabase(DBDefinition definition, DataSource ds) {
         this.definition = definition;
@@ -108,6 +127,14 @@ public abstract class DBDatabase {
      * @param jdbcURL - The JDBC URL to connect to the database.
      * @param username - The username to login to the database as.
      * @param password - The users password for the database.
+     * @see DBDefinition
+     * @see OracleDB
+     * @see MySQLDB
+     * @see MSSQLServerDB
+     * @see H2DB
+     * @see H2MemoryDB
+     * @see InformixDB
+     * @see PostgresDB
      */
     public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
         this.definition = definition;
@@ -267,8 +294,9 @@ public abstract class DBDatabase {
      *
      * Automatically selects the correct table based on the example supplied and
      * returns the selected rows as a list
-     * 
-     * <p>See {@link nz.co.gregs.dbvolution.DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow)}
+     *
+     * <p>See
+     * {@link nz.co.gregs.dbvolution.DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow)}
      *
      * @param <R>
      * @param exampleRow
@@ -284,8 +312,9 @@ public abstract class DBDatabase {
      *
      * Automatically selects the correct table based on the example supplied and
      * returns the selected rows as a list
-     * 
-     * <p>See {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
+     *
+     * <p>See
+     * {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
      *
      * @param <R>
      * @param expectedNumberOfRows
@@ -303,14 +332,14 @@ public abstract class DBDatabase {
     }
 
     /**
-     *
-     * creates a query and fetches the rows automatically, based on the examples given 
+     * creates a query and fetches the rows automatically, based on the examples
+     * given
      *
      * @param rows
      * @return a list of DBQueryRows relating to the selected rows
      * @throws SQLException
      * @see DBQuery
-     * @see DBQuery#getAllRows() 
+     * @see DBQuery#getAllRows()
      */
     public List<DBQueryRow> get(DBRow... rows) throws SQLException {
         DBQuery dbQuery = getDBQuery(rows);
@@ -331,7 +360,12 @@ public abstract class DBDatabase {
 
     /**
      *
-     * creates a query and fetches the rows automatically, based on the examples given
+     * creates a query and fetches the rows automatically, based on the examples
+     * given
+     *
+     * Will throw a {@link UnexpectedNumberOfRowsException} if the number of
+     * rows found is different from the number expected. See {@link DBQuery#getAllRows(long)
+     * } for further details.
      *
      * @param expectedNumberOfRows
      * @param rows
@@ -339,7 +373,7 @@ public abstract class DBDatabase {
      * @throws SQLException
      * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
      * @see DBQuery
-     * @see DBQuery#getAllRows(long)  
+     * @see DBQuery#getAllRows(long)
      */
     public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
         if (expectedNumberOfRows == null) {
@@ -361,8 +395,10 @@ public abstract class DBDatabase {
      * @throws SQLException
      * @throws Exception
      * @see DBTransaction
-     * @see DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction) 
-     * @see DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction) 
+     * @see
+     * DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
+     * @see
+     * DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
      */
     synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
         if (commit) {
@@ -374,16 +410,17 @@ public abstract class DBDatabase {
 
     /**
      * Performs the transaction on this database.
-     * 
-     * <p>If there is an exception of any kind the transaction is rolled back and no changes are made.
-     * 
+     *
+     * <p>If there is an exception of any kind the transaction is rolled back
+     * and no changes are made.
+     *
      * <p>Otherwise the transaction is committed and changes are made permanent
      *
      * @param <V>
      * @param dbTransaction
      * @return the object returned by the transaction
      * @throws SQLException
-     * @throws Exception     
+     * @throws Exception
      * @see DBTransaction
      */
     synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
@@ -417,10 +454,12 @@ public abstract class DBDatabase {
 
     /**
      * Performs the transaction on this database without making changes.
-     * 
-     * <p>If there is an exception of any kind the transaction is rolled back and no changes are made.
-     * 
-     * <p>If no exception occurs, the transaction is still rolled back and no changes are made
+     *
+     * <p>If there is an exception of any kind the transaction is rolled back
+     * and no changes are made.
+     *
+     * <p>If no exception occurs, the transaction is still rolled back and no
+     * changes are made
      *
      * @param <V>
      * @param dbTransaction
@@ -432,7 +471,7 @@ public abstract class DBDatabase {
     synchronized public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
         Connection connection;
         V returnValues = null;
-        boolean wasReadOnly = false;
+//        boolean wasReadOnly = false;
         boolean wasAutoCommit = true;
 
         this.transactionStatement = getDBTransactionStatement();
@@ -441,7 +480,7 @@ public abstract class DBDatabase {
             this.isInAReadOnlyTransaction = true;
 
             connection = transactionStatement.getConnection();
-            wasReadOnly = connection.isReadOnly();
+//            wasReadOnly = connection.isReadOnly();
             wasAutoCommit = connection.getAutoCommit();
 
             connection.setAutoCommit(false);
@@ -493,6 +532,9 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Returns the name of the JDBC driver class used by this DBDatabase
+     * instance.
+     *
      * @return the driverName
      */
     public String getDriverName() {
@@ -500,6 +542,8 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Returns the JDBC URL used by this instance, if one has been specified.
+     *
      * @return the jdbcURL
      */
     public String getJdbcURL() {
@@ -507,6 +551,8 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Returns the username specified for this DBDatabase instance.
+     *
      * @return the username
      */
     public String getUsername() {
@@ -514,6 +560,8 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Returns the password specified
+     *
      * @return the password
      */
     public String getPassword() {
@@ -521,6 +569,14 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Returns a DBTable instance for the DBRow example.
+     *
+     * <p>See {@link DBTable DBTable} for more details.
+     *
+     * <p>Please be aware that DBtable doesn't assume the example's criteria are
+     * important. Use
+     * {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow) getRowsByExample}
+     * to use the criteria on the DBRow.
      *
      * @param <R>
      * @param example
@@ -531,6 +587,10 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Creates a new DBQuery object with the examples added as
+     * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[]) required} tables.
+     *
+     * This is the easiest way to create DBQueries, and indeed queries.
      *
      * @param examples
      * @return a DBQuery with the examples as required tables
@@ -539,36 +599,53 @@ public abstract class DBDatabase {
         return DBQuery.getInstance(this, examples);
     }
 
+    /**
+     * Enables the printing of all SQL to System.out before the SQL is executed.
+     *
+     * @param b TRUE to print SQL before execution, FALSE otherwise.
+     */
     public void setPrintSQLBeforeExecuting(boolean b) {
         printSQLBeforeExecuting = b;
     }
 
     /**
+     * Indicates whether SQL will be printed before it is executed.
+     *
      * @return the printSQLBeforeExecuting
      */
     public boolean isPrintSQLBeforeExecuting() {
         return printSQLBeforeExecuting;
     }
 
+    /**
+     * Called by internal methods that are about to execute SQL so the SQL can
+     * be printed.
+     *
+     * @param sqlString
+     */
     public void printSQLIfRequested(String sqlString) {
         printSQLIfRequested(sqlString, System.out);
     }
 
-    public void printSQLIfRequested(String sqlString, PrintStream out) {
+    void printSQLIfRequested(String sqlString, PrintStream out) {
         if (printSQLBeforeExecuting) {
             out.println(sqlString);
         }
     }
 
     /**
+     * Creates a table on the database based on the DBRow.
+     *
+     * <p>Implemented to facilitate testing, this method creates an actual table
+     * on the database using the default data types supplied by the fields of
+     * the DBRow.
      *
      * @param newTableRow
      * @throws SQLException
+     * @throws AutoCommitActionDuringTransactionException
      */
-    public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringReadOnlyTransactionException {
-        if (isInAReadOnlyTransaction) {
-            throw new AutoCommitActionDuringReadOnlyTransactionException("DBDatabase.dropTable()");
-        }
+    public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+        preventDDLDuringTransaction("DBDatabase.createTable()");
         StringBuilder sqlScript = new StringBuilder();
         List<PropertyWrapper> pkFields = new ArrayList<PropertyWrapper>();
         String lineSeparator = System.getProperty("line.separator");
@@ -616,9 +693,24 @@ public abstract class DBDatabase {
         getDBStatement().execute(sqlString);
     }
 
-    public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringReadOnlyTransactionException {
-        if (isInAReadOnlyTransaction) {
-            throw new AutoCommitActionDuringReadOnlyTransactionException("DBDatabase.dropTable()");
+    /**
+     * Drops a table from the database.
+     *
+     * <p>In General NEVER USE THIS METHOD.
+     *
+     * <p>Seriously NEVER USE THIS METHOD.
+     *
+     * <p>Your DBA will murder you.
+     *
+     * @param tableRow
+     * @throws SQLException
+     * @throws AutoCommitActionDuringTransactionException
+     * @throws AccidentalDroppingOfTableException
+     */
+    public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
+        preventDDLDuringTransaction("DBDatabase.dropTable()");
+        if (preventAccidentalDroppingOfTables) {
+            throw new AccidentalDroppingOfTableException();
         }
         StringBuilder sqlScript = new StringBuilder();
 
@@ -629,8 +721,17 @@ public abstract class DBDatabase {
     }
 
     /**
+     * Drops a table from the database.
      *
-     * The easy way to drop a table that might not exist.
+     * <p>The easy way to drop a table that might not exist.
+     * <p>An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)
+     * }
+     * <
+     * p>In General NEVER USE THIS METHOD.
+     *
+     * <p>Seriously NEVER USE THIS METHOD.
+     *
+     * <p>Your DBA will murder you.
      *
      * @param <TR>
      * @param tableRow
@@ -644,17 +745,50 @@ public abstract class DBDatabase {
         }
     }
 
+    /**
+     * Returns the DBdefinition used by this DBDatabase
+     *
+     * <p>Every DBDatabase has a DBDefinition that defines the syntax used in
+     * that database.
+     *
+     * <p>While DBDefinition is important, unless you are implementing support
+     * for a new database you probably don't need this.
+     *
+     * @return
+     */
     public DBDefinition getDefinition() {
         return definition;
     }
 
+    /**
+     * Returns whether or not the example has any specified criteria.
+     * 
+     * See {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase) willCreateBlankQuery} on DBRow.
+     *
+     * @param row
+     * @return
+     */
     protected boolean willCreateBlankQuery(DBRow row) {
         return row.willCreateBlankQuery(this);
     }
 
-    public void dropDatabase() throws Exception, UnsupportedOperationException, AutoCommitActionDuringReadOnlyTransactionException {
-        if (isInAReadOnlyTransaction) {
-            throw new AutoCommitActionDuringReadOnlyTransactionException("DBDatabase.dropDatabase()");
+    /**
+     * The worst idea EVAH.
+     *
+     * <p>Do Not Use This.
+     *
+     * @throws Exception
+     * @throws UnsupportedOperationException
+     * @throws AutoCommitActionDuringTransactionException
+     * @throws AccidentalDroppingOfTableException
+     */
+    public void dropDatabase() throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
+        preventDDLDuringTransaction("DBDatabase.dropDatabase()");
+        if (preventAccidentalDroppingOfTables) {
+            throw new AccidentalDroppingOfTableException();
+        }
+        if (preventAccidentalDroppingDatabase) {
+            throw new AccidentalDroppingOfDatabaseException();
         }
 
         String dropStr = getDefinition().getDropDatabase(getDatabaseName());//;
@@ -663,19 +797,76 @@ public abstract class DBDatabase {
         this.doTransaction(new DBRawSQLTransaction(dropStr));
     }
 
+    /**
+     * Returns the database name if one was supplied.
+     *
+     * @return the database name
+     */
     public String getDatabaseName() {
         return databaseName;
     }
 
-    protected String setDatabaseName(String databaseName) {
-        return this.databaseName = databaseName;
+    /**
+     * Sets the database name.
+     *
+     * @param databaseName
+     */
+    protected void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
     }
 
+    /**
+     * Returns whether this DBDatabase will attempt to batch multiple SQL
+     * commands.
+     *
+     * <p>It is possible to execute several SQL statements in one instruction,
+     * and generally DBvolution attempts to do that when handed several actions
+     * at once.
+     * <p>However sometimes this is inappropriate and this method can help with
+     * those times.
+     *
+     * @return TRUE if this instance will try to batch SQL statements, FALSE
+     * otherwise
+     */
     public boolean batchSQLStatementsWhenPossible() {
         return batchIfPossible;
     }
 
+    /**
+     * Sets whether this DBDatabase will attempt to batch multiple SQL commands.
+     *
+     * <p>It is possible to execute several SQL statements in one instruction,
+     * and generally DBvolution attempts to do that when handed several actions
+     * at once.
+     * <p>However sometimes this is inappropriate and this method can help with
+     * those times.
+     *
+     * @param batchSQLStatementsWhenPossible TRUE if this instance will try to
+     * batch SQL statements, FALSE otherwise
+     */
     public void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
         batchIfPossible = batchSQLStatementsWhenPossible;
+    }
+
+    void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
+        if (isInATransaction) {
+            throw new AutoCommitActionDuringTransactionException(message);
+        }
+    }
+
+    /**
+     *
+     * @param droppingTablesIsAMistake just leave it at TRUE.
+     */
+    public void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
+        this.preventAccidentalDroppingOfTables = droppingTablesIsAMistake;
+    }
+
+    /**
+     *
+     * @param justLeaveThisAtTrue
+     */
+    public void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
+        this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
     }
 }

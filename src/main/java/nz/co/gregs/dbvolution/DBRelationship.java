@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -25,30 +26,51 @@ import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
+ * Represents a relationship between 2 columns on 2 tables.
+ * 
+ * <p>This is a generalisation of {@link DBForeignKey} that can be added to DBRows.
+ * 
+ * <p>Use {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) DBRow's AddRelationship methods} to add a relationship to a DBRow.
+ * 
+ * <p>For a DBQuery, you may be better using the {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition method}.
  *
  * @author gregorygraham
  */
 public class DBRelationship implements Serializable {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private DBRow firstTable;
     private DBRow secondTable;
     private PropertyWrapper firstColumnPropertyWrapper;
     private PropertyWrapper secondColumnPropertyWrapper;
     private DBOperator operation;
 
-    public DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, Object otherTableField) {
+    /**
+     * Creates a new DBRelationship representing the connection between to tables
+     *
+     * <p>Relationships connect 2 columns in 2 tables. DBRelationship represents
+     * a columnA = columnB relationship like a classic foreign key relation.
+     * 
+     * <p>Use this constructor to create a equal new relationship or use {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) }
+     * 
+     * <p>More complex relationships a possible with the longer constructor or  {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.operators.DBOperator)  }
+     * 
+     * @param thisTable
+     * @param thisTableField
+     * @param otherTable
+     * @param otherTableField
+     */
+    protected DBRelationship(DBRow thisTable, QueryableDatatype thisTableField, DBRow otherTable, Object otherTableField) {
         this(thisTable, thisTableField, otherTable, otherTableField, new DBEqualsOperator(thisTableField));
     }
 
     /**
-     * Creates a relationship between the first table's column
-     * and the second tables' column, identified
-     * by the object references of column's fields and/or methods.
-     * 
-     * <p> For example the following code snippet will create
-     * a relationship between the customer's fkAddress column
-     * and the adress's uid column:
+     * Creates a relationship between the first table's column and the second
+     * tables' column, identified by the object references of column's fields
+     * and/or methods.
+     *
+     * <p> For example the following code snippet will create a relationship
+     * between the customer's fkAddress column and the address's uid column:
      * <pre>
      * Customer customer = ...;
      * Address address = ...;
@@ -56,41 +78,43 @@ public class DBRelationship implements Serializable {
      * new DBRelationship(customer, customer.fkAddress, address, address.uid, operator);
      * </pre>
      *
-     * <p> Requires that {@code thisTableField} is from the {@code thisTable} instance,
-     * and {@code otherTableField} is from the {@code otherTable} instance.
+     * <p> Requires that {@code thisTableField} is from the {@code thisTable}
+     * instance, and {@code otherTableField} is from the {@code otherTable}
+     * instance.
+     *
      * @param thisTable
      * @param thisTableField
      * @param otherTable
      * @param otherTableField
      * @param operator
-     * @throws IncorrectDBRowInstanceSuppliedException if {@code thisTableField} is not
-     * from the {@code thisTable} instance or if {@code otherTableField} is not from 
-     * the {@code otherTable} instance
+     * @throws IncorrectDBRowInstanceSuppliedException if {@code thisTableField}
+     * is not from the {@code thisTable} instance or if {@code otherTableField}
+     * is not from the {@code otherTable} instance
      */
-    public DBRelationship(DBRow thisTable, Object thisTableField, DBRow otherTable, Object otherTableField, DBOperator operator) {
+    protected DBRelationship(DBRow thisTable, Object thisTableField, DBRow otherTable, Object otherTableField, DBOperator operator) {
         this.firstTable = DBRow.copyDBRow(thisTable);
         this.secondTable = DBRow.copyDBRow(otherTable);
         this.operation = operator;
-        
+
         this.firstColumnPropertyWrapper = thisTable.getPropertyWrapperOf(thisTableField);
         if (firstColumnPropertyWrapper == null) {
             throw new IncorrectDBRowInstanceSuppliedException(thisTable, thisTableField);
         }
-        
+
         this.secondColumnPropertyWrapper = otherTable.getPropertyWrapperOf(otherTableField);
         if (secondColumnPropertyWrapper == null) {
             throw new IncorrectDBRowInstanceSuppliedException(otherTable, otherTableField);
         }
     }
 
-    public String generateSQL(DBDatabase database) {
+    String generateSQL(DBDatabase database) {
         final DBDefinition definition = database.getDefinition();
         return getOperation().generateRelationship(database,
                 definition.formatTableAliasAndColumnName(firstTable, firstColumnPropertyWrapper.columnName()),
                 definition.formatTableAliasAndColumnName(secondTable, secondColumnPropertyWrapper.columnName()));
     }
 
-    static public String generateSQL(DBDatabase database, DBRow firstTable, PropertyWrapper firstColumnProp, DBOperator operation, DBRow secondTable, PropertyWrapper secondColumnProp) {
+    static String generateSQL(DBDatabase database, DBRow firstTable, PropertyWrapper firstColumnProp, DBOperator operation, DBRow secondTable, PropertyWrapper secondColumnProp) {
         final DBDefinition definition = database.getDefinition();
         return operation.generateRelationship(database,
                 definition.formatTableAliasAndColumnName(firstTable, firstColumnProp.columnName()),
@@ -112,14 +136,14 @@ public class DBRelationship implements Serializable {
     }
 
     /**
-     * @return the firstColumn
+     * @return the firstColumn's PropertyWrapper
      */
     public PropertyWrapper getFirstColumnPropertyWrapper() {
         return firstColumnPropertyWrapper;
     }
 
     /**
-     * @return the secondColumn
+     * @return the secondColumn's PropertyWrapper
      */
     public PropertyWrapper getSecondColumnPropertyWrapper() {
         return secondColumnPropertyWrapper;
