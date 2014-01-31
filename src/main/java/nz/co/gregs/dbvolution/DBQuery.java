@@ -131,10 +131,15 @@ public class DBQuery {
     /**
      * Add an optional table to this query
      *
-     * This method adds an optional (OUTER) table to the query. The query will
-     * return an instance of this DBRow for each row found, though it may be a
-     * null instance as there was no matching row in the database.
+     * <p>
+     * This method adds an optional (OUTER) table to the query.
      *
+     * <p>
+     * The query will return an instance of this DBRow for each row found,
+     * though it may be a null instance as there was no matching row in the
+     * database.
+     *
+     * <p>
      * Criteria (permitted and excluded values) specified in the supplied
      * instance will be added to the query.
      *
@@ -192,7 +197,7 @@ public class DBQuery {
      * <p>
      * See also {@link DBQuery#getSQLForCount() getSQLForCount}
      *
-     * @return
+     * @return a String of the SQL that will be used by this DBQuery.
      * @throws SQLException
      */
     public String getSQLForQuery() throws SQLException {
@@ -366,7 +371,9 @@ public class DBQuery {
      * Use this method to check the SQL that will be executed during
      * {@link DBQuery#count() the count() method}
      *
-     * @return @throws SQLException
+     * @return a String of the SQL query that will be used to count the rows
+     * returned by this query
+     * @throws SQLException
      */
     public String getSQLForCount() throws SQLException {
         DBDefinition defn = database.getDefinition();
@@ -515,7 +522,7 @@ public class DBQuery {
      * @throws SQLException
      * @throws UnexpectedNumberOfRowsException
      */
-    public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, int expected) throws SQLException, UnexpectedNumberOfRowsException {
+    public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, long expected) throws SQLException, UnexpectedNumberOfRowsException {
         List<R> allInstancesFound = getAllInstancesOf(exemplar);
         final int actual = allInstancesFound.size();
         if (actual > expected) {
@@ -551,7 +558,7 @@ public class DBQuery {
      *
      * @param <R>
      * @param exemplar
-     * @return
+     * @return A List of all the instances found of the exemplar.
      * @throws SQLException
      */
     public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
@@ -699,7 +706,7 @@ public class DBQuery {
      *
      * <p>
      * Either: counts the results already retrieved, or creates a
-     * {@link #getSQLForCount() count query} for this instance and retrieves
+     * {@link #getSQLForCount() count query} for this instance and retrieves the
      * number of rows that would have been returned had
      * {@link #getAllRows() getAllRows()} been called.
      *
@@ -730,8 +737,23 @@ public class DBQuery {
     }
 
     /**
+     * Test whether this DBQuery will create a query without limitations.
      *
-     * @return
+     * <p>
+     * Checks this instance for criteria and conditions and returns FALSE if at
+     * least one constraint has been placed on the query.
+     *
+     * <p>
+     * This helps avoid the common mistake of accidentally retrieving all the
+     * rows of the tables by forgetting to add criteria.
+     *
+     * <p>
+     * No attempt to compare the length of the query results with the length of
+     * the table is made: if your criteria selects all the row of the tables
+     * this method will still return FALSE.
+     *
+     * @return TRUE if the DBQuery will retrieve all the rows of the tables,
+     * FALSE otherwise
      */
     public boolean willCreateBlankQuery() {
         boolean willCreateBlankQuery = true;
@@ -742,16 +764,29 @@ public class DBQuery {
     }
 
     /**
+     * Limit the query to only returning a certain number of rows
      *
-     * @param i
+     * <p>
+     * Implements support of the LIMIT and TOP operators of many databases.
+     *
+     * <p>
+     * Only the specified number of rows will be returned from the database and
+     * DBvolution.
+     *
+     * @param maximumNumberOfRowsReturned
      */
-    public void setRowLimit(int i) {
-        rowLimit = new Long(i);
+    public void setRowLimit(long maximumNumberOfRowsReturned) {
+        rowLimit = new Long(maximumNumberOfRowsReturned);
         results = null;
 
     }
 
     /**
+     * Clear the row limit on this DBQuery and return it to retrieving all rows.
+     *
+     * <p>
+     * Also resets the retrieved results so that the database will be
+     * re-queried.
      *
      */
     public void clearRowLimit() {
@@ -786,6 +821,7 @@ public class DBQuery {
     }
 
     /**
+     * Remove all sorting that has been set on this DBQuery
      *
      */
     public void clearSortOrder() {
@@ -812,27 +848,89 @@ public class DBQuery {
     }
 
     /**
+     * Change the Default Setting of Disallowing Blank Queries
      *
-     * @param allow
+     * <p>
+     * A common mistake is creating a query without supplying criteria and
+     * accidently retrieving a huge number of rows.
+     *
+     * <p>
+     * DBvolution detects this situation and, by default, throws a
+     * {@link nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException AccidentalBlankQueryException}
+     * when it happens.
+     *
+     * <p>
+     * To change this behaviour, and allow blank queries, call
+     * {@code setBlankQueriesAllowed(true)}.
+     *
+     * @param allow - TRUE to allow blank queries, FALSE to return it to the
+     * default setting.
      */
     public void setBlankQueryAllowed(boolean allow) {
         this.blankQueryAllowed = allow;
     }
 
     /**
+     * Change the Default Setting of Disallowing Accidental Cartesian Joins
      *
-     * @param allow
+     * <p>
+     * A common mistake is to create a query without connecting all the tables
+     * in the query and accident retrieve a huge number of rows.
+     *
+     * <p>
+     * DBvolution detects this situation and, by default, throws a
+     * {@link nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException AccidentalCartesianJoinException}
+     * when it happens.
+     *
+     * <p>
+     * To change this behaviour, and allow cartesian joins, call
+     * {@code setCartesianJoinsAllowed(true)}.
+     *
+     * @param allow - TRUE to allow cartesian joins, FALSE to return it to the
+     * default setting.
      */
     public void setCartesianJoinsAllowed(boolean allow) {
         this.cartesianJoinAllowed = allow;
     }
 
     /**
+     * Constructs the SQL for this DBQuery and executes it on the database,
+     * returning the rows found.
      *
-     * @param expectedRows
-     * @return
+     * <p>
+     * Like {@link #getAllRows() getAllRows()} this method retrieves all the
+     * rows for this DBQuery. However it checks the number of rows retrieved and
+     * throws a {@link UnexpectedNumberOfRowsException} if the number of rows
+     * retrieved differs from the expected number.
+     *
+     * <p>
+     * Adds all required DBRows as inner join tables and all optional DBRow as
+     * outer join tables.
+     * <p>
+     * Uses the defined
+     * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on
+     * the DBRow and
+     * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) added relationships}
+     * to connect the tables. Foreign keys that have been
+     * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
+     * are not used.
+     * <p>
+     * Criteria such as
+     * {@link nz.co.gregs.dbvolution.datatypes.QueryableDatatype#permittedValues(java.lang.Object...) permitted values}
+     * defined on the fields of the DBRow examples are added as part of the
+     * WHERE clause.
+     *
+     * <p>
+     * Similarly conditions added to the DBQuery using
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition}
+     * are added.
+     *
+     * @param expectedRows - the number of rows expected to be retrieved
+     * @return A List of DBQueryRows containing all the DBRow instances aligned
+     * with their related instances.
      * @throws UnexpectedNumberOfRowsException
      * @throws SQLException
+     * @see #getAllRows()
      */
     public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
         List<DBQueryRow> allRows = getAllRows();
@@ -844,6 +942,15 @@ public class DBQuery {
     }
 
     /**
+     * Returns the current setting for ANSI join syntax.
+     *
+     * <p>
+     * Indicates whether or not this query will use JOIN in the FROM clause or
+     * treat foreign keys as a constraint in the WHERE clause.
+     *
+     * <p>
+     * N.B. Optional (outer) tables are only supported with ANSI syntax.
+     *
      * @return the useANSISyntax flag
      */
     public boolean isUseANSISyntax() {
@@ -851,6 +958,23 @@ public class DBQuery {
     }
 
     /**
+     * Sets whether this DBQuery will use ANSI syntax.
+     *
+     * <p>
+     * The default is to use ANSI syntax.
+     *
+     * <p>
+     * You should probably use ANSI syntax.
+     *
+     * <p>
+     * ANSI syntax has the foreign key and added relationships defined in the
+     * FROM clause with the JOIN operator. Pre-ANSI syntax treated the foreign
+     * keys and other relationships as part of the WHERE clause.
+     *
+     * <p>
+     * ANSI syntax supports OUTER joins with a standard syntax, and DBvolution
+     * supports OUTER thru the ANSI syntax.
+     *
      * @param useANSISyntax the useANSISyntax flag to set
      */
     public void setUseANSISyntax(boolean useANSISyntax) {
@@ -858,6 +982,19 @@ public class DBQuery {
     }
 
     /**
+     * Search the classpath and add any DBRow classes that reference the DBRows
+     * within this DBQuery
+     *
+     * <p>
+     * This method automatically enlarges the query by finding all associated
+     * DBRow classes and adding them to the query.
+     *
+     * <p>
+     * In a sense this expands the query out by one level of indirection.
+     *
+     * <p>
+     * N.B. for any realistic database, repeatedly calling this method will
+     * quickly make the query impossibly large.
      *
      * @throws InstantiationException
      * @throws IllegalAccessException
@@ -874,6 +1011,19 @@ public class DBQuery {
     }
 
     /**
+     * Search the classpath and add, as optional, any DBRow classes that
+     * reference the DBRows within this DBQuery
+     *
+     * <p>
+     * This method automatically enlarges the query by finding all associated
+     * DBRow classes and adding them to the query as optional tables.
+     *
+     * <p>
+     * In a sense this expands the query out by one level of indirection.
+     *
+     * <p>
+     * N.B. for any realistic database, repeatedly calling this method will
+     * quickly make the query impossibly large.
      *
      * @throws InstantiationException
      * @throws IllegalAccessException
@@ -902,24 +1052,45 @@ public class DBQuery {
     }
 
     /**
+     * Provides all the DBQueryRow that the instance provided is part of.
      *
-     * @param exemplar
-     * @return
+     * <p>
+     * This method returns the subset of this DBQuery's results that include the
+     * provided instance.
+     *
+     * <p>
+     * Slicing the results like this allows you to get a list of, for instance,
+     * status table DBRows and then process the DBQueryRows that have each
+     * status DBRow as a block.
+     *
+     * @param instance
+     * @return A list of DBQueryRow instances that relate to the exemplar
      * @throws SQLException
      */
-    public List<DBQueryRow> getAllRowsContaining(DBRow exemplar) throws SQLException {
+    public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException {
         if (this.needsResults()) {
             getAllRows();
         }
         List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
         for (DBQueryRow row : results) {
-            if (row.get(exemplar) == exemplar) {
+            if (row.get(instance) == instance) {
                 returnList.add(row);
             }
         }
         return returnList;
     }
 
+    /**
+     * SOON TO BE REMOVED
+     *
+     * <p>
+     * Please use
+     * {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition}
+     * instead.
+     *
+     * @param leftHandSide
+     * @param operatorWithRightHandSideValues
+     */
 //    @Deprecated
     public void addComparison(DBExpression leftHandSide, DBOperator operatorWithRightHandSideValues) {
         comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
