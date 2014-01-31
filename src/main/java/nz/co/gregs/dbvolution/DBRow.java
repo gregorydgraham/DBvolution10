@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -680,7 +681,7 @@ abstract public class DBRow implements Serializable {
 //        List<String> sqlStrings = new ArrayList<String>();
 //        DBDefinition defn = db.getDefinition();
 //        for (DBRelationship rel : adHocRelationships) {
-//            sqlStrings.add(defn.beginWhereClauseLine() + rel.generateSQL(db));
+//            sqlStrings.add(defn.beginWhereClauseLine() + rel.toSQLString(db));
 //        }
 //        return sqlStrings;
 //    }
@@ -822,7 +823,7 @@ abstract public class DBRow implements Serializable {
 
             rels//.append(lineSeparator)
                     .append(joinSeparator)
-                    .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
+                    .append(DBRelationship.toSQLString(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
             joinSeparator = defn.beginWhereClauseLine(options);
         }
@@ -847,7 +848,7 @@ abstract public class DBRow implements Serializable {
 
             rels//.append(lineSeparator)
                     .append(joinSeparator)
-                    .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
+                    .append(DBRelationship.toSQLString(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
             joinSeparator = defn.beginWhereClauseLine(options);
         }
