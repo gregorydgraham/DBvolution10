@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -153,8 +154,14 @@ public class DBQuery {
     }
 
     /**
+     * Remove tables from the query
      *
-     * Remove optional or required tables from the query
+     * <p>
+     * This method removes previously added tables from the query.
+     *
+     * <p>
+     * Previous results and SQL are discarded, and the query is set ready to be
+     * re-run.
      *
      * @param tables
      * @return this DBQuery instance
@@ -170,6 +177,24 @@ public class DBQuery {
         return this;
     }
 
+    /**
+     * Generates and returns the actual SQL to be used by this query.
+     *
+     * <p>
+     * Good for debugging and great for DBAs, this is how you find out what
+     * DBvolution is really doing.
+     *
+     * <p>
+     * Generates the SQL query for retrieving the objects but does not execute
+     * the SQL. Use {@link #getAllRows() the get*Rows methods} to retrieve the
+     * rows.
+     *
+     * <p>
+     * See also {@link DBQuery#getSQLForCount() getSQLForCount}
+     *
+     * @return
+     * @throws SQLException
+     */
     public String getSQLForQuery() throws SQLException {
         return getSQLForQuery(null);
     }
@@ -335,9 +360,13 @@ public class DBQuery {
     }
 
     /**
+     * Returns the SQL query that will used to count the rows
      *
-     * @return
-     * @throws SQLException
+     * <p>
+     * Use this method to check the SQL that will be executed during
+     * {@link DBQuery#count() the count() method}
+     *
+     * @return @throws SQLException
      */
     public String getSQLForCount() throws SQLException {
         DBDefinition defn = database.getDefinition();
@@ -345,9 +374,39 @@ public class DBQuery {
     }
 
     /**
+     * Constructs the SQL for this DBQuery and executes it on the database,
+     * returning the rows found.
      *
-     * @return
+     * <p>
+     * Adds all required DBRows as inner join tables and all optional DBRow as
+     * outer join tables.
+     * <p>
+     * Uses the defined
+     * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on
+     * the DBRow and
+     * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) added relationships}
+     * to connect the tables. Foreign keys that have been
+     * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
+     * are not used.
+     * <p>
+     * Criteria such as
+     * {@link nz.co.gregs.dbvolution.datatypes.QueryableDatatype#permittedValues(java.lang.Object...) permitted values}
+     * defined on the fields of the DBRow examples are added as part of the
+     * WHERE clause.
+     *
+     * <p>
+     * Similarly conditions added to the DBQuery using
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition}
+     * are added.
+     *
+     * @return A List of DBQueryRows containing all the DBRow instances aligned
+     * with their related instances.
      * @throws SQLException
+     * @see DBRow
+     * @see DBForeignKey
+     * @see QueryableDatatype
+     * @see BooleanExpression
+     * @see DBDatabase
      */
     public List<DBQueryRow> getAllRows() throws SQLException {
         results = new ArrayList<DBQueryRow>();
@@ -402,9 +461,16 @@ public class DBQuery {
     }
 
     /**
+     * Returns all the known instances of the exemplar.
      *
+     * <p>
+     * Similar to
+     * {@link #getAllInstancesOf(nz.co.gregs.dbvolution.DBRow) getAllInstancesOf(DBRow)}
+     *
+     * <p>
      * Expects there to be exactly one(1) object of the exemplar type.
      *
+     * <p>
      * An UnexpectedNumberOfRowsException is thrown if there is zero or more
      * than one row.
      *
@@ -420,6 +486,26 @@ public class DBQuery {
     }
 
     /**
+     * Returns all the known instances of the exemplar.
+     *
+     * <p>
+     * A simple means of ensuring that your query has retrieved the correct
+     * results. For instance if you are looking up 2 vehicles in the database
+     * and 3 are returned, this method will throw an exception stopping the
+     * DBScript or DBTransaction automatically.
+     *
+     * <p>
+     * Similar to
+     * {@link #getAllInstancesOf(nz.co.gregs.dbvolution.DBRow) getAllInstancesOf(DBRow)}
+     *
+     * <p>
+     * Expects there to be exactly as many objects of the exemplar type as
+     * specified
+     *
+     * <p>
+     * An UnexpectedNumberOfRowsException is thrown if there is less or more
+     * instances than than specified.
+     *
      *
      * @param <R>
      * @param exemplar The DBRow class that you would like returned.
@@ -453,6 +539,15 @@ public class DBQuery {
     }
 
     /**
+     * Finds all instances of the exemplar in the results and returns them.
+     *
+     * <p>
+     * Allows easy retrieval of all the examples of a DBRow class regardless of
+     * DBQueryRows they are in.
+     *
+     * <p>
+     * Facilitates processing of rows on a single table retrieved via a
+     * complicated series of tables.
      *
      * @param <R>
      * @param exemplar
@@ -513,9 +608,18 @@ public class DBQuery {
     }
 
     /**
-     * Fast way to print the results
+     * Fast way to print the results.
      *
-     * myTable.printRows(System.err);
+     * <p>
+     * Retrieves the rows if required and then prints all of the rows but only
+     * the fields that have non-null values.
+     *
+     * <p>
+     * Helps to trim a wide printout of columns down to only the data specified
+     * in the rows.
+     *
+     * <p>
+     * Example: myQuery.printAllDataColumns(System.err);
      *
      * @param printStream
      * @throws java.sql.SQLException
@@ -539,9 +643,14 @@ public class DBQuery {
     }
 
     /**
-     * Fast way to print the results
+     * Fast way to print the results.
      *
-     * myTable.printAllPrimaryKeys(System.err);
+     * <p>
+     * Retrieves and prints all the rows but only prints the primary key
+     * columns.
+     *
+     * <p>
+     * Example: myQuery.printAllPrimaryKeys(System.err);
      *
      * @param ps
      * @throws java.sql.SQLException
@@ -562,27 +671,39 @@ public class DBQuery {
                     }
                 }
             }
-
             ps.println();
         }
     }
 
     /**
+     * Remove all tables from the query and discard any results or state.
      *
-     * @return
+     * <p>
+     * Clears all the settings and collections within this instance and set it
+     * back to a blank state
+     *
+     * @return this DBQuery instance.
      */
     public DBQuery clear() {
         this.queryTables.clear();
         this.optionalQueryTables.clear();
         this.allQueryTables.clear();
         this.comparisons.clear();
+        this.expressions.clear();
         results = null;
         return this;
     }
 
     /**
+     * Count the rows on the database without retrieving the rows.
      *
-     * @return
+     * <p>
+     * Either: counts the results already retrieved, or creates a
+     * {@link #getSQLForCount() count query} for this instance and retrieves
+     * number of rows that would have been returned had
+     * {@link #getAllRows() getAllRows()} been called.
+     *
+     * @return the number of rows that have or will be retrieved.
      * @throws SQLException
      */
     public Long count() throws SQLException {
