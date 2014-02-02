@@ -22,7 +22,6 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.operators.*;
 import static org.hamcrest.Matchers.*;

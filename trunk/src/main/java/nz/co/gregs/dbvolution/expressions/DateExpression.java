@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
-import static nz.co.gregs.dbvolution.expressions.NumberExpression.value;
 
 public class DateExpression implements DateResult {
 

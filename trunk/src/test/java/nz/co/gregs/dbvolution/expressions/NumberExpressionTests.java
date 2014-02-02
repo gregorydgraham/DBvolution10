@@ -100,6 +100,32 @@ public class NumberExpressionTests extends AbstractTest {
     }
 
     @Test
+    public void testBracketsInCondition() throws SQLException {
+        Marque marq = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marq);
+        dbQuery.addCondition(
+                marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+        Marque marque = allRows.get(0).get(marq);
+        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+
+        dbQuery = database.getDBQuery(marq);
+        dbQuery.addComparison(
+                marq.column(marq.uidMarque)
+                .plus(2).minus(4).bracket()
+                .times(6).bracket()
+                .dividedBy(3),
+                new DBEqualsOperator(-2));
+        allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+        marque = allRows.get(0).get(marq);
+        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+    }
+
+    @Test
     public void testACOS() throws SQLException {
         Marque marq = new Marque();
         DBQuery dbQuery = database.getDBQuery(marq);
