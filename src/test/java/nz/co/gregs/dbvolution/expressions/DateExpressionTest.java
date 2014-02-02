@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.example.Marque;
-import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import static org.hamcrest.Matchers.is;
