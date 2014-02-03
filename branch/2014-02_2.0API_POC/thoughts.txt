@@ -1,6 +1,25 @@
-The java.lang.reflection.Proxy approach can only work on interfaces,
+[2014-02-03: Malcolm] - java.lang.reflect.Proxy
+The java.lang.reflect.Proxy approach can only work on interfaces,
 and DBv mainly works on concrete classes, so it won't help us at all.
 The solution is to use CGLIB, like Mockito and so many other libraries.
 
-For the moment, we'll just use the java.lang.reflection.Proxy approach and interfaces
+For the moment, we'll just use the java.lang.reflect.Proxy approach and interfaces
 so that we can test the idea as a whole.
+
+
+[2014-02-04: Malcolm] - CGLIB Documentation
+CGLIB is apparently notoriously bad for documentation.
+http://cglib.sourceforge.net/
+http://www.javacodegeeks.com/2013/12/cglib-the-missing-manual.html
+
+
+[2014-02-04: Malcolm] - CGLIB vs Others
+Hibernate recently dropped the use of CGLIB (see: http://relation.to/16658.lace),
+because CGLIB is no longer being actively maintained.
+
+The Hibernate team chose to use Javaassist instead.
+Javassist is a sub-project of JBoss, so it should be maintained pretty well.
+It also looks like it has good documentation.
+
+Javaassist:
+http://www.csg.ci.i.u-tokyo.ac.jp/~chiba/javassist/
