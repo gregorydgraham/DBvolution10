@@ -284,8 +284,8 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
-     * Returns the PropertyWrappers used internally to maintain the relationship between
-     * fields and columns
+     * Returns the PropertyWrappers used internally to maintain the relationship
+     * between fields and columns
      *
      * @return non-null list of property wrappers, empty if none
      */
@@ -329,7 +329,7 @@ abstract public class DBRow implements Serializable {
     /**
      *
      * Indicates that the DBRow is a defined row within the database.
-     * 
+     *
      * Example objects and blank rows from an optional table are "undefined".
      *
      * @param newValue TRUE if this row exists within the database.
@@ -342,10 +342,11 @@ abstract public class DBRow implements Serializable {
     /**
      *
      * Indicates whether this instance is a defined row within the database.
-     * 
+     *
      * Example objects and blank rows from an optional table are "undefined".
      *
-     * @param newValue TRUE if this row exists within the database, otherwise FALSE.
+     * @param newValue TRUE if this row exists within the database, otherwise
+     * FALSE.
      */
     public boolean getDefined() {
         return isDefined;
@@ -418,7 +419,8 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
-     * Change all the criteria specified on this DBRow instance into a list of string for adding in to the WHERE clause
+     * Change all the criteria specified on this DBRow instance into a list of
+     * strings for adding in to the WHERE clause
      *
      * @param db The DBDatabase instance that this query is to be executed on.
      * @return the WHERE clause that will be used with the current parameters
@@ -428,7 +430,7 @@ abstract public class DBRow implements Serializable {
         return getWhereClauses(db, false);
     }
 
-     List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) {
+    List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) {
         DBDefinition defn = db.getDefinition();
         List<String> whereClause = new ArrayList<String>();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
@@ -450,6 +452,11 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
+     * Tests whether this DBRow instance has any criteria
+     * ({@link QueryableDatatype#permittedValues(java.lang.Object[])}, etc) set.
+     *
+     * <p>The database is not accessed and this method does not protect against
+     * functionally blank queries.
      *
      * @param db
      * @return true if this DBRow instance has no specified criteria and will
@@ -463,7 +470,8 @@ abstract public class DBRow implements Serializable {
 
     /**
      * Probably not needed by the programmer, this is the convenience function
-     * to find the table name specified by {@code @DBTableName}
+     * to find the table name specified by {@code @DBTableName} or the class
+     * name
      *
      * @return the name of the table in the database specified to correlate with
      * the specified type
@@ -493,6 +501,12 @@ abstract public class DBRow implements Serializable {
         return string.toString();
     }
 
+    /**
+     * Returns the same result as {@link #toString() } but omitting the Foreign
+     * Key references.
+     *
+     * @return
+     */
     public String toStringMinusFKs() {
         StringBuilder string = new StringBuilder();
         List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
@@ -610,11 +624,19 @@ abstract public class DBRow implements Serializable {
         fkFields.clear();
     }
 
+    /**
+     * Removes all foreign keys from the "ignore" list.
+     *
+     */
     public void useAllForeignKeys() {
         ignoredForeignKeys.clear();
         fkFields.clear();
     }
 
+    /**
+     * Adds All foreign keys to the ignore list.
+     * 
+     */
     public void ignoreAllForeignKeys() {
         List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
         for (PropertyWrapper prop : props) {
@@ -626,15 +648,15 @@ abstract public class DBRow implements Serializable {
     /**
      *
      * Creates a foreign key like relationship between columns on 2 different
-     * DBRow objects
+     * DBRow objects.
      *
-     * this function relies on the QueryableDatatypes being part of the DBRows
+     * <p>This function relies on the QueryableDatatypes being part of the DBRows
      * that are also passed. So every call to this function should be similar
      * to:
      *
-     * myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
+     * <p>myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField);
      *
-     * uses the default DBEqualsOperator
+     * <p>Uses the default DBEqualsOperator.
      *
      * @param thisTableField
      * @param otherTable
@@ -648,15 +670,15 @@ abstract public class DBRow implements Serializable {
     /**
      *
      * Creates a foreign key like relationship between columns on 2 different
-     * DBRow objects
+     * DBRow objects.
      *
-     * this function relies on the QueryableDatatypes being part of the DBRows
+     * <p>this function relies on the QueryableDatatypes being part of the DBRows
      * that are also passed. So every call to this function should be similar
      * to:
      *
-     * myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
+     * <p>myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField, new DBGreaterThanOperator());
      *
-     * Uses the supplied operator to establish the relationship rather than the
+     * <p>Uses the supplied operator to establish the relationship rather than the
      * default DBEqualsOperator. Not all operators can be used for
      * relationships.
      *
