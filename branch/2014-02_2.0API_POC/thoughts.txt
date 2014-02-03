@@ -1,0 +1,6 @@
+The java.lang.reflection.Proxy approach can only work on interfaces,
+and DBv mainly works on concrete classes, so it won't help us at all.
+The solution is to use CGLIB, like Mockito and so many other libraries.
+
+For the moment, we'll just use the java.lang.reflection.Proxy approach and interfaces
+so that we can test the idea as a whole.
