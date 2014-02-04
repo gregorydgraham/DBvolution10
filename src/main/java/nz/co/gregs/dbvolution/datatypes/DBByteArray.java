@@ -209,4 +209,11 @@ public class DBByteArray extends DBLargeObject {
     public int getSize() {
         return getBytes().length;
     }
+
+    @Override
+    public byte[] getValue() {
+        return getBytes();
+    }
+    
+    
 }

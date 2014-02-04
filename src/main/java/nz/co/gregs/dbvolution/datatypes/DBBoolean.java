@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanResult;
 
-public class DBBoolean extends QueryableDatatype implements BooleanResult{
+public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,4 +60,10 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult{
     public DBBoolean copy() {
         return (DBBoolean) (BooleanResult) super.copy();
     }
+
+    @Override
+    public Boolean getValue() {
+        return booleanValue();
+    }
+
 }

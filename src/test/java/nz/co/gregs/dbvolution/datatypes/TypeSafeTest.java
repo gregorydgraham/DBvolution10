@@ -29,12 +29,12 @@ public class TypeSafeTest extends AbstractTest {
     @Test
     public void typeSafeTest(){
         DBInteger myInt = new DBInteger(23);
-        if (!myInt.getValue().equals(new Integer(23))){
-            throw new RuntimeException("DBInteger(int) should return an Integer");
+        if (!myInt.getValue().equals(new Long(23))){
+            throw new RuntimeException("DBInteger(int) should return a Long");
         }
         myInt.setValue(23);
-        if (!myInt.getValue().equals(new Integer(23))){
-            throw new RuntimeException("DBInteger.setValue(int) should return an Integer");
+        if (!myInt.getValue().equals(new Long(23))){
+            throw new RuntimeException("DBInteger.setValue(int) should return a Long");
         }
         myInt = new DBInteger(23L);
         if (!myInt.getValue().equals(new Long(23))){
