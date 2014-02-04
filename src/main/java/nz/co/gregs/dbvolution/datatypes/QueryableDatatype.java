@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
@@ -41,7 +42,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     protected boolean isDBNull = false;
     protected boolean includingNulls = false;
     protected DBOperator operator = null;
-    protected boolean undefined = true;
+    private boolean undefined = true;
     protected boolean changed = false;
     protected QueryableDatatype previousValueAsQDT = null;
     protected boolean isPrimaryKey;
@@ -65,6 +66,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         } else {
             this.literalValue = obj;
             this.operator = new DBEqualsOperator(this);
+            undefined = false;
         }
     }
 
@@ -89,7 +91,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     static public QueryableDatatype getQueryableDatatypeForObject(Object o) {
         QueryableDatatype qdt;
         if (o instanceof QueryableDatatype) {
-            qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype)o).getClass());
+            qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype) o).getClass());
             qdt.setValue(((QueryableDatatype) o).literalValue);
         } else {
             if (o instanceof DBExpression) {
@@ -330,15 +332,19 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Performs searches based on a range.
-     * 
-     * if both ends of the range are specified the lower-bound will be included 
-     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will 
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
      * return 1 and 2.
-     * 
-     * <p>if the upper-bound is null the range will be open ended and inclusive. <br>
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
      * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
      *
-     * <p>if the upper-bound is null the range will be open ended and exclusive. <br>
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
      * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
      *
      * @param lowerBound
@@ -350,14 +356,19 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Performs searches based on a range.
-     * 
-     * if both ends of the range are specified both the lower- and upper-bound will be included 
-     * in the search. I.e permittedRangeInclusive(1,3) will return 1, 2, and 3.
-     * 
-     * <p>if the upper-bound is null the range will be open ended and inclusive. <br>
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
      * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
      *
-     * <p>if the upper-bound is null the range will be open ended and inclusive. <br>
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
      * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
      *
      * @param lowerBound
@@ -369,14 +380,19 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Performs searches based on a range.
-     * 
-     * if both ends of the range are specified both the lower- and upper-bound will be excluded 
-     * in the search. I.e permittedRangeExclusive(1,3) will return 2.
-     * 
-     * <p>if the upper-bound is null the range will be open ended and exclusive. <br>
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
      * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
      *
-     * <p>if the upper-bound is null the range will be open ended and exclusive. <br>
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
      * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
      *
      * @param lowerBound
@@ -403,12 +419,15 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Perform searches based on using database compatible pattern matching
-     * 
-     * <p>This facilitates the LIKE operator.
-     * 
-     * <p>Please use the pattern system appropriate to your database.
-     * 
-     * <p>Java0-style regular expressions are not yet supported.
+     *
+     * <p>
+     * This facilitates the LIKE operator.
+     *
+     * <p>
+     * Please use the pattern system appropriate to your database.
+     *
+     * <p>
+     * Java0-style regular expressions are not yet supported.
      *
      * @param pattern
      */
@@ -422,18 +441,27 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     }
 
     /**
-     * Gets the current literal value of this queryable data type, without any
-     * formatting. The returned value <i>should/<i> be in the correct type as
-     * appropriate for the type of queryable data type.
+     * Gets the current literal value of this queryable data type. The returned
+     * value <i>should/<i> be in the correct type as appropriate for the type of
+     * queryable data type.
      *
      * <p>
-     * The literal value is undefined (and {@code null}) if using an operator
-     * other than {@code equals}.
+     * This method will return NULL if the QDT represents a database NULL OR the
+     * field is undefined. Use {@link #isNull() } and {@link #isDefined() } to
+     * differentiate the 2 states.
+     *
+     * <p>
+     * Undefined QDTs represents a QDT that is not a field from the database.
+     * Undefined QDTs are similar to {@link DBRow#isDefined undefined DBRows}
      *
      * @return the literal value, if defined, which may be null
      */
     public Object getValue() {
-        return literalValue;
+        if (undefined || isNull()) {
+            return null;
+        } else {
+            return literalValue;
+        }
     }
 
     /**
@@ -678,5 +706,19 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         } else {
             return this.getOperator().equals(other.getOperator());
         }
+    }
+
+    /**
+     * @return the undefined
+     */
+    protected boolean isDefined() {
+        return !undefined;
+    }
+
+    /**
+     * @param defined the undefined to set
+     */
+    protected void setDefined(boolean defined) {
+        this.undefined = !defined;
     }
 }

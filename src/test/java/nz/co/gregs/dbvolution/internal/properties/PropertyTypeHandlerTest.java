@@ -236,7 +236,7 @@ public class PropertyTypeHandlerTest {
 	}
 	
 	@Test
-	public void infersDBStringGivenIntegerStringAdaptorOnDBIntegerField() {
+	public void infersDBStringGivenLongStringAdaptorOnDBIntegerField() {
 		class MyClass extends DBRow {
 			@DBAdaptType(value=LongStringAdaptor.class)
 			@DBColumn
