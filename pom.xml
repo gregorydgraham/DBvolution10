@@ -47,6 +47,42 @@
         <libDirectory>${basedir}/lib</libDirectory>
     </properties>
     
+    <profiles>
+    	<profile>
+    		<id>mutationTest</id>
+    		<build>
+    			<plugins>
+    				<plugin>
+    					<!-- This looks like a good idea.
+    					Currently not working due to a bug supporting Maven2,
+    					supposedly fixed in 0.33, due to be released soon.
+    					Error is: "UnsupportedOperationException: Tried to retrieve value but had None".
+    					Issue: https://github.com/hcoles/pitest/issues/92 -->
+    					<groupId>org.pitest</groupId>
+    					<artifactId>pitest-maven</artifactId>
+    					<version>0.32</version>
+    					<executions>
+    						<execution>
+    							<phase>test</phase>
+    							<goals>
+    								<goal>mutationCoverage</goal>
+    							</goals>
+    						</execution>
+    					</executions>
+    					<configuration>
+    						<targetClasses>
+    							<param>nz.co.gregs.dbvolution*</param>
+    						</targetClasses>
+    						<targetTests>
+    							<param>nz.co.gregs.dbvolution*</param>
+    						</targetTests>
+    					</configuration>
+    				</plugin>
+    			</plugins>
+    		</build>
+    	</profile>
+    </profiles>
+    
     <build>
         <plugins>
             <plugin>
