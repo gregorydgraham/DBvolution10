@@ -131,6 +131,11 @@ public class DBDate extends QueryableDatatype implements DateResult{
     public DBDate copy() {
         return (DBDate)super.copy(); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public Date getValue() {
+        return dateValue();
+    }
     
     
 }

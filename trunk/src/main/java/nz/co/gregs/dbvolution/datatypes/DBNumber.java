@@ -114,6 +114,35 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
         }
         return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
     }
+    
+    /**
+     * Gets the current literal value of this DBNumber, without any
+     * formatting.
+     *
+     * <p>
+     * The literal value is undefined (and {@code null}) if using an operator
+     * other than {@code equals}.
+     *
+     * @return the literal value, if defined, which may be null
+     */
+    @Override
+    public Number getValue(){
+        return numberValue();
+    }
+
+    /**
+     *
+     * @return the number as a the original number class
+     */
+    public Number numberValue() {
+        if (literalValue == null) {
+            return null;
+        } else if (literalValue instanceof Number) {
+            return ((Number) literalValue).doubleValue();
+        } else {
+            return Double.parseDouble(literalValue.toString());
+        }
+    }
 
     /**
      *
@@ -138,6 +167,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
     public Long longValue() {
         if (literalValue == null) {
             return null;
+        } else if (literalValue instanceof Long) {
+            return (Long)literalValue;
         } else if (literalValue instanceof Number) {
             return ((Number) literalValue).longValue();
         } else {

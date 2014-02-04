@@ -170,6 +170,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         return (literalValue == null ? "" : literalValue.toString());
     }
 
+    @Deprecated
     public Long longValue() {
         if (isDBNull || literalValue == null) {
             return null;
@@ -183,6 +184,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     }
 
+    @Deprecated
     public Integer intValue() {
         if (isDBNull || literalValue == null) {
             return null;
@@ -196,6 +198,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     }
 
+    @Deprecated
     public Double doubleValue() {
         if (isDBNull || literalValue == null) {
             return null;
@@ -429,7 +432,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * @return the literal value, if defined, which may be null
      */
-    // FIXME sometimes strings are returned for DBNumber types
     public Object getValue() {
         return literalValue;
     }

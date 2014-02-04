@@ -86,4 +86,11 @@ public class DBInteger extends DBNumber {
             }
         }
     }
+
+    @Override
+    public Long getValue() {
+        return longValue();
+    }
+    
+    
 }
