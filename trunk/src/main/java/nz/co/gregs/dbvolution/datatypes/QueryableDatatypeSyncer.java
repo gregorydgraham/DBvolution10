@@ -261,7 +261,7 @@ public class QueryableDatatypeSyncer {
             targetQdt.includingNulls = sourceQdt.includingNulls;
             targetQdt.isDBNull = sourceQdt.isDBNull;
             targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
-            targetQdt.undefined = sourceQdt.undefined;
+            targetQdt.setDefined(sourceQdt.isDefined());
             targetQdt.sort = sourceQdt.sort;
 
             // copy literal value with translation
