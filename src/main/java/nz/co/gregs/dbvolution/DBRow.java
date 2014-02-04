@@ -635,7 +635,7 @@ abstract public class DBRow implements Serializable {
 
     /**
      * Adds All foreign keys to the ignore list.
-     * 
+     *
      */
     public void ignoreAllForeignKeys() {
         List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
@@ -650,11 +650,12 @@ abstract public class DBRow implements Serializable {
      * Creates a foreign key like relationship between columns on 2 different
      * DBRow objects.
      *
-     * <p>This function relies on the QueryableDatatypes being part of the DBRows
-     * that are also passed. So every call to this function should be similar
-     * to:
+     * <p>This function relies on the QueryableDatatypes being part of the
+     * DBRows that are also passed. So every call to this function should be
+     * similar to:
      *
-     * <p>myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField);
+     * <p>myRow.addRelationship(myRow.someField, myOtherRow,
+     * myOtherRow.otherField);
      *
      * <p>Uses the default DBEqualsOperator.
      *
@@ -672,14 +673,15 @@ abstract public class DBRow implements Serializable {
      * Creates a foreign key like relationship between columns on 2 different
      * DBRow objects.
      *
-     * <p>this function relies on the QueryableDatatypes being part of the DBRows
-     * that are also passed. So every call to this function should be similar
-     * to:
+     * <p>this function relies on the QueryableDatatypes being part of the
+     * DBRows that are also passed. So every call to this function should be
+     * similar to:
      *
-     * <p>myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField, new DBGreaterThanOperator());
+     * <p>myRow.addRelationship(myRow.someField, myOtherRow,
+     * myOtherRow.otherField, new DBGreaterThanOperator());
      *
-     * <p>Uses the supplied operator to establish the relationship rather than the
-     * default DBEqualsOperator. Not all operators can be used for
+     * <p>Uses the supplied operator to establish the relationship rather than
+     * the default DBEqualsOperator. Not all operators can be used for
      * relationships.
      *
      * @param thisTableField
@@ -693,20 +695,23 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
+     * Remove all added relationships.
      *
+     *
+     * @see
+     * DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype,
+     * nz.co.gregs.dbvolution.DBRow,
+     * nz.co.gregs.dbvolution.datatypes.QueryableDatatype)
+     * @see
+     * DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype,
+     * nz.co.gregs.dbvolution.DBRow,
+     * nz.co.gregs.dbvolution.datatypes.QueryableDatatype,
+     * nz.co.gregs.dbvolution.operators.DBOperator)
      */
     public void clearRelationships() {
         this.adHocRelationships.clear();
     }
 
-//    List<String> getAdHocRelationshipSQL(DBDatabase db) {
-//        List<String> sqlStrings = new ArrayList<String>();
-//        DBDefinition defn = db.getDefinition();
-//        for (DBRelationship rel : adHocRelationships) {
-//            sqlStrings.add(defn.beginWhereClauseLine() + rel.toSQLString(db));
-//        }
-//        return sqlStrings;
-//    }
     protected boolean hasLargeObjects() {
         if (hasBlobs == null) {
             hasBlobs = Boolean.FALSE;
@@ -778,14 +783,23 @@ abstract public class DBRow implements Serializable {
         }
     }
 
+    /**
+     * Remove all limitations on the fields returned.
+     *
+     * <p>Clears the limits on returned fields set by {@link DBRow#returnFieldsLimitedTo(T[])
+     * }
+     *
+     */
     public void returnAllFields() {
         returnColumns.clear();
     }
 
     /**
+     * Needed for non-ANSI support.
+     *
      * @return the adHocRelationships
      */
-    public List<DBRelationship> getAdHocRelationships() {
+    protected List<DBRelationship> getAdHocRelationships() {
         return adHocRelationships;
     }
 
@@ -903,7 +917,14 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
-     * Returns all the DBRow subclasses referenced by foreign keys
+     * Returns all the DBRow subclasses referenced by by this class with foreign
+     * keys
+     *
+     * <p>Similar to {@link #getAllRelatedTables() } but where this class
+     * directly references the external DBRow subclass with an {@code @DBForeignKey} annotation.
+     *
+     * <p>That is to say: where A is this class, returns a List of B such that A
+     * => B
      *
      * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
      *
@@ -920,6 +941,18 @@ abstract public class DBRow implements Serializable {
         return (List<Class<? extends DBRow>>) referencedTables.clone();
     }
 
+    /**
+     * Creates a list of all DBRow subclasses that reference this class with
+     * foreign keys.
+     *
+     * <p>Similar to {@link #getReferencedTables() } but where this class is
+     * being referenced by the external DBRow subclass.
+     *
+     * <p>That is to say: where A is this class, returns a List of B such that B
+     * => A
+     *
+     * @return
+     */
     public List<Class<? extends DBRow>> getAllRelatedTables() {
         List<Class<? extends DBRow>> relatedTables = getReferencedTables();
         Reflections reflections = new Reflections(this.getClass().getPackage().getName());
@@ -957,6 +990,15 @@ abstract public class DBRow implements Serializable {
         }
     }
 
+    /**
+     * Finds all instances of {@code example} that share a {@link DBQueryRow} with this instance.
+     * 
+     * @param <R>
+     * @param query
+     * @param example
+     * @return all instances of {@code example} that are connected to this instance in the {@code query}
+     * @throws SQLException
+     */
     public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQuery query, R example) throws SQLException {
         List<R> instances = new ArrayList<R>();
         for (DBQueryRow qrow : query.getAllRows()) {
@@ -977,14 +1019,14 @@ abstract public class DBRow implements Serializable {
         return tableAlias == null ? getTableName() : tableAlias;
     }
 
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public static <T extends DBRow> T getDBRowExampleWithSetFields(T baseRow, QueryableDatatype... qdts) {
-        T example = (T) DBRow.getDBRow(baseRow.getClass());
-        for (QueryableDatatype qdt : qdts) {
-            PropertyWrapperDefinition definition = baseRow.getPropertyWrapperOf(qdt).getDefinition();
-            definition.setQueryableDatatype(example, qdt);
-        }
-        return example;
-    }
+//    @Deprecated
+//    @SuppressWarnings("unchecked")
+//    public static <T extends DBRow> T getDBRowExampleWithSetFields(T baseRow, QueryableDatatype... qdts) {
+//        T example = (T) DBRow.getDBRow(baseRow.getClass());
+//        for (QueryableDatatype qdt : qdts) {
+//            PropertyWrapperDefinition definition = baseRow.getPropertyWrapperOf(qdt).getDefinition();
+//            definition.setQueryableDatatype(example, qdt);
+//        }
+//        return example;
+//    }
 }
