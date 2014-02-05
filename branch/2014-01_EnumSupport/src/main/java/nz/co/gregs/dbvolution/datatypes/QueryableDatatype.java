@@ -1,6 +1,17 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 gregory.graham.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package nz.co.gregs.dbvolution.datatypes;
 
@@ -12,34 +23,43 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
-import nz.co.gregs.dbvolution.operators.*;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
+import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
+import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
  *
  * @author gregory.graham
  */
-public abstract class QueryableDatatype extends Object implements Serializable, DataGenerator {
+public abstract class QueryableDatatype extends Object implements Serializable, DBExpression {
 
     public static final long serialVersionUID = 1L;
     protected Object literalValue = null;
     protected boolean isDBNull = false;
     protected boolean includingNulls = false;
     protected DBOperator operator = null;
-    protected boolean undefined = true;
+    private boolean undefined = true;
     protected boolean changed = false;
     protected QueryableDatatype previousValueAsQDT = null;
     protected boolean isPrimaryKey;
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
-	protected PropertyWrapperDefinition propertyWrapper; // no guarantees whether this gets set
+    transient protected PropertyWrapperDefinition propertyWrapper; // no guarantees whether this gets set
 
     /**
      *
@@ -49,15 +69,15 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      *
-     * @param trans
      * @param obj
      */
     protected QueryableDatatype(Object obj) {
         if (obj == null) {
             this.isDBNull = true;
-        } else{
+        } else {
             this.literalValue = obj;
             this.operator = new DBEqualsOperator(this);
+            undefined = false;
         }
     }
 
@@ -81,26 +101,29 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     static public QueryableDatatype getQueryableDatatypeForObject(Object o) {
         QueryableDatatype qdt;
-        if (o instanceof DataGenerator) {
-            qdt = new DBDataGenerator();
-        } else if (o instanceof Integer) {
-            qdt = new DBInteger();
-        } else if (o instanceof Long) {
-            qdt = new DBInteger();
-        } else if (o instanceof Number) {
-            qdt = new DBNumber();
-        } else if (o instanceof String) {
-            qdt = new DBString();
-        } else if (o instanceof Date) {
-            qdt = new DBDate();
-        } else if (o instanceof Byte[]) {
-            qdt = new DBByteArray();
-        } else if (o instanceof Boolean) {
-            qdt = new DBBoolean();
+        if (o instanceof QueryableDatatype) {
+            qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype) o).getClass());
+            qdt.setValue(((QueryableDatatype) o).literalValue);
         } else {
-            qdt = new DBJavaObject();
+            if (o instanceof DBExpression) {
+                qdt = new DBDataGenerator();
+            } else if (o instanceof Integer) {
+                qdt = new DBInteger();
+            } else if (o instanceof Number) {
+                qdt = new DBNumber();
+            } else if (o instanceof String) {
+                qdt = new DBString();
+            } else if (o instanceof Date) {
+                qdt = new DBDate();
+            } else if (o instanceof Byte[]) {
+                qdt = new DBByteArray();
+            } else if (o instanceof Boolean) {
+                qdt = new DBBoolean();
+            } else {
+                qdt = new DBJavaObject();
+            }
+            qdt.setValue(o);
         }
-        qdt.setValue(o);
         return qdt;
     }
 
@@ -160,6 +183,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         return (literalValue == null ? "" : literalValue.toString());
     }
 
+    @Deprecated
     public Long longValue() {
         if (isDBNull || literalValue == null) {
             return null;
@@ -173,6 +197,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     }
 
+    @Deprecated
     public Integer intValue() {
         if (isDBNull || literalValue == null) {
             return null;
@@ -186,6 +211,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     }
 
+    @Deprecated
     public Double doubleValue() {
         if (isDBNull || literalValue == null) {
             return null;
@@ -244,16 +270,33 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
+     *
      * @param permitted
      */
     public void permittedValuesIgnoreCase(String... permitted) {
         this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
     }
 
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
+     *
+     * @param permitted
+     */
     public void permittedValuesIgnoreCase(List<String> permitted) {
         this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
     }
 
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
+     *
+     * @param permitted
+     */
     public void permittedValuesIgnoreCase(Set<String> permitted) {
         this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
     }
@@ -298,12 +341,76 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         negateOperator();
     }
 
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
     public void permittedRange(Object lowerBound, Object upperBound) {
         setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
     }
 
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
     public void permittedRangeInclusive(Object lowerBound, Object upperBound) {
         setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
+    public void permittedRangeExclusive(Object lowerBound, Object upperBound) {
+        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
     }
 
     public void excludedRange(Object lowerBound, Object upperBound) {
@@ -314,32 +421,58 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     public void excludedRangeInclusive(Object lowerBound, Object upperBound) {
         setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
         negateOperator();
-
     }
 
+    public void excludedRangeExclusive(Object lowerBound, Object upperBound) {
+        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+        negateOperator();
+    }
+
+    /**
+     * Perform searches based on using database compatible pattern matching
+     *
+     * <p>
+     * This facilitates the LIKE operator.
+     *
+     * <p>
+     * Please use the pattern system appropriate to your database.
+     *
+     * <p>
+     * Java0-style regular expressions are not yet supported.
+     *
+     * @param pattern
+     */
     public void permittedPattern(String pattern) {
-        this.setOperator(new DBLikeOperator(this));
+        this.setOperator(new DBPermittedPatternOperator(this));
     }
 
     public void excludedPattern(String pattern) {
-        this.setOperator(new DBLikeOperator(this));
+        this.setOperator(new DBPermittedPatternOperator(this));
         this.negateOperator();
     }
 
     /**
-     * Gets the current literal value of this queryable data type, without any
-     * formatting. The returned value <i>should/<i> be in the correct type as
-     * appropriate for the type of queryable data type.
+     * Gets the current literal value of this queryable data type. The returned
+     * value <i>should/<i> be in the correct type as appropriate for the type of
+     * queryable data type.
      *
      * <p>
-     * The literal value is undefined (and {@code null}) if using an operator
-     * other than {@code equals}.
+     * This method will return NULL if the QDT represents a database NULL OR the
+     * field is undefined. Use {@link #isNull() } and {@link #isDefined() } to
+     * differentiate the 2 states.
+     *
+     * <p>
+     * Undefined QDTs represents a QDT that is not a field from the database.
+     * Undefined QDTs are similar to {@link DBRow#isDefined undefined DBRows}
      *
      * @return the literal value, if defined, which may be null
      */
-    // FIXME sometimes strings are returned for DBNumber types
     public Object getValue() {
-        return literalValue;
+        if (undefined || isNull()) {
+            return null;
+        } else {
+            return literalValue;
+        }
     }
 
     /**
@@ -353,10 +486,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         if (newLiteralValue == null) {
             setToNull();
         } else {
-            if (newLiteralValue instanceof DataGenerator) {
-                setChanged((DataGenerator) newLiteralValue);
+            if (newLiteralValue instanceof DBExpression) {
+                setChanged((DBExpression) newLiteralValue);
                 this.literalValue = newLiteralValue;
-                this.setOperator(new DBEqualsOperator(new DBDataGenerator((DataGenerator) newLiteralValue)));
+                this.setOperator(new DBEqualsOperator(new DBDataGenerator((DBExpression) newLiteralValue)));
             } else if (newLiteralValue instanceof Date) {
                 setChanged((Date) newLiteralValue);
                 this.literalValue = newLiteralValue;
@@ -377,7 +510,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         changed = false;
         previousValueAsQDT = null;
     }
-
 
     /**
      *
@@ -405,7 +537,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * Example return value: "VARCHAR(1000)"
      *
-     * @return the standard SQL datatype that corresponds to this QDT as a String
+     * @return the standard SQL datatype that corresponds to this QDT as a
+     * String
      */
     public abstract String getSQLDatatype();
 
@@ -443,7 +576,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      * DBDate{1/March/2013} => TO_DATE('20130301', 'YYYYMMDD')
      *
      * @param db
-     * @return the literal value translated to a String ready to insert into an SQL statement
+     * @return the literal value translated to a String ready to insert into an
+     * SQL statement
      */
     protected abstract String formatValueForSQLStatement(DBDatabase db);
 
@@ -525,12 +659,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     }
 
     public String getPreviousSQLValue(DBDatabase db) {
-        return previousValueAsQDT.toSQLString(db);
+        return (previousValueAsQDT == null) ? null : previousValueAsQDT.toSQLString(db);
     }
 
     /**
      * Used to switch the direction of the column's sort order
-     * 
+     *
+     * use setSortOrderAscending() and setSortOrderDescending() where possible
+     *
      * use setSortOrderAscending() and setSortOrderDescending() where possible
      *
      * Use Boolean.TRUE for Ascending Use Boolean.FALSE for Descending
@@ -581,6 +717,21 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         } else {
             return this.getOperator().equals(other.getOperator());
         }
+    }
+    
+
+    /**
+     * @return the undefined
+     */
+    protected boolean isDefined() {
+        return !undefined;
+    }
+
+    /**
+     * @param defined the undefined to set
+     */
+    protected void setDefined(boolean defined) {
+        this.undefined = !defined;
     }
     
     /**

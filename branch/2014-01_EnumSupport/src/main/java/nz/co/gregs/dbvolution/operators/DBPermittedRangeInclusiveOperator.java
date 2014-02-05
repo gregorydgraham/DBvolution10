@@ -25,7 +25,7 @@ public class DBPermittedRangeInclusiveOperator extends DBMetaOperator {
     
        public DBPermittedRangeInclusiveOperator(Object lowerBound, Object upperBound) {
         if (lowerBound != null && upperBound != null) {
-            operator = new DBBetweenOperator(
+            operator = new DBBetweenInclusiveOperator(
                     QueryableDatatype.getQueryableDatatypeForObject(lowerBound), 
                     QueryableDatatype.getQueryableDatatypeForObject(upperBound));
         } else if (lowerBound == null && upperBound != null) {

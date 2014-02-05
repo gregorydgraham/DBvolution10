@@ -16,12 +16,13 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.InputStream;
+import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
 
 /**
  *
  * @author gregorygraham
  */
-public abstract class DBLargeObject extends QueryableDatatype {
+public abstract class DBLargeObject extends QueryableDatatype implements LargeObjectResult{
 
     public DBLargeObject() {
         super();
@@ -31,13 +32,18 @@ public abstract class DBLargeObject extends QueryableDatatype {
 
     /**
      *
-     * @return
+     * @return the size of the Large Object as an int
      */
     public abstract int getSize();
 
     @Override
     public String toString(){
         return "/*BINARY DATA*/";
+    }
+
+    @Override
+    public DBLargeObject copy() {
+        return (DBLargeObject)super.copy();
     }
     
 }

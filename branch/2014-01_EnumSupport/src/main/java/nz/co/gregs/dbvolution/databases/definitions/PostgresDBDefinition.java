@@ -32,7 +32,7 @@ public class PostgresDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+    public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         if (qdt instanceof DBByteArray) {
             return " BYTEA ";
         } else if (qdt instanceof DBLargeObject) {

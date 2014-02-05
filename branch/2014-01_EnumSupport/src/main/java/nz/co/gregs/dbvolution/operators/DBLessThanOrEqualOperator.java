@@ -15,15 +15,14 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.generators.DataGenerator;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 
 public class DBLessThanOrEqualOperator extends DBLessThanOperator {
 
     public static final long serialVersionUID = 1L;
 
-    public DBLessThanOrEqualOperator(DataGenerator lessThanThis) {
+    public DBLessThanOrEqualOperator(DBExpression lessThanThis) {
         super(lessThanThis);
     }
 

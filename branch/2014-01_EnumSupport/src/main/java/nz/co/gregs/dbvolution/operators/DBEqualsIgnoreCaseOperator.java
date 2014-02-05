@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 
@@ -29,7 +29,7 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
         super();
     }
 
-    public DBEqualsIgnoreCaseOperator(DataGenerator equalTo) {
+    public DBEqualsIgnoreCaseOperator(DBExpression equalTo) {
         super(equalTo);
     }
 
@@ -41,7 +41,7 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             return dbIsNullOperator.generateWhereLine(db, columnName);
         }
-        return defn.beginAndLine() + defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
+        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
     }
 
     @Override

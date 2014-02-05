@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  *
@@ -51,8 +51,8 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
      * instance for this to work.
      * @param tableRow
      * @param qdtOfTheRow
-     * @throws IncorrectDBRowInstanceSuppliedExceptionliteral{@code qdtOfTheRow}
-     * is not frliteralhe {@code tableRow} instance
+     * @throws IncorrectDBRowInstanceSuppliedException if the {@code qdtOfTheRow}
+     * is not from the {@code tableRow} instance
      */
     public DBExistsOperator(E tableRow, Object qdtOfTheRow) throws IncorrectDBRowInstanceSuppliedException{
         this.tableRow = DBRow.copyDBRow(tableRow);
@@ -69,12 +69,12 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
         DBTable<E> table = DBTable.getInstance(database, tableRow);
         String subSelect;
         try {
-            subSelect = table.getSQLForSelect() + table.getWhereClauseWithExampleAndRawSQL(tableRow, defn.beginAndLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
+            subSelect = table.getSQLForSelect() + table.getWhereClauseWithExampleAndRawSQL(tableRow, defn.beginWhereClauseLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }
 
-        return database.getDefinition().beginAndLine() + (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
+        return (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
     }
 
     @Override

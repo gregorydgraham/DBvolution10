@@ -1,20 +1,33 @@
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.columns.BooleanColumn;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.internal.DBRowInstanceWrapper;
-import nz.co.gregs.dbvolution.internal.DBRowWrapperFactory;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.columns.DateColumn;
+import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
+import nz.co.gregs.dbvolution.columns.NumberColumn;
+import nz.co.gregs.dbvolution.columns.StringColumn;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.internal.properties.DBRowInstanceWrapper;
+import nz.co.gregs.dbvolution.internal.properties.DBRowWrapperFactory;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 import org.reflections.Reflections;
@@ -26,10 +39,10 @@ import org.reflections.Reflections;
 abstract public class DBRow implements Serializable {
 
     static DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
-    protected boolean isDefined = false;
-    protected final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
-    protected final List<PropertyWrapperDefinition> returnColumns = new ArrayList<PropertyWrapperDefinition>();
-    protected final List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
+    boolean isDefined = false;
+    final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
+    final List<PropertyWrapperDefinition> returnColumns = new ArrayList<PropertyWrapperDefinition>();
+    final List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
     private transient Boolean hasBlobs;
     private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
     private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
@@ -37,9 +50,20 @@ abstract public class DBRow implements Serializable {
     private transient ArrayList<Class<? extends DBRow>> referencedTables;
     private String tableAlias;
 
+    /**
+     * Creates a blank DBRow
+     *
+     */
     public DBRow() {
     }
 
+    /**
+     * Creates a new blank DBRow of the supplied subclass.
+     *
+     * @param <T>
+     * @param requiredDBRowClass
+     * @return
+     */
     public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) {
         try {
             return requiredDBRowClass.getConstructor().newInstance();
@@ -58,6 +82,14 @@ abstract public class DBRow implements Serializable {
         }
     }
 
+    /**
+     * Creates a new instance of the supplied DBRow subclass and duplicates it's
+     * values.
+     *
+     * @param <T>
+     * @param originalRow
+     * @return
+     */
     public static <T extends DBRow> T copyDBRow(T originalRow) {
         @SuppressWarnings("unchecked")
         T newRow = (T) DBRow.getDBRow(originalRow.getClass());
@@ -90,6 +122,170 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
+     * Creates a new LargeObjectColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A LargeObjectColumn representing the supplied field
+     */
+    public LargeObjectColumn column(DBLargeObject fieldOfThisInstance) {
+        return new LargeObjectColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new BooleanColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A LargeObjectColumn representing the supplied field
+     */
+    public BooleanColumn column(DBBoolean fieldOfThisInstance) {
+        return new BooleanColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new BooleanColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public BooleanColumn column(Boolean fieldOfThisInstance) {
+        return new BooleanColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new StringColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public StringColumn column(DBString fieldOfThisInstance) {
+        return new StringColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new StringColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public StringColumn column(String fieldOfThisInstance) {
+        return new StringColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new NumberColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public NumberColumn column(DBNumber fieldOfThisInstance) {
+        return new NumberColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new NumberColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public NumberColumn column(Number fieldOfThisInstance) {
+        return new NumberColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new DateColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public DateColumn column(DBDate fieldOfThisInstance) {
+        return new DateColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new DateColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>This method is the easy way to create a reference to the database
+     * column represented by the field for use in creating complex expressions
+     * within your query.
+     *
+     * <p>For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public DateColumn column(Date fieldOfThisInstance) {
+        return new DateColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Returns the PropertyWrappers used internally to maintain the relationship
+     * between fields and columns
      *
      * @return non-null list of property wrappers, empty if none
      */
@@ -97,18 +293,29 @@ abstract public class DBRow implements Serializable {
         return getWrapper().getPropertyWrappers();
     }
 
+    /**
+     * Remove all the settings on all the fields of this DBRow
+     */
     public void clear() {
         for (PropertyWrapper prop : getPropertyWrappers()) {
             QueryableDatatype qdt = prop.getQueryableDatatype();
             if (qdt != null) {
                 qdt.clear();
-        		
+
                 // ensure field set when using type adaptors
-            	prop.setQueryableDatatype(qdt);
+                prop.setQueryableDatatype(qdt);
             }
         }
     }
 
+    /**
+     * Returns the QueryableDatatype instance of the Primary Key of This DBRow
+     *
+     * <p>If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
+     * field, then the QueryableDatatype instance of that field is returned.
+     *
+     * @return the QDT of the primary key or null if there is no primary key.
+     */
     public QueryableDatatype getPrimaryKey() {
         final PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
         if (primaryKeyPropertyWrapper == null) {
@@ -121,19 +328,25 @@ abstract public class DBRow implements Serializable {
 
     /**
      *
-     * indicates that the DBRow is defined in the database
+     * Indicates that the DBRow is a defined row within the database.
      *
-     * @param newValue
+     * Example objects and blank rows from an optional table are "undefined".
+     *
+     * @param newValue TRUE if this row exists within the database.
      */
-    protected void setDefined(boolean newValue) {
+    @Deprecated
+    private void setDefined(boolean newValue) {
         isDefined = newValue;
     }
 
     /**
      *
-     * indicates if the DBRow is defined in the database
+     * Indicates whether this instance is a defined row within the database.
      *
-     * @return true if the row is defined within the database, false otherwise
+     * Example objects and blank rows from an optional table are "undefined".
+     *
+     * @param newValue TRUE if this row exists within the database, otherwise
+     * FALSE.
      */
     public boolean getDefined() {
         return isDefined;
@@ -154,9 +367,14 @@ abstract public class DBRow implements Serializable {
      *
      */
     public void setDefined() {
-        isDefined = false;
+        isDefined = true;
     }
 
+    /**
+     * Returns true if any of the non-LargeObject fields has been changed.
+     *
+     * @return TRUE if the simple types have changed, otherwise FALSE
+     */
     public boolean hasChangedSimpleTypes() {
         List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
         for (PropertyWrapper prop : propertyWrappers) {
@@ -182,6 +400,11 @@ abstract public class DBRow implements Serializable {
         return false;
     }
 
+    /**
+     * Finds the Primary Key, if there is one, and returns its column name
+     *
+     * @return the column of the primary key
+     */
     public String getPrimaryKeyColumnName() {
         PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
         if (primaryKeyPropertyWrapper == null) {
@@ -196,32 +419,44 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
+     * Change all the criteria specified on this DBRow instance into a list of
+     * strings for adding in to the WHERE clause
      *
-     * @return
+     * @param db The DBDatabase instance that this query is to be executed on.
+     * @return the WHERE clause that will be used with the current parameters
      *
      */
-    public String getWhereClause(DBDatabase db) {
-        return getWhereClause(db, false);
+    public List<String> getWhereClauses(DBDatabase db) {
+        return getWhereClauses(db, false);
     }
 
-    public String getWhereClause(DBDatabase db, boolean useTableAlias) {
+    List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) {
         DBDefinition defn = db.getDefinition();
-        StringBuilder whereClause = new StringBuilder();
+        List<String> whereClause = new ArrayList<String>();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
         for (PropertyWrapper prop : props) {
             if (prop.isColumn()) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
+                String possibleWhereClause;
                 if (useTableAlias) {
-                    whereClause.append(qdt.getWhereClause(db, defn.formatTableAliasAndColumnName(this, prop.columnName())));
+                    possibleWhereClause = qdt.getWhereClause(db, defn.formatTableAliasAndColumnName(this, prop.columnName()));
                 } else {
-                    whereClause.append(qdt.getWhereClause(db, defn.formatTableAndColumnName(this, prop.columnName())));
+                    possibleWhereClause = qdt.getWhereClause(db, defn.formatTableAndColumnName(this, prop.columnName()));
+                }
+                if (!possibleWhereClause.replaceAll(" ", "").isEmpty()) {
+                    whereClause.add("(" + possibleWhereClause + ")");
                 }
             }
         }
-        return whereClause.toString();
+        return whereClause;
     }
 
     /**
+     * Tests whether this DBRow instance has any criteria
+     * ({@link QueryableDatatype#permittedValues(java.lang.Object[])}, etc) set.
+     *
+     * <p>The database is not accessed and this method does not protect against
+     * functionally blank queries.
      *
      * @param db
      * @return true if this DBRow instance has no specified criteria and will
@@ -229,19 +464,14 @@ abstract public class DBRow implements Serializable {
      *
      */
     public boolean willCreateBlankQuery(DBDatabase db) {
-        String whereClause = getWhereClause(db);
-        if (whereClause == null || whereClause.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        List<String> whereClause = getWhereClauses(db);
+        return whereClause == null || whereClause.isEmpty();
     }
 
     /**
      * Probably not needed by the programmer, this is the convenience function
-     * to find the table name specified by
-     *
-     * @DBTableName
+     * to find the table name specified by {@code @DBTableName} or the class
+     * name
      *
      * @return the name of the table in the database specified to correlate with
      * the specified type
@@ -254,7 +484,6 @@ abstract public class DBRow implements Serializable {
     @Override
     public String toString() {
         StringBuilder string = new StringBuilder();
-        Class<? extends DBRow> thisClass = this.getClass();
         List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
 
         String separator = "";
@@ -272,9 +501,14 @@ abstract public class DBRow implements Serializable {
         return string.toString();
     }
 
+    /**
+     * Returns the same result as {@link #toString() } but omitting the Foreign
+     * Key references.
+     *
+     * @return
+     */
     public String toStringMinusFKs() {
         StringBuilder string = new StringBuilder();
-        Class<? extends DBRow> thisClass = this.getClass();
         List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
 
         String separator = "";
@@ -296,7 +530,7 @@ abstract public class DBRow implements Serializable {
 
     /**
      *
-     * @return
+     * @return A list of all raw, unformatted column names
      */
     protected List<String> getColumnNames() {
         ArrayList<String> columnNames = new ArrayList<String>();
@@ -349,7 +583,7 @@ abstract public class DBRow implements Serializable {
      * </pre>
      *
      * @param qdt
-     * @return
+     * @return the PropertyWrapper associated with the Object suppled.
      */
     public PropertyWrapper getPropertyWrapperOf(Object qdt) {
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
@@ -390,11 +624,19 @@ abstract public class DBRow implements Serializable {
         fkFields.clear();
     }
 
+    /**
+     * Removes all foreign keys from the "ignore" list.
+     *
+     */
     public void useAllForeignKeys() {
         ignoredForeignKeys.clear();
         fkFields.clear();
     }
 
+    /**
+     * Adds All foreign keys to the ignore list.
+     *
+     */
     public void ignoreAllForeignKeys() {
         List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
         for (PropertyWrapper prop : props) {
@@ -406,15 +648,16 @@ abstract public class DBRow implements Serializable {
     /**
      *
      * Creates a foreign key like relationship between columns on 2 different
-     * DBRow objects
+     * DBRow objects.
      *
-     * this function relies on the QueryableDatatypes being part of the DBRows
-     * that are also passed. So every call to this function should be similar
-     * to:
+     * <p>This function relies on the QueryableDatatypes being part of the
+     * DBRows that are also passed. So every call to this function should be
+     * similar to:
      *
-     * myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
+     * <p>myRow.addRelationship(myRow.someField, myOtherRow,
+     * myOtherRow.otherField);
      *
-     * uses the default DBEqualsOperator
+     * <p>Uses the default DBEqualsOperator.
      *
      * @param thisTableField
      * @param otherTable
@@ -428,16 +671,17 @@ abstract public class DBRow implements Serializable {
     /**
      *
      * Creates a foreign key like relationship between columns on 2 different
-     * DBRow objects
+     * DBRow objects.
      *
-     * this function relies on the QueryableDatatypes being part of the DBRows
-     * that are also passed. So every call to this function should be similar
-     * to:
+     * <p>this function relies on the QueryableDatatypes being part of the
+     * DBRows that are also passed. So every call to this function should be
+     * similar to:
      *
-     * myRow.addRelationship(myRow.field1, myOtherRow, myOtherRow.field2);
+     * <p>myRow.addRelationship(myRow.someField, myOtherRow,
+     * myOtherRow.otherField, new DBGreaterThanOperator());
      *
-     * Uses the supplied operator to establish the relationship rather than the
-     * default DBEqualsOperator. Not all operators can be used for
+     * <p>Uses the supplied operator to establish the relationship rather than
+     * the default DBEqualsOperator. Not all operators can be used for
      * relationships.
      *
      * @param thisTableField
@@ -451,19 +695,21 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
+     * Remove all added relationships.
      *
+     *
+     * @see
+     * DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype,
+     * nz.co.gregs.dbvolution.DBRow,
+     * nz.co.gregs.dbvolution.datatypes.QueryableDatatype)
+     * @see
+     * DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype,
+     * nz.co.gregs.dbvolution.DBRow,
+     * nz.co.gregs.dbvolution.datatypes.QueryableDatatype,
+     * nz.co.gregs.dbvolution.operators.DBOperator)
      */
     public void clearRelationships() {
         this.adHocRelationships.clear();
-    }
-
-    List<String> getAdHocRelationshipSQL(DBDatabase db) {
-        List<String> sqlStrings = new ArrayList<String>();
-        DBDefinition defn = db.getDefinition();
-        for (DBRelationship rel : adHocRelationships) {
-            sqlStrings.add(defn.beginAndLine() + rel.generateSQL(db));
-        }
-        return sqlStrings;
     }
 
     protected boolean hasLargeObjects() {
@@ -522,10 +768,10 @@ abstract public class DBRow implements Serializable {
      * <p>
      * Requires the field to be from this instance to work.
      *
-     * @param <T>
+     * @param <T> A list or List of fields of this DBRow
      * @param properties a list of fields/methods from this object
      */
-//    @SafeVarargs // wait for Java8 before using Java7
+    //@SafeVarargs
     public final <T> void returnFieldsLimitedTo(T... properties) {
         PropertyWrapper propWrapper;
         for (T property : properties) {
@@ -537,14 +783,23 @@ abstract public class DBRow implements Serializable {
         }
     }
 
+    /**
+     * Remove all limitations on the fields returned.
+     *
+     * <p>Clears the limits on returned fields set by {@link DBRow#returnFieldsLimitedTo(T[])
+     * }
+     *
+     */
     public void returnAllFields() {
         returnColumns.clear();
     }
 
     /**
+     * Needed for non-ANSI support.
+     *
      * @return the adHocRelationships
      */
-    public List<DBRelationship> getAdHocRelationships() {
+    protected List<DBRelationship> getAdHocRelationships() {
         return adHocRelationships;
     }
 
@@ -552,10 +807,13 @@ abstract public class DBRow implements Serializable {
      * the foreign keys and adhoc relationships as an SQL String or a null
      * pointer
      *
+     * @param db
+     * @param newTable
+     * @param options
      * @return the foreign keys and adhoc relationships as an SQL String or a
      * null pointer
      */
-    public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable) {
+    protected String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
         StringBuilder rels = new StringBuilder();
         DBDefinition defn = db.getDefinition();
 //        final String lineSeparator = System.getProperty("line.separator");
@@ -564,14 +822,13 @@ abstract public class DBRow implements Serializable {
         String joinSeparator = "";
         for (PropertyWrapper fk : fks) {
             Class<? extends DBRow> referencedClass = fk.referencedClass();
-            PropertyWrapperDefinition referencedProp = fk.referencedPropertyDefinitionIdentity();
 
-            if (newTable.getClass().equals(referencedClass)) {
+            if (referencedClass.isAssignableFrom(newTable.getClass())) {
                 String formattedForeignKey = defn.formatTableAliasAndColumnName(
                         this, fk.columnName());
 
                 String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
-                        newTable, referencedProp.columnName());
+                        newTable, fk.referencedColumnName());
 
                 rels//.append(lineSeparator)
                         .append(joinSeparator)
@@ -579,7 +836,7 @@ abstract public class DBRow implements Serializable {
                         .append(defn.getEqualsComparator())
                         .append(formattedReferencedColumn);
 
-                joinSeparator = defn.beginAndLine();
+                joinSeparator = defn.beginWhereClauseLine(options);
             }
         }
         List<DBRelationship> adHocs = getAdHocRelationships();
@@ -602,9 +859,9 @@ abstract public class DBRow implements Serializable {
 
             rels//.append(lineSeparator)
                     .append(joinSeparator)
-                    .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
+                    .append(DBRelationship.toSQLString(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
-            joinSeparator = defn.beginAndLine();
+            joinSeparator = defn.beginWhereClauseLine(options);
         }
 
         adHocs = newTable.getAdHocRelationships();
@@ -627,9 +884,9 @@ abstract public class DBRow implements Serializable {
 
             rels//.append(lineSeparator)
                     .append(joinSeparator)
-                    .append(DBRelationship.generateSQL(db, leftTable, leftColumn, operator, rightTable, rightColumn));
+                    .append(DBRelationship.toSQLString(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
-            joinSeparator = defn.beginAndLine();
+            joinSeparator = defn.beginWhereClauseLine(options);
         }
 
         fks = newTable.getForeignKeyPropertyWrappers();
@@ -653,17 +910,23 @@ abstract public class DBRow implements Serializable {
                         .append(defn.getEqualsComparator())
                         .append(formattedForeignKey);
 
-                joinSeparator = defn.beginAndLine();
+                joinSeparator = defn.beginWhereClauseLine(options);
             }
         }
         return rels.toString();
     }
 
     /**
-     * Returns all the DBRow subclasses referenced by foreign keys
+     * Returns all the DBRow subclasses referenced by by this class with foreign
+     * keys
      *
-     * @return A list of DBRow subclasses referenced with
-     * @DBForeignKey
+     * <p>Similar to {@link #getAllRelatedTables() } but where this class
+     * directly references the external DBRow subclass with an {@code @DBForeignKey} annotation.
+     *
+     * <p>That is to say: where A is this class, returns a List of B such that A
+     * => B
+     *
+     * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
      *
      */
     @SuppressWarnings("unchecked")
@@ -678,6 +941,18 @@ abstract public class DBRow implements Serializable {
         return (List<Class<? extends DBRow>>) referencedTables.clone();
     }
 
+    /**
+     * Creates a list of all DBRow subclasses that reference this class with
+     * foreign keys.
+     *
+     * <p>Similar to {@link #getReferencedTables() } but where this class is
+     * being referenced by the external DBRow subclass.
+     *
+     * <p>That is to say: where A is this class, returns a List of B such that B
+     * => A
+     *
+     * @return
+     */
     public List<Class<? extends DBRow>> getAllRelatedTables() {
         List<Class<? extends DBRow>> relatedTables = getReferencedTables();
         Reflections reflections = new Reflections(this.getClass().getPackage().getName());
@@ -715,6 +990,15 @@ abstract public class DBRow implements Serializable {
         }
     }
 
+    /**
+     * Finds all instances of {@code example} that share a {@link DBQueryRow} with this instance.
+     * 
+     * @param <R>
+     * @param query
+     * @param example
+     * @return all instances of {@code example} that are connected to this instance in the {@code query}
+     * @throws SQLException
+     */
     public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQuery query, R example) throws SQLException {
         List<R> instances = new ArrayList<R>();
         for (DBQueryRow qrow : query.getAllRows()) {
@@ -727,21 +1011,22 @@ abstract public class DBRow implements Serializable {
         return instances;
     }
 
-    public void setTableAlias(String alias) {
+    protected void setTableAlias(String alias) {
         tableAlias = alias;
     }
 
-    String getTableAlias() {
+    protected String getTableAlias() {
         return tableAlias == null ? getTableName() : tableAlias;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends DBRow> T getDBRowExampleWithSetFields(T baseRow, QueryableDatatype... qdts) {
-        T example = (T) DBRow.getDBRow(baseRow.getClass());
-        for (QueryableDatatype qdt : qdts){
-            PropertyWrapperDefinition definition = baseRow.getPropertyWrapperOf(qdt).getDefinition();
-            definition.setQueryableDatatype(example, qdt);
-        }
-        return example;
-    }
+//    @Deprecated
+//    @SuppressWarnings("unchecked")
+//    public static <T extends DBRow> T getDBRowExampleWithSetFields(T baseRow, QueryableDatatype... qdts) {
+//        T example = (T) DBRow.getDBRow(baseRow.getClass());
+//        for (QueryableDatatype qdt : qdts) {
+//            PropertyWrapperDefinition definition = baseRow.getPropertyWrapperOf(qdt).getDefinition();
+//            definition.setQueryableDatatype(example, qdt);
+//        }
+//        return example;
+//    }
 }

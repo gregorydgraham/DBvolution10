@@ -15,11 +15,10 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
@@ -30,7 +29,7 @@ public class DBLikeOperator extends DBOperator {
     public static final long serialVersionUID = 1L;
 //    private final QueryableDatatype firstValue;
 
-    public DBLikeOperator(DataGenerator likeableValue) {
+    public DBLikeOperator(DBExpression likeableValue) {
         super();
         this.firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
     }
@@ -44,7 +43,7 @@ public class DBLikeOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        likeableValue.setDatabase(db);
         DBDefinition defn = db.getDefinition();
-        return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
+        return (invertOperator ? "!(" : "(") + defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
     }
 
     private String getOperator() {

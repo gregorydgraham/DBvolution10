@@ -1,14 +1,29 @@
+/*
+ * Copyright 2013 gregory.graham.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor;
-import nz.co.gregs.dbvolution.internal.SafeOneWaySimpleTypeAdaptor.Direction;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.properties.SafeOneWaySimpleTypeAdaptor;
+import nz.co.gregs.dbvolution.internal.properties.SafeOneWaySimpleTypeAdaptor.Direction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,8 +36,8 @@ import org.apache.commons.logging.LogFactory;
  */
 // TODO come up with a better name
 public class QueryableDatatypeSyncer {
-
-    public static final Log log = LogFactory.getLog(QueryableDatatypeSyncer.class);
+    private static final Log log = LogFactory.getLog(QueryableDatatypeSyncer.class);
+    
     protected final String propertyName;
     protected final DBTypeAdaptor<Object, Object> typeAdaptor;
     protected final Class<? extends QueryableDatatype> internalQdtType;
@@ -118,7 +133,16 @@ public class QueryableDatatypeSyncer {
 
     // for DEBUG purposes only
     static String qdtToString(QueryableDatatype qdt) {
-        String literalStr = (qdt == null) ? null : qdt.literalValue.getClass().getSimpleName() + "[" + qdt.literalValue + "]";
+    	String literalStr;
+    	if (qdt == null) {
+    		literalStr = null;
+    	}
+    	else if (qdt.literalValue == null) {
+    		literalStr = "null";
+    	}
+    	else {
+    		literalStr = qdt.literalValue.getClass().getSimpleName() + "[" + qdt.literalValue + "]";
+    	}
         StringBuilder buf = new StringBuilder();
         if (qdt == null) {
             buf.append("null");
@@ -177,7 +201,7 @@ public class QueryableDatatypeSyncer {
          * @return the newly created QDT of the target type, or null if
          * {@code sourceQdt} was null
          */
-        public DataGenerator convert(DataGenerator source) {
+        public DBExpression convert(DBExpression source) {
             if (!(source instanceof QueryableDatatype)) {
                 return source;
             } else {
@@ -197,10 +221,10 @@ public class QueryableDatatypeSyncer {
                         targetQdt = newTargetQDT();
                         setTargetQDTFromSourceQDT(targetQdt, sourceQDT);
                     }
-                    log.info(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + qdtToString(targetQdt));
+                    log.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + qdtToString(targetQdt));
                     return targetQdt;
                 } catch (RuntimeException e) {
-                    log.info(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + e.getClass().getSimpleName());
+                    log.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + e.getClass().getSimpleName());
                     throw e;
                 }
             }
@@ -237,7 +261,7 @@ public class QueryableDatatypeSyncer {
             targetQdt.includingNulls = sourceQdt.includingNulls;
             targetQdt.isDBNull = sourceQdt.isDBNull;
             targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
-            targetQdt.undefined = sourceQdt.undefined;
+            targetQdt.setDefined(sourceQdt.isDefined());
             targetQdt.sort = sourceQdt.sort;
 
             // copy literal value with translation

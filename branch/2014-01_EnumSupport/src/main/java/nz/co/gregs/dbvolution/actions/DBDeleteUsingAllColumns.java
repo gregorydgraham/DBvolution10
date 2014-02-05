@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 public class DBDeleteUsingAllColumns extends DBDelete {
 
@@ -60,11 +60,11 @@ public class DBDeleteUsingAllColumns extends DBDelete {
         String sql = defn.beginDeleteLine()
                 + defn.formatTableName(row)
                 + defn.beginWhereClause()
-                + defn.getTrueOperation();
+                + defn.getWhereClauseBeginningCondition();
         for (PropertyWrapper prop : row.getPropertyWrappers()) {
             QueryableDatatype qdt = prop.getQueryableDatatype();
             sql = sql
-                    + defn.beginAndLine()
+                    + defn.beginWhereClauseLine()
                     + prop.columnName()
                     + defn.getEqualsComparator()
                     + (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));

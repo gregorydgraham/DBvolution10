@@ -1,6 +1,17 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2013 gregory.graham.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package nz.co.gregs.dbvolution.datatypes;
 
@@ -10,14 +21,15 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
+import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
 
 /**
  *
  * @author gregory.graham
  */
-
-public class DBNumber extends QueryableDatatype {
+public class DBNumber extends QueryableDatatype implements NumberResult{
 
     public static final long serialVersionUID = 1;
 
@@ -33,15 +45,9 @@ public class DBNumber extends QueryableDatatype {
         super(aNumber);
     }
 
-    /**
-     *
-     * @param aNumber
-     */
-    public DBNumber(Object aNumber) {
-        super(aNumber);
-        if (!(aNumber instanceof Number)) {
-            initDBNumber(aNumber);
-        }
+    @Override
+    public DBNumber copy() {
+        return (DBNumber) super.copy();
     }
 
     @Override
@@ -56,6 +62,7 @@ public class DBNumber extends QueryableDatatype {
             if (aNumber instanceof Number) {
                 super.setValue((Number) aNumber);
             } else {
+            	// FIXME (Ticket 35): don't think this should be here - would be better to give ClassCastException
                 super.setValue(Double.parseDouble(aNumber.toString()));
             }
         }
@@ -70,7 +77,11 @@ public class DBNumber extends QueryableDatatype {
     public String getWhereClause(DBDatabase db, String columnName) {
         if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
-        } else {
+        }
+        else if (this.getOperator() instanceof DBLikeOperator) {
+            throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
+        }
+        else {
             return super.getWhereClause(db, columnName);
         }
     }
@@ -83,7 +94,7 @@ public class DBNumber extends QueryableDatatype {
 
     /**
      *
-     * @return
+     * @return the default database type as a string, may be gazumped by the DBDefinition
      */
     @Override
     public String getSQLDatatype() {
@@ -93,7 +104,7 @@ public class DBNumber extends QueryableDatatype {
     /**
      *
      * @param db
-     * @return
+     * @return the underlying number formatted for a SQL statement
      */
     @Override
     public String formatValueForSQLStatement(DBDatabase db) {
@@ -103,10 +114,39 @@ public class DBNumber extends QueryableDatatype {
         }
         return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
     }
+    
+    /**
+     * Gets the current literal value of this DBNumber, without any
+     * formatting.
+     *
+     * <p>
+     * The literal value is undefined (and {@code null}) if using an operator
+     * other than {@code equals}.
+     *
+     * @return the literal value, if defined, which may be null
+     */
+    @Override
+    public Number getValue(){
+        return numberValue();
+    }
 
     /**
      *
-     * @return
+     * @return the number as a the original number class
+     */
+    public Number numberValue() {
+        if (literalValue == null) {
+            return null;
+        } else if (literalValue instanceof Number) {
+            return ((Number) literalValue).doubleValue();
+        } else {
+            return Double.parseDouble(literalValue.toString());
+        }
+    }
+
+    /**
+     *
+     * @return the number as a Double
      */
     @Override
     public Double doubleValue() {
@@ -121,12 +161,14 @@ public class DBNumber extends QueryableDatatype {
 
     /**
      *
-     * @return
+     * @return the number as a Long
      */
     @Override
     public Long longValue() {
         if (literalValue == null) {
             return null;
+        } else if (literalValue instanceof Long) {
+            return (Long)literalValue;
         } else if (literalValue instanceof Number) {
             return ((Number) literalValue).longValue();
         } else {
@@ -136,7 +178,7 @@ public class DBNumber extends QueryableDatatype {
 
     /**
      *
-     * @return
+     * @return the number as an iInteger
      */
     @Override
     public Integer intValue() {
@@ -150,6 +192,7 @@ public class DBNumber extends QueryableDatatype {
     }
 
     /**
+     * Internal method to automatically set the value using information from the database
      *
      * @param resultSet
      * @param fullColumnName

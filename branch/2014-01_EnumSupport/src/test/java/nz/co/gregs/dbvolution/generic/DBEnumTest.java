@@ -73,7 +73,7 @@ public class DBEnumTest extends AbstractTest {
         
         String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
         System.out.println(sqlFragment);
-        assertThat(sqlFragment, containsString("column in ( 2 , 1 ))"));
+        assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class DBEnumTest extends AbstractTest {
         
         String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
         System.out.println(sqlFragment);
-        assertThat(sqlFragment, containsString("column in ( 2 , 1 ))"));
+        assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
     }
 
     // In this test, the QueryableDatatype.permittedValues(Object...) method is called,

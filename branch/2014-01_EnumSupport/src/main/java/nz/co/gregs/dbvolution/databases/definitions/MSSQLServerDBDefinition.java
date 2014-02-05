@@ -50,7 +50,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
     }
 
     @Override
-    public String doTrimTransform(String enclosedValue) {
+    public String doTrimFunction(String enclosedValue) {
         return " LTRIM(RTRIM("+enclosedValue+")) "; //To change body of generated methods, choose Tools | Templates.
     }
     

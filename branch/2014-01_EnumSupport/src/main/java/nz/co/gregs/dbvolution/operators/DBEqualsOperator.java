@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQD
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
@@ -37,8 +37,13 @@ public class DBEqualsOperator extends DBOperator {
         super();
     }
 
-    public DBEqualsOperator(DataGenerator equalTo) {
+    public DBEqualsOperator(DBExpression equalTo) {
         this.firstValue = (equalTo == null ? equalTo : equalTo.copy());
+    }
+
+    public DBEqualsOperator(Object equalTo) {
+        QueryableDatatype first = QueryableDatatype.getQueryableDatatypeForObject(equalTo);
+        this.firstValue = (first == null ? first : first.copy());
     }
 
     public String getInverse(DBDefinition defn) {
@@ -63,7 +68,7 @@ public class DBEqualsOperator extends DBOperator {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
             whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
         } else {
-            whereLine = defn.beginAndLine() + columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + firstValue.toSQLString(db) + " ";
+            whereLine =  columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + firstValue.toSQLString(db);
         }
         defn = null;
         return whereLine;

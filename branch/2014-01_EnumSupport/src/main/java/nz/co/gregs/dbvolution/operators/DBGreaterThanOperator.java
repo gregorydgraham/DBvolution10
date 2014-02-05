@@ -15,11 +15,10 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
@@ -38,7 +37,7 @@ public class DBGreaterThanOperator extends DBOperator {
         this.firstValue = null;
     }
 
-    public DBGreaterThanOperator(DataGenerator greaterThanThis) {
+    public DBGreaterThanOperator(DBExpression greaterThanThis) {
         super();
         this.firstValue = greaterThanThis == null ? greaterThanThis : greaterThanThis.copy();
     }
@@ -55,7 +54,7 @@ public class DBGreaterThanOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        firstValue.setDatabase(database);
         DBDefinition defn = db.getDefinition();
-        return defn.beginAndLine() + columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
+        return columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
     }
 
     @Override

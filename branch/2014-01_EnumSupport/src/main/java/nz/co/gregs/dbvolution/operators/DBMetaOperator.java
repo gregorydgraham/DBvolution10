@@ -52,18 +52,8 @@ abstract class DBMetaOperator extends DBOperator{
         operator.invertOperator(invertOperator);
     }
 
-    //    public DBPermittedValuesOperator(Set<QueryableDatatype> permitted) {
-    //        if (permitted == null) {
-    //            operator = new DBIsNullOperator();
-    //        } else if (permitted.size() == 1) {
-    //                operator = new DBEqualsOperator(permitted.toArray(new QueryableDatatype[]{})[0]);
-    //        } else {
-    //            operator = new DBInOperator(permitted);
-    //        }
-    //    }
     @Override
     public void not() {
         operator.not();
     }
-    
 }

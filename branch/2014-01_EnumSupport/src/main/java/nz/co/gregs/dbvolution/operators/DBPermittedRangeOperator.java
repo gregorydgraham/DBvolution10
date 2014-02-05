@@ -25,13 +25,13 @@ public class DBPermittedRangeOperator extends DBMetaOperator {
     
     public DBPermittedRangeOperator(Object lowerBound, Object upperBound) {
         if (lowerBound != null && upperBound != null) {
-            operator = new DBBetweenOperator(
+            operator = new DBBetweenInclusiveExclusiveOperator(
                     QueryableDatatype.getQueryableDatatypeForObject(lowerBound), 
                     QueryableDatatype.getQueryableDatatypeForObject(upperBound));
         } else if (lowerBound == null && upperBound != null) {
             QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(upperBound);
             qdt.setValue(upperBound);
-            operator = new DBLessThanOperator(qdt);
+            operator = new DBLessThanOrEqualOperator(qdt);
         } else if (lowerBound != null && upperBound == null) {
             final QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(lowerBound);
             qdt.setValue(lowerBound);

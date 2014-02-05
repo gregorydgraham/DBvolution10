@@ -48,7 +48,7 @@ public class OracleDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+    public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         if (qdt instanceof DBBoolean) {
             return " NUMBER(1)";
         } else if (qdt instanceof DBString) {
@@ -79,13 +79,36 @@ public class OracleDBDefinition extends DBDefinition {
 
     @Override
     public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
-        return "/*+ FIRST_ROWS("+rowLimit+") */"; //To change body of generated methods, choose Tools | Templates.
+        return "/*+ FIRST_ROWS("+rowLimit+") */"; 
     }
 
     @Override
     public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
         return "";
     }
+
+    @Override
+    public String getCurrentDateFunctionName() {
+        return "SYSDATE"; 
+    }
+
+    @Override
+    public String getCurrentTimestampFunction() {
+        return "SYSDATE"; 
+    }
+
+    @Override
+    public String getCurrentTimeFunction() {
+        return "SYSDATE"; 
+    }
+
+    @Override
+    public String getCurrentUserFunctionName() {
+        return "USER"; 
+    }    
     
-    
+    @Override
+    public String getPositionFunction(String originalString, String stringToFind) {
+        return "INSTR("+originalString+","+stringToFind+")";
+    }
 }

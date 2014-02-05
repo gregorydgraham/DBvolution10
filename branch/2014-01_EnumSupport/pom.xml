@@ -4,7 +4,7 @@
 
     <groupId>nz.co.gregs</groupId>
     <artifactId>dbvolution</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.7-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <name>DBvolution</name>
@@ -46,6 +46,42 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <libDirectory>${basedir}/lib</libDirectory>
     </properties>
+    
+    <profiles>
+    	<profile>
+    		<id>mutationTest</id>
+    		<build>
+    			<plugins>
+    				<plugin>
+    					<!-- This looks like a good idea.
+    					Currently not working due to a bug supporting Maven2,
+    					supposedly fixed in 0.33, due to be released soon.
+    					Error is: "UnsupportedOperationException: Tried to retrieve value but had None".
+    					Issue: https://github.com/hcoles/pitest/issues/92 -->
+    					<groupId>org.pitest</groupId>
+    					<artifactId>pitest-maven</artifactId>
+    					<version>0.32</version>
+    					<executions>
+    						<execution>
+    							<phase>test</phase>
+    							<goals>
+    								<goal>mutationCoverage</goal>
+    							</goals>
+    						</execution>
+    					</executions>
+    					<configuration>
+    						<targetClasses>
+    							<param>nz.co.gregs.dbvolution*</param>
+    						</targetClasses>
+    						<targetTests>
+    							<param>nz.co.gregs.dbvolution*</param>
+    						</targetTests>
+    					</configuration>
+    				</plugin>
+    			</plugins>
+    		</build>
+    	</profile>
+    </profiles>
     
     <build>
         <plugins>
@@ -135,7 +171,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.3.172</version>
+            <version>1.3.174</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -169,17 +205,17 @@
             <type>jar</type>
         </dependency>
         <dependency>
-        	<groupId>commons-logging</groupId>
-        	<artifactId>commons-logging</artifactId>
-        	<version>1.1.3</version>
-        	<classifier>api</classifier>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.3</version>
+            <classifier>api</classifier>
         </dependency>
         <dependency>
-        	<groupId>commons-logging</groupId>
-        	<artifactId>commons-logging</artifactId>
-        	<version>1.1.3</version>
-        	<classifier>adapters</classifier>
-        	<scope>test</scope>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.3</version>
+            <classifier>adapters</classifier>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>nz.co.gregs</groupId>
@@ -187,10 +223,10 @@
             <version>3.8.3.3</version>
         </dependency>
         <dependency>
-        	<groupId>log4j</groupId>
-        	<artifactId>log4j</artifactId>
-        	<version>1.2.17</version>
-        	<scope>test</scope>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <distributionManagement>

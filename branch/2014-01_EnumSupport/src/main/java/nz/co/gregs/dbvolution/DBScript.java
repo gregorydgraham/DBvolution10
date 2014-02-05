@@ -43,14 +43,14 @@ public abstract class DBScript {
     /**
      * Run the script in a committed transaction.
      * 
-     * Implement() wraps the script() method in a transaction and commits it.
+     * <P>Implement() wraps the script() method in a transaction and commits it.
      * 
-     * Any exceptions will cause the script to abort and rollback safely.
+     * <P>Any exceptions will cause the script to abort and rollback safely.
      * 
-     * When the script executes without exceptions the changes will be committed and made permanent.
+     * <P>When the script executes without exceptions the changes will be committed and made permanent.
      *
      * @param db
-     * @return
+     * @return a DBActionList of all the actions performed on the database
      * @throws Exception
      */
     public final DBActionList implement(DBDatabase db) throws Exception {
@@ -67,7 +67,7 @@ public abstract class DBScript {
      * Any changes will be safely rolled back.
      *
      * @param db
-     * @return
+     * @return a DBActionList of all the actions performed on the database
      * @throws Exception
      */
     public final DBActionList test(DBDatabase db) throws Exception {

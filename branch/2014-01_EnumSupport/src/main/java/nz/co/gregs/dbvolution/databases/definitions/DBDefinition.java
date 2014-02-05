@@ -17,10 +17,9 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.generators.StringValue;
-import nz.co.gregs.dbvolution.internal.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
  *
@@ -60,7 +59,7 @@ public abstract class DBDefinition {
      *
      * @param table
      * @param columnName
-     * @return
+     * @return a string of the table and column name for the select clause
      */
     public String formatTableAndColumnName(DBRow table, String columnName) {
         return formatTableName(table) + "." + formatColumnName(columnName);
@@ -85,7 +84,7 @@ public abstract class DBDefinition {
      *
      * @param table
      * @param columnName
-     * @return
+     * @return a string of the column alias for the select clause
      */
     public String formatColumnNameForResultSet(DBRow table, String columnName) {
         String formattedName = formatTableAndColumnName(table, columnName).replaceAll("\\.", "__");
@@ -111,10 +110,26 @@ public abstract class DBDefinition {
      *
      * usually, but not always " and "
      *
-     * @return
+     * @return a string for the start of a where clause line
      */
+    public String beginWhereClauseLine() {
+        return beginAndLine();
+    }
+
+    public String beginWhereClauseLine(QueryOptions options) {
+        if (options.isMatchAll()) {
+            return beginAndLine();
+        } else {
+            return beginOrLine();
+        }
+    }
+
     public String beginAndLine() {
-        return " and ";
+        return " AND ";
+    }
+
+    public String beginOrLine() {
+        return " OR ";
     }
 
     public String getDropTableStart() {
@@ -217,6 +232,18 @@ public abstract class DBDefinition {
         return ",";
     }
 
+    public String getWhereClauseBeginningCondition() {
+        return getTrueOperation();
+    }
+
+    public String getWhereClauseBeginningCondition(QueryOptions options) {
+        if (options.isMatchAll()) {
+            return getTrueOperation();
+        } else {
+            return getFalseOperation();
+        }
+    }
+
     public String getFalseOperation() {
         return " 1=0 ";
     }
@@ -254,20 +281,21 @@ public abstract class DBDefinition {
     }
 
     /**
-     * Provides an opportunity for the definition to insert a row limiting statement before the query
-     * 
+     * Provides an opportunity for the definition to insert a row limiting
+     * statement before the query
+     *
      * for example H2DB uses SELECT TOP 10 ... FROM ... WHERE ... ;
-     * 
+     *
      * Based on the example for H2DB this method should return " TOP 10 "
-     * 
-     * If the database does not support row limiting 
-     * this method should throw an exception when rowLimit is not null
-     * 
-     * If the database does not limit rows during the select clause 
-     * this method should return ""
-     * 
+     *
+     * If the database does not support row limiting this method should throw an
+     * exception when rowLimit is not null
+     *
+     * If the database does not limit rows during the select clause this method
+     * should return ""
+     *
      * @param rowLimit
-     * @return
+     * @return a string for the row limit sub-clause or ""
      */
     abstract public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit);
 
@@ -293,8 +321,8 @@ public abstract class DBDefinition {
         return "";
     }
 
-    public String getSubsequentJoinOperationSeparator() {
-        return beginAndLine();
+    public String getSubsequentJoinOperationSeparator(QueryOptions options) {
+        return beginWhereClauseLine(options);
     }
 
     public String beginInnerJoin() {
@@ -316,46 +344,57 @@ public abstract class DBDefinition {
     public String endOnClause() {
         return " ) ";
     }
-    
-    
-    public final Object getSQLTypeOfDBDatatype(PropertyWrapper field) {
+
+    public final String getSQLTypeOfDBDatatype(PropertyWrapper field) {
         return getSQLTypeOfDBDatatype(field.getQueryableDatatype());
     }
 
-    protected Object getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+    /**
+     * Supplied to allow the DBDefintion to override the standard QDT datatype.
+     *
+     * <p>
+     * When the
+     *
+     * @param qdt
+     * @return the databases type for the QDT as a string
+     */
+    protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         return qdt.getSQLDatatype();
     }
 
     /**
-     * Provides an opportunity for the definition to insert a row limiting statement after the query
-     * 
+     * Provides an opportunity for the definition to insert a row limiting
+     * statement after the query
+     *
      * for example MySQL/MariaDB use SELECT ... FROM ... WHERE ... LIMIT 10 ;
-     * 
-     * Based on the example for MySQL/MariaDB this method should return " LIMIT 10 "
-     * 
-     * If the database does not support row limiting 
-     * this method should throw an exception when rowLimit is not null
-     * 
-     * If the database does not limit rows after the where clause 
-     * this method should return ""
-     * 
+     *
+     * Based on the example for MySQL/MariaDB this method should return " LIMIT
+     * 10 "
+     *
+     * If the database does not support row limiting this method should throw an
+     * exception when rowLimit is not null
+     *
+     * If the database does not limit rows after the where clause this method
+     * should return ""
+     *
      * @param rowLimit
-     * @return
+     * @return the row limiting sub-clause or ""
      */
     abstract public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit);
 
     /**
      *
-     * The place holder for variables inserted into a prepared statement, usually " ? "
-     * 
-     * @return 
+     * The place holder for variables inserted into a prepared statement,
+     * usually " ? "
+     *
+     * @return the place holder for variables as a string
      */
     public String getPreparedVariableSymbol() {
         return " ? ";
     }
 
     public boolean isColumnNamesCaseSensitive() {
-		return false;
+        return false;
     }
 
     public String startMultilineComment() {
@@ -391,11 +430,11 @@ public abstract class DBDefinition {
     }
 
     public Object getTableAlias(DBRow tabRow) {
-        return ("_"+tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
+        return ("_" + tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
     }
 
-    public String getCurrentDateFunction() {
-        return " CURRENT_DATE "; 
+    public String getCurrentDateFunctionName() {
+        return " CURRENT_DATE ";
     }
 
     public String getCurrentTimestampFunction() {
@@ -403,9 +442,10 @@ public abstract class DBDefinition {
     }
 
     public String getCurrentTimeFunction() {
-        return " CURRENT_TIMESTAMP "; 
+        return " CURRENT_TIMESTAMP ";
     }
 
+    @Deprecated
     public String getCurrentUserFunction() {
         return " CURRENT_USER ";
     }
@@ -415,39 +455,94 @@ public abstract class DBDefinition {
     }
 
     public String doLeftTrimTransform(String enclosedValue) {
-        return " LTRIM("+enclosedValue+") ";
+        return " LTRIM(" + enclosedValue + ") ";
     }
 
     public String doLowercaseTransform(String enclosedValue) {
-        return " LOWER("+enclosedValue+") ";
+        return " LOWER(" + enclosedValue + ") ";
     }
 
     public String doRightTrimTransform(String enclosedValue) {
-        return " RTRIM("+ enclosedValue+" )";
+        return " RTRIM(" + enclosedValue + " )";
     }
 
     public String doStringLengthTransform(String enclosedValue) {
-        return " CHAR_LENGTH( "+enclosedValue+" ) ";
+        return " CHAR_LENGTH( " + enclosedValue + " ) ";
     }
 
-    public String doSubstringTransform(String enclosedValue, DBInteger startingPosition, DBInteger length) {
-        return " SUBSTRING("
-                +enclosedValue
-                +" FROM " 
-                +(startingPosition.intValue() + 1) 
-                +( (length!=null && !length.isNull()) ? " for " + (length.intValue() - startingPosition.intValue()) : "")
-                + ") ";
-    }
-
-    public String doTrimTransform(String enclosedValue) {
-        return " TRIM("+enclosedValue+") ";
+    public String doTrimFunction(String enclosedValue) {
+        return " TRIM(" + enclosedValue + ") ";
     }
 
     public String doUppercaseTransform(String enclosedValue) {
-        return " UPPER("+enclosedValue+") ";
+        return " UPPER(" + enclosedValue + ") ";
     }
 
     public String doConcatTransform(String firstString, String secondString) {
-        return firstString+"||"+secondString;
+        return firstString + "||" + secondString;
+    }
+
+    public String getNextSequenceValueFunctionName() {
+        return " NEXTVAL";
+    }
+
+    public String getConcatOperator() {
+        return "||";
+    }
+
+    public String getReplaceFunctionName() {
+        return "REPLACE";
+    }
+
+    public String getLeftTrimFunctionName() {
+        return "LTRIM";
+    }
+
+    public String getRightTrimFunctionName() {
+        return "RTRIM";
+    }
+
+    public String getLowercaseFunctionName() {
+        return "LOWER";
+    }
+
+    public String getUppercaseFunctionName() {
+        return "UPPER";
+    }
+
+    public String getStringLengthFunctionName() {
+        return "CHAR_LENGTH";
+    }
+
+    public String getCurrentUserFunctionName() {
+        return "CURRENT_USER";
+    }
+
+    public String getYearFunction(String dateExpression) {
+        return "EXTRACT(YEAR FROM " + dateExpression + ")";
+    }
+
+    public String getMonthFunction(String dateExpression) {
+        return "EXTRACT(MONTH FROM " + dateExpression + ")";
+    }
+
+    public String getDayFunction(String dateExpression) {
+        return "EXTRACT(DAY FROM " + dateExpression + ")";
+    }
+
+    public String getHourFunction(String dateExpression) {
+        return "EXTRACT(HOUR FROM " + dateExpression + ")";
+    }
+
+    public String getMinuteFunction(String dateExpression) {
+        return "EXTRACT(MINUTE FROM " + dateExpression + ")";
+    }
+
+    public String getSecondFunction(String dateExpression) {
+        return "EXTRACT(SECOND FROM " + dateExpression + ")";
+    }
+
+    public String getPositionFunction(String originalString, String stringToFind) {
+        return "POSITION(" + stringToFind + " IN " + originalString + ")";
     }
 }

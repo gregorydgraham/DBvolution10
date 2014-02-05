@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.generators.DataGenerator;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
@@ -29,7 +29,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
     public static final long serialVersionUID = 1L;
 //    private final QueryableDatatype firstValue;
 
-    public DBLikeCaseInsensitiveOperator(DataGenerator likeableValue) {
+    public DBLikeCaseInsensitiveOperator(DBExpression likeableValue) {
         super();
         firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
     }
@@ -54,7 +54,7 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
             throw new RuntimeException("Get Operator Returns NULL: the getOperator() method returned null when it should return a String of the database's operator.");
         } else {
             DBDefinition defn = db.getDefinition();
-            return defn.beginAndLine() + (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(firstValue.toSQLString(db)) + ")";
+            return (invertOperator ? "!(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(firstValue.toSQLString(db)) + ")";
         }
     }
 

@@ -1,6 +1,6 @@
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.internal.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
  * Internal class. Do not use. 

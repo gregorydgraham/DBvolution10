@@ -39,21 +39,19 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
         DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
-        whereClause.append(defn.beginAndLine());
+        whereClause.append("");
         if (listOfPossibleValues.isEmpty()) {
-            // prevent any rows from returning as an empty list means no rows can match
+            // prevent any rows from returning: an empty list means no rows can match
             whereClause.append(defn.getFalseOperation());
         } else {
-            whereClause.append(invertOperator ? "!(" : "(");
             whereClause.append(defn.toLowerCase(columnName));
-            whereClause.append(getOperator());
+            whereClause.append(invertOperator ? getInverse() : getOperator());
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
-//                qdt.setDatabase(db);
                 whereClause.append(sep).append(" ").append(qdt.toSQLString(db).toLowerCase()).append(" ");
                 sep = ",";
             }
-            whereClause.append("))");
+            whereClause.append(")");
         }
         return whereClause.toString();
     }
