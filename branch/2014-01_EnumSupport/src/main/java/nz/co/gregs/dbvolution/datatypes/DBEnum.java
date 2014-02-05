@@ -58,7 +58,6 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
      * @throws IllegalArgumentException if the database's raw value
      * does not have a corresponding value in the enum
      */
-    // TODO: needs to handle where DBEnumValue.getLiteralValue() returns an Integer, and super.getValue() returns a Long, etc.
     public E enumValue() {
     	// get actual literal value: a String or a Long
         Object literalValue = super.getValue();
