@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,18 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 interface JavaProperty {
 	
 	/**
-	 * Gets a string representation suitable for debugging and logging.
+	 * Gets a string that clearly identifies the field or bean-property,
+	 * suitable for inclusion in an exception message or logging.
+	 * 
+	 * <p> The format is suitable such that you may generate strings
+	 * via constructs such as the following, and achieve the indicated
+	 * result:
+	 * <ul>
+	 * <li> {@code new Exception("Invalid valid for "+property)}
+	 *      <ul>
+	 *      <li> Generates a message like: {@code "Invalid valid for field com.mycompany.myproject.MyTable.fieldName"}
+	 *      </ul>
+	 * </ul> 
 	 */
 	@Override
 	public String toString();
@@ -87,6 +99,13 @@ interface JavaProperty {
 	 * be resolved to a single type
 	 */
 	public Class<?> type();
+	
+	/**
+     * Gets a <tt>Type</tt> object that represents the formal type of the property,
+     * including generic parameters, if any.
+	 * @return
+	 */
+	public Type genericType();
 	
 	/**
 	 * Get the property's value on the given target object.
@@ -172,7 +191,7 @@ interface JavaProperty {
 		
 		@Override
 		public String toString() {
-			return "field "+type().getSimpleName()+" "+qualifiedName();
+			return "field "+qualifiedName();
 		}
 
 		/**
@@ -238,6 +257,11 @@ interface JavaProperty {
 		}
 
 		@Override
+		public Type genericType() {
+			return field.getGenericType();
+		}
+		
+		@Override
 		public boolean isReadable() {
 			return true;
 		}
@@ -302,6 +326,7 @@ interface JavaProperty {
 	public class JavaBeanProperty implements JavaProperty {
 		private String name;
 		private Class<?> type;
+		private Type genericType;
 		private Method getter;
 		private Method setter;
 		
@@ -310,6 +335,16 @@ interface JavaProperty {
 			this.type = descriptor.getPropertyType();
 			this.getter = descriptor.getReadMethod();
 			this.setter = descriptor.getWriteMethod();
+			
+			if (this.getter != null) {
+				this.genericType = this.getter.getGenericReturnType();
+			}
+			else if (this.setter != null) {
+				Type[] types = this.setter.getGenericParameterTypes();
+				if (types.length == 1) {
+					this.genericType = types[0];
+				}
+			}
 		}
 
 		/**
@@ -409,53 +444,10 @@ interface JavaProperty {
 			return type;
 		}
 		
-//		private static Class<?> determineType(String name, Method getter, Method setter) {
-//			Class<?> getterType = null;
-//			Class<?> setterType = null;
-//			String qualifiedName;
-//			if (getter != null) {
-//				qualifiedName = getter.getDeclaringClass().getName()+"."+name;
-//			}
-//			else if (setter != null) {
-//				qualifiedName = setter.getDeclaringClass().getName()+"."+name;
-//			}
-//			else {
-//				qualifiedName = name;
-//			}
-//			
-//            if (getter != null) {
-//                Class<?>[] params = getter.getParameterTypes();
-//                if (params.length != 0) {
-//                    throw new DBPebkacException("Bad read method arg count on property "+qualifiedName);
-//                }
-//                getterType = getter.getReturnType();
-//                if (getterType == Void.TYPE) {
-//                    throw new DBPebkacException("Read method returns void on property "+qualifiedName);
-//                }
-//            }
-//            if (setter != null) {
-//                Class<?> params[] = setter.getParameterTypes();
-//                if (params.length != 1) {
-//                    throw new DBPebkacException("Bad write method arg count on property "+qualifiedName);
-//                }
-//                setterType = params[0];
-//            }
-//            
-//            if (getterType != null && setterType != null) {
-//            	if (setterType.isAssignableFrom(getterType)) {
-//            		return getterType;
-//            	}
-//            	else {
-//            		throw new DBPebkacException("Getter and setter have inconsistent types for property "+qualifiedName);
-//            	}
-//            }
-//            else if (getterType != null) {
-//            	return getterType;
-//            }
-//            else {
-//            	return setterType;
-//            }
-//		}
+		@Override
+		public Type genericType() {
+			return genericType;
+		}
 		
 		@Override
 		public boolean isReadable() {

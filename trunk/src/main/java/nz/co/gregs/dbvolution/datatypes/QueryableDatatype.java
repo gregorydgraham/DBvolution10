@@ -23,13 +23,23 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
-import nz.co.gregs.dbvolution.operators.*;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
+import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
+import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
  *
@@ -49,6 +59,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
+	transient protected PropertyWrapperDefinition propertyWrapper; // no guarantees whether this gets set
 
     /**
      *
@@ -720,5 +731,23 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      */
     protected void setDefined(boolean defined) {
         this.undefined = !defined;
+    }
+    
+    /**
+     * Sets the internal reference the property wrapper of the field or bean property
+     * that references this QueryableDatatype.
+     * Supports QDT types that need extra meta-information, such as the {@code DBEnum} type.
+     * 
+     * <p> Called by the property wrapper itself when it gets or sets the field,
+     * so this QDT's reference to its owning field is populated 99% of the time.
+     * 
+     * <p> Can't be called directly, must be called via {@link InternalQueryableDatatypeProxy}.
+     * 
+     * <p> <i>Thread-safety: relatively safe, as PropertyWrappers are thread-safe
+     * and interchangeable.
+     * @param propertyWrapper
+     */
+    void setPropertyWrapper(PropertyWrapperDefinition propertyWrapper) {
+    	this.propertyWrapper = propertyWrapper;
     }
 }
