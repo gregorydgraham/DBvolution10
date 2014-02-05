@@ -17,12 +17,13 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
+import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 
 import org.junit.Test;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unused"})
 public class ForeignKeyHandlerTest {
 	private JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
 			Visibility.PRIVATE, Visibility.PUBLIC, null, (PropertyType[])null);
@@ -219,7 +220,7 @@ public class ForeignKeyHandlerTest {
 		assertThat(handler.getReferencedPropertyDefinitionIdentity().type(), is((Object)DBInteger.class));
 	}
 	
-	@Test(expected=DBPebkacException.class)
+	@Test(expected=InvalidDeclaredTypeException.class)
 	public void errorsGivenReferencedColumnWithInvalidTypeAdaptor() {
 		class MyStringDateTypeAdaptor implements DBTypeAdaptor<String, Date> {
 			public String fromDatabaseValue(Date dbvValue) {
