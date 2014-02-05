@@ -57,7 +57,7 @@ public class DBEnumTest extends AbstractTest {
     public void createRecordUsingLiteral() {
         IntegerTable row = new IntegerTable();
         row.recordType.setValue(
-        		IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getLiteralValue());
+        		IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getCode());
         
         String sqlFragment = row.recordType.toSQLString(database);
         assertThat(sqlFragment, is("3"));
@@ -80,8 +80,8 @@ public class DBEnumTest extends AbstractTest {
     public void filterRecordUsingLiteral() {
         IntegerTable rowExemplar = new IntegerTable();
         rowExemplar.recordType.permittedValues(
-        		RecordType.MOVEMENT_REQUEST_RECORD.getLiteralValue(),
-        		RecordType.SHIPPING_MANIFEST_RECORD.getLiteralValue());
+        		RecordType.MOVEMENT_REQUEST_RECORD.getCode(),
+        		RecordType.SHIPPING_MANIFEST_RECORD.getCode());
         
         String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
         System.out.println(sqlFragment);
@@ -171,7 +171,7 @@ public class DBEnumTest extends AbstractTest {
     	row.recordType.setValue(IntegerTable.RecordType.SHIPPING_MANIFEST_RECORD);
 
     	// do test
-    	long code = IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.literalValue;
+    	long code = IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.code;
     	row.recordType.setValue(code);
     	assertThat(row.recordType.enumValue(), is(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
     }
@@ -241,17 +241,17 @@ public class DBEnumTest extends AbstractTest {
             MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
             MOVEMENT_CANCELLATION_REQUEST(3, "Movement Cancellation Request");
             
-            private int literalValue;
+            private int code;
             private String displayName;
 
             private RecordType(int code, String displayName) {
-                this.literalValue = code;
+                this.code = code;
                 this.displayName = displayName;
             }
 
             @Override
-            public Integer getLiteralValue() {
-                return literalValue;
+            public Integer getCode() {
+                return code;
             }
 
             public String getDisplayName() {
@@ -267,7 +267,7 @@ public class DBEnumTest extends AbstractTest {
                     return null;
                 }
                 for (RecordType recordType : values()) {
-                    if (recordType.getLiteralValue() == code) {
+                    if (recordType.getCode() == code) {
                         return recordType;
                     }
                 }
@@ -374,7 +374,7 @@ public class DBEnumTest extends AbstractTest {
             }
 
             @Override
-            public String getLiteralValue() {
+            public String getCode() {
                 return literalValue;
             }
 
@@ -391,7 +391,7 @@ public class DBEnumTest extends AbstractTest {
                     return null;
                 }
                 for (StringEnumType recordType : values()) {
-                    if (recordType.getLiteralValue().equals(code)) {
+                    if (recordType.getCode().equals(code)) {
                         return recordType;
                     }
                 }

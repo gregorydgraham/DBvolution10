@@ -17,7 +17,7 @@ import nz.co.gregs.dbvolution.internal.JavaPropertyFinder.Visibility;
 
 import org.junit.Test;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unused"})
 public class EnumTypeHandlerTest {
 	private JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
 			Visibility.PRIVATE, Visibility.PUBLIC, null, (PropertyType[])null);
@@ -121,7 +121,7 @@ public class EnumTypeHandlerTest {
 		ZERO, ONE, TWO;
 
 		@Override
-		public Integer getLiteralValue() {
+		public Integer getCode() {
 			return ordinal();
 		}
 	}
@@ -130,7 +130,7 @@ public class EnumTypeHandlerTest {
 		ZERO, ONE, TWO;
 
 		@Override
-		public String getLiteralValue() {
+		public String getCode() {
 			return name().toLowerCase();
 		}
 	}

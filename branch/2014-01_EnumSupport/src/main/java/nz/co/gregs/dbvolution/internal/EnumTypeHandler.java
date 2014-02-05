@@ -96,7 +96,7 @@ class EnumTypeHandler {
 		if (enumValues != null) {
 			for (Enum<?> enumValue: enumValues) {
 				if (enumValue instanceof DBEnumValue) {
-					Object code = ((DBEnumValue<?>) enumValue).getLiteralValue();
+					Object code = ((DBEnumValue<?>) enumValue).getCode();
 					if (code != null) {
 						return code.getClass();
 					}

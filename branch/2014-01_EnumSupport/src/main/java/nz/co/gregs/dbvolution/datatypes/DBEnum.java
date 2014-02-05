@@ -41,30 +41,10 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
     	super.setValue(convertToLiteral(enumValue));
     }
     
-	protected Object[] convertToLiteral(E... enumValues) {
-    	Object[] result = new Object[enumValues.length];
-    	for (int i=0; i < enumValues.length; i++) {
-    		E enumValue = enumValues[i];
-    		result[i] = convertToLiteral(enumValue);
-    	}
-    	return result;
-    }
-    
-    protected Object convertToLiteral(E enumValue) {
-    	if (enumValue == null || enumValue.getLiteralValue() == null) {
-    		return null;
-    	}
-    	else {
-	    	Object literalValue = enumValue.getLiteralValue();
-	    	validateLiteralValue(enumValue);
-	    	return literalValue;
-    	}
-    }
-
     /**
      * Validates whether the given type is acceptable as a literal value.
      * Enum values with null literal values are tolerated and should not be rejected
-     * by this method. See documentation for {@link DBEnumValue#getLiteralValue()}.
+     * by this method. See documentation for {@link DBEnumValue#getCode()}.
      * @param enumValue non-null enum value, for which the literal value may be null
      * @throws IncompatibleClassChangeError on incompatible types
      */
@@ -90,7 +70,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 		E[] enumValues = getEnumType().getEnumConstants();
 		for (E enumValue: enumValues) {
 			if (enumValue instanceof DBEnumValue) {
-				Object enumLiteralValue = ((DBEnumValue<?>) enumValue).getLiteralValue();
+				Object enumLiteralValue = ((DBEnumValue<?>) enumValue).getCode();
 				if (areLiteralValuesEqual(literalValue, enumLiteralValue)) {
 					return enumValue;
 				}
@@ -235,34 +215,54 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
     *
     * @param permitted
     */
-   public void permittedValues(E... permitted) {
-       super.permittedValues(convertToLiteral(permitted));
-   }
+    public void permittedValues(E... permitted) {
+    	super.permittedValues(convertToLiteral(permitted));
+    }
 
-   /**
-    *
-    * excludes the object, Set, List, Array, or vararg of objects
-    *
-    *
-    * @param excluded
-    */
-   public void excludedValues(E... excluded) {
-	   super.excludedValues(convertToLiteral(excluded));
-   }
+	/**
+	 *
+	 * excludes the object, Set, List, Array, or vararg of objects
+	 *
+	 *
+	 * @param excluded
+	 */
+	public void excludedValues(E... excluded) {
+		super.excludedValues(convertToLiteral(excluded));
+	}
 
-   public void permittedRange(E lowerBound, E upperBound) {
-       super.permittedRange(convertToLiteral(lowerBound), convertToLiteral(upperBound));
-   }
+	public void permittedRange(E lowerBound, E upperBound) {
+		super.permittedRange(convertToLiteral(lowerBound), convertToLiteral(upperBound));
+	}
 
-   public void permittedRangeInclusive(E lowerBound, E upperBound) {
-       super.permittedRangeInclusive(convertToLiteral(lowerBound), convertToLiteral(upperBound));
-   }
+	public void permittedRangeInclusive(E lowerBound, E upperBound) {
+		super.permittedRangeInclusive(convertToLiteral(lowerBound), convertToLiteral(upperBound));
+	}
 
-   public void excludedRange(E lowerBound, E upperBound) {
-       super.excludedRange(convertToLiteral(lowerBound), convertToLiteral(upperBound));
-   }
+	public void excludedRange(E lowerBound, E upperBound) {
+		super.excludedRange(convertToLiteral(lowerBound), convertToLiteral(upperBound));
+	}
 
-   public void excludedRangeInclusive(E lowerBound, E upperBound) {
-       super.excludedRangeInclusive(convertToLiteral(lowerBound), convertToLiteral(upperBound));
-   }
+	public void excludedRangeInclusive(E lowerBound, E upperBound) {
+		super.excludedRangeInclusive(convertToLiteral(lowerBound), convertToLiteral(upperBound));
+	}
+
+	protected Object[] convertToLiteral(E... enumValues) {
+    	Object[] result = new Object[enumValues.length];
+    	for (int i=0; i < enumValues.length; i++) {
+    		E enumValue = enumValues[i];
+    		result[i] = convertToLiteral(enumValue);
+    	}
+    	return result;
+    }
+    
+    protected Object convertToLiteral(E enumValue) {
+    	if (enumValue == null || enumValue.getCode() == null) {
+    		return null;
+    	}
+    	else {
+	    	Object literalValue = enumValue.getCode();
+	    	validateLiteralValue(enumValue);
+	    	return literalValue;
+    	}
+    }
 }

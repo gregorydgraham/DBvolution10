@@ -18,7 +18,12 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Integer>> extends DBEnum<E> {
+/**
+ * Like {@link DBInteger} except that the database value can be easily
+ * interpreted as an enumeration with {@code Integer} or {@code Long} codes.
+ * @param <E> type of enumeration class
+ */
+public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> extends DBEnum<E> {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,7 +40,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Integer>> extends DBE
 
     @Override
     protected void validateLiteralValue(E enumValue) {
-    	Object literalValue = enumValue.getLiteralValue();
+    	Object literalValue = enumValue.getCode();
     	if (literalValue != null) {
     		if (!(literalValue instanceof Integer || literalValue instanceof Long)) {
 	    		String enumMethodRef = enumValue.getClass().getName()+"."+enumValue.name()+".getLiteralValue()";

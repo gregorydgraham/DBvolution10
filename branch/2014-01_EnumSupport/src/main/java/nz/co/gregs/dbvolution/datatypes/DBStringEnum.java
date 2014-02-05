@@ -15,6 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+/**
+ * Like {@link DBInteger} except that the database value can be easily
+ * interpreted as an enumeration with integer codes.
+ * @param <E> type of enumeration class
+ */
 public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnum<E> {
 
     private static final long serialVersionUID = 1L;
@@ -32,7 +37,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
     
     @Override
     protected void validateLiteralValue(E enumValue) {
-    	Object literalValue = enumValue.getLiteralValue();
+    	Object literalValue = enumValue.getCode();
     	if (literalValue != null) {
     		if (!(literalValue instanceof String)) {
 	    		String enumMethodRef = enumValue.getClass().getName()+"."+enumValue.name()+".getLiteralValue()";
