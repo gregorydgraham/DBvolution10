@@ -14,9 +14,9 @@ import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.datatypes.SimpleValueQueryableDatatypeSyncer;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
 import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.ParameterBounds;
 import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
 
@@ -78,7 +78,7 @@ class PropertyTypeHandler {
         // validation: must use type adaptor if java property not a QueryableDataType
         if (!QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
 	        if (annotation == null) {
-                throw new DBPebkacException(javaProperty.type().getName() + " is not a supported type on "+javaProperty + ". "
+                throw new InvalidDeclaredTypeException(javaProperty.type().getName() + " is not a supported type on "+javaProperty + ". "
                         + "Use one of the standard DB types, or use the @" + DBAdaptType.class.getSimpleName() + " annotation "
                         + "to adapt from a non-standard type.");
             }
@@ -87,7 +87,7 @@ class PropertyTypeHandler {
         // validation: type adaptor must implement TypeAdaptor interface if used
         if (typeAdaptorClass != null) {
             if (!DBTypeAdaptor.class.isAssignableFrom(typeAdaptorClass)) {
-                throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName() + " must implement "
+                throw new InvalidDeclaredTypeException("Type adaptor " + typeAdaptorClass.getName() + " must implement "
                         + DBTypeAdaptor.class.getSimpleName() + ", on " + javaProperty);
             }
         }
@@ -95,11 +95,11 @@ class PropertyTypeHandler {
         // validation: type adaptor must not be an interface or abstract
         if (typeAdaptorClass != null) {
             if (typeAdaptorClass.isInterface()) {
-                throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName()
+                throw new InvalidDeclaredTypeException("Type adaptor " + typeAdaptorClass.getName()
                         + " must not be an interface, on " + javaProperty);
             }
             if (Modifier.isAbstract(typeAdaptorClass.getModifiers())) {
-                throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName()
+                throw new InvalidDeclaredTypeException("Type adaptor " + typeAdaptorClass.getName()
                         + " must not be abstract, on " + javaProperty);
             }
         }
@@ -122,12 +122,12 @@ class PropertyTypeHandler {
             }
             if (parameterBounds != null && parameterBounds.length == 2) {
                 if (parameterBounds[0].isUpperMulti()) {
-                    throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName() + " must not be"+
+                    throw new InvalidDeclaredTypeException("Type adaptor " + typeAdaptorClass.getName() + " must not be"+
                             " declared with multiple super types for type variables"+
                             ", on " + javaProperty);
                 }
                 if (parameterBounds[1].isUpperMulti()) {
-                    throw new DBPebkacException("Type adaptor " + typeAdaptorClass.getName() + " must not be"+
+                    throw new InvalidDeclaredTypeException("Type adaptor " + typeAdaptorClass.getName() + " must not be"+
                             " declared with multiple super types for type variables"+
                             ", on " + javaProperty);
                 }
@@ -149,7 +149,7 @@ class PropertyTypeHandler {
         // validation: Type adaptor's external type must not be a QDT.
         if (typeAdaptorExternalType != null) {
         	if (QueryableDatatype.class.isAssignableFrom(typeAdaptorExternalType)) {
-        		throw new DBPebkacException(
+        		throw new InvalidDeclaredTypeException(
         				"Type adaptor's external type must not be a "+QueryableDatatype.class.getSimpleName()+
         				", on " + javaProperty);
         	}
@@ -158,7 +158,7 @@ class PropertyTypeHandler {
         // validation: Type adaptor's internal type must not be a QDT.
         if (typeAdaptorInternalType != null) {
         	if (QueryableDatatype.class.isAssignableFrom(typeAdaptorInternalType)) {
-        		throw new DBPebkacException(
+        		throw new InvalidDeclaredTypeException(
         				"Type adaptor's internal type must not be a "+QueryableDatatype.class.getSimpleName()+
         				", on " + javaProperty);
         	}
@@ -168,12 +168,12 @@ class PropertyTypeHandler {
         if (annotation != null && explicitTypeOrNullOf(annotation) != null) {
         	Class<?> explicitQDTType = explicitTypeOrNullOf(annotation);
             if (!QueryableDatatype.class.isAssignableFrom(explicitQDTType)) {
-                throw new DBPebkacException("@DB" + DBAdaptType.class.getSimpleName() + "(type) on "+
+                throw new InvalidDeclaredTypeException("@DB" + DBAdaptType.class.getSimpleName() + "(type) on "+
                         javaProperty + " is not a supported type. "+
                         "Use one of the standard DB types.");
             }
             if (Modifier.isAbstract(explicitQDTType.getModifiers()) || Modifier.isInterface(explicitQDTType.getModifiers())) {
-                throw new DBPebkacException("@DB" + DBAdaptType.class.getSimpleName() +
+                throw new InvalidDeclaredTypeException("@DB" + DBAdaptType.class.getSimpleName() +
                 		"(type) must be a concrete type"+
                 		", on "+javaProperty);
             }
@@ -187,7 +187,7 @@ class PropertyTypeHandler {
         if (typeAdaptorExternalType != null && !QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
         	if (!javaProperty.type().equals(typeAdaptorExternalType) &&
         			SafeOneWaySimpleTypeAdaptor.getSimpleCastFor(javaProperty.type(), typeAdaptorExternalType) == null) {
-    			throw new DBPebkacException("Type adaptor's external "+typeAdaptorExternalType.getSimpleName()+
+    			throw new InvalidDeclaredTypeException("Type adaptor's external "+typeAdaptorExternalType.getSimpleName()+
     					" type is not compatible with the property type, on " + javaProperty);
         	}
         }
@@ -195,11 +195,11 @@ class PropertyTypeHandler {
         	Class<? extends QueryableDatatype> explicitQDTType = (Class<? extends QueryableDatatype>)javaProperty.type();
     		Class<?> inferredQDTType = inferredQDTTypeForSimpleType(typeAdaptorExternalType);
     		if (inferredQDTType == null) {
-    			throw new DBPebkacException("Type adaptor's external "+typeAdaptorExternalType.getSimpleName()+
+    			throw new InvalidDeclaredTypeException("Type adaptor's external "+typeAdaptorExternalType.getSimpleName()+
     					" type is not a supported simple type, on " + javaProperty);
     		}
     		else if (!isSimpleTypeSupportedByQDT(typeAdaptorExternalType, explicitQDTType)) {
-    			throw new DBPebkacException("Type adaptor's external "+typeAdaptorExternalType.getSimpleName()+
+    			throw new InvalidDeclaredTypeException("Type adaptor's external "+typeAdaptorExternalType.getSimpleName()+
     					" type is not compatible with a "+explicitQDTType.getSimpleName()+
     					" property, on " + javaProperty);
     		}
@@ -214,7 +214,7 @@ class PropertyTypeHandler {
         if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) == null) {
     		Class<?> inferredQDTType = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
     		if (inferredQDTType == null) {
-    			throw new DBPebkacException("Type adaptor's internal "+typeAdaptorInternalType.getSimpleName()+
+    			throw new InvalidDeclaredTypeException("Type adaptor's internal "+typeAdaptorInternalType.getSimpleName()+
     					" type is not a supported simple type, on " + javaProperty);
     		}
         }
@@ -222,11 +222,11 @@ class PropertyTypeHandler {
         	Class<? extends QueryableDatatype> explicitQDTType = explicitTypeOrNullOf(annotation);
     		Class<?> inferredQDTType = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
     		if (inferredQDTType == null) {
-    			throw new DBPebkacException("Type adaptor's internal "+typeAdaptorInternalType.getSimpleName()+
+    			throw new InvalidDeclaredTypeException("Type adaptor's internal "+typeAdaptorInternalType.getSimpleName()+
     					" type is not a supported simple type, on " + javaProperty);
     		}
     		else if (!isSimpleTypeSupportedByQDT(typeAdaptorInternalType, explicitQDTType)) {
-    			throw new DBPebkacException("Type adaptor's internal "+typeAdaptorInternalType.getSimpleName()+
+    			throw new InvalidDeclaredTypeException("Type adaptor's internal "+typeAdaptorInternalType.getSimpleName()+
     					" type is not compatible with "+explicitQDTType.getSimpleName()+
     					", on " + javaProperty);
     		}
@@ -585,7 +585,7 @@ class PropertyTypeHandler {
      * @param annotation
      * @return
      * @throws DBRuntimeException on unexpected internal errors, and
-     * @throws DBPebkacException on errors with the end-user supplied code
+     * @throws InvalidDeclaredTypeException on errors with the end-user supplied code
      */
     private static DBTypeAdaptor<Object, Object> newTypeAdaptorInstanceGiven(JavaProperty property, DBAdaptType annotation) {
         Class<? extends DBTypeAdaptor<?, ?>> adaptorClass = annotation.value();
@@ -596,22 +596,22 @@ class PropertyTypeHandler {
         }
 
         if (adaptorClass.isInterface()) {
-            throw new DBPebkacException("TypeAdaptor cannot be an interface (" + adaptorClass.getSimpleName()
+            throw new InvalidDeclaredTypeException("TypeAdaptor cannot be an interface (" + adaptorClass.getSimpleName()
                     + "), on property " + property.qualifiedName());
         }
         if (Modifier.isAbstract(adaptorClass.getModifiers())) {
-            throw new DBPebkacException("TypeAdaptor cannot be an abstract class (" + adaptorClass.getSimpleName()
+            throw new InvalidDeclaredTypeException("TypeAdaptor cannot be an abstract class (" + adaptorClass.getSimpleName()
                     + "), on property " + property.qualifiedName());
         }
 
         try {
             adaptorClass.newInstance();
         } catch (InstantiationException e) {
-            throw new DBPebkacException("Type adaptor " + adaptorClass.getName()
+            throw new InvalidDeclaredTypeException("Type adaptor " + adaptorClass.getName()
                     + " could not be constructed, on property "
                     + property.qualifiedName() + ": " + e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            throw new DBPebkacException("Type adaptor " + adaptorClass.getName()
+            throw new InvalidDeclaredTypeException("Type adaptor " + adaptorClass.getName()
                     + " could not be constructed, on property "
                     + property.qualifiedName() + ": " + e.getMessage(), e);
         }
@@ -621,7 +621,7 @@ class PropertyTypeHandler {
         try {
             constructor = adaptorClass.getConstructor();
         } catch (NoSuchMethodException e) {
-            throw new DBPebkacException("Type adaptor " + adaptorClass.getName()
+            throw new InvalidDeclaredTypeException("Type adaptor " + adaptorClass.getName()
                     + " has no default constructor, on property "
                     + property.qualifiedName(), e);
         } catch (SecurityException e) {
@@ -636,7 +636,7 @@ class PropertyTypeHandler {
         try {
             instance = constructor.newInstance();
         } catch (InstantiationException e) {
-            throw new DBPebkacException(adaptorClass.getName() + " cannot be constructed (it is probably abstract), referenced by property "
+            throw new InvalidDeclaredTypeException(adaptorClass.getName() + " cannot be constructed (it is probably abstract), referenced by property "
                     + property.qualifiedName(), e);
         } catch (IllegalAccessException e) {
             // caused by a Java security manager or an attempt to access a non-visible field

@@ -18,7 +18,7 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
+import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public class PropertyTypeHandlerTest {
 			public DBString field = new DBString();
 		}
 		
-		thrown.expect(DBPebkacException.class);
+		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("internal Long type is not compatible");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
@@ -55,7 +55,7 @@ public class PropertyTypeHandlerTest {
 			public DBString field = new DBString();
 		}
 		
-		thrown.expect(DBPebkacException.class);
+		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("external Long type is not compatible");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
@@ -68,7 +68,7 @@ public class PropertyTypeHandlerTest {
 			public DBString field = new DBString();
 		}
 		
-		thrown.expect(DBPebkacException.class);
+		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("external type must not");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
@@ -81,12 +81,12 @@ public class PropertyTypeHandlerTest {
 			public DBString field = new DBString();
 		}
 		
-		thrown.expect(DBPebkacException.class);
+		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("internal type must not");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
 	
-	@Test(expected=DBPebkacException.class)
+	@Test(expected=InvalidDeclaredTypeException.class)
 	public void errorsOnConstructionGivenInterfaceTypeAdaptor() {
 		class MyClass extends DBRow {
 			@DBColumn
@@ -105,7 +105,7 @@ public class PropertyTypeHandlerTest {
 			public Integer field;
 		}
 		
-		thrown.expect(DBPebkacException.class);
+		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("must be");
 		thrown.expectMessage("concrete");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
