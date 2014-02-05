@@ -2,6 +2,7 @@ package nz.co.gregs.dbvolution.internal.properties;
 
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
@@ -25,9 +26,12 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * <li> databaseType/databaseValue - the type and value of the database column itself (this class doesn't deal with these) 
  * </ul>
  * 
- * <p> Note: instances of this class cheap to create and do not need to be cached.
+ * <p> Note: instances of this class are cheap to create and do not need to be cached.
  * 
  * <p> This class is <i>thread-safe</i>.
+ * 
+ * <p> This class is not serializable. References to it within serializable classes
+ * should be marked as {@code transient}.
  */
 public class PropertyWrapper {
 	private final DBRowInstanceWrapper dbRowInstanceWrapper;
@@ -296,6 +300,23 @@ public class PropertyWrapper {
 		return propertyDefinition.referencedPropertyDefinitionIdentity();
 	}
 	
+	/**
+	 * Gets the enum type, or null if not appropriate
+	 * @return the enum type, which may also implement {@link DBEnumValue}
+	 */
+	public Class<? extends Enum<?>> getEnumType() {
+		return propertyDefinition.getEnumType();
+	}
+	
+	/**
+	 * Gets the type of the code supplied by enum values.
+	 * This is derived from the {@link DBEnumValue} implementation in the enum.
+	 * @return null if not known or not appropriate
+	 */
+	public Class<?> getEnumCodeType() {
+		return propertyDefinition.getEnumCodeType();
+	}
+
 	/**
 	 * Indicates whether the value of the property can be retrieved.
 	 * Bean properties which are missing a 'getter' can not be read,
