@@ -18,6 +18,7 @@ import nz.co.gregs.dbvolution.actions.DBUpdate;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
@@ -570,7 +571,11 @@ public class DBTable<E extends DBRow> {
         }
         List<Long> primaryKeys = new ArrayList<Long>();
         for (E e : listOfRows) {
-            primaryKeys.add(e.getPrimaryKey().longValue());
+            final QueryableDatatype primaryKeyQDT = e.getPrimaryKey();
+            if (primaryKeyQDT instanceof DBNumber){
+                final DBNumber pkAsDBNumber = (DBNumber)primaryKeyQDT;
+                primaryKeys.add(pkAsDBNumber.longValue());
+            }
         }
         return primaryKeys;
     }
@@ -596,12 +601,12 @@ public class DBTable<E extends DBRow> {
      * @throws java.sql.SQLException
      */
     public void compare(DBTable<E> secondTable) throws SQLException {
-        HashMap<Long, E> secondMap = new HashMap<Long, E>();
+        HashMap<String, E> secondMap = new HashMap<String, E>();
         for (E row : secondTable.toList()) {
-            secondMap.put(row.getPrimaryKey().longValue(), row);
+            secondMap.put(row.getPrimaryKey().toString(), row);
         }
         for (E row : this.toList()) {
-            E foundRow = secondMap.get(row.getPrimaryKey().longValue());
+            E foundRow = secondMap.get(row.getPrimaryKey().toString());
             if (foundRow == null) {
                 System.out.println("NOT FOUND: " + row);
             } else if (!row.toString().equals(foundRow.toString())) {

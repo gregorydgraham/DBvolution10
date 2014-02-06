@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.generic;
+package nz.co.gregs.dbvolution.datatypes;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -24,14 +24,9 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.generic.DBEnumTest.IntegerTable.RecordType;
-import nz.co.gregs.dbvolution.generic.DBEnumTest.StringTable.StringEnumType;
+import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerTable.RecordType;
+import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringTable.StringEnumType;
 
 import org.junit.Ignore;
 import org.junit.Test;
