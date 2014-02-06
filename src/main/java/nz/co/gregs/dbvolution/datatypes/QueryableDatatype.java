@@ -183,6 +183,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         return (literalValue == null ? "" : literalValue.toString());
     }
 
+    /**
+     * This method undermines the type safety of the QDT objects.
+     * 
+     * <p>However it has been implemented within DBNumber so will still work with your existing objects.
+     *
+     * @return a Long of the value of this QDT.
+     * @deprecated
+     */
     @Deprecated
     public Long longValue() {
         if (isDBNull || literalValue == null) {
@@ -197,6 +205,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     }
 
+    /**
+     * This method undermines the type safety of the QDT objects.
+     * 
+     * <p>However it has been implemented within DBNumber so will still work with your existing objects.
+     *
+     * @return a Integer of the value of this QDT.
+     * @deprecated
+     */
     @Deprecated
     public Integer intValue() {
         if (isDBNull || literalValue == null) {
@@ -211,6 +227,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     }
 
+    /**
+     * This method undermines the type safety of the QDT objects.
+     * 
+     * <p>However it has been implemented within DBNumber so will still work with your existing objects.
+     *
+     * @return a Double of the value of this QDT.
+     * @deprecated
+     */
     @Deprecated
     public Double doubleValue() {
         if (isDBNull || literalValue == null) {

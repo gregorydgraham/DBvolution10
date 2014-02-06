@@ -131,24 +131,25 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
     }
 
     /**
+     * The current {@link #getValue()  literal value} of this DBNumber as a Number
      *
-     * @return the number as a the original number class
+     * @return the number as the original number class
      */
     public Number numberValue() {
         if (literalValue == null) {
             return null;
         } else if (literalValue instanceof Number) {
-            return ((Number) literalValue).doubleValue();
+            return (Number) literalValue;
         } else {
             return Double.parseDouble(literalValue.toString());
         }
     }
 
     /**
+     * The current {@link #getValue()  literal value} of this DBNumber as a Double
      *
      * @return the number as a Double
      */
-    @Override
     public Double doubleValue() {
         if (literalValue == null) {
             return null;
@@ -160,10 +161,10 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
     }
 
     /**
+     * The current {@link #getValue()  literal value} of this DBNumber as a Long
      *
      * @return the number as a Long
      */
-    @Override
     public Long longValue() {
         if (literalValue == null) {
             return null;
@@ -177,10 +178,10 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
     }
 
     /**
+     * The current {@link #getValue()  literal value} of this DBNumber as an Integer
      *
-     * @return the number as an iInteger
+     * @return the number as an Integer
      */
-    @Override
     public Integer intValue() {
         if (literalValue == null) {
             return null;
