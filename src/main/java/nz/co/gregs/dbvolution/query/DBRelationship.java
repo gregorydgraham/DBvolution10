@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.query;
 
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 

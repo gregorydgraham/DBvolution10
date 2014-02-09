@@ -31,7 +31,7 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
      *
      * @param tableName
      * @param columnName
-     * @return
+     * @return TRUE if the column is a foreign key column, FALSE otherwise
      */
     @Override
     public boolean isForeignKeyColumn(String tableName, String columnName) {
@@ -42,7 +42,7 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
      *
      * @param tableName
      * @param columnName
-     * @return
+     * @return The name of the referenced column
      */
     @Override
     public String getReferencedColumn(String tableName, String columnName) {
@@ -61,7 +61,7 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
      *
      * @param tableName
      * @param columnName
-     * @return
+     * @return the name of the referenced table
      */
     @Override
     public String getReferencedTable(String tableName, String columnName) {

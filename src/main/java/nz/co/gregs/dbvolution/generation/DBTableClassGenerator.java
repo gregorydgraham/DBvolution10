@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -230,7 +231,15 @@ public class DBTableClassGenerator {
                 //schema = connection.getSchema();
             } catch (java.lang.AbstractMethodError exp) {
                 // NOT USING Java 1.7+ apparently
-            } catch (Exception ex) {
+            } catch (IllegalAccessException ex) {
+                // NOT USING Java 1.7+ apparently
+            } catch (IllegalArgumentException ex) {
+                // NOT USING Java 1.7+ apparently
+            } catch (NoSuchMethodException ex) {
+                // NOT USING Java 1.7+ apparently
+            } catch (SecurityException ex) {
+                // NOT USING Java 1.7+ apparently
+            } catch (InvocationTargetException ex) {
                 // NOT USING Java 1.7+ apparently
             }
 

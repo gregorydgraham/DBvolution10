@@ -26,6 +26,7 @@ import java.util.Set;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
@@ -59,7 +60,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
-	transient protected PropertyWrapperDefinition propertyWrapper; // no guarantees whether this gets set
+    transient protected PropertyWrapperDefinition propertyWrapper; // no guarantees whether this gets set
 
     /**
      *
@@ -177,6 +178,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     /**
      * Returns the raw value as a String
      *
+     * <p>
+     * A database NULL is treated as an empty string, use {@link #isNull() } to
+     * handle NULLs separately.
+     *
      * @return the literal value as a String
      */
     public String stringValue() {
@@ -184,15 +189,20 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     }
 
     /**
-     * This method undermines the type safety of the QDT objects.
-     * 
-     * <p>However it has been implemented within DBNumber so will still work with your existing objects.
+     * Use {@link #getValue() } instead
+     *
+     * <p>
+     * This method undermines the type safety of the QDT objects
+     *
+     * <p>
+     * However it has been implemented within DBNumber so will still work with
+     * your existing objects.
      *
      * @return a Long of the value of this QDT.
      * @deprecated
      */
     @Deprecated
-    public Long longValue() {
+    public Long longValue() throws NumberFormatException {
         if (isDBNull || literalValue == null) {
             return null;
         } else if (literalValue instanceof Long) {
@@ -206,15 +216,20 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     }
 
     /**
+     * Use {@link #getValue() } instead
+     *
+     * <p>
      * This method undermines the type safety of the QDT objects.
-     * 
-     * <p>However it has been implemented within DBNumber so will still work with your existing objects.
+     *
+     * <p>
+     * However it has been implemented within DBNumber so will still work with
+     * your existing objects.
      *
      * @return a Integer of the value of this QDT.
      * @deprecated
      */
     @Deprecated
-    public Integer intValue() {
+    public Integer intValue() throws NumberFormatException {
         if (isDBNull || literalValue == null) {
             return null;
         } else if (literalValue instanceof Integer) {
@@ -228,9 +243,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     }
 
     /**
+     * Use {@link #getValue() } instead
+     *
+     * <p>
      * This method undermines the type safety of the QDT objects.
-     * 
-     * <p>However it has been implemented within DBNumber so will still work with your existing objects.
+     *
+     * <p>
+     * However it has been implemented within DBNumber so will still work with
+     * your existing objects.
      *
      * @return a Double of the value of this QDT.
      * @deprecated
@@ -567,11 +587,17 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     public abstract String getSQLDatatype();
 
     /**
+     * Formats the literal value for use within an SQL statement.
+     *
+     * <p>
+     * This is used internally to transform the Java object in to SQL format.
+     * You won't need to use it.
      *
      * @param db
      * @return the literal value as it would appear in an SQL statement i.e.
      * {yada} => 'yada' {} => NULL
      */
+    @Override
     public final String toSQLString(DBDatabase db) {
         DBDefinition def = db.getDefinition();
         if (this.isDBNull || literalValue == null) {
@@ -678,10 +704,34 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         }
     }
 
+    /**
+     * Indicates whether object is NULL within the database
+     *
+     * <p>
+     * Databases and Java both use the term NULL but for slightly different
+     * meanings.
+     *
+     * <p>
+     * This method indicates whether the field represented by this object is
+     * NULL in the database sense.
+     *
+     * @return TRUE if this object represents a NULL database value, otherwise
+     * FALSE
+     */
     public boolean isNull() {
         return isDBNull || literalValue == null;
     }
 
+    /**
+     * Returns the previous value of this field as an SQL formatted String.
+     *
+     * <p>
+     * Used by {@link DBActionList} to generate
+     * {@link DBActionList#getRevertActionList() revert action lists}.
+     *
+     * @param db
+     * @return the previous value of this field as an SQL formatted String
+     */
     public String getPreviousSQLValue(DBDatabase db) {
         return (previousValueAsQDT == null) ? null : previousValueAsQDT.toSQLString(db);
     }
@@ -756,22 +806,27 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     protected void setDefined(boolean defined) {
         this.undefined = !defined;
     }
-    
+
     /**
-     * Sets the internal reference the property wrapper of the field or bean property
-     * that references this QueryableDatatype.
-     * Supports QDT types that need extra meta-information, such as the {@code DBEnum} type.
-     * 
-     * <p> Called by the property wrapper itself when it gets or sets the field,
-     * so this QDT's reference to its owning field is populated 99% of the time.
-     * 
-     * <p> Can't be called directly, must be called via {@link InternalQueryableDatatypeProxy}.
-     * 
-     * <p> <i>Thread-safety: relatively safe, as PropertyWrappers are thread-safe
+     * Sets the internal reference the property wrapper of the field or bean
+     * property that references this QueryableDatatype. Supports QDT types that
+     * need extra meta-information, such as the {@code DBEnum} type.
+     *
+     * <p>
+     * Called by the property wrapper itself when it gets or sets the field, so
+     * this QDT's reference to its owning field is populated 99% of the time.
+     *
+     * <p>
+     * Can't be called directly, must be called via
+     * {@link InternalQueryableDatatypeProxy}.
+     *
+     * <p>
+     * <i>Thread-safety: relatively safe, as PropertyWrappers are thread-safe
      * and interchangeable.
+     *
      * @param propertyWrapper
      */
     void setPropertyWrapper(PropertyWrapperDefinition propertyWrapper) {
-    	this.propertyWrapper = propertyWrapper;
+        this.propertyWrapper = propertyWrapper;
     }
 }

@@ -17,11 +17,31 @@
 package nz.co.gregs.dbvolution.generation;
 
 /**
+ * A Helper class to capture naming conventions of databases.
+ *
+ * <p>
+ * While databases have a mechanism to identify Primary Keys, some don't use
+ * it.
+ *
+ * <p>
+ * However there is often a naming convention that makes it obvious that a
+ * column is a PK.
+ *
+ * <p>
+ * Extend the methods of this class to help DBvolution automatically recognize
+ * the PKs within your schema.
  *
  * @author gregorygraham
  */
 public class PrimaryKeyRecognisor {
 
+    /**
+     * Default implementation, returns FALSE
+     *
+     * @param tableName
+     * @param columnName
+     * @return TRUE if the column is a PRimary Key, otherwise FALSE.
+     */
     public boolean isPrimaryKeyColumn(String tableName, String columnName) {
         return false;
     }

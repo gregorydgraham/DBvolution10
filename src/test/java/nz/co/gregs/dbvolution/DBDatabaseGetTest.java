@@ -23,9 +23,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import net.sourceforge.tedhi.DateRange;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBQueryRow;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -61,13 +58,13 @@ public class DBDatabaseGetTest extends AbstractTest {
     public void testGetFirstAndPrimaryKey() throws SQLException {
         List<Marque> singleMarque = new ArrayList<Marque>();
         DBRow row = marqueRows.get(0);
-        Long primaryKey;
+        Object primaryKey;
         if (row != null) {
-            primaryKey = ((DBNumber)row.getPrimaryKey()).longValue();
-            Marque marque = new Marque();
-            marque.uidMarque.permittedValues(primaryKey);
-            singleMarque = database.get(marque);
-        }
+            primaryKey = (row.getPrimaryKey()).getValue();
+                Marque marque = new Marque();
+                marque.uidMarque.permittedValues(primaryKey);
+                singleMarque = database.get(marque);
+            }
         Assert.assertTrue("Incorrect number of marques retreived", singleMarque.size() == 1);
     }
 
@@ -123,7 +120,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         Assert.assertThat(gotMarques.size(), is(2));
     }
 
-    @Test       
+    @Test
     @SuppressWarnings("unchecked")
     public void testIsInWithList() throws SQLException {
         Marque hummerQuery = new Marque();
@@ -147,7 +144,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         permittedMarques.add("HUMMER");
         hummerQuery.getName().excludedValues(permittedMarques);
         List<Marque> gotMarques = database.get(hummerQuery);
-        Assert.assertThat(gotMarques.size(), is(allMarques.size()-2));
+        Assert.assertThat(gotMarques.size(), is(allMarques.size() - 2));
     }
 
     @Test
