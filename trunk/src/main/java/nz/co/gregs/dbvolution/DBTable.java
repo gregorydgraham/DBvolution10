@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
@@ -49,7 +50,7 @@ public class DBTable<E extends DBRow> {
      * @param <E>
      * @param database
      * @param example
-     * @return
+     * @return an instance of the supplied example
      */
     public static <E extends DBRow> DBTable<E> getInstance(DBDatabase database, E example) {
         DBTable<E> dbTable = new DBTable<E>(database, example);
@@ -105,9 +106,9 @@ public class DBTable<E extends DBRow> {
 
     /**
      *
-     * Returns the
+     * Returns the SELECT and FROM clauses used in the SQL query.
      *
-     * @return
+     * @return the SQL string for the SELECT and FROM clauses
      */
     public String getSQLForSelect() {
         DBDefinition defn = database.getDefinition();
@@ -145,7 +146,7 @@ public class DBTable<E extends DBRow> {
      * throws AccidentalBlankQueryException if you haven't specifically allowed
      * blank queries with setBlankQueryAllowed(boolean)
      *
-     * @return
+     * @return ALL rows of the table from the database
      * @throws SQLException, AccidentalBlankQueryException
      */
     public DBTable<E> getAllRows() throws SQLException, AccidentalBlankQueryException {
@@ -294,12 +295,13 @@ public class DBTable<E extends DBRow> {
 
     /**
      * Retrieves the row (or rows in a bad database) that has the specified
-     * primary key The primary key column is identified by the
+     * primary key.
      *
-     * @DBPrimaryKey annotation in the TableRow subclass
+     * <p>The primary key column is identified by the {@code @DBPrimaryKey}
+     * annotation in the TableRow subclass. 
      *
      * @param pkValue
-     * @return
+     * @return a DBTable instance containing the row(s) for the primary key
      * @throws SQLException
      */
     public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
@@ -338,7 +340,7 @@ public class DBTable<E extends DBRow> {
      * (e.g. DBNumber, DBString, etc) can be used in this way N.B. an actual
      *
      * @param queryTemplate
-     * @return
+     * @return a DBTable instance containing the rows that match the example
      * @throws SQLException
      */
     public DBTable<E> getRowsByExample(E queryTemplate) throws SQLException, AccidentalBlankQueryException {
@@ -371,7 +373,7 @@ public class DBTable<E extends DBRow> {
      * understanding and debugging.
      *
      * @param row
-     * @return
+     * @return a String of the WHERE clause used for the specified example
      */
     public String getSQLForExample(E row) throws AccidentalBlankQueryException {
         if (!this.blankQueryAllowed && row.willCreateBlankQuery(database)) {
@@ -392,14 +394,16 @@ public class DBTable<E extends DBRow> {
     /**
      * For the particularly hard queries, just provide the actual WHERE clause
      * you want to use.
+     * 
+     * <p>Check out {@link DBExpression expressions} before using this method.
      *
-     * myExample.getLanguage.isLike("%JAVA%"); is similar to: getByRawSQL("and
+     * <p>myExample.getLanguage.isLike("%JAVA%"); is similar to: getByRawSQL("and
      * language like '%JAVA%'");
      *
-     * N.B. the starting AND is optional and avoid trailing semicolons
+     * <p>N.B. the starting AND is optional and avoid trailing semicolons
      *
      * @param sqlWhereClause
-     * @return
+     * @return a DBTable of the rows matching the WHERE clause specified
      * @throws java.sql.SQLException
      */
     public DBTable<E> getRowsByRawSQL(String sqlWhereClause) throws SQLException {
@@ -450,7 +454,7 @@ public class DBTable<E extends DBRow> {
      *
      * particularly helpful when you know there is only one row
      *
-     * @return
+     * @return the first row in this DBTable instance
      * @throws java.sql.SQLException
      */
     public E getFirstRow() throws SQLException, AccidentalBlankQueryException {
@@ -471,7 +475,7 @@ public class DBTable<E extends DBRow> {
      * Similar to getFirstRow() but throws an UnexpectedNumberOfRowsException if
      * there is more than 1 row available
      *
-     * @return
+     * @return the first row in this DBTable instance
      * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
      * @throws java.sql.SQLException
      */
@@ -513,9 +517,10 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
+     * Deletes the rows from the database permanently.
      *
      * @param oldRows
-     * @return
+     * @return a {@link DBActionList} of the delete actions.
      * @throws SQLException
      */
     public DBActionList delete(List<E> oldRows) throws SQLException {
@@ -541,10 +546,12 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
+     * 
      *
      * @param query
      * @param sqlWhereClause
-     * @return
+     * @return a String of the WHERE clause for the specified example and specified SQL clause
+     * @see #getRowsByRawSQL(java.lang.String) 
      */
     public String getWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
@@ -555,8 +562,10 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
+     * Extracts the rows from this DBTable instance into a standard List
      *
-     * @return @throws java.sql.SQLException
+     * @return a List of the rows in this DBTable instance
+     * @throws java.sql.SQLException
      */
     public List<E> toList() throws SQLException, AccidentalBlankQueryException {
         if (resultSet == null) {
@@ -572,8 +581,8 @@ public class DBTable<E extends DBRow> {
         List<Long> primaryKeys = new ArrayList<Long>();
         for (E e : listOfRows) {
             final QueryableDatatype primaryKeyQDT = e.getPrimaryKey();
-            if (primaryKeyQDT instanceof DBNumber){
-                final DBNumber pkAsDBNumber = (DBNumber)primaryKeyQDT;
+            if (primaryKeyQDT instanceof DBNumber) {
+                final DBNumber pkAsDBNumber = (DBNumber) primaryKeyQDT;
                 primaryKeys.add(pkAsDBNumber.longValue());
             }
         }

@@ -47,9 +47,10 @@ public class DBTableClassGenerator {
      *
      * Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
-     * 
-     * convenience method which calls
-     * generateClasses(jdbcURL, username, password, packageName, 1L, baseDirectory,new PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+     *
+     * convenience method which calls generateClasses(jdbcURL, username,
+     * password, packageName, 1L, baseDirectory,new PrimaryKeyRecognisor(),new
+     * ForeignKeyRecognisor());
      *
      * @param database
      * @param packageName
@@ -174,7 +175,8 @@ public class DBTableClassGenerator {
      * @param versionNumber
      * @param pkRecog
      * @param fkRecog
-     * @return
+     * @return a List of DBTableClass instances representing the tables found on
+     * the database
      * @throws SQLException
      */
     public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
@@ -182,13 +184,23 @@ public class DBTableClassGenerator {
     }
 
     /**
+     * Generate the required Java classes for all the Views on the database.
+     *
+     * <p>Connects to the database using the DBDatabase instance supplied and
+     * generates class for the views it can find.
+     *
+     * <p>Classes will be in the package supplied, serialVersionUID will be set
+     * to the version number supplied and the supplied
+     * {@link PrimaryKeyRecognisor} and {@link ForeignKeyRecognisor} will be
+     * used.
      *
      * @param database
      * @param packageName
      * @param versionNumber
      * @param pkRecog
      * @param fkRecog
-     * @return
+     * @return a List of DBTableClass instances representing the views found on
+     * the database
      * @throws SQLException
      */
     public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
@@ -200,7 +212,8 @@ public class DBTableClassGenerator {
      * @param database
      * @param packageName
      * @param dbObjectTypes
-     * @return
+     * @return a List of DBTableClass instances representing the tables and
+     * views found on the database
      * @throws SQLException
      */
     private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
@@ -335,7 +348,8 @@ public class DBTableClassGenerator {
      * SQLType
      *
      * @param columnType
-     * @return
+     * @return a string of the appropriate QueryableDatatype for the specified
+     * SQLType
      */
     private static String getQueryableDatatypeNameOfSQLType(int columnType, int precision) throws UnknownJavaSQLTypeException {
         String value = "";
@@ -402,7 +416,7 @@ public class DBTableClassGenerator {
      * I.e. changes "_" into an uppercase letter.
      *
      * @param s
-     * @return
+     * @return camel case version of the String
      */
     public static String toClassCase(String s) {
         String classCaseString = "";
@@ -425,7 +439,7 @@ public class DBTableClassGenerator {
      * I.e. changes "_" into an uppercase letter.
      *
      * @param s
-     * @return
+     * @return Camel Case version of S
      */
     private static String toFieldCase(String s) {
         String classClass = toClassCase(s);
@@ -438,7 +452,7 @@ public class DBTableClassGenerator {
      * Capitalizes the first letter of the string
      *
      * @param s
-     * @return
+     * @return Capitalizes the first letter of the string
      */
     private static String toProperCase(String s) {
         if (s.length() == 0) {

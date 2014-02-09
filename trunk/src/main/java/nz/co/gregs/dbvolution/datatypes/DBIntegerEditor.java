@@ -44,7 +44,7 @@ public class DBIntegerEditor extends PropertyEditorSupport {
             type = new DBInteger();
         } else {
             type = new DBInteger();
-            type.setValue(text);
+            type.setValue(Integer.parseInt(text));
         }
         setValue(type);
     }

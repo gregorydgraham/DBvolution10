@@ -52,16 +52,16 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
     
     /**
      * Gets the enumeration value.
-     * Converts in-line from the database's raw value to the enum type.
-     * If  
-     * @return
+     * <p>Converts in-line from the database's raw value to the enum type.
+     * 
+     * @return the Enumeration instance that is appropriate to this instance
      * @throws IllegalArgumentException if the database's raw value
      * does not have a corresponding value in the enum
      */
     public E enumValue() {
     	// get actual literal value: a String or a Long
-        Object literalValue = super.getValue();
-        if (literalValue == null) {
+        Object localValue = super.getValue();
+        if (localValue == null) {
         	return null;
         }
         
@@ -70,7 +70,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 		for (E enumValue: enumValues) {
 			if (enumValue instanceof DBEnumValue) {
 				Object enumLiteralValue = ((DBEnumValue<?>) enumValue).getCode();
-				if (areLiteralValuesEqual(literalValue, enumLiteralValue)) {
+				if (areLiteralValuesEqual(localValue, enumLiteralValue)) {
 					return enumValue;
 				}
 			}
@@ -78,7 +78,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 				throw new IllegalArgumentException("Enum type "+enumType.getName()+" must implement "+DBEnumValue.class.getSimpleName());
 			}
 		}
-		throw new IncompatibleClassChangeError("Invalid literal value ["+literalValue+"] encountered" +
+		throw new IncompatibleClassChangeError("Invalid literal value ["+localValue+"] encountered" +
 				" when converting to enum type "+enumType.getName());
     }
     
