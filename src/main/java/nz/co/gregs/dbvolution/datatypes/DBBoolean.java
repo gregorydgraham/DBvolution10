@@ -35,6 +35,10 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
         return "BIT(1)";
     }
 
+    public void setValue(Boolean newLiteralValue) {
+        super.setValue(newLiteralValue);
+    }
+
     @Override
     public String formatValueForSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();

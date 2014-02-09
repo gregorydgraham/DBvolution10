@@ -44,7 +44,7 @@ public class DBNumberEditor extends PropertyEditorSupport {
             type = new DBNumber();
         } else {
             type = new DBNumber();
-            type.setValue(text);
+            type.setValue(Double.parseDouble(text));
         }
         setValue(type);
     }

@@ -29,9 +29,9 @@ import nz.co.gregs.dbvolution.expressions.NumberResult;
  *
  * @author gregory.graham
  */
-public class DBNumber extends QueryableDatatype implements NumberResult{
+public class DBNumber extends QueryableDatatype implements NumberResult {
 
-    public static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     public DBNumber() {
         super();
@@ -50,23 +50,30 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
         return (DBNumber) super.copy();
     }
 
-    @Override
-    public void setValue(Object newLiteralValue) {
-        initDBNumber(newLiteralValue);
-    }
-
-    private void initDBNumber(Object aNumber) {
-        if (aNumber == null) {
+    public void setValue(Number newLiteralValue) {
+        if (newLiteralValue == null) {
             super.setValue(null);
         } else {
-            if (aNumber instanceof Number) {
-                super.setValue((Number) aNumber);
-            } else {
-            	// FIXME (Ticket 35): don't think this should be here - would be better to give ClassCastException
-                super.setValue(Double.parseDouble(aNumber.toString()));
-            }
+            super.setValue(newLiteralValue);
         }
     }
+
+//    @Override
+//    public void setValue(Object newLiteralValue) {
+//        initDBNumber(newLiteralValue);
+//    }
+//    private void initDBNumber(Object aNumber) {
+//        if (aNumber == null) {
+//            super.setValue(null);
+//        } else {
+//            if (aNumber instanceof Number) {
+//                super.setValue((Number) aNumber);
+//            } else {
+//                // FIXME (Ticket 35): don't think this should be here - would be better to give ClassCastException
+//                super.setValue(Double.parseDouble(aNumber.toString()));
+//            }
+//        }
+//    }
 
     @Override
     public void blankQuery() {
@@ -77,11 +84,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
     public String getWhereClause(DBDatabase db, String columnName) {
         if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
-        }
-        else if (this.getOperator() instanceof DBLikeOperator) {
+        } else if (this.getOperator() instanceof DBLikeOperator) {
             throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
-        }
-        else {
+        } else {
             return super.getWhereClause(db, columnName);
         }
     }
@@ -94,7 +99,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
 
     /**
      *
-     * @return the default database type as a string, may be gazumped by the DBDefinition
+     * @return the default database type as a string, may be gazumped by the
+     * DBDefinition
      */
     @Override
     public String getSQLDatatype() {
@@ -114,10 +120,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
         }
         return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
     }
-    
+
     /**
-     * Gets the current literal value of this DBNumber, without any
-     * formatting.
+     * Gets the current literal value of this DBNumber, without any formatting.
      *
      * <p>
      * The literal value is undefined (and {@code null}) if using an operator
@@ -126,12 +131,13 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
      * @return the literal value, if defined, which may be null
      */
     @Override
-    public Number getValue(){
+    public Number getValue() {
         return numberValue();
     }
 
     /**
-     * The current {@link #getValue()  literal value} of this DBNumber as a Number
+     * The current {@link #getValue()  literal value} of this DBNumber as a
+     * Number
      *
      * @return the number as the original number class
      */
@@ -146,7 +152,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
     }
 
     /**
-     * The current {@link #getValue()  literal value} of this DBNumber as a Double
+     * The current {@link #getValue()  literal value} of this DBNumber as a
+     * Double
      *
      * @return the number as a Double
      */
@@ -169,7 +176,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
         if (literalValue == null) {
             return null;
         } else if (literalValue instanceof Long) {
-            return (Long)literalValue;
+            return (Long) literalValue;
         } else if (literalValue instanceof Number) {
             return ((Number) literalValue).longValue();
         } else {
@@ -178,7 +185,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
     }
 
     /**
-     * The current {@link #getValue()  literal value} of this DBNumber as an Integer
+     * The current {@link #getValue()  literal value} of this DBNumber as an
+     * Integer
      *
      * @return the number as an Integer
      */
@@ -193,7 +201,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult{
     }
 
     /**
-     * Internal method to automatically set the value using information from the database
+     * Internal method to automatically set the value using information from the
+     * database
      *
      * @param resultSet
      * @param fullColumnName

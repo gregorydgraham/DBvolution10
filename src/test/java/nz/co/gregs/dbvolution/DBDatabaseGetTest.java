@@ -26,6 +26,7 @@ import net.sourceforge.tedhi.DateRange;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -62,7 +63,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         DBRow row = marqueRows.get(0);
         Long primaryKey;
         if (row != null) {
-            primaryKey = row.getPrimaryKey().longValue();
+            primaryKey = ((DBNumber)row.getPrimaryKey()).longValue();
             Marque marque = new Marque();
             marque.uidMarque.permittedValues(primaryKey);
             singleMarque = database.get(marque);

@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.datatypes.DBDate;
 import java.beans.PropertyEditorSupport;
 
 /**

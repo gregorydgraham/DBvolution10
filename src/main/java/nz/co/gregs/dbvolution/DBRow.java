@@ -1,6 +1,5 @@
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -8,25 +7,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import nz.co.gregs.dbvolution.query.DBRelationship;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.columns.BooleanColumn;
-
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.columns.DateColumn;
-import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
-import nz.co.gregs.dbvolution.columns.NumberColumn;
-import nz.co.gregs.dbvolution.columns.StringColumn;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.internal.properties.DBRowInstanceWrapper;
-import nz.co.gregs.dbvolution.internal.properties.DBRowWrapperFactory;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.columns.*;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
@@ -62,7 +52,7 @@ abstract public class DBRow implements Serializable {
      *
      * @param <T>
      * @param requiredDBRowClass
-     * @return
+     * @return a new blank version of the specified class
      */
     public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) {
         try {
@@ -88,7 +78,8 @@ abstract public class DBRow implements Serializable {
      *
      * @param <T>
      * @param originalRow
-     * @return
+     * @return a new version of the specified row with values that duplicate the
+     * original.
      */
     public static <T extends DBRow> T copyDBRow(T originalRow) {
         @SuppressWarnings("unchecked")
@@ -345,8 +336,7 @@ abstract public class DBRow implements Serializable {
      *
      * Example objects and blank rows from an optional table are "undefined".
      *
-     * @param newValue TRUE if this row exists within the database, otherwise
-     * FALSE.
+     * @return TRUE if this row exists within the database, otherwise FALSE.
      */
     public boolean getDefined() {
         return isDefined;
@@ -505,7 +495,8 @@ abstract public class DBRow implements Serializable {
      * Returns the same result as {@link #toString() } but omitting the Foreign
      * Key references.
      *
-     * @return
+     * @return a string representation of the contents of this instance with
+     * Foreign Key fields removed
      */
     public String toStringMinusFKs() {
         StringBuilder string = new StringBuilder();
@@ -529,6 +520,7 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
+     * Returns a list of the column names used by the database.
      *
      * @return A list of all raw, unformatted column names
      */
@@ -789,6 +781,7 @@ abstract public class DBRow implements Serializable {
      * <p>Clears the limits on returned fields set by {@link DBRow#returnFieldsLimitedTo(T[])
      * }
      *
+     *
      */
     public void returnAllFields() {
         returnColumns.clear();
@@ -921,7 +914,8 @@ abstract public class DBRow implements Serializable {
      * keys
      *
      * <p>Similar to {@link #getAllRelatedTables() } but where this class
-     * directly references the external DBRow subclass with an {@code @DBForeignKey} annotation.
+     * directly references the external DBRow subclass with an
+     * {@code @DBForeignKey} annotation.
      *
      * <p>That is to say: where A is this class, returns a List of B such that A
      * => B
@@ -951,7 +945,8 @@ abstract public class DBRow implements Serializable {
      * <p>That is to say: where A is this class, returns a List of B such that B
      * => A
      *
-     * @return
+     * @return a list of classes that have a {@code @DBForeignKey} reference to
+     * this class
      */
     public List<Class<? extends DBRow>> getAllRelatedTables() {
         List<Class<? extends DBRow>> relatedTables = getReferencedTables();
@@ -991,12 +986,14 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
-     * Finds all instances of {@code example} that share a {@link DBQueryRow} with this instance.
-     * 
+     * Finds all instances of {@code example} that share a {@link DBQueryRow}
+     * with this instance.
+     *
      * @param <R>
      * @param query
      * @param example
-     * @return all instances of {@code example} that are connected to this instance in the {@code query}
+     * @return all instances of {@code example} that are connected to this
+     * instance in the {@code query}
      * @throws SQLException
      */
     public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQuery query, R example) throws SQLException {
@@ -1018,7 +1015,6 @@ abstract public class DBRow implements Serializable {
     protected String getTableAlias() {
         return tableAlias == null ? getTableName() : tableAlias;
     }
-
 //    @Deprecated
 //    @SuppressWarnings("unchecked")
 //    public static <T extends DBRow> T getDBRowExampleWithSetFields(T baseRow, QueryableDatatype... qdts) {

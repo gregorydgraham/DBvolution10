@@ -754,7 +754,7 @@ public abstract class DBDatabase {
      * <p>While DBDefinition is important, unless you are implementing support
      * for a new database you probably don't need this.
      *
-     * @return
+     * @return the DBDefinition used by this DBDatabase instance
      */
     public DBDefinition getDefinition() {
         return definition;
@@ -766,7 +766,7 @@ public abstract class DBDatabase {
      * See {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase) willCreateBlankQuery} on DBRow.
      *
      * @param row
-     * @return
+     * @return TRUE if the specified row has no specified criteria, FALSE otherwise
      */
     protected boolean willCreateBlankQuery(DBRow row) {
         return row.willCreateBlankQuery(this);
