@@ -24,6 +24,8 @@ public class QueryOptions {
     private boolean matchAll = true;
 
     /**
+     * 
+     * 
      * @return the matchAll
      */
     public boolean isMatchAll() {
@@ -35,12 +37,17 @@ public class QueryOptions {
     }
 
     /**
-     * @param matchAll the matchAll to set
+     * Changes the DBQuery to using all ANDs to connect the criteria
+     * 
      */
     public void setMatchAll() {
         this.matchAll = true;
     }
     
+    /**
+     * Changes the DBQuery to using all ORs to connect the criteria
+     *
+     */
     public void setMatchAny() {
         this.matchAll = false;
     }

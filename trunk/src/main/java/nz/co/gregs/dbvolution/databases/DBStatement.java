@@ -21,6 +21,8 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -28,6 +30,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
  */
 public class DBStatement implements Statement {
 
+    static final private Log log = LogFactory.getLog(DBStatement.class);
+    
     protected final Statement realStatement;
     private boolean batchHasEntries;
     private final DBDatabase database;
@@ -54,7 +58,9 @@ public class DBStatement implements Statement {
         }catch(SQLException e){
             // Someone please tell me how you are supposed to cope 
             // with an exception during the close method????????
-            e.printStackTrace(System.err);
+            log.warn("Exception occurred during Statament.close(): "+e.getMessage(), e);
+            throw e;
+//            e.printStackTrace(System.err);
         }
     }
 

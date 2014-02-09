@@ -37,6 +37,8 @@ import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.properties.DBRowWrapperFactory;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * DBDatabase is the repository of all knowledge about your database
@@ -62,6 +64,8 @@ import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
  * @author gregory.graham
  */
 public abstract class DBDatabase {
+    
+    private static final Log log = LogFactory.getLog(DBDatabase.class);
 
     private String driverName = "";
     private String jdbcURL = "";
@@ -434,11 +438,11 @@ public abstract class DBDatabase {
             try {
                 returnValues = dbTransaction.doTransaction(this);
                 connection.commit();
-                System.err.println("Transaction Successful: Commit Performed");
+                log.info("Transaction Successful: Commit Performed");
                 connection.setAutoCommit(true);
             } catch (Exception ex) {
                 connection.rollback();
-                System.err.println("Exception Occurred: ROLLBACK Performed");
+                log.warn("Exception Occurred: ROLLBACK Performed! "+ex.getMessage(), ex);
                 throw ex;
             } finally {
                 connection.setAutoCommit(true);
@@ -487,10 +491,10 @@ public abstract class DBDatabase {
             try {
                 returnValues = dbTransaction.doTransaction(this);
                 connection.rollback();
-                System.err.println("Transaction Successful: ROLLBACK Performed");
+                log.info("Transaction Successful: ROLLBACK Performed");
             } catch (Exception ex) {
                 connection.rollback();
-                System.err.println("Exception Occurred: ROLLBACK Performed");
+                log.warn("Exception Occurred: ROLLBACK Performed! "+ex.getMessage(), ex);
                 throw ex;
             } finally {
                 connection.setAutoCommit(wasAutoCommit);
