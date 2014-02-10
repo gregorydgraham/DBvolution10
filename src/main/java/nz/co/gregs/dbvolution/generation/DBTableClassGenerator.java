@@ -46,12 +46,12 @@ public class DBTableClassGenerator {
      * Creates DBTableRow classes corresponding to all the tables and views
      * accessible to the user specified in the database supplied.
      *
-     * Classes are placed in the correct subdirectory of the base directory as
+     * <p>Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
      *
-     * convenience method which calls generateClasses(jdbcURL, username,
+     * <p>Convenience method which calls {@code generateClasses(jdbcURL, username,
      * password, packageName, 1L, baseDirectory,new PrimaryKeyRecognisor(),new
-     * ForeignKeyRecognisor());
+     * ForeignKeyRecognisor());}
      *
      * @param database
      * @param packageName
@@ -69,12 +69,12 @@ public class DBTableClassGenerator {
      * Creates DBTableRow classes corresponding to all the tables and views
      * accessible to the user specified in the database supplied.
      *
-     * Classes are placed in the correct subdirectory of the base directory as
+     * <p>Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
      *
-     * convenience method which calls
+     * <p>Convenience method which calls {@code 
      * generateClasses(jdbcURL,username,password,packageName,baseDirectory,new
-     * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());
+     * PrimaryKeyRecognisor(),new ForeignKeyRecognisor());}
      *
      * @param database
      * @param packageName
@@ -93,10 +93,10 @@ public class DBTableClassGenerator {
      * Creates DBTableRow classes corresponding to all the tables and views
      * accessible to the user specified in the database supplied.
      *
-     * Classes are placed in the correct subdirectory of the base directory as
+     * <p>Classes are placed in the correct subdirectory of the base directory as
      * defined by the package name supplied.
      *
-     * Primary keys and foreign keys are created based on the definitions within
+     * <p>Primary keys and foreign keys are created based on the definitions within
      * the database and the results from the PK and FK recognisors.
      *
      * @param database
@@ -143,9 +143,9 @@ public class DBTableClassGenerator {
      * Saves the supplied DBTableRow classes as java files in the supplied
      * directory.
      *
-     * No database interaction nor package name checking is performed.
+     * <p>No database interaction nor package name checking is performed.
      *
-     * You probably want to use generateClassesFromJDBCURLToDirectory
+     * <p>You probably want to use {@link #generateClasses(nz.co.gregs.dbvolution.DBDatabase, java.lang.String, java.lang.String) }
      *
      * @param generatedClasses
      * @param classDirectory
@@ -170,6 +170,16 @@ public class DBTableClassGenerator {
     }
 
     /**
+     * Generate the required Java classes for all the Tables on the database.
+     *
+     * <p>Connects to the database using the DBDatabase instance supplied and
+     * generates class for the tables it can find.
+     *
+     * <p>Classes will be in the package supplied, serialVersionUID will be set
+     * to the version number supplied and the supplied
+     * {@link PrimaryKeyRecognisor} and {@link ForeignKeyRecognisor} will be
+     * used.
+     *
      *
      * @param database
      * @param packageName
@@ -209,6 +219,15 @@ public class DBTableClassGenerator {
     }
 
     /**
+     * Generate the required Java classes for all the Tables and Views on the database.
+     *
+     * <p>Connects to the database using the DBDatabase instance supplied and
+     * generates class for the tables and views it can find.
+     *
+     * <p>Classes will be in the package supplied, serialVersionUID will be set
+     * to the version number supplied and the supplied
+     * {@link PrimaryKeyRecognisor} and {@link ForeignKeyRecognisor} will be
+     * used.
      *
      * @param database
      * @param packageName
