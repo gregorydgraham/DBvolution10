@@ -30,11 +30,11 @@ public class DBPermittedRangeInclusiveOperator extends DBMetaOperator {
                     QueryableDatatype.getQueryableDatatypeForObject(upperBound));
         } else if (lowerBound == null && upperBound != null) {
             QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(upperBound);
-//            qdt.setValue(upperBound);
+//            qdt.setLiteralValue(upperBound);
             operator = new DBLessThanOrEqualOperator(qdt);
         } else if (lowerBound != null && upperBound == null) {
             final QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(lowerBound);
-//            qdt.setValue(lowerBound);
+//            qdt.setLiteralValue(lowerBound);
             operator = new DBGreaterThanOrEqualsOperator(qdt);
         }
     }

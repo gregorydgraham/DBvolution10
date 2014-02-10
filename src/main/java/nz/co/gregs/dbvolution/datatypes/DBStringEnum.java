@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.datatypes;
 /**
  * Like {@link DBInteger} except that the database value can be easily
  * interpreted as an enumeration with integer codes.
+ *
  * @param <E> type of enumeration class
  */
 public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnum<E> {
@@ -28,28 +29,45 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
     }
 
     public DBStringEnum(String value) {
-    	super(value);
+        super(value);
     }
-    
+
     public DBStringEnum(E value) {
         super(value);
     }
-    
+
     @Override
     protected void validateLiteralValue(E enumValue) {
-    	Object literalValue = enumValue.getCode();
-    	if (literalValue != null) {
-    		if (!(literalValue instanceof String)) {
-	    		String enumMethodRef = enumValue.getClass().getName()+"."+enumValue.name()+".getLiteralValue()";
-	    		String literalValueTypeRef = literalValue.getClass().getName();
-	            throw new IncompatibleClassChangeError("Enum literal type is not valid: "+
-	            		enumMethodRef+" returned a "+literalValueTypeRef+", which is not valid for a "+this.getClass().getSimpleName());
-    		}
-    	}
+        Object localValue = enumValue.getCode();
+        if (localValue != null) {
+            if (!(localValue instanceof String)) {
+                String enumMethodRef = enumValue.getClass().getName() + "." + enumValue.name() + ".getLiteralValue()";
+                String literalValueTypeRef = localValue.getClass().getName();
+                throw new IncompatibleClassChangeError("Enum literal type is not valid: "
+                        + enumMethodRef + " returned a " + literalValueTypeRef + ", which is not valid for a " + this.getClass().getSimpleName());
+            }
+        }
     }
 
     @Override
     public String getSQLDatatype() {
         return new DBString().getSQLDatatype();
     }
+
+    @Override
+    public void setValue(Object newLiteralValue) {
+        if(newLiteralValue instanceof String){
+            setValue((String) newLiteralValue);
+        }else if(newLiteralValue instanceof DBString){
+            setValue(((DBString) newLiteralValue).getValue());
+        }else{
+            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A Non-String: Use only Strings with this class");
+        }
+    }
+    
+    public void setValue(String newLiteralValue){
+        super.setLiteralValue(newLiteralValue);
+    }
+
+
 }

@@ -21,6 +21,7 @@ import java.sql.SQLException;
 /**
  * Like {@link DBInteger} except that the database value can be easily
  * interpreted as an enumeration with {@code Integer} or {@code Long} codes.
+ *
  * @param <E> type of enumeration class
  */
 public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> extends DBEnum<E> {
@@ -30,25 +31,50 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
     public DBIntegerEnum() {
     }
 
-    public DBIntegerEnum(String value) {
+    public DBIntegerEnum(Integer value) {
+        super(value.longValue());
+    }
+
+    public DBIntegerEnum(Long value) {
         super(value);
     }
-    
+
     public DBIntegerEnum(E value) {
         super(value);
     }
 
     @Override
+    public void setValue(Object newLiteralValue) {
+        if (newLiteralValue instanceof Long) {
+            setValue((Long) newLiteralValue);
+        } else if (newLiteralValue instanceof Integer) {
+            setValue((Integer)newLiteralValue);
+        } else if (newLiteralValue instanceof DBIntegerEnum) {
+            setValue(((DBIntegerEnum)newLiteralValue).literalValue);
+        } else {
+            throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Long: Use only Long with this class");
+        }
+    }
+    
+    public void setValue(Long newLiteralValue){
+        super.setLiteralValue(newLiteralValue);
+    }
+
+    public void setValue(Integer newLiteralValue){
+        super.setLiteralValue(newLiteralValue);
+    }
+
+    @Override
     protected void validateLiteralValue(E enumValue) {
-    	Object literalValue = enumValue.getCode();
-    	if (literalValue != null) {
-    		if (!(literalValue instanceof Integer || literalValue instanceof Long)) {
-	    		String enumMethodRef = enumValue.getClass().getName()+"."+enumValue.name()+".getLiteralValue()";
-	    		String literalValueTypeRef = literalValue.getClass().getName();
-	            throw new IncompatibleClassChangeError("Enum literal type is not valid: "+
-	            		enumMethodRef+" returned a "+literalValueTypeRef+", which is not valid for a "+this.getClass().getSimpleName());
-    		}
-    	}
+        Object literalValue = enumValue.getCode();
+        if (literalValue != null) {
+            if (!(literalValue instanceof Integer || literalValue instanceof Long)) {
+                String enumMethodRef = enumValue.getClass().getName() + "." + enumValue.name() + ".getLiteralValue()";
+                String literalValueTypeRef = literalValue.getClass().getName();
+                throw new IncompatibleClassChangeError("Enum literal type is not valid: "
+                        + enumMethodRef + " returned a " + literalValueTypeRef + ", which is not valid for a " + this.getClass().getSimpleName());
+            }
+        }
     }
 
     @Override
@@ -73,7 +99,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
             if (dbValue == null) {
                 this.setToNull();
             } else {
-                this.setValue(dbValue);
+                this.setLiteralValue(dbValue);
             }
         }
     }

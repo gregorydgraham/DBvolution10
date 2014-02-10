@@ -59,20 +59,31 @@ public class DBByteArray extends DBLargeObject {
         return "BLOB";
     }
 
+    @Override
+    public void setValue(Object newLiteralValue) {
+        if (newLiteralValue instanceof byte[]) {
+            setValue((byte[]) newLiteralValue);
+        } else if (newLiteralValue instanceof DBByteArray) {
+            setValue(((DBByteArray) newLiteralValue).getValue());
+        } else {
+            throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Byte[]: Use only byte arrays with this class");
+        }
+    }
+
     public void setValue(byte[] byteArray) {
-        super.setValue(byteArray);
+        super.setLiteralValue(byteArray);
         byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
     }
 
     public void setValue(InputStream inputViaStream) {
-        super.setValue(inputViaStream);
+        super.setLiteralValue(inputViaStream);
         byteStream = new BufferedInputStream(inputViaStream);
     }
 
-    public void setValue(File fileToRead) throws IOException{
+    public void setValue(File fileToRead) throws IOException {
         setValue(setFromFileSystem(fileToRead));
     }
-
+    
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         InputStream dbValue;
@@ -202,7 +213,7 @@ public class DBByteArray extends DBLargeObject {
     }
 
     public byte[] getBytes() {
-        return (byte[])this.literalValue;
+        return (byte[]) this.literalValue;
     }
 
     @Override
@@ -214,6 +225,5 @@ public class DBByteArray extends DBLargeObject {
     public byte[] getValue() {
         return getBytes();
     }
-    
-    
+
 }
