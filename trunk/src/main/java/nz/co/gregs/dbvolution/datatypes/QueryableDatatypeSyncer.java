@@ -168,7 +168,7 @@ public class QueryableDatatypeSyncer {
      * <p>
      * DBOperators can reference the same QDT that own the operator instance,
      * such as:
-     * <code>QueryableDatatype.setValue{this.operator = new DBEqualsOperator(this)}</code>.
+     * <code>QueryableDatatype.setLiteralValue{this.operator = new DBEqualsOperator(this)}</code>.
      * Cycles are handled by tracking source QDTs observed and returning the
      * previously mapped target QDT when re-observed.
      *

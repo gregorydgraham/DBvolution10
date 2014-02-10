@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateResult;
@@ -39,11 +39,11 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     public String getSQLDatatype() {
-        if(literalValue instanceof DateResult){
+        if (literalValue instanceof DateResult) {
             return new DBDate().getSQLDatatype();
-        } else if(literalValue instanceof NumberResult){
+        } else if (literalValue instanceof NumberResult) {
             return new DBNumber().getSQLDatatype();
-        } else if(literalValue instanceof StringResult){
+        } else if (literalValue instanceof StringResult) {
             return new DBString().getSQLDatatype();
         } else {
             return new DBUnknownDatatype().getSQLDatatype();
@@ -52,7 +52,21 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     protected String formatValueForSQLStatement(DBDatabase db) {
-        return ((DBExpression)literalValue).toSQLString(db);
+        return ((DBExpression) literalValue).toSQLString(db);
+    }
+
+    @Override
+    public void setValue(Object newLiteralValue) {
+        if (newLiteralValue instanceof DBExpression) {
+            setValue((DBExpression) newLiteralValue);
+        } else if (newLiteralValue instanceof DBDataGenerator) {
+            setValue(((DBDataGenerator) newLiteralValue).literalValue);
+        } else {
+            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A "+newLiteralValue.getClass().getSimpleName()+": Use only Dates with this class");
+        }
     }
     
+    public void setValue(DBExpression newLiteralValue){
+        setLiteralValue(newLiteralValue);
+    }
 }

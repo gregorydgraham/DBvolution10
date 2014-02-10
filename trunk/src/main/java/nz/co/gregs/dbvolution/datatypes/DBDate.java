@@ -75,8 +75,19 @@ public class DBDate extends QueryableDatatype implements DateResult{
         }
     }
 
+    @Override
+    public void setValue(Object newLiteralValue) {
+        if(newLiteralValue instanceof Date){
+            setValue((Date) newLiteralValue);
+        }else if(newLiteralValue instanceof DBDate){
+            setValue(((DBDate) newLiteralValue).literalValue);
+        }else{
+            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A Non-Date: Use only Dates with this class");
+        }
+    }
+
     public void setValue(Date date) {
-        super.setValue(date);
+        super.setLiteralValue(date);
     }
 
     @SuppressWarnings("deprecation")

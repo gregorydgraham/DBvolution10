@@ -57,7 +57,7 @@ public class DBEnumTest extends AbstractTest {
     @Test
     public void createRecordUsingLiteral() {
         IntegerTable row = new IntegerTable();
-        row.recordType.setValue(
+        row.recordType.setLiteralValue(
         		IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getCode());
         
         String sqlFragment = row.recordType.toSQLString(database);
@@ -173,7 +173,7 @@ public class DBEnumTest extends AbstractTest {
 
     	// do test
     	long code = IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.code;
-    	row.recordType.setValue(code);
+    	row.recordType.setLiteralValue(code);
     	assertThat(row.recordType.enumValue(), is(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
     }
 
@@ -188,11 +188,11 @@ public class DBEnumTest extends AbstractTest {
     public void correctlyConvertsIntegerToLongEnum() {
 //    	// warm up enum type
 //    	LongTable row = new LongTable();
-//    	row.recordType.setValue(LongTable.RecordType.SHIPPING_MANIFEST_RECORD);
+//    	row.recordType.setLiteralValue(LongTable.RecordType.SHIPPING_MANIFEST_RECORD);
 //
 //    	// do test
 //    	int code = LongTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.literalValue;
-//    	row.recordType.setValue(code);
+//    	row.recordType.setLiteralValue(code);
 //    	assertThat(row.recordType.enumValue(), is(LongTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
     }
     
@@ -291,8 +291,8 @@ public class DBEnumTest extends AbstractTest {
 //        }
 //
 //        public LongTable(Integer uid, RecordType recType) {
-//            this.uid_202.setValue(uid);
-//            this.recordType.setValue(recType);
+//            this.uid_202.setLiteralValue(uid);
+//            this.recordType.setLiteralValue(recType);
 //        }
 //
 //        /**

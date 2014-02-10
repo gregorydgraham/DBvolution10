@@ -35,8 +35,20 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
         return "BIT(1)";
     }
 
+    @Override
+    public void setValue(Object newLiteralValue) {
+        if(newLiteralValue instanceof Boolean){
+            setValue((Boolean) newLiteralValue);
+        }else
+        if(newLiteralValue instanceof DBBoolean){
+            setValue(((DBBoolean) newLiteralValue).getValue());
+        }else{
+            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A Non-Boolean: Use only Booleans with this class");
+        }
+    }
+
     public void setValue(Boolean newLiteralValue) {
-        super.setValue(newLiteralValue);
+        super.setLiteralValue(newLiteralValue);
     }
 
     @Override

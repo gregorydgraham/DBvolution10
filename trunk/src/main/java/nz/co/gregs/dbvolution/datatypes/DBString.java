@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  *
  * @author gregory.graham
  */
-public class DBString extends QueryableDatatype implements StringResult{
+public class DBString extends QueryableDatatype implements StringResult {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,9 +35,28 @@ public class DBString extends QueryableDatatype implements StringResult{
     public DBString(String string) {
         super(string);
     }
-    
+
+    @Override
+    public void setValue(Object newLiteralValue) {
+        if (newLiteralValue instanceof String) {
+            setValue((String) newLiteralValue);
+        } else {
+            throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-String: Use only Strings with this class");
+        }
+    }
+
     public void setValue(String str) {
-        super.setValue(str);
+        super.setLiteralValue(str);
+    }
+
+    @Override
+    public String getValue() {
+        final Object value = super.getValue();
+        if (value instanceof String) {
+            return (String)value;
+        } else {
+            return value.toString();
+        }
     }
 
     @Override
@@ -48,7 +67,7 @@ public class DBString extends QueryableDatatype implements StringResult{
     @Override
     public String formatValueForSQLStatement(DBDatabase db) {
         DBDefinition defn = db.getDefinition();
-        
+
         if (literalValue instanceof Date) {
             return defn.getDateFormattedForQuery((Date) literalValue);
         } else {
@@ -60,7 +79,7 @@ public class DBString extends QueryableDatatype implements StringResult{
 
     @Override
     public DBString copy() {
-        return (DBString)super.copy();
+        return (DBString) super.copy();
     }
 
 }

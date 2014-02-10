@@ -93,7 +93,7 @@ public class TypeAdaptorTest {
 //		db.createTable(new CustomerWithDBInteger());
 //		
 //		CustomerWithDBInteger c = new CustomerWithDBInteger();
-//		c.uid.setValue(23);
+//		c.uid.setLiteralValue(23);
 //		db.insert(c);
 //		
 //		CustomerWithDBInteger q = new CustomerWithDBInteger();

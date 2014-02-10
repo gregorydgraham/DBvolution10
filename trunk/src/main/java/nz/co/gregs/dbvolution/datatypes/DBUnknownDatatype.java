@@ -40,5 +40,10 @@ public class DBUnknownDatatype extends QueryableDatatype {
     public DBUnknownDatatype() {
         super();
     }
+
+    @Override
+    public void setValue(Object newLiteralValue) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

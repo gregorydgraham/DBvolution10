@@ -60,11 +60,11 @@ public class DBDatabaseGetTest extends AbstractTest {
         DBRow row = marqueRows.get(0);
         Object primaryKey;
         if (row != null) {
-            primaryKey = (row.getPrimaryKey()).getValue();
-                Marque marque = new Marque();
-                marque.uidMarque.permittedValues(primaryKey);
-                singleMarque = database.get(marque);
-            }
+            primaryKey = row.getPrimaryKey().getValue();
+            Marque marque = new Marque();
+            marque.uidMarque.permittedValues(primaryKey);
+            singleMarque = database.get(marque);
+        }
         Assert.assertTrue("Incorrect number of marques retreived", singleMarque.size() == 1);
     }
 

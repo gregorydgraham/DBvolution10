@@ -50,27 +50,38 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
         return (DBNumber) super.copy();
     }
 
+    @Override
+    public void setValue(Object newLiteralValue) {
+        if(newLiteralValue instanceof Number){
+            setValue((Number) newLiteralValue);
+        }else if(newLiteralValue instanceof DBNumber){
+            setValue(((DBNumber) newLiteralValue).getValue());
+        }else{
+            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A "+newLiteralValue.getClass().getSimpleName()+": Use only Numbers with this class");
+        }
+    }
+
     public void setValue(Number newLiteralValue) {
         if (newLiteralValue == null) {
-            super.setValue(null);
+            super.setLiteralValue(null);
         } else {
-            super.setValue(newLiteralValue);
+            super.setLiteralValue(newLiteralValue);
         }
     }
 
 //    @Override
-//    public void setValue(Object newLiteralValue) {
+//    public void setLiteralValue(Object newLiteralValue) {
 //        initDBNumber(newLiteralValue);
 //    }
 //    private void initDBNumber(Object aNumber) {
 //        if (aNumber == null) {
-//            super.setValue(null);
+//            super.setLiteralValue(null);
 //        } else {
 //            if (aNumber instanceof Number) {
-//                super.setValue((Number) aNumber);
+//                super.setLiteralValue((Number) aNumber);
 //            } else {
 //                // FIXME (Ticket 35): don't think this should be here - would be better to give ClassCastException
-//                super.setValue(Double.parseDouble(aNumber.toString()));
+//                super.setLiteralValue(Double.parseDouble(aNumber.toString()));
 //            }
 //        }
 //    }

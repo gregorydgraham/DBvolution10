@@ -104,7 +104,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         QueryableDatatype qdt;
         if (o instanceof QueryableDatatype) {
             qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype) o).getClass());
-            qdt.setValue(((QueryableDatatype) o).literalValue);
+            qdt.setLiteralValue(((QueryableDatatype) o).literalValue);
         } else {
             if (o instanceof DBExpression) {
                 qdt = new DBDataGenerator();
@@ -123,7 +123,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             } else {
                 qdt = new DBJavaObject();
             }
-            qdt.setValue(o);
+            qdt.setLiteralValue(o);
         }
         return qdt;
     }
@@ -518,6 +518,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             return literalValue;
         }
     }
+    
+    public abstract void setValue(Object newLiteralValue);
 
     /**
      * Sets the literal value of this queryable data type. Replaces any assigned
@@ -525,7 +527,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * @param newLiteralValue the literalValue to set
      */
-    public void setValue(Object newLiteralValue) {
+    protected void setLiteralValue(Object newLiteralValue) {
         preventChangeOfPrimaryKey();
         if (newLiteralValue == null) {
             setToNull();
@@ -679,7 +681,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             if (dbValue == null) {
                 this.setToNull();
             } else {
-                this.setValue(dbValue);
+                this.setLiteralValue(dbValue);
             }
         }
     }
@@ -698,7 +700,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             if (this.isDBNull) {
                 newInstance.setToNull();
             } else {
-                newInstance.setValue(this.literalValue);
+                newInstance.setLiteralValue(this.literalValue);
             }
             previousValueAsQDT = newInstance;
         }

@@ -36,6 +36,16 @@ public class DBJavaObject extends QueryableDatatype {
     }
 
     @Override
+    public void setValue(Object newLiteralValue) {
+        if (newLiteralValue instanceof DBJavaObject) {
+            DBJavaObject blob = (DBJavaObject) newLiteralValue;
+            setValue(blob.getValue());
+        } else {
+            setLiteralValue(newLiteralValue);
+        }
+    }
+
+    @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         if (resultSet == null || fullColumnName == null) {
             this.setToNull();
@@ -43,7 +53,7 @@ public class DBJavaObject extends QueryableDatatype {
             Object dbValue;
             try {
                 dbValue = resultSet.getObject(fullColumnName);
-                if (resultSet.wasNull()){
+                if (resultSet.wasNull()) {
                     dbValue = null;
                 }
             } catch (SQLException ex) {
@@ -52,7 +62,7 @@ public class DBJavaObject extends QueryableDatatype {
             if (dbValue == null) {
                 this.setToNull();
             } else {
-                this.setValue(dbValue);
+                this.setLiteralValue(dbValue);
             }
         }
     }
