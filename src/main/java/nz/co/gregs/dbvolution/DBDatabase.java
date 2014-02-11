@@ -64,7 +64,7 @@ import org.apache.commons.logging.LogFactory;
  * @author gregory.graham
  */
 public abstract class DBDatabase {
-    
+
     private static final Log log = LogFactory.getLog(DBDatabase.class);
 
     private String driverName = "";
@@ -299,7 +299,8 @@ public abstract class DBDatabase {
      * Automatically selects the correct table based on the example supplied and
      * returns the selected rows as a list
      *
-     * <p>See
+     * <p>
+     * See
      * {@link nz.co.gregs.dbvolution.DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow)}
      *
      * @param <R>
@@ -317,8 +318,26 @@ public abstract class DBDatabase {
      * Automatically selects the correct table based on the example supplied and
      * returns the selected rows as a list
      *
-     * <p>See
-     * {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
+     * <p>
+     * See
+     * {@link nz.co.gregs.dbvolution.DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow)}
+     *
+     * @param <R>
+     * @param exampleRow
+     * @return a list of the selected rows
+     * @throws SQLException
+     */
+    public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException {
+        return get(exampleRow);
+    }
+
+    /**
+     *
+     * Automatically selects the correct table based on the example supplied and
+     * returns the selected rows as a list
+     *
+     * <p>
+     * See {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
      *
      * @param <R>
      * @param expectedNumberOfRows
@@ -336,6 +355,25 @@ public abstract class DBDatabase {
     }
 
     /**
+     *
+     * Automatically selects the correct table based on the example supplied and
+     * returns the selected rows as a list
+     *
+     * <p>
+     * See {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
+     *
+     * @param <R>
+     * @param expectedNumberOfRows
+     * @param exampleRow
+     * @return a list of the selected rows
+     * @throws SQLException
+     * @throws UnexpectedNumberOfRowsException
+     */
+    public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
+        return get(expectedNumberOfRows, exampleRow);
+    }
+
+    /**
      * creates a query and fetches the rows automatically, based on the examples
      * given
      *
@@ -348,6 +386,20 @@ public abstract class DBDatabase {
     public List<DBQueryRow> get(DBRow... rows) throws SQLException {
         DBQuery dbQuery = getDBQuery(rows);
         return dbQuery.getAllRows();
+    }
+
+    /**
+     * creates a query and fetches the rows automatically, based on the examples
+     * given
+     *
+     * @param rows
+     * @return a list of DBQueryRows relating to the selected rows
+     * @throws SQLException
+     * @see DBQuery
+     * @see DBQuery#getAllRows()
+     */
+    public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException {
+        return get(rows);
     }
 
     /**
@@ -415,10 +467,12 @@ public abstract class DBDatabase {
     /**
      * Performs the transaction on this database.
      *
-     * <p>If there is an exception of any kind the transaction is rolled back
-     * and no changes are made.
+     * <p>
+     * If there is an exception of any kind the transaction is rolled back and
+     * no changes are made.
      *
-     * <p>Otherwise the transaction is committed and changes are made permanent
+     * <p>
+     * Otherwise the transaction is committed and changes are made permanent
      *
      * @param <V>
      * @param dbTransaction
@@ -442,7 +496,7 @@ public abstract class DBDatabase {
                 connection.setAutoCommit(true);
             } catch (Exception ex) {
                 connection.rollback();
-                log.warn("Exception Occurred: ROLLBACK Performed! "+ex.getMessage(), ex);
+                log.warn("Exception Occurred: ROLLBACK Performed! " + ex.getMessage(), ex);
                 throw ex;
             } finally {
                 connection.setAutoCommit(true);
@@ -459,10 +513,12 @@ public abstract class DBDatabase {
     /**
      * Performs the transaction on this database without making changes.
      *
-     * <p>If there is an exception of any kind the transaction is rolled back
-     * and no changes are made.
+     * <p>
+     * If there is an exception of any kind the transaction is rolled back and
+     * no changes are made.
      *
-     * <p>If no exception occurs, the transaction is still rolled back and no
+     * <p>
+     * If no exception occurs, the transaction is still rolled back and no
      * changes are made
      *
      * @param <V>
@@ -494,7 +550,7 @@ public abstract class DBDatabase {
                 log.info("Transaction Successful: ROLLBACK Performed");
             } catch (Exception ex) {
                 connection.rollback();
-                log.warn("Exception Occurred: ROLLBACK Performed! "+ex.getMessage(), ex);
+                log.warn("Exception Occurred: ROLLBACK Performed! " + ex.getMessage(), ex);
                 throw ex;
             } finally {
                 connection.setAutoCommit(wasAutoCommit);
@@ -575,9 +631,11 @@ public abstract class DBDatabase {
     /**
      * Returns a DBTable instance for the DBRow example.
      *
-     * <p>See {@link DBTable DBTable} for more details.
+     * <p>
+     * See {@link DBTable DBTable} for more details.
      *
-     * <p>Please be aware that DBtable doesn't assume the example's criteria are
+     * <p>
+     * Please be aware that DBtable doesn't assume the example's criteria are
      * important. Use
      * {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow) getRowsByExample}
      * to use the criteria on the DBRow.
@@ -640,9 +698,10 @@ public abstract class DBDatabase {
     /**
      * Creates a table on the database based on the DBRow.
      *
-     * <p>Implemented to facilitate testing, this method creates an actual table
-     * on the database using the default data types supplied by the fields of
-     * the DBRow.
+     * <p>
+     * Implemented to facilitate testing, this method creates an actual table on
+     * the database using the default data types supplied by the fields of the
+     * DBRow.
      *
      * @param newTableRow
      * @throws SQLException
@@ -700,11 +759,14 @@ public abstract class DBDatabase {
     /**
      * Drops a table from the database.
      *
-     * <p>In General NEVER USE THIS METHOD.
+     * <p>
+     * In General NEVER USE THIS METHOD.
      *
-     * <p>Seriously NEVER USE THIS METHOD.
+     * <p>
+     * Seriously NEVER USE THIS METHOD.
      *
-     * <p>Your DBA will murder you.
+     * <p>
+     * Your DBA will murder you.
      *
      * @param tableRow
      * @throws SQLException
@@ -727,15 +789,19 @@ public abstract class DBDatabase {
     /**
      * Drops a table from the database.
      *
-     * <p>The easy way to drop a table that might not exist.
-     * <p>An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)
+     * <p>
+     * The easy way to drop a table that might not exist.
+     * <p>
+     * An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)
      * }
      * <
      * p>In General NEVER USE THIS METHOD.
      *
-     * <p>Seriously NEVER USE THIS METHOD.
+     * <p>
+     * Seriously NEVER USE THIS METHOD.
      *
-     * <p>Your DBA will murder you.
+     * <p>
+     * Your DBA will murder you.
      *
      * @param <TR>
      * @param tableRow
@@ -752,11 +818,13 @@ public abstract class DBDatabase {
     /**
      * Returns the DBdefinition used by this DBDatabase
      *
-     * <p>Every DBDatabase has a DBDefinition that defines the syntax used in
-     * that database.
+     * <p>
+     * Every DBDatabase has a DBDefinition that defines the syntax used in that
+     * database.
      *
-     * <p>While DBDefinition is important, unless you are implementing support
-     * for a new database you probably don't need this.
+     * <p>
+     * While DBDefinition is important, unless you are implementing support for
+     * a new database you probably don't need this.
      *
      * @return the DBDefinition used by this DBDatabase instance
      */
@@ -766,11 +834,14 @@ public abstract class DBDatabase {
 
     /**
      * Returns whether or not the example has any specified criteria.
-     * 
-     * See {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase) willCreateBlankQuery} on DBRow.
+     *
+     * See
+     * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase) willCreateBlankQuery}
+     * on DBRow.
      *
      * @param row
-     * @return TRUE if the specified row has no specified criteria, FALSE otherwise
+     * @return TRUE if the specified row has no specified criteria, FALSE
+     * otherwise
      */
     protected boolean willCreateBlankQuery(DBRow row) {
         return row.willCreateBlankQuery(this);
@@ -779,7 +850,8 @@ public abstract class DBDatabase {
     /**
      * The worst idea EVAH.
      *
-     * <p>Do Not Use This.
+     * <p>
+     * Do Not Use This.
      *
      * @throws Exception
      * @throws UnsupportedOperationException
@@ -823,10 +895,12 @@ public abstract class DBDatabase {
      * Returns whether this DBDatabase will attempt to batch multiple SQL
      * commands.
      *
-     * <p>It is possible to execute several SQL statements in one instruction,
-     * and generally DBvolution attempts to do that when handed several actions
-     * at once.
-     * <p>However sometimes this is inappropriate and this method can help with
+     * <p>
+     * It is possible to execute several SQL statements in one instruction, and
+     * generally DBvolution attempts to do that when handed several actions at
+     * once.
+     * <p>
+     * However sometimes this is inappropriate and this method can help with
      * those times.
      *
      * @return TRUE if this instance will try to batch SQL statements, FALSE
@@ -839,10 +913,12 @@ public abstract class DBDatabase {
     /**
      * Sets whether this DBDatabase will attempt to batch multiple SQL commands.
      *
-     * <p>It is possible to execute several SQL statements in one instruction,
-     * and generally DBvolution attempts to do that when handed several actions
-     * at once.
-     * <p>However sometimes this is inappropriate and this method can help with
+     * <p>
+     * It is possible to execute several SQL statements in one instruction, and
+     * generally DBvolution attempts to do that when handed several actions at
+     * once.
+     * <p>
+     * However sometimes this is inappropriate and this method can help with
      * those times.
      *
      * @param batchSQLStatementsWhenPossible TRUE if this instance will try to
