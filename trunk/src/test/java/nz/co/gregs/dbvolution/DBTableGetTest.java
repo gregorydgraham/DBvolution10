@@ -23,13 +23,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import net.sourceforge.tedhi.DateRange;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.OracleDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -106,9 +104,47 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     @Test
+    public void testIsLike() throws SQLException {
+        Marque likeQuery = new Marque();
+        likeQuery.name.permittedPattern("TOY%");
+        marques = marques.getRowsByExample(likeQuery);
+        marques.print();
+        Assert.assertEquals(marques.toList().size(), 1);
+        Assert.assertEquals("" + 1, marques.toList().get(0).getPrimaryKey().toSQLString(database));
+    }
+
+    @Test
+    public void testIsNotLike() throws SQLException {
+        Marque likeQuery = new Marque();
+        likeQuery.name.excludedPattern("%E%");
+        marques = marques.getRowsByExample(likeQuery);
+        marques.print();
+        Assert.assertEquals(marques.toList().size(), 14);
+    }
+
+    @Test
+    public void testIsNotLikeStringExpression() throws SQLException {
+        Marque likeQuery = new Marque();
+        likeQuery.name.excludedPattern(new StringExpression("%e%").uppercase());
+        marques = marques.getRowsByExample(likeQuery);
+        marques.print();
+        Assert.assertEquals(marques.toList().size(), 14);
+    }
+
+    @Test
     public void testIsWhileIgnoringCase() throws SQLException {
         Marque literalQuery = new Marque();
         literalQuery.name.permittedValuesIgnoreCase("toYOTA");
+        marques = marques.getRowsByExample(literalQuery);
+        marques.print();
+        Assert.assertEquals(marques.toList().size(), 1);
+        Assert.assertEquals("TOYOTA", marques.toList().get(0).name.stringValue());
+    }
+
+    @Test
+    public void testIsWhileIgnoringCaseStringExpression() throws SQLException {
+        Marque literalQuery = new Marque();
+        literalQuery.name.permittedValuesIgnoreCase(new StringExpression("toYOTA").lowercase());
         marques = marques.getRowsByExample(literalQuery);
         marques.print();
         Assert.assertEquals(marques.toList().size(), 1);

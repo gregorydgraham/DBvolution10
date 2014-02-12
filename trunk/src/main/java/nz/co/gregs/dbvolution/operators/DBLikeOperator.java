@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQD
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
  *
@@ -28,6 +29,11 @@ public class DBLikeOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
 //    private final QueryableDatatype firstValue;
+
+    public DBLikeOperator(String likeableValue) {
+        super();
+        this.firstValue = likeableValue == null ? null : new StringExpression(likeableValue);
+    }
 
     public DBLikeOperator(DBExpression likeableValue) {
         super();
@@ -43,11 +49,11 @@ public class DBLikeOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
 //        likeableValue.setDatabase(db);
         DBDefinition defn = db.getDefinition();
-        return (invertOperator ? "!(" : "(") + defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
+        return "("+ defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
     }
 
     private String getOperator() {
-        return " like ";
+        return invertOperator?" not like ":" like ";
     }
 
     @Override

@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
@@ -297,7 +298,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         if (getOperator() != null) {
             getOperator().invertOperator(true);
         } else {
-            throw new RuntimeException("No Operator Has Been Defined Yet: please use the query methods before inverting the operation");
+            throw new RuntimeException("No Operator Has Been Defined Yet: please use the permitted/excluded methods before negating the operation");
         }
     }
 
@@ -330,6 +331,17 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * @param permitted
      */
+    public void permittedValuesIgnoreCase(StringExpression... permitted) {
+        this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
+     *
+     * @param permitted
+     */
     public void permittedValuesIgnoreCase(List<String> permitted) {
         this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
     }
@@ -346,16 +358,30 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     }
 
     /**
+     * Reduces the rows to excluding the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
      *
      * @param excluded
      */
     public void excludedValuesIgnoreCase(String... excluded) {
         setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
         negateOperator();
-
     }
 
     /**
+     * Reduces the rows to excluding the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
+     *
+     * @param excluded
+     */
+    public void excludedValuesIgnoreCase(StringExpression... excluded) {
+        setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
+        negateOperator();
+    }
+
+    /**
+     * Reduces the rows to excluding the object, Set, List, Array, or vararg of
+     * Strings ignoring letter case.
      *
      * @param excluded
      */
@@ -487,11 +513,20 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      * @param pattern
      */
     public void permittedPattern(String pattern) {
-        this.setOperator(new DBPermittedPatternOperator(this));
+        this.setOperator(new DBPermittedPatternOperator(pattern));
     }
 
     public void excludedPattern(String pattern) {
-        this.setOperator(new DBPermittedPatternOperator(this));
+        this.setOperator(new DBPermittedPatternOperator(pattern));
+        this.negateOperator();
+    }
+
+    public void permittedPattern(StringExpression pattern) {
+        this.setOperator(new DBPermittedPatternOperator(pattern));
+    }
+
+    public void excludedPattern(StringExpression pattern) {
+        this.setOperator(new DBPermittedPatternOperator(pattern));
         this.negateOperator();
     }
 
