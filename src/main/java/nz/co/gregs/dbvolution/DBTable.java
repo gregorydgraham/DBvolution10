@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
@@ -205,6 +206,10 @@ public class DBTable<E extends DBRow> {
                     Integer dbColumnIndex = dbColumnNames.get(formattedColumnName);
                     if (formattedColumnName != null && dbColumnIndex != null) {
                         setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
+                        QueryableDatatype qdt = field.getQueryableDatatype();
+                        if (tableRow.isEmptyRow() && !qdt.isNull()) {
+                            tableRow.setEmptyRow(false);
+                        }
                     }
                 }
             }
@@ -252,7 +257,7 @@ public class DBTable<E extends DBRow> {
                 field.setQueryableDatatype(qdt);
                 break;
             default:
-                throw new RuntimeException("Unknown Java SQL Type: " + rsMeta.getColumnType(dbColumnIndex));
+                throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: table " + tableRow.getTableName() + " column " + dbColumnName + " has a Unknown SQL type of " + rsMeta.getColumnType(dbColumnIndex)+". Please contact enquiry at https://sourceforge.net/projects/dbvolution/ for support.", rsMeta.getColumnType(dbColumnIndex));
         }
     }
 
@@ -297,8 +302,9 @@ public class DBTable<E extends DBRow> {
      * Retrieves the row (or rows in a bad database) that has the specified
      * primary key.
      *
-     * <p>The primary key column is identified by the {@code @DBPrimaryKey}
-     * annotation in the TableRow subclass. 
+     * <p>
+     * The primary key column is identified by the {@code @DBPrimaryKey}
+     * annotation in the TableRow subclass.
      *
      * @param pkValue
      * @return a DBTable instance containing the row(s) for the primary key
@@ -394,13 +400,16 @@ public class DBTable<E extends DBRow> {
     /**
      * For the particularly hard queries, just provide the actual WHERE clause
      * you want to use.
-     * 
-     * <p>Check out {@link DBExpression expressions} before using this method.
      *
-     * <p>myExample.getLanguage.isLike("%JAVA%"); is similar to: getByRawSQL("and
+     * <p>
+     * Check out {@link DBExpression expressions} before using this method.
+     *
+     * <p>
+     * myExample.getLanguage.isLike("%JAVA%"); is similar to: getByRawSQL("and
      * language like '%JAVA%'");
      *
-     * <p>N.B. the starting AND is optional and avoid trailing semicolons
+     * <p>
+     * N.B. the starting AND is optional and avoid trailing semicolons
      *
      * @param sqlWhereClause
      * @return a DBTable of the rows matching the WHERE clause specified
@@ -546,12 +555,13 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * 
+     *
      *
      * @param query
      * @param sqlWhereClause
-     * @return a String of the WHERE clause for the specified example and specified SQL clause
-     * @see #getRowsByRawSQL(java.lang.String) 
+     * @return a String of the WHERE clause for the specified example and
+     * specified SQL clause
+     * @see #getRowsByRawSQL(java.lang.String)
      */
     public String getWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
@@ -703,11 +713,13 @@ public class DBTable<E extends DBRow> {
     /**
      * Set the query to return rows that match any conditions
      *
-     * <p>This means that all permitted*, excluded*, and comparisons are
-     * optional for any rows and rows will be returned if they match any of the
+     * <p>
+     * This means that all permitted*, excluded*, and comparisons are optional
+     * for any rows and rows will be returned if they match any of the
      * conditions.
      *
-     * <p>The conditions will be connected by OR in the SQL.
+     * <p>
+     * The conditions will be connected by OR in the SQL.
      */
     public void setToMatchAnyCondition() {
         this.options.setMatchAny();
@@ -716,10 +728,12 @@ public class DBTable<E extends DBRow> {
     /**
      * Set the query to only return rows that match all conditions
      *
-     * <p>This is the default state
+     * <p>
+     * This is the default state
      *
-     * <p>This means that all permitted*, excluded*, and comparisons are
-     * required for any rows and the conditions will be connected by AND.
+     * <p>
+     * This means that all permitted*, excluded*, and comparisons are required
+     * for any rows and the conditions will be connected by AND.
      */
     public void setToMatchAllConditions() {
         this.options.setMatchAll();
