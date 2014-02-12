@@ -52,7 +52,7 @@ public class QueryGraph {
     public boolean hasDisconnectedSubgraph() {
         boolean disconnected = false;
         QueryGraph fullGraph = new QueryGraph();
-        synchronized(mutex)  {
+        synchronized (mutex) {
             fullGraph.addAll(this);
         }
         if (!fullGraph.nodes.isEmpty()) {
@@ -86,8 +86,8 @@ public class QueryGraph {
         List<QueryGraphNode> addedTables = new ArrayList<QueryGraphNode>();
         for (Class<? extends DBRow> table : nodeA.getConnectedTables()) {
             QueryGraphNode nodeToAdd = nodes.get(table);
-            Class<? extends DBRow> tableToAdd = nodeToAdd.table;
-            add(nodeA.table, tableToAdd);
+            Class<? extends DBRow> tableToAdd = nodeToAdd.getTable();
+            add(nodeA.getTable(), tableToAdd);
             addedTables.add(nodeToAdd);
         }
         return addedTables;
@@ -105,6 +105,27 @@ public class QueryGraph {
         for (Map.Entry<Class<? extends DBRow>, QueryGraphNode> entry : otherGraph.nodes.entrySet()) {
             this.nodes.put(entry.getKey(), new QueryGraphNode(entry.getValue()));
         }
+    }
+
+    public List<Class<? extends DBRow>> toList(Class<? extends DBRow> startFrom) {
+        List<Class<? extends DBRow>> sortedTables = new ArrayList<Class<? extends DBRow>>();
+        List<Class<? extends DBRow>> addedTables = new ArrayList<Class<? extends DBRow>>();
+        QueryGraphNode nodeA = nodes.get(startFrom);
+        sortedTables.add(nodeA.getTable());
+        int sortedBeforeLoop = 0;
+        while (sortedTables.size() > sortedBeforeLoop) {
+            sortedBeforeLoop = sortedTables.size();
+            addedTables.clear();
+            for (Class<? extends DBRow> row : sortedTables) {
+                nodeA = nodes.get(row);
+                for (Class<? extends DBRow> table : nodeA.getConnectedTables()) {
+                    QueryGraphNode nodeToAdd = nodes.get(table);
+                    addedTables.add(nodeToAdd.getTable());
+                }
+            }
+            sortedTables.addAll(addedTables);
+        }
+        return sortedTables;
     }
 
     public class QueryGraphNode {
@@ -127,6 +148,13 @@ public class QueryGraph {
 
         public void connectTable(Class<? extends DBRow> table) {
             connectedTables.add(table);
+        }
+
+        /**
+         * @return the table
+         */
+        public Class<? extends DBRow> getTable() {
+            return table;
         }
     }
 }

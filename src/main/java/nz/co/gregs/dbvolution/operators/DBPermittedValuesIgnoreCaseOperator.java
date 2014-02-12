@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDatatypeForObject;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
 
@@ -28,6 +29,22 @@ public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
     public DBPermittedValuesIgnoreCaseOperator(String... permitted) {
         ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
         for (String obj : permitted) {
+                qdts.add(getQueryableDatatypeForObject(obj));
+        }
+        if (permitted == null) {
+            operator = new DBIsNullOperator();
+        } else if (qdts.isEmpty()) {
+            operator = new DBIsNullOperator();
+        } else if (qdts.size() == 1) {
+            operator = new DBEqualsIgnoreCaseOperator(qdts.get(0));
+        } else {
+            operator = new DBInIgnoreCaseOperator(qdts);
+        }
+    }
+
+    public DBPermittedValuesIgnoreCaseOperator(StringExpression... permitted) {
+        ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
+        for (StringExpression obj : permitted) {
                 qdts.add(getQueryableDatatypeForObject(obj));
         }
         if (permitted == null) {

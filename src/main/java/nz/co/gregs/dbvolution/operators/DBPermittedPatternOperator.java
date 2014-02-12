@@ -17,11 +17,16 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 
 public class DBPermittedPatternOperator extends DBLikeOperator {
     
     public static final long serialVersionUID = 1L;
+
+    public DBPermittedPatternOperator(String likeableValue) {
+        super(new StringExpression(likeableValue));
+    }
 
     public DBPermittedPatternOperator(DBExpression likeableValue) {
         super(likeableValue);
