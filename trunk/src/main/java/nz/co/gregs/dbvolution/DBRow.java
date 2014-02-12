@@ -39,6 +39,7 @@ abstract public class DBRow implements Serializable {
     private transient DBRowInstanceWrapper wrapper = null;
     private transient ArrayList<Class<? extends DBRow>> referencedTables;
     private String tableAlias;
+    private Boolean emptyRow = true;
 
     /**
      * Creates a blank DBRow
@@ -116,11 +117,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new LargeObjectColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -134,11 +137,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new BooleanColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -152,11 +157,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new BooleanColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -170,11 +177,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new StringColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -188,11 +197,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new StringColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -206,11 +217,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new NumberColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -224,11 +237,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new NumberColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -242,11 +257,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new DateColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -260,11 +277,13 @@ abstract public class DBRow implements Serializable {
      * Creates a new DateColumn instance to help create
      * {@link DBExpression expressions}
      *
-     * <p>This method is the easy way to create a reference to the database
-     * column represented by the field for use in creating complex expressions
-     * within your query.
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
      *
-     * <p>For use with the
+     * <p>
+     * For use with the
      * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
      *
      * @param fieldOfThisInstance
@@ -302,7 +321,8 @@ abstract public class DBRow implements Serializable {
     /**
      * Returns the QueryableDatatype instance of the Primary Key of This DBRow
      *
-     * <p>If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
+     * <p>
+     * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
      * field, then the QueryableDatatype instance of that field is returned.
      *
      * @return the QDT of the primary key or null if there is no primary key.
@@ -445,7 +465,8 @@ abstract public class DBRow implements Serializable {
      * Tests whether this DBRow instance has any criteria
      * ({@link QueryableDatatype#permittedValues(java.lang.Object[])}, etc) set.
      *
-     * <p>The database is not accessed and this method does not protect against
+     * <p>
+     * The database is not accessed and this method does not protect against
      * functionally blank queries.
      *
      * @param db
@@ -642,14 +663,17 @@ abstract public class DBRow implements Serializable {
      * Creates a foreign key like relationship between columns on 2 different
      * DBRow objects.
      *
-     * <p>This function relies on the QueryableDatatypes being part of the
-     * DBRows that are also passed. So every call to this function should be
-     * similar to:
+     * <p>
+     * This function relies on the QueryableDatatypes being part of the DBRows
+     * that are also passed. So every call to this function should be similar
+     * to:
      *
-     * <p>myRow.addRelationship(myRow.someField, myOtherRow,
+     * <p>
+     * myRow.addRelationship(myRow.someField, myOtherRow,
      * myOtherRow.otherField);
      *
-     * <p>Uses the default DBEqualsOperator.
+     * <p>
+     * Uses the default DBEqualsOperator.
      *
      * @param thisTableField
      * @param otherTable
@@ -665,15 +689,18 @@ abstract public class DBRow implements Serializable {
      * Creates a foreign key like relationship between columns on 2 different
      * DBRow objects.
      *
-     * <p>this function relies on the QueryableDatatypes being part of the
-     * DBRows that are also passed. So every call to this function should be
-     * similar to:
+     * <p>
+     * this function relies on the QueryableDatatypes being part of the DBRows
+     * that are also passed. So every call to this function should be similar
+     * to:
      *
-     * <p>myRow.addRelationship(myRow.someField, myOtherRow,
-     * myOtherRow.otherField, new DBGreaterThanOperator());
+     * <p>
+     * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField,
+     * new DBGreaterThanOperator());
      *
-     * <p>Uses the supplied operator to establish the relationship rather than
-     * the default DBEqualsOperator. Not all operators can be used for
+     * <p>
+     * Uses the supplied operator to establish the relationship rather than the
+     * default DBEqualsOperator. Not all operators can be used for
      * relationships.
      *
      * @param thisTableField
@@ -778,7 +805,8 @@ abstract public class DBRow implements Serializable {
     /**
      * Remove all limitations on the fields returned.
      *
-     * <p>Clears the limits on returned fields set by {@link DBRow#returnFieldsLimitedTo(T[])
+     * <p>
+     * Clears the limits on returned fields set by {@link DBRow#returnFieldsLimitedTo(T[])
      * }
      *
      *
@@ -913,12 +941,14 @@ abstract public class DBRow implements Serializable {
      * Returns all the DBRow subclasses referenced by by this class with foreign
      * keys
      *
-     * <p>Similar to {@link #getAllRelatedTables() } but where this class
-     * directly references the external DBRow subclass with an
-     * {@code @DBForeignKey} annotation.
+     * <p>
+     * Similar to {@link #getAllRelatedTables() } but where this class directly
+     * references the external DBRow subclass with an {@code @DBForeignKey}
+     * annotation.
      *
-     * <p>That is to say: where A is this class, returns a List of B such that A
-     * => B
+     * <p>
+     * That is to say: where A is this class, returns a List of B such that A =>
+     * B
      *
      * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
      *
@@ -939,11 +969,13 @@ abstract public class DBRow implements Serializable {
      * Creates a list of all DBRow subclasses that reference this class with
      * foreign keys.
      *
-     * <p>Similar to {@link #getReferencedTables() } but where this class is
-     * being referenced by the external DBRow subclass.
+     * <p>
+     * Similar to {@link #getReferencedTables() } but where this class is being
+     * referenced by the external DBRow subclass.
      *
-     * <p>That is to say: where A is this class, returns a List of B such that B
-     * => A
+     * <p>
+     * That is to say: where A is this class, returns a List of B such that B =>
+     * A
      *
      * @return a list of classes that have a {@code @DBForeignKey} reference to
      * this class
@@ -1015,14 +1047,38 @@ abstract public class DBRow implements Serializable {
     protected String getTableAlias() {
         return tableAlias == null ? getTableName() : tableAlias;
     }
-//    @Deprecated
-//    @SuppressWarnings("unchecked")
-//    public static <T extends DBRow> T getDBRowExampleWithSetFields(T baseRow, QueryableDatatype... qdts) {
-//        T example = (T) DBRow.getDBRow(baseRow.getClass());
-//        for (QueryableDatatype qdt : qdts) {
-//            PropertyWrapperDefinition definition = baseRow.getPropertyWrapperOf(qdt).getDefinition();
-//            definition.setQueryableDatatype(example, qdt);
-//        }
-//        return example;
-//    }
+
+    /**
+     * Indicates whether this instance has any values set from the database.
+     *
+     * <p>
+     * If this row is the result of the database sending back a row with NULL in every column, this method
+     * returns TRUE.
+     *
+     * <p>
+     * An empty row is probably the result an optional DBRow not having a
+     * matching row for the query. In database parlance this row is a null row of an OUTER JOIN and
+     * this table did not have any matching rows.
+     *
+     * <p>
+     * Please note: if the row is undefined
+     * {@link DBRow#isDefined (see isDefined)} then this is meaningless
+     *
+     * @return TRUE if the row has no non-null values or is undefined, FALSE otherwise
+     */
+    public Boolean isEmptyRow() {
+        return emptyRow;
+    }
+
+    /**
+     * Sets the row to be empty or not.
+     * 
+     * Used within DBQuery and DBTable while creating the DBRows to indicate an empty row.
+     * 
+     * @param isThisRowEmpty
+     */
+    protected void setEmptyRow(Boolean isThisRowEmpty) {
+        this.emptyRow = isThisRowEmpty;
+    }
+
 }

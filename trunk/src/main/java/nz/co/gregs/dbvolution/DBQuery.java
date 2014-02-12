@@ -436,6 +436,10 @@ public class DBQuery {
                             QueryableDatatype qdt = newProp.getQueryableDatatype();
                             String resultSetColumnName = defn.formatColumnNameForDBQueryResultSet(newInstance, newProp.columnName());
                             qdt.setFromResultSet(resultSet, resultSetColumnName);
+                            if (newInstance.isEmptyRow() && !qdt.isNull()) {
+                                newInstance.setEmptyRow(false);
+                            }
+
                         }
                         newInstance.setDefined(); // Actually came from the database so it is a defined row.
                         Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
@@ -775,11 +779,13 @@ public class DBQuery {
      * DBvolution.
      *
      * @param maximumNumberOfRowsReturned
+     * @return this DBQuery instance
      */
-    public void setRowLimit(long maximumNumberOfRowsReturned) {
+    public DBQuery setRowLimit(long maximumNumberOfRowsReturned) {
         rowLimit = new Long(maximumNumberOfRowsReturned);
         results = null;
 
+        return this;
     }
 
     /**
@@ -789,10 +795,13 @@ public class DBQuery {
      * Also resets the retrieved results so that the database will be
      * re-queried.
      *
+     * @return this DBQuery instance
      */
-    public void clearRowLimit() {
+    public DBQuery clearRowLimit() {
         rowLimit = null;
         results = null;
+
+        return this;
     }
 
     /**
@@ -807,8 +816,9 @@ public class DBQuery {
      * </pre>
      *
      * @param sortColumns
+     * @return this DBQuery instance
      */
-    public void setSortOrder(ColumnProvider... sortColumns) {
+    public DBQuery setSortOrder(ColumnProvider... sortColumns) {
         results = null;
 
         sortOrder = new ArrayList<PropertyWrapper>();
@@ -819,14 +829,19 @@ public class DBQuery {
                 sortOrder.add(prop);
             }
         }
+
+        return this;
     }
 
     /**
      * Remove all sorting that has been set on this DBQuery
      *
+     * @return this DBQuery instance
      */
-    public void clearSortOrder() {
+    public DBQuery clearSortOrder() {
         sortOrder = null;
+
+        return this;
     }
 
     private String getOrderByClause() {
@@ -866,9 +881,12 @@ public class DBQuery {
      *
      * @param allow - TRUE to allow blank queries, FALSE to return it to the
      * default setting.
+     * @return this DBQuery instance
      */
-    public void setBlankQueryAllowed(boolean allow) {
+    public DBQuery setBlankQueryAllowed(boolean allow) {
         this.blankQueryAllowed = allow;
+
+        return this;
     }
 
     /**
@@ -889,9 +907,12 @@ public class DBQuery {
      *
      * @param allow - TRUE to allow cartesian joins, FALSE to return it to the
      * default setting.
+     * @return this DBQuery instance
      */
-    public void setCartesianJoinsAllowed(boolean allow) {
+    public DBQuery setCartesianJoinsAllowed(boolean allow) {
         this.cartesianJoinAllowed = allow;
+
+        return this;
     }
 
     /**
@@ -977,9 +998,12 @@ public class DBQuery {
      * supports OUTER thru the ANSI syntax.
      *
      * @param useANSISyntax the useANSISyntax flag to set
+     * @return this DBQuery instance
      */
-    public void setUseANSISyntax(boolean useANSISyntax) {
+    public DBQuery setUseANSISyntax(boolean useANSISyntax) {
         this.useANSISyntax = useANSISyntax;
+
+        return this;
     }
 
     /**
@@ -999,8 +1023,9 @@ public class DBQuery {
      *
      * @throws InstantiationException
      * @throws IllegalAccessException
+     * @return this DBQuery instance
      */
-    public void addAllRelatedTables() throws InstantiationException, IllegalAccessException {
+    public DBQuery addAllRelatedTables() throws InstantiationException, IllegalAccessException {
         List<DBRow> tablesToAdd = new ArrayList<DBRow>();
         for (DBRow table : allQueryTables) {
             List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
@@ -1009,6 +1034,8 @@ public class DBQuery {
             }
         }
         add(tablesToAdd.toArray(new DBRow[]{}));
+
+        return this;
     }
 
     /**
@@ -1028,8 +1055,9 @@ public class DBQuery {
      *
      * @throws InstantiationException
      * @throws IllegalAccessException
+     * @return this DBQuery instance
      */
-    public void addAllRelatedTablesAsOptional() throws InstantiationException, IllegalAccessException {
+    public DBQuery addAllRelatedTablesAsOptional() throws InstantiationException, IllegalAccessException {
         Set<DBRow> tablesToAdd = new HashSet<DBRow>();
         List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
         for (DBRow table : allQueryTables) {
@@ -1050,6 +1078,8 @@ public class DBQuery {
             }
         }
         addOptional(tablesToAdd.toArray(new DBRow[]{}));
+
+        return this;
     }
 
     /**
@@ -1128,10 +1158,12 @@ public class DBQuery {
      * </pre>
      *
      * @param condition
+     * @return this DBQuery instance
      */
-    public void addCondition(BooleanExpression condition) {
+    public DBQuery addCondition(BooleanExpression condition) {
         expressions.add(condition);
         results = null;
+        return this;
     }
 
     /**
@@ -1144,10 +1176,13 @@ public class DBQuery {
      *
      * <p>
      * The conditions will be connected by OR in the SQL.
+     *
+     * @return this DBQuery instance
      */
-    public void setToMatchAnyCondition() {
+    public DBQuery setToMatchAnyCondition() {
         options.setMatchAny();
         results = null;
+        return this;
     }
 
     /**
@@ -1159,9 +1194,41 @@ public class DBQuery {
      * <p>
      * This means that all permitted*, excluded*, and comparisons are required
      * for any rows and the conditions will be connected by AND.
+     *
+     * @return this DBQuery instance
      */
-    public void setToMatchAllConditions() {
+    public DBQuery setToMatchAllConditions() {
         options.setMatchAll();
         results = null;
+        return this;
+    }
+
+    /**
+     * Automatically adds the example as a required table if it has criteria, or
+     * as an optional table otherwise.
+     *
+     * <p>
+     * Any DBRow example passed to this method that has criteria specified on
+     * it, however vague, will become a required table on the query.
+     *
+     * <p>
+     * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase)
+     * } is TRUE, will be added as an optional table.
+     *
+     * <p>
+     * Warning: not specifying a required table will result in a FULL OUTER join
+     * which some database don't handle. You may want to test that the query is
+     * not blank after adding all your tables.
+     *
+     * @param exampleWithOrWithoutCriteria
+     * @return this DBQuery instance
+     */
+    public DBQuery addOptionalIfNonspecific(DBRow exampleWithOrWithoutCriteria) {
+        if (exampleWithOrWithoutCriteria.willCreateBlankQuery(database)) {
+            addOptional(exampleWithOrWithoutCriteria);
+        } else {
+            add(exampleWithOrWithoutCriteria);
+        }
+        return this;
     }
 }
