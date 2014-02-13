@@ -22,20 +22,20 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
  *
  * @author gregory.graham
  */
-public class MySQLDB extends DBDatabase{
-    
+public class MySQLDB extends DBDatabase {
+
     public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
     protected String databaseName;
-    
-    public MySQLDB(String jdbcURL, String username, String password){
+
+    public MySQLDB(String jdbcURL, String username, String password) {
         super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);
-    }    
-    
-    public MySQLDB(String server, long port, String databaseName, String username, String password){
-        super(new MySQLDBDefinition(), 
-                MYSQLDRIVERNAME,  
-                "jdbc:mysql://"+server+":" + port + "/" + databaseName,
-                username, 
+    }
+
+    public MySQLDB(String server, long port, String databaseName, String username, String password) {
+        super(new MySQLDBDefinition(),
+                MYSQLDRIVERNAME,
+                "jdbc:mysql://" + server + ":" + port + "/" + databaseName,
+                username,
                 password);
         this.setDatabaseName(databaseName);
     }
@@ -44,4 +44,10 @@ public class MySQLDB extends DBDatabase{
     public String getDatabaseName() {
         return databaseName; //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public boolean supportsFullOuterJoinNatively() {
+        return false;
+    }
+
 }
