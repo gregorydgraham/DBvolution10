@@ -938,6 +938,20 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
+     * Tests whether this instance of DBRow and the otherTable instance of DBRow
+     * will be connected given the specified database and query options.
+     *
+     * @param database
+     * @param otherTable
+     * @param options
+     * @return
+     */
+    public boolean willBeConnectedTo(DBDatabase database, DBRow otherTable, QueryOptions options) {
+        String join = this.getRelationshipsAsSQL(database, otherTable, options);
+        return join != null && !join.isEmpty();
+    }
+
+    /**
      * Returns all the DBRow subclasses referenced by by this class with foreign
      * keys
      *
@@ -1052,19 +1066,20 @@ abstract public class DBRow implements Serializable {
      * Indicates whether this instance has any values set from the database.
      *
      * <p>
-     * If this row is the result of the database sending back a row with NULL in every column, this method
-     * returns TRUE.
+     * If this row is the result of the database sending back a row with NULL in
+     * every column, this method returns TRUE.
      *
      * <p>
      * An empty row is probably the result an optional DBRow not having a
-     * matching row for the query. In database parlance this row is a null row of an OUTER JOIN and
-     * this table did not have any matching rows.
+     * matching row for the query. In database parlance this row is a null row
+     * of an OUTER JOIN and this table did not have any matching rows.
      *
      * <p>
      * Please note: if the row is undefined
      * {@link DBRow#isDefined (see isDefined)} then this is meaningless
      *
-     * @return TRUE if the row has no non-null values or is undefined, FALSE otherwise
+     * @return TRUE if the row has no non-null values or is undefined, FALSE
+     * otherwise
      */
     public Boolean isEmptyRow() {
         return emptyRow;
@@ -1072,9 +1087,10 @@ abstract public class DBRow implements Serializable {
 
     /**
      * Sets the row to be empty or not.
-     * 
-     * Used within DBQuery and DBTable while creating the DBRows to indicate an empty row.
-     * 
+     *
+     * Used within DBQuery and DBTable while creating the DBRows to indicate an
+     * empty row.
+     *
      * @param isThisRowEmpty
      */
     protected void setEmptyRow(Boolean isThisRowEmpty) {

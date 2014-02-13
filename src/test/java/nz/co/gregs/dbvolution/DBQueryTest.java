@@ -42,36 +42,16 @@ public class DBQueryTest extends AbstractTest {
         DBQuery dbQuery = database.getDBQuery();
         CarCompany carCompany = new CarCompany();
         carCompany.name.permittedValues("TOYOTA");
-        dbQuery.add(carCompany);
         dbQuery.add(new Marque());
-        final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
+        dbQuery.add(carCompany);
+        final String generateSQLString = dbQuery.getSQLForQuery();//.replaceAll(" +", " ");
 
-
-        String expectedResult = " SELECT CAR_COMPANY.NAME DB1064314813, \n"
-                + "CAR_COMPANY.UID_CARCOMPANY DB819159114, \n"
-                + "MARQUE.NUMERIC_CODE DB570915006, \n"
-                + "MARQUE.UID_MARQUE DB768788587, \n"
-                + "MARQUE.ISUSEDFORTAFROS DB1658455900, \n"
-                + "MARQUE.FK_TOYSTATUSCLASS DB551644671, \n"
-                + "MARQUE.INTINDALLOCALLOWED DB1405397146, \n"
-                + "MARQUE.UPD_COUNT DB1497912790, \n"
-                + "MARQUE.AUTO_CREATED DB332721019, \n"
-                + "MARQUE.NAME DB1359288114, \n"
-                + "MARQUE.PRICINGCODEPREFIX DB443037310, \n"
-                + "MARQUE.RESERVATIONSALWD DB1860726622, \n"
-                + "MARQUE.CREATION_DATE DB1712481749, \n"
-                + "MARQUE.ENABLED DB637053442, \n"
-                + "MARQUE.FK_CARCOMPANY DB1664116480 FROM car_company, \n"
-                + "marque WHERE 1=1 and (CAR_COMPANY.NAME = 'TOYOTA') \n"
-                + "and (CAR_COMPANY.UID_CARCOMPANY = MARQUE.FK_CARCOMPANY) ;";
-        if (dbQuery.isUseANSISyntax()) {
-            expectedResult = "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
-        }
+        String expectedResult = "select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany from marque as __1997432637 inner join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        Assert.assertThat(testableSQLWithoutColumnAliases(expectedResult),
-                is(testableSQLWithoutColumnAliases(generateSQLString)));
+        Assert.assertThat(testableSQLWithoutColumnAliases(generateSQLString),
+                is(testableSQLWithoutColumnAliases(expectedResult)));
     }
 
     @Test

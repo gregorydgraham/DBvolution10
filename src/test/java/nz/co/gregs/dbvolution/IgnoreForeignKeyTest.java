@@ -17,11 +17,10 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -49,9 +48,10 @@ public class IgnoreForeignKeyTest extends AbstractTest {
         dbQuery = database.getDBQuery(carCompany, marque);
         dbQuery.setBlankQueryAllowed(true);
         dbQuery.setCartesianJoinsAllowed(true);
+        System.out.println(dbQuery.getSQLForQuery());
         allRows = dbQuery.getAllRows();
         dbQuery.print();
-        Assert.assertTrue("Number of rows should be 88", allRows.size() == 88);
+        Assert.assertThat(allRows.size(), is(88));
 
         marque.useAllForeignKeys();
         dbQuery = database.getDBQuery(carCompany, marque);
