@@ -268,7 +268,7 @@ public class DBQuery {
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
         QueryGraph queryGraph = new QueryGraph(database, allQueryTables, options);
-        DBRow startQueryFromTable = (DBRow) (queryTables.isEmpty()?allQueryTables.get(0):queryTables.get(0));
+        DBRow startQueryFromTable = queryTables.isEmpty()?allQueryTables.get(0):queryTables.get(0);
         List<DBRow> sortedQueryTables = cartesianJoinAllowed
                 ?queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
                 :queryGraph.toList(startQueryFromTable.getClass());
@@ -334,7 +334,7 @@ public class DBQuery {
         if (database.isPrintSQLBeforeExecuting()) {
             System.out.println(sqlString);
         }
-        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.hasDisconnectedSubgraph()) {
+        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
             throw new AccidentalCartesianJoinException();
         }
 
