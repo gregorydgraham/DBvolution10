@@ -27,4 +27,11 @@ public class H2DB extends DBDatabase {
     public H2DB(String jdbcURL, String username, String password) {
         super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
     }
+
+    @Override
+    public boolean supportsFullOuterJoinNatively() {
+        return false;
+    }
+    
+    
 }

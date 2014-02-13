@@ -185,16 +185,22 @@ public class OuterJoinTest extends AbstractTest {
                 = testableSQLWithoutColumnAliases("select __78874071.name, __78874071.uid_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo from car_company as __78874071 left outer join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk ) inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) left outer join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company and _1159239592.logo_id = _1617907935.fk_company_logo ) where 1=1 ;");
         String expected2OptionalTableQuery3
                 = testableSQLWithoutColumnAliases("select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, _1617907935.fk_car_company, _1617907935.fk_company_logo from car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) left outer join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk ) left outer join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company and _1159239592.logo_id = _1617907935.fk_company_logo ) where 1=1 ;");
-String expected2OptionalTableQuery4
+        String expected2OptionalTableQuery4
                 = testableSQLWithoutColumnAliases("select __78874071.name, __78874071.uid_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, _1617907935.fk_car_company, _1617907935.fk_company_logo, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany from car_company as __78874071 left outer join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk ) left outer join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company and _1159239592.logo_id = _1617907935.fk_company_logo ) inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) where 1=1 ;");
+        String expected2OptionalTableQuery5
+                = testableSQLWithoutColumnAliases("select __78874071.name, __78874071.uid_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany from car_company as __78874071 left outer join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) left outer join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk and _1617907935.fk_company_logo = _1159239592.logo_id ) inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) where 1=1 ;");
+        String expected2OptionalTableQuery6
+                = testableSQLWithoutColumnAliases("select __78874071.name, __78874071.uid_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name from car_company as __78874071 left outer join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) left outer join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk and _1617907935.fk_company_logo = _1159239592.logo_id ) where 1=1 ;");
         System.out.println(sqlForQuery);
         Assert.assertThat(
                 testableSQLWithoutColumnAliases(sqlForQuery),
                 anyOf(
-                        is(expected2OptionalTableQuery), 
-                        is(expected2OptionalTableQuery2), 
-                        is(expected2OptionalTableQuery3), 
-                        is(expected2OptionalTableQuery4)
+                        is(expected2OptionalTableQuery),
+                        is(expected2OptionalTableQuery2),
+                        is(expected2OptionalTableQuery3),
+                        is(expected2OptionalTableQuery4),
+                        is(expected2OptionalTableQuery5),
+                        is(expected2OptionalTableQuery6)
                 ));
         dbQuery.print(System.out);
         Assert.assertThat(dbQuery.count(), is(22L));
@@ -220,7 +226,29 @@ String expected2OptionalTableQuery4
                 testableSQLWithoutColumnAliases(sqlForQuery),
                 anyOf(is(expectedFullOuterQuery), is(otherExpectedFullOuterQuery)));
         // FULL OUTER JOIN not supported by H2 or MySqldb
-        if (!((database instanceof H2DB) || (database instanceof MySQLDB))) {
+        if (database.supportsFullOuterJoin()) {
+            dbQuery.print(System.out);
+            Assert.assertThat(dbQuery.count(), is(22L));
+        }
+    }
+
+    @Test
+    public void testOuterJoinQueryAvoidsBadOrder() throws SQLException {
+        DBQuery dbQuery = database.getDBQuery();
+        dbQuery.setUseANSISyntax(true);
+        dbQuery.addOptional(new LinkCarCompanyAndLogo());
+        dbQuery.addOptional(new CompanyLogo());
+        dbQuery.addOptional(new Marque());
+        dbQuery.addOptional(new CarCompany());
+        dbQuery.setBlankQueryAllowed(true);
+        String sqlForQuery = dbQuery.getSQLForQuery();
+        System.out.println(sqlForQuery);
+        System.out.println(testableSQLWithoutColumnAliases(sqlForQuery));
+        Assert.assertThat(
+                testableSQLWithoutColumnAliases(sqlForQuery),
+                not(containsString("( 1=1 )")));
+        // FULL OUTER JOIN not supported by H2 or MySqldb
+        if (database.supportsFullOuterJoin()) {
             dbQuery.print(System.out);
             Assert.assertThat(dbQuery.count(), is(22L));
         }

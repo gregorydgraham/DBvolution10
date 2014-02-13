@@ -74,7 +74,7 @@ public abstract class DBDatabase {
     private DataSource dataSource = null;
     private boolean printSQLBeforeExecuting;
     private boolean isInATransaction = false;
-    private boolean isInAReadOnlyTransaction = false;
+//    private boolean isInAReadOnlyTransaction = false;
     private DBTransactionStatement transactionStatement;
     private final DBDefinition definition;
     private String databaseName;
@@ -531,16 +531,13 @@ public abstract class DBDatabase {
     synchronized public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
         Connection connection;
         V returnValues = null;
-//        boolean wasReadOnly = false;
         boolean wasAutoCommit = true;
 
         this.transactionStatement = getDBTransactionStatement();
         try {
             this.isInATransaction = true;
-            this.isInAReadOnlyTransaction = true;
 
             connection = transactionStatement.getConnection();
-//            wasReadOnly = connection.isReadOnly();
             wasAutoCommit = connection.getAutoCommit();
 
             connection.setAutoCommit(false);
@@ -558,7 +555,6 @@ public abstract class DBDatabase {
             }
         } finally {
             this.transactionStatement.transactionFinished();
-            this.isInAReadOnlyTransaction = false;
             this.isInATransaction = false;
             transactionStatement = null;
         }
@@ -790,7 +786,9 @@ public abstract class DBDatabase {
      * Drops a table from the database.
      *
      * <p>
-     * The easy way to drop a table that might not exist.
+     * The easy way to drop a table that might not exist. Will still throw a
+     * AutoCommitActionDuringTransactionException if you use it during a
+     * transaction.
      * <p>
      * An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)
      * }
@@ -810,7 +808,9 @@ public abstract class DBDatabase {
     public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) {
         try {
             this.dropTable(tableRow);
-        } catch (Exception exp) {
+        } catch (SQLException exp) {
+            ;
+        } catch (AccidentalDroppingOfTableException exp) {
             ;
         }
     }
@@ -948,5 +948,45 @@ public abstract class DBDatabase {
      */
     public void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
         this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
+    }
+
+    /**
+     * Indicates whether this database supports full outer joins.
+     *
+     * <p>
+     * Some databases don't yet support queries where all the tables are
+     * optional, that is FULL OUTER joins.
+     *
+     * <p>
+     * This method indicates whether or not this instance can perform full outer
+     * joins.
+     *
+     * <p>
+     * Please note: there are plans to implement full outer joins within DBV for
+     * databases without native support, at which point this method will return
+     * TRUE for all databases. Timing for this implementation is not yet
+     * available.
+     *
+     * @return
+     */
+    public boolean supportsFullOuterJoin() {
+        return supportsFullOuterJoinNatively();
+    }
+
+    /**
+     * Indicates whether this database supports full outer joins natively.
+     *
+     * <p>
+     * Some databases don't yet support queries where all the tables are
+     * optional, that is FULL OUTER joins.
+     *
+     * <p>
+     * This method indicates whether or not this instance can perform full outer
+     * joins.
+     *
+     * @return
+     */
+    protected boolean supportsFullOuterJoinNatively() {
+        return true;
     }
 }
