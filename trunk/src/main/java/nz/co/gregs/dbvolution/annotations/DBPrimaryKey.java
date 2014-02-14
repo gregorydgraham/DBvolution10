@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * 
  * DBPrimaryKey is generated automatically by DBTableClassGenerator if the primary key is specified within the database.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

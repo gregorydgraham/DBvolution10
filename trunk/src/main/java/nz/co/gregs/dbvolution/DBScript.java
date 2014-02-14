@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,12 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 /**
  * A convenient method of implement a database script in DBvolution
  *
- * @author gregory.graham
+ * <p>
+ * DBvolution is available on <a
+ * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
+ * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
+ *
+ * @author Gregory Graham
  */
 public abstract class DBScript {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class DBDataComparison {
     private final DBOperator operator;

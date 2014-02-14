@@ -30,9 +30,13 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
+ * <p>
+ * DBvolution is available on <a
+ * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
+ * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
  *
  * @param <E>
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class DBTable<E extends DBRow> {
 
@@ -40,11 +44,11 @@ public class DBTable<E extends DBRow> {
     E template;
     private DBDatabase database = null;
     ResultSet resultSet = null;
-    private java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
+    private final java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
     private Long rowLimit;
     private List<PropertyWrapper> sortOrder = null;
     private boolean blankQueryAllowed = false;
-    private QueryOptions options = new QueryOptions();
+    private final QueryOptions options = new QueryOptions();
 
     /**
      *

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * 
  * DBColumn is generated automatically by DBTableClassGenerator.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

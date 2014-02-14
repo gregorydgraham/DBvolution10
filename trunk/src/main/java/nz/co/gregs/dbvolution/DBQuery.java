@@ -36,6 +36,11 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
 
 /**
  * The Definition of a Query on a Database
+ * 
+ * <p>
+ * DBvolution is available on <a
+ * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
+ * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
  *
  * <p>
  * DBQuery brings together several DBRow classes into a single database query.
@@ -49,22 +54,23 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
  * {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBDatabase's getDBQuery method}.
  *
  * <p>
- The foreign keys from the DBRow instances will be automatically aligned and
- the criteria defined on the DBRows will be seamlessly addAndConnected to the WHERE
- clause.
-
- <p>
+ * The foreign keys from the DBRow instances will be automatically aligned and
+ * the criteria defined on the DBRows will be seamlessly addAndConnected to the
+ * WHERE clause.
+ *
+ * <p>
  * Outer joins are supported using
- * {@link #addOptional(nz.co.gregs.dbvolution.DBRow...) addAndConnectOptional}, as well
- * all OR queries with {@link #setToMatchAnyCondition()}
+ * {@link #addOptional(nz.co.gregs.dbvolution.DBRow...) addAndConnectOptional},
+ * as well all OR queries with {@link #setToMatchAnyCondition()}
  *
  * <p>
- more complicated conditions can be addAndConnected to the query itself using the
- {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addAndConnectCondition method}.
+ * more complicated conditions can be addAndConnected to the query itself using
+ * the
+ * {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addAndConnectCondition method}.
  *
  * <p>
- DBQuery can even scan the Class path and find all related DBRow classes and
- addAndConnect them on request.
+ * DBQuery can even scan the Class path and find all related DBRow classes and
+ * addAndConnect them on request.
  *
  * @author gregorygraham
  */
@@ -108,9 +114,10 @@ public class DBQuery {
      * Add a table to the query.
      *
      * <p>
- This method addAndConnects the DBRow to the list of required (INNER) tables.
-
- <p>
+     * This method addAndConnects the DBRow to the list of required (INNER)
+     * tables.
+     *
+     * <p>
      * Criteria (permitted and excluded values) from this instance will be
      * automatically included in the query and an instance of this DBRow class
      * will be created for each DBQueryRow returned.
@@ -133,16 +140,16 @@ public class DBQuery {
      * Add an optional table to this query
      *
      * <p>
- This method addAndConnects an optional (OUTER) table to the query.
-
- <p>
+     * This method addAndConnects an optional (OUTER) table to the query.
+     *
+     * <p>
      * The query will return an instance of this DBRow for each row found,
      * though it may be a null instance as there was no matching row in the
      * database.
      *
      * <p>
- Criteria (permitted and excluded values) specified in the supplied
- instance will be addAndConnected to the query.
+     * Criteria (permitted and excluded values) specified in the supplied
+     * instance will be addAndConnected to the query.
      *
      * @param tables a list of DBRow objects that defines optional tables and
      * criteria
@@ -163,9 +170,9 @@ public class DBQuery {
      * Remove tables from the query
      *
      * <p>
- This method removes previously addAndConnected tables from the query.
-
- <p>
+     * This method removes previously addAndConnected tables from the query.
+     *
+     * <p>
      * Previous results and SQL are discarded, and the query is set ready to be
      * re-run.
      *
@@ -268,10 +275,10 @@ public class DBQuery {
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
         QueryGraph queryGraph = new QueryGraph(database, allQueryTables, options);
-        DBRow startQueryFromTable = queryTables.isEmpty()?allQueryTables.get(0):queryTables.get(0);
+        DBRow startQueryFromTable = queryTables.isEmpty() ? allQueryTables.get(0) : queryTables.get(0);
         List<DBRow> sortedQueryTables = cartesianJoinAllowed
-                ?queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
-                :queryGraph.toList(startQueryFromTable.getClass());
+                ? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
+                : queryGraph.toList(startQueryFromTable.getClass());
 
         if (rowLimit != null) {
             selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
@@ -407,13 +414,13 @@ public class DBQuery {
      * <p>
      * Criteria such as
      * {@link nz.co.gregs.dbvolution.datatypes.QueryableDatatype#permittedValues(java.lang.Object...) permitted values}
- defined on the fields of the DBRow examples are addAndConnected as part of the
- WHERE clause.
-
- <p>
- Similarly conditions addAndConnected to the DBQuery using
- {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addAndConnectCondition}
- are addAndConnected.
+     * defined on the fields of the DBRow examples are addAndConnected as part
+     * of the WHERE clause.
+     *
+     * <p>
+     * Similarly conditions addAndConnected to the DBQuery using
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addAndConnectCondition}
+     * are addAndConnected.
      *
      * @return A List of DBQueryRows containing all the DBRow instances aligned
      * with their related instances.
@@ -757,10 +764,10 @@ public class DBQuery {
      * least one constraint has been placed on the query.
      *
      * <p>
- This helps avoid the common mistake of accidentally retrieving all the
- rows of the tables by forgetting to addAndConnect criteria.
-
- <p>
+     * This helps avoid the common mistake of accidentally retrieving all the
+     * rows of the tables by forgetting to addAndConnect criteria.
+     *
+     * <p>
      * No attempt to compare the length of the query results with the length of
      * the table is made: if your criteria selects all the row of the tables
      * this method will still return FALSE.
@@ -947,13 +954,13 @@ public class DBQuery {
      * <p>
      * Criteria such as
      * {@link nz.co.gregs.dbvolution.datatypes.QueryableDatatype#permittedValues(java.lang.Object...) permitted values}
- defined on the fields of the DBRow examples are addAndConnected as part of the
- WHERE clause.
-
- <p>
- Similarly conditions addAndConnected to the DBQuery using
- {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addAndConnectCondition}
- are addAndConnected.
+     * defined on the fields of the DBRow examples are addAndConnected as part
+     * of the WHERE clause.
+     *
+     * <p>
+     * Similarly conditions addAndConnected to the DBQuery using
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addAndConnectCondition}
+     * are addAndConnected.
      *
      * @param expectedRows - the number of rows expected to be retrieved
      * @return A List of DBQueryRows containing all the DBRow instances aligned
@@ -997,11 +1004,11 @@ public class DBQuery {
      * You should probably use ANSI syntax.
      *
      * <p>
- ANSI syntax has the foreign key and addAndConnected relationships defined in the
- FROM clause with the JOIN operator. Pre-ANSI syntax treated the foreign
- keys and other relationships as part of the WHERE clause.
-
- <p>
+     * ANSI syntax has the foreign key and addAndConnected relationships defined
+     * in the FROM clause with the JOIN operator. Pre-ANSI syntax treated the
+     * foreign keys and other relationships as part of the WHERE clause.
+     *
+     * <p>
      * ANSI syntax supports OUTER joins with a standard syntax, and DBvolution
      * supports OUTER thru the ANSI syntax.
      *
@@ -1015,14 +1022,14 @@ public class DBQuery {
     }
 
     /**
-     * Search the classpath and addAndConnect any DBRow classes that reference the DBRows
- within this DBQuery
+     * Search the classpath and addAndConnect any DBRow classes that reference
+     * the DBRows within this DBQuery
      *
      * <p>
- This method automatically enlarges the query by finding all associated
- DBRow classes and addAndConnecting them to the query.
-
- <p>
+     * This method automatically enlarges the query by finding all associated
+     * DBRow classes and addAndConnecting them to the query.
+     *
+     * <p>
      * In a sense this expands the query out by one level of indirection.
      *
      * <p>
@@ -1047,14 +1054,14 @@ public class DBQuery {
     }
 
     /**
-     * Search the classpath and addAndConnect, as optional, any DBRow classes that
- reference the DBRows within this DBQuery
+     * Search the classpath and addAndConnect, as optional, any DBRow classes
+     * that reference the DBRows within this DBQuery
      *
      * <p>
- This method automatically enlarges the query by finding all associated
- DBRow classes and addAndConnecting them to the query as optional tables.
-
- <p>
+     * This method automatically enlarges the query by finding all associated
+     * DBRow classes and addAndConnecting them to the query as optional tables.
+     *
+     * <p>
      * In a sense this expands the query out by one level of indirection.
      *
      * <p>
@@ -1140,10 +1147,10 @@ public class DBQuery {
      * Use this method to addAndConnect complex conditions to the DBQuery.
      *
      * <p>
- This method takes a BooleanExpression and addAndConnects it to the where clause of
- the Query
-
- <p>
+     * This method takes a BooleanExpression and addAndConnects it to the where
+     * clause of the Query
+     *
+     * <p>
      * The easiest way to get a BooleanExpression is the DBRow.column() method
      * and then apply the functions you require until you get a
      * BooleanExpression back.
@@ -1156,14 +1163,14 @@ public class DBQuery {
      * <p>
      * Standard uses of this method are:
      * <pre>
- addAndConnectCondition(myRow.column(myRow.myColumn).like("%THis%"));
- addAndConnectCondition(myRow.column(myRow.myNumber).cos().greaterThan(0.5));
- addAndConnectCondition(StringExpression.value("THis").like(myRwo.column(myRow.myColumn)));
- addAndConnectCondition(BooleanExpression.anyOf(
-                      myRow.column(myRow.myColumn).between("That", "This"),
-                      myRow.column(myRow.myColumn).is("Something"))
-                      );
- </pre>
+     * addAndConnectCondition(myRow.column(myRow.myColumn).like("%THis%"));
+     * addAndConnectCondition(myRow.column(myRow.myNumber).cos().greaterThan(0.5));
+     * addAndConnectCondition(StringExpression.value("THis").like(myRwo.column(myRow.myColumn)));
+     * addAndConnectCondition(BooleanExpression.anyOf(
+     * myRow.column(myRow.myColumn).between("That", "This"),
+     * myRow.column(myRow.myColumn).is("Something"))
+     * );
+     * </pre>
      *
      * @param condition
      * @return this DBQuery instance
@@ -1212,8 +1219,8 @@ public class DBQuery {
     }
 
     /**
-     * Automatically addAndConnects the example as a required table if it has criteria, or
- as an optional table otherwise.
+     * Automatically addAndConnects the example as a required table if it has
+     * criteria, or as an optional table otherwise.
      *
      * <p>
      * Any DBRow example passed to this method that has criteria specified on
@@ -1222,11 +1229,11 @@ public class DBQuery {
      * <p>
      * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase)
      * } is TRUE, will be addAndConnected as an optional table.
-
- <p>
- Warning: not specifying a required table will result in a FULL OUTER join
- which some database don't handle. You may want to test that the query is
- not blank after addAndConnecting all your tables.
+     *
+     * <p>
+     * Warning: not specifying a required table will result in a FULL OUTER join
+     * which some database don't handle. You may want to test that the query is
+     * not blank after addAndConnecting all your tables.
      *
      * @param exampleWithOrWithoutCriteria
      * @return this DBQuery instance
