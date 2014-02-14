@@ -810,8 +810,8 @@ abstract public class DBRow implements Serializable {
      * Remove all limitations on the fields returned.
      *
      * <p>
-     * Clears the limits on returned fields set by {@link DBRow#returnFieldsLimitedTo(T[])
-     * }
+     * Clears the limits on returned fields set by
+     * {@code DBRow.returnFieldsLimitedTo(T...)}
      *
      *
      */
@@ -948,7 +948,8 @@ abstract public class DBRow implements Serializable {
      * @param database
      * @param otherTable
      * @param options
-     * @return
+     * @return TRUE if this instance and the otherTable will be connected, FALSE
+     * otherwise.
      */
     public boolean willBeConnectedTo(DBDatabase database, DBRow otherTable, QueryOptions options) {
         String join = this.getRelationshipsAsSQL(database, otherTable, options);
