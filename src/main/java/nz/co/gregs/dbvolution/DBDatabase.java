@@ -971,7 +971,8 @@ public abstract class DBDatabase {
      * TRUE for all databases. Timing for this implementation is not yet
      * available.
      *
-     * @return
+     * @return TRUE if this DBDatabase supports full outer joins , FALSE
+     * otherwise.
      */
     public boolean supportsFullOuterJoin() {
         return supportsFullOuterJoinNatively();
@@ -988,7 +989,8 @@ public abstract class DBDatabase {
      * This method indicates whether or not this instance can perform full outer
      * joins.
      *
-     * @return
+     * @return TRUE if the underlying database supports full outer joins
+     * natively, FALSE otherwise.
      */
     protected boolean supportsFullOuterJoinNatively() {
         return true;
