@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * 
  * <p> DBTableName is generated automatically by DBTableClassGenerator.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 @Target(ElementType.TYPE)
 @Inherited

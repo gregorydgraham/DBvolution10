@@ -23,8 +23,12 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 import org.reflections.Reflections;
 
 /**
+ * <p>
+ * DBvolution is available on <a
+ * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
+ * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 abstract public class DBRow implements Serializable {
 

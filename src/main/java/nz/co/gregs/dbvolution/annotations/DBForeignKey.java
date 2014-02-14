@@ -28,7 +28,7 @@ import nz.co.gregs.dbvolution.DBRow;
  * 
  * DBForeignKey is generated automatically by DBTableClassGenerator if the foreign key is specified within the database.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

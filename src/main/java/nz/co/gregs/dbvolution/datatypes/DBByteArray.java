@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
  * Implements the abstractions necessary to handle arbitrary byte streams and
  * files stored in the database
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class DBByteArray extends DBLargeObject {
 

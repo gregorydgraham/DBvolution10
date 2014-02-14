@@ -14,7 +14,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 /**
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 @DBTableName("marque")
 public class Marque extends DBRow {

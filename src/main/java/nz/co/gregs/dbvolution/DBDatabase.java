@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregory.graham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,11 @@ import org.apache.commons.logging.LogFactory;
  * DBDatabase is the repository of all knowledge about your database
  *
  * <p>
+ * Available on <a
+ * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
+ * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
+ *
+ * <p>
  * All DBvolution projects need a DBDatabase object to provide the database
  * connection, login details, and to generate the correct syntax for the
  * database.
@@ -58,10 +63,9 @@ import org.apache.commons.logging.LogFactory;
  *
  * <p>
  * Very few programmers will need to construct an actual DBDatabase as the
- * subclasses provide most of the required details for connecting to their
- * databases.
+ * subclasses provide most of the required details for connecting to databases.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public abstract class DBDatabase {
 
