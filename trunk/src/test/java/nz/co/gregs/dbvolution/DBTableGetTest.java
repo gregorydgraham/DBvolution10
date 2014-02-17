@@ -99,7 +99,7 @@ public class DBTableGetTest extends AbstractTest {
         literalQuery.getUidMarque().permittedValues(4893059);
         marques = marques.getRowsByExample(literalQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 1);
+        Assert.assertEquals(1, marques.toList().size());
         Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKey().toSQLString(database));
     }
 
@@ -109,7 +109,7 @@ public class DBTableGetTest extends AbstractTest {
         likeQuery.name.permittedPattern("TOY%");
         marques = marques.getRowsByExample(likeQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 1);
+        Assert.assertEquals(1, marques.toList().size());
         Assert.assertEquals("" + 1, marques.toList().get(0).getPrimaryKey().toSQLString(database));
     }
 
@@ -119,7 +119,7 @@ public class DBTableGetTest extends AbstractTest {
         likeQuery.name.excludedPattern("%E%");
         marques = marques.getRowsByExample(likeQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 14);
+        Assert.assertEquals(14, marques.toList().size());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class DBTableGetTest extends AbstractTest {
         likeQuery.name.excludedPattern(new StringExpression("%e%").uppercase());
         marques = marques.getRowsByExample(likeQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 14);
+        Assert.assertEquals(14, marques.toList().size());
     }
 
     @Test
@@ -137,7 +137,7 @@ public class DBTableGetTest extends AbstractTest {
         literalQuery.name.permittedValuesIgnoreCase("toYOTA");
         marques = marques.getRowsByExample(literalQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 1);
+        Assert.assertEquals(1, marques.toList().size());
         Assert.assertEquals("TOYOTA", marques.toList().get(0).name.stringValue());
     }
 
@@ -147,7 +147,7 @@ public class DBTableGetTest extends AbstractTest {
         literalQuery.name.permittedValuesIgnoreCase(new StringExpression("toYOTA").lowercase());
         marques = marques.getRowsByExample(literalQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 1);
+        Assert.assertEquals(1, marques.toList().size());
         Assert.assertEquals("TOYOTA", marques.toList().get(0).name.stringValue());
     }
 
@@ -157,7 +157,7 @@ public class DBTableGetTest extends AbstractTest {
         literalQuery.getUidMarque().permittedValues(4893059, 4893090);
         marques = marques.getRowsByExample(literalQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 2);
+        Assert.assertEquals(2, marques.toList().size());
         Assert.assertEquals("" + 4893059, marques.toList().get(0).getPrimaryKey().toSQLString(database));
         Assert.assertEquals("" + 4893090, marques.toList().get(1).getPrimaryKey().toSQLString(database));
     }
@@ -232,7 +232,7 @@ public class DBTableGetTest extends AbstractTest {
         }
         marques = marques.getRowsByRawSQL(rawQuery);
         marques.print();
-        Assert.assertEquals(marques.toList().size(), 2);
+        Assert.assertEquals(2, marques.toList().size());
     }
 
     @Test

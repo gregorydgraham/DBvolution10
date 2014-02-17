@@ -17,14 +17,15 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 
-
 /**
- * 
- * Class to allow some functionality for data types that DBvolution does not yet support
+ *
+ * Class to allow some functionality for data types that DBvolution does not yet
+ * support
  *
  * @author Gregory Graham
  */
 public class DBUnknownDatatype extends QueryableDatatype {
+
     public static final long serialVersionUID = 1L;
 
     @Override
@@ -45,5 +46,9 @@ public class DBUnknownDatatype extends QueryableDatatype {
     public void setValue(Object newLiteralValue) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    @Override
+    public DBUnknownDatatype getQueryableDatatypeForExpressionValue() {
+        return new DBUnknownDatatype();
+    }
 }

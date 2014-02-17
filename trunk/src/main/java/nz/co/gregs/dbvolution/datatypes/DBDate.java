@@ -147,6 +147,11 @@ public class DBDate extends QueryableDatatype implements DateResult{
     public Date getValue() {
         return dateValue();
     }
+
+    @Override
+    public DBDate getQueryableDatatypeForExpressionValue() {
+        return new DBDate();
+    }
     
     
 }

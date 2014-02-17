@@ -71,4 +71,9 @@ public class DBJavaObject extends QueryableDatatype {
     public String formatValueForSQLStatement(DBDatabase db) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public DBJavaObject getQueryableDatatypeForExpressionValue() {
+        return new DBJavaObject();
+    }
 }

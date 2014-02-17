@@ -128,13 +128,8 @@ public class DBQueryTest extends AbstractTest {
     @Test
     public void testGettingRelatedInstances() throws SQLException {
         CarCompany carCompany = new CarCompany();
-//        carCompany.name.permittedValues("TOYOTA");
         DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
         dbQuery.setBlankQueryAllowed(true);
-
-        List<DBQueryRow> results = dbQuery.getAllRows();
-
-        DBQueryRow[] rows = results.toArray(new DBQueryRow[]{});
 
         CarCompany toyota = null;
         for (CarCompany carco : dbQuery.getAllInstancesOf(carCompany)) {
@@ -143,11 +138,14 @@ public class DBQueryTest extends AbstractTest {
             }
         }
 
-        List<Marque> relatedInstances = toyota.getRelatedInstancesFromQuery(dbQuery, new Marque());
+        if (toyota != null) {
+            List<Marque> relatedInstances = toyota.getRelatedInstancesFromQuery(dbQuery, new Marque());
 
-        database.print(relatedInstances);
-        Assert.assertThat(relatedInstances.size(), is(2));
-
+            database.print(relatedInstances);
+            Assert.assertThat(relatedInstances.size(), is(2));
+        } else {
+            throw new RuntimeException("Unable To Find Toyota From The Query Results");
+        }
     }
 
     @Test

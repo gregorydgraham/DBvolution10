@@ -545,4 +545,8 @@ public abstract class DBDefinition {
     public String getPositionFunction(String originalString, String stringToFind) {
         return "POSITION(" + stringToFind + " IN " + originalString + ")";
     }
+
+    public String formatExpressionAlias(Object key) {
+        return ("DB"+key.hashCode()).replaceAll("-", "_");
+    }
 }

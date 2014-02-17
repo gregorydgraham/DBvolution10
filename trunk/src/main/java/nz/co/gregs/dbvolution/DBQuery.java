@@ -36,7 +36,7 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
 
 /**
  * The Definition of a Query on a Database
- * 
+ *
  * <p>
  * DBvolution is available on <a
  * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
@@ -60,8 +60,9 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
  *
  * <p>
  * Outer joins are supported using
- * {@link #addOptional(nz.co.gregs.dbvolution.DBRow...) addAndConnectOptional},
- * as well all OR queries with {@link #setToMatchAnyCondition()}
+ * {@link #addOptional(nz.co.gregs.dbvolution.DBRow...) addOptional}, as well as
+ * "all OR" queries with {@link #setToMatchAnyCondition()} ( all or is a query
+ * like SELECT .. FROM ... WHERE a=b OR b=c OR c=d ...)
  *
  * <p>
  * more complicated conditions can be addAndConnected to the query itself using
@@ -91,6 +92,7 @@ public class DBQuery {
     private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
     private final QueryOptions options = new QueryOptions();
     private final List<BooleanExpression> expressions = new ArrayList<BooleanExpression>();
+    private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -325,12 +327,20 @@ public class DBQuery {
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
+        
         for (DBDataComparison comp : comparisons) {
             whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
         }
+        
         for (BooleanExpression expression : expressions) {
             whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(expression.toSQLString(database)).append(")");
         }
+        
+        for (Map.Entry<Object, DBExpression> entry: expressionColumns.entrySet()) {
+            selectClause.append(colSep).append(entry.getValue().toSQLString(database)).append(" ").append(defn.formatExpressionAlias(entry.getKey()));
+            colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+        }
+        
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
@@ -442,6 +452,13 @@ public class DBQuery {
             try {
                 while (resultSet.next()) {
                     queryRow = new DBQueryRow();
+                    
+                    for (Map.Entry<Object, DBExpression> entry: expressionColumns.entrySet()){
+                        String expressionAlias = database.getDefinition().formatExpressionAlias(entry.getKey());
+                        QueryableDatatype expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
+                        expressionQDT.setFromResultSet(resultSet, expressionAlias);
+                        queryRow.addExpressionColumnValue(entry.getKey(),expressionQDT);
+                    }
                     for (DBRow tableRow : allQueryTables) {
                         DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
@@ -1244,6 +1261,11 @@ public class DBQuery {
         } else {
             add(exampleWithOrWithoutCriteria);
         }
+        return this;
+    }
+    
+    public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd){
+        expressionColumns.put(identifyingObject, expressionToAdd);
         return this;
     }
 }

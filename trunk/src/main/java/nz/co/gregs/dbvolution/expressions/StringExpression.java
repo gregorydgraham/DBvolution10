@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -55,13 +54,16 @@ public class StringExpression implements StringResult {
     /**
      * Create An Appropriate Expression Object For This Object
      *
-     * <p>The expression framework requires a *Expression to work with. The
-     * easiest way to get that is the {@code DBRow.column()} method.
+     * <p>
+     * The expression framework requires a *Expression to work with. The easiest
+     * way to get that is the {@code DBRow.column()} method.
      *
-     * <p>However if you wish your expression to start with a literal value it
-     * is a little trickier.
+     * <p>
+     * However if you wish your expression to start with a literal value it is a
+     * little trickier.
      *
-     * <p>This method provides the easy route to a *Expression from a literal
+     * <p>
+     * This method provides the easy route to a *Expression from a literal
      * value. Just call, for instance,
      * {@code StringExpression.value("STARTING STRING")} to get a
      * StringExpression and start the expression chain.
@@ -203,96 +205,96 @@ public class StringExpression implements StringResult {
     public StringExpression replace(String findString, String replaceWith) {
         return new StringExpression(
                 new DBTrinaryStringFunction(this, new StringExpression(findString), new StringExpression(replaceWith)) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getReplaceFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getReplaceFunctionName();
+                    }
+                });
     }
 
     public StringExpression replace(StringResult findString, String replaceWith) {
         return new StringExpression(
                 new DBTrinaryStringFunction(this, findString, new StringExpression(replaceWith)) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getReplaceFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getReplaceFunctionName();
+                    }
+                });
     }
 
     public StringExpression replace(String findString, StringResult replaceWith) {
         return new StringExpression(
                 new DBTrinaryStringFunction(this, new StringExpression(findString), replaceWith) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getReplaceFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getReplaceFunctionName();
+                    }
+                });
     }
 
     public StringExpression replace(StringResult findString, StringResult replaceWith) {
         return new StringExpression(
                 new DBTrinaryStringFunction(this, findString, replaceWith) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getReplaceFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getReplaceFunctionName();
+                    }
+                });
     }
 
     public StringExpression trim() {
         return new StringExpression(
                 new DBUnaryStringFunction(this) {
-            @Override
-            public String toSQLString(DBDatabase db) {
-                return db.getDefinition().doTrimFunction(this.only.toSQLString(db));
-            }
+                    @Override
+                    public String toSQLString(DBDatabase db) {
+                        return db.getDefinition().doTrimFunction(this.only.toSQLString(db));
+                    }
 
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return "NOT USED BECAUSE SQLSERVER DOESN'T IMPLEMENT TRIM";
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return "NOT USED BECAUSE SQLSERVER DOESN'T IMPLEMENT TRIM";
+                    }
+                });
     }
 
     public StringExpression leftTrim() {
         return new StringExpression(
                 new DBUnaryStringFunction(this) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getLeftTrimFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getLeftTrimFunctionName();
+                    }
+                });
     }
 
     public StringExpression rightTrim() {
         return new StringExpression(
                 new DBUnaryStringFunction(this) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getRightTrimFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getRightTrimFunctionName();
+                    }
+                });
     }
 
     public StringExpression lowercase() {
         return new StringExpression(
                 new DBUnaryStringFunction(this) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getLowercaseFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getLowercaseFunctionName();
+                    }
+                });
     }
 
     public StringExpression uppercase() {
         return new StringExpression(
                 new DBUnaryStringFunction(this) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getUppercaseFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getUppercaseFunctionName();
+                    }
+                });
     }
 
     /*endIndex0Based*/
@@ -323,21 +325,21 @@ public class StringExpression implements StringResult {
     public NumberExpression length() {
         return new NumberExpression(
                 new DBUnaryNumberFunction(this) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getStringLengthFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getStringLengthFunctionName();
+                    }
+                });
     }
 
     public static StringExpression currentUser() {
         return new StringExpression(
                 new DBNonaryStringFunction() {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getCurrentUserFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getCurrentUserFunctionName();
+                    }
+                });
     }
 
     /**
@@ -356,6 +358,11 @@ public class StringExpression implements StringResult {
         });
     }
 
+    @Override
+    public DBString getQueryableDatatypeForExpressionValue() {
+        return new DBString();
+    }
+
     private static abstract class DBBinaryStringArithmetic implements StringResult {
 
         private StringResult first;
@@ -364,6 +371,11 @@ public class StringExpression implements StringResult {
         public DBBinaryStringArithmetic(StringResult first, StringResult second) {
             this.first = first;
             this.second = second;
+        }
+
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
         }
 
         @Override
@@ -392,6 +404,11 @@ public class StringExpression implements StringResult {
     private static abstract class DBNonaryStringFunction implements StringResult {
 
         public DBNonaryStringFunction() {
+        }
+
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
         }
 
         abstract String getFunctionName(DBDatabase db);
@@ -435,6 +452,11 @@ public class StringExpression implements StringResult {
             this.only = only;
         }
 
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
+        }
+
         abstract String getFunctionName(DBDatabase db);
 
         protected String beforeValue(DBDatabase db) {
@@ -475,6 +497,11 @@ public class StringExpression implements StringResult {
 
         public DBUnaryNumberFunction(StringExpression only) {
             this.only = only;
+        }
+
+        @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
         }
 
         abstract String getFunctionName(DBDatabase db);
@@ -531,6 +558,11 @@ public class StringExpression implements StringResult {
         }
 
         @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
+        }
+
+        @Override
         public String toSQLString(DBDatabase db) {
             return this.beforeValue(db) + first.toSQLString(db)
                     + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))
@@ -580,6 +612,11 @@ public class StringExpression implements StringResult {
         public BinaryComplicatedNumberFunction(StringExpression first, StringExpression second) {
             this.first = first;
             this.second = second;
+        }
+
+        @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
         }
 
         @Override
@@ -652,6 +689,11 @@ public class StringExpression implements StringResult {
                     + (substringLength != null ? " for " + (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
                     + ") ";
         }
+
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
+        }
     }
 
     private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
@@ -662,6 +704,11 @@ public class StringExpression implements StringResult {
         public DBBinaryBooleanArithmetic(StringResult first, StringResult second) {
             this.first = first;
             this.second = second;
+        }
+
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
         }
 
         @Override
@@ -700,6 +747,11 @@ public class StringExpression implements StringResult {
             this.values = new StringResult[rightHandSide.length];
             this.column = leftHandSide;
             System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
+        }
+
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
         }
 
         abstract String getFunctionName(DBDatabase db);

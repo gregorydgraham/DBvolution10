@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
 public class NumberExpression implements NumberResult {
@@ -567,6 +568,11 @@ public class NumberExpression implements NumberResult {
         });
     }
 
+    @Override
+    public DBNumber getQueryableDatatypeForExpressionValue() {
+        return new DBNumber();
+    }
+
     public static abstract class DBBinaryArithmetic implements NumberResult {
 
         public NumberResult first;
@@ -581,6 +587,12 @@ public class NumberExpression implements NumberResult {
             this.first = first;
             this.second = second;
         }
+
+            @Override
+            public DBNumber getQueryableDatatypeForExpressionValue() {
+                return new DBNumber();
+            }
+
 
         @Override
         public String toSQLString(DBDatabase db) {
@@ -651,6 +663,12 @@ public class NumberExpression implements NumberResult {
             this.only = only;
         }
 
+            @Override
+            public DBNumber getQueryableDatatypeForExpressionValue() {
+                return new DBNumber();
+            }
+
+
         abstract String getFunctionName(DBDatabase db);
 
         protected String beforeValue(DBDatabase db) {
@@ -695,6 +713,12 @@ public class NumberExpression implements NumberResult {
             this.first = first;
             this.second = second;
         }
+
+            @Override
+            public DBNumber getQueryableDatatypeForExpressionValue() {
+                return new DBNumber();
+            }
+
 
         @Override
         public String toSQLString(DBDatabase db) {
@@ -802,6 +826,11 @@ public class NumberExpression implements NumberResult {
             this.second = second;
         }
 
+            @Override
+            public DBBoolean getQueryableDatatypeForExpressionValue() {
+                return new DBBoolean();
+            }
+
         @Override
         public String toSQLString(DBDatabase db) {
             return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
@@ -839,6 +868,12 @@ public class NumberExpression implements NumberResult {
             this.column = leftHandSide;
             System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
         }
+
+            @Override
+            public DBBoolean getQueryableDatatypeForExpressionValue() {
+                return new DBBoolean();
+            }
+
 
         abstract String getFunctionName(DBDatabase db);
 

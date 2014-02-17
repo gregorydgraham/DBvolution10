@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  * Interface to be implemented by all DBvolution objects that produce an SQL
@@ -35,6 +36,12 @@ import nz.co.gregs.dbvolution.DBDatabase;
  * @author Gregory Graham
  */
 public interface DBExpression {
+
+    /**
+     *
+     * @return the QueryableDatatype subclass that corresponds to the results of this expression
+     */
+    public QueryableDatatype getQueryableDatatypeForExpressionValue();
 
     /**
      * Produces the snippet provided by this class.
