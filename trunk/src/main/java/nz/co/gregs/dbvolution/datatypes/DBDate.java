@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.expressions.DateResult;
 
@@ -37,6 +38,10 @@ public class DBDate extends QueryableDatatype implements DateResult{
 
     public DBDate(Date date) {
         super(date);
+    }
+
+    public DBDate(DateExpression dateExpression) {
+        super(dateExpression);
     }
 
     DBDate(Timestamp timestamp) {
