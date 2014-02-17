@@ -82,4 +82,9 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
         return booleanValue();
     }
 
+    @Override
+    public DBBoolean getQueryableDatatypeForExpressionValue() {
+        return new DBBoolean();
+    }
+
 }

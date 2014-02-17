@@ -18,6 +18,8 @@ package nz.co.gregs.dbvolution;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Contains all the instances of DBRow that are associated with one line of a
@@ -40,6 +42,7 @@ import java.util.HashMap;
 public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
     private static final long serialVersionUID = 1;
+    private final Map<Object, QueryableDatatype> expressionColumnValues = new LinkedHashMap<Object, QueryableDatatype>();
 
     /**
      * Returns the instance of exemplar contained within this DBQueryRow.
@@ -82,5 +85,13 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
         for (DBRow row : values()) {
             ps.print("" + row);
         }
+    }
+
+    void addExpressionColumnValue(Object key, QueryableDatatype expressionQDT) {
+        expressionColumnValues.put(key, expressionQDT);
+    }
+
+    public QueryableDatatype getExpressionColumnValue(Object key) {
+        return expressionColumnValues.get(key);
     }
 }

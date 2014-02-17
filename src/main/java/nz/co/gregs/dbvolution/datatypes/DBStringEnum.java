@@ -56,18 +56,21 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 
     @Override
     public void setValue(Object newLiteralValue) {
-        if(newLiteralValue instanceof String){
+        if (newLiteralValue instanceof String) {
             setValue((String) newLiteralValue);
-        }else if(newLiteralValue instanceof DBString){
+        } else if (newLiteralValue instanceof DBString) {
             setValue(((DBString) newLiteralValue).getValue());
-        }else{
-            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A Non-String: Use only Strings with this class");
+        } else {
+            throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-String: Use only Strings with this class");
         }
     }
-    
-    public void setValue(String newLiteralValue){
+
+    public void setValue(String newLiteralValue) {
         super.setLiteralValue(newLiteralValue);
     }
 
-
+    @Override
+    public DBString getQueryableDatatypeForExpressionValue() {
+        return new DBString();
+    }
 }

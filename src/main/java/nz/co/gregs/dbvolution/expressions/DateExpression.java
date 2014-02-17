@@ -20,7 +20,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
 public class DateExpression implements DateResult {
 
@@ -50,13 +52,16 @@ public class DateExpression implements DateResult {
     /**
      * Create An Appropriate Expression Object For This Object
      *
-     * <p>The expression framework requires a *Expression to work with. The
-     * easiest way to get that is the {@code DBRow.column()} method.
+     * <p>
+     * The expression framework requires a *Expression to work with. The easiest
+     * way to get that is the {@code DBRow.column()} method.
      *
-     * <p>However if you wish your expression to start with a literal value it
-     * is a little trickier.
+     * <p>
+     * However if you wish your expression to start with a literal value it is a
+     * little trickier.
      *
-     * <p>This method provides the easy route to a *Expression from a literal
+     * <p>
+     * This method provides the easy route to a *Expression from a literal
      * value. Just call, for instance,
      * {@code StringExpression.value("STARTING STRING")} to get a
      * StringExpression and start the expression chain.
@@ -77,94 +82,94 @@ public class DateExpression implements DateResult {
     public static DateExpression currentDate() {
         return new DateExpression(
                 new DBNonaryFunction() {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getCurrentDateFunctionName();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getCurrentDateFunctionName();
+                    }
+                });
     }
 
     public static DateExpression currentDateTime() {
         return new DateExpression(
                 new DBNonaryFunction() {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getCurrentTimestampFunction();
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getCurrentTimestampFunction();
+                    }
+                });
     }
 
     public static DateExpression currentTime() {
         return new DateExpression(
                 new DBNonaryFunction() {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return db.getDefinition().getCurrentTimeFunction();
-            }
-        });
-    }
-    
-    public NumberExpression year(){
-        return new NumberExpression(
-                new UnaryComplicatedNumberFunction(this) {
-            @Override
-            public String toSQLString(DBDatabase db) {
-                return db.getDefinition().getYearFunction(this.only.toSQLString(db));
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getCurrentTimeFunction();
+                    }
+                });
     }
 
-    public NumberExpression month(){
+    public NumberExpression year() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-            @Override
-            public String toSQLString(DBDatabase db) {
-                return db.getDefinition().getMonthFunction(this.only.toSQLString(db));
-            }
-        });
+                    @Override
+                    public String toSQLString(DBDatabase db) {
+                        return db.getDefinition().getYearFunction(this.only.toSQLString(db));
+                    }
+                });
     }
 
-    public NumberExpression day(){
+    public NumberExpression month() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-            @Override
-            public String toSQLString(DBDatabase db) {
-                return db.getDefinition().getDayFunction(this.only.toSQLString(db));
-            }
-        });
+                    @Override
+                    public String toSQLString(DBDatabase db) {
+                        return db.getDefinition().getMonthFunction(this.only.toSQLString(db));
+                    }
+                });
     }
 
-    public NumberExpression hour(){
+    public NumberExpression day() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-            @Override
-            public String toSQLString(DBDatabase db) {
-                return db.getDefinition().getHourFunction(this.only.toSQLString(db));
-            }
-        });
+                    @Override
+                    public String toSQLString(DBDatabase db) {
+                        return db.getDefinition().getDayFunction(this.only.toSQLString(db));
+                    }
+                });
     }
 
-    public NumberExpression minute(){
+    public NumberExpression hour() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-            @Override
-            public String toSQLString(DBDatabase db) {
-                return db.getDefinition().getMinuteFunction(this.only.toSQLString(db));
-            }
-        });
+                    @Override
+                    public String toSQLString(DBDatabase db) {
+                        return db.getDefinition().getHourFunction(this.only.toSQLString(db));
+                    }
+                });
     }
 
-    public NumberExpression second(){
+    public NumberExpression minute() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-            @Override
-            public String toSQLString(DBDatabase db) {
-                return db.getDefinition().getSecondFunction(this.only.toSQLString(db));
-            }
-        });
+                    @Override
+                    public String toSQLString(DBDatabase db) {
+                        return db.getDefinition().getMinuteFunction(this.only.toSQLString(db));
+                    }
+                });
     }
-    
-        public BooleanExpression is(Date date) {
+
+    public NumberExpression second() {
+        return new NumberExpression(
+                new UnaryComplicatedNumberFunction(this) {
+                    @Override
+                    public String toSQLString(DBDatabase db) {
+                        return db.getDefinition().getSecondFunction(this.only.toSQLString(db));
+                    }
+                });
+    }
+
+    public BooleanExpression is(Date date) {
         return is(value(date));
     }
 
@@ -254,7 +259,10 @@ public class DateExpression implements DateResult {
         });
     }
 
-
+    @Override
+    public DBDate getQueryableDatatypeForExpressionValue() {
+        return new DBDate();
+    }
 
     private static abstract class DBNonaryFunction implements DateResult {
 
@@ -262,6 +270,11 @@ public class DateExpression implements DateResult {
         }
 
         abstract String getFunctionName(DBDatabase db);
+
+        @Override
+        public DBDate getQueryableDatatypeForExpressionValue() {
+            return new DBDate();
+        }
 
         protected String beforeValue(DBDatabase db) {
             return " " + getFunctionName(db) + "";
@@ -303,6 +316,11 @@ public class DateExpression implements DateResult {
         }
 
         @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
+        }
+
+        @Override
         public abstract String toSQLString(DBDatabase db);
 
         @Override
@@ -328,6 +346,11 @@ public class DateExpression implements DateResult {
         public DBBinaryBooleanArithmetic(DateExpression first, DateResult second) {
             this.first = first;
             this.second = second;
+        }
+
+        @Override
+        public DBBoolean getQueryableDatatypeForExpressionValue() {
+            return new DBBoolean();
         }
 
         @Override
@@ -366,6 +389,11 @@ public class DateExpression implements DateResult {
             this.values = new DateResult[rightHandSide.length];
             this.column = leftHandSide;
             System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
+        }
+
+        @Override
+        public DBBoolean getQueryableDatatypeForExpressionValue() {
+            return new DBBoolean();
         }
 
         abstract String getFunctionName(DBDatabase db);

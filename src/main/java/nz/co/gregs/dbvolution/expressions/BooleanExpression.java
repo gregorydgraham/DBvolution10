@@ -100,7 +100,6 @@ public class BooleanExpression implements BooleanResult {
         });
     }
 
-
     /**
      * Collects the expressions together and only requires one to be true.
      *
@@ -109,13 +108,12 @@ public class BooleanExpression implements BooleanResult {
      * them using OR repeatedly.
      *
      * <p>
-     * This expression returns true if any of the component expressions
-     * is true
+     * This expression returns true if any of the component expressions is true
      *
      * @param booleanExpressions
      * @return a boolean expression that returns true if any of the
      * booleanExpressions is true.
-     * @see #allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) 
+     * @see #allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
      */
     public static BooleanExpression anyOf(BooleanExpression... booleanExpressions) {
         return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
@@ -127,12 +125,22 @@ public class BooleanExpression implements BooleanResult {
         });
     }
 
+    @Override
+    public DBBoolean getQueryableDatatypeForExpressionValue() {
+        return new DBBoolean();
+    }
+
     private static abstract class DBNnaryBooleanArithmetic implements BooleanResult {
 
         private BooleanResult[] bools;
 
         public DBNnaryBooleanArithmetic(BooleanResult... bools) {
             this.bools = bools;
+        }
+
+        @Override
+        public DBBoolean getQueryableDatatypeForExpressionValue() {
+            return new DBBoolean();
         }
 
         @Override

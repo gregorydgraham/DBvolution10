@@ -82,4 +82,9 @@ public class DBString extends QueryableDatatype implements StringResult {
         return (DBString) super.copy();
     }
 
+    @Override
+    public DBString getQueryableDatatypeForExpressionValue() {
+        return new DBString();
+    }
+
 }

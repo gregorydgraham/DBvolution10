@@ -103,4 +103,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
             }
         }
     }
+
+    @Override
+    public DBInteger getQueryableDatatypeForExpressionValue() {
+        return new DBInteger();
+    }
 }

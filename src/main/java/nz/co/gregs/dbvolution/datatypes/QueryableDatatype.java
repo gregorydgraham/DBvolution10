@@ -553,7 +553,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             return literalValue;
         }
     }
-    
+
     public abstract void setValue(Object newLiteralValue);
 
     /**
@@ -865,5 +865,16 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      */
     void setPropertyWrapper(PropertyWrapperDefinition propertyWrapper) {
         this.propertyWrapper = propertyWrapper;
+    }
+
+    @Override
+    public QueryableDatatype getQueryableDatatypeForExpressionValue() {
+        try {
+            return this.getClass().newInstance();
+        } catch (InstantiationException e) {
+            return this;
+        } catch (IllegalAccessException ex) {
+            return this;
+        }
     }
 }

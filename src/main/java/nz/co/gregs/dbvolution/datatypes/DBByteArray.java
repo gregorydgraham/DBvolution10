@@ -226,4 +226,9 @@ public class DBByteArray extends DBLargeObject {
         return getBytes();
     }
 
+    @Override
+    public DBByteArray getQueryableDatatypeForExpressionValue() {
+        return new DBByteArray();
+    }
+
 }

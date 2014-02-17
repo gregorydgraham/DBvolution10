@@ -239,4 +239,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
             }
         }
     }
+
+    @Override
+    public DBNumber getQueryableDatatypeForExpressionValue() {
+        return new DBNumber();
+    }
 }

@@ -39,4 +39,9 @@ public class LargeObjectExpression implements LargeObjectResult {
     public LargeObjectExpression copy() {
         return new LargeObjectExpression(qdt.copy());
     }
+
+    @Override
+    public DBByteArray getQueryableDatatypeForExpressionValue() {
+        return new DBByteArray();
+    }
 }

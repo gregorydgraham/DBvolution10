@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -82,5 +83,10 @@ public class AbstractColumn implements DBExpression {
      */
     public DBExpression asValue(){
         return this;
+    }
+
+    @Override
+    public QueryableDatatype getQueryableDatatypeForExpressionValue() {
+        return QueryableDatatype.getQueryableDatatypeForObject(field);
     }
 }

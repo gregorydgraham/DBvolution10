@@ -15,11 +15,15 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
@@ -68,5 +72,20 @@ public class DBDataGenerator extends QueryableDatatype {
     
     public void setValue(DBExpression newLiteralValue){
         setLiteralValue(newLiteralValue);
+    }
+
+    @Override
+    public QueryableDatatype getQueryableDatatypeForExpressionValue() {
+        if (literalValue instanceof DateExpression){
+            return new DBDate();
+        }else if (literalValue instanceof NumberExpression){
+            return new DBNumber();
+        }else if (literalValue instanceof StringExpression){
+            return new DBString();
+        }else if (literalValue instanceof BooleanExpression){
+            return new DBBoolean();
+        }else if (literalValue instanceof LargeObjectExpression){
+            return new DBByteArray();
+        }else return new DBUnknownDatatype();
     }
 }
