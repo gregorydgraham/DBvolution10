@@ -229,7 +229,6 @@ public class DBQuery {
             String join = otherTable.getRelationshipsAsSQL(this.database, newTable, options);
             if (join != null && !join.isEmpty()) {
                 joinClauses.add(join);
-//                queryGraph.addAndConnect(newTable.getClass(), otherTable.getClass());
             }
         }
         String sqlToReturn;
@@ -301,7 +300,7 @@ public class DBQuery {
 //            queryGraph.add(tabRow.getClass());
 
             if (providedSelectClause == null) {
-                List<String> columnNames = tabRow.getColumnNames();
+                List<String> columnNames = tabRow.getColumnNames(database);
                 for (String columnName : columnNames) {
                     String formattedColumnName = defn.formatTableAliasAndColumnNameForSelectClause(tabRow, columnName);
                     selectClause.append(colSep).append(formattedColumnName);

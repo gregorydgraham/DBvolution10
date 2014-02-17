@@ -17,17 +17,13 @@ package nz.co.gregs.dbvolution;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.datatypes.DBDataGenerator;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -122,22 +118,21 @@ public class ExpressionColumnTests extends AbstractTest {
         exprExample.name.permittedValuesIgnoreCase("TOYOTA");
         DBQuery query = database.getDBQuery(exprExample);
 
-//        final Date dateKey = new Date();
-//        query.addExpressionColumn(dateKey, DateExpression.currentDate());
-
         final String sqlForQuery = query.getSQLForQuery();
         Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
 
         for (DBQueryRow row : query.getAllRows()) {
             ExpressionRow expressionRow = row.get(new ExpressionRow());
             System.out.println(expressionRow.expr.toSQLString(database));
-            DBDate currentDate = (DBDate) expressionRow.expr;
+            DBDate currentDate = expressionRow.expr;
             System.out.println("" + currentDate.dateValue());
         }
     }
 
     public class ExpressionRow extends Marque {
 
+        public static final long serialVersionUID = 1L;
+        
         @DBColumn
         DBDate expr = new DBDate(DateExpression.currentDate());
     }

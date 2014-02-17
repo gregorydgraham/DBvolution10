@@ -549,7 +549,7 @@ abstract public class DBRow implements Serializable {
      *
      * @return A list of all raw, unformatted column names
      */
-    protected List<String> getColumnNames() {
+    protected List<String> getColumnNames(DBDatabase db) {
         ArrayList<String> columnNames = new ArrayList<String>();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
 

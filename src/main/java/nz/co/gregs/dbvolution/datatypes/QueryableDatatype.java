@@ -83,6 +83,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         }
     }
 
+    protected QueryableDatatype(DBExpression obj) {
+        if (obj == null) {
+            this.isDBNull = true;
+        } else {
+            this.literalValue = obj;
+        }
+    }
+
     public static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
         try {
             return requiredQueryableDatatype.getConstructor().newInstance();
@@ -532,7 +540,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Gets the current literal value of this queryable data type. The returned
-     * value <i>should/<i> be in the correct type as appropriate for the type of
+     * value <i>should<i> be in the correct type as appropriate for the type of
      * queryable data type.
      *
      * <p>
@@ -639,9 +647,11 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         DBDefinition def = db.getDefinition();
         if (this.isDBNull || literalValue == null) {
             return def.getNull();
+        } else if  (literalValue instanceof DBExpression){
+            return ((DBExpression)literalValue).toSQLString(db);
+        } else {
+            return formatValueForSQLStatement(db);
         }
-//        return transform.generate(formatValueForSQLStatement(db));
-        return formatValueForSQLStatement(db);
     }
 
     /**
