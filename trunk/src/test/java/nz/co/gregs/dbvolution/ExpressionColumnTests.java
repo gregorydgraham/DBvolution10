@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -46,7 +47,6 @@ public class ExpressionColumnTests extends AbstractTest {
         final String sqlForQuery = query.getSQLForQuery();
         Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
 
-        query.getAllRows();
         for (DBQueryRow row : query.getAllRows()) {
             QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(dateKey);
             System.out.println(expressionColumnValue.toSQLString(database));
@@ -72,7 +72,6 @@ public class ExpressionColumnTests extends AbstractTest {
         final String sqlForQuery = query.getSQLForQuery();
         Assert.assertThat(sqlForQuery, containsString("SUBSTR"));
 
-        query.getAllRows();
         for (DBQueryRow row : query.getAllRows()) {
             QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(shortMarqueName);
             System.out.println(expressionColumnValue.toSQLString(database));
@@ -80,6 +79,30 @@ public class ExpressionColumnTests extends AbstractTest {
                 DBString shortName = (DBString) expressionColumnValue;
                 System.out.println("" + shortName.stringValue());
                 Assert.assertThat(shortName.toString(), is("TOYOTA".substring(0, 3)));
+            } else {
+                throw new RuntimeException("String Expression Failed To Create DBString Instance");
+            }
+        }
+    }
+
+    @Test
+    public void selectNumberExpressionWithDBQuery() throws Exception {
+        final CarCompany carCompany = new CarCompany();
+        final Marque marque = new Marque();
+        marque.name.permittedValuesIgnoreCase("TOYOTA");
+        DBQuery query = database.getDBQuery(marque, carCompany);
+
+        final String strangeEquation = "strange equation";
+        query.addExpressionColumn(strangeEquation, marque.column(marque.uidMarque).times(5).dividedBy(3).plus(2));
+
+        for (DBQueryRow row : query.getAllRows()) {
+            int uid = row.get(new Marque()).uidMarque.intValue();
+            QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
+            System.out.println(expressionColumnValue.toSQLString(database));
+            if (expressionColumnValue instanceof DBNumber) {
+                DBNumber eqValue = (DBNumber) expressionColumnValue;
+                System.out.println("" + eqValue.numberValue());
+                Assert.assertThat(eqValue.intValue(), is(uid*5/3+2));
             } else {
                 throw new RuntimeException("String Expression Failed To Create DBString Instance");
             }

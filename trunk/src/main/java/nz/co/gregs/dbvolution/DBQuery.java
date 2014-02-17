@@ -268,7 +268,11 @@ public class DBQuery {
         if (!blankQueryAllowed && willCreateBlankQuery()) {
             throw new AccidentalBlankQueryException();
         }
-
+        
+        QueryGraph queryGraph = new QueryGraph(database, allQueryTables, options);
+        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
+            throw new AccidentalCartesianJoinException();
+        }
         DBDefinition defn = database.getDefinition();
         StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
         StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
@@ -276,7 +280,6 @@ public class DBQuery {
         StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options));
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
-        QueryGraph queryGraph = new QueryGraph(database, allQueryTables, options);
         DBRow startQueryFromTable = queryTables.isEmpty() ? allQueryTables.get(0) : queryTables.get(0);
         List<DBRow> sortedQueryTables = cartesianJoinAllowed
                 ? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
@@ -348,12 +351,6 @@ public class DBQuery {
                 .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
                 .append(defn.endSQLStatement())
                 .toString();
-        if (database.isPrintSQLBeforeExecuting()) {
-            System.out.println(sqlString);
-        }
-        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
-            throw new AccidentalCartesianJoinException();
-        }
 
         return sqlString;
     }

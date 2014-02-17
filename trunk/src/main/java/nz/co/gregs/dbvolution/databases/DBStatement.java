@@ -43,6 +43,7 @@ public class DBStatement implements Statement {
 
     @Override
     public ResultSet executeQuery(String string) throws SQLException {
+        database.printSQLIfRequested(string);
         return realStatement.executeQuery(string);
     }
 
