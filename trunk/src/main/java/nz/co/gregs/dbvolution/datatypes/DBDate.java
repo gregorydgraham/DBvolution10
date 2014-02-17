@@ -40,7 +40,7 @@ public class DBDate extends QueryableDatatype implements DateResult{
         super(date);
     }
 
-    public DBDate(DateExpression dateExpression) {
+    public DBDate(DateResult dateExpression) {
         super(dateExpression);
     }
 

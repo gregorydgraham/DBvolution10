@@ -18,7 +18,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends QueryableDatatype {
 
     private static final long serialVersionUID = 1L;
-
     private Class<E> enumType;
 
     public DBEnum() {
@@ -75,13 +74,9 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
         // attempt conversion
         E[] enumValues = getEnumType().getEnumConstants();
         for (E enumValue : enumValues) {
-            if (enumValue instanceof DBEnumValue) {
-                Object enumLiteralValue = ((DBEnumValue<?>) enumValue).getCode();
-                if (areLiteralValuesEqual(localValue, enumLiteralValue)) {
-                    return enumValue;
-                }
-            } else {
-                throw new IllegalArgumentException("Enum type " + enumType.getName() + " must implement " + DBEnumValue.class.getSimpleName());
+            Object enumLiteralValue = enumValue.getCode();
+            if (areLiteralValuesEqual(localValue, enumLiteralValue)) {
+                return enumValue;
             }
         }
         throw new IncompatibleClassChangeError("Invalid literal value [" + localValue + "] encountered"

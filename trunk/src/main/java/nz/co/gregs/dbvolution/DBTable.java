@@ -104,7 +104,7 @@ public class DBTable<E extends DBRow> {
 
     private String getAllFieldsForSelect() {
         StringBuilder allFields = new StringBuilder();
-        List<String> columnNames = template.getColumnNames();
+        List<String> columnNames = template.getColumnNames(database);
         String separator = "";
         for (String column : columnNames) {
             allFields.append(separator).append(" ").append(database.getDefinition().formatColumnName(column));
