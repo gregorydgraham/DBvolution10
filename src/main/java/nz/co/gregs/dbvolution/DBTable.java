@@ -35,6 +35,30 @@ import nz.co.gregs.dbvolution.internal.query.QueryOptions;
  * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
  * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
  *
+ * <p>
+ * DBTable provides features for making simple queries on the database.
+ *
+ * <p>
+ * If your query only references one table, DBTable makes it easy to get the
+ * rows from that table.
+ *
+ * <p>
+ * Use
+ * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) getDBTable from DBDatabase}
+ * to retrieve an instance for particular DBRow subclass.
+ *
+ * <p>
+ * DBTable and {@link DBQuery} are very similar but there are important
+ * differences. In particular DBTable uses a simple
+ * {@code List<<E extends DBRow>>} rather than {@code List<DBQueryRow>} and
+ * DBTable requires you to specify an example in
+ * {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)} rather than using the
+ * exemplar provided initially.
+ *
+ * <p>
+ * DBTable is a quick and easy API for targeted data retrieval, for more complex
+ * needs use {@link DBQuery}.
+ *
  * @param <E>
  * @author Gregory Graham
  */
@@ -51,6 +75,11 @@ public class DBTable<E extends DBRow> {
     private final QueryOptions options = new QueryOptions();
 
     /**
+     * Factory method to create a DBTable.
+     *
+     * <p>
+     * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) } is probably
+     * a better option.
      *
      * @param <E>
      * @param database
@@ -63,7 +92,7 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     *
+     * Constructor
      *
      * @param myDatabase
      * @param dummyObject
@@ -110,7 +139,6 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     *
      * Returns the SELECT and FROM clauses used in the SQL query.
      *
      * @return the SQL string for the SELECT and FROM clauses
@@ -145,9 +173,11 @@ public class DBTable<E extends DBRow> {
     /**
      * Gets All Rows of the table from the database
      *
+     * <p>
      * Use this carefully as it does what it says on the label: Gets All Rows of
      * the table from the database.
      *
+     * <p>
      * throws AccidentalBlankQueryException if you haven't specifically allowed
      * blank queries with setBlankQueryAllowed(boolean)
      *
@@ -261,7 +291,7 @@ public class DBTable<E extends DBRow> {
                 field.setQueryableDatatype(qdt);
                 break;
             default:
-                throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: table " + tableRow.getTableName() + " column " + dbColumnName + " has a Unknown SQL type of " + rsMeta.getColumnType(dbColumnIndex)+". Please contact enquiry at https://sourceforge.net/projects/dbvolution/ for support.", rsMeta.getColumnType(dbColumnIndex));
+                throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: table " + tableRow.getTableName() + " column " + dbColumnName + " has a Unknown SQL type of " + rsMeta.getColumnType(dbColumnIndex) + ". Please contact enquiry at https://sourceforge.net/projects/dbvolution/ for support.", rsMeta.getColumnType(dbColumnIndex));
         }
     }
 
@@ -323,6 +353,18 @@ public class DBTable<E extends DBRow> {
         return this;
     }
 
+    /**
+     * Retrieves the row (or rows in a bad database) that has the specified
+     * primary key.
+     *
+     * <p>
+     * The primary key column is identified by the {@code @DBPrimaryKey}
+     * annotation in the TableRow subclass.
+     *
+     * @param pkValue
+     * @return a DBTable instance containing the row(s) for the primary key
+     * @throws SQLException
+     */
     public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
         String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + pkValue + " ";
@@ -331,6 +373,18 @@ public class DBTable<E extends DBRow> {
         return this;
     }
 
+    /**
+     * Retrieves the row (or rows in a bad database) that has the specified
+     * primary key.
+     *
+     * <p>
+     * The primary key column is identified by the {@code @DBPrimaryKey}
+     * annotation in the TableRow subclass.
+     *
+     * @param pkValue
+     * @return a DBTable instance containing the row(s) for the primary key
+     * @throws SQLException
+     */
     public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
         String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
@@ -340,18 +394,22 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * Using TableRow subclass as an example this method retrieves all the
-     * appropriate records The following will retrieve all records from the
-     * table where the Language column contains JAVA MyTableRow myExample = new
-     * MyTableRow(); myExample.getLanguage.useLikeComparison("%JAVA%"); (new
-     * DBTable<MyTableRow>()).getByExample(myExample);
+     * This method retrieves all the appropriate records.
      *
-     * All columns defined within the TableRow subclass as QueryableDatatype
-     * (e.g. DBNumber, DBString, etc) can be used in this way N.B. an actual
+     * <p>
+     * The following will retrieve all records from the table where the Language
+     * column contains JAVA:<br>
+     * {@code DBTable<MyRow> myTable = database.getDBTable(new MyRow());}<br>
+     * {@code MyRow myExample = new MyRow();}<br>
+     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
+     * {@code myTable.getByExample(myExample); }<br>
+     * {@code List<MyRow> myRows = myTable.toList();}
      *
      * @param queryTemplate
      * @return a DBTable instance containing the rows that match the example
      * @throws SQLException
+     * @see QueryableDatatype
+     * @see DBRow
      */
     public DBTable<E> getRowsByExample(E queryTemplate) throws SQLException, AccidentalBlankQueryException {
         template = queryTemplate;
@@ -361,10 +419,53 @@ public class DBTable<E extends DBRow> {
         return getRows(selectStatement);
     }
 
+    /**
+     * This method retrieves the only appropriate record.
+     *
+     * <p>
+     * Throws an exception if there is no appropriate records, or several
+     * appropriate records.
+     *
+     * <p>
+     * The following will the only record from the table where the Language
+     * column contains JAVA:<br>
+     * {@code MyTableRow myExample = new MyTableRow();}<br>
+     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
+     * {@code (new DBTable<MyTableRow>()).getOnlyRowByExample(myExample);}
+     *
+     * @param queryTemplate
+     * @return a DBTable instance containing the rows that match the example
+     * @throws SQLException
+     * @throws UnexpectedNumberOfRowsException
+     * @throws AccidentalBlankQueryException
+     * @see QueryableDatatype
+     * @see DBRow
+     */
     public E getOnlyRowByExample(E queryTemplate) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
         return getRowsByExample(queryTemplate, 1).listOfRows.get(0);
     }
 
+    /**
+     * This method retrieves all the appropriate records, and throws an
+     * exception if the number of records differs from the required number.
+     *
+     * <p>
+     * The following will retrieve all 10 records from the table where the
+     * Language column contains JAVA, and throw an exception if anything other
+     * than 10 rows is returned.<br>
+     * {@code MyTableRow myExample = new MyTableRow();}<br>
+     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
+     * {@code (new DBTable<MyTableRow>()).getRowsByExample(myExample, 10L);}
+     *
+     * @param queryTemplate
+     * @param expectedNumberOfRows
+     * @return a DBTable instance containing the rows that match the example
+     * @throws SQLException
+     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+     * @throws AccidentalBlankQueryException
+     * @see QueryableDatatype
+     * @see DBRow
+     */
     public DBTable<E> getRowsByExample(E queryTemplate, long expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
         DBTable<E> rowsByExample = getRowsByExample(queryTemplate);
         int actualNumberOfRows = rowsByExample.toList().size();
@@ -465,7 +566,12 @@ public class DBTable<E extends DBRow> {
      *
      * Returns the first row of the table
      *
+     * <p>
      * particularly helpful when you know there is only one row
+     *
+     * <p>
+     * If the no query has been run on the DBTable yet, {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)
+     * } with the initial exemplar will be run.
      *
      * @return the first row in this DBTable instance
      * @throws java.sql.SQLException
@@ -485,8 +591,13 @@ public class DBTable<E extends DBRow> {
      *
      * Returns the first row and only row of the table.
      *
-     * Similar to getFirstRow() but throws an UnexpectedNumberOfRowsException if
-     * there is more than 1 row available
+     * <p>
+     * Similar to {@link getFirstRow()} but throws an
+     * UnexpectedNumberOfRowsException if there is more than 1 row available
+     *
+     * <p>
+     * If the no query has been run on the DBTable yet, {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)
+     * } with the initial exemplar will be run.
      *
      * @return the first row in this DBTable instance
      * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
