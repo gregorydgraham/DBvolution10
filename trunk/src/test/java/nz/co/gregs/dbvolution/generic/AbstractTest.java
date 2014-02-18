@@ -29,7 +29,6 @@ import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.example.*;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -39,7 +38,7 @@ import org.junit.runners.Parameterized.Parameters;
  * @author gregorygraham
  */
 @RunWith(Parameterized.class)
-public class AbstractTest {
+public abstract class AbstractTest {
 
     public DBDatabase database;
     Marque myMarqueRow = new Marque();
@@ -163,10 +162,10 @@ public class AbstractTest {
         database.setPrintSQLBeforeExecuting(true);
     }
 
-    @Test
-    public void fakeTest() {
-        ;
-    }
+//    @Test
+//    public void fakeTest() {
+//        ;
+//    }
 
     @After
     public void tearDown() throws Exception {
