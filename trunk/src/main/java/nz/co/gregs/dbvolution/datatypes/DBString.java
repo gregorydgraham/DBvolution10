@@ -52,8 +52,10 @@ public class DBString extends QueryableDatatype implements StringResult {
     @Override
     public String getValue() {
         final Object value = super.getValue();
-        if (value instanceof String) {
-            return (String)value;
+        if (value == null) {
+            return (String) null;
+        } else if (value instanceof String) {
+            return (String) value;
         } else {
             return value.toString();
         }

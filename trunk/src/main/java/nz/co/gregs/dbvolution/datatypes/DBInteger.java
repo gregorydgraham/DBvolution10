@@ -67,6 +67,7 @@ public class DBInteger extends DBNumber {
 
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        blankQuery();
         if (resultSet == null || fullColumnName == null) {
             this.setToNull();
         } else {
@@ -85,6 +86,8 @@ public class DBInteger extends DBNumber {
                 this.setValue(dbValue);
             }
         }
+        setUnchanged();
+        setDefined(true);
     }
 
     @Override

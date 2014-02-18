@@ -84,6 +84,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        blankQuery();
         if (resultSet == null || fullColumnName == null) {
             this.setToNull();
         } else {
@@ -102,6 +103,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
                 this.setLiteralValue(dbValue);
             }
         }
+        setUnchanged();
+        setDefined(true);
     }
 
     @Override

@@ -647,8 +647,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         DBDefinition def = db.getDefinition();
         if (this.isDBNull || literalValue == null) {
             return def.getNull();
-        } else if  (literalValue instanceof DBExpression){
-            return ((DBExpression)literalValue).toSQLString(db);
+        } else if (literalValue instanceof DBExpression) {
+            return ((DBExpression) literalValue).toSQLString(db);
         } else {
             return formatValueForSQLStatement(db);
         }
@@ -710,6 +710,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      * @throws SQLException
      */
     public void setFromResultSet(ResultSet resultSet, String resultSetColumnName) throws SQLException {
+        blankQuery();
         if (resultSet == null || resultSetColumnName == null) {
             this.setToNull();
         } else {
@@ -729,6 +730,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
                 this.setLiteralValue(dbValue);
             }
         }
+        setUnchanged();
+        setDefined(true);
+        propertyWrapper = null;
     }
 
     private void preventChangeOfPrimaryKey() {
@@ -738,16 +742,16 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     }
 
     private void setChanged(Object newLiteralValue) {
-        if (this.isDBNull
-                || (literalValue != null && !newLiteralValue.equals(literalValue))) {
+        if ((this.isDBNull && newLiteralValue != null)
+                || (literalValue != null && (newLiteralValue==null || !newLiteralValue.equals(literalValue)))) {
             changed = true;
-            QueryableDatatype newInstance = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
+            QueryableDatatype copyOfOldValues = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
             if (this.isDBNull) {
-                newInstance.setToNull();
+                copyOfOldValues.setToNull();
             } else {
-                newInstance.setLiteralValue(this.literalValue);
+                copyOfOldValues.setLiteralValue(this.literalValue);
             }
-            previousValueAsQDT = newInstance;
+            previousValueAsQDT = copyOfOldValues;
         }
     }
 

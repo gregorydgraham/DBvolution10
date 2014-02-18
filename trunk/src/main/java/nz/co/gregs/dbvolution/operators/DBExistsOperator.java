@@ -69,7 +69,7 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
         DBTable<E> table = DBTable.getInstance(database, tableRow);
         String subSelect;
         try {
-            subSelect = table.getSQLForSelect() + table.getWhereClauseWithExampleAndRawSQL(tableRow, defn.beginWhereClauseLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
+            subSelect = table.getSQLSelectAndFromForQuery() + table.getSQLWhereClauseWithExampleAndRawSQL(tableRow, defn.beginWhereClauseLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }
