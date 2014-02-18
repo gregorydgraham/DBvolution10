@@ -465,6 +465,8 @@ public class DBQuery {
                                 newInstance.setEmptyRow(false);
                             }
 
+                            // ensure field set when using type adaptors
+                            newProp.setQueryableDatatype(qdt);
                         }
                         newInstance.setDefined(); // Actually came from the database so it is a defined row.
                         Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());

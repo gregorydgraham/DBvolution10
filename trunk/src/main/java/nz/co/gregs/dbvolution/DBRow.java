@@ -408,6 +408,9 @@ abstract public class DBRow implements Serializable {
             if (!(qdt instanceof DBLargeObject)) {
                 if (qdt.hasChanged()) {
                     qdt.setUnchanged();
+
+                    // ensure field set when using type adaptors
+                    prop.setQueryableDatatype(qdt);
                 }
             }
         }
