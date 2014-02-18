@@ -743,7 +743,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     private void setChanged(Object newLiteralValue) {
         if ((this.isDBNull && newLiteralValue != null)
-                || (literalValue != null && (newLiteralValue==null || !newLiteralValue.equals(literalValue)))) {
+                || (literalValue != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
             changed = true;
             QueryableDatatype copyOfOldValues = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
             if (this.isDBNull) {
@@ -889,6 +889,21 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             return this;
         } catch (IllegalAccessException ex) {
             return this;
+        }
+    }
+
+    /**
+     * Returns the expression underlying this QDT or null.
+     * 
+     * <p>When the QDT is created using an expression , this method makes the expression accessible.
+     *
+     * @return the underlying expression if there is one, or NULL otherwise.
+     */
+    public final DBExpression getExpression() {
+        if (literalValue != null && DBExpression.class.isAssignableFrom(literalValue.getClass())) {
+            return (DBExpression) literalValue;
+        } else {
+            return null;
         }
     }
 }

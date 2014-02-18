@@ -448,19 +448,23 @@ public class PropertyWrapper {
     }
 
     public boolean hasExpression() {
-        try{
-            getExpression();
-            return true;
-        }catch (ClassCastException ex){
+        QueryableDatatype qdt = getQueryableDatatype();
+        if(qdt.isNull()){
             return false;
+        }else{
+            DBExpression value = qdt.getExpression();
+            if (value !=null){
+                return true;
+            }
         }
+        return false;
     }
 
     public DBExpression getExpression() throws ClassCastException{
         QueryableDatatype qdt = getQueryableDatatype();
-        Object value = qdt.getValue();
-        if (value instanceof DBExpression){
-            return (DBExpression)value;
+        DBExpression value = qdt.getExpression();
+        if (value !=null){
+            return value;
         }
         throw new ClassCastException("Attempt To Retreive Non-Existant Expression: Field "+javaName()+" for column "+columnName()+" on "+dbRowInstanceWrapper.javaName()+" does not contain an expression, do not call getExpression() on it.");
     }

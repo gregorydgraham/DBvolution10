@@ -115,7 +115,7 @@ public class ExpressionColumnTests extends AbstractTest {
     @Test
     public void selectDBRowExpressionWithDBQuery() throws Exception {
         final ExpressionRow exprExample = new ExpressionRow();
-        for(String col : exprExample.getColumnNames(database)){
+        for (String col : exprExample.getColumnNames(database)) {
             System.out.println(col);
         }
         exprExample.name.permittedValuesIgnoreCase("TOYOTA");
@@ -132,14 +132,14 @@ public class ExpressionColumnTests extends AbstractTest {
         }
     }
 
-    @Ignore
     @Test
     public void selectDBRowExpressionWithDBTable() throws Exception {
         final ExpressionRow exprExample = new ExpressionRow();
         exprExample.name.permittedValuesIgnoreCase("TOYOTA");
         DBTable<ExpressionRow> table = database.getDBTable(exprExample);
 
-        final String sqlForQuery = table.getSQLForExample(exprExample);
+        final String sqlForQuery = table.getSQLSelectAndFromForQuery();
+        System.out.println(sqlForQuery);
         Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
         final DBTable<ExpressionRow> rowsByExample = table.getRowsByExample(exprExample);
 
@@ -150,11 +150,11 @@ public class ExpressionColumnTests extends AbstractTest {
         }
     }
 
-    public class ExpressionRow extends Marque {
+    public static class ExpressionRow extends Marque {
 
         public static final long serialVersionUID = 1L;
-        
         @DBColumn
         DBDate sysDateColumnOnClass = new DBDate(DateExpression.currentDate());
+
     }
 }
