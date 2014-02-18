@@ -115,6 +115,9 @@ public class ExpressionColumnTests extends AbstractTest {
     @Test
     public void selectDBRowExpressionWithDBQuery() throws Exception {
         final ExpressionRow exprExample = new ExpressionRow();
+        for(String col : exprExample.getColumnNames(database)){
+            System.out.println(col);
+        }
         exprExample.name.permittedValuesIgnoreCase("TOYOTA");
         DBQuery query = database.getDBQuery(exprExample);
 
@@ -123,8 +126,26 @@ public class ExpressionColumnTests extends AbstractTest {
 
         for (DBQueryRow row : query.getAllRows()) {
             ExpressionRow expressionRow = row.get(new ExpressionRow());
-            System.out.println(expressionRow.expr.toSQLString(database));
-            DBDate currentDate = expressionRow.expr;
+            System.out.println(expressionRow.sysDateColumnOnClass.toSQLString(database));
+            DBDate currentDate = expressionRow.sysDateColumnOnClass;
+            System.out.println("" + currentDate.dateValue());
+        }
+    }
+
+    @Ignore
+    @Test
+    public void selectDBRowExpressionWithDBTable() throws Exception {
+        final ExpressionRow exprExample = new ExpressionRow();
+        exprExample.name.permittedValuesIgnoreCase("TOYOTA");
+        DBTable<ExpressionRow> table = database.getDBTable(exprExample);
+
+        final String sqlForQuery = table.getSQLForExample(exprExample);
+        Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+        final DBTable<ExpressionRow> rowsByExample = table.getRowsByExample(exprExample);
+
+        for (ExpressionRow expressionRow : rowsByExample.toList()) {
+            System.out.println(expressionRow.sysDateColumnOnClass.toSQLString(database));
+            DBDate currentDate = expressionRow.sysDateColumnOnClass;
             System.out.println("" + currentDate.dateValue());
         }
     }
@@ -134,6 +155,6 @@ public class ExpressionColumnTests extends AbstractTest {
         public static final long serialVersionUID = 1L;
         
         @DBColumn
-        DBDate expr = new DBDate(DateExpression.currentDate());
+        DBDate sysDateColumnOnClass = new DBDate(DateExpression.currentDate());
     }
 }

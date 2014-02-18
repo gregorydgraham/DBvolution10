@@ -5,6 +5,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  * Abstracts a java field or bean-property on a target object as a DBvolution-centric
@@ -444,5 +445,23 @@ public class PropertyWrapper {
      */
     public DBRowInstanceWrapper getDBRowInstanceWrapper() {
     	return dbRowInstanceWrapper;
+    }
+
+    public boolean hasExpression() {
+        try{
+            getExpression();
+            return true;
+        }catch (ClassCastException ex){
+            return false;
+        }
+    }
+
+    public DBExpression getExpression() throws ClassCastException{
+        QueryableDatatype qdt = getQueryableDatatype();
+        Object value = qdt.getValue();
+        if (value instanceof DBExpression){
+            return (DBExpression)value;
+        }
+        throw new ClassCastException("Attempt To Retreive Non-Existant Expression: Field "+javaName()+" for column "+columnName()+" on "+dbRowInstanceWrapper.javaName()+" does not contain an expression, do not call getExpression() on it.");
     }
 }

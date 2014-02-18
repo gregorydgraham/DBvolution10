@@ -47,10 +47,10 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
             if (field.isColumn()) {
                 final QueryableDatatype qdt = field.getQueryableDatatype();
                 if (qdt.hasChanged()) {
-                	if (qdt.getPreviousSQLValue(db) == null) {
-                		throw new NullPointerException("Property has changed but is missing previous value: "+field);
-                	}
-                	
+                    if (qdt.getPreviousSQLValue(db) == null) {
+                        throw new NullPointerException("Property has changed but is missing previous value: " + field);
+                    }
+
                     String columnName = field.columnName();
                     sql.append(separator)
                             .append(defn.formatColumnName(columnName))

@@ -47,6 +47,7 @@ public class DBJavaObject extends QueryableDatatype {
 
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        blankQuery();
         if (resultSet == null || fullColumnName == null) {
             this.setToNull();
         } else {
@@ -65,6 +66,8 @@ public class DBJavaObject extends QueryableDatatype {
                 this.setLiteralValue(dbValue);
             }
         }
+        setUnchanged();
+        setDefined(true);
     }
 
     @Override

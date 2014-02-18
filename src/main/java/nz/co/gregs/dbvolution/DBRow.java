@@ -547,6 +547,7 @@ abstract public class DBRow implements Serializable {
     /**
      * Returns a list of the column names used by the database.
      *
+     * @param db
      * @return A list of all raw, unformatted column names
      */
     protected List<String> getColumnNames(DBDatabase db) {
@@ -555,7 +556,9 @@ abstract public class DBRow implements Serializable {
 
         for (PropertyWrapper prop : props) {
             if (prop.isColumn()) {
-                if (returnColumns == null || returnColumns.isEmpty() || returnColumns.contains(prop.getDefinition())) {
+                if (prop.hasExpression()) {
+                    columnNames.add(prop.getExpression().toSQLString(db));
+                } else if (returnColumns == null || returnColumns.isEmpty() || returnColumns.contains(prop.getDefinition())) {
                     String dbColumnName = prop.columnName();
                     if (dbColumnName != null) {
                         columnNames.add(dbColumnName);

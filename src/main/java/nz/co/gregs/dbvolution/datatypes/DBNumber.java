@@ -220,6 +220,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
      */
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        blankQuery();
         if (resultSet == null || fullColumnName == null) {
             this.setToNull();
         } else {
@@ -238,6 +239,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
                 this.setValue(dbValue);
             }
         }
+        setUnchanged();
+        setDefined(true);
     }
 
     @Override

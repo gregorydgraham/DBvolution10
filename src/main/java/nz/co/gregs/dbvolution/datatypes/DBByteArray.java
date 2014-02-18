@@ -86,6 +86,7 @@ public class DBByteArray extends DBLargeObject {
     
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+        blankQuery();
         InputStream dbValue;
         if (resultSet == null || fullColumnName == null) {
             this.setToNull();
@@ -128,6 +129,8 @@ public class DBByteArray extends DBLargeObject {
                 this.setValue(bytes);
             }
         }
+        setUnchanged();
+        setDefined(true);
     }
 
     @Override

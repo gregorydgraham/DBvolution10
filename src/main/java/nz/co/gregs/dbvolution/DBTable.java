@@ -139,11 +139,22 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
+     * Renamed {@link #getSQLSelectAndFromForQuery() }
+     *
+     * @return the SQL string for the SELECT and FROM clauses
+     * @deprecated
+     * @see #getSQLSelectAndFromForQuery() 
+     */
+    @Deprecated
+    public String getSQLForSelect() {
+        return getSQLSelectAndFromForQuery();
+    }
+    /**
      * Returns the SELECT and FROM clauses used in the SQL query.
      *
      * @return the SQL string for the SELECT and FROM clauses
      */
-    public String getSQLForSelect() {
+    public String getSQLSelectAndFromForQuery() {
         DBDefinition defn = database.getDefinition();
         StringBuilder selectStatement = new StringBuilder();
         DBSelectQuery selectQueryAnnotation = template.getClass().getAnnotation(DBSelectQuery.class);
@@ -348,7 +359,7 @@ public class DBTable<E extends DBRow> {
 
         DBDefinition defn = database.getDefinition();
         String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
-        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
+        String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
     }
@@ -368,7 +379,7 @@ public class DBTable<E extends DBRow> {
     public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
         String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + pkValue + " ";
-        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
+        String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
     }
@@ -388,7 +399,7 @@ public class DBTable<E extends DBRow> {
     public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
         String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
-        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
+        String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
     }
@@ -413,8 +424,8 @@ public class DBTable<E extends DBRow> {
      */
     public DBTable<E> getRowsByExample(E queryTemplate) throws SQLException, AccidentalBlankQueryException {
         template = queryTemplate;
-        String whereClause = getSQLForExample(queryTemplate);
-        String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
+        String whereClause = getSQLWhereClauseForExample(queryTemplate);
+        String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
 
         return getRows(selectStatement);
     }
@@ -486,7 +497,7 @@ public class DBTable<E extends DBRow> {
      * @param row
      * @return a String of the WHERE clause used for the specified example
      */
-    public String getSQLForExample(E row) throws AccidentalBlankQueryException {
+    public String getSQLWhereClauseForExample(E row) throws AccidentalBlankQueryException {
         if (!this.blankQueryAllowed && row.willCreateBlankQuery(database)) {
             throw new AccidentalBlankQueryException();
         }
@@ -500,6 +511,20 @@ public class DBTable<E extends DBRow> {
             }
         }
         return whereClause.toString();
+    }
+
+    /**
+     * Renamed {@link #getSQLWhereClauseForExample(nz.co.gregs.dbvolution.DBRow) }
+     *
+     * @param row
+     * @return
+     * @throws AccidentalBlankQueryException
+     * @deprecated
+     * @see #getSQLWhereClauseForExample(nz.co.gregs.dbvolution.DBRow) 
+     */
+    @Deprecated
+    public String getSQLForExample(E row) throws AccidentalBlankQueryException {
+        return getSQLWhereClauseForExample(row);
     }
 
     /**
@@ -523,11 +548,11 @@ public class DBTable<E extends DBRow> {
     public DBTable<E> getRowsByRawSQL(String sqlWhereClause) throws SQLException {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
             String whereClause = sqlWhereClause.replaceAll("\\s*;\\s*$", "");
-            String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
+            String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
             return getRows(selectStatement);
         } else {
             String whereClause = " AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
-            String selectStatement = this.getSQLForSelect() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
+            String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
             return getRows(selectStatement);
         }
     }
@@ -678,11 +703,11 @@ public class DBTable<E extends DBRow> {
      * specified SQL clause
      * @see #getRowsByRawSQL(java.lang.String)
      */
-    public String getWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) {
+    public String getSQLWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
-            return getSQLForExample(query) + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
+            return getSQLWhereClauseForExample(query) + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
         } else {
-            return getSQLForExample(query) + " AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
+            return getSQLWhereClauseForExample(query) + " AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
         }
     }
 
