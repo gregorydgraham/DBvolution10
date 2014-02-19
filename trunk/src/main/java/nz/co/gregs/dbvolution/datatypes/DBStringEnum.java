@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+
 /**
  * Like {@link DBInteger} except that the database value can be easily
  * interpreted as an enumeration with integer codes.
@@ -29,6 +31,10 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
     }
 
     public DBStringEnum(String value) {
+        super(value);
+    }
+
+    public DBStringEnum(StringExpression value) {
         super(value);
     }
 
