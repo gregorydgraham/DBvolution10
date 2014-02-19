@@ -36,6 +36,10 @@ public class DBString extends QueryableDatatype implements StringResult {
         super(string);
     }
 
+    public DBString(StringResult stringExpression) {
+        super(stringExpression);
+    }
+
     @Override
     public void setValue(Object newLiteralValue) {
         if (newLiteralValue instanceof String) {
