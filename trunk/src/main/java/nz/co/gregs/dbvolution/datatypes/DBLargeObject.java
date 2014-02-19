@@ -28,6 +28,10 @@ public abstract class DBLargeObject extends QueryableDatatype implements LargeOb
         super();
     }
 
+    public DBLargeObject(LargeObjectResult blobResult) {
+        super(blobResult);
+    }
+    
     public abstract InputStream getInputStream() ;
 
     /**

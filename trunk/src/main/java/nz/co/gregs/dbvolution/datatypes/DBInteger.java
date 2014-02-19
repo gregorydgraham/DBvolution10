@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
 
 /**
  *
@@ -43,6 +44,10 @@ public class DBInteger extends DBNumber {
     }
 
     public DBInteger(Long aLong) {
+        super(aLong);
+    }
+
+    public DBInteger(NumberResult aLong) {
         super(aLong);
     }
 

@@ -24,6 +24,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -142,11 +144,11 @@ public class ExpressionColumnTests extends AbstractTest {
         System.out.println(sqlForQuery);
         Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
         final DBTable<ExpressionRow> rowsByExample = table.getRowsByExample(exprExample);
+        database.print(rowsByExample.toList());
 
         for (ExpressionRow expressionRow : rowsByExample.toList()) {
             System.out.println(expressionRow.sysDateColumnOnClass.toSQLString(database));
-            DBDate currentDate = expressionRow.sysDateColumnOnClass;
-            System.out.println("" + currentDate.dateValue());
+            System.out.println("" + expressionRow.sysDateColumnOnClass.dateValue());
         }
     }
 
@@ -155,6 +157,12 @@ public class ExpressionColumnTests extends AbstractTest {
         public static final long serialVersionUID = 1L;
         @DBColumn
         DBDate sysDateColumnOnClass = new DBDate(DateExpression.currentDate());
+
+        @DBColumn
+        DBString currentUserColumnOnClass = new DBString(StringExpression.currentUser());
+
+        @DBColumn
+        DBNumber numberColumnOnClass = new DBNumber(NumberExpression.value(5).times(3));
 
     }
 }

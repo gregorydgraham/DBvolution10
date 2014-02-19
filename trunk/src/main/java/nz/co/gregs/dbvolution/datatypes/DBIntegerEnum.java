@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
 
 /**
  * Like {@link DBInteger} except that the database value can be easily
@@ -37,6 +38,10 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 
     public DBIntegerEnum(Long value) {
         super(value);
+    }
+
+    public DBIntegerEnum(NumberResult numberExpression) {
+        super(numberExpression);
     }
 
     public DBIntegerEnum(E value) {

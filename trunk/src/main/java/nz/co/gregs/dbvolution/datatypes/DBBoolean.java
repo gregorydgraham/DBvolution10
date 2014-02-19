@@ -30,6 +30,10 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
         super(bool);
     }
 
+    public DBBoolean(BooleanResult bool) {
+        super(bool);
+    }
+
     @Override
     public String getSQLDatatype() {
         return "BIT(1)";
