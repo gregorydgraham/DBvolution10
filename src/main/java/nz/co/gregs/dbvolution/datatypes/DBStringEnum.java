@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  * Like {@link DBInteger} except that the database value can be easily
@@ -34,8 +34,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
         super(value);
     }
 
-    public DBStringEnum(StringExpression value) {
-        super(value);
+    public DBStringEnum(StringResult stringExpression) {
+        super(stringExpression);
     }
 
     public DBStringEnum(E value) {
