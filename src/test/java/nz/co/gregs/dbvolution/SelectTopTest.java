@@ -17,9 +17,6 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBQueryRow;
-import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -39,9 +36,9 @@ public class SelectTopTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
         DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
         carCoTable.setRowLimit(2);
-        DBTable<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
-        allRows.print();
-        Assert.assertThat(allRows.toList().size(), is(2));
+        List<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
+        carCoTable.print();
+        Assert.assertThat(allRows.size(), is(2));
     }
     
     @Test
@@ -49,9 +46,9 @@ public class SelectTopTest extends AbstractTest {
         CarCompany carCompany = new CarCompany();
         DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
         carCoTable.setRowLimit(3);
-        DBTable<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
-        allRows.print();
-        Assert.assertThat(allRows.toList().size(), is(3));
+        List<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
+        carCoTable.print();
+        Assert.assertThat(allRows.size(), is(3));
     }
     
     
@@ -59,13 +56,15 @@ public class SelectTopTest extends AbstractTest {
     public void testClearingTheRowLimit() throws SQLException {
         CarCompany carCompany = new CarCompany();
         DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
-        carCoTable.setRowLimit(2);
-        DBTable<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
-        allRows.print();
-        carCoTable.clearRowLimit();
-        allRows = carCoTable.getAllRows();
-        allRows.print();
-        Assert.assertThat(allRows.toList().size(), is(4));
+        carCoTable.setBlankQueryAllowed(true);
+        
+        List<CarCompany> allRows = carCoTable.setRowLimit(2).getAllRows();
+        carCoTable.print();
+        Assert.assertThat(allRows.size(), is(2));
+        
+        allRows = carCoTable.clearRowLimit().getAllRows();
+        carCoTable.print();
+        Assert.assertThat(allRows.size(), is(4));
     }
     
     @Test

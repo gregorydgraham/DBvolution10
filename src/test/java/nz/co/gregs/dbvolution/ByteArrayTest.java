@@ -80,7 +80,7 @@ public class ByteArrayTest extends AbstractTest {
         newFile.delete();
         
         companyLogo = new CompanyLogo();
-        CompanyLogo firstRow = database.getDBTable(companyLogo).getRowsByPrimaryKey(1).getOnlyRow();
+        CompanyLogo firstRow = database.getDBTable(companyLogo).getRowsByPrimaryKey(1).get(0);
         System.out.println("row = " + firstRow.toString());
         firstRow.imageBytes.writeToFileSystem(newFile.getName());
         newFile = new File(newFile.getName());

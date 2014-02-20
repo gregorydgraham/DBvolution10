@@ -67,9 +67,9 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
     public String generateWhereLine(DBDatabase database, String columnName) {
         DBDefinition defn = database.getDefinition();
         DBTable<E> table = DBTable.getInstance(database, tableRow);
-        String subSelect;
+        String subSelect = "";
         try {
-            subSelect = table.getSQLSelectAndFromForQuery() + table.getSQLWhereClauseWithExampleAndRawSQL(tableRow, defn.beginWhereClauseLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
+//            subSelect = table.getSQLSelectAndFromForQuery() + table.getSQLWhereClauseWithExampleAndRawSQL(tableRow, defn.beginWhereClauseLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
         } catch (IllegalArgumentException ex) {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }

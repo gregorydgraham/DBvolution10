@@ -314,7 +314,7 @@ public abstract class DBDatabase {
      */
     public <R extends DBRow> List<R> get(R exampleRow) throws SQLException {
         DBTable<R> dbTable = getDBTable(exampleRow);
-        return dbTable.getRowsByExample(exampleRow).toList();
+        return dbTable.getAllRows();
     }
 
     /**
@@ -354,7 +354,7 @@ public abstract class DBDatabase {
         if (expectedNumberOfRows == null) {
             return get(exampleRow);
         } else {
-            return getDBTable(exampleRow).getRowsByExample(exampleRow, expectedNumberOfRows.longValue()).toList();
+            return getDBTable(exampleRow).getRowsByExample(exampleRow, expectedNumberOfRows.longValue());
         }
     }
 

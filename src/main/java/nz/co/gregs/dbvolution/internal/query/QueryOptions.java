@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
+
 /**
  *
  * @author greg
@@ -22,6 +24,11 @@ package nz.co.gregs.dbvolution.internal.query;
 public class QueryOptions {
     
     private boolean matchAll = true;
+    private Long rowLimit = null;
+    private ColumnProvider[] sortColumns = new ColumnProvider[]{};
+    private boolean blankQueryAllowed = false;
+    private boolean cartesianJoinAllowed = false;
+    private boolean useANSISyntax = true;
 
     /**
      * 
@@ -50,6 +57,76 @@ public class QueryOptions {
      */
     public void setMatchAny() {
         this.matchAll = false;
+    }
+
+    /**
+     * @return the rowLimit
+     */
+    public Long getRowLimit() {
+        return rowLimit;
+    }
+
+    /**
+     * @param rowLimit the rowLimit to set
+     */
+    public void setRowLimit(Long rowLimit) {
+        this.rowLimit = rowLimit;
+    }
+
+    /**
+     * @return the sortColumns
+     */
+    public ColumnProvider[] getSortColumns() {
+        return sortColumns;
+    }
+
+    /**
+     * @param sortColumns the sortColumns to set
+     */
+    public void setSortColumns(ColumnProvider[] sortColumns) {
+        this.sortColumns = sortColumns;
+    }
+
+    /**
+     * @return the blankQueryAllowed
+     */
+    public boolean isBlankQueryAllowed() {
+        return blankQueryAllowed;
+    }
+
+    /**
+     * @param blankQueryAllowed the blankQueryAllowed to set
+     */
+    public void setBlankQueryAllowed(boolean blankQueryAllowed) {
+        this.blankQueryAllowed = blankQueryAllowed;
+    }
+
+    /**
+     * @return the useANSISyntax
+     */
+    public boolean isUseANSISyntax() {
+        return useANSISyntax;
+    }
+
+    /**
+     * @param useANSISyntax the useANSISyntax to set
+     */
+    public void setUseANSISyntax(boolean useANSISyntax) {
+        this.useANSISyntax = useANSISyntax;
+    }
+
+    /**
+     * @return the cartesianJoinAllowed
+     */
+    public boolean isCartesianJoinAllowed() {
+        return cartesianJoinAllowed;
+    }
+
+    /**
+     * @param cartesianJoinAllowed the cartesianJoinAllowed to set
+     */
+    public void setCartesianJoinAllowed(boolean cartesianJoinAllowed) {
+        this.cartesianJoinAllowed = cartesianJoinAllowed;
     }
     
     

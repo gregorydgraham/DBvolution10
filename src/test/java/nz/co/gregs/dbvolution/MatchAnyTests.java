@@ -17,8 +17,6 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
@@ -40,12 +38,12 @@ public class MatchAnyTests extends AbstractTest {
         Marque marq = new Marque();
         marq.name.permittedValuesIgnoreCase("toyota");
         marq.uidMarque.permittedValues(2);
-        DBTable<Marque> dbQuery = database.getDBTable(marq);
-        List<Marque> marquesFound = dbQuery.getRowsByExample(marq).toList();
+        DBTable<Marque> dbTable = database.getDBTable(marq);
+        List<Marque> marquesFound = dbTable.getAllRows();
         Assert.assertThat(marquesFound.size(), is(0));
 
-        dbQuery.setToMatchAnyCondition();
-        marquesFound = dbQuery.getRowsByExample(marq).toList();
+        dbTable.setToMatchAnyCondition();
+        marquesFound = dbTable.getRowsByExample(marq);
         Assert.assertThat(marquesFound.size(), is(2));
     }
 

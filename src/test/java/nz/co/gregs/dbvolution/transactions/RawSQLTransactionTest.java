@@ -66,7 +66,7 @@ public class RawSQLTransactionTest extends AbstractTest {
         Assert.assertThat(doneTrans, is(true));
         Marque mrq = new Marque();
         mrq.name.permittedValues("Peugeot", "Toyota");
-        DBTable<Marque> rows = database.getDBTable(mrq).getRowsByExample(mrq);
+        DBTable<Marque> rows = database.getDBTable(mrq);
         rows.print();
         Assert.assertThat(rows.toList(), is(not(Matchers.empty())));
         Assert.assertThat(rows.toList().size(), is(2));

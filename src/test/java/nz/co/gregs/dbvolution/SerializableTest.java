@@ -47,7 +47,7 @@ public class SerializableTest extends AbstractTest {
             Marque hummerExample = new Marque();
             hummerExample.getUidMarque().blankQuery();
             hummerExample.getName().permittedValues("PEUGEOT", "HUMMER");
-            List<Marque> marqueList = database.getDBTable(hummerExample).getRowsByExample(hummerExample).toList();
+            List<Marque> marqueList = database.getDBTable(hummerExample).getRowsByExample(hummerExample);
 
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename));
 
