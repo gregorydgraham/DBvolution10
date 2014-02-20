@@ -64,7 +64,6 @@ public class DBTable<E extends DBRow> {
     public List<E> getRowsByExample(E example) throws SQLException {
         this.exemplar = example;
         this.query = database.getDBQuery(example);
-        this.applyConfigs();
         return getAllRows();
     }
 
@@ -241,7 +240,6 @@ public class DBTable<E extends DBRow> {
 
     public DBTable<E> setRowLimit(int i) {
         this.options.setRowLimit(new Long(i));
-        applyRowLimit();
         return this;
     }
 
@@ -249,16 +247,13 @@ public class DBTable<E extends DBRow> {
         if (options.getRowLimit() != null) {
             query.setRowLimit(options.getRowLimit());
         } else {
-            this.clearRowLimit();
+            query.clearRowLimit();
         }
         return this;
     }
 
     public DBTable<E> clearRowLimit() {
-        if (this.options.getRowLimit() != null) {
-            this.options.setRowLimit(null);
-            applyRowLimit();
-        }
+        this.options.setRowLimit(null);
         return this;
     }
 
@@ -277,23 +272,18 @@ public class DBTable<E extends DBRow> {
      * Requires that all {@literal orderColumns} be from the {@code baseRow}
      * instance to work.
      *
-     * @param baseRow
      *
-     * @param orderColumns
+     * @param sortColumns
      * @return this
      */
     public DBTable<E> setSortOrder(ColumnProvider... sortColumns) {
         this.options.setSortColumns(sortColumns);
-
-        applySortOrder();
-
         return this;
     }
 
     public DBTable<E> clearSortOrder() {
         if (this.options.getSortColumns().length > 0) {
             this.options.setSortColumns(new ColumnProvider[]{});
-            applySortOrder();
         }
         return this;
     }
@@ -308,7 +298,6 @@ public class DBTable<E extends DBRow> {
 
     public DBTable<E> setBlankQueryAllowed(boolean allow) {
         this.options.setBlankQueryAllowed(allow);
-        applyBlankQueryAllowed();
         return this;
     }
 

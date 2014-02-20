@@ -345,7 +345,7 @@ public class DBQuery {
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
-                .append(defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()))
+                .append(options.getRowLimit()!=null?defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()):"")
                 .append(defn.endSQLStatement())
                 .toString();
 
