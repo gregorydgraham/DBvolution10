@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution;
 import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,15 +50,14 @@ import nz.co.gregs.dbvolution.internal.query.QueryOptions;
  *
  * <p>
  * DBTable and {@link DBQuery} are very similar but there are important
- * differences. In particular DBTableOLD uses a simple
- * {@code List<<E extends DBRow>>} rather than {@code List<DBQueryRow>} and
- * DBTableOLD requires you to specify an example in
- * {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)} rather than using the
- * exemplar provided initially.
+ * differences. In particular DBTable uses a simple
+ * {@code List<<E extends DBRow>>} rather than {@code List<DBQueryRow>}.
+ * Additionally DBTable results are always fresh: the internal query is rerun
+ * each time a get* method is called.
  *
  * <p>
- * DBTable is a quick and easy API for targeted data retrieval, for more complex
- * needs use {@link DBQuery}.
+ * DBTable is a quick and easy API for targeted data retrieval; for more complex
+ * needs, use {@link DBQuery}.
  *
  * @param <E>
  * @author Gregory Graham
@@ -70,13 +70,16 @@ public class DBTable<E extends DBRow> {
     private final QueryOptions options = new QueryOptions();
 
     protected DBTable(DBDatabase database, E exampleRow) {
-        exemplar = exampleRow;
+        exemplar = DBRow.copyDBRow(exampleRow);
         this.database = database;
-        this.query = database.getDBQuery(exampleRow);
+        this.query = database.getDBQuery(exemplar);
     }
 
     /**
      * Factory method to create a DBTable.
+     *
+     * <p>
+     * The example will be copied to avoid unexpected changes of the results.
      *
      * <p>
      * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) } is probably
@@ -92,27 +95,102 @@ public class DBTable<E extends DBRow> {
         return dbTable;
     }
 
+    /**
+     * Gets All Rows of the table from the database
+     *
+     * <p>
+     * Retrieves all rows that match the example set during creation or by
+     * subsequent {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow) } and
+     * similar methods.
+     *
+     * <p>
+     * If the example has no criteria specified and there is no
+     * {@link #setRawSQL(java.lang.String) raw SQL set} then all rows of the
+     * table will be returned.
+     *
+     * <p>
+     * Throws AccidentalBlankQueryException if you haven't specifically allowed
+     * blank queries with setBlankQueryAllowed(boolean)
+     *
+     * @return all the appropriate rows of the table from the database;
+     * @throws SQLException, AccidentalBlankQueryException
+     */
     public List<E> getAllRows() throws SQLException {
         query.refreshQuery();
         applyConfigs();
         return query.getAllInstancesOf(exemplar);
     }
 
+    /**
+     * Synonym for {@link #getAllRows()
+     *
+     * @return all the appropriate rows
+     * @throws SQLException
+     */
     public List<E> toList() throws SQLException {
         return getAllRows();
     }
 
+    /**
+     * Sets the example and retrieves all the appropriate records.
+     *
+     * <p>
+     * The example is stored as the new exemplar and the query is rerun
+     *
+     * <p>
+     * The following will retrieve all records from the table where the Language
+     * column contains JAVA:<br>
+     * {@code DBTableOLD<MyRow> myTable = database.getDBTableOLD(new MyRow());}<br>
+     * {@code MyRow myExample = new MyRow();}<br>
+     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
+     * {@code myTable.getByExample(myExample); }<br>
+     * {@code List<MyRow> myRows = myTable.toList();}
+     *
+     * @param example
+     * @return All the rows that match the example
+     * @throws SQLException
+     * @see QueryableDatatype
+     * @see DBRow
+     */
     public List<E> getRowsByExample(E example) throws SQLException {
-        this.exemplar = example;
+        this.exemplar = DBRow.copyDBRow(example);
         this.query = database.getDBQuery(example);
         return getAllRows();
     }
 
+    /**
+     *
+     * Returns the first row of the table
+     *
+     * <p>
+     * Particularly helpful when you know there is only one row
+     *
+     * <p>
+     * Functionally equivalent to {@link #getAllRows()}.get(0).
+     *
+     * @return the first appropriate row in this DBTable
+     * @throws java.sql.SQLException
+     */
     public E getFirstRow() throws SQLException {
         List<E> allRows = getAllRows();
         return allRows.get(0);
     }
 
+    /**
+     *
+     * Returns the first row and only row of the table.
+     *
+     * <p>
+     * Similar to {@link getFirstRow()} but throws an
+     * UnexpectedNumberOfRowsException if there is more than 1 row available
+     *
+     * <p>
+     * {@link #getAllRows() } with the initial exemplar will be run.
+     *
+     * @return the first row in this DBTableOLD instance
+     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+     * @throws java.sql.SQLException
+     */
     public E getOnlyRow() throws SQLException, UnexpectedNumberOfRowsException {
         List<E> allRows = getAllRows();
         if (allRows.size() > 1) {
@@ -122,10 +200,54 @@ public class DBTable<E extends DBRow> {
         }
     }
 
+    /**
+     * Sets the exemplar to the given example and retrieves the only appropriate
+     * record.
+     *
+     * <p>
+     * Throws an exception if there are no appropriate records, or several
+     * appropriate records.
+     *
+     * <p>
+     * The following will return the only record from the table where the
+     * Language column contains JAVA:<br>
+     * {@code MyTableRow myExample = new MyTableRow();}<br>
+     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
+     * {@code MyRow myRow = (new DBTable<MyTableRow>()).getOnlyRowByExample(myExample);}
+     *
+     * @param example
+     * @return A list containing the rows that match the example
+     * @throws SQLException
+     * @throws UnexpectedNumberOfRowsException
+     * @throws AccidentalBlankQueryException
+     * @see QueryableDatatype
+     * @see DBRow
+     */
     public E getOnlyRowByExample(E example) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
         return getRowsByExample(example, 1L).get(0);
     }
 
+    /**
+     * This method retrieves all the appropriate records, and throws an
+     * exception if the number of records differs from the required number.
+     *
+     * <p>
+     * The following will retrieve all 10 records from the table where the
+     * Language column contains JAVA, and throw an exception if anything other
+     * than 10 rows is returned.<br>
+     * {@code MyTableRow myExample = new MyTableRow();}<br>
+     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
+     * {@code List<MyTableRow> rows = (new DBTable<MyTableRow>()).getRowsByExample(myExample, 10L);}
+     *
+     * @param example
+     * @param expectedNumberOfRows
+     * @return a DBTableOLD instance containing the rows that match the example
+     * @throws SQLException
+     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+     * @throws AccidentalBlankQueryException
+     * @see QueryableDatatype
+     * @see DBRow
+     */
     public List<E> getRowsByExample(E example, long expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
         List<E> rowsByExample = getRowsByExample(example);
         if (rowsByExample.size() == expectedNumberOfRows) {
@@ -142,30 +264,125 @@ public class DBTable<E extends DBRow> {
         return getAllRows();
     }
 
+    /**
+     * Retrieves the row (or rows in a bad database) that has the specified
+     * primary key.
+     *
+     * <p>
+     * The primary key column is identified by the {@code @DBPrimaryKey}
+     * annotation in the TableRow subclass.
+     *
+     * @param pkValue
+     * @return a List containing the row(s) for the primary key
+     * @throws SQLException
+     */
     public List<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         return getRowsByPrimaryKeyObject(pkValue);
     }
 
+    /**
+     * Retrieves the row (or rows in a bad database) that has the specified
+     * primary key.
+     *
+     * <p>
+     * The primary key column is identified by the {@code @DBPrimaryKey}
+     * annotation in the TableRow subclass.
+     *
+     * @param pkValue
+     * @return a List containing the row(s) for the primary key
+     * @throws SQLException
+     */
     public List<E> getRowsByPrimaryKey(String pkValue) throws SQLException {
         return getRowsByPrimaryKeyObject(pkValue);
     }
 
+    /**
+     * Retrieves the row (or rows in a bad database) that has the specified
+     * primary key.
+     *
+     * <p>
+     * The primary key column is identified by the {@code @DBPrimaryKey}
+     * annotation in the TableRow subclass.
+     *
+     * @param pkValue
+     * @return a List containing the row(s) for the primary key
+     * @throws SQLException
+     */
     public List<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         return getRowsByPrimaryKeyObject(pkValue);
     }
 
+    /**
+     * Generates and returns the actual SQL that will be used by {@link #getAllRows()
+     * } now.
+     *
+     * <p>
+     * Good for debugging and great for DBAs, this is how you find out what
+     * DBvolution is really doing.
+     *
+     * <p>
+     * Generates the SQL query for retrieving the objects but does not execute
+     * the SQL. Use {@link #getAllRows() the get* methods} to retrieve the rows.
+     *
+     * <p>
+     * See also {@link #getSQLForCount() getSQLForCount}
+     *
+     * @return a String of the SQL that will be used by {@link #getAllRows() }.
+     * @throws SQLException
+     */
     public String getSQLForQuery() throws SQLException {
         return query.getSQLForQuery();
     }
 
+    /**
+     * Returns the SQL query that will used to count the rows
+     *
+     * <p>
+     * Use this method to check the SQL that will be executed during
+     * {@link #count() the count() method}
+     *
+     * @return a String of the SQL query that will be used to count the rows
+     * returned by this query
+     * @throws SQLException
+     */
     public String getSQLForCount() throws SQLException {
         return query.getSQLForCount();
     }
 
+    /**
+     * Count the rows on the database without retrieving the rows.
+     *
+     * <p>
+     * Either: counts the results already retrieved, or creates a
+     * {@link #getSQLForCount() count query} for this instance and retrieves the
+     * number of rows that would have been returned had
+     * {@link #getAllRows() getAllRows()} been called.
+     *
+     * @return the number of rows that have or will be retrieved.
+     * @throws SQLException
+     */
+    public Long count() throws SQLException {
+        return query.count();
+    }
+
+    /**
+     * Convenience method to print all the rows in the current collection
+     * Equivalent to: print(System.out)
+     *
+     * @throws java.sql.SQLException
+     */
     public void print() throws SQLException {
         print(System.out);
     }
 
+    /**
+     * the same as print() but allows you to specify the PrintStream required
+     *
+     * myTable.printAllRows(System.err);
+     *
+     * @param stream
+     * @throws java.sql.SQLException
+     */
     public void print(PrintStream stream) throws SQLException {
         List<E> allRows = getAllRows();
         for (E row : allRows) {
@@ -173,6 +390,14 @@ public class DBTable<E extends DBRow> {
         }
     }
 
+    /**
+     *
+     * Inserts DBRows into the database
+     *
+     * @param newRows
+     * @return a DBActionList of all the actions performed
+     * @throws SQLException
+     */
     public final DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : newRows) {
@@ -182,7 +407,15 @@ public class DBTable<E extends DBRow> {
         return actions;
     }
 
-    public DBActionList insert(List<E> newRows) throws SQLException {
+    /**
+     *
+     * Inserts DBRows into the database
+     *
+     * @param newRows
+     * @return a DBActionList of all the actions performed
+     * @throws SQLException
+     */
+    public DBActionList insert(Collection<E> newRows) throws SQLException {
         DBActionList changes = new DBActionList();
         for (DBRow row : newRows) {
             changes.addAll(DBInsert.save(database, row));
@@ -191,6 +424,13 @@ public class DBTable<E extends DBRow> {
         return changes;
     }
 
+    /**
+     * Deletes the rows from the database permanently.
+     *
+     * @param oldRows
+     * @return a {@link DBActionList} of the delete actions.
+     * @throws SQLException
+     */
     //@SafeVarargs
     public final DBActionList delete(E... oldRows) throws SQLException {
         DBActionList actions = new DBActionList();
@@ -208,7 +448,7 @@ public class DBTable<E extends DBRow> {
      * @return a {@link DBActionList} of the delete actions.
      * @throws SQLException
      */
-    public DBActionList delete(List<E> oldRows) throws SQLException {
+    public DBActionList delete(Collection<E> oldRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : oldRows) {
             actions.addAll(DBDelete.delete(database, row));
@@ -217,11 +457,28 @@ public class DBTable<E extends DBRow> {
         return actions;
     }
 
+    /**
+     *
+     * Updates the DBRow on the database
+     *
+     * @param oldRow
+     * @return a DBActionList of the actions performed on the database
+     * @throws SQLException
+     */
     public DBActionList update(E oldRow) throws SQLException {
+        query.refreshQuery();
         return DBUpdate.update(database, oldRow);
     }
 
-    public DBActionList update(List<E> oldRows) throws SQLException {
+    /**
+     *
+     * Updates Lists of DBRows on the database
+     *
+     * @param oldRows
+     * @return a DBActionList of the actions performed on the database
+     * @throws SQLException
+     */
+    public DBActionList update(Collection<E> oldRows) throws SQLException {
         DBActionList changes = new DBActionList();
         for (E row : oldRows) {
             if (row.hasChangedSimpleTypes()) {
@@ -279,8 +536,21 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    public DBTable<E> setRowLimit(int i) {
-        this.options.setRowLimit(new Long(i));
+    /**
+     * Limit the query to only returning a certain number of rows
+     *
+     * <p>
+     * Implements support of the LIMIT and TOP operators of many databases.
+     *
+     * <p>
+     * Only the specified number of rows will be returned from the database and
+     * DBvolution.
+     *
+     * @param rowLimit
+     * @return this DBTable instance
+     */
+    public DBTable<E> setRowLimit(int rowLimit) {
+        this.options.setRowLimit(new Long(rowLimit));
         return this;
     }
 
@@ -337,6 +607,26 @@ public class DBTable<E extends DBRow> {
         }
     }
 
+    /**
+     * Change the Default Setting of Disallowing Blank Queries
+     *
+     * <p>
+     * A common mistake is creating a query without supplying criteria and
+     * accidently retrieving a huge number of rows.
+     *
+     * <p>
+     * DBvolution detects this situation and, by default, throws a
+     * {@link nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException AccidentalBlankQueryException}
+     * when it happens.
+     *
+     * <p>
+     * To change this behaviour, and allow blank queries, call
+     * {@code setBlankQueriesAllowed(true)}.
+     *
+     * @param allow - TRUE to allow blank queries, FALSE to return it to the
+     * default setting.
+     * @return this DBTable instance
+     */
     public DBTable<E> setBlankQueryAllowed(boolean allow) {
         this.options.setBlankQueryAllowed(allow);
         return this;
