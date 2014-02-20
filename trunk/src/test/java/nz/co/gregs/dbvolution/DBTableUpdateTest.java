@@ -60,7 +60,7 @@ public class DBTableUpdateTest extends AbstractTest {
 
         marques.getRowsByExample(myTableRow);
         marques.print();
-        Marque toyota = marques.toList().get(0);
+        Marque toyota = marques.getFirstRow();
         System.out.println("===" + toyota.name.toString());
         Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
@@ -72,7 +72,7 @@ public class DBTableUpdateTest extends AbstractTest {
         
         marques.getRowsByExample(myTableRow);
         marques.print();
-        toyota = marques.toList().get(0);
+        toyota = marques.getFirstRow();
         Assert.assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
     }
 }

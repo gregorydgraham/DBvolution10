@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
@@ -212,13 +211,13 @@ public class DBActionListCreationTest extends AbstractTest {
         
         example.clear();
         example.name.permittedValuesIgnoreCase("tvr");
-        DBTable<Marque> rowsByExample = database.getDBTable(example).getRowsByExample(example);
-        Assert.assertThat(rowsByExample.toList().size(), is(0));
+        DBTable<Marque> rowsByExample = database.getDBTable(example);
+        Assert.assertThat(rowsByExample.getAllRows().size(), is(0));
         
         example.clear();
         example.name.permittedValuesIgnoreCase("honda");
-        rowsByExample = database.getDBTable(example).getRowsByExample(example);
-        Assert.assertThat(rowsByExample.toList().size(), is(1));
+        rowsByExample = database.getDBTable(example);
+        Assert.assertThat(rowsByExample.getAllRows().size(), is(1));
     }
 
     @Test

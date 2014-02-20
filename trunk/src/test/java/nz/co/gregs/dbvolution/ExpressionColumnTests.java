@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -134,19 +135,20 @@ public class ExpressionColumnTests extends AbstractTest {
         }
     }
 
+    @Ignore
     @Test
     public void selectDBRowExpressionWithDBTable() throws Exception {
         final ExpressionRow exprExample = new ExpressionRow();
         exprExample.name.permittedValuesIgnoreCase("TOYOTA");
         DBTable<ExpressionRow> table = database.getDBTable(exprExample);
 
-        final String sqlForQuery = table.getSQLSelectAndFromForQuery();
+        final String sqlForQuery = table.getSQLForQuery();
         System.out.println(sqlForQuery);
         Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
-        final DBTable<ExpressionRow> rowsByExample = table.getRowsByExample(exprExample);
-        database.print(rowsByExample.toList());
+        final List<ExpressionRow> rowsByExample = table.getAllRows();
+        database.print(rowsByExample);
 
-        for (ExpressionRow expressionRow : rowsByExample.toList()) {
+        for (ExpressionRow expressionRow : rowsByExample) {
             System.out.println(expressionRow.sysDateColumnOnClass.toSQLString(database));
             System.out.println("" + expressionRow.sysDateColumnOnClass.dateValue());
         }

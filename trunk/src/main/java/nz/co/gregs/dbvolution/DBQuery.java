@@ -55,8 +55,8 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
  *
  * <p>
  * The foreign keys from the DBRow instances will be automatically aligned and
- * the criteria defined on the DBRows will be seamlessly added to the
- * WHERE clause.
+ * the criteria defined on the DBRows will be seamlessly added to the WHERE
+ * clause.
  *
  * <p>
  * Outer joins are supported using
@@ -65,8 +65,7 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
  * like SELECT .. FROM ... WHERE a=b OR b=c OR c=d ...)
  *
  * <p>
- * more complicated conditions can be added to the query itself using
- * the
+ * more complicated conditions can be added to the query itself using the
  * {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition method}.
  *
  * <p>
@@ -82,17 +81,18 @@ public class DBQuery {
     private final List<Class<? extends DBRow>> optionalQueryTables;
     private final List<DBRow> allQueryTables;
     private List<DBQueryRow> results;
-    private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
-    private Long rowLimit;
-    private List<PropertyWrapper> sortOrder = null;
     private String resultSQL;
-    private boolean useANSISyntax = true;
-    private boolean cartesianJoinAllowed = false;
-    private boolean blankQueryAllowed = false;
+    private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
-    private final QueryOptions options = new QueryOptions();
     private final List<BooleanExpression> expressions = new ArrayList<BooleanExpression>();
     private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
+
+    private final QueryOptions options = new QueryOptions();
+//    private Long rowLimit;
+    private List<PropertyWrapper> sortOrder = null;
+//    private boolean useANSISyntax = true;
+//    private boolean cartesianJoinAllowed = false;
+//    private boolean blankQueryAllowed = false;
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -116,8 +116,7 @@ public class DBQuery {
      * Add a table to the query.
      *
      * <p>
-     * This method adds the DBRow to the list of required (INNER)
-     * tables.
+     * This method adds the DBRow to the list of required (INNER) tables.
      *
      * <p>
      * Criteria (permitted and excluded values) from this instance will be
@@ -264,12 +263,12 @@ public class DBQuery {
             throw new AccidentalBlankQueryException();
         }
 
-        if (!blankQueryAllowed && willCreateBlankQuery()) {
+        if (!options.isBlankQueryAllowed() && willCreateBlankQuery()) {
             throw new AccidentalBlankQueryException();
         }
-        
+
         QueryGraph queryGraph = new QueryGraph(database, allQueryTables, options);
-        if (!cartesianJoinAllowed && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
+        if (!options.isCartesianJoinAllowed() && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
             throw new AccidentalCartesianJoinException();
         }
         DBDefinition defn = database.getDefinition();
@@ -280,12 +279,12 @@ public class DBQuery {
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
         DBRow startQueryFromTable = queryTables.isEmpty() ? allQueryTables.get(0) : queryTables.get(0);
-        List<DBRow> sortedQueryTables = cartesianJoinAllowed
+        List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
                 ? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
                 : queryGraph.toList(startQueryFromTable.getClass());
 
-        if (rowLimit != null) {
-            selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
+        if (options.getRowLimit() != null) {
+            selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options.getRowLimit()));
         }
 
         String separator = "";
@@ -308,7 +307,7 @@ public class DBQuery {
             } else {
                 selectClause = new StringBuilder(providedSelectClause);
             }
-            if (!useANSISyntax) {
+            if (!options.isUseANSISyntax()) {
                 fromClause.append(separator).append(tableName);
             } else {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables));
@@ -321,32 +320,32 @@ public class DBQuery {
                 }
             }
 
-            if (!useANSISyntax) {
+            if (!options.isUseANSISyntax()) {
                 getNonANSIJoin(tabRow, whereClause, defn, joinedTables, tableName, lineSep);
             }
 
             separator = ", " + lineSep;
             otherTables.addAll(allQueryTables);
         }
-        
+
         for (DBDataComparison comp : comparisons) {
             whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
         }
-        
+
         for (BooleanExpression expression : expressions) {
             whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(expression.toSQLString(database)).append(")");
         }
-        
-        for (Map.Entry<Object, DBExpression> entry: expressionColumns.entrySet()) {
+
+        for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
             selectClause.append(colSep).append(entry.getValue().toSQLString(database)).append(" ").append(defn.formatExpressionAlias(entry.getKey()));
             colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
         }
-        
+
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
-                .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
+                .append(defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()))
                 .append(defn.endSQLStatement())
                 .toString();
 
@@ -400,8 +399,8 @@ public class DBQuery {
     }
 
     /**
-     * Constructs the SQL for this DBQuery using the supplied DBRows as examples and executes it on the database,
-     * returning the rows found.
+     * Constructs the SQL for this DBQuery using the supplied DBRows as examples
+     * and executes it on the database, returning the rows found.
      *
      * <p>
      * Adds all required DBRows as inner join tables and all optional DBRows as
@@ -417,8 +416,8 @@ public class DBQuery {
      * <p>
      * Criteria such as
      * {@link nz.co.gregs.dbvolution.datatypes.QueryableDatatype#permittedValues(java.lang.Object...) permitted values}
-     * defined on the fields of the DBRow examples are added as part
-     * of the WHERE clause.
+     * defined on the fields of the DBRow examples are added as part of the
+     * WHERE clause.
      *
      * <p>
      * Similarly conditions added to the DBQuery using
@@ -445,12 +444,12 @@ public class DBQuery {
             try {
                 while (resultSet.next()) {
                     queryRow = new DBQueryRow();
-                    
-                    for (Map.Entry<Object, DBExpression> entry: expressionColumns.entrySet()){
+
+                    for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
                         String expressionAlias = database.getDefinition().formatExpressionAlias(entry.getKey());
                         QueryableDatatype expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
                         expressionQDT.setFromResultSet(resultSet, expressionAlias);
-                        queryRow.addExpressionColumnValue(entry.getKey(),expressionQDT);
+                        queryRow.addExpressionColumnValue(entry.getKey(), expressionQDT);
                     }
                     for (DBRow tableRow : allQueryTables) {
                         DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
@@ -809,7 +808,7 @@ public class DBQuery {
      * @return this DBQuery instance
      */
     public DBQuery setRowLimit(long maximumNumberOfRowsReturned) {
-        rowLimit = new Long(maximumNumberOfRowsReturned);
+        options.setRowLimit(new Long(maximumNumberOfRowsReturned));
         results = null;
 
         return this;
@@ -825,7 +824,7 @@ public class DBQuery {
      * @return this DBQuery instance
      */
     public DBQuery clearRowLimit() {
-        rowLimit = null;
+        options.setRowLimit(null);
         results = null;
 
         return this;
@@ -911,7 +910,7 @@ public class DBQuery {
      * @return this DBQuery instance
      */
     public DBQuery setBlankQueryAllowed(boolean allow) {
-        this.blankQueryAllowed = allow;
+        this.options.setBlankQueryAllowed(allow);
 
         return this;
     }
@@ -937,7 +936,7 @@ public class DBQuery {
      * @return this DBQuery instance
      */
     public DBQuery setCartesianJoinsAllowed(boolean allow) {
-        this.cartesianJoinAllowed = allow;
+        this.options.setCartesianJoinAllowed(allow);
 
         return this;
     }
@@ -966,8 +965,8 @@ public class DBQuery {
      * <p>
      * Criteria such as
      * {@link nz.co.gregs.dbvolution.datatypes.QueryableDatatype#permittedValues(java.lang.Object...) permitted values}
-     * defined on the fields of the DBRow examples are added as part
-     * of the WHERE clause.
+     * defined on the fields of the DBRow examples are added as part of the
+     * WHERE clause.
      *
      * <p>
      * Similarly conditions added to the DBQuery using
@@ -1003,7 +1002,7 @@ public class DBQuery {
      * @return the useANSISyntax flag
      */
     public boolean isUseANSISyntax() {
-        return useANSISyntax;
+        return options.isUseANSISyntax();
     }
 
     /**
@@ -1016,9 +1015,9 @@ public class DBQuery {
      * You should probably use ANSI syntax.
      *
      * <p>
-     * ANSI syntax has the foreign key and added relationships defined
-     * in the FROM clause with the JOIN operator. Pre-ANSI syntax treated the
-     * foreign keys and other relationships as part of the WHERE clause.
+     * ANSI syntax has the foreign key and added relationships defined in the
+     * FROM clause with the JOIN operator. Pre-ANSI syntax treated the foreign
+     * keys and other relationships as part of the WHERE clause.
      *
      * <p>
      * ANSI syntax supports OUTER joins with a standard syntax, and DBvolution
@@ -1028,14 +1027,14 @@ public class DBQuery {
      * @return this DBQuery instance
      */
     public DBQuery setUseANSISyntax(boolean useANSISyntax) {
-        this.useANSISyntax = useANSISyntax;
+        this.options.setUseANSISyntax(useANSISyntax);
 
         return this;
     }
 
     /**
-     * Search the classpath and add any DBRow classes that reference
-     * the DBRows within this DBQuery
+     * Search the classpath and add any DBRow classes that reference the DBRows
+     * within this DBQuery
      *
      * <p>
      * This method automatically enlarges the query by finding all associated
@@ -1066,8 +1065,8 @@ public class DBQuery {
     }
 
     /**
-     * Search the classpath and add, as optional, any DBRow classes
-     * that reference the DBRows within this DBQuery
+     * Search the classpath and add, as optional, any DBRow classes that
+     * reference the DBRows within this DBQuery
      *
      * <p>
      * This method automatically enlarges the query by finding all associated
@@ -1159,8 +1158,8 @@ public class DBQuery {
      * Use this method to add complex conditions to the DBQuery.
      *
      * <p>
-     * This method takes a BooleanExpression and adds it to the where
-     * clause of the Query
+     * This method takes a BooleanExpression and adds it to the where clause of
+     * the Query
      *
      * <p>
      * The easiest way to get a BooleanExpression is the DBRow.column() method
@@ -1231,8 +1230,8 @@ public class DBQuery {
     }
 
     /**
-     * Automatically adds the example as a required table if it has
-     * criteria, or as an optional table otherwise.
+     * Automatically adds the example as a required table if it has criteria, or
+     * as an optional table otherwise.
      *
      * <p>
      * Any DBRow example passed to this method that has criteria specified on
@@ -1258,9 +1257,13 @@ public class DBQuery {
         }
         return this;
     }
-    
-    public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd){
+
+    public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd) {
         expressionColumns.put(identifyingObject, expressionToAdd);
         return this;
+    }
+
+    protected void refreshQuery() {
+        results = null;
     }
 }

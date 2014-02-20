@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import net.sourceforge.tedhi.DateRange;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -49,8 +48,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         List<Marque> allMarques = database
                 .getDBTable(new Marque())
                 .setBlankQueryAllowed(true)
-                .getAllRows()
-                .toList();
+                .getAllRows();
         Assert.assertTrue("Incorrect number of marques retreived", allMarques.size() == marqueRows.size());
     }
 
@@ -138,7 +136,7 @@ public class DBDatabaseGetTest extends AbstractTest {
     public void testIsExcludedWithList() throws SQLException {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
-        List<Marque> allMarques = database.getDBTable(hummerQuery).setBlankQueryAllowed(true).getRowsByExample(hummerQuery).toList();
+        List<Marque> allMarques = database.getDBTable(hummerQuery).setBlankQueryAllowed(true).getAllRows();
         List<String> permittedMarques = new ArrayList<String>();
         permittedMarques.add("PEUGEOT");
         permittedMarques.add("HUMMER");
@@ -210,7 +208,7 @@ public class DBDatabaseGetTest extends AbstractTest {
     public void testIgnoringColumnsOnTable() throws SQLException {
         Marque myMarqueRow = new Marque();
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
-        List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getRowsByExample(myMarqueRow).toList();
+        List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getAllRows();
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);
             Assert.assertThat(marq.auto_created.isNull(), is(true));
@@ -233,7 +231,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         Marque myMarqueRow = new Marque();
         myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
-        List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getRowsByExample(myMarqueRow).toList();
+        List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getAllRows();
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);
             Assert.assertThat(marq.auto_created.isNull(), is(false));

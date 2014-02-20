@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.transactions;
 
-import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +40,7 @@ public class DBTableTransactionTest extends AbstractTest {
 
     @Test
     public void testInsertRowsSucceeds() throws SQLException, Exception{
-        List<Marque> original = marques.setBlankQueryAllowed(true).getRowsByExample(new Marque()).toList();
+        List<Marque> original = marques.setBlankQueryAllowed(true).getRowsByExample(new Marque());
         System.out.println("original.toList().size(): " + original.size());
         DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
             @Override
@@ -66,7 +65,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 return marques;
             }
         });
-        List<Marque> added = marques.getRowsByExample(new Marque()).toList();
+        List<Marque> added = marques.getRowsByExample(new Marque());
         System.out.println("original.toList().size(): " + original.size());
         System.out.println("added.toList().size(): " + added.size());
         Assert.assertTrue("Length of list after insert should be longer than the original", added.size() == original.size() + 2);
@@ -74,7 +73,7 @@ public class DBTableTransactionTest extends AbstractTest {
 
     @Test
     public void testInsertRowsFailure() throws SQLException {
-        List<Marque> original = marques.setBlankQueryAllowed(true).getRowsByExample(new Marque()).toList();
+        List<Marque> original = marques.setBlankQueryAllowed(true).getRowsByExample(new Marque());
         System.out.println("original.toList().size(): " + original.size());
         try{
         DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
@@ -103,9 +102,9 @@ public class DBTableTransactionTest extends AbstractTest {
         }catch (Exception e){
             e.printStackTrace();
         }
-        final DBTable<Marque> addedRows = marques.getRowsByExample(new Marque());
-        addedRows.print();
-        List<Marque> added = addedRows.toList();
+        final List<Marque> addedRows = marques.getRowsByExample(new Marque());
+        marques.print();
+        List<Marque> added = marques.toList();
         System.out.println("original.toList().size(): " + original.size());
         System.out.println("added.toList().size(): " + added.size());
         Assert.assertTrue("Length of list after insert should be the same as the original", added.size() == original.size());

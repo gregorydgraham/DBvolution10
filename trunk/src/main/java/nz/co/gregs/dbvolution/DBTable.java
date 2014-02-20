@@ -1,650 +1,144 @@
+/*
+ * Copyright 2014 gregorygraham.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.DBInsert;
 import java.io.PrintStream;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import nz.co.gregs.dbvolution.actions.DBDelete;
-import nz.co.gregs.dbvolution.actions.DBUpdate;
-
-import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
-import nz.co.gregs.dbvolution.databases.DBStatement;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.actions.*;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
-import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
- * <p>
- * DBvolution is available on <a
- * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
- * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
  *
- * <p>
- * DBTable provides features for making simple queries on the database.
- *
- * <p>
- * If your query only references one table, DBTable makes it easy to get the
- * rows from that table.
- *
- * <p>
- * Use
- * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) getDBTable from DBDatabase}
- * to retrieve an instance for particular DBRow subclass.
- *
- * <p>
- * DBTable and {@link DBQuery} are very similar but there are important
- * differences. In particular DBTable uses a simple
- * {@code List<<E extends DBRow>>} rather than {@code List<DBQueryRow>} and
- * DBTable requires you to specify an example in
- * {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)} rather than using the
- * exemplar provided initially.
- *
- * <p>
- * DBTable is a quick and easy API for targeted data retrieval, for more complex
- * needs use {@link DBQuery}.
- *
- * @param <E>
- * @author Gregory Graham
+ * @author gregorygraham
  */
 public class DBTable<E extends DBRow> {
 
-//    private static boolean printSQLBeforeExecuting = false;
-    E template;
-    private DBDatabase database = null;
-    ResultSet resultSet = null;
-    private final java.util.ArrayList<E> listOfRows = new java.util.ArrayList<E>();
-    private Long rowLimit;
-    private List<PropertyWrapper> sortOrder = null;
-    private boolean blankQueryAllowed = false;
-    private final QueryOptions options = new QueryOptions();
+    private E exemplar = null;
+    private final DBDatabase database;
+    private DBQuery query = null;
+    private QueryOptions options = new QueryOptions();
 
-    /**
-     * Factory method to create a DBTable.
-     *
-     * <p>
-     * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) } is probably
-     * a better option.
-     *
-     * @param <E>
-     * @param database
-     * @param example
-     * @return an instance of the supplied example
-     */
+    protected DBTable(DBDatabase database, E exampleRow) {
+        exemplar = exampleRow;
+        this.database = database;
+        this.query = database.getDBQuery(exampleRow);
+    }
+
     public static <E extends DBRow> DBTable<E> getInstance(DBDatabase database, E example) {
         DBTable<E> dbTable = new DBTable<E>(database, example);
         return dbTable;
     }
 
-    /**
-     * Constructor
-     *
-     * @param myDatabase
-     * @param dummyObject
-     */
-    private DBTable(DBDatabase myDatabase, E dummyObject) {
-        this.database = myDatabase;
-        template = dummyObject;
+    public List<E> getAllRows() throws SQLException {
+        query.refreshQuery();
+        applyConfigs();
+        return query.getAllInstancesOf(exemplar);
     }
 
-    private String getAllFieldsForSelect() {
-        StringBuilder allFields = new StringBuilder();
-        List<String> columnNames = template.getColumnNames(database);
-        String separator = "";
-        for (String column : columnNames) {
-            allFields.append(separator).append(" ").append(database.getDefinition().formatColumnName(column));
-            separator = ",";
-        }
-
-        return allFields.toString();
+    public List<E> toList() throws SQLException {
+        return getAllRows();
     }
 
-    private String getSQLForSelectAll() {
-        DBDefinition defn = database.getDefinition();
-        StringBuilder selectStatement = new StringBuilder();
-        DBSelectQuery selectQueryAnnotation = template.getClass().getAnnotation(DBSelectQuery.class);
-        if (selectQueryAnnotation != null) {
-            selectStatement.append(selectQueryAnnotation.value());
+    public List<E> getRowsByExample(E example) throws SQLException {
+        this.exemplar = example;
+        this.query = database.getDBQuery(example);
+        this.applyConfigs();
+        return getAllRows();
+    }
+
+    public E getFirstRow() throws SQLException {
+        List<E> allRows = getAllRows();
+        return allRows.get(0);
+    }
+
+    public E getOnlyRow() throws SQLException, UnexpectedNumberOfRowsException {
+        List<E> allRows = getAllRows();
+        if (allRows.size() > 1) {
+            throw new UnexpectedNumberOfRowsException(1, allRows.size());
         } else {
-            selectStatement.append(defn.beginSelectStatement());
-            if (rowLimit != null) {
-                selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
-            }
-//            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
-            selectStatement.append(getAllFieldsForSelect())
-                    .append(defn.beginFromClause())
-                    .append(defn.formatTableName(template))
-                    .append(defn.beginTableAlias()).append(defn.getTableAlias(template)).append(defn.endTableAlias())
-                    .append(getOrderByClause())
-                    .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
-                    .append(defn.endSQLStatement());
-        }
-
-        return selectStatement.toString();
-    }
-
-    /**
-     * Renamed {@link #getSQLSelectAndFromForQuery() }
-     *
-     * @return the SQL string for the SELECT and FROM clauses
-     * @deprecated
-     * @see #getSQLSelectAndFromForQuery() 
-     */
-    @Deprecated
-    public String getSQLForSelect() {
-        return getSQLSelectAndFromForQuery();
-    }
-    /**
-     * Returns the SELECT and FROM clauses used in the SQL query.
-     *
-     * @return the SQL string for the SELECT and FROM clauses
-     */
-    public String getSQLSelectAndFromForQuery() {
-        DBDefinition defn = database.getDefinition();
-        StringBuilder selectStatement = new StringBuilder();
-        DBSelectQuery selectQueryAnnotation = template.getClass().getAnnotation(DBSelectQuery.class);
-        if (selectQueryAnnotation != null) {
-            selectStatement
-                    .append(selectQueryAnnotation.value())
-                    .append(defn.beginWhereClause())
-                    .append(defn.getWhereClauseBeginningCondition(options));
-        } else {
-            selectStatement.append(defn.beginSelectStatement());
-            if (rowLimit != null) {
-                selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
-            }
-
-//            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
-            selectStatement
-                    .append(getAllFieldsForSelect())
-                    .append(defn.beginFromClause())
-                    .append(defn.formatTableName(template))
-                    .append(defn.beginWhereClause())
-                    .append(defn.getWhereClauseBeginningCondition(options));
-        }
-
-        return selectStatement.toString();
-    }
-
-    /**
-     * Gets All Rows of the table from the database
-     *
-     * <p>
-     * Use this carefully as it does what it says on the label: Gets All Rows of
-     * the table from the database.
-     *
-     * <p>
-     * throws AccidentalBlankQueryException if you haven't specifically allowed
-     * blank queries with setBlankQueryAllowed(boolean)
-     *
-     * @return ALL rows of the table from the database
-     * @throws SQLException, AccidentalBlankQueryException
-     */
-    public DBTable<E> getAllRows() throws SQLException, AccidentalBlankQueryException {
-        if (!this.blankQueryAllowed) {
-            throw new AccidentalBlankQueryException();
-        }
-        resultSet = null;
-        this.listOfRows.clear();
-
-        String selectStatement = this.getSQLForSelectAll();
-
-        resultSet = null;
-        DBStatement statement = this.database.getDBStatement();
-        try {
-            try {
-                try {
-                    boolean executed = statement.execute(selectStatement);
-                } catch (SQLException noConnection) {
-                    throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + database.getJdbcURL() + " USERNAME=" + database.getUsername(), noConnection);
-                }
-                try {
-                    resultSet = statement.getResultSet();
-                } catch (SQLException noConnection) {
-                    throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + database.getJdbcURL() + " USERNAME=" + database.getUsername(), noConnection);
-                }
-                addAllFields(this, resultSet);
-            } finally {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            }
-        } finally {
-            statement.close();
-        }
-        return this;
-    }
-
-    private void addAllFields(DBTable<E> dbTable, ResultSet resultSet) throws SQLException {
-        DBDefinition defn = database.getDefinition();
-        ResultSetMetaData rsMeta = resultSet.getMetaData();
-        Map<String, Integer> dbColumnNames = new HashMap<String, Integer>();
-        for (int k = 1; k <= rsMeta.getColumnCount(); k++) {
-            dbColumnNames.put(defn.formatColumnName(rsMeta.getColumnName(k)), k);
-        }
-
-        while (resultSet.next()) {
-            @SuppressWarnings("unchecked")
-            E tableRow = (E) DBRow.getDBRow(template.getClass());
-
-            List<PropertyWrapper> fields = tableRow.getPropertyWrappers();
-
-            for (PropertyWrapper field : fields) {
-                if (field.isColumn()) {
-                    String dbColumnName = field.columnName();
-                    String formattedColumnName = defn.formatColumnName(dbColumnName);
-                    Integer dbColumnIndex = dbColumnNames.get(formattedColumnName);
-                    if (formattedColumnName != null && dbColumnIndex != null) {
-                        setObjectFieldValueToColumnValue(rsMeta, dbColumnIndex, field, tableRow, resultSet, dbColumnName);
-                        QueryableDatatype qdt = field.getQueryableDatatype();
-                        if (tableRow.isEmptyRow() && !qdt.isNull()) {
-                            tableRow.setEmptyRow(false);
-                        }
-                    }
-                }
-            }
-            tableRow.setDefined();
-            dbTable.listOfRows.add(tableRow);
+            return allRows.get(0);
         }
     }
 
-    private void setObjectFieldValueToColumnValue(ResultSetMetaData rsMeta, int dbColumnIndex, PropertyWrapper field, DBRow tableRow, ResultSet resultSet, String dbColumnName) throws SQLException {
-        QueryableDatatype qdt = field.getQueryableDatatype();
-        int columnType = rsMeta.getColumnType(dbColumnIndex);
-//        int precision = rsMeta.getPrecision(dbColumnIndex);
-        switch (columnType) {
-            case Types.BIT:
-            case Types.INTEGER:
-            case Types.BIGINT:
-            case Types.BOOLEAN:
-            case Types.ROWID:
-            case Types.SMALLINT:
-            case Types.DECIMAL:
-            case Types.DOUBLE:
-            case Types.FLOAT:
-            case Types.NUMERIC:
-            case Types.REAL:
-            case Types.CHAR:
-            case Types.NCHAR:
-            case Types.NVARCHAR:
-            case Types.VARCHAR:
-            case Types.LONGNVARCHAR:
-            case Types.LONGVARCHAR:
-            case Types.CLOB:
-            case Types.NCLOB:
-            case Types.DATE:
-            case Types.TIME:
-            case Types.TIMESTAMP:
-            case Types.BINARY:
-            case Types.VARBINARY:
-            case Types.JAVA_OBJECT:
-            case Types.LONGVARBINARY:
-            case Types.BLOB:
-            case Types.OTHER:
-                qdt.setFromResultSet(resultSet, dbColumnName);
-
-                // ensure field set when using type adaptors
-                field.setQueryableDatatype(qdt);
-                break;
-            default:
-                throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: table " + tableRow.getTableName() + " column " + dbColumnName + " has a Unknown SQL type of " + rsMeta.getColumnType(dbColumnIndex) + ". Please contact enquiry at https://sourceforge.net/projects/dbvolution/ for support.", rsMeta.getColumnType(dbColumnIndex));
-        }
+    public E getOnlyRowByExample(E example) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
+        return getRowsByExample(example, 1L).get(0);
     }
 
-    private String getPrimaryKeyColumnName() {
-        String columnName = template.getPrimaryKeyColumnName();
-        if (columnName == null) {
-            throw new UndefinedPrimaryKeyException(template.getClass());
-        } else {
-            return columnName;
-        }
-    }
-
-    private String escapeSingleQuotes(String str) {
-        if (str == null) {
-            return "";
-        }
-        return str.replace("'", "''").replace("\\", "\\\\");
-    }
-
-    private DBTable<E> getRows(String selectStatement) throws SQLException {
-        this.listOfRows.clear();
-//        if (printSQLBeforeExecuting || database.isPrintSQLBeforeExecuting()) {
-//            System.out.println(selectStatement);
-//        }
-
-        DBStatement statement = database.getDBStatement();
-        try {
-            boolean executed = statement.execute(selectStatement);
-            resultSet = statement.getResultSet();
-            try {
-                addAllFields(this, resultSet);
-            } finally {
-                resultSet.close();
-            }
-        } finally {
-            statement.close();
-        }
-        return this;
-    }
-
-    /**
-     * Retrieves the row (or rows in a bad database) that has the specified
-     * primary key.
-     *
-     * <p>
-     * The primary key column is identified by the {@code @DBPrimaryKey}
-     * annotation in the TableRow subclass.
-     *
-     * @param pkValue
-     * @return a DBTable instance containing the row(s) for the primary key
-     * @throws SQLException
-     */
-    public DBTable<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
-
-        DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
-        String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
-        this.getRows(selectStatement);
-        return this;
-    }
-
-    /**
-     * Retrieves the row (or rows in a bad database) that has the specified
-     * primary key.
-     *
-     * <p>
-     * The primary key column is identified by the {@code @DBPrimaryKey}
-     * annotation in the TableRow subclass.
-     *
-     * @param pkValue
-     * @return a DBTable instance containing the row(s) for the primary key
-     * @throws SQLException
-     */
-    public DBTable<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
-        DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + pkValue + " ";
-        String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
-        this.getRows(selectStatement);
-        return this;
-    }
-
-    /**
-     * Retrieves the row (or rows in a bad database) that has the specified
-     * primary key.
-     *
-     * <p>
-     * The primary key column is identified by the {@code @DBPrimaryKey}
-     * annotation in the TableRow subclass.
-     *
-     * @param pkValue
-     * @return a DBTable instance containing the row(s) for the primary key
-     * @throws SQLException
-     */
-    public DBTable<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
-        DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
-        String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
-        this.getRows(selectStatement);
-        return this;
-    }
-
-    /**
-     * This method retrieves all the appropriate records.
-     *
-     * <p>
-     * The following will retrieve all records from the table where the Language
-     * column contains JAVA:<br>
-     * {@code DBTable<MyRow> myTable = database.getDBTable(new MyRow());}<br>
-     * {@code MyRow myExample = new MyRow();}<br>
-     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
-     * {@code myTable.getByExample(myExample); }<br>
-     * {@code List<MyRow> myRows = myTable.toList();}
-     *
-     * @param queryTemplate
-     * @return a DBTable instance containing the rows that match the example
-     * @throws SQLException
-     * @see QueryableDatatype
-     * @see DBRow
-     */
-    public DBTable<E> getRowsByExample(E queryTemplate) throws SQLException, AccidentalBlankQueryException {
-        template = queryTemplate;
-        String whereClause = getSQLWhereClauseForExample(queryTemplate);
-        String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
-
-        return getRows(selectStatement);
-    }
-
-    /**
-     * This method retrieves the only appropriate record.
-     *
-     * <p>
-     * Throws an exception if there is no appropriate records, or several
-     * appropriate records.
-     *
-     * <p>
-     * The following will the only record from the table where the Language
-     * column contains JAVA:<br>
-     * {@code MyTableRow myExample = new MyTableRow();}<br>
-     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
-     * {@code (new DBTable<MyTableRow>()).getOnlyRowByExample(myExample);}
-     *
-     * @param queryTemplate
-     * @return a DBTable instance containing the rows that match the example
-     * @throws SQLException
-     * @throws UnexpectedNumberOfRowsException
-     * @throws AccidentalBlankQueryException
-     * @see QueryableDatatype
-     * @see DBRow
-     */
-    public E getOnlyRowByExample(E queryTemplate) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
-        return getRowsByExample(queryTemplate, 1).listOfRows.get(0);
-    }
-
-    /**
-     * This method retrieves all the appropriate records, and throws an
-     * exception if the number of records differs from the required number.
-     *
-     * <p>
-     * The following will retrieve all 10 records from the table where the
-     * Language column contains JAVA, and throw an exception if anything other
-     * than 10 rows is returned.<br>
-     * {@code MyTableRow myExample = new MyTableRow();}<br>
-     * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
-     * {@code (new DBTable<MyTableRow>()).getRowsByExample(myExample, 10L);}
-     *
-     * @param queryTemplate
-     * @param expectedNumberOfRows
-     * @return a DBTable instance containing the rows that match the example
-     * @throws SQLException
-     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-     * @throws AccidentalBlankQueryException
-     * @see QueryableDatatype
-     * @see DBRow
-     */
-    public DBTable<E> getRowsByExample(E queryTemplate, long expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
-        DBTable<E> rowsByExample = getRowsByExample(queryTemplate);
-        int actualNumberOfRows = rowsByExample.toList().size();
-        if (actualNumberOfRows == expectedNumberOfRows) {
+    public List<E> getRowsByExample(E example, long expectedNumberOfRows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
+        List<E> rowsByExample = getRowsByExample(example);
+        if (rowsByExample.size() == expectedNumberOfRows) {
             return rowsByExample;
         } else {
-            throw new UnexpectedNumberOfRowsException(expectedNumberOfRows, actualNumberOfRows, "Unexpected Number Of Rows Detected: was expecting "
-                    + expectedNumberOfRows
-                    + ", found "
-                    + actualNumberOfRows);
+            throw new UnexpectedNumberOfRowsException(expectedNumberOfRows, rowsByExample.size());
         }
     }
 
-    /**
-     * Returns the WHERE clause used by the getByExample method. Provided to aid
-     * understanding and debugging.
-     *
-     * @param row
-     * @return a String of the WHERE clause used for the specified example
-     */
-    public String getSQLWhereClauseForExample(E row) throws AccidentalBlankQueryException {
-        if (!this.blankQueryAllowed && row.willCreateBlankQuery(database)) {
-            throw new AccidentalBlankQueryException();
-        }
-        StringBuilder whereClause = new StringBuilder();
-        String lineSep = System.getProperty("line.separator");
-        DBDefinition defn = database.getDefinition();
-        List<String> tabRowCriteria = row.getWhereClauses(database);
-        if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
-            for (String clause : tabRowCriteria) {
-                whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
-            }
-        }
-        return whereClause.toString();
+    private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException {
+        exemplar.clear();
+        exemplar.getPrimaryKey().permittedValues(pkValue);
+        this.query = database.getDBQuery(exemplar);
+        return getAllRows();
     }
 
-    /**
-     * Renamed {@link #getSQLWhereClauseForExample(nz.co.gregs.dbvolution.DBRow) }
-     *
-     * @param row
-     * @return
-     * @throws AccidentalBlankQueryException
-     * @deprecated
-     * @see #getSQLWhereClauseForExample(nz.co.gregs.dbvolution.DBRow) 
-     */
-    @Deprecated
-    public String getSQLForExample(E row) throws AccidentalBlankQueryException {
-        return getSQLWhereClauseForExample(row);
+    public List<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
+        return getRowsByPrimaryKeyObject(pkValue);
     }
 
-    /**
-     * For the particularly hard queries, just provide the actual WHERE clause
-     * you want to use.
-     *
-     * <p>
-     * Check out {@link DBExpression expressions} before using this method.
-     *
-     * <p>
-     * myExample.getLanguage.isLike("%JAVA%"); is similar to: getByRawSQL("and
-     * language like '%JAVA%'");
-     *
-     * <p>
-     * N.B. the starting AND is optional and avoid trailing semicolons
-     *
-     * @param sqlWhereClause
-     * @return a DBTable of the rows matching the WHERE clause specified
-     * @throws java.sql.SQLException
-     */
-    public DBTable<E> getRowsByRawSQL(String sqlWhereClause) throws SQLException {
-        if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
-            String whereClause = sqlWhereClause.replaceAll("\\s*;\\s*$", "");
-            String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
-            return getRows(selectStatement);
-        } else {
-            String whereClause = " AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
-            String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
-            return getRows(selectStatement);
-        }
+    public List<E> getRowsByPrimaryKey(String pkValue) throws SQLException {
+        return getRowsByPrimaryKeyObject(pkValue);
     }
 
-    /**
-     * Convenience method to print all the rows in the current collection
-     * Equivalent to: print(System.out)
-     *
-     * @throws java.sql.SQLException
-     */
-    public void print() throws SQLException, AccidentalBlankQueryException {
-        if (resultSet == null) {
-            getRowsByExample(template);
-        }
+    public List<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
+        return getRowsByPrimaryKeyObject(pkValue);
+    }
+
+    public String getSQLForQuery() throws SQLException {
+        return query.getSQLForQuery();
+    }
+
+    public String getSQLForCount() throws SQLException {
+        return query.getSQLForCount();
+    }
+
+    public void print() throws SQLException {
         print(System.out);
     }
 
-    /**
-     * the same as print() but allows you to specify the PrintStream required
-     *
-     * myTable.printAllRows(System.err);
-     *
-     * @param ps
-     * @throws java.sql.SQLException
-     */
-    public void print(PrintStream ps) throws SQLException, AccidentalBlankQueryException {
-        if (resultSet == null) {
-            getRowsByExample(template);
-        }
-        for (E row : this.listOfRows) {
-            ps.println(row);
+    public void print(PrintStream stream) throws SQLException {
+        List<E> allRows = getAllRows();
+        for (E row : allRows) {
+            stream.println(row);
         }
     }
 
-    /**
-     *
-     * Returns the first row of the table
-     *
-     * <p>
-     * particularly helpful when you know there is only one row
-     *
-     * <p>
-     * If the no query has been run on the DBTable yet, {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)
-     * } with the initial exemplar will be run.
-     *
-     * @return the first row in this DBTable instance
-     * @throws java.sql.SQLException
-     */
-    public E getFirstRow() throws SQLException, AccidentalBlankQueryException {
-        if (resultSet == null) {
-            getRowsByExample(template);
-        }
-        if (this.listOfRows.size() > 0) {
-            return this.listOfRows.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     *
-     * Returns the first row and only row of the table.
-     *
-     * <p>
-     * Similar to {@link getFirstRow()} but throws an
-     * UnexpectedNumberOfRowsException if there is more than 1 row available
-     *
-     * <p>
-     * If the no query has been run on the DBTable yet, {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)
-     * } with the initial exemplar will be run.
-     *
-     * @return the first row in this DBTable instance
-     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-     * @throws java.sql.SQLException
-     */
-    public E getOnlyRow() throws UnexpectedNumberOfRowsException, SQLException {
-        if (resultSet == null) {
-            getRowsByExample(template);
-        }
-        if (this.listOfRows.size() > 0) {
-            return this.listOfRows.get(0);
-        } else {
-            throw new UnexpectedNumberOfRowsException(1, listOfRows.size(), "Unexpected Number Of Rows Detected: was expecting 1, found " + listOfRows.size());
-        }
-    }
-
-    //@SafeVarargs
     public final DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : newRows) {
             actions.addAll(DBInsert.save(database, row));
         }
+        query.refreshQuery();
         return actions;
     }
 
@@ -653,6 +147,7 @@ public class DBTable<E extends DBRow> {
         for (DBRow row : newRows) {
             changes.addAll(DBInsert.save(database, row));
         }
+        query.refreshQuery();
         return changes;
     }
 
@@ -662,6 +157,7 @@ public class DBTable<E extends DBRow> {
         for (E row : oldRows) {
             actions.addAll(DBDelete.delete(database, row));
         }
+        query.refreshQuery();
         return actions;
     }
 
@@ -677,6 +173,7 @@ public class DBTable<E extends DBRow> {
         for (E row : oldRows) {
             actions.addAll(DBDelete.delete(database, row));
         }
+        query.refreshQuery();
         return actions;
     }
 
@@ -691,63 +188,30 @@ public class DBTable<E extends DBRow> {
                 changes.addAll(DBUpdate.update(database, row));
             }
         }
+        query.refreshQuery();
         return changes;
     }
 
-    /**
-     *
-     *
-     * @param query
-     * @param sqlWhereClause
-     * @return a String of the WHERE clause for the specified example and
-     * specified SQL clause
-     * @see #getRowsByRawSQL(java.lang.String)
-     */
-    public String getSQLWhereClauseWithExampleAndRawSQL(E query, String sqlWhereClause) {
-        if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
-            return getSQLWhereClauseForExample(query) + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
-        } else {
-            return getSQLWhereClauseForExample(query) + " AND " + sqlWhereClause.replaceAll("\\s*;\\s*$", "");
-        }
-    }
-
-    /**
-     * Extracts the rows from this DBTable instance into a standard List
-     *
-     * @return a List of the rows in this DBTable instance
-     * @throws java.sql.SQLException
-     */
-    public List<E> toList() throws SQLException, AccidentalBlankQueryException {
-        if (resultSet == null) {
-            getRowsByExample(template);
-        }
-        return new java.util.ArrayList<E>(listOfRows);
-    }
-
     public List<Long> getPrimaryKeysAsLong() throws SQLException {
-        if (resultSet == null) {
-            getRowsByExample(template);
-        }
-        List<Long> primaryKeys = new ArrayList<Long>();
-        for (E e : listOfRows) {
-            final QueryableDatatype primaryKeyQDT = e.getPrimaryKey();
-            if (primaryKeyQDT instanceof DBNumber) {
-                final DBNumber pkAsDBNumber = (DBNumber) primaryKeyQDT;
-                primaryKeys.add(pkAsDBNumber.longValue());
+        List<E> allRows = getAllRows();
+        List<Long> longPKs = new ArrayList<Long>();
+        for (E row : allRows) {
+            QueryableDatatype primaryKey = row.getPrimaryKey();
+            if (DBNumber.class.isAssignableFrom(primaryKey.getClass())) {
+                DBNumber num = (DBNumber) primaryKey;
+                longPKs.add(num.longValue());
             }
         }
-        return primaryKeys;
+        return longPKs;
     }
 
     public List<String> getPrimaryKeysAsString() throws SQLException {
-        if (resultSet == null) {
-            getRowsByExample(template);
+        List<E> allRows = getAllRows();
+        List<String> stringPKs = new ArrayList<String>();
+        for (E row : allRows) {
+            stringPKs.add(row.getPrimaryKey().stringValue());
         }
-        List<String> primaryKeys = new ArrayList<String>();
-        for (E e : listOfRows) {
-            primaryKeys.add(e.getPrimaryKey().toString());
-        }
-        return primaryKeys;
+        return stringPKs;
     }
 
     /**
@@ -761,10 +225,10 @@ public class DBTable<E extends DBRow> {
      */
     public void compare(DBTable<E> secondTable) throws SQLException {
         HashMap<String, E> secondMap = new HashMap<String, E>();
-        for (E row : secondTable.toList()) {
+        for (E row : secondTable.getAllRows()) {
             secondMap.put(row.getPrimaryKey().toString(), row);
         }
-        for (E row : this.toList()) {
+        for (E row : this.getAllRows()) {
             E foundRow = secondMap.get(row.getPrimaryKey().toString());
             if (foundRow == null) {
                 System.out.println("NOT FOUND: " + row);
@@ -776,14 +240,25 @@ public class DBTable<E extends DBRow> {
     }
 
     public DBTable<E> setRowLimit(int i) {
-        resultSet = null;
-        rowLimit = new Long(i);
+        this.options.setRowLimit(new Long(i));
+        applyRowLimit();
+        return this;
+    }
+
+    private DBTable<E> applyRowLimit() {
+        if (options.getRowLimit() != null) {
+            query.setRowLimit(options.getRowLimit());
+        } else {
+            this.clearRowLimit();
+        }
         return this;
     }
 
     public DBTable<E> clearRowLimit() {
-        resultSet = null;
-        rowLimit = null;
+        if (this.options.getRowLimit() != null) {
+            this.options.setRowLimit(null);
+            applyRowLimit();
+        }
         return this;
     }
 
@@ -807,47 +282,45 @@ public class DBTable<E extends DBRow> {
      * @param orderColumns
      * @return this
      */
-    public DBTable<E> setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
-        resultSet = null;
-        sortOrder = new ArrayList<PropertyWrapper>();
-        for (QueryableDatatype qdt : orderColumns) {
-            PropertyWrapper prop = baseRow.getPropertyWrapperOf(qdt);
-            if (prop == null) {
-                throw new IncorrectDBRowInstanceSuppliedException(baseRow, qdt);
-            }
-            sortOrder.add(prop);
-        }
+    public DBTable<E> setSortOrder(ColumnProvider... sortColumns) {
+        this.options.setSortColumns(sortColumns);
+
+        applySortOrder();
+
         return this;
     }
 
     public DBTable<E> clearSortOrder() {
-        resultSet = null;
-        sortOrder = null;
+        if (this.options.getSortColumns().length > 0) {
+            this.options.setSortColumns(new ColumnProvider[]{});
+            applySortOrder();
+        }
         return this;
     }
 
-    private String getOrderByClause() {
-        DBDefinition defn = database.getDefinition();
-        if (sortOrder != null) {
-            StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
-            String sortSeparator = defn.getStartingOrderByClauseSeparator();
-            for (PropertyWrapper prop : sortOrder) {
-                QueryableDatatype qdt = prop.getQueryableDatatype();
-                final String dbColumnName = prop.columnName();
-                if (dbColumnName != null) {
-                    orderByClause.append(sortSeparator).append(defn.formatColumnName(dbColumnName)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-                    sortSeparator = defn.getSubsequentOrderByClauseSeparator();
-                }
-            }
-            orderByClause.append(defn.endOrderByClause());
-            return orderByClause.toString();
+    private void applySortOrder() {
+        if (options.getSortColumns().length > 0) {
+            this.query.setSortOrder(options.getSortColumns());
+        } else {
+            query.clearSortOrder();
         }
-        return "";
     }
 
     public DBTable<E> setBlankQueryAllowed(boolean allow) {
-        this.blankQueryAllowed = allow;
+        this.options.setBlankQueryAllowed(allow);
+        applyBlankQueryAllowed();
         return this;
+    }
+
+    private void applyBlankQueryAllowed() {
+        this.query.setBlankQueryAllowed(options.isBlankQueryAllowed());
+    }
+
+    private void applyConfigs() {
+        applyBlankQueryAllowed();
+        applyRowLimit();
+        applySortOrder();
+        applyMatchAny();
     }
 
     /**
@@ -876,6 +349,14 @@ public class DBTable<E extends DBRow> {
      * for any rows and the conditions will be connected by AND.
      */
     public void setToMatchAllConditions() {
-        this.options.setMatchAll();
+        options.setMatchAll();
+    }
+
+    private void applyMatchAny() {
+        if (options.isMatchAny()) {
+            query.setToMatchAnyCondition();
+        } else if (options.isMatchAll()) {
+            query.setToMatchAllConditions();
+        }
     }
 }

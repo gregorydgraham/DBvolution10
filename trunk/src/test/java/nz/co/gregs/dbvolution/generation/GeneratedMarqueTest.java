@@ -115,7 +115,7 @@ public class GeneratedMarqueTest extends AbstractTest {
             Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), dbcl.javaSource);
             Object newInstance = compiledClass.newInstance();
             DBRow row = (DBRow) newInstance;
-            List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getRowsByExample(row).toList();
+            List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
             database.print(rows);
             if (row.getTableName().equals("CAR_COMPANY")) {
                 Assert.assertThat(rows.size(), is(4));
