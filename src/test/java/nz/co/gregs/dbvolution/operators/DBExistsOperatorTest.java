@@ -22,7 +22,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -35,7 +34,6 @@ public class DBExistsOperatorTest extends AbstractTest {
         super(testIterationName, db);
     }
 
-    @Ignore
     @Test
     public void testDBExistsOperator() throws SQLException {
         

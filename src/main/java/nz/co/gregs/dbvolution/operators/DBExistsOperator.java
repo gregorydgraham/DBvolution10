@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
@@ -29,32 +30,35 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * @author Gregory Graham
  * @param <E>
  */
-public class  DBExistsOperator<E extends DBRow> extends DBOperator {
+public class DBExistsOperator<E extends DBRow> extends DBOperator {
+
     public static final long serialVersionUID = 1L;
 
     E tableRow;
     private final String referencedColumnName;
 
     /**
-     * Creates an exists operator on the given table row
-     * instance and column identified by the given property's
-     * object reference (field or method).
-     * 
-     * <p> For example the following code snippet will create
-     * an exists operator on the uid column:
+     * Creates an exists operator on the given table row instance and column
+     * identified by the given property's object reference (field or method).
+     *
+     * <p>
+     * For example the following code snippet will create an exists operator on
+     * the uid column:
      * <pre>
      * Customer customer = ...;
      * new DBExistsOperator(customer, customer.uid);
      * </pre>
      *
-     * <p> Requires that {@literal qdtOfTheRow} is from theliteralode tableRow}
+     * <p>
+     * Requires that {@literal qdtOfTheRow} is from theliteralode tableRow}
      * instance for this to work.
+     *
      * @param tableRow
      * @param qdtOfTheRow
-     * @throws IncorrectDBRowInstanceSuppliedException if the {@code qdtOfTheRow}
-     * is not from the {@code tableRow} instance
+     * @throws IncorrectDBRowInstanceSuppliedException if the
+     * {@code qdtOfTheRow} is not from the {@code tableRow} instance
      */
-    public DBExistsOperator(E tableRow, Object qdtOfTheRow) throws IncorrectDBRowInstanceSuppliedException{
+    public DBExistsOperator(E tableRow, Object qdtOfTheRow) throws IncorrectDBRowInstanceSuppliedException {
         this.tableRow = DBRow.copyDBRow(tableRow);
         PropertyWrapper qdtField = tableRow.getPropertyWrapperOf(qdtOfTheRow);
         if (qdtField == null) {
@@ -62,19 +66,21 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
         }
         this.referencedColumnName = qdtField.columnName();
     }
-    
+
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {
         DBDefinition defn = database.getDefinition();
         DBTable<E> table = DBTable.getInstance(database, tableRow);
         String subSelect = "";
         try {
+            table.setRawSQL(defn.beginWhereClauseLine() + columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
+            subSelect = table.getSQLForQuery().replace(";", "");
 //            subSelect = table.getSQLSelectAndFromForQuery() + table.getSQLWhereClauseWithExampleAndRawSQL(tableRow, defn.beginWhereClauseLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
-        } catch (IllegalArgumentException ex) {
+        } catch (SQLException ex) {
             throw new RuntimeException("Error In DBExistsOperator", ex);
         }
 
-        return (invertOperator?" not ":"")+" exists (" + subSelect + ") ";
+        return (invertOperator ? " not " : "") + " exists (" + subSelect + ") ";
     }
 
     @Override
@@ -89,6 +95,6 @@ public class  DBExistsOperator<E extends DBRow> extends DBOperator {
 
     @Override
     public DBExistsOperator<E> copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	return this;
+        return this;
     }
 }

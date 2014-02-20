@@ -24,12 +24,6 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerTable.RecordType;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringTable.StringEnumType;
@@ -175,25 +169,6 @@ public class DBEnumTest extends AbstractTest {
     	long code = IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.code;
     	row.recordType.setLiteralValue(code);
     	assertThat(row.recordType.enumValue(), is(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
-    }
-
-    /*
-     * Not possible because the type declaration of DBIntegerEnum restricts to DBEnumValue<Integer>.
-     * The moral is that the DBIntegerEnum declaration is currently too restrictive.
-     * But if we remove the <Integer> from there, we'll need to add more validation
-     * into the code itself.
-     */
-    @Ignore
-    @Test
-    public void correctlyConvertsIntegerToLongEnum() {
-//    	// warm up enum type
-//    	LongTable row = new LongTable();
-//    	row.recordType.setLiteralValue(LongTable.RecordType.SHIPPING_MANIFEST_RECORD);
-//
-//    	// do test
-//    	int code = LongTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.literalValue;
-//    	row.recordType.setLiteralValue(code);
-//    	assertThat(row.recordType.enumValue(), is(LongTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
     }
     
     @Test
