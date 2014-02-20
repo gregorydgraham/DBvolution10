@@ -76,7 +76,7 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
  */
 public class DBQuery {
 
-    DBDatabase database;
+    private final DBDatabase database;
     private final List<DBRow> queryTables;
     private final List<Class<? extends DBRow>> optionalQueryTables;
     private final List<DBRow> allQueryTables;
@@ -93,6 +93,7 @@ public class DBQuery {
 //    private boolean useANSISyntax = true;
 //    private boolean cartesianJoinAllowed = false;
 //    private boolean blankQueryAllowed = false;
+    private String rawSQLClause = "";
 
     private DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -263,7 +264,7 @@ public class DBQuery {
             throw new AccidentalBlankQueryException();
         }
 
-        if (!options.isBlankQueryAllowed() && willCreateBlankQuery()) {
+        if (!options.isBlankQueryAllowed() && willCreateBlankQuery() && rawSQLClause.isEmpty()) {
             throw new AccidentalBlankQueryException();
         }
 
@@ -344,8 +345,9 @@ public class DBQuery {
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
+                .append(rawSQLClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
-                .append(options.getRowLimit()!=null?defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()):"")
+                .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
                 .append(defn.endSQLStatement())
                 .toString();
 
@@ -1265,5 +1267,13 @@ public class DBQuery {
 
     protected void refreshQuery() {
         results = null;
+    }
+
+    void setRawSQL(String rawQuery) {
+        if (rawQuery == null) {
+            this.rawSQLClause = "";
+        } else {
+            this.rawSQLClause = " "+rawQuery+" ";
+        }
     }
 }

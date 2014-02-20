@@ -224,16 +224,15 @@ public class DBTableGetTest extends AbstractTest {
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", rowsByExample.size() == marqueRows.size() - 1);
     }
 
-    @Ignore
     @Test
     public void testRawQuery() throws SQLException {
         String rawQuery = "and lower(name) in ('peugeot','hummer')  ";
         if (database instanceof OracleDB) {
             rawQuery = "and lower(\"name\") in ('peugeot','hummer')  ";
         }
-//        List<Marque> rowsByRawSQL = marques.getRowsByRawSQL(rawQuery);
-//        database.print(rowsByRawSQL);
-//        Assert.assertEquals(2, rowsByRawSQL.size());
+        List<Marque> rowsByRawSQL = marques.setRawSQL(rawQuery).getAllRows();
+        database.print(rowsByRawSQL);
+        Assert.assertEquals(2, rowsByRawSQL.size());
     }
 
     @Test

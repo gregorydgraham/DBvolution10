@@ -30,15 +30,44 @@ import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
+ * <p>
+ * DBvolution is available on <a
+ * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
+ * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
  *
- * @author gregorygraham
+ * <p>
+ * DBTable provides features for making simple queries on the database.
+ *
+ * <p>
+ * If your query only references one table, DBTable makes it easy to get the
+ * rows from that table.
+ *
+ * <p>
+ * Use
+ * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) getDBTable from DBDatabase}
+ * to retrieve an instance for particular DBRow subclass.
+ *
+ * <p>
+ * DBTable and {@link DBQuery} are very similar but there are important
+ * differences. In particular DBTableOLD uses a simple
+ * {@code List<<E extends DBRow>>} rather than {@code List<DBQueryRow>} and
+ * DBTableOLD requires you to specify an example in
+ * {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)} rather than using the
+ * exemplar provided initially.
+ *
+ * <p>
+ * DBTable is a quick and easy API for targeted data retrieval, for more complex
+ * needs use {@link DBQuery}.
+ *
+ * @param <E>
+ * @author Gregory Graham
  */
 public class DBTable<E extends DBRow> {
 
     private E exemplar = null;
     private final DBDatabase database;
     private DBQuery query = null;
-    private QueryOptions options = new QueryOptions();
+    private final QueryOptions options = new QueryOptions();
 
     protected DBTable(DBDatabase database, E exampleRow) {
         exemplar = exampleRow;
@@ -46,6 +75,18 @@ public class DBTable<E extends DBRow> {
         this.query = database.getDBQuery(exampleRow);
     }
 
+    /**
+     * Factory method to create a DBTable.
+     *
+     * <p>
+     * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) } is probably
+     * a better option.
+     *
+     * @param <E>
+     * @param database
+     * @param example
+     * @return an instance of the supplied example
+     */
     public static <E extends DBRow> DBTable<E> getInstance(DBDatabase database, E example) {
         DBTable<E> dbTable = new DBTable<E>(database, example);
         return dbTable;
@@ -347,5 +388,10 @@ public class DBTable<E extends DBRow> {
         } else if (options.isMatchAll()) {
             query.setToMatchAllConditions();
         }
+    }
+
+    public DBTable setRawSQL(String rawQuery) throws SQLException {
+        query.setRawSQL(rawQuery);
+        return this;
     }
 }
