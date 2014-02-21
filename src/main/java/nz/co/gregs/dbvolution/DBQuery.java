@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.internal.properties.DBRowInstanceWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
@@ -299,10 +300,10 @@ public class DBQuery {
             tableName = tabRow.getTableName();
 
             if (providedSelectClause == null) {
-                List<String> columnNames = tabRow.getColumnNames(database);
-                for (String columnName : columnNames) {
-                    String formattedColumnName = defn.formatTableAliasAndColumnNameForSelectClause(tabRow, columnName);
-                    selectClause.append(colSep).append(formattedColumnName);
+                List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
+                for (PropertyWrapper propDefn : tabProps) {
+//                    String formattedColumnName = defn.formatTableAliasAndColumnNameForSelectClause(tabRow, columnName);
+                    selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
                     colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
                 }
             } else {

@@ -554,6 +554,7 @@ abstract public class DBRow implements Serializable {
      * @return A list of all raw, unformatted column names
      */
     protected List<String> getColumnNames(DBDatabase db) {
+        final DBDefinition defn = db.getDefinition();
         ArrayList<String> columnNames = new ArrayList<String>();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
 
@@ -564,7 +565,7 @@ abstract public class DBRow implements Serializable {
                 } else if (returnColumns == null || returnColumns.isEmpty() || returnColumns.contains(prop.getDefinition())) {
                     String dbColumnName = prop.columnName();
                     if (dbColumnName != null) {
-                        columnNames.add(dbColumnName);
+                        columnNames.add(defn.formatTableAliasAndColumnNameForSelectClause(this, dbColumnName));
                     }
                 }
             }
@@ -1026,7 +1027,7 @@ abstract public class DBRow implements Serializable {
         return relatedTables;
     }
 
-    private DBRowInstanceWrapper getWrapper() {
+    protected DBRowInstanceWrapper getWrapper() {
         if (wrapper == null) {
             wrapper = wrapperFactory.instanceWrapperFor(this);
         }
@@ -1106,6 +1107,22 @@ abstract public class DBRow implements Serializable {
      */
     protected void setEmptyRow(Boolean isThisRowEmpty) {
         this.emptyRow = isThisRowEmpty;
+    }
+
+    List<PropertyWrapper> getSelectedProperties() {
+        if (returnColumns==null || returnColumns.isEmpty()){
+            return getPropertyWrappers();
+        }else{
+            ArrayList<PropertyWrapper> selected = new ArrayList<PropertyWrapper>();
+            for(PropertyWrapperDefinition proDef : returnColumns){
+                for(PropertyWrapper pro : getPropertyWrappers()){
+                    if (pro.getDefinition().equals(proDef)){
+                        selected.add(pro);
+                    }
+                }
+            }
+            return selected;
+        }
     }
 
 }

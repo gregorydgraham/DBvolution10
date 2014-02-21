@@ -57,6 +57,11 @@ public class InformixDBDefinition extends DBDefinition {
     public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
         return "";
     }
+
+    @Override
+    public String getCurrentDateFunctionName() {
+        return " current ";
+    }
     
     
 }

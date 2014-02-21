@@ -62,6 +62,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryOptions;
  * @param <E>
  * @author Gregory Graham
  */
+@Deprecated
 public class DBTableOLD<E extends DBRow> {
 
 //    private static boolean printSQLBeforeExecuting = false;
