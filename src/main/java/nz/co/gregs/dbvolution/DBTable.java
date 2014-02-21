@@ -680,7 +680,7 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    public DBTable setRawSQL(String rawQuery) throws SQLException {
+    public DBTable<E> setRawSQL(String rawQuery) throws SQLException {
         query.setRawSQL(rawQuery);
         return this;
     }
