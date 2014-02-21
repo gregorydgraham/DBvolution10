@@ -70,7 +70,8 @@ public abstract class DBDefinition {
     }
 
     public String formatTableAliasAndColumnNameForSelectClause(DBRow table, String columnName) {
-        return formatTableAliasAndColumnName(table, columnName) + " " + formatColumnNameForDBQueryResultSet(table, columnName);
+        final String tableAliasAndColumn = formatTableAliasAndColumnName(table, columnName);
+        return tableAliasAndColumn + " " + formatForColumnAlias(tableAliasAndColumn);//formatColumnNameForDBQueryResultSet(table, columnName);
     }
 
     public String formatTableName(DBRow table) {
@@ -87,18 +88,23 @@ public abstract class DBDefinition {
      * @return a string of the column alias for the select clause
      */
     public String formatColumnNameForResultSet(DBRow table, String columnName) {
-        String formattedName = formatTableAndColumnName(table, columnName).replaceAll("\\.", "__");
-        return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
+        final String actualName = formatTableAndColumnName(table, columnName);
+        return formatForColumnAlias(actualName);
     }
 
     public String formatColumnNameForDBQueryResultSet(DBRow table, String columnName) {
-        String formattedName = formatTableAliasAndColumnName(table, columnName).replaceAll("\\.", "__");
+        final String actualName = formatTableAliasAndColumnName(table, columnName);
+        return formatForColumnAlias(actualName);
+    }
+
+    public String formatForColumnAlias(final String actualName) {
+        String formattedName = actualName.replaceAll("\\.", "__");
         return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
     }
 
-    public String formatTableAndColumnNameForSelectClause(DBRow table, String columnName) {
-        return formatTableAndColumnName(table, columnName) + " " + formatColumnNameForResultSet(table, columnName);
-    }
+//    public String formatTableAndColumnNameForSelectClause(DBRow table, String columnName) {
+//        return formatTableAndColumnName(table, columnName) + " " + formatColumnNameForResultSet(table, columnName);
+//    }
 
     public String safeString(String toString) {
         return toString.replaceAll("'", "''");

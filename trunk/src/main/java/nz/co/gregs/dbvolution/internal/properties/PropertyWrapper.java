@@ -1,7 +1,9 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
@@ -467,5 +469,25 @@ public class PropertyWrapper {
             return value;
         }
         throw new ClassCastException("Attempt To Retreive Non-Existant Expression: Field "+javaName()+" for column "+columnName()+" on "+dbRowInstanceWrapper.javaName()+" does not contain an expression, do not call getExpression() on it.");
+    }
+
+    public Object getSelectableName(DBDatabase db) {
+        DBDefinition defn = db.getDefinition();
+        if (hasExpression()){
+            return getExpression().toSQLString(db);
+        }else {
+            final DBRow actualRow = this.getDBRowInstanceWrapper().adapteeDBRow();
+            return defn.formatTableAliasAndColumnName(actualRow, columnName());
+        }
+    }
+
+    public Object getColumnAlias(DBDatabase db) {
+        DBDefinition defn = db.getDefinition();
+        if (hasExpression()){
+            return defn.formatForColumnAlias(String.valueOf(getExpression().hashCode()));
+        }else {
+            final DBRow actualRow = this.getDBRowInstanceWrapper().adapteeDBRow();
+            return defn.formatColumnNameForDBQueryResultSet(actualRow, columnName());
+        }
     }
 }
