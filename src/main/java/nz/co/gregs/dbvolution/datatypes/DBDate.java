@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.expressions.DateResult;
  *
  * @author Gregory Graham
  */
-public class DBDate extends QueryableDatatype implements DateResult{
+public class DBDate extends QueryableDatatype implements DateResult {
 
     private static final long serialVersionUID = 1L;
 
@@ -81,12 +81,12 @@ public class DBDate extends QueryableDatatype implements DateResult{
 
     @Override
     public void setValue(Object newLiteralValue) {
-        if(newLiteralValue instanceof Date){
+        if (newLiteralValue instanceof Date) {
             setValue((Date) newLiteralValue);
-        }else if(newLiteralValue instanceof DBDate){
+        } else if (newLiteralValue instanceof DBDate) {
             setValue(((DBDate) newLiteralValue).literalValue);
-        }else{
-            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A Non-Date: Use only Dates with this class");
+        } else {
+            throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Date: Use only Dates with this class");
         }
     }
 
@@ -128,10 +128,21 @@ public class DBDate extends QueryableDatatype implements DateResult{
         } else {
             java.sql.Date dbValue;
             try {
-                dbValue = resultSet.getDate(fullColumnName);
-                if (resultSet.wasNull()){
+                java.sql.Date dateValue = resultSet.getDate(fullColumnName);
+                if (resultSet.wasNull()) {
                     dbValue = null;
+                } else {
+                    // Some drivers interpret getDate as meaning return only the date without the time
+                    // so we should check both the date and the timestamp find the latest time.
+                    final long timestamp = resultSet.getTimestamp(fullColumnName).getTime();
+                    java.sql.Date timestampValue = new java.sql.Date(timestamp);
+                    if (timestampValue.after(dateValue)) {
+                        dbValue = timestampValue;
+                    } else {
+                        dbValue = dateValue;
+                    }
                 }
+
             } catch (SQLException ex) {
                 dbValue = null;
             }
@@ -147,7 +158,7 @@ public class DBDate extends QueryableDatatype implements DateResult{
 
     @Override
     public DBDate copy() {
-        return (DBDate)super.copy(); //To change body of generated methods, choose Tools | Templates.
+        return (DBDate) super.copy(); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -159,6 +170,5 @@ public class DBDate extends QueryableDatatype implements DateResult{
     public DBDate getQueryableDatatypeForExpressionValue() {
         return new DBDate();
     }
-    
-    
+
 }
