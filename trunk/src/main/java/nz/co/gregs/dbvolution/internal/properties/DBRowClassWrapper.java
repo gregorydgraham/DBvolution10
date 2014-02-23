@@ -346,7 +346,7 @@ public class DBRowClassWrapper {
      * @return the non-null list of matching property definitions, with only identity
      * information available, empty if no such properties found
      */
-    List<PropertyWrapperDefinition> getPropertyDefinitionIdentitiesByCaseInsensitiveColumnName(String columnName) {
+    List<PropertyWrapperDefinition> getPropertyDefinitionIdentitiesByColumnNameCaseInsensitive(String columnName) {
     	List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
         JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
         for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(adaptee)) {

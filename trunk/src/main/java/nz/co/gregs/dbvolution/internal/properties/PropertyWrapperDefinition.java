@@ -1,11 +1,14 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  * Abstracts a java field or bean-property as a DBvolution-centric
@@ -432,4 +435,50 @@ public class PropertyWrapperDefinition {
     public DBRowClassWrapper getDBRowClassWrapper() {
     	return classWrapper;
     }
+
+    public void setColumnExpression(DBExpression expression) {
+        columnHandler.setColumnExpression(expression);
+    }
+    
+    protected DBExpression getColumnExpression() {
+        return columnHandler.getColumnExpression();
+    }
+    
+    protected boolean hasColumnExpression() {
+        return columnHandler.getColumnExpression() != null;
+    }
+    
+    protected String getSelectableName(DBDatabase db, DBRow actualRow) {
+        DBDefinition defn = db.getDefinition();
+        checkForColumnAlias(actualRow);
+        if (hasColumnExpression()){
+            return getColumnExpression().toSQLString(db);
+        }else {
+            return defn.formatTableAliasAndColumnName(actualRow, columnName());
+        }
+    }
+
+    protected String getColumnAlias(DBDatabase db, DBRow actualRow) {
+        DBDefinition defn = db.getDefinition();
+        checkForColumnAlias(actualRow);
+        if (hasColumnExpression()){
+            return defn.formatForColumnAlias(String.valueOf(getColumnExpression().hashCode()));
+        }else {
+            return defn.formatColumnNameForDBQueryResultSet(actualRow, columnName());
+        }
+    }
+
+    void checkForColumnAlias(DBRow actualRow) {
+        if(!hasColumnExpression()){
+            Object value = this.getRawJavaProperty().get(actualRow);
+            if (value!=null && QueryableDatatype.class.isAssignableFrom(value.getClass())){
+                QueryableDatatype qdt = (QueryableDatatype)value;
+                if (qdt.hasColumnExpression()){
+                    this.setColumnExpression(qdt.getColumnExpression());
+                }
+            }
+        }
+    }
+
+
 }

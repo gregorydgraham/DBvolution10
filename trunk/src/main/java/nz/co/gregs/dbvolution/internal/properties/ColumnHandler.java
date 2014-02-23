@@ -2,6 +2,8 @@ package nz.co.gregs.dbvolution.internal.properties;
 
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  * Handles annotation processing, business logic, validation rules, defaulting,
@@ -17,6 +19,7 @@ class ColumnHandler {
 	private final String columnName;
 	private final DBColumn columnAnnotation; // null if not present on property
 	private final DBPrimaryKey primaryKeyAnnotation; // null if not present on property
+    private DBExpression columnExpression; // null if not present on property
 	
 	ColumnHandler(JavaProperty adaptee) {
 		this.columnAnnotation = adaptee.getAnnotation(DBColumn.class);
@@ -30,6 +33,12 @@ class ColumnHandler {
 		} else {
 			this.columnName = null;
 		}
+        if(QueryableDatatype.class.isAssignableFrom(adaptee.getClass())){
+            QueryableDatatype qdt = (QueryableDatatype)adaptee;
+            if (qdt.hasColumnExpression()){
+                this.columnExpression = qdt.getColumnExpression();
+            }else this.columnExpression = null;
+        }else this.columnExpression = null;
 	}
 
 	/**
@@ -68,4 +77,15 @@ class ColumnHandler {
 	public DBColumn getDBColumnAnnotation() {
 		return columnAnnotation;
 	}
+
+    /**
+     * @return the columnExpression
+     */
+    public DBExpression getColumnExpression() {
+        return columnExpression;
+    }
+
+    void setColumnExpression(DBExpression expression) {
+        columnExpression = expression;
+    }
 }

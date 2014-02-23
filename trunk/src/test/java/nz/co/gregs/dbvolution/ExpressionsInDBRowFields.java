@@ -17,7 +17,10 @@ package nz.co.gregs.dbvolution;
 
 import java.util.List;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -44,20 +47,23 @@ public class ExpressionsInDBRowFields extends AbstractTest {
     @Test
     public void selectDBRowExpressionWithDBQuery() throws Exception {
         final ExpressionRow exprExample = new ExpressionRow();
-        for (String col : exprExample.getColumnNames(database)) {
-            System.out.println(col);
-        }
+        
         exprExample.name.permittedValuesIgnoreCase("TOYOTA");
         DBQuery query = database.getDBQuery(exprExample);
 
         final String sqlForQuery = query.getSQLForQuery();
         Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+        Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentUserFunctionName()));
+        Assert.assertThat(sqlForQuery, containsString(NumberExpression.value(5).times(3).toSQLString(database)));
+        final List<DBQueryRow> allRows = query.getAllRows();
 
-        for (DBQueryRow row : query.getAllRows()) {
+        for (DBQueryRow row : allRows) {
             ExpressionRow expressionRow = row.get(exprExample);
-            System.out.println(expressionRow.sysDateColumnOnClass.toSQLString(database));
+            System.out.println("Expression Row SysDate SQL: " + expressionRow.sysDateColumnOnClass.toSQLString(database));
+            System.out.println("Expression Row SysDate SQL: " + expressionRow.currentUserColumnOnClass.toSQLString(database));
+            System.out.println("Expression Row SysDate SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
             DBDate currentDate = expressionRow.sysDateColumnOnClass;
-            System.out.println("" + currentDate.dateValue());
+            System.out.println("Expression Row.sysDateColumnOnClass = " + currentDate.dateValue());
         }
     }
 
@@ -65,19 +71,34 @@ public class ExpressionsInDBRowFields extends AbstractTest {
     @Test
     public void selectDBRowExpressionWithDBQueryAndExpressionCriteria() throws Exception {
         final ExpressionRow exprExample = new ExpressionRow();
-        exprExample.currentUserColumnOnClass.permittedValues("GREGORY");
-        for (String col : exprExample.getColumnNames(database)) {
-            System.out.println(col);
-        }
+        exprExample.numberColumnOnClass.permittedValues(15);
+        
         exprExample.name.permittedValuesIgnoreCase("TOYOTA");
         DBQuery query = database.getDBQuery(exprExample);
 
-        final String sqlForQuery = query.getSQLForQuery();
+         String sqlForQuery = query.getSQLForQuery();
         Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
 
         for (DBQueryRow row : query.getAllRows()) {
             ExpressionRow expressionRow = row.get(new ExpressionRow());
             System.out.println(expressionRow.sysDateColumnOnClass.toSQLString(database));
+            DBDate currentDate = expressionRow.sysDateColumnOnClass;
+            System.out.println("" + currentDate.dateValue());
+        }
+        final ExpressionRow exprExample2 = new ExpressionRow();
+        exprExample2.numberColumnOnClass.excludedValues(15);
+        
+        exprExample2.name.permittedValuesIgnoreCase("TOYOTA");
+        query = database.getDBQuery(exprExample2);
+
+        sqlForQuery = query.getSQLForQuery();
+        Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+
+        for (DBQueryRow row : query.getAllRows()) {
+            ExpressionRow expressionRow = row.get(new ExpressionRow());
+            System.out.println("Expression Row SysDate SQL: " + expressionRow.sysDateColumnOnClass.toSQLString(database));
+            System.out.println("Expression Row SysDate SQL: " + expressionRow.currentUserColumnOnClass.toSQLString(database));
+            System.out.println("Expression Row SysDate SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
             DBDate currentDate = expressionRow.sysDateColumnOnClass;
             System.out.println("" + currentDate.dateValue());
         }
@@ -102,18 +123,25 @@ public class ExpressionsInDBRowFields extends AbstractTest {
         }
     }
 
-    public static class ExpressionRow extends Marque {
+    @DBTableName("marque")
+    public static class ExpressionRow extends DBRow {
 
         public static final long serialVersionUID = 1L;
+        
         @DBColumn
         DBDate sysDateColumnOnClass = new DBDate(DateExpression.currentDate());
-
+        
         @DBColumn
         DBString currentUserColumnOnClass = new DBString(StringExpression.currentUser());
-
+        
         @DBColumn
         DBNumber numberColumnOnClass = new DBNumber(NumberExpression.value(5).times(3));
-
+        
+        @DBColumn("uid_marque")
+        @DBPrimaryKey
+        public DBInteger uidMarque = new DBInteger();
+        
+        @DBColumn
+        public DBString name = new DBString();
     }
-
 }
