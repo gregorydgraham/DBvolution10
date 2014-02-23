@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import nz.co.gregs.dbvolution.expressions.DateResult;
 
 
 public class DBDateOnly extends DBDate {
@@ -32,6 +33,10 @@ public class DBDateOnly extends DBDate {
 
     public DBDateOnly(Timestamp timestamp) {
         super(timestamp);
+    }
+    
+    public DBDateOnly(DateResult dateExpression){
+        super(dateExpression);
     }
 
     @Override

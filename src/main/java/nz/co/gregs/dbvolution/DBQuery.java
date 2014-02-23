@@ -461,7 +461,14 @@ public class DBQuery {
                         List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
                         for (PropertyWrapper newProp : newProperties) {
                             QueryableDatatype qdt = newProp.getQueryableDatatype();
-                            String resultSetColumnName = defn.formatColumnNameForDBQueryResultSet(newInstance, newProp.columnName());
+                            
+                            //from getSQLForQuery()
+//                List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
+//                for (PropertyWrapper propDefn : tabProps) {
+//                    selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
+                            
+//                            String resultSetColumnName = defn.formatColumnNameForDBQueryResultSet(newInstance, newProp.columnName());
+                            String resultSetColumnName = newProp.getColumnAlias(database);
                             qdt.setFromResultSet(resultSet, resultSetColumnName);
                             if (newInstance.isEmptyRow() && !qdt.isNull()) {
                                 newInstance.setEmptyRow(false);

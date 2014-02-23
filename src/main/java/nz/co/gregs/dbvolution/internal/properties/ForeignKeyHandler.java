@@ -71,7 +71,7 @@ class ForeignKeyHandler {
 			
 			// validate: explicitly declared column name exists on referenced table
 			if (declaredReferencedColumnName != null) {
-				List<PropertyWrapperDefinition> properties = referencedClassWrapper.getPropertyDefinitionIdentitiesByCaseInsensitiveColumnName(declaredReferencedColumnName);
+				List<PropertyWrapperDefinition> properties = referencedClassWrapper.getPropertyDefinitionIdentitiesByColumnNameCaseInsensitive(declaredReferencedColumnName);
 				if (properties.size() > 1) {
 					throw new DBPebkacException(adaptee.qualifiedName()+" references column "+declaredReferencedColumnName+
 							", however there are "+properties.size()+" such properties in "+referencedClassWrapper.javaName()+".");

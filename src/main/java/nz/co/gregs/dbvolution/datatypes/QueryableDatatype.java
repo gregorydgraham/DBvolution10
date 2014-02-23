@@ -57,11 +57,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     private boolean undefined = true;
     protected boolean changed = false;
     protected QueryableDatatype previousValueAsQDT = null;
-    protected boolean isPrimaryKey;
+    protected boolean isPrimaryKey = false;
     public final static Boolean SORT_ASCENDING = Boolean.TRUE;
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
     transient protected PropertyWrapperDefinition propertyWrapper; // no guarantees whether this gets set
+    private DBExpression columnExpression = null;
 
     /**
      *
@@ -83,12 +84,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         }
     }
 
-    protected QueryableDatatype(DBExpression obj) {
-        if (obj == null) {
-            this.isDBNull = true;
-        } else {
-            this.literalValue = obj;
-        }
+    protected QueryableDatatype(DBExpression columnExpression) {
+        this.columnExpression = columnExpression.copy();
+//        if (obj == null) {
+//            this.isDBNull = true;
+//        } else {
+//            this.literalValue = obj;
+//        }
     }
 
     public static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
@@ -170,6 +172,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             }
             newQDT.isPrimaryKey = this.isPrimaryKey;
             newQDT.sort = this.sort;
+            newQDT.columnExpression = this.columnExpression;
         } catch (InstantiationException ex) {
             throw new UnableInstantiateQueryableDatatypeException(this, ex);
         } catch (IllegalAccessException ex) {
@@ -873,7 +876,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      *
      * <p>
      * <i>Thread-safety: relatively safe, as PropertyWrappers are thread-safe
-     * and interchangeable.
+     * and interchangeable.</i>
      *
      * @param propertyWrapper
      */
@@ -894,16 +897,25 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Returns the expression underlying this QDT or null.
-     * 
-     * <p>When the QDT is created using an expression , this method makes the expression accessible.
+     *
+     * <p>When the QDT is created using an expression , this method makes the
+     * expression accessible.
      *
      * @return the underlying expression if there is one, or NULL otherwise.
      */
-    public final DBExpression getExpression() {
-        if (literalValue != null && DBExpression.class.isAssignableFrom(literalValue.getClass())) {
-            return (DBExpression) literalValue;
-        } else {
-            return null;
-        }
+    public final DBExpression getColumnExpression() {
+        return columnExpression;
+    }
+
+    /**
+     * Tests for the expression underlying this QDT or returns FALSE.
+     *
+     * <p>When the QDT is created using an expression , this method makes the
+     * expression accessible.
+     *
+     * @return TRUE if there is a underlying expression, or FALSE otherwise.
+     */
+    public final boolean hasColumnExpression() {
+        return columnExpression!=null;
     }
 }
