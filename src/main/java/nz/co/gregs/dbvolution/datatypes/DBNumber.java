@@ -73,23 +73,6 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
         }
     }
 
-//    @Override
-//    public void setLiteralValue(Object newLiteralValue) {
-//        initDBNumber(newLiteralValue);
-//    }
-//    private void initDBNumber(Object aNumber) {
-//        if (aNumber == null) {
-//            super.setLiteralValue(null);
-//        } else {
-//            if (aNumber instanceof Number) {
-//                super.setLiteralValue((Number) aNumber);
-//            } else {
-//                // FIXME (Ticket 35): don't think this should be here - would be better to give ClassCastException
-//                super.setLiteralValue(Double.parseDouble(aNumber.toString()));
-//            }
-//        }
-//    }
-
     @Override
     public void blankQuery() {
         super.blankQuery();

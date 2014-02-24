@@ -438,16 +438,33 @@ abstract public class DBRow implements Serializable {
     /**
      * Change all the criteria specified on this DBRow instance into a list of
      * strings for adding in to the WHERE clause
+     * 
+     * <p>Uses table and column aliases appropriate for SELECT queries
      *
      * @param db The DBDatabase instance that this query is to be executed on.
      * @return the WHERE clause that will be used with the current parameters
      *
      */
-    public List<String> getWhereClauses(DBDatabase db) {
+    public List<String> getWhereClausesWithoutAliases(DBDatabase db) {
         return getWhereClauses(db, false);
     }
 
-    List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) {
+
+    /**
+     * Change all the criteria specified on this DBRow instance into a list of
+     * strings for adding in to the WHERE clause
+     *
+     * <p>Uses plain table and column names appropriate for DELETE queries
+     * 
+     * @param db The DBDatabase instance that this query is to be executed on.
+     * @return the WHERE clause that will be used with the current parameters
+     *
+     */
+    public List<String> getWhereClausesWithAliases(DBDatabase db) {
+        return getWhereClauses(db, true);
+    }
+
+    private List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) {
         DBDefinition defn = db.getDefinition();
         List<String> whereClause = new ArrayList<String>();
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
@@ -456,7 +473,7 @@ abstract public class DBRow implements Serializable {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
                 String possibleWhereClause;
                 if (useTableAlias) {
-                    possibleWhereClause = qdt.getWhereClause(db, defn.formatTableAliasAndColumnName(this, prop.columnName()));
+                    possibleWhereClause = qdt.getWhereClause(db, prop.getSelectableName(db));
                 } else {
                     possibleWhereClause = qdt.getWhereClause(db, defn.formatTableAndColumnName(this, prop.columnName()));
                 }
@@ -482,7 +499,7 @@ abstract public class DBRow implements Serializable {
      *
      */
     public boolean willCreateBlankQuery(DBDatabase db) {
-        List<String> whereClause = getWhereClauses(db);
+        List<String> whereClause = getWhereClausesWithoutAliases(db);
         return whereClause == null || whereClause.isEmpty();
     }
 
@@ -1111,13 +1128,13 @@ abstract public class DBRow implements Serializable {
     }
 
     List<PropertyWrapper> getSelectedProperties() {
-        if (returnColumns==null || returnColumns.isEmpty()){
+        if (returnColumns == null || returnColumns.isEmpty()) {
             return getPropertyWrappers();
-        }else{
+        } else {
             ArrayList<PropertyWrapper> selected = new ArrayList<PropertyWrapper>();
-            for(PropertyWrapperDefinition proDef : returnColumns){
-                for(PropertyWrapper pro : getPropertyWrappers()){
-                    if (pro.getDefinition().equals(proDef)){
+            for (PropertyWrapperDefinition proDef : returnColumns) {
+                for (PropertyWrapper pro : getPropertyWrappers()) {
+                    if (pro.getDefinition().equals(proDef)) {
                         selected.add(pro);
                     }
                 }
@@ -1125,5 +1142,4 @@ abstract public class DBRow implements Serializable {
             return selected;
         }
     }
-
 }
