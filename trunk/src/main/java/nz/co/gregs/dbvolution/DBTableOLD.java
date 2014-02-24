@@ -505,7 +505,7 @@ public class DBTableOLD<E extends DBRow> {
         StringBuilder whereClause = new StringBuilder();
         String lineSep = System.getProperty("line.separator");
         DBDefinition defn = database.getDefinition();
-        List<String> tabRowCriteria = row.getWhereClauses(database);
+        List<String> tabRowCriteria = row.getWhereClausesWithoutAliases(database);
         if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
             for (String clause : tabRowCriteria) {
                 whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);

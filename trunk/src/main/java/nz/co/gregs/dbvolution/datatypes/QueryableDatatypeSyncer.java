@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Malcolm Lett
  */
-// TODO come up with a better name
 public class QueryableDatatypeSyncer {
     private static final Log log = LogFactory.getLog(QueryableDatatypeSyncer.class);
     

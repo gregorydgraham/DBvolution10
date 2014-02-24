@@ -450,49 +450,19 @@ public class PropertyWrapper {
 
     public boolean hasColumnExpression() {
         return getDefinition().hasColumnExpression();
-//        QueryableDatatype qdt = getQueryableDatatype();
-//        if(qdt.isNull()){
-//            return false;
-//        }else{
-//            DBExpression value = qdt.getExpression();
-//            if (value !=null){
-//                return true;
-//            }
-//        }
-//        return false;
     }
 
     public DBExpression getColumnExpression() throws ClassCastException{
         return getDefinition().getColumnExpression();
-//        QueryableDatatype qdt = getQueryableDatatype();
-//        DBExpression value = qdt.getExpression();
-//        if (value !=null){
-//            return value;
-//        }
-//        throw new ClassCastException("Attempt To Retreive Non-Existant Expression: Field "+javaName()+" for column "+columnName()+" on "+dbRowInstanceWrapper.javaName()+" does not contain an expression, do not call getExpression() on it.");
     }
 
     public String getSelectableName(DBDatabase db) {
         final DBRow actualRow = this.getDBRowInstanceWrapper().adapteeDBRow();
         return getDefinition().getSelectableName(db, actualRow);
-//        DBDefinition defn = db.getDefinition();
-//        if (hasColumnExpression()){
-//            return getColumnExpression().toSQLString(db);
-//        }else {
-//            final DBRow actualRow = this.getDBRowInstanceWrapper().adapteeDBRow();
-//            return defn.formatTableAliasAndColumnName(actualRow, columnName());
-//        }
     }
 
     public String getColumnAlias(DBDatabase db) {            
         final DBRow actualRow = this.getDBRowInstanceWrapper().adapteeDBRow();
         return propertyDefinition.getColumnAlias(db, actualRow);
-//        DBDefinition defn = db.getDefinition();
-//        if (hasColumnExpression()){
-//            return defn.formatForColumnAlias(String.valueOf(getColumnExpression().hashCode()));
-//        }else {
-//            final DBRow actualRow = this.getDBRowInstanceWrapper().adapteeDBRow();
-//            return defn.formatColumnNameForDBQueryResultSet(actualRow, columnName());
-//        }
     }
 }

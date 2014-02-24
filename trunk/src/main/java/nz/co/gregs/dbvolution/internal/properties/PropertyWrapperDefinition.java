@@ -50,6 +50,7 @@ public class PropertyWrapperDefinition {
 	private final PropertyTypeHandler typeHandler;
 	private final ForeignKeyHandler foreignKeyHandler;
 	private final EnumTypeHandler enumTypeHandler;
+    private boolean checkedForColumnExpression = false;
 	
 	PropertyWrapperDefinition(DBRowClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
@@ -469,7 +470,7 @@ public class PropertyWrapperDefinition {
     }
 
     void checkForColumnAlias(DBRow actualRow) {
-        if(!hasColumnExpression()){
+        if(!checkedForColumnExpression && !hasColumnExpression()){
             Object value = this.getRawJavaProperty().get(actualRow);
             if (value!=null && QueryableDatatype.class.isAssignableFrom(value.getClass())){
                 QueryableDatatype qdt = (QueryableDatatype)value;
@@ -477,6 +478,7 @@ public class PropertyWrapperDefinition {
                     this.setColumnExpression(qdt.getColumnExpression());
                 }
             }
+            checkedForColumnExpression = true;
         }
     }
 

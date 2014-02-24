@@ -29,7 +29,6 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.internal.properties.DBRowInstanceWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
@@ -315,7 +314,7 @@ public class DBQuery {
                 fromClause.append(getANSIJoinClause(tabRow, joinedTables));
             }
             joinedTables.add(tabRow);
-            List<String> tabRowCriteria = tabRow.getWhereClauses(database, true);
+            List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(database);
             if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
                 for (String clause : tabRowCriteria) {
                     whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);

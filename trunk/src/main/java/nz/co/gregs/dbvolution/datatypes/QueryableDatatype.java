@@ -691,7 +691,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     /**
      * @param operator the operator to set
      */
-    // FIXME I think this should set 'literalValue' to null
     public void setOperator(DBOperator operator) {
         blankQuery();
         this.operator = operator;
