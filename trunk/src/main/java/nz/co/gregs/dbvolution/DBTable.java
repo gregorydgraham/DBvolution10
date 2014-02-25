@@ -122,7 +122,7 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     * Synonym for {@link #getAllRows()
+     * Synonym for {@link #getAllRows()}
      *
      * @return all the appropriate rows
      * @throws SQLException
@@ -181,7 +181,7 @@ public class DBTable<E extends DBRow> {
      * Returns the first row and only row of the table.
      *
      * <p>
-     * Similar to {@link getFirstRow()} but throws an
+     * Similar to {@link #getFirstRow()} but throws an
      * UnexpectedNumberOfRowsException if there is more than 1 row available
      *
      * <p>

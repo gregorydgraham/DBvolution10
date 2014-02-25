@@ -39,14 +39,14 @@ public interface DBTypeAdaptor<T, D> {
 	/**
 	 * Null values must be handled correctly.
 	 * @param dbvValue
-	 * @return
+	 * @return The database value transformed into the Java value
 	 */
 	public T fromDatabaseValue(D dbvValue);
 
 	/**
 	 * Null values must be handled correctly.
 	 * @param objectValue
-	 * @return
+	 * @return The Java value transformed into the database value
 	 */
 	public D toDatabaseValue(T objectValue);
 }
