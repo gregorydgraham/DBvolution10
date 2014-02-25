@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution;
 import java.util.List;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -58,6 +59,9 @@ public class ExpressionsInDBRowFields extends AbstractTest {
             System.out.println("Expression Row.sysDateColumnOnClass = " + currentDate.dateValue());
             Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
             Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
+            Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
+            Assert.assertThat(expressionRow.shortName.stringValue(), is("TOY"));
+            Assert.assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
         }
     }
 
@@ -79,6 +83,11 @@ public class ExpressionsInDBRowFields extends AbstractTest {
             System.out.println("Expression Row numberColumnOnClass SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
             DBDate currentDate = expressionRow.sysDateColumnOnClass;
             System.out.println("Expression Row.sysDateColumnOnClass = " + currentDate.dateValue());
+            Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
+            Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
+            Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
+            Assert.assertThat(expressionRow.shortName.stringValue(), is("TOY"));
+            Assert.assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
         }
 
         final ExpressionRow exprExample2 = new ExpressionRow();
@@ -112,6 +121,11 @@ public class ExpressionsInDBRowFields extends AbstractTest {
             System.out.println("Expression Row numberColumnOnClass SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
             DBDate currentDate = expressionRow.sysDateColumnOnClass;
             System.out.println("Expression Row.sysDateColumnOnClass = " + currentDate.dateValue());
+            Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
+            Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
+            Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
+            Assert.assertThat(expressionRow.shortName.stringValue(), is("TOY"));
+            Assert.assertThat(expressionRow.uidAndName.stringValue(), is("1-TOYOTA"));
         }
     }
 
@@ -132,9 +146,19 @@ public class ExpressionsInDBRowFields extends AbstractTest {
         
         @DBColumn("uid_marque")
         @DBPrimaryKey
-        public DBInteger uidMarque = new DBInteger();
+        public DBNumber uidMarque = new DBNumber();
         
         @DBColumn
         public DBString name = new DBString();
+        
+        @DBColumn
+        DBNumber marqueUIDTimes10 = new DBNumber(this.column(this.uidMarque).times(10));
+        
+        @DBColumn
+        DBString shortName = new DBString(this.column(this.name).substring(0, 3));
+        
+        @DBColumn
+        DBString uidAndName = new DBString(StringExpression.value("").append(this.column(this.uidMarque)).append("-").append(this.column(this.name)));
+        
     }
 }
