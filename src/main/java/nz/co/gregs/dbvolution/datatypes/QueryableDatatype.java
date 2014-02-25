@@ -62,17 +62,21 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     public final static Boolean SORT_DESCENDING = Boolean.FALSE;
     protected Boolean sort = SORT_ASCENDING;
     transient protected PropertyWrapperDefinition propertyWrapper; // no guarantees whether this gets set
-    private DBExpression columnExpression = null;
+    protected DBExpression columnExpression = null;
 
     /**
+     * Default Constructor
      *
      */
     protected QueryableDatatype() {
     }
 
     /**
+     * Create a QueryableDatatype with the exact value provided.
+     * 
+     * <p>Equivalent to {@code new QueryableDatatype().setValue(obj);}
      *
-     * @param obj
+     * @param obj the literal value of the QDT.
      */
     protected QueryableDatatype(Object obj) {
         if (obj == null) {
@@ -84,13 +88,19 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
         }
     }
 
+    /**
+     * Create a QDT with a permanent column expression.
+     *
+     * <p>Use this method within a DBRow sub-class to create a column that uses
+     * an expression to create the value at query time.
+     *
+     * <p>This is particularly useful for trimming strings or converting between
+     * types but also allows for complex arithmetic and transformations.
+     *
+     * @param columnExpression
+     */
     protected QueryableDatatype(DBExpression columnExpression) {
         this.columnExpression = columnExpression.copy();
-//        if (obj == null) {
-//            this.isDBNull = true;
-//        } else {
-//            this.literalValue = obj;
-//        }
     }
 
     public static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
@@ -915,6 +925,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      * @return TRUE if there is a underlying expression, or FALSE otherwise.
      */
     public final boolean hasColumnExpression() {
-        return columnExpression!=null;
+        return columnExpression != null;
     }
 }

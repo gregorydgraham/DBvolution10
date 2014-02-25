@@ -62,7 +62,7 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
      * Warning: this directly returns the value from the type adaptor, without
      * casting to the specific type expected by the target java property.
      *
-     * @return
+     * @return the internal value as a base Java object
      */
     public Object getExternalSimpleValueFromInternalQDT() {
         return toExternalSimpleTypeAdaptor.convert(internalQdt.getValue());

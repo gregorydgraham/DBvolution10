@@ -518,7 +518,7 @@ public class DBTableOLD<E extends DBRow> {
      * Renamed {@link #getSQLWhereClauseForExample(nz.co.gregs.dbvolution.DBRow) }
      *
      * @param row
-     * @return
+     * @return the where clause
      * @throws AccidentalBlankQueryException
      * @deprecated
      * @see #getSQLWhereClauseForExample(nz.co.gregs.dbvolution.DBRow) 
@@ -618,7 +618,7 @@ public class DBTableOLD<E extends DBRow> {
      * Returns the first row and only row of the table.
      *
      * <p>
-     * Similar to {@link getFirstRow()} but throws an
+     * Similar to {@link #getFirstRow()} but throws an
      * UnexpectedNumberOfRowsException if there is more than 1 row available
      *
      * <p>

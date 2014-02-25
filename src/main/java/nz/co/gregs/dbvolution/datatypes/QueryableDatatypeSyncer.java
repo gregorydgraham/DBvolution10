@@ -194,11 +194,11 @@ public class QueryableDatatypeSyncer {
          * operators and inner QDT references within the given QDT.
          *
          * <p>
-         * If {@code sourceQdt} is null, returns {@code null}.
+         * If {@code source} is null, returns {@code null}.
          *
-         * @param sourceQdt the QDT to convert to the target type, may be null
+         * @param source the QDT to convert to the target type, may be null
          * @return the newly created QDT of the target type, or null if
-         * {@code sourceQdt} was null
+         * {@code source} was null
          */
         public DBExpression convert(DBExpression source) {
             if (!(source instanceof QueryableDatatype)) {
@@ -215,11 +215,9 @@ public class QueryableDatatypeSyncer {
                         }
                     }
 
-                    QueryableDatatype targetQdt = null;
-                    if (sourceQDT != null) {
-                        targetQdt = newTargetQDT();
-                        setTargetQDTFromSourceQDT(targetQdt, sourceQDT);
-                    }
+                    QueryableDatatype targetQdt = newTargetQDT();
+                    setTargetQDTFromSourceQDT(targetQdt, sourceQDT);
+                    
                     log.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + qdtToString(targetQdt));
                     return targetQdt;
                 } catch (RuntimeException e) {
@@ -262,6 +260,7 @@ public class QueryableDatatypeSyncer {
             targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
             targetQdt.setDefined(sourceQdt.isDefined());
             targetQdt.sort = sourceQdt.sort;
+            targetQdt.columnExpression = sourceQdt.columnExpression;
 
             // copy literal value with translation
             targetQdt.literalValue = simpleTypeAdaptor.convert(sourceQdt.literalValue);
