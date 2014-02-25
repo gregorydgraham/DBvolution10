@@ -21,6 +21,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 
 public class NumberExpression implements NumberResult {
 
@@ -76,6 +77,27 @@ public class NumberExpression implements NumberResult {
      */
     public static NumberExpression value(Number object) {
         return new NumberExpression(object);
+    }
+    
+    public StringExpression stringValue() {
+        return new StringExpression(new DBUnaryStringFunction(this) {
+
+            @Override
+            protected String afterValue(DBDatabase db) {
+                return " ";
+            }
+
+            @Override
+            protected String beforeValue(DBDatabase db) {
+                return " ''||";
+            }
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "";
+            }
+            
+        });
     }
     
     public BooleanExpression is(Number number) {
@@ -918,4 +940,53 @@ public class NumberExpression implements NumberResult {
             return newInstance;
         }
     }
+
+    private static abstract class DBUnaryStringFunction implements StringResult {
+
+        protected DBExpression only;
+
+        public DBUnaryStringFunction() {
+            this.only = null;
+        }
+
+        public DBUnaryStringFunction(DBExpression only) {
+            this.only = only;
+        }
+
+            @Override
+            public DBString getQueryableDatatypeForExpressionValue() {
+                return new DBString();
+            }
+
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return "" + getFunctionName(db) + "( ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
+        }
+
+        @Override
+        public DBUnaryStringFunction copy() {
+            DBUnaryStringFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.only = only.copy();
+            return newInstance;
+        }
+    }
+
 }

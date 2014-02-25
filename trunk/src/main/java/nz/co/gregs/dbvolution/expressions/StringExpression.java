@@ -202,6 +202,24 @@ public class StringExpression implements StringResult {
         });
     }
 
+    public StringExpression append(NumberResult number1) {
+        return new StringExpression(new DBBinaryStringNumberArithmetic(this, number1) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return db.getDefinition().getConcatOperator();
+            }
+        });
+    }
+
+    public StringExpression append(Number number1) {
+        return new StringExpression(new DBBinaryStringNumberArithmetic(this, new NumberExpression(number1)) {
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return db.getDefinition().getConcatOperator();
+            }
+        });
+    }
+
     public StringExpression replace(String findString, String replaceWith) {
         return new StringExpression(
                 new DBTrinaryStringFunction(this, new StringExpression(findString), new StringExpression(replaceWith)) {
@@ -640,8 +658,8 @@ public class StringExpression implements StringResult {
 
     private class Substring extends StringExpression implements StringResult {
 
-        private final NumberResult startingPosition;
-        private final NumberResult length;
+        private NumberResult startingPosition;
+        private NumberResult length;
 
         public Substring(StringResult stringInput, Number startingIndex0Based) {
             super(stringInput);
@@ -669,7 +687,7 @@ public class StringExpression implements StringResult {
 
         @Override
         public Substring copy() {
-            return (Substring) super.copy();
+            return new Substring(getStringInput(), startingPosition, length);
         }
 
         @Override
@@ -797,4 +815,43 @@ public class StringExpression implements StringResult {
             return newInstance;
         }
     }
+    
+    private static abstract class DBBinaryStringNumberArithmetic implements StringResult {
+
+        private StringResult first;
+        private NumberResult second;
+
+        public DBBinaryStringNumberArithmetic(StringResult first, NumberResult second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+        }
+
+        @Override
+        public DBBinaryStringNumberArithmetic copy() {
+            DBBinaryStringNumberArithmetic newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first.copy();
+            newInstance.second = second.copy();
+            return newInstance;
+        }
+
+        protected abstract String getEquationOperator(DBDatabase db);
+    }
+
 }
