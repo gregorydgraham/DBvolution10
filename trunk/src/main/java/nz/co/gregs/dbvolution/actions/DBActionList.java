@@ -42,10 +42,12 @@ public class DBActionList extends ArrayList<DBAction> {
         return sqlList;
     }
 
-    public synchronized void execute(DBDatabase database) throws SQLException {
+    public synchronized DBActionList execute(DBDatabase database) throws SQLException {
+        DBActionList executed = new DBActionList();
         for (DBAction action : this) {
-            action.execute(database);
+            executed.addAll(action.execute(database));
         }
+        return executed;
     }
 
     public DBActionList getRevertActionList() {

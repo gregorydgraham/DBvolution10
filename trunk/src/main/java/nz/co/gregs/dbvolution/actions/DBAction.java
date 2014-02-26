@@ -83,10 +83,11 @@ public abstract class DBAction {
      * The Action's internal information will not be changed and can be repeated
      *
      * @param database
+     * @return the actions executed as a DBActionList
      * @throws SQLException
      */
-    protected final void execute(DBDatabase database) throws SQLException{
-        this.execute(database,DBRow.copyDBRow(row));
+    protected final DBActionList execute(DBDatabase database) throws SQLException{
+        return this.execute(database,DBRow.copyDBRow(row));
     }
 
 }
