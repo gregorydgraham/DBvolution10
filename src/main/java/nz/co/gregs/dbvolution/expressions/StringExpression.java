@@ -80,6 +80,28 @@ public class StringExpression implements StringResult {
     public static StringExpression value(String string) {
         return new StringExpression(string);
     }
+    
+        public StringExpression ifNull(String alternative) {
+        return new StringExpression(
+                new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
+
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getIfNullFunctionName();
+                    }
+                });
+    }
+
+        public StringExpression ifNull(StringResult alternative) {
+        return new StringExpression(
+                new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
+
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getIfNullFunctionName();
+                    }
+                });
+    }
 
     public BooleanExpression isLike(String sqlPattern) {
         return isLike(value(sqlPattern));
@@ -591,6 +613,64 @@ public class StringExpression implements StringResult {
         @Override
         public DBTrinaryStringFunction copy() {
             DBTrinaryStringFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first == null ? null : first.copy();
+            newInstance.second = second == null ? null : second.copy();
+            newInstance.third = third == null ? null : third.copy();
+            return newInstance;
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return " " + getFunctionName(db) + "( ";
+        }
+
+        protected String getSeparator(DBDatabase db) {
+            return ", ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+    }
+
+    private static abstract class DBBinaryStringFunction implements StringResult {
+
+        private StringResult first;
+        private StringResult second;
+
+        public DBBinaryStringFunction(StringResult first) {
+            this.first = first;
+            this.second = null;
+        }
+
+        public DBBinaryStringFunction(StringResult first, StringResult second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db) + first.toSQLString(db)
+                    + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))
+                    + this.afterValue(db);
+        }
+
+        @Override
+        public DBBinaryStringFunction copy() {
+            DBBinaryStringFunction newInstance;
             try {
                 newInstance = getClass().newInstance();
             } catch (InstantiationException ex) {
