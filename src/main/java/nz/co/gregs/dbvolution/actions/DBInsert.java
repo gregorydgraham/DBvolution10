@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBInsert extends DBAction {
 
-    static DBInsert saver = new DBInsert();
+    private static DBInsert saver = new DBInsert();
     private static DBInsertLargeObjects blobSave = new DBInsertLargeObjects();
     private transient StringBuilder allColumns;
     private transient StringBuilder allValues;
@@ -121,4 +121,22 @@ public class DBInsert extends DBAction {
         return new DBActionList(new DBInsert(row));
     }
 
+    /**
+     * Creates a DBActionList of inserts actions for the rows.
+     *
+     * <p>
+     * The actions created can be applied on a particular database using
+     * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
+     *
+     * @param rows
+     * @return a DBActionList of inserts.
+     * @throws SQLException
+     */
+    public static DBActionList getInserts(DBRow... rows) throws SQLException {
+        DBActionList inserts = new DBActionList();
+        for (DBRow row : rows) {
+            inserts.add(new DBInsert(row));
+        }
+        return inserts;
+    }
 }

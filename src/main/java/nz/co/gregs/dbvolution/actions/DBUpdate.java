@@ -33,6 +33,15 @@ public abstract class DBUpdate extends DBAction {
         super(row);
     }
 
+    /**
+     * Executes required update actions for the row and returns a DBACtionList
+     * of those actions.
+     *
+     * @param db
+     * @param row
+     * @return a DBActionList of updates that have been executed.
+     * @throws SQLException
+     */
     public static DBActionList update(DBDatabase db, DBRow row) throws SQLException {
         DBActionList updates = getUpdates(row);
         for (DBAction act : updates) {
@@ -41,6 +50,34 @@ public abstract class DBUpdate extends DBAction {
         return updates;
     }
 
+    /**
+     * Creates a DBActionList of update actions for the rows.
+     *
+     * <p>
+     * The actions created can be applied on a particular database using
+     * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
+     * 
+     * <p>Synonym for {@link #getUpdates(nz.co.gregs.dbvolution.DBRow...) }
+     *
+     * @param rows
+     * @return a DBActionList of updates.
+     * @throws SQLException
+     */
+    public static DBActionList update(DBRow... rows) throws SQLException {
+        return getUpdates(rows);
+    }
+
+    /**
+     * Creates a DBActionList of update actions for the rows.
+     *
+     * <p>
+     * The actions created can be applied on a particular database using
+     * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
+     *
+     * @param rows
+     * @return a DBActionList of updates.
+     * @throws SQLException
+     */
     public static DBActionList getUpdates(DBRow... rows) throws SQLException {
         DBActionList updates = new DBActionList();
         for (DBRow row : rows) {
