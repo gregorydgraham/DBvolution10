@@ -20,7 +20,6 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.*;
 
-
 public class OracleDBDefinition extends DBDefinition {
 
     String dateFormatStr = "yyyy-M-d HH:mm:ss Z";
@@ -44,7 +43,7 @@ public class OracleDBDefinition extends DBDefinition {
 
     @Override
     public String formatColumnName(String columnName) {
-        return "\""+columnName+"\"";
+        return "\"" + columnName + "\"";
     }
 
     @Override
@@ -79,7 +78,7 @@ public class OracleDBDefinition extends DBDefinition {
 
     @Override
     public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
-        return "/*+ FIRST_ROWS("+rowLimit+") */"; 
+        return "/*+ FIRST_ROWS(" + rowLimit + ") */";
     }
 
     @Override
@@ -89,26 +88,31 @@ public class OracleDBDefinition extends DBDefinition {
 
     @Override
     public String getCurrentDateFunctionName() {
-        return "SYSDATE"; 
+        return "SYSDATE";
     }
 
     @Override
     public String getCurrentTimestampFunction() {
-        return "SYSDATE"; 
+        return "SYSDATE";
     }
 
     @Override
     public String getCurrentTimeFunction() {
-        return "SYSDATE"; 
+        return "SYSDATE";
     }
 
     @Override
     public String getCurrentUserFunctionName() {
-        return "USER"; 
-    }    
-    
+        return "USER";
+    }
+
     @Override
     public String getPositionFunction(String originalString, String stringToFind) {
-        return "INSTR("+originalString+","+stringToFind+")";
+        return "INSTR(" + originalString + "," + stringToFind + ")";
+    }
+
+    @Override
+    public String getIfNullFunctionName() {
+        return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
     }
 }

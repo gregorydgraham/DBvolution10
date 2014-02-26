@@ -61,5 +61,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
         return firstString+"+"+secondString;
     }
 
+    @Override
+    public String getIfNullFunctionName() {
+        return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
+    }
+
 
 }

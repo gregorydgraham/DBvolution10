@@ -199,7 +199,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
         DBString uidNameAndYear = new DBString(this.column(this.uidMarque).append("-").append(this.column(this.name)).append("-").append(this.column(this.creationDate).year()));
 
         @DBColumn
-        DBString uidNameAndNVLYear = new DBString(this.column(this.uidMarque).append("-").append(this.column(this.name)).append("-").append(this.column(this.creationDate).year().ifNull(2000)));
+        DBString uidNameAndNVLYear = new DBString(this.column(this.uidMarque).ifNull(-1).append("-").append(this.column(this.name).ifNull("UNKNOWN")).append("-").append(this.column(this.creationDate).year().ifNull(2000)));
 
     }
 }
