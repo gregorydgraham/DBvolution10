@@ -15,10 +15,11 @@
  */
 package nz.co.gregs.dbvolution;
 
+import com.google.common.base.Predicates;
+import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -129,36 +130,76 @@ public class ExpressionsInDBRowFields extends AbstractTest {
         }
     }
 
+    @Test
+    public void selectDBRowExpressionAllMarques() throws Exception {
+        final DBTable<ExpressionRow> expressionTable = database.getDBTable(new ExpressionRow());
+        final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
+        database.print(allMarques);
+
+        for (ExpressionRow row : allMarques) {
+            Assert.assertThat(row.uidAndName.stringValue(), is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
+            final Date dateValue = row.creationDate.dateValue();
+            if (dateValue != null) {
+                Assert.assertThat(row.uidNameAndYear.stringValue(), is(
+                        row.uidMarque.stringValue() + "-"
+                        + row.name.stringValue() + "-"
+                        + (dateValue.getYear() + 1900)));
+                Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+                        row.uidMarque.stringValue() + "-"
+                        + row.name.stringValue() + "-"
+                        + (dateValue.getYear() + 1900)));
+            }else{
+                Assert.assertThat(row.uidNameAndYear.stringValue(), isEmptyOrNullString());
+                Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+                        row.uidMarque.stringValue() + "-"
+                        + row.name.stringValue() + "-"
+                        + 2000));
+            }
+        }
+    }
+
     @DBTableName("marque")
     public static class ExpressionRow extends DBRow {
 
         public static final long serialVersionUID = 1L;
         public static final String STRING_VALUE = "THis ValuE";
-        
+
         @DBColumn
         DBDate sysDateColumnOnClass = new DBDate(DateExpression.currentDate());
-        
+
         @DBColumn
         DBString stringColumnOnClass = new DBString(StringExpression.value(STRING_VALUE).uppercase());
-        
+
         @DBColumn
         DBNumber numberColumnOnClass = new DBNumber(NumberExpression.value(5).times(3));
-        
+
         @DBColumn("uid_marque")
         @DBPrimaryKey
         public DBNumber uidMarque = new DBNumber();
-        
+
         @DBColumn
         public DBString name = new DBString();
-        
+
+        @DBColumn("creation_date")
+        public DBDate creationDate = new DBDate();
+
         @DBColumn
         DBNumber marqueUIDTimes10 = new DBNumber(this.column(this.uidMarque).times(10));
-        
+
+        @DBColumn
+        DBString marqueUIDTimes10String = new DBString(this.column(this.uidMarque).times(10).stringResult());
+
         @DBColumn
         DBString shortName = new DBString(this.column(this.name).substring(0, 3));
-        
+
         @DBColumn
-        DBString uidAndName = new DBString(StringExpression.value("").append(this.column(this.uidMarque)).append("-").append(this.column(this.name)));
-        
+        DBString uidAndName = new DBString(this.column(this.uidMarque).append("-").append(this.column(this.name)));
+
+        @DBColumn
+        DBString uidNameAndYear = new DBString(this.column(this.uidMarque).append("-").append(this.column(this.name)).append("-").append(this.column(this.creationDate).year()));
+
+        @DBColumn
+        DBString uidNameAndNVLYear = new DBString(this.column(this.uidMarque).append("-").append(this.column(this.name)).append("-").append(this.column(this.creationDate).year().ifNull(2000)));
+
     }
 }

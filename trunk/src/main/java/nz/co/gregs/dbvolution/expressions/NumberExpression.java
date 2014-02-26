@@ -55,13 +55,16 @@ public class NumberExpression implements NumberResult {
     /**
      * Create An Appropriate Expression Object For This Object
      *
-     * <p>The expression framework requires a *Expression to work with. The
-     * easiest way to get that is the {@code DBRow.column()} method.
+     * <p>
+     * The expression framework requires a *Expression to work with. The easiest
+     * way to get that is the {@code DBRow.column()} method.
      *
-     * <p>However if you wish your expression to start with a literal value it
-     * is a little trickier.
+     * <p>
+     * However if you wish your expression to start with a literal value it is a
+     * little trickier.
      *
-     * <p>This method provides the easy route to a *Expression from a literal
+     * <p>
+     * This method provides the easy route to a *Expression from a literal
      * value. Just call, for instance,
      * {@code StringExpression.value("STARTING STRING")} to get a
      * StringExpression and start the expression chain.
@@ -78,8 +81,8 @@ public class NumberExpression implements NumberResult {
     public static NumberExpression value(Number object) {
         return new NumberExpression(object);
     }
-    
-    public StringExpression stringValue() {
+
+    public StringExpression stringResult() {
         return new StringExpression(new DBUnaryStringFunction(this) {
 
             @Override
@@ -96,10 +99,18 @@ public class NumberExpression implements NumberResult {
             String getFunctionName(DBDatabase db) {
                 return "";
             }
-            
+
         });
     }
-    
+
+    public StringExpression append(String string) {
+        return this.stringResult().append(string);
+    }
+
+    public StringExpression append(StringResult string) {
+        return this.stringResult().append(string);
+    }
+
     public BooleanExpression is(Number number) {
         return is(value(number));
     }
@@ -198,30 +209,41 @@ public class NumberExpression implements NumberResult {
         if (schemaName != null) {
             return new NumberExpression(
                     new DBBinaryFunction(StringExpression.value(schemaName), StringExpression.value(sequenceName)) {
-                @Override
-                String getFunctionName(DBDatabase db) {
-                    return db.getDefinition().getNextSequenceValueFunctionName();
-                }
-            });
+                        @Override
+                        String getFunctionName(DBDatabase db) {
+                            return db.getDefinition().getNextSequenceValueFunctionName();
+                        }
+                    });
         } else {
             return new NumberExpression(
                     new DBUnaryFunction(StringExpression.value(sequenceName)) {
-                @Override
-                String getFunctionName(DBDatabase db) {
-                    return db.getDefinition().getNextSequenceValueFunctionName();
-                }
-            });
+                        @Override
+                        String getFunctionName(DBDatabase db) {
+                            return db.getDefinition().getNextSequenceValueFunctionName();
+                        }
+                    });
         }
+    }
+
+    public NumberExpression ifNull(Number alternative) {
+        return new NumberExpression(
+                new DBBinaryFunction(this, new NumberExpression(alternative)) {
+
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getIfNullFunctionName();
+                    }
+                });
     }
 
     public NumberExpression bracket() {
         return new NumberExpression(
                 new DBUnaryFunction(this) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return "";
-            }
-        });
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return "";
+                    }
+                });
     }
 
     public NumberExpression exp() {
@@ -610,11 +632,10 @@ public class NumberExpression implements NumberResult {
             this.second = second;
         }
 
-            @Override
-            public DBNumber getQueryableDatatypeForExpressionValue() {
-                return new DBNumber();
-            }
-
+        @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
+        }
 
         @Override
         public String toSQLString(DBDatabase db) {
@@ -685,11 +706,10 @@ public class NumberExpression implements NumberResult {
             this.only = only;
         }
 
-            @Override
-            public DBNumber getQueryableDatatypeForExpressionValue() {
-                return new DBNumber();
-            }
-
+        @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
+        }
 
         abstract String getFunctionName(DBDatabase db);
 
@@ -736,11 +756,10 @@ public class NumberExpression implements NumberResult {
             this.second = second;
         }
 
-            @Override
-            public DBNumber getQueryableDatatypeForExpressionValue() {
-                return new DBNumber();
-            }
-
+        @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
+        }
 
         @Override
         public String toSQLString(DBDatabase db) {
@@ -848,10 +867,10 @@ public class NumberExpression implements NumberResult {
             this.second = second;
         }
 
-            @Override
-            public DBBoolean getQueryableDatatypeForExpressionValue() {
-                return new DBBoolean();
-            }
+        @Override
+        public DBBoolean getQueryableDatatypeForExpressionValue() {
+            return new DBBoolean();
+        }
 
         @Override
         public String toSQLString(DBDatabase db) {
@@ -891,11 +910,10 @@ public class NumberExpression implements NumberResult {
             System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
         }
 
-            @Override
-            public DBBoolean getQueryableDatatypeForExpressionValue() {
-                return new DBBoolean();
-            }
-
+        @Override
+        public DBBoolean getQueryableDatatypeForExpressionValue() {
+            return new DBBoolean();
+        }
 
         abstract String getFunctionName(DBDatabase db);
 
@@ -953,11 +971,10 @@ public class NumberExpression implements NumberResult {
             this.only = only;
         }
 
-            @Override
-            public DBString getQueryableDatatypeForExpressionValue() {
-                return new DBString();
-            }
-
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
+        }
 
         abstract String getFunctionName(DBDatabase db);
 

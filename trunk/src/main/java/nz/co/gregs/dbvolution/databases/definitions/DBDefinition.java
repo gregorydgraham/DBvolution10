@@ -555,4 +555,8 @@ public abstract class DBDefinition {
     public String formatExpressionAlias(Object key) {
         return ("DB"+key.hashCode()).replaceAll("-", "_");
     }
+
+    public String getIfNullFunctionName() {
+        return "COALESCE";
+    }
 }

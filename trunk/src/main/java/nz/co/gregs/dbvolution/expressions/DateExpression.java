@@ -78,7 +78,7 @@ public class DateExpression implements DateResult {
     public static DateExpression value(Date date) {
         return new DateExpression(date);
     }
-
+    
     public static DateExpression currentDate() {
         return new DateExpression(
                 new DBNonaryFunction() {
