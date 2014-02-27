@@ -155,6 +155,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
      *
      * @return the number as a Double
      */
+    @SuppressWarnings("deprecation")
     public Double doubleValue() {
         if (literalValue == null) {
             return null;
@@ -170,6 +171,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
      *
      * @return the number as a Long
      */
+    @SuppressWarnings("deprecation")
     public Long longValue() {
         if (literalValue == null) {
             return null;
@@ -188,6 +190,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
      *
      * @return the number as an Integer
      */
+    @SuppressWarnings("deprecation")
     public Integer intValue() {
         if (literalValue == null) {
             return null;
