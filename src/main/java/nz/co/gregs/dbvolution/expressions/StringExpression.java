@@ -81,7 +81,7 @@ public class StringExpression implements StringResult {
         return new StringExpression(string);
     }
     
-        public StringExpression ifNull(String alternative) {
+        public StringExpression ifDBNull(String alternative) {
         return new StringExpression(
                 new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
 
@@ -92,7 +92,7 @@ public class StringExpression implements StringResult {
                 });
     }
 
-        public StringExpression ifNull(StringResult alternative) {
+        public StringExpression ifDBNull(StringResult alternative) {
         return new StringExpression(
                 new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
 

@@ -131,6 +131,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void selectDBRowExpressionAllMarques() throws Exception {
         final DBTable<ExpressionRow> expressionTable = database.getDBTable(new ExpressionRow());
         final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
@@ -153,7 +154,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
                 Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
                         row.uidMarque.stringValue() + "-"
                         + row.name.stringValue() + "-"
-                        + 2000));
+                        + ((new Date()).getYear()+1900)));
             }
         }
     }
@@ -199,7 +200,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
         DBString uidNameAndYear = new DBString(this.column(this.uidMarque).append("-").append(this.column(this.name)).append("-").append(this.column(this.creationDate).year()));
 
         @DBColumn
-        DBString uidNameAndNVLYear = new DBString(this.column(this.uidMarque).ifNull(-1).append("-").append(this.column(this.name).ifNull("UNKNOWN")).append("-").append(this.column(this.creationDate).year().ifNull(2000)));
+        DBString uidNameAndNVLYear = new DBString(this.column(this.uidMarque).ifDBNull(NumberExpression.value(-1).times(NumberExpression.value(2))).append("-").append(this.column(this.name).ifDBNull("UNKNOWN")).append("-").append(this.column(this.creationDate).ifDBNull(DateExpression.currentDate()).year().ifDBNull(2000)));
 
     }
 }

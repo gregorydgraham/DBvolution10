@@ -259,9 +259,9 @@ public class DateExpression implements DateResult {
         });
     }
 
-    public DateExpression ifNull(Date alternative) {
+    public DateExpression ifDBNull(Date alternative) {
         return new DateExpression(
-                new DateExpression.DBNnaryDateFunction(this, new DateResult[]{new DateExpression(alternative)}) {
+                new DateExpression.DBBinaryFunction(this, new DateExpression(alternative)) {
             @Override
             String getFunctionName(DBDatabase db) {
                 return db.getDefinition().getIfNullFunctionName();
@@ -269,9 +269,9 @@ public class DateExpression implements DateResult {
         });
     }
 
-    public DateExpression ifNull(DateResult alternative) {
+    public DateExpression ifDBNull(DateResult alternative) {
         return new DateExpression(
-                new DateExpression.DBNnaryDateFunction(this, new DateResult[]{alternative}) {
+                new DateExpression.DBBinaryFunction(this, alternative) {
             @Override
             String getFunctionName(DBDatabase db) {
                 return db.getDefinition().getIfNullFunctionName();
@@ -430,7 +430,7 @@ public class DateExpression implements DateResult {
         public String toSQLString(DBDatabase db) {
             StringBuilder builder = new StringBuilder();
             builder
-                    .append(column.toSQLString(db))
+                    .append(column.toSQLString(db)).append(" ")
                     .append(this.getFunctionName(db))
                     .append(this.beforeValue(db));
             String separator = "";
@@ -523,4 +523,61 @@ public class DateExpression implements DateResult {
             return newInstance;
         }
     }
+    
+        private static abstract class DBBinaryFunction implements DateResult {
+
+        private DateExpression first;
+        private DateResult second;
+
+        public DBBinaryFunction(DateExpression first) {
+            this.first = first;
+            this.second = null;
+        }
+
+        public DBBinaryFunction(DateExpression first, DateResult second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db) + first.toSQLString(db) + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db)) + this.afterValue(db);
+        }
+
+        @Override
+        public DBBinaryFunction copy() {
+            DBBinaryFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.first = first.copy();
+            newInstance.second = second.copy();
+            return newInstance;
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return " " + getFunctionName(db) + "( ";
+        }
+
+        protected String getSeparator(DBDatabase db) {
+            return ", ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+    }
+
+
 }

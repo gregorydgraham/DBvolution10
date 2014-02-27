@@ -225,9 +225,20 @@ public class NumberExpression implements NumberResult {
         }
     }
 
-    public NumberExpression ifNull(Number alternative) {
+    public NumberExpression ifDBNull(Number alternative) {
         return new NumberExpression(
                 new DBBinaryFunction(this, new NumberExpression(alternative)) {
+
+                    @Override
+                    String getFunctionName(DBDatabase db) {
+                        return db.getDefinition().getIfNullFunctionName();
+                    }
+                });
+    }
+
+    public NumberExpression ifDBNull(NumberResult alternative) {
+        return new NumberExpression(
+                new DBBinaryFunction(this, alternative) {
 
                     @Override
                     String getFunctionName(DBDatabase db) {
