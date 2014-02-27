@@ -95,7 +95,7 @@ public class DBQuery {
 //    private boolean blankQueryAllowed = false;
     private String rawSQLClause = "";
 
-    private DBQuery(DBDatabase database) {
+    DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
         this.optionalQueryTables = new ArrayList<Class<? extends DBRow>>();
         this.allQueryTables = new ArrayList<DBRow>();
@@ -129,6 +129,32 @@ public class DBQuery {
      * @return this DBQuery instance
      */
     public DBQuery add(DBRow... tables) {
+        for (DBRow table : tables) {
+            queryTables.add(table);
+            allQueryTables.add(table);
+            results = null;
+            resultSQL = null;
+        }
+        return this;
+    }
+
+    /**
+     *
+     * Add a List of tables to the query.
+     *
+     * <p>
+     * This method adds the DBRows to the list of required (INNER) tables.
+     *
+     * <p>
+     * Criteria (permitted and excluded values) from these instances will be
+     * automatically included in the query and an instance of this DBRow class
+     * will be created for each DBQueryRow returned.
+     *
+     * @param tables a list of DBRow objects that defines required tables and
+     * criteria
+     * @return this DBQuery instance
+     */
+    public DBQuery add(List<DBRow> tables) {
         for (DBRow table : tables) {
             queryTables.add(table);
             allQueryTables.add(table);
