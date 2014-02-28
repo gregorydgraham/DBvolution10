@@ -22,6 +22,9 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static org.hamcrest.Matchers.*;
+import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DBReportTests extends AbstractTest {
@@ -33,8 +36,30 @@ public class DBReportTests extends AbstractTest {
     @Test
     public void createReportTest() throws SQLException {
         SimpleReport reportExample = new SimpleReport();
-        List<SimpleReport> simpleReportRows = DBReport.getRows(database, reportExample);
+        List<SimpleReport> simpleReportRows = DBReport.getAllRows(database, reportExample);
+        Assert.assertThat(simpleReportRows.size(), is(22));
         for (SimpleReport simp : simpleReportRows) {
+            Assert.assertThat(simp.marque.uidMarque.stringValue(), not(isEmptyOrNullString()));
+            Assert.assertThat(simp.carCompany.uidCarCompany.stringValue(), not(isEmptyOrNullString()));
+            Assert.assertThat(simp.carCompanyAndMarque.stringValue(), not(isEmptyOrNullString()));
+            System.out.println("" + simp.marque);
+            System.out.println("" + simp.carCompany);
+            System.out.println("" + simp.carCompanyAndMarque.stringValue());
+        }
+    }
+
+    @Ignore
+    @Test
+    public void withExampleTest() throws SQLException {
+        SimpleReport reportExample = new SimpleReport();
+        Marque toyota = new Marque();
+        toyota.name.permittedValuesIgnoreCase("TOYOTA");
+        List<SimpleReport> simpleReportRows = DBReport.getRows(database, reportExample, toyota);
+        Assert.assertThat(simpleReportRows.size(), is(1));
+        for (SimpleReport simp : simpleReportRows) {
+            Assert.assertThat(simp.marque.uidMarque.stringValue(), not(isEmptyOrNullString()));
+            Assert.assertThat(simp.carCompany.uidCarCompany.stringValue(), not(isEmptyOrNullString()));
+            Assert.assertThat(simp.carCompanyAndMarque.stringValue(), not(isEmptyOrNullString()));
             System.out.println("" + simp.marque);
             System.out.println("" + simp.carCompany);
             System.out.println("" + simp.carCompanyAndMarque.stringValue());

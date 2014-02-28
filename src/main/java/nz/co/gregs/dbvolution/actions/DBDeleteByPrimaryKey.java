@@ -70,8 +70,8 @@ public class DBDeleteByPrimaryKey extends DBDelete {
     @Override
     public DBActionList getRevertDBActionList() {
         DBActionList reverts = new DBActionList();
-        for (DBRow row : savedRows) {
-            reverts.add(new DBInsert(row));
+        for (DBRow savedRow : savedRows) {
+            reverts.add(new DBInsert(savedRow));
         }
         return reverts;
     }

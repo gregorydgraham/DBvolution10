@@ -586,6 +586,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     protected void setLiteralValue(Object newLiteralValue) {
         preventChangeOfPrimaryKey();
         if (newLiteralValue == null) {
+            setChanged(newLiteralValue);
             setToNull();
         } else {
             if (newLiteralValue instanceof DBExpression) {
