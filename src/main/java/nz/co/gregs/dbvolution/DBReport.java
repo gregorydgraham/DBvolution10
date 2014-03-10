@@ -43,11 +43,25 @@ class DBReport {
         return reportRows;
     }
 
+    /**
+     * Gets all the report rows of the supplied DBReport using the supplied
+     * example rows.
+     *
+     * All supplied rows should be from a DBRow subclass that is included in the
+     * report.
+     *
+     * @param <A>
+     * @param database
+     * @param exampleReport
+     * @param rows
+     * @return
+     * @throws SQLException
+     */
     public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
         List<A> reportRows = new ArrayList<A>();
         DBQuery query = database.getDBQuery();
         addTablesAndExpressions(query, exampleReport);
-//        query.addExtraCriteria(rows);
+        query.addExtraExamples(rows);
         List<DBQueryRow> allRows = query.getAllRows();
         for (DBQueryRow row : allRows) {
             reportRows.add(DBReport.getReportInstance(exampleReport, row));

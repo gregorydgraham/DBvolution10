@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DBReportTests extends AbstractTest {
@@ -48,7 +47,6 @@ public class DBReportTests extends AbstractTest {
         }
     }
 
-    @Ignore
     @Test
     public void withExampleTest() throws SQLException {
         SimpleReport reportExample = new SimpleReport();
@@ -62,7 +60,10 @@ public class DBReportTests extends AbstractTest {
             Assert.assertThat(simp.carCompanyAndMarque.stringValue(), not(isEmptyOrNullString()));
             System.out.println("" + simp.marque);
             System.out.println("" + simp.carCompany);
-            System.out.println("" + simp.carCompanyAndMarque.stringValue());
+            System.out.println("" + simp.carCompanyAndMarque.stringValue());            
+            Assert.assertThat(simp.marque.name.stringValue(), is("TOYOTA"));
+            Assert.assertThat(simp.carCompany.name.stringValue(), is("TOYOTA"));
+            Assert.assertThat(simp.carCompanyAndMarque.stringValue(), is("TOYOTA: TOYOTA"));
         }
     }
 
