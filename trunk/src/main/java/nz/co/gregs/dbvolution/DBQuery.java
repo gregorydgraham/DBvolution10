@@ -94,6 +94,7 @@ public class DBQuery {
 //    private boolean cartesianJoinAllowed = false;
 //    private boolean blankQueryAllowed = false;
     private String rawSQLClause = "";
+    private List<DBRow> extraExamples = new ArrayList<DBRow>();
 
     DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -368,6 +369,15 @@ public class DBQuery {
             colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
         }
 
+        for (DBRow extra : extraExamples) {
+            List<String> extraCriteria = extra.getWhereClausesWithAliases(database);
+            if (extraCriteria != null && !extraCriteria.isEmpty()) {
+                for (String clause : extraCriteria) {
+                    whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+                }
+            }
+        }
+
         final String sqlString = selectClause.append(lineSep)
                 .append(fromClause).append(lineSep)
                 .append(whereClause).append(lineSep)
@@ -486,12 +496,11 @@ public class DBQuery {
                         List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
                         for (PropertyWrapper newProp : newProperties) {
                             QueryableDatatype qdt = newProp.getQueryableDatatype();
-                            
+
                             //from getSQLForQuery()
 //                List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
 //                for (PropertyWrapper propDefn : tabProps) {
 //                    selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
-                            
 //                            String resultSetColumnName = defn.formatColumnNameForDBQueryResultSet(newInstance, newProp.columnName());
                             String resultSetColumnName = newProp.getColumnAlias(database);
                             qdt.setFromResultSet(resultSet, resultSetColumnName);
@@ -763,6 +772,7 @@ public class DBQuery {
         this.allQueryTables.clear();
         this.comparisons.clear();
         this.expressions.clear();
+        this.extraExamples.clear();
         results = null;
         return this;
     }
@@ -824,6 +834,9 @@ public class DBQuery {
     public boolean willCreateBlankQuery() {
         boolean willCreateBlankQuery = true;
         for (DBRow table : allQueryTables) {
+            willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
+        }
+        for (DBRow table : extraExamples) {
             willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
         }
         return willCreateBlankQuery && (comparisons.isEmpty()) && (expressions.isEmpty());
@@ -1306,7 +1319,20 @@ public class DBQuery {
         if (rawQuery == null) {
             this.rawSQLClause = "";
         } else {
-            this.rawSQLClause = " "+rawQuery+" ";
+            this.rawSQLClause = " " + rawQuery + " ";
         }
+    }
+
+    /**
+     * Adds Extra Examples to the Query.
+     * 
+     * The included DBRow instances will be used to add extra criteria as though they were an added table.
+     * 
+     * They will NOT be added as tables however, for that use {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
+     * 
+     * @param extraExamples 
+     */
+    void addExtraExamples(DBRow... extraExamples) {
+        this.extraExamples.addAll(Arrays.asList(extraExamples));
     }
 }
