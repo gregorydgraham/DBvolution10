@@ -36,12 +36,11 @@ public class DBReportTests extends AbstractTest {
         super(testIterationName, db);
     }
 
-    @Ignore
     @Test
     public void createReportTest() throws SQLException {
         SimpleReport reportExample = new SimpleReport();
         List<SimpleReport> simpleReportRows = DBReport.getAllRows(database, reportExample);
-        Assert.assertThat(simpleReportRows.size(), is(22));
+        Assert.assertThat(simpleReportRows.size(), is(21));
         for (SimpleReport simp : simpleReportRows) {
             Assert.assertThat(simp.marqueUID.stringValue(), not(isEmptyOrNullString()));
             Assert.assertThat(simp.marqueName.stringValue(), not(isEmptyOrNullString()));
@@ -78,20 +77,20 @@ public class DBReportTests extends AbstractTest {
         public Marque marque = new Marque();
         public CarCompany carCompany = new CarCompany();
 
-        @DBColumn
         public DBString carCompanyName = new DBString(carCompany.column(carCompany.name));
 
-        @DBColumn
         public DBString marqueName = new DBString(marque.column(marque.name));
 
-        @DBColumn
         public DBString carCompanyAndMarque = new DBString(carCompany.column(carCompany.name).append(": ").append(marque.column(marque.name)));
 
-        @DBColumn
         public DBNumber marqueUID = new DBNumber(marque.column(marque.uidMarque));
-
-        @DBColumn
+        
         public DBDate marqueCreated = new DBDate(marque.column(marque.creationDate));
+        
+        {
+            marque.toyotaStatusClassID.permittedValues(1246974);
+            carCompany.uidCarCompany.excludedValues(null);
+        }
 
         public SimpleReport() {
             super();
