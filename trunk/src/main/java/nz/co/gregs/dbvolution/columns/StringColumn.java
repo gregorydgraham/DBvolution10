@@ -20,26 +20,39 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
-public class StringColumn extends StringExpression implements ColumnProvider{
+public class StringColumn extends StringExpression implements ColumnProvider {
 
-    private final AbstractColumn column;
+    private AbstractColumn column;
+    
+    private StringColumn(){
+        
+    }
 
     public StringColumn(DBRow row, String field) {
         this.column = new AbstractColumn(row, field);
     }
-    
+
     public StringColumn(DBRow row, DBString field) {
         this.column = new AbstractColumn(row, field);
     }
-    
+
     @Override
     public String toSQLString(DBDatabase db) {
         return column.toSQLString(db);
     }
 
     @Override
-    public StringColumn copy() {
-        return (StringColumn)super.copy();
+    public synchronized StringColumn copy() {
+        StringColumn newInstance;
+        try {
+            newInstance = this.getClass().newInstance();
+            newInstance.column = column;
+            return newInstance;
+        } catch (InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override

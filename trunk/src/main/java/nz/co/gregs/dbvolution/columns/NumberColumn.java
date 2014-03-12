@@ -22,27 +22,40 @@ import nz.co.gregs.dbvolution.expressions.NumberExpression;
 
 public class NumberColumn extends NumberExpression implements ColumnProvider {
 
-    private final AbstractColumn column;
+    private AbstractColumn column;
+
+    private NumberColumn() {
+    }
 
     public NumberColumn(DBRow row, Number field) {
         this.column = new AbstractColumn(row, field);
     }
-    
+
     public NumberColumn(DBRow row, DBNumber field) {
         this.column = new AbstractColumn(row, field);
     }
-    
+
     @Override
     public String toSQLString(DBDatabase db) {
         return column.toSQLString(db);
     }
 
     @Override
-    public NumberColumn copy() {
-        return (NumberColumn)super.copy();
+    public synchronized NumberColumn copy() {
+        try {
+            NumberColumn newInstance = this.getClass().newInstance();
+            newInstance.column = this.column;
+            return newInstance;
+        } catch (InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
+
     }
 
     @Override
     public AbstractColumn getColumn() {
         return column;
-    }}
+    }
+}

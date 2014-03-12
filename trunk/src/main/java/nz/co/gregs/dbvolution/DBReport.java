@@ -73,7 +73,7 @@ class DBReport {
 //        List<DBRow> tables = new ArrayList<DBRow>();
         Field[] fields = exampleReport.getClass().getFields();
         if (fields.length == 0) {
-            throw new UnableToAccessDBReportFieldException(exampleReport, null);
+            throw new UnableToAccessDBReportFieldException(exampleReport, null, null);
         }
         for (Field field : fields) {
             final Object value;
@@ -81,7 +81,9 @@ class DBReport {
                 value = field.get(exampleReport);
                 if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
                     if (value instanceof DBRow) {
-                        query.add((DBRow) value);
+                        final DBRow dbRow = (DBRow) value;
+                        dbRow.returnFieldsLimitedTo();
+                        query.add(dbRow);
                     }
                 } else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
                     if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
@@ -89,9 +91,9 @@ class DBReport {
                     }
                 }
             } catch (IllegalArgumentException ex) {
-                throw new UnableToAccessDBReportFieldException(exampleReport, ex);
+                throw new UnableToAccessDBReportFieldException(exampleReport,field, ex);
             } catch (IllegalAccessException ex) {
-                throw new UnableToAccessDBReportFieldException(exampleReport, ex);
+                throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
             }
         }
     }
@@ -116,9 +118,11 @@ class DBReport {
                         }
                     }
                 } catch (IllegalArgumentException ex) {
-                    throw new UnableToAccessDBReportFieldException(exampleReport, ex);
+                    ex.printStackTrace();
+                    throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
                 } catch (IllegalAccessException ex) {
-                    throw new UnableToAccessDBReportFieldException(exampleReport, ex);
+                    ex.printStackTrace();
+                    throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
                 }
             }
             return newReport;
@@ -133,8 +137,12 @@ class DBReport {
 
         public static final long serialVersionUID = 1L;
 
+        public UnableToAccessDBReportFieldException(Object badReport, Field field, Exception ex) {
+            super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null: Especially field: "+field.getName(), ex);
+        }
+
         public UnableToAccessDBReportFieldException(Object badReport, Exception ex) {
-            super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null", ex);
+            super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null.", ex);
         }
     }
 

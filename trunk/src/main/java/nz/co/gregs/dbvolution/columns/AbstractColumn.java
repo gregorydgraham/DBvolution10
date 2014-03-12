@@ -46,7 +46,7 @@ public class AbstractColumn implements DBExpression {
     }
     
     @Override
-    public DBExpression copy() {
+    public AbstractColumn copy() {
         try {
             Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(dbrow.getClass(), field.getClass());
             AbstractColumn newInstance = constructor.newInstance(dbrow, field);
