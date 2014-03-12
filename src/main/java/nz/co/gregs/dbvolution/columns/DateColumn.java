@@ -23,7 +23,10 @@ import nz.co.gregs.dbvolution.expressions.DateExpression;
 
 public class DateColumn extends DateExpression implements ColumnProvider {
 
-    private final AbstractColumn column;
+    private AbstractColumn column;
+
+    private DateColumn() {
+    }
 
     public DateColumn(DBRow row, Date field) {
         this.column = new AbstractColumn(row, field);
@@ -39,10 +42,19 @@ public class DateColumn extends DateExpression implements ColumnProvider {
     }
 
     @Override
-    public DateColumn copy() {
-        return (DateColumn) super.copy();
-    }
+    public synchronized DateColumn copy() {
+        try {
+            DateColumn newInstance = this.getClass().newInstance();
+            newInstance.column = this.column;
+            return newInstance;
+        } catch (InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
 
+    }
+    
     @Override
     public AbstractColumn getColumn() {
         return column;

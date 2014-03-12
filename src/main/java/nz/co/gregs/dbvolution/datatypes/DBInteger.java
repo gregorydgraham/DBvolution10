@@ -32,7 +32,7 @@ public class DBInteger extends DBNumber {
     }
 
     public DBInteger(int anInt) {
-    	this(Integer.valueOf(anInt));
+        this(Integer.valueOf(anInt));
     }
 
     public DBInteger(Integer anInt) {
@@ -99,6 +99,4 @@ public class DBInteger extends DBNumber {
     public Long getValue() {
         return longValue();
     }
-    
-    
 }

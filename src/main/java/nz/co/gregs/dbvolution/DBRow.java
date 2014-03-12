@@ -35,7 +35,7 @@ abstract public class DBRow implements Serializable {
     static DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
     boolean isDefined = false;
     final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
-    final List<PropertyWrapperDefinition> returnColumns = new ArrayList<PropertyWrapperDefinition>();
+    List<PropertyWrapperDefinition> returnColumns = null; //= new ArrayList<PropertyWrapperDefinition>();
     final List<DBRelationship> adHocRelationships = new ArrayList<DBRelationship>();
     private transient Boolean hasBlobs;
     private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
@@ -93,8 +93,13 @@ abstract public class DBRow implements Serializable {
         for (PropertyWrapperDefinition defn : originalRow.ignoredForeignKeys) {
             newRow.ignoredForeignKeys.add(defn);
         }
-        for (PropertyWrapperDefinition defn : originalRow.returnColumns) {
-            newRow.returnColumns.add(defn);
+        if (originalRow.returnColumns != null) {
+            newRow.returnColumns = new ArrayList<PropertyWrapperDefinition>();
+            for (PropertyWrapperDefinition defn : originalRow.returnColumns) {
+                newRow.returnColumns.add(defn);
+            }
+        } else {
+            newRow.returnColumns = null;
         }
         for (DBRelationship adhoc : originalRow.adHocRelationships) {
             newRow.adHocRelationships.add(adhoc);
@@ -438,8 +443,9 @@ abstract public class DBRow implements Serializable {
     /**
      * Change all the criteria specified on this DBRow instance into a list of
      * strings for adding in to the WHERE clause
-     * 
-     * <p>Uses table and column aliases appropriate for SELECT queries
+     *
+     * <p>
+     * Uses table and column aliases appropriate for SELECT queries
      *
      * @param db The DBDatabase instance that this query is to be executed on.
      * @return the WHERE clause that will be used with the current parameters
@@ -449,13 +455,13 @@ abstract public class DBRow implements Serializable {
         return getWhereClauses(db, false);
     }
 
-
     /**
      * Change all the criteria specified on this DBRow instance into a list of
      * strings for adding in to the WHERE clause
      *
-     * <p>Uses plain table and column names appropriate for DELETE queries
-     * 
+     * <p>
+     * Uses plain table and column names appropriate for DELETE queries
+     *
      * @param db The DBDatabase instance that this query is to be executed on.
      * @return the WHERE clause that will be used with the current parameters
      *
@@ -580,7 +586,7 @@ abstract public class DBRow implements Serializable {
             if (prop.isColumn()) {
                 if (prop.hasColumnExpression()) {
                     columnNames.add(prop.getColumnExpression().toSQLString(db));
-                } else if (returnColumns == null || returnColumns.isEmpty() || returnColumns.contains(prop.getDefinition())) {
+                } else if (returnColumns == null || returnColumns.contains(prop.getDefinition())) {
                     String dbColumnName = prop.columnName();
                     if (dbColumnName != null) {
                         columnNames.add(defn.formatTableAliasAndColumnNameForSelectClause(this, dbColumnName));
@@ -821,6 +827,7 @@ abstract public class DBRow implements Serializable {
      */
     //@SafeVarargs
     public final <T> void returnFieldsLimitedTo(T... properties) {
+        returnColumns = new ArrayList<PropertyWrapperDefinition>();
         PropertyWrapper propWrapper;
         for (T property : properties) {
             propWrapper = getPropertyWrapperOf(property);
@@ -841,7 +848,8 @@ abstract public class DBRow implements Serializable {
      *
      */
     public void returnAllFields() {
-        returnColumns.clear();
+//        returnColumns.clear();
+        returnColumns = null;
     }
 
     /**
@@ -1128,7 +1136,7 @@ abstract public class DBRow implements Serializable {
     }
 
     List<PropertyWrapper> getSelectedProperties() {
-        if (returnColumns == null || returnColumns.isEmpty()) {
+        if (returnColumns == null) {
             return getPropertyWrappers();
         } else {
             ArrayList<PropertyWrapper> selected = new ArrayList<PropertyWrapper>();

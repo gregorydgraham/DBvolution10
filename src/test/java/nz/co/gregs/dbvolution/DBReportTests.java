@@ -18,12 +18,16 @@ package nz.co.gregs.dbvolution;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DBReportTests extends AbstractTest {
@@ -32,17 +36,19 @@ public class DBReportTests extends AbstractTest {
         super(testIterationName, db);
     }
 
+    @Ignore
     @Test
     public void createReportTest() throws SQLException {
         SimpleReport reportExample = new SimpleReport();
         List<SimpleReport> simpleReportRows = DBReport.getAllRows(database, reportExample);
         Assert.assertThat(simpleReportRows.size(), is(22));
         for (SimpleReport simp : simpleReportRows) {
-            Assert.assertThat(simp.marque.uidMarque.stringValue(), not(isEmptyOrNullString()));
-            Assert.assertThat(simp.carCompany.uidCarCompany.stringValue(), not(isEmptyOrNullString()));
+            Assert.assertThat(simp.marqueUID.stringValue(), not(isEmptyOrNullString()));
+            Assert.assertThat(simp.marqueName.stringValue(), not(isEmptyOrNullString()));
+            Assert.assertThat(simp.carCompanyName.stringValue(), not(isEmptyOrNullString()));
             Assert.assertThat(simp.carCompanyAndMarque.stringValue(), not(isEmptyOrNullString()));
-            System.out.println("" + simp.marque);
-            System.out.println("" + simp.carCompany);
+            System.out.println("" + simp.marqueName);
+            System.out.println("" + simp.carCompanyName);
             System.out.println("" + simp.carCompanyAndMarque.stringValue());
         }
     }
@@ -55,14 +61,14 @@ public class DBReportTests extends AbstractTest {
         List<SimpleReport> simpleReportRows = DBReport.getRows(database, reportExample, toyota);
         Assert.assertThat(simpleReportRows.size(), is(1));
         for (SimpleReport simp : simpleReportRows) {
-            Assert.assertThat(simp.marque.uidMarque.stringValue(), not(isEmptyOrNullString()));
-            Assert.assertThat(simp.carCompany.uidCarCompany.stringValue(), not(isEmptyOrNullString()));
+            Assert.assertThat(simp.marqueUID.stringValue(), not(isEmptyOrNullString()));
+            //          Assert.assertThat(simp.carCompany.uidCarCompany.stringValue(), not(isEmptyOrNullString()));
             Assert.assertThat(simp.carCompanyAndMarque.stringValue(), not(isEmptyOrNullString()));
             System.out.println("" + simp.marque);
             System.out.println("" + simp.carCompany);
-            System.out.println("" + simp.carCompanyAndMarque.stringValue());            
-            Assert.assertThat(simp.marque.name.stringValue(), is("TOYOTA"));
-            Assert.assertThat(simp.carCompany.name.stringValue(), is("TOYOTA"));
+            System.out.println("" + simp.carCompanyAndMarque.stringValue());
+            Assert.assertThat(simp.marqueName.stringValue(), is("TOYOTA"));
+            Assert.assertThat(simp.carCompanyName.stringValue(), is("TOYOTA"));
             Assert.assertThat(simp.carCompanyAndMarque.stringValue(), is("TOYOTA: TOYOTA"));
         }
     }
@@ -73,7 +79,19 @@ public class DBReportTests extends AbstractTest {
         public CarCompany carCompany = new CarCompany();
 
         @DBColumn
+        public DBString carCompanyName = new DBString(carCompany.column(carCompany.name));
+
+        @DBColumn
+        public DBString marqueName = new DBString(marque.column(marque.name));
+
+        @DBColumn
         public DBString carCompanyAndMarque = new DBString(carCompany.column(carCompany.name).append(": ").append(marque.column(marque.name)));
+
+        @DBColumn
+        public DBNumber marqueUID = new DBNumber(marque.column(marque.uidMarque));
+
+        @DBColumn
+        public DBDate marqueCreated = new DBDate(marque.column(marque.creationDate));
 
         public SimpleReport() {
             super();
