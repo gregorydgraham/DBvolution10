@@ -88,13 +88,11 @@ public class DBQuery {
     private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
 
     private final QueryOptions options = new QueryOptions();
-//    private Long rowLimit;
     private List<PropertyWrapper> sortOrder = null;
-//    private boolean useANSISyntax = true;
-//    private boolean cartesianJoinAllowed = false;
-//    private boolean blankQueryAllowed = false;
+
     private String rawSQLClause = "";
     private List<DBRow> extraExamples = new ArrayList<DBRow>();
+    private QueryGraph queryGraph;
 
     DBQuery(DBDatabase database) {
         this.queryTables = new ArrayList<DBRow>();
@@ -295,7 +293,7 @@ public class DBQuery {
             throw new AccidentalBlankQueryException();
         }
 
-        QueryGraph queryGraph = new QueryGraph(database, allQueryTables, options);
+        queryGraph = new QueryGraph(database, allQueryTables, options);
         if (!options.isCartesianJoinAllowed() && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
             throw new AccidentalCartesianJoinException();
         }
@@ -1325,14 +1323,23 @@ public class DBQuery {
 
     /**
      * Adds Extra Examples to the Query.
-     * 
-     * The included DBRow instances will be used to add extra criteria as though they were an added table.
-     * 
-     * They will NOT be added as tables however, for that use {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
-     * 
-     * @param extraExamples 
+     *
+     * The included DBRow instances will be used to add extra criteria as though
+     * they were an added table.
+     *
+     * They will NOT be added as tables however, for that use
+     * {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
+     *
+     * @param extraExamples
      */
     void addExtraExamples(DBRow... extraExamples) {
         this.extraExamples.addAll(Arrays.asList(extraExamples));
+    }
+
+    public void displayQueryGraph() {
+        if (queryGraph == null) {
+            queryGraph = new QueryGraph(database, allQueryTables, options);
+        }
+        queryGraph.getDisplayGraph().display();
     }
 }
