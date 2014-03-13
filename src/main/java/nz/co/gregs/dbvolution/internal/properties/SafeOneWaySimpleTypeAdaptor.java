@@ -205,7 +205,7 @@ public class SafeOneWaySimpleTypeAdaptor {
 	/**
 	 * Uses the type adaptor to convert in the configured direction.
 	 * @param value
-	 * @return
+	 * @return the value supplied converted by the type adaptor
 	 * @throws ClassCastException on type conversion failure
 	 * @throws DBThrownByEndUserCodeException if the type adaptor throws an exception
 	 */

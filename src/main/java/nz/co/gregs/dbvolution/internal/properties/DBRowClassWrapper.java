@@ -8,7 +8,6 @@ import java.util.Map;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
@@ -21,7 +20,7 @@ import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
  * this class will work against any class type.
  *
  * <p> To wrap a target object instance, use the
- * {@link #instanceAdaptorFor(DBDefinition, Object) objectAdapterFor()} method.
+ * {@link #instanceWrapperFor(nz.co.gregs.dbvolution.DBRow)} method.
  *
  * <p> Note: instances of this class are expensive to create, and are intended
  * to be cached and kept long-term. Instances can be safely shared between
@@ -222,7 +221,7 @@ public class DBRowClassWrapper {
     /**
      * Gets an object wrapper instance for the given target object
      * @param target the {@code DBRow} instance
-     * @return
+     * @return A DBRowInstanceWrapper for the supplied target.
      */
     public DBRowInstanceWrapper instanceWrapperFor(DBRow target) {
     	if (identityOnly) {
@@ -247,7 +246,7 @@ public class DBRowClassWrapper {
     /**
      * Gets the underlying wrapped class.
      *
-     * @return
+     * @return the DBRow or Object wrapped by this instance.
      */
     public Class<?> adaptee() {
         return adaptee;
@@ -257,8 +256,11 @@ public class DBRowClassWrapper {
      * Gets the simple name of the class being wrapped by this adaptor.
      * <p> Use {@link #tableName()} for the name of the table mapped to this
      * class.
+     * 
+     * <p>
+     * Equivalent to {@code this.adaptee().getSimpleName();}
      *
-     * @return
+     * @return the SimpleName of the class being wrapped.
      */
     public String javaName() {
         return adaptee.getSimpleName();
@@ -269,7 +271,7 @@ public class DBRowClassWrapper {
      * <p> Use {@link #tableName()} for the name of the table mapped to this
      * class.
      *
-     * @return
+     * @return the fully qualified name of the class being wrapped.
      */
     public String qualifiedJavaName() {
         return adaptee.getName();
@@ -278,7 +280,7 @@ public class DBRowClassWrapper {
     /**
      * Indicates whether this class maps to a database column.
      *
-     * @return
+     * @return TRUE if this DBRowClassWrapper represents a database table, otherwise FALSE.
      */
     public boolean isTable() {
         return tableHandler.isTable();
@@ -292,7 +294,7 @@ public class DBRowClassWrapper {
      * <p> If the {@link DBTableName} annotation is missing, this method returns
      * {@code null}.
      *
-     * <p> Use {@link #getDBTableNameAnnotation} for low level access.
+     * <p> Use {@link TableHandler#getDBTableNameAnnotation() } for low level access.
      *
      * @return the table name, if specified explicitly or implicitly.
      */
@@ -321,7 +323,7 @@ public class DBRowClassWrapper {
      *
      * @param database active database
      * @param columnName
-     * @return
+     * @return the PropertyWrapperDefinition for the columnName supplied.
      */
     public PropertyWrapperDefinition getPropertyDefinitionByColumn(DBDatabase database, String columnName) {
     	if (identityOnly) {
@@ -380,7 +382,7 @@ public class DBRowClassWrapper {
      * handle that well and returns only the first one it sees.
      *
      * @param propertyName
-     * @return
+     * @return the PropertyWrapperDefinition for the named object property
      */
     public PropertyWrapperDefinition getPropertyDefinitionByName(String propertyName) {
     	if (identityOnly) {
@@ -392,7 +394,7 @@ public class DBRowClassWrapper {
     /**
      * Gets all properties annotated with {@code DBColumn}.
      *
-     * @return
+     * @return a List of all PropertyWrapperDefinitions for the wrapped class.
      */
     public List<PropertyWrapperDefinition> getPropertyDefinitions() {
     	if (identityOnly) {
@@ -403,7 +405,7 @@ public class DBRowClassWrapper {
     
     /**
      * Gets all foreign key properties.
-     * @return
+     * @return a list of ProperyWrapperDefinitions for all the foreign keys defined in the wrapped object
      */
     public List<PropertyWrapperDefinition> getForeignKeyPropertyDefinitions() {
     	if (identityOnly) {

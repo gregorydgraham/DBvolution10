@@ -86,10 +86,8 @@ public class DBQuery {
     private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
     private final List<BooleanExpression> expressions = new ArrayList<BooleanExpression>();
     private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
-
     private final QueryOptions options = new QueryOptions();
     private List<PropertyWrapper> sortOrder = null;
-
     private String rawSQLClause = "";
     private List<DBRow> extraExamples = new ArrayList<DBRow>();
     private QueryGraph queryGraph;
@@ -1336,6 +1334,23 @@ public class DBQuery {
         this.extraExamples.addAll(Arrays.asList(extraExamples));
     }
 
+    /**
+     * Show the GraphStream window of the current QueryGraph.
+     *
+     * <p>
+     * A pictorial representation to help you with diagnosing the issues with
+     * queries and to visualize what is actually being used by DBvolution.
+     *
+     * <p>
+     * Internally DBvolution uses a graph to design the query that will be used.
+     * This graph is helpful for visualizing the underlying query, more so than
+     * an SQL query dump. So this method will display the query graph of this
+     * query at this time. The graph cannot be altered through the window but it
+     * can be moved to help show the parts of the graph. You can manipulate the
+     * query graph by {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)  adding relationships to the DBRow}
+     * instances, or {@link DBRow#ignoreForeignKey(java.lang.Object) ignoring inappropriate foreign keys}.
+     *
+     */
     public void displayQueryGraph() {
         if (queryGraph == null) {
             queryGraph = new QueryGraph(database, allQueryTables, options);
