@@ -25,7 +25,10 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import org.graphstream.graph.EdgeRejectedException;
+import org.graphstream.graph.ElementNotFoundException;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.IdAlreadyInUseException;
 import org.graphstream.graph.implementations.SingleGraph;
 
 /**
@@ -56,8 +59,7 @@ public class QueryGraph {
             QueryGraphNode node1 = nodes.get(table1Class);
             if (node1 == null) {
                 node1 = new QueryGraphNode(table1Class);
-                displayGraph.addNode(node1.table.getSimpleName());
-                displayGraph.getNode(node1.table.getSimpleName()).addAttribute("ui.label", node1.table.getSimpleName());
+                addNodeToDisplayGraph(node1);
                 nodes.put(table1Class, node1);
                 rows.put(table1Class, table1);
             }
@@ -68,25 +70,33 @@ public class QueryGraph {
                         QueryGraphNode node2 = nodes.get(table2Class);
                         if (node2 == null) {
                             node2 = new QueryGraphNode(table2Class);
-                            displayGraph.addNode(node2.table.getSimpleName());
-                            displayGraph.getNode(node2.table.getSimpleName()).addAttribute("ui.label", node2.table.getSimpleName());
+                            addNodeToDisplayGraph(node2);
                             nodes.put(table2Class, node2);
                             rows.put(table2Class, table2);
                         }
                         node1.connectTable(table2Class);
                         node2.connectTable(table1Class);
-                        final String relationshipsAsSQL = table1.getRelationshipsAsSQL(database, table2, options);
-                        displayGraph.addEdge(
-                                relationshipsAsSQL, 
-                                table1.getClass().getSimpleName(), 
-                                table2.getClass().getSimpleName());
-                        displayGraph.getEdge(relationshipsAsSQL).addAttribute("ui.label", relationshipsAsSQL);
+                        addEdgeToDisplayGraph(database, table1, table2, options);
                     }
                 }
             }
             tablesAdded.add(table1);
             tablesRemaining.remove(table1);
         }
+    }
+
+    private void addNodeToDisplayGraph(QueryGraphNode node1) throws IdAlreadyInUseException {
+        displayGraph.addNode(node1.table.getSimpleName());
+        displayGraph.getNode(node1.table.getSimpleName()).addAttribute("ui.label", node1.table.getSimpleName());
+    }
+
+    private void addEdgeToDisplayGraph(DBDatabase database, DBRow table1, DBRow table2, QueryOptions options) throws ElementNotFoundException, EdgeRejectedException, IdAlreadyInUseException {
+        final String relationshipsAsSQL = table1.getRelationshipsAsSQL(database, table2, options);
+        displayGraph.addEdge(
+                relationshipsAsSQL,
+                table1.getClass().getSimpleName(),
+                table2.getClass().getSimpleName());
+        displayGraph.getEdge(relationshipsAsSQL).addAttribute("ui.label", relationshipsAsSQL);
     }
 
     public boolean willCreateCartesianJoin() { //willCreateCartesianJoin
