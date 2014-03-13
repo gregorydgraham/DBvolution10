@@ -52,8 +52,7 @@ public class DBRowWrapperFactory {
 	 * Gets the object adaptor for the given object.
 	 * If an adaptor for the object's class has not yet been created, one will be created
 	 * and added to the internal cache.
-	 * @param database the current database in use
-	 * @param object the object to wrap
+	 * @param object the DBRow instance to wrap
 	 * @return the object adaptor for the given object
 	 */
 	public DBRowInstanceWrapper instanceWrapperFor(DBRow object) {

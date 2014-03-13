@@ -867,7 +867,7 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
-     * Needed for non-ANSI support.
+     * Returns the List of DBRelationships defined for this instance.
      *
      * @return the adHocRelationships
      */
@@ -876,19 +876,18 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
-     * the foreign keys and adhoc relationships as an SQL String or a null
+     * the foreign keys and ad-hoc relationships as an SQL String or a null
      * pointer
      *
      * @param db
      * @param newTable
      * @param options
-     * @return the foreign keys and adhoc relationships as an SQL String or a
+     * @return the foreign keys and ad-hoc relationships as an SQL String or a
      * null pointer
      */
     public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
         StringBuilder rels = new StringBuilder();
         DBDefinition defn = db.getDefinition();
-//        final String lineSeparator = System.getProperty("line.separator");
 
         List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
         String joinSeparator = "";
@@ -902,8 +901,7 @@ abstract public class DBRow implements Serializable {
                 String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
                         newTable, fk.referencedColumnName());
 
-                rels//.append(lineSeparator)
-                        .append(joinSeparator)
+                rels.append(joinSeparator)
                         .append(formattedForeignKey)
                         .append(defn.getEqualsComparator())
                         .append(formattedReferencedColumn);
@@ -929,8 +927,7 @@ abstract public class DBRow implements Serializable {
                 operator = operator.getInverseOperator();
             }
 
-            rels//.append(lineSeparator)
-                    .append(joinSeparator)
+            rels.append(joinSeparator)
                     .append(DBRelationship.toSQLString(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
             joinSeparator = defn.beginWhereClauseLine(options);
@@ -954,8 +951,7 @@ abstract public class DBRow implements Serializable {
                 operator = operator.getInverseOperator();
             }
 
-            rels//.append(lineSeparator)
-                    .append(joinSeparator)
+            rels.append(joinSeparator)
                     .append(DBRelationship.toSQLString(db, leftTable, leftColumn, operator, rightTable, rightColumn));
 
             joinSeparator = defn.beginWhereClauseLine(options);
@@ -976,8 +972,7 @@ abstract public class DBRow implements Serializable {
                         this,
                         this.getPrimaryKeyColumnName());
 
-                rels//.append(lineSeparator)
-                        .append(joinSeparator)
+                rels.append(joinSeparator)
                         .append(formattedPrimaryKey)
                         .append(defn.getEqualsComparator())
                         .append(formattedForeignKey);
