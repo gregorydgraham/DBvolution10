@@ -73,8 +73,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Create a QueryableDatatype with the exact value provided.
-     * 
-     * <p>Equivalent to {@code new QueryableDatatype().setValue(obj);}
+     *
+     * <p>
+     * Equivalent to {@code new QueryableDatatype().setValue(obj);}
      *
      * @param obj the literal value of the QDT.
      */
@@ -91,10 +92,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     /**
      * Create a QDT with a permanent column expression.
      *
-     * <p>Use this method within a DBRow sub-class to create a column that uses
-     * an expression to create the value at query time.
+     * <p>
+     * Use this method within a DBRow sub-class to create a column that uses an
+     * expression to create the value at query time.
      *
-     * <p>This is particularly useful for trimming strings or converting between
+     * <p>
+     * This is particularly useful for trimming strings or converting between
      * types but also allows for complex arithmetic and transformations.
      *
      * @param columnExpression
@@ -908,7 +911,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     /**
      * Returns the expression underlying this QDT or null.
      *
-     * <p>When the QDT is created using an expression , this method makes the
+     * <p>
+     * When the QDT is created using an expression , this method makes the
      * expression accessible.
      *
      * @return the underlying expression if there is one, or NULL otherwise.
@@ -920,7 +924,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
     /**
      * Tests for the expression underlying this QDT or returns FALSE.
      *
-     * <p>When the QDT is created using an expression , this method makes the
+     * <p>
+     * When the QDT is created using an expression , this method makes the
      * expression accessible.
      *
      * @return TRUE if there is a underlying expression, or FALSE otherwise.

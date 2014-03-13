@@ -89,12 +89,6 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
         }
     }
 
-    @Override
-    protected DBOperator setToNull() {
-        DBOperator op = super.setToNull();
-        return op;
-    }
-
     /**
      *
      * @return the default database type as a string, may be gazumped by the
