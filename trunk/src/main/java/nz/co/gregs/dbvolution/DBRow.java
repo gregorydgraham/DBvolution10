@@ -871,7 +871,7 @@ abstract public class DBRow implements Serializable {
      * @return the foreign keys and adhoc relationships as an SQL String or a
      * null pointer
      */
-    protected String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
+    public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
         StringBuilder rels = new StringBuilder();
         DBDefinition defn = db.getDefinition();
 //        final String lineSeparator = System.getProperty("line.separator");

@@ -25,6 +25,8 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.implementations.SingleGraph;
 
 /**
  *
@@ -35,6 +37,8 @@ public class QueryGraph {
     final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<Class<? extends DBRow>, QueryGraphNode>();
     final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
     final private Object mutex = new Object();
+        
+    private Graph displayGraph = new SingleGraph("Graph of Tables and Relations");
 
     public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, QueryOptions options) {
         addAndConnectToRelevant(database, allQueryTables, options);
@@ -52,6 +56,8 @@ public class QueryGraph {
             QueryGraphNode node1 = nodes.get(table1Class);
             if (node1 == null) {
                 node1 = new QueryGraphNode(table1Class);
+                displayGraph.addNode(node1.table.getSimpleName());
+                displayGraph.getNode(node1.table.getSimpleName()).addAttribute("ui.label", node1.table.getSimpleName());
                 nodes.put(table1Class, node1);
                 rows.put(table1Class, table1);
             }
@@ -62,11 +68,19 @@ public class QueryGraph {
                         QueryGraphNode node2 = nodes.get(table2Class);
                         if (node2 == null) {
                             node2 = new QueryGraphNode(table2Class);
+                            displayGraph.addNode(node2.table.getSimpleName());
+                            displayGraph.getNode(node2.table.getSimpleName()).addAttribute("ui.label", node2.table.getSimpleName());
                             nodes.put(table2Class, node2);
                             rows.put(table2Class, table2);
                         }
                         node1.connectTable(table2Class);
                         node2.connectTable(table1Class);
+                        final String relationshipsAsSQL = table1.getRelationshipsAsSQL(database, table2, options);
+                        displayGraph.addEdge(
+                                relationshipsAsSQL, 
+                                table1.getClass().getSimpleName(), 
+                                table2.getClass().getSimpleName());
+                        displayGraph.getEdge(relationshipsAsSQL).addAttribute("ui.label", relationshipsAsSQL);
                     }
                 }
             }
@@ -161,5 +175,9 @@ public class QueryGraph {
         public Class<? extends DBRow> getTable() {
             return table;
         }
+    }
+    
+    public Graph getDisplayGraph(){
+        return displayGraph;
     }
 }

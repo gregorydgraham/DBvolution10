@@ -89,7 +89,7 @@ public class DBReportTests extends AbstractTest {
         
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues(null);
+            carCompany.uidCarCompany.excludedValues((Object[]) null);
         }
 
         public SimpleReport() {
