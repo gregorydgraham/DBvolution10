@@ -838,6 +838,21 @@ abstract public class DBRow implements Serializable {
         }
     }
 
+    
+    /**
+     * Removes all builtin columns from the return list.
+     * 
+     * <p>
+     * Used by DBReport to avoid returning fields that haven't been specified with an expression.
+     * 
+     * <p>
+     * Probably not useful in general use.
+     *
+     */
+    public final void removeAllFieldsFromResults() {
+        returnFieldsLimitedTo(new Object[]{});
+    }
+
     /**
      * Remove all limitations on the fields returned.
      *
@@ -848,7 +863,6 @@ abstract public class DBRow implements Serializable {
      *
      */
     public void returnAllFields() {
-//        returnColumns.clear();
         returnColumns = null;
     }
 

@@ -70,7 +70,6 @@ class DBReport {
     }
 
     private static <A extends DBReport> void addTablesAndExpressions(DBQuery query, A exampleReport) {
-//        List<DBRow> tables = new ArrayList<DBRow>();
         Field[] fields = exampleReport.getClass().getFields();
         if (fields.length == 0) {
             throw new UnableToAccessDBReportFieldException(exampleReport, null, null);
@@ -82,7 +81,7 @@ class DBReport {
                 if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
                     if (value instanceof DBRow) {
                         final DBRow dbRow = (DBRow) value;
-                        dbRow.returnFieldsLimitedTo();
+                        dbRow.removeAllFieldsFromResults();
                         query.add(dbRow);
                     }
                 } else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
