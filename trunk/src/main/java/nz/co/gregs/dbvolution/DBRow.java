@@ -838,13 +838,13 @@ abstract public class DBRow implements Serializable {
         }
     }
 
-    
     /**
      * Removes all builtin columns from the return list.
-     * 
+     *
      * <p>
-     * Used by DBReport to avoid returning fields that haven't been specified with an expression.
-     * 
+     * Used by DBReport to avoid returning fields that haven't been specified
+     * with an expression.
+     *
      * <p>
      * Probably not useful in general use.
      *
@@ -981,6 +981,53 @@ abstract public class DBRow implements Serializable {
             }
         }
         return rels.toString();
+    }
+
+    /**
+     * List the foreign keys and ad-hoc relationships from this instance to the
+     * supplied example as DBRelations
+     *
+     * @param db
+     * @param newTable
+     * @param options
+     * @return the foreign keys and ad-hoc relationships as an SQL String or a
+     * null pointer
+     */
+    public List<DBRelationship> getRelationshipsFromThisInstance(DBDatabase db, DBRow newTable, QueryOptions options) {
+        List<DBRelationship> rels = new ArrayList<DBRelationship>();
+        DBDefinition defn = db.getDefinition();
+
+        List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
+        for (PropertyWrapper fk : fks) {
+            Class<? extends DBRow> referencedClass = fk.referencedClass();
+
+            if (referencedClass.isAssignableFrom(newTable.getClass())) {
+                rels.add(new DBRelationship(this, fk.getQueryableDatatype(), newTable, newTable.getPrimaryKey()));
+            }
+        }
+
+        fks = newTable.getForeignKeyPropertyWrappers();
+        for (PropertyWrapper fk : fks) {
+            Class<? extends DBRow> referencedClass = fk.referencedClass();
+
+            if (referencedClass.isAssignableFrom(this.getClass())) {
+                rels.add(new DBRelationship(newTable, fk.getQueryableDatatype(), this, this.getPrimaryKey()));
+            }
+        }
+        
+        List<DBRelationship> adHocs = getAdHocRelationships();
+        rels.addAll(adHocs);
+        for (DBRelationship adhoc : adHocs) {
+            DBRow firstTable = adhoc.getFirstTable();
+            DBRow secondTable = adhoc.getSecondTable();
+            if (firstTable.getClass().equals(newTable.getClass())
+                    ||secondTable.getClass().equals(newTable.getClass())
+                    ){
+             rels.add(adhoc);
+            }
+        }
+
+        return rels;
     }
 
     /**
