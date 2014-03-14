@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
+import org.graphstream.graph.Graph;
 
 /**
  * The Definition of a Query on a Database
@@ -291,7 +292,8 @@ public class DBQuery {
             throw new AccidentalBlankQueryException();
         }
 
-        queryGraph = new QueryGraph(database, allQueryTables, options);
+        initialiseQueryGraphStream();
+
         if (!options.isCartesianJoinAllowed() && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
             throw new AccidentalCartesianJoinException();
         }
@@ -1347,14 +1349,28 @@ public class DBQuery {
      * an SQL query dump. So this method will display the query graph of this
      * query at this time. The graph cannot be altered through the window but it
      * can be moved to help show the parts of the graph. You can manipulate the
-     * query graph by {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)  adding relationships to the DBRow}
-     * instances, or {@link DBRow#ignoreForeignKey(java.lang.Object) ignoring inappropriate foreign keys}.
+     * query graph by
+     * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)  adding relationships to the DBRow}
+     * instances, or
+     * {@link DBRow#ignoreForeignKey(java.lang.Object) ignoring inappropriate foreign keys}.
      *
      */
     public void displayQueryGraph() {
+        initialiseQueryGraphStream();
+        queryGraph.getDisplayGraph().display();
+    }
+
+    public Graph getQueryGraphDisplay() {
+        initialiseQueryGraphStream();
+        return queryGraph.getDisplayGraph();
+    }
+
+    private void initialiseQueryGraphStream() {
         if (queryGraph == null) {
             queryGraph = new QueryGraph(database, allQueryTables, options);
+        } else {
+            queryGraph.clear();
+            queryGraph.addAndConnectToRelevant(database, allQueryTables, options);
         }
-        queryGraph.getDisplayGraph().display();
     }
 }

@@ -25,11 +25,12 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeRejectedException;
 import org.graphstream.graph.ElementNotFoundException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.IdAlreadyInUseException;
-import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.graph.implementations.MultiGraph;
 
 /**
  *
@@ -39,15 +40,22 @@ public class QueryGraph {
 
     final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<Class<? extends DBRow>, QueryGraphNode>();
     final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
-    final private Object mutex = new Object();
-        
-    private Graph displayGraph = new SingleGraph("Graph of Tables and Relations");
+//    final private Object mutex = new Object();
+
+    private Graph displayGraph = new MultiGraph("Graph of Tables and Relations");
 
     public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, QueryOptions options) {
         addAndConnectToRelevant(database, allQueryTables, options);
     }
+    
+    public QueryGraph clear(){
+        displayGraph.clear();
+        nodes.clear();
+        rows.clear();
+        return this;
+    }
 
-    private void addAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, QueryOptions options) {
+    public void addAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, QueryOptions options) {
 
         List<DBRow> tablesAdded = new ArrayList<DBRow>();
         List<DBRow> tablesRemaining = new ArrayList<DBRow>();
@@ -88,6 +96,20 @@ public class QueryGraph {
     private void addNodeToDisplayGraph(QueryGraphNode node1) throws IdAlreadyInUseException {
         displayGraph.addNode(node1.table.getSimpleName());
         displayGraph.getNode(node1.table.getSimpleName()).addAttribute("ui.label", node1.table.getSimpleName());
+    }
+
+    private void addEdgesToDisplayGraph(DBDatabase database, DBRow table1, DBRow table2, QueryOptions options) throws ElementNotFoundException, EdgeRejectedException, IdAlreadyInUseException {
+        for (DBRelationship fk : table1.getRelationshipsFromThisInstance(database, table2, options)) {
+            final String fkString = fk.toSQLString(database);
+            if (displayGraph.getEdge(fkString) == null) {
+                displayGraph.addEdge(
+                        fkString,
+                        table1.getClass().getSimpleName(),
+                        table2.getClass().getSimpleName());
+                final Edge edge = displayGraph.getEdge(fkString);
+                edge.addAttribute("ui.label", fkString);
+            }
+        }
     }
 
     private void addEdgeToDisplayGraph(DBDatabase database, DBRow table1, DBRow table2, QueryOptions options) throws ElementNotFoundException, EdgeRejectedException, IdAlreadyInUseException {
@@ -186,8 +208,8 @@ public class QueryGraph {
             return table;
         }
     }
-    
-    public Graph getDisplayGraph(){
+
+    public Graph getDisplayGraph() {
         return displayGraph;
     }
 }
