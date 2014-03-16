@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.query;
 
+import edu.uci.ics.jung.graph.SparseMultigraph;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -25,12 +26,11 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.EdgeRejectedException;
-import org.graphstream.graph.ElementNotFoundException;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.IdAlreadyInUseException;
-import org.graphstream.graph.implementations.MultiGraph;
+//import org.graphstream.graph.Edge;
+//import org.graphstream.graph.EdgeRejectedException;
+//import org.graphstream.graph.ElementNotFoundException;
+//import org.graphstream.graph.Graph;
+//import org.graphstream.graph.IdAlreadyInUseException;
 
 /**
  *
@@ -41,21 +41,21 @@ public class QueryGraph {
     final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<Class<? extends DBRow>, QueryGraphNode>();
     final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
 //    final private Object mutex = new Object();
-
-    private Graph displayGraph = new MultiGraph("Graph of Tables and Relations");
+    edu.uci.ics.jung.graph.Graph<QueryGraphNode, String> jungGraph = new SparseMultigraph<QueryGraphNode, String>();
+//    private Graph displayGraph = new org.graphstream.graph.implementations.MultiGraph("Graph of Tables and Relations");
 
     public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, QueryOptions options) {
         addAndConnectToRelevant(database, allQueryTables, options);
     }
-    
-    public QueryGraph clear(){
-        displayGraph.clear();
+
+    public QueryGraph clear() {
+//        displayGraph.clear();
         nodes.clear();
         rows.clear();
         return this;
     }
 
-    public void addAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, QueryOptions options) {
+    public final void addAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, QueryOptions options) {
 
         List<DBRow> tablesAdded = new ArrayList<DBRow>();
         List<DBRow> tablesRemaining = new ArrayList<DBRow>();
@@ -84,7 +84,7 @@ public class QueryGraph {
                         }
                         node1.connectTable(table2Class);
                         node2.connectTable(table1Class);
-                        addEdgeToDisplayGraph(database, table1, table2, options);
+                        addEdgesToDisplayGraph(database, table1, node1, table2, node2, options);
                     }
                 }
             }
@@ -93,33 +93,41 @@ public class QueryGraph {
         }
     }
 
-    private void addNodeToDisplayGraph(QueryGraphNode node1) throws IdAlreadyInUseException {
-        displayGraph.addNode(node1.table.getSimpleName());
-        displayGraph.getNode(node1.table.getSimpleName()).addAttribute("ui.label", node1.table.getSimpleName());
+    private void addNodeToDisplayGraph(QueryGraphNode node1) {
+        jungGraph.addVertex(node1);
+
+//        displayGraph.addNode(node1.table.getSimpleName());
+//        displayGraph.getNode(node1.table.getSimpleName()).addAttribute("ui.label", node1.table.getSimpleName());
     }
 
-    private void addEdgesToDisplayGraph(DBDatabase database, DBRow table1, DBRow table2, QueryOptions options) throws ElementNotFoundException, EdgeRejectedException, IdAlreadyInUseException {
+    private void addEdgesToDisplayGraph(DBDatabase database, DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2, QueryOptions options) {
         for (DBRelationship fk : table1.getRelationshipsFromThisInstance(database, table2, options)) {
             final String fkString = fk.toSQLString(database);
-            if (displayGraph.getEdge(fkString) == null) {
-                displayGraph.addEdge(
-                        fkString,
-                        table1.getClass().getSimpleName(),
-                        table2.getClass().getSimpleName());
-                final Edge edge = displayGraph.getEdge(fkString);
-                edge.addAttribute("ui.label", fkString);
+
+            if (!jungGraph.containsEdge(fkString)) {
+                jungGraph.addEdge(fkString, node1, node2);
             }
+
+
+//            if (displayGraph.getEdge(fkString) == null) {
+//                displayGraph.addEdge(
+//                        fkString,
+//                        table1.getClass().getSimpleName(),
+//                        table2.getClass().getSimpleName());
+//                final Edge edge = displayGraph.getEdge(fkString);
+//                edge.addAttribute("ui.label", fkString);
+//            }
         }
     }
 
-    private void addEdgeToDisplayGraph(DBDatabase database, DBRow table1, DBRow table2, QueryOptions options) throws ElementNotFoundException, EdgeRejectedException, IdAlreadyInUseException {
-        final String relationshipsAsSQL = table1.getRelationshipsAsSQL(database, table2, options);
-        displayGraph.addEdge(
-                relationshipsAsSQL,
-                table1.getClass().getSimpleName(),
-                table2.getClass().getSimpleName());
-        displayGraph.getEdge(relationshipsAsSQL).addAttribute("ui.label", relationshipsAsSQL);
-    }
+//    private void addEdgeToDisplayGraph(DBDatabase database, DBRow table1, DBRow table2, QueryOptions options) {
+//        final String relationshipsAsSQL = table1.getRelationshipsAsSQL(database, table2, options);
+//        displayGraph.addEdge(
+//                relationshipsAsSQL,
+//                table1.getClass().getSimpleName(),
+//                table2.getClass().getSimpleName());
+//        displayGraph.getEdge(relationshipsAsSQL).addAttribute("ui.label", relationshipsAsSQL);
+//    }
 
     public boolean willCreateCartesianJoin() { //willCreateCartesianJoin
         Set<DBRow> returnTables = new HashSet<DBRow>();
@@ -179,7 +187,11 @@ public class QueryGraph {
         return returnList;
     }
 
-    private class QueryGraphNode {
+    public edu.uci.ics.jung.graph.Graph<QueryGraphNode, String> getJungGraph() {
+        return jungGraph;
+    }
+
+    public class QueryGraphNode {
 
         private final Class<? extends DBRow> table;
         private final Set<Class<? extends DBRow>> connectedTables = new HashSet<Class<? extends DBRow>>();
@@ -207,9 +219,14 @@ public class QueryGraph {
         public Class<? extends DBRow> getTable() {
             return table;
         }
+
+        @Override
+        public String toString() {
+            return table.getSimpleName();
+        }
     }
 
-    public Graph getDisplayGraph() {
-        return displayGraph;
-    }
+//    public Graph getGraphStream() {
+//        return displayGraph;
+//    }
 }

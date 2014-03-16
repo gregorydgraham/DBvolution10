@@ -172,7 +172,6 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.3.174</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -184,7 +183,6 @@
             <groupId>net.sourceforge.tedhi</groupId>
             <artifactId>tedhi</artifactId>
             <version>0.8</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -229,14 +227,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.graphstream</groupId>
-            <artifactId>gs-core</artifactId>
-            <version>1.2</version>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-visualization</artifactId>
+            <version>2.0.1</version>
         </dependency>
         <dependency>
-            <groupId>org.graphstream</groupId>
-            <artifactId>gs-algo</artifactId>
-            <version>1.2</version>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>jung-graph-impl</artifactId>
+            <version>2.0.1</version>
         </dependency>
     </dependencies>
     <distributionManagement>

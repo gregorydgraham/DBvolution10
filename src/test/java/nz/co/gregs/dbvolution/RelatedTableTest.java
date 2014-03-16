@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.List;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
@@ -52,7 +51,7 @@ public class RelatedTableTest extends AbstractTest {
         Marque marque = new Marque();
         
         List<Class<? extends DBRow>> allRelatedTables = (new CarCompany()).getAllRelatedTables();
-        Assert.assertThat(allRelatedTables.size(), is(3));
+        Assert.assertThat(allRelatedTables.size(), is(4));
         Assert.assertThat(allRelatedTables.contains(Marque.class), is(true));
         Assert.assertThat(allRelatedTables.contains(CompanyLogo.class), is(true));
         Assert.assertThat(allRelatedTables.contains(LinkCarCompanyAndLogo.class), is(true));

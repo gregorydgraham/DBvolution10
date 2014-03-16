@@ -15,10 +15,22 @@
  */
 package nz.co.gregs.dbvolution;
 
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import edu.uci.ics.jung.visualization.RenderContext;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
+import java.awt.Color;
+import java.awt.Dimension;
 import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
+import javax.swing.JFrame;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -33,7 +45,6 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
-import org.graphstream.graph.Graph;
 
 /**
  * The Definition of a Query on a Database
@@ -292,7 +303,7 @@ public class DBQuery {
             throw new AccidentalBlankQueryException();
         }
 
-        initialiseQueryGraphStream();
+        initialiseQueryGraph();
 
         if (!options.isCartesianJoinAllowed() && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
             throw new AccidentalCartesianJoinException();
@@ -1337,7 +1348,7 @@ public class DBQuery {
     }
 
     /**
-     * Show the GraphStream window of the current QueryGraph.
+     * Show the Graph window of the current QueryGraph.
      *
      * <p>
      * A pictorial representation to help you with diagnosing the issues with
@@ -1356,16 +1367,45 @@ public class DBQuery {
      *
      */
     public void displayQueryGraph() {
-        initialiseQueryGraphStream();
-        queryGraph.getDisplayGraph().display();
-    }
+        initialiseQueryGraph();
 
-    public Graph getQueryGraphDisplay() {
-        initialiseQueryGraphStream();
-        return queryGraph.getDisplayGraph();
-    }
+        edu.uci.ics.jung.graph.Graph<QueryGraph.QueryGraphNode, String> jungGraph = queryGraph.getJungGraph();
 
-    private void initialiseQueryGraphStream() {
+        Layout<QueryGraph.QueryGraphNode, String> layout 
+                = new CircleLayout<QueryGraph.QueryGraphNode, String>(jungGraph);
+        layout.setSize(new Dimension(300, 300));
+        
+        VisualizationViewer<QueryGraph.QueryGraphNode, String> vv 
+                = new VisualizationViewer<QueryGraph.QueryGraphNode, String>(layout);
+        vv.setPreferredSize(new Dimension(350, 350));
+
+        DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String> gm 
+                = new DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String>();
+        gm.setMode(ModalGraphMouse.Mode.PICKING);
+        vv.setGraphMouse(gm);
+
+        RenderContext<QueryGraph.QueryGraphNode, String> renderContext = vv.getRenderContext();
+        renderContext.setEdgeLabelTransformer(new ToStringLabeller<String>());
+        renderContext.setVertexLabelTransformer(new ToStringLabeller<QueryGraph.QueryGraphNode>());
+        renderContext.setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.yellow, false));
+
+        JFrame frame = new JFrame("DBQuery Graph");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().add(vv);
+        frame.pack();
+        frame.setVisible(true);
+    }
+//    public void displayQueryGraphStream() {
+//        initialiseQueryGraph();
+//        queryGraph.getGraphStream().display();
+//    }
+//
+//    public Graph getQueryGraphDisplay() {
+//        initialiseQueryGraph();
+//        return queryGraph.getGraphStream();
+//    }
+
+    private void initialiseQueryGraph() {
         if (queryGraph == null) {
             queryGraph = new QueryGraph(database, allQueryTables, options);
         } else {
