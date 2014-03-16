@@ -31,6 +31,16 @@ public class DBDeleteByPrimaryKey extends DBDelete {
         super(row);
     }
 
+    private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
+        super(row);
+        DBRow example = DBRow.getDBRow(row.getClass());
+        example.getPrimaryKey().setValue(row.getPrimaryKey());
+        List<DBRow> gotRows = db.get(example);
+        for (DBRow gotRow : gotRows) {
+            savedRows.add(gotRow);
+        }
+    }
+
     DBDeleteByPrimaryKey() {
         super();
     }
@@ -81,4 +91,8 @@ public class DBDeleteByPrimaryKey extends DBDelete {
         return new DBActionList(new DBDeleteByPrimaryKey(row));
     }
 
+    @Override
+    protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {
+        return new DBActionList(new DBDeleteByPrimaryKey(db, row));
+    }
 }
