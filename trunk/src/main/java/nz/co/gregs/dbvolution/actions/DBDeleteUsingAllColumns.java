@@ -33,6 +33,14 @@ public class DBDeleteUsingAllColumns extends DBDelete {
         super(row);
     }
 
+    private <R extends DBRow> DBDeleteUsingAllColumns(DBDatabase db, R row) throws SQLException {
+        super(row);
+        List<R> gotRows = db.get(row);
+        for(R gotRow: gotRows){
+            savedRows.add(gotRow);
+        }
+    }
+
     DBDeleteUsingAllColumns() {
         super();
     }
@@ -87,6 +95,11 @@ public class DBDeleteUsingAllColumns extends DBDelete {
     @Override
     protected DBActionList getActions(DBRow row) {
         return new DBActionList(new DBDeleteUsingAllColumns(row));
+    }
+
+    @Override
+    protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {
+        return new DBActionList(new DBDeleteUsingAllColumns(db, row));
     }
 
 }
