@@ -1369,14 +1369,14 @@ public class DBQuery {
     public void displayQueryGraph() {
         initialiseQueryGraph();
 
-        edu.uci.ics.jung.graph.Graph<QueryGraph.QueryGraphNode, String> jungGraph = queryGraph.getJungGraph();
+        edu.uci.ics.jung.graph.Graph<QueryGraph.QueryGraphNode, DBRelationship> jungGraph = queryGraph.getJungGraph();
 
-        Layout<QueryGraph.QueryGraphNode, String> layout 
-                = new CircleLayout<QueryGraph.QueryGraphNode, String>(jungGraph);
+        Layout<QueryGraph.QueryGraphNode, DBRelationship> layout 
+                = new CircleLayout<QueryGraph.QueryGraphNode, DBRelationship>(jungGraph);
         layout.setSize(new Dimension(300, 300));
         
-        VisualizationViewer<QueryGraph.QueryGraphNode, String> vv 
-                = new VisualizationViewer<QueryGraph.QueryGraphNode, String>(layout);
+        VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship> vv 
+                = new VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship>(layout);
         vv.setPreferredSize(new Dimension(350, 350));
 
         DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String> gm 
@@ -1384,8 +1384,8 @@ public class DBQuery {
         gm.setMode(ModalGraphMouse.Mode.PICKING);
         vv.setGraphMouse(gm);
 
-        RenderContext<QueryGraph.QueryGraphNode, String> renderContext = vv.getRenderContext();
-        renderContext.setEdgeLabelTransformer(new ToStringLabeller<String>());
+        RenderContext<QueryGraph.QueryGraphNode, DBRelationship> renderContext = vv.getRenderContext();
+        renderContext.setEdgeLabelTransformer(new ToStringLabeller<DBRelationship>());
         renderContext.setVertexLabelTransformer(new ToStringLabeller<QueryGraph.QueryGraphNode>());
         renderContext.setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.yellow, false));
 

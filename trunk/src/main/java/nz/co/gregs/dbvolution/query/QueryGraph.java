@@ -26,11 +26,6 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
-//import org.graphstream.graph.Edge;
-//import org.graphstream.graph.EdgeRejectedException;
-//import org.graphstream.graph.ElementNotFoundException;
-//import org.graphstream.graph.Graph;
-//import org.graphstream.graph.IdAlreadyInUseException;
 
 /**
  *
@@ -40,18 +35,16 @@ public class QueryGraph {
 
     final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<Class<? extends DBRow>, QueryGraphNode>();
     final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
-//    final private Object mutex = new Object();
-    edu.uci.ics.jung.graph.Graph<QueryGraphNode, String> jungGraph = new SparseMultigraph<QueryGraphNode, String>();
-//    private Graph displayGraph = new org.graphstream.graph.implementations.MultiGraph("Graph of Tables and Relations");
+    edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBRelationship> jungGraph = new SparseMultigraph<QueryGraphNode, DBRelationship>();
 
     public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, QueryOptions options) {
         addAndConnectToRelevant(database, allQueryTables, options);
     }
 
     public QueryGraph clear() {
-//        displayGraph.clear();
         nodes.clear();
         rows.clear();
+        clearDisplayGraph();
         return this;
     }
 
@@ -60,6 +53,7 @@ public class QueryGraph {
         List<DBRow> tablesAdded = new ArrayList<DBRow>();
         List<DBRow> tablesRemaining = new ArrayList<DBRow>();
         tablesRemaining.addAll(otherTables);
+        clearDisplayGraph();
 
         while (tablesRemaining.size() > 0) {
             DBRow table1 = tablesRemaining.get(0);
@@ -95,39 +89,17 @@ public class QueryGraph {
 
     private void addNodeToDisplayGraph(QueryGraphNode node1) {
         jungGraph.addVertex(node1);
-
-//        displayGraph.addNode(node1.table.getSimpleName());
-//        displayGraph.getNode(node1.table.getSimpleName()).addAttribute("ui.label", node1.table.getSimpleName());
     }
 
     private void addEdgesToDisplayGraph(DBDatabase database, DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2, QueryOptions options) {
         for (DBRelationship fk : table1.getRelationshipsFromThisInstance(database, table2, options)) {
-            final String fkString = fk.toSQLString(database);
+//            final String fkString = fk.toSQLString(database);
 
-            if (!jungGraph.containsEdge(fkString)) {
-                jungGraph.addEdge(fkString, node1, node2);
+            if (!jungGraph.containsEdge(fk)) {
+                jungGraph.addEdge(fk, node1, node2);
             }
-
-
-//            if (displayGraph.getEdge(fkString) == null) {
-//                displayGraph.addEdge(
-//                        fkString,
-//                        table1.getClass().getSimpleName(),
-//                        table2.getClass().getSimpleName());
-//                final Edge edge = displayGraph.getEdge(fkString);
-//                edge.addAttribute("ui.label", fkString);
-//            }
         }
     }
-
-//    private void addEdgeToDisplayGraph(DBDatabase database, DBRow table1, DBRow table2, QueryOptions options) {
-//        final String relationshipsAsSQL = table1.getRelationshipsAsSQL(database, table2, options);
-//        displayGraph.addEdge(
-//                relationshipsAsSQL,
-//                table1.getClass().getSimpleName(),
-//                table2.getClass().getSimpleName());
-//        displayGraph.getEdge(relationshipsAsSQL).addAttribute("ui.label", relationshipsAsSQL);
-//    }
 
     public boolean willCreateCartesianJoin() { //willCreateCartesianJoin
         Set<DBRow> returnTables = new HashSet<DBRow>();
@@ -187,8 +159,12 @@ public class QueryGraph {
         return returnList;
     }
 
-    public edu.uci.ics.jung.graph.Graph<QueryGraphNode, String> getJungGraph() {
+    public edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBRelationship> getJungGraph() {
         return jungGraph;
+    }
+
+    private void clearDisplayGraph() {
+        jungGraph = new SparseMultigraph<QueryGraphNode, DBRelationship>();
     }
 
     public class QueryGraphNode {

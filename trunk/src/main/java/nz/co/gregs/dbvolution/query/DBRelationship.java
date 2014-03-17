@@ -158,4 +158,9 @@ public class DBRelationship implements Serializable {
     public DBOperator getOperation() {
         return operation;
     }
+
+    @Override
+    public String toString() {
+        return firstTable.getClass().getSimpleName() + "."+firstColumnPropertyWrapper.javaName()+" : "+ secondTable.getClass().getSimpleName() + "."+secondColumnPropertyWrapper.javaName();
+    }
 }
