@@ -105,7 +105,6 @@ public abstract class DBDefinition {
 //    public String formatTableAndColumnNameForSelectClause(DBRow table, String columnName) {
 //        return formatTableAndColumnName(table, columnName) + " " + formatColumnNameForResultSet(table, columnName);
 //    }
-
     public String safeString(String toString) {
         return toString.replaceAll("'", "''");
     }
@@ -553,10 +552,14 @@ public abstract class DBDefinition {
     }
 
     public String formatExpressionAlias(Object key) {
-        return ("DB"+key.hashCode()).replaceAll("-", "_");
+        return ("DB" + key.hashCode()).replaceAll("-", "_");
     }
 
     public String getIfNullFunctionName() {
         return "COALESCE";
+    }
+
+    public String getNegationFunctionName() {
+        return "NOT";
     }
 }
