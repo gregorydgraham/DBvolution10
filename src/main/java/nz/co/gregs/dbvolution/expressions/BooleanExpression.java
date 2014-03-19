@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 public class BooleanExpression implements BooleanResult {
 
@@ -125,9 +126,102 @@ public class BooleanExpression implements BooleanResult {
         });
     }
 
+    /**
+     * Returns FALSE if this expression is TRUE, or FALSE if it is TRUE.
+     *
+     * <p>
+     * The 3 main boolean operators are AND, OR, and NOT. This method implements
+     * NOT.
+     *
+     * <p>
+     * The boolean result of the expression will be negated by this call so that
+     * TRUE becomes FALSE and FALSE becomes TRUE.
+     *
+     * <p>
+     * Please note that databases use
+     * <a href="https://en.wikipedia.org/wiki/Three-valued_logic">Three-valued logic</a>
+     * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
+     * expression
+         *
+     * @return
+     */
+    public BooleanExpression negate() {
+        return new BooleanExpression(new DBUnaryBooleanArithmetic(this) {
+
+            @Override
+            protected String getEquationOperator(DBDatabase db) {
+                return db.getDefinition().getNegationFunctionName();
+            }
+        });
+    }
+
+    /**
+     * Returns FALSE if this expression is TRUE, or FALSE if it is TRUE.
+     *
+     * <p>
+     * Synonym for {@link #negate() the negate() method}
+     *
+     * <p>
+     * The 3 main boolean operators are AND, OR, and NOT. This method implements
+     * NOT.
+     *
+     * <p>
+     * The boolean result of the expression will be negated by this call so that
+     * TRUE becomes FALSE and FALSE becomes TRUE.
+     *
+     * <p>
+     * Please note that databases use
+     * <a href="https://en.wikipedia.org/wiki/Three-valued_logic">Three-valued logic</a>
+     * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
+     * expression
+     *
+     * @return
+     */
+    public BooleanExpression not() {
+        return this.negate();
+    }
+
     @Override
     public DBBoolean getQueryableDatatypeForExpressionValue() {
         return new DBBoolean();
+    }
+
+    private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
+
+        private BooleanExpression bool;
+
+        public DBUnaryBooleanArithmetic(BooleanExpression bool) {
+            this.bool = bool.copy();
+        }
+
+        @Override
+        public DBBoolean getQueryableDatatypeForExpressionValue() {
+            return new DBBoolean();
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            String returnStr = "";
+            String op = this.getEquationOperator(db);
+            returnStr = op + " " + bool.toSQLString(db);
+            return returnStr;
+        }
+
+        @Override
+        public DBUnaryBooleanArithmetic copy() {
+            DBUnaryBooleanArithmetic newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.bool = bool.copy();
+            return newInstance;
+        }
+
+        protected abstract String getEquationOperator(DBDatabase db);
     }
 
     private static abstract class DBNnaryBooleanArithmetic implements BooleanResult {
