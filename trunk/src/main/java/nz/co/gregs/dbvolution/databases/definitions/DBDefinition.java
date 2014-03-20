@@ -562,4 +562,12 @@ public abstract class DBDefinition {
     public String getNegationFunctionName() {
         return "NOT";
     }
+
+    public String getSubsequentGroupBySubClauseSeparator() {
+        return ", ";
+    }
+
+    public Object beginGroupByClause() {
+        return " GROUP BY ";
+    }
 }

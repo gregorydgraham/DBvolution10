@@ -93,4 +93,8 @@ public class DBString extends QueryableDatatype implements StringResult {
         return new DBString();
     }
 
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
 }

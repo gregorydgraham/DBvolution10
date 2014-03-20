@@ -79,4 +79,9 @@ public class DBJavaObject extends QueryableDatatype {
     public DBJavaObject getQueryableDatatypeForExpressionValue() {
         return new DBJavaObject();
     }
+
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
 }

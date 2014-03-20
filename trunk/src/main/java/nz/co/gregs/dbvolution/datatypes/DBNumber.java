@@ -231,4 +231,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
     public DBNumber getQueryableDatatypeForExpressionValue() {
         return new DBNumber();
     }
+
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
 }

@@ -91,12 +91,21 @@ public class BooleanExpression implements BooleanResult {
      * booleanExpressions are true.
      * @see #anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
      */
-    public static BooleanExpression allOf(BooleanExpression... booleanExpressions) {
+    public static BooleanExpression allOf(final BooleanExpression... booleanExpressions) {
         return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return db.getDefinition().beginAndLine();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                boolean result = false;
+                for (BooleanExpression boex : booleanExpressions) {
+                    result = result || boex.isAggregator();
+                }
+                return result;
             }
         });
     }
@@ -116,12 +125,21 @@ public class BooleanExpression implements BooleanResult {
      * booleanExpressions is true.
      * @see #allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
      */
-    public static BooleanExpression anyOf(BooleanExpression... booleanExpressions) {
+    public static BooleanExpression anyOf(final BooleanExpression... booleanExpressions) {
         return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
 
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return db.getDefinition().beginOrLine();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                boolean result = false;
+                for (BooleanExpression boex : booleanExpressions) {
+                    result = result || boex.isAggregator();
+                }
+                return result;
             }
         });
     }
@@ -139,10 +157,11 @@ public class BooleanExpression implements BooleanResult {
      *
      * <p>
      * Please note that databases use
-     * <a href="https://en.wikipedia.org/wiki/Three-valued_logic">Three-valued logic</a>
+     * <a href="https://en.wikipedia.org/wiki/Three-valued_logic">Three-valued
+     * logic</a>
      * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
      * expression
-         *
+     *
      * @return
      */
     public BooleanExpression negate() {
@@ -151,6 +170,11 @@ public class BooleanExpression implements BooleanResult {
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return db.getDefinition().getNegationFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return false;
             }
         });
     }
@@ -171,7 +195,8 @@ public class BooleanExpression implements BooleanResult {
      *
      * <p>
      * Please note that databases use
-     * <a href="https://en.wikipedia.org/wiki/Three-valued_logic">Three-valued logic</a>
+     * <a href="https://en.wikipedia.org/wiki/Three-valued_logic">Three-valued
+     * logic</a>
      * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
      * expression
      *
@@ -184,6 +209,15 @@ public class BooleanExpression implements BooleanResult {
     @Override
     public DBBoolean getQueryableDatatypeForExpressionValue() {
         return new DBBoolean();
+    }
+
+    @Override
+    public boolean isAggregator() {
+        if (bool1 != null) {
+            return bool1.isAggregator();
+        } else {
+            return false;
+        }
     }
 
     private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {

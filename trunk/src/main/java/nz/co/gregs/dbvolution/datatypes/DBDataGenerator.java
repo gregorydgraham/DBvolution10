@@ -66,26 +66,34 @@ public class DBDataGenerator extends QueryableDatatype {
         } else if (newLiteralValue instanceof DBDataGenerator) {
             setValue(((DBDataGenerator) newLiteralValue).literalValue);
         } else {
-            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A "+newLiteralValue.getClass().getSimpleName()+": Use only Dates with this class");
+            throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A " + newLiteralValue.getClass().getSimpleName() + ": Use only Dates with this class");
         }
     }
-    
-    public void setValue(DBExpression newLiteralValue){
+
+    public void setValue(DBExpression newLiteralValue) {
         setLiteralValue(newLiteralValue);
     }
 
     @Override
     public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-        if (literalValue instanceof DateExpression){
+        if (literalValue instanceof DateExpression) {
             return new DBDate();
-        }else if (literalValue instanceof NumberExpression){
+        } else if (literalValue instanceof NumberExpression) {
             return new DBNumber();
-        }else if (literalValue instanceof StringExpression){
+        } else if (literalValue instanceof StringExpression) {
             return new DBString();
-        }else if (literalValue instanceof BooleanExpression){
+        } else if (literalValue instanceof BooleanExpression) {
             return new DBBoolean();
-        }else if (literalValue instanceof LargeObjectExpression){
+        } else if (literalValue instanceof LargeObjectExpression) {
             return new DBByteArray();
-        }else return new DBUnknownDatatype();
+        } else {
+            return new DBUnknownDatatype();
+        }
     }
+
+    @Override
+    public boolean isAggregator() {
+        return ((DBExpression)this.getValue()).isAggregator();
+    }
+
 }

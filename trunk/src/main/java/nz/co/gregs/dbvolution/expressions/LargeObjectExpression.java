@@ -44,4 +44,9 @@ public class LargeObjectExpression implements LargeObjectResult {
     public DBByteArray getQueryableDatatypeForExpressionValue() {
         return new DBByteArray();
     }
+
+    @Override
+    public boolean isAggregator() {
+        return qdt.isAggregator();
+    }
 }

@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
@@ -98,6 +99,7 @@ public class DBQuery {
     private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
     private final List<BooleanExpression> expressions = new ArrayList<BooleanExpression>();
     private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
+    private final Map<Object, DBExpression> groupByColumns = new LinkedHashMap<Object, DBExpression>();
     private final QueryOptions options = new QueryOptions();
     private List<PropertyWrapper> sortOrder = null;
     private String rawSQLClause = "";
@@ -313,6 +315,7 @@ public class DBQuery {
         StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
         List<DBRow> joinedTables = new ArrayList<DBRow>();
         StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options));
+        StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
         ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
         DBRow startQueryFromTable = queryTables.isEmpty() ? allQueryTables.get(0) : queryTables.get(0);
@@ -326,6 +329,7 @@ public class DBQuery {
 
         String separator = "";
         String colSep = defn.getStartingSelectSubClauseSeparator();
+        String groupByColSep = "";
         String tableName;
 
         for (DBRow tabRow : sortedQueryTables) {
@@ -378,6 +382,11 @@ public class DBQuery {
             colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
         }
 
+        for (Map.Entry<Object, DBExpression> entry : groupByColumns.entrySet()) {
+            groupByClause.append(groupByColSep).append(entry.getValue().toSQLString(database));
+            groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+        }
+
         for (DBRow extra : extraExamples) {
             List<String> extraCriteria = extra.getWhereClausesWithAliases(database);
             if (extraCriteria != null && !extraCriteria.isEmpty()) {
@@ -393,6 +402,7 @@ public class DBQuery {
                 .append(rawSQLClause).append(lineSep)
                 .append(getOrderByClause()).append(lineSep)
                 .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
+                .append(groupByColumns.size() > 0 ? groupByClause : "")
                 .append(defn.endSQLStatement())
                 .toString();
 
@@ -1315,8 +1325,27 @@ public class DBQuery {
         return this;
     }
 
+    /**
+     * Used by DBReport to add columns to the SELECT clause
+     *
+     * @param identifyingObject
+     * @param expressionToAdd
+     * @return
+     */
     public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd) {
         expressionColumns.put(identifyingObject, expressionToAdd);
+        return this;
+    }
+
+    /**
+     * Used by DBReport to add columns to the GROUP BY clause.
+     *
+     * @param identifyingObject
+     * @param expressionToAdd
+     * @return
+     */
+    public DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
+        groupByColumns.put(identifyingObject, expressionToAdd);
         return this;
     }
 
@@ -1371,15 +1400,15 @@ public class DBQuery {
 
         edu.uci.ics.jung.graph.Graph<QueryGraph.QueryGraphNode, DBRelationship> jungGraph = queryGraph.getJungGraph();
 
-        Layout<QueryGraph.QueryGraphNode, DBRelationship> layout 
-                = new CircleLayout<QueryGraph.QueryGraphNode, DBRelationship>(jungGraph);
+        Layout<QueryGraph.QueryGraphNode, DBRelationship> layout
+                = new SpringLayout2<QueryGraph.QueryGraphNode, DBRelationship>(jungGraph);
         layout.setSize(new Dimension(300, 300));
-        
-        VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship> vv 
+
+        VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship> vv
                 = new VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship>(layout);
         vv.setPreferredSize(new Dimension(350, 350));
 
-        DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String> gm 
+        DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String> gm
                 = new DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String>();
         gm.setMode(ModalGraphMouse.Mode.PICKING);
         vv.setGraphMouse(gm);
@@ -1390,7 +1419,7 @@ public class DBQuery {
         renderContext.setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.yellow, false));
 
         JFrame frame = new JFrame("DBQuery Graph");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().add(vv);
         frame.pack();
         frame.setVisible(true);

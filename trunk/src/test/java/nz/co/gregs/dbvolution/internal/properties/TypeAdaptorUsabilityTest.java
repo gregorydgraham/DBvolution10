@@ -240,6 +240,11 @@ public class TypeAdaptorUsabilityTest {
             public void setValue(Object newLiteralValue) {
                 super.setLiteralValue(newLiteralValue);
             }
+
+            @Override
+            public boolean isAggregator() {
+                return false;
+            }
         }
         
         class MyTypeAdaptor implements DBTypeAdaptor<String, Integer> {
@@ -300,6 +305,11 @@ public class TypeAdaptorUsabilityTest {
             @Override
             public void setValue(Object newLiteralValue) {
                 setLiteralValue(newLiteralValue);
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return false;
             }
         }
         

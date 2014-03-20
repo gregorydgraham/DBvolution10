@@ -116,4 +116,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
     public DBInteger getQueryableDatatypeForExpressionValue() {
         return new DBInteger();
     }
+
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
 }

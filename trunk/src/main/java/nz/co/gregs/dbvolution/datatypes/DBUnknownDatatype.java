@@ -51,4 +51,9 @@ public class DBUnknownDatatype extends QueryableDatatype {
     public DBUnknownDatatype getQueryableDatatypeForExpressionValue() {
         return new DBUnknownDatatype();
     }
+
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
 }

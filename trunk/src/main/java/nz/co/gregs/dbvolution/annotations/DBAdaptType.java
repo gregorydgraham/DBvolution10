@@ -56,6 +56,11 @@ public @interface DBAdaptType {
         @Override
         public void setValue(Object newLiteralValue) {
         }
+
+        @Override
+        public boolean isAggregator() {
+            return false;
+        }
     }
 
     /**
