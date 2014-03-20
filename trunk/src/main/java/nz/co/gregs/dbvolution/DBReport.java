@@ -48,7 +48,7 @@ public class DBReport {
      * @param <A>
      * @param database
      * @param exampleReport
-     * @return
+     * @return a list of DBReport instances representing the results of the report query.
      * @throws SQLException
      */
     public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
@@ -74,7 +74,7 @@ public class DBReport {
      * @param database
      * @param exampleReport
      * @param rows
-     * @return
+     * @return a list of DBReport instances representing the results of the report query.
      * @throws SQLException
      */
     public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {

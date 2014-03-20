@@ -69,6 +69,16 @@ public class DBReportTests extends AbstractTest {
         }
     }
 
+    @Test
+    public void GroupTest() throws SQLException {
+        GroupReport reportExample = new GroupReport();
+        List<GroupReport> foundGroupReports = database.getRows(reportExample);
+        Assert.assertThat(foundGroupReports.size(), is(4));
+        for(GroupReport rep : foundGroupReports){
+            System.out.println(""+rep.carCompanyName.stringValue());   
+        }
+    }
+    
     public static class SimpleReport extends DBReport {
 
         public Marque marque = new Marque();
@@ -90,6 +100,23 @@ public class DBReportTests extends AbstractTest {
         }
 
         public SimpleReport() {
+            super();
+        }
+    }
+    
+    public static class GroupReport extends DBReport {
+
+        public Marque marque = new Marque();
+        public CarCompany carCompany = new CarCompany();
+
+        public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+
+        {
+            marque.toyotaStatusClassID.permittedValues(1246974);
+            carCompany.uidCarCompany.excludedValues((Object[]) null);
+        }
+
+        public GroupReport() {
             super();
         }
     }

@@ -145,7 +145,7 @@ public class BooleanExpression implements BooleanResult {
     }
 
     /**
-     * Returns FALSE if this expression is TRUE, or FALSE if it is TRUE.
+     * Negates this BooleanExpression.
      *
      * <p>
      * The 3 main boolean operators are AND, OR, and NOT. This method implements
@@ -162,7 +162,7 @@ public class BooleanExpression implements BooleanResult {
      * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
      * expression
      *
-     * @return
+     * @return a Boolean expression representing the negation of the current expression.
      */
     public BooleanExpression negate() {
         return new BooleanExpression(new DBUnaryBooleanArithmetic(this) {
@@ -180,7 +180,7 @@ public class BooleanExpression implements BooleanResult {
     }
 
     /**
-     * Returns FALSE if this expression is TRUE, or FALSE if it is TRUE.
+     * Returns FALSE if this expression is TRUE, or TRUE if it is FALSE.
      *
      * <p>
      * Synonym for {@link #negate() the negate() method}
@@ -200,7 +200,7 @@ public class BooleanExpression implements BooleanResult {
      * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
      * expression
      *
-     * @return
+     * @return a Boolean expression representing the negation of the current expression.
      */
     public BooleanExpression not() {
         return this.negate();
