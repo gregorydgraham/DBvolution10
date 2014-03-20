@@ -84,7 +84,7 @@ public class DBByteArray extends DBLargeObject {
     public void setValue(File fileToRead) throws IOException {
         setValue(setFromFileSystem(fileToRead));
     }
-    
+
     @Override
     public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
         blankQuery();
@@ -235,4 +235,8 @@ public class DBByteArray extends DBLargeObject {
         return new DBByteArray();
     }
 
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
 }

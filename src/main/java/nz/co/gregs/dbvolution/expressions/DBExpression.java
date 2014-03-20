@@ -39,7 +39,8 @@ public interface DBExpression {
 
     /**
      *
-     * @return the QueryableDatatype subclass that corresponds to the results of this expression
+     * @return the QueryableDatatype subclass that corresponds to the results of
+     * this expression
      */
     public QueryableDatatype getQueryableDatatypeForExpressionValue();
 
@@ -76,4 +77,21 @@ public interface DBExpression {
      * @return a copy of this {@code DBValue}
      */
     public DBExpression copy();
+
+    /**
+     * Returns TRUE if this expression is an Aggregator like SUM() or LEAST()
+     *
+     * <p>
+     * Subclasses must implement this method returning TRUE if the expression
+     * will combine the results of several rows to produce a result. If the
+     * expression relies on subexpressions, then the isAggregator method must
+     * return TRUE if the subexpressions include an aggregator.
+     *
+     * <p>
+     * Aggregators are used with {@link DBReport }. Aggregator expressions are
+     * included in the SELECT clause but excluded from the GROUP BY clause.
+     *
+     * @return TRUE if this DBExpression represents an aggregating functions
+     */
+    public boolean isAggregator();
 }

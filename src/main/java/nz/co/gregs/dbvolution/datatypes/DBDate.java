@@ -171,4 +171,9 @@ public class DBDate extends QueryableDatatype implements DateResult {
         return new DBDate();
     }
 
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
+
 }

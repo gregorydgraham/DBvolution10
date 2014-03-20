@@ -80,8 +80,8 @@ public class StringExpression implements StringResult {
     public static StringExpression value(String string) {
         return new StringExpression(string);
     }
-    
-        public StringExpression ifDBNull(String alternative) {
+
+    public StringExpression ifDBNull(String alternative) {
         return new StringExpression(
                 new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
 
@@ -92,7 +92,7 @@ public class StringExpression implements StringResult {
                 });
     }
 
-        public StringExpression ifDBNull(StringResult alternative) {
+    public StringExpression ifDBNull(StringResult alternative) {
         return new StringExpression(
                 new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
 
@@ -403,6 +403,11 @@ public class StringExpression implements StringResult {
         return new DBString();
     }
 
+    @Override
+    public boolean isAggregator() {
+        return string1==null?false:string1.isAggregator();
+    }
+
     private static abstract class DBBinaryStringArithmetic implements StringResult {
 
         private StringResult first;
@@ -439,6 +444,12 @@ public class StringExpression implements StringResult {
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
+
+        @Override
+        public boolean isAggregator() {
+            return this.first.isAggregator() || second.isAggregator();
+        }
+
     }
 
     private static abstract class DBNonaryStringFunction implements StringResult {
@@ -477,6 +488,11 @@ public class StringExpression implements StringResult {
                 throw new RuntimeException(ex);
             }
             return newInstance;
+        }
+
+        @Override
+        public boolean isAggregator() {
+            return false;
         }
     }
 
@@ -525,6 +541,11 @@ public class StringExpression implements StringResult {
             newInstance.only = only.copy();
             return newInstance;
         }
+
+        @Override
+        public boolean isAggregator() {
+            return only.isAggregator();
+        }
     }
 
     private static abstract class DBUnaryNumberFunction implements NumberResult {
@@ -571,6 +592,11 @@ public class StringExpression implements StringResult {
             }
             newInstance.only = (only == null ? null : only.copy());
             return newInstance;
+        }
+
+        @Override
+        public boolean isAggregator() {
+            return only.isAggregator();
         }
     }
 
@@ -639,6 +665,11 @@ public class StringExpression implements StringResult {
         protected String afterValue(DBDatabase db) {
             return ") ";
         }
+
+        @Override
+        public boolean isAggregator() {
+            return first.isAggregator() || second.isAggregator() || third.isAggregator();
+        }
     }
 
     private static abstract class DBBinaryStringFunction implements StringResult {
@@ -696,6 +727,11 @@ public class StringExpression implements StringResult {
         protected String afterValue(DBDatabase db) {
             return ") ";
         }
+
+        @Override
+        public boolean isAggregator() {
+            return first.isAggregator() || second.isAggregator();
+        }
     }
 
     private static abstract class BinaryComplicatedNumberFunction implements NumberResult {
@@ -733,6 +769,11 @@ public class StringExpression implements StringResult {
             newInstance.first = first.copy();
             newInstance.second = second.copy();
             return newInstance;
+        }
+
+        @Override
+        public boolean isAggregator() {
+            return first.isAggregator() || second.isAggregator();
         }
     }
 
@@ -830,6 +871,11 @@ public class StringExpression implements StringResult {
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
+
+        @Override
+        public boolean isAggregator() {
+            return first.isAggregator() || second.isAggregator();
+        }
     }
 
     private static abstract class DBNnaryBooleanFunction implements BooleanResult {
@@ -894,8 +940,17 @@ public class StringExpression implements StringResult {
             newInstance.values = this.values;
             return newInstance;
         }
+
+        @Override
+        public boolean isAggregator() {
+            boolean result = column.isAggregator();
+            for (StringResult numer : values) {
+                result = result || numer.isAggregator();
+            }
+            return result;
+        }
     }
-    
+
     private static abstract class DBBinaryStringNumberArithmetic implements StringResult {
 
         private StringResult first;
@@ -932,6 +987,12 @@ public class StringExpression implements StringResult {
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
+
+        @Override
+        public boolean isAggregator() {
+            return first.isAggregator() || second.isAggregator();
+        }
+
     }
 
 }

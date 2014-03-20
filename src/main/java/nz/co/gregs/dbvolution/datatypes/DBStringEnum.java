@@ -79,4 +79,9 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
     public DBString getQueryableDatatypeForExpressionValue() {
         return new DBString();
     }
+
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
 }

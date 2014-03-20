@@ -89,4 +89,9 @@ public class AbstractColumn implements DBExpression {
     public QueryableDatatype getQueryableDatatypeForExpressionValue() {
         return QueryableDatatype.getQueryableDatatypeForObject(field);
     }
+
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
 }

@@ -20,17 +20,37 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
  * @author gregory.graham
  */
-class DBReport {
+public class DBReport {
 
     public DBReport() {
         super();
     }
 
+    /**
+     * Gets all the report rows of the supplied DBReport using only conditions
+     * supplied within the supplied DBReport.
+     *
+     * <p>
+     * Use this method to retrieve all rows when the criteria have been supplied
+     * as part of the DBReport subclass.
+     *
+     * <p>
+     * If you require extra criteria to be add to the DBReport, limiting the
+     * results to a subset, use the
+     * {@link DBReport#getRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) getRows method}.
+     *
+     * @param <A>
+     * @param database
+     * @param exampleReport
+     * @return
+     * @throws SQLException
+     */
     public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
         List<A> reportRows = new ArrayList<A>();
         DBQuery query = database.getDBQuery();
@@ -86,11 +106,15 @@ class DBReport {
                     }
                 } else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
                     if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
-                        query.addExpressionColumn(value, ((QueryableDatatype) value).getColumnExpression());
+                        final DBExpression columnExpression = ((QueryableDatatype) value).getColumnExpression();
+                        query.addExpressionColumn(value, columnExpression);
+                        if (!columnExpression.isAggregator()) {
+                            query.addGroupByColumn(value, columnExpression);
+                        }
                     }
                 }
             } catch (IllegalArgumentException ex) {
-                throw new UnableToAccessDBReportFieldException(exampleReport,field, ex);
+                throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
             } catch (IllegalAccessException ex) {
                 throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
             }
@@ -117,10 +141,8 @@ class DBReport {
                         }
                     }
                 } catch (IllegalArgumentException ex) {
-                    ex.printStackTrace();
                     throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
                 } catch (IllegalAccessException ex) {
-                    ex.printStackTrace();
                     throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
                 }
             }
@@ -137,7 +159,7 @@ class DBReport {
         public static final long serialVersionUID = 1L;
 
         public UnableToAccessDBReportFieldException(Object badReport, Field field, Exception ex) {
-            super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null: Especially field: "+field.getName(), ex);
+            super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null: Especially field: " + field.getName(), ex);
         }
 
         public UnableToAccessDBReportFieldException(Object badReport, Exception ex) {
@@ -150,7 +172,7 @@ class DBReport {
         public static final long serialVersionUID = 1L;
 
         public UnableToCreateDBReportSubclassException(Object badReport, Exception ex) {
-            super("Unable To Create DBReport Instance: please ensure that your DBReport subclass, " + badReport.getClass().getSimpleName() + " has a Public, No Parameter Constructor.", ex);
+            super("Unable To Create DBReport Instance: please ensure that your DBReport subclass, " + badReport.getClass().getSimpleName() + ", has a Public, No Parameter Constructor. The class itself may need to be \"public static\" as well.", ex);
         }
     }
 

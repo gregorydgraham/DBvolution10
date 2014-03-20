@@ -41,13 +41,12 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
     @Override
     public void setValue(Object newLiteralValue) {
-        if(newLiteralValue instanceof Boolean){
+        if (newLiteralValue instanceof Boolean) {
             setValue((Boolean) newLiteralValue);
-        }else
-        if(newLiteralValue instanceof DBBoolean){
+        } else if (newLiteralValue instanceof DBBoolean) {
             setValue(((DBBoolean) newLiteralValue).getValue());
-        }else{
-            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A Non-Boolean: Use only Booleans with this class");
+        } else {
+            throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Boolean: Use only Booleans with this class");
         }
     }
 
@@ -89,6 +88,11 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
     @Override
     public DBBoolean getQueryableDatatypeForExpressionValue() {
         return new DBBoolean();
+    }
+
+    @Override
+    public boolean isAggregator() {
+        return false;
     }
 
 }
