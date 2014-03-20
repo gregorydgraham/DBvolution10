@@ -1330,7 +1330,7 @@ public class DBQuery {
      *
      * @param identifyingObject
      * @param expressionToAdd
-     * @return
+     * @return this DBQuery instance
      */
     public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd) {
         expressionColumns.put(identifyingObject, expressionToAdd);
@@ -1342,7 +1342,7 @@ public class DBQuery {
      *
      * @param identifyingObject
      * @param expressionToAdd
-     * @return
+     * @return this DBQuery instance
      */
     public DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
         groupByColumns.put(identifyingObject, expressionToAdd);

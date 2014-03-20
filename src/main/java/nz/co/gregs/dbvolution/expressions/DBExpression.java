@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
