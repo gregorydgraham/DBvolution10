@@ -15,7 +15,10 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 
 /**
  *
@@ -56,4 +59,10 @@ public class DBUnknownDatatype extends QueryableDatatype {
     public boolean isAggregator() {
         return false;
     }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return new HashSet<DBRow>();
+    }
+
 }

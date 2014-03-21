@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.columns;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -93,5 +95,12 @@ public class AbstractColumn implements DBExpression {
     @Override
     public boolean isAggregator() {
         return false;
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        HashSet<DBRow> hashSet = new HashSet<DBRow>();
+        hashSet.add(dbrow);
+        return hashSet;
     }
 }

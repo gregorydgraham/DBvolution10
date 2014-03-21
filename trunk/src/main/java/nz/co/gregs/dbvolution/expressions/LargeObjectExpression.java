@@ -15,7 +15,10 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 
 public class LargeObjectExpression implements LargeObjectResult {
@@ -49,4 +52,14 @@ public class LargeObjectExpression implements LargeObjectResult {
     public boolean isAggregator() {
         return qdt.isAggregator();
     }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        HashSet<DBRow> hashSet = new HashSet<DBRow>();
+        if (qdt != null) {
+            hashSet.addAll(qdt.getTablesInvolved());
+        }
+        return hashSet;
+    }
+
 }

@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -57,5 +59,10 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
     @Override
     public AbstractColumn getColumn() {
         return column;
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return column.getTablesInvolved();
     }
 }

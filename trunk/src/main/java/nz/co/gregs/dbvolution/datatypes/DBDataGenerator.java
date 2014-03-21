@@ -15,7 +15,10 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
@@ -94,6 +97,13 @@ public class DBDataGenerator extends QueryableDatatype {
     @Override
     public boolean isAggregator() {
         return ((DBExpression)this.getValue()).isAggregator();
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        HashSet<DBRow> hashSet = new HashSet<DBRow>();
+        hashSet.addAll(((DBExpression) literalValue).getTablesInvolved());
+        return hashSet;
     }
 
 }

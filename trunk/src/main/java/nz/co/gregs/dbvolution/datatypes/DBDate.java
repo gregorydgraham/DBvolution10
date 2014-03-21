@@ -19,7 +19,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.expressions.DateResult;
 
@@ -174,6 +177,11 @@ public class DBDate extends QueryableDatatype implements DateResult {
     @Override
     public boolean isAggregator() {
         return false;
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return new HashSet<DBRow>();
     }
 
 }

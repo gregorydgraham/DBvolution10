@@ -18,8 +18,11 @@ package nz.co.gregs.dbvolution.expressions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -286,7 +289,12 @@ public class DateExpression implements DateResult {
 
     @Override
     public boolean isAggregator() {
-        return date1==null?false:date1.isAggregator();
+        return date1 == null ? false : date1.isAggregator();
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return date1 == null ? new HashSet<DBRow>() : date1.getTablesInvolved();
     }
 
     private static abstract class DBNonaryFunction implements DateResult {
@@ -325,6 +333,11 @@ public class DateExpression implements DateResult {
                 throw new RuntimeException(ex);
             }
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            return new HashSet<DBRow>();
         }
 
         @Override
@@ -368,6 +381,15 @@ public class DateExpression implements DateResult {
         }
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (only != null) {
+                hashSet.addAll(only.getTablesInvolved());
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             return only.isAggregator();
         }
@@ -407,6 +429,18 @@ public class DateExpression implements DateResult {
             newInstance.first = first.copy();
             newInstance.second = second.copy();
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
@@ -556,6 +590,20 @@ public class DateExpression implements DateResult {
         }
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (column != null) {
+                hashSet.addAll(column.getTablesInvolved());
+            }
+            for (DateResult val : values) {
+                if (val != null) {
+                    hashSet.addAll(val.getTablesInvolved());
+                }
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             boolean result = false || column.isAggregator();
             for (DateResult dater : values) {
@@ -604,6 +652,18 @@ public class DateExpression implements DateResult {
             newInstance.first = first.copy();
             newInstance.second = second.copy();
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
         }
 
         abstract String getFunctionName(DBDatabase db);

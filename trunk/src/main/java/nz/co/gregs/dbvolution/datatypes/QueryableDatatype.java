@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -932,5 +933,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
      */
     public final boolean hasColumnExpression() {
         return columnExpression != null;
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return new HashSet<DBRow>();
     }
 }

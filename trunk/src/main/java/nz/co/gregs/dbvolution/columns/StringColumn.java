@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -58,5 +59,10 @@ public class StringColumn extends StringExpression implements ColumnProvider {
     @Override
     public AbstractColumn getColumn() {
         return column;
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return column.getTablesInvolved();
     }
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
@@ -38,7 +39,11 @@ public class QueryGraph {
     edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBRelationship> jungGraph = new SparseMultigraph<QueryGraphNode, DBRelationship>();
 
     public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, QueryOptions options) {
-        addAndConnectToRelevant(database, allQueryTables, options);
+        addAndConnectToRelevant(database, allQueryTables, null, options);
+    }
+
+    public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, List<BooleanExpression> expressions, QueryOptions options) {
+        addAndConnectToRelevant(database, allQueryTables, expressions, options);
     }
 
     public QueryGraph clear() {
@@ -48,7 +53,7 @@ public class QueryGraph {
         return this;
     }
 
-    public final void addAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, QueryOptions options) {
+    public final void addAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, List<BooleanExpression> expressions, QueryOptions options) {
 
         List<DBRow> tablesAdded = new ArrayList<DBRow>();
         List<DBRow> tablesRemaining = new ArrayList<DBRow>();
@@ -85,19 +90,42 @@ public class QueryGraph {
             tablesAdded.add(table1);
             tablesRemaining.remove(table1);
         }
+
+        for (BooleanExpression expr : expressions) {
+            Set<DBRow> tables = expr.getTablesInvolved();
+            for (DBRow table : tables) {
+                Set<DBRow> tablesToConnectTo = new HashSet<DBRow>(tables);
+                tablesToConnectTo.remove(table);
+                final QueryGraphNode node1 = new QueryGraphNode(table.getClass());
+                addNodeToDisplayGraph(node1);
+                for (DBRow tab2 : tablesToConnectTo) {
+                    final QueryGraphNode node2 = new QueryGraphNode(tab2.getClass());
+                    addNodeToDisplayGraph(node2);
+                    addEdgeToDisplayGraph(table, node1, tab2, node2);
+                }
+            }
+        }
     }
 
     private void addNodeToDisplayGraph(QueryGraphNode node1) {
-        jungGraph.addVertex(node1);
+        if (!jungGraph.containsVertex(node1)) {
+            jungGraph.addVertex(node1);
+        }
     }
 
     private void addEdgesToDisplayGraph(DBDatabase database, DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2, QueryOptions options) {
         for (DBRelationship fk : table1.getRelationshipsFromThisInstance(database, table2, options)) {
-//            final String fkString = fk.toSQLString(database);
-
             if (!jungGraph.containsEdge(fk)) {
                 jungGraph.addEdge(fk, node1, node2);
             }
+        }
+    }
+
+    private void addEdgeToDisplayGraph(DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2) {
+        DBRelationship fk = new DBRelationship(table1, table1.getPrimaryKey(), table2, table2.getPrimaryKey());
+
+        if (!jungGraph.containsEdge(fk)) {
+            jungGraph.addEdge(fk, node1, node2);
         }
     }
 
@@ -200,9 +228,23 @@ public class QueryGraph {
         public String toString() {
             return table.getSimpleName();
         }
-    }
 
-//    public Graph getGraphStream() {
-//        return displayGraph;
-//    }
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof QueryGraphNode) {
+                QueryGraphNode otherNode = (QueryGraphNode) o;
+                if (this.table.equals(otherNode.table)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 89 * hash + (this.table != null ? this.table.hashCode() : 0);
+            return hash;
+        }
+    }
 }

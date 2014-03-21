@@ -17,6 +17,9 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
 
 /**
@@ -53,19 +56,19 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
         if (newLiteralValue instanceof Long) {
             setValue((Long) newLiteralValue);
         } else if (newLiteralValue instanceof Integer) {
-            setValue((Integer)newLiteralValue);
+            setValue((Integer) newLiteralValue);
         } else if (newLiteralValue instanceof DBIntegerEnum) {
-            setValue(((DBIntegerEnum)newLiteralValue).literalValue);
+            setValue(((DBIntegerEnum) newLiteralValue).literalValue);
         } else {
             throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Long: Use only Long with this class");
         }
     }
-    
-    public void setValue(Long newLiteralValue){
+
+    public void setValue(Long newLiteralValue) {
         super.setLiteralValue(newLiteralValue);
     }
 
-    public void setValue(Integer newLiteralValue){
+    public void setValue(Integer newLiteralValue) {
         super.setLiteralValue(newLiteralValue);
     }
 
@@ -121,4 +124,10 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
     public boolean isAggregator() {
         return false;
     }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return new HashSet<DBRow>();
+    }
+
 }

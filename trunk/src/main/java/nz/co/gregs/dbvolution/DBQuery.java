@@ -103,7 +103,7 @@ public class DBQuery {
     private final QueryOptions options = new QueryOptions();
     private List<PropertyWrapper> sortOrder = null;
     private String rawSQLClause = "";
-    private List<DBRow> extraExamples = new ArrayList<DBRow>();
+    private final List<DBRow> extraExamples = new ArrayList<DBRow>();
     private QueryGraph queryGraph;
 
     DBQuery(DBDatabase database) {
@@ -1436,10 +1436,10 @@ public class DBQuery {
 
     private void initialiseQueryGraph() {
         if (queryGraph == null) {
-            queryGraph = new QueryGraph(database, allQueryTables, options);
+            queryGraph = new QueryGraph(database, allQueryTables, expressions, options);
         } else {
             queryGraph.clear();
-            queryGraph.addAndConnectToRelevant(database, allQueryTables, options);
+            queryGraph.addAndConnectToRelevant(database, allQueryTables, expressions, options);
         }
     }
 }

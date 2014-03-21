@@ -17,8 +17,11 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 
@@ -404,8 +407,17 @@ public class StringExpression implements StringResult {
     }
 
     @Override
+    public Set<DBRow> getTablesInvolved() {
+        HashSet<DBRow> hashSet = new HashSet<DBRow>();
+        if (string1 != null) {
+            hashSet.addAll(string1.getTablesInvolved());
+        }
+        return hashSet;
+    }
+
+    @Override
     public boolean isAggregator() {
-        return string1==null?false:string1.isAggregator();
+        return string1 == null ? false : string1.isAggregator();
     }
 
     private static abstract class DBBinaryStringArithmetic implements StringResult {
@@ -444,6 +456,18 @@ public class StringExpression implements StringResult {
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
+        }
 
         @Override
         public boolean isAggregator() {
@@ -488,6 +512,12 @@ public class StringExpression implements StringResult {
                 throw new RuntimeException(ex);
             }
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            return hashSet;
         }
 
         @Override
@@ -543,6 +573,15 @@ public class StringExpression implements StringResult {
         }
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (only != null) {
+                hashSet.addAll(only.getTablesInvolved());
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             return only.isAggregator();
         }
@@ -592,6 +631,15 @@ public class StringExpression implements StringResult {
             }
             newInstance.only = (only == null ? null : only.copy());
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (only != null) {
+                hashSet.addAll(only.getTablesInvolved());
+            }
+            return hashSet;
         }
 
         @Override
@@ -667,6 +715,21 @@ public class StringExpression implements StringResult {
         }
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            if (third != null) {
+                hashSet.addAll(third.getTablesInvolved());
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             return first.isAggregator() || second.isAggregator() || third.isAggregator();
         }
@@ -729,6 +792,18 @@ public class StringExpression implements StringResult {
         }
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             return first.isAggregator() || second.isAggregator();
         }
@@ -769,6 +844,18 @@ public class StringExpression implements StringResult {
             newInstance.first = first.copy();
             newInstance.second = second.copy();
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
         }
 
         @Override
@@ -873,6 +960,18 @@ public class StringExpression implements StringResult {
         protected abstract String getEquationOperator(DBDatabase db);
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             return first.isAggregator() || second.isAggregator();
         }
@@ -942,6 +1041,20 @@ public class StringExpression implements StringResult {
         }
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (column != null) {
+                hashSet.addAll(column.getTablesInvolved());
+            }
+            for (StringResult second : values) {
+                if (second != null) {
+                    hashSet.addAll(second.getTablesInvolved());
+                }
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             boolean result = column.isAggregator();
             for (StringResult numer : values) {
@@ -987,6 +1100,18 @@ public class StringExpression implements StringResult {
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
+        }
 
         @Override
         public boolean isAggregator() {

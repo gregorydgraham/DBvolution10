@@ -28,11 +28,13 @@ import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
+import nz.co.gregs.dbvolution.DBRow;
 
 /**
  *
@@ -239,4 +241,10 @@ public class DBByteArray extends DBLargeObject {
     public boolean isAggregator() {
         return false;
     }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return new HashSet<DBRow>();
+    }
+
 }
