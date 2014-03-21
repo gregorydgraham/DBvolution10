@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -27,7 +28,7 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
     public LargeObjectColumn(DBRow row, DBLargeObject field) {
         this.column = new AbstractColumn(row, field);
     }
-    
+
     @Override
     public String toSQLString(DBDatabase db) {
         return column.toSQLString(db);
@@ -35,10 +36,16 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
 
     @Override
     public LargeObjectColumn copy() {
-        return (LargeObjectColumn)super.copy();
+        return (LargeObjectColumn) super.copy();
     }
 
     @Override
     public AbstractColumn getColumn() {
         return column;
-    }}
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return column.getTablesInvolved();
+    }
+}

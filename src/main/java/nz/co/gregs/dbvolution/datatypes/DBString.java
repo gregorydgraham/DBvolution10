@@ -16,7 +16,10 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.StringResult;
 
@@ -97,4 +100,10 @@ public class DBString extends QueryableDatatype implements StringResult {
     public boolean isAggregator() {
         return false;
     }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return new HashSet<DBRow>();
+    }
+
 }

@@ -17,8 +17,11 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -44,7 +47,7 @@ public class NumberExpression implements NumberResult {
     }
 
     protected NumberResult getInputNumber() {
-        return innerNumberResult;
+        return getInnerNumberResult();
     }
 
     @Override
@@ -630,7 +633,30 @@ public class NumberExpression implements NumberResult {
 
     @Override
     public boolean isAggregator() {
-        return innerNumberResult==null?false:innerNumberResult.isAggregator();
+        return getInnerNumberResult() == null ? false : getInnerNumberResult().isAggregator();
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        HashSet<DBRow> hashSet = new HashSet<DBRow>();
+        if (getInnerNumberResult() != null) {
+            hashSet.addAll(getInnerNumberResult().getTablesInvolved());
+        }
+        return hashSet;
+    }
+
+    /**
+     * @return the innerNumberResult
+     */
+    public NumberResult getInnerNumberResult() {
+        return innerNumberResult;
+    }
+
+    /**
+     * @param innerNumberResult the innerNumberResult to set
+     */
+    public void setInnerNumberResult(NumberResult innerNumberResult) {
+        this.innerNumberResult = innerNumberResult;
     }
 
     public static abstract class DBBinaryArithmetic implements NumberResult {
@@ -671,6 +697,18 @@ public class NumberExpression implements NumberResult {
             newInstance.first = first.copy();
             newInstance.second = second.copy();
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
@@ -768,6 +806,15 @@ public class NumberExpression implements NumberResult {
         }
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (only != null) {
+                hashSet.addAll(only.getTablesInvolved());
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             return only.isAggregator();
         }
@@ -825,6 +872,18 @@ public class NumberExpression implements NumberResult {
 
         protected String afterValue(DBDatabase db) {
             return ") ";
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
         }
 
         @Override
@@ -937,6 +996,18 @@ public class NumberExpression implements NumberResult {
         protected abstract String getEquationOperator(DBDatabase db);
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (first != null) {
+                hashSet.addAll(first.getTablesInvolved());
+            }
+            if (second != null) {
+                hashSet.addAll(second.getTablesInvolved());
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             return first.isAggregator() || second.isAggregator();
         }
@@ -1006,6 +1077,20 @@ public class NumberExpression implements NumberResult {
         }
 
         @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (column != null) {
+                hashSet.addAll(column.getTablesInvolved());
+            }
+            for (NumberResult second : values) {
+                if (second != null) {
+                    hashSet.addAll(second.getTablesInvolved());
+                }
+            }
+            return hashSet;
+        }
+
+        @Override
         public boolean isAggregator() {
             boolean result = column.isAggregator();
             for (NumberResult numer : values) {
@@ -1059,6 +1144,15 @@ public class NumberExpression implements NumberResult {
             }
             newInstance.only = only.copy();
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            if (only != null) {
+                hashSet.addAll(only.getTablesInvolved());
+            }
+            return hashSet;
         }
 
         @Override

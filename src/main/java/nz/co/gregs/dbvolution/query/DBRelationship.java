@@ -30,12 +30,18 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
  * Represents a relationship between 2 columns on 2 tables.
- * 
- * <p>This is a generalisation of {@link DBForeignKey} that can be added to DBRows.
- * 
- * <p>Use {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) DBRow's AddRelationship methods} to add a relationship to a DBRow.
- * 
- * <p>For a DBQuery, you may be better using the {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition method}.
+ *
+ * <p>
+ * This is a generalisation of {@link DBForeignKey} that can be added to DBRows.
+ *
+ * <p>
+ * Use
+ * {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) DBRow's AddRelationship methods}
+ * to add a relationship to a DBRow.
+ *
+ * <p>
+ * For a DBQuery, you may be better using the
+ * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition method}.
  *
  * @author gregorygraham
  */
@@ -49,15 +55,21 @@ public class DBRelationship implements Serializable {
     private DBOperator operation;
 
     /**
-     * Creates a new DBRelationship representing the connection between to tables
+     * Creates a new DBRelationship representing the connection between to
+     * tables
      *
-     * <p>Relationships connect 2 columns in 2 tables. DBRelationship represents
-     * a columnA = columnB relationship like a classic foreign key relation.
-     * 
-     * <p>Use this constructor to create a equal new relationship or use {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) }
-     * 
-     * <p>More complex relationships a possible with the longer constructor or  {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.operators.DBOperator)  }
-     * 
+     * <p>
+     * Relationships connect 2 columns in 2 tables. DBRelationship represents a
+     * columnA = columnB relationship like a classic foreign key relation.
+     *
+     * <p>
+     * Use this constructor to create a equal new relationship or use {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)
+     * }
+     *
+     * <p>
+     * More complex relationships a possible with the longer constructor or null     {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.operators.DBOperator)
+     * }
+     *
      * @param thisTable
      * @param thisTableField
      * @param otherTable
@@ -72,8 +84,9 @@ public class DBRelationship implements Serializable {
      * tables' column, identified by the object references of column's fields
      * and/or methods.
      *
-     * <p> For example the following code snippet will create a relationship
-     * between the customer's fkAddress column and the address's uid column:
+     * <p>
+     * For example the following code snippet will create a relationship between
+     * the customer's fkAddress column and the address's uid column:
      * <pre>
      * Customer customer = ...;
      * Address address = ...;
@@ -81,7 +94,8 @@ public class DBRelationship implements Serializable {
      * new DBRelationship(customer, customer.fkAddress, address, address.uid, operator);
      * </pre>
      *
-     * <p> Requires that {@code thisTableField} is from the {@code thisTable}
+     * <p>
+     * Requires that {@code thisTableField} is from the {@code thisTable}
      * instance, and {@code otherTableField} is from the {@code otherTable}
      * instance.
      *
@@ -161,6 +175,37 @@ public class DBRelationship implements Serializable {
 
     @Override
     public String toString() {
-        return firstTable.getClass().getSimpleName() + "."+firstColumnPropertyWrapper.javaName()+" : "+ secondTable.getClass().getSimpleName() + "."+secondColumnPropertyWrapper.javaName();
+        return firstTable.getClass().getSimpleName() + "." + firstColumnPropertyWrapper.javaName() + " : " + secondTable.getClass().getSimpleName() + "." + secondColumnPropertyWrapper.javaName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DBRelationship) {
+            DBRelationship otherRel = (DBRelationship) o;
+            if (this.firstTable.getClass().equals(otherRel.firstTable.getClass())
+                    || this.secondTable.getClass().equals(otherRel.secondTable.getClass())
+                    || this.firstColumnPropertyWrapper.referencedPropertyDefinitionIdentity().equals(otherRel.firstColumnPropertyWrapper.referencedPropertyDefinitionIdentity())
+                    || this.secondColumnPropertyWrapper.referencedPropertyDefinitionIdentity().equals(otherRel.secondColumnPropertyWrapper.referencedPropertyDefinitionIdentity())
+                    || this.operation.equals(otherRel.operation)
+                    || this.firstTable.getClass().equals(otherRel.secondTable.getClass())
+                    || this.secondTable.getClass().equals(otherRel.firstTable.getClass())
+                    || this.firstColumnPropertyWrapper.referencedPropertyDefinitionIdentity().equals(otherRel.secondColumnPropertyWrapper.referencedPropertyDefinitionIdentity())
+                    || this.secondColumnPropertyWrapper.referencedPropertyDefinitionIdentity().equals(otherRel.firstColumnPropertyWrapper.referencedPropertyDefinitionIdentity())
+                    ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.firstTable != null ? this.firstTable.hashCode() : 0);
+        hash = 97 * hash + (this.secondTable != null ? this.secondTable.hashCode() : 0);
+        hash = 97 * hash + (this.firstColumnPropertyWrapper != null ? this.firstColumnPropertyWrapper.hashCode() : 0);
+        hash = 97 * hash + (this.secondColumnPropertyWrapper != null ? this.secondColumnPropertyWrapper.hashCode() : 0);
+        hash = 97 * hash + (this.operation != null ? this.operation.hashCode() : 0);
+        return hash;
     }
 }

@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.Set;
+import nz.co.gregs.dbvolution.DBRow;
+
 /**
  * Interface required to be implemented by all DBExpressions that produce
  * Boolean results
@@ -35,5 +38,7 @@ public interface BooleanResult extends DBExpression {
 
     @Override
     public BooleanResult copy();
+
+    public Set<DBRow> getTablesInvolved();
 
 }

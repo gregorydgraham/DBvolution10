@@ -18,7 +18,10 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
@@ -56,12 +59,12 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
     @Override
     public void setValue(Object newLiteralValue) {
-        if(newLiteralValue instanceof Number){
+        if (newLiteralValue instanceof Number) {
             setValue((Number) newLiteralValue);
-        }else if(newLiteralValue instanceof DBNumber){
+        } else if (newLiteralValue instanceof DBNumber) {
             setValue(((DBNumber) newLiteralValue).getValue());
-        }else{
-            throw new ClassCastException(this.getClass().getSimpleName()+".setValue() Called With A "+newLiteralValue.getClass().getSimpleName()+": Use only Numbers with this class");
+        } else {
+            throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A " + newLiteralValue.getClass().getSimpleName() + ": Use only Numbers with this class");
         }
     }
 
@@ -236,4 +239,10 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
     public boolean isAggregator() {
         return false;
     }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return new HashSet<DBRow>();
+    }
+
 }

@@ -15,8 +15,10 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -95,4 +97,15 @@ public interface DBExpression {
      * @return TRUE if this DBExpression represents an aggregating functions
      */
     public boolean isAggregator();
+
+    /**
+     * Returns a Set of the DBRow instances involved in this expression.
+     *
+     * <p>
+     * Used by QueryGraph to plot the connections between tables and avoid
+     * cartesian joins.
+     *
+     * @return a set of DBRow instances involved in this DBExpression.
+     */
+    public Set<DBRow> getTablesInvolved();
 }

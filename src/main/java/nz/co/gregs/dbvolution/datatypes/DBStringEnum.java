@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.util.HashSet;
+import java.util.Set;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
@@ -84,4 +87,10 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
     public boolean isAggregator() {
         return false;
     }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return new HashSet<DBRow>();
+    }
+
 }

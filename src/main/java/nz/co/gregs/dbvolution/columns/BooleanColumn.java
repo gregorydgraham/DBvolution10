@@ -15,12 +15,14 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 public class BooleanColumn extends BooleanExpression implements ColumnProvider {
+
     private final AbstractColumn column;
 
     public BooleanColumn(DBRow row, Boolean field) {
@@ -44,5 +46,10 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
     @Override
     public AbstractColumn getColumn() {
         return column;
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return column.getTablesInvolved();
     }
 }

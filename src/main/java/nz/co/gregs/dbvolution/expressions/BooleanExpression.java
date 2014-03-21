@@ -15,7 +15,11 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
@@ -162,7 +166,8 @@ public class BooleanExpression implements BooleanResult {
      * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
      * expression
      *
-     * @return a Boolean expression representing the negation of the current expression.
+     * @return a Boolean expression representing the negation of the current
+     * expression.
      */
     public BooleanExpression negate() {
         return new BooleanExpression(new DBUnaryBooleanArithmetic(this) {
@@ -200,7 +205,8 @@ public class BooleanExpression implements BooleanResult {
      * so {@link QueryableDatatype#isDBNull NULL} is also a valid result of this
      * expression
      *
-     * @return a Boolean expression representing the negation of the current expression.
+     * @return a Boolean expression representing the negation of the current
+     * expression.
      */
     public BooleanExpression not() {
         return this.negate();
@@ -218,6 +224,11 @@ public class BooleanExpression implements BooleanResult {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Set<DBRow> getTablesInvolved() {
+        return bool1 == null ? new HashSet<DBRow>() : bool1.getTablesInvolved();
     }
 
     private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
@@ -253,6 +264,11 @@ public class BooleanExpression implements BooleanResult {
             }
             newInstance.bool = bool.copy();
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            return bool == null ? new HashSet<DBRow>() : bool.getTablesInvolved();
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
@@ -298,6 +314,15 @@ public class BooleanExpression implements BooleanResult {
                 newInstance.bools[i] = bools[i].copy();
             }
             return newInstance;
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            HashSet<DBRow> hashSet = new HashSet<DBRow>();
+            for (BooleanResult boo : bools){
+                hashSet.addAll(boo.getTablesInvolved());
+            }
+            return hashSet;
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
