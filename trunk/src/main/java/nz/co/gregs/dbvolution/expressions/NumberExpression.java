@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 public class NumberExpression implements NumberResult {
 
@@ -87,7 +88,6 @@ public class NumberExpression implements NumberResult {
 
     public StringExpression stringResult() {
         return new StringExpression(new DBUnaryStringFunction(this) {
-
             @Override
             protected String afterValue(DBDatabase db) {
                 return " ";
@@ -102,7 +102,6 @@ public class NumberExpression implements NumberResult {
             String getFunctionName(DBDatabase db) {
                 return "";
             }
-
         });
     }
 
@@ -125,6 +124,14 @@ public class NumberExpression implements NumberResult {
                 return " = ";
             }
         });
+    }
+
+    public BooleanExpression isNot(Number number) {
+        return is(value(number)).not();
+    }
+
+    public BooleanExpression isNot(NumberResult number) {
+        return is(number).not();
     }
 
     public BooleanExpression isLessThan(Number number) {
@@ -212,52 +219,50 @@ public class NumberExpression implements NumberResult {
         if (schemaName != null) {
             return new NumberExpression(
                     new DBBinaryFunction(StringExpression.value(schemaName), StringExpression.value(sequenceName)) {
-                        @Override
-                        String getFunctionName(DBDatabase db) {
-                            return db.getDefinition().getNextSequenceValueFunctionName();
-                        }
-                    });
+                @Override
+                String getFunctionName(DBDatabase db) {
+                    return db.getDefinition().getNextSequenceValueFunctionName();
+                }
+            });
         } else {
             return new NumberExpression(
                     new DBUnaryFunction(StringExpression.value(sequenceName)) {
-                        @Override
-                        String getFunctionName(DBDatabase db) {
-                            return db.getDefinition().getNextSequenceValueFunctionName();
-                        }
-                    });
+                @Override
+                String getFunctionName(DBDatabase db) {
+                    return db.getDefinition().getNextSequenceValueFunctionName();
+                }
+            });
         }
     }
 
     public NumberExpression ifDBNull(Number alternative) {
         return new NumberExpression(
                 new DBBinaryFunction(this, new NumberExpression(alternative)) {
-
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return db.getDefinition().getIfNullFunctionName();
-                    }
-                });
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getIfNullFunctionName();
+            }
+        });
     }
 
     public NumberExpression ifDBNull(NumberResult alternative) {
         return new NumberExpression(
                 new DBBinaryFunction(this, alternative) {
-
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return db.getDefinition().getIfNullFunctionName();
-                    }
-                });
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getIfNullFunctionName();
+            }
+        });
     }
 
     public NumberExpression bracket() {
         return new NumberExpression(
                 new DBUnaryFunction(this) {
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return "";
-                    }
-                });
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return "";
+            }
+        });
     }
 
     public NumberExpression exp() {
@@ -449,29 +454,16 @@ public class NumberExpression implements NumberResult {
         });
     }
 
-    public NumberExpression standardDev() {
-        return new NumberExpression(new DBUnaryFunction(this) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return "stddev";
-            }
-        });
-    }
-
-    public NumberExpression variance() {
-        return new NumberExpression(new DBUnaryFunction(this) {
-            @Override
-            String getFunctionName(DBDatabase db) {
-                return "var";
-            }
-        });
-    }
-
     /**
-     * Implements support for CEIL()
+     * Implements support for CEIL().
+     * 
+     * <p>
+     * Returns the smallest integer that is larger than the expression 
      *
      * <p>
-     * Note: (new DBNumber(-1.5)).ceil() == -1
+     * Note:<br>
+     * (new DBNumber(  1.5)).ceil() == 2<br>
+     * (new DBNumber(-1.5)).ceil() == -1
      *
      * @return the value of the equation rounded up to the nearest integer.
      */
@@ -499,7 +491,10 @@ public class NumberExpression implements NumberResult {
     }
 
     /**
-     * Implements support for FLOOR()
+     * Implements support for FLOOR().
+     *
+     * <p>
+     * Returns the largest integer that is smaller than the expression 
      *
      * <p>
      * note that this is not the same as {@code trunc()} as
@@ -517,7 +512,10 @@ public class NumberExpression implements NumberResult {
     }
 
     /**
-     * Implements support for TRUNC()
+     * Implements support for TRUNC().
+     * 
+     * <p>
+     * Removes the decimal part of the expression, leaving an integer.
      *
      * <p>
      * note that this is not the same as roundDown() as
@@ -626,6 +624,118 @@ public class NumberExpression implements NumberResult {
         });
     }
 
+    public NumberExpression average() {
+        return new NumberExpression(new DBUnaryFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getAverageFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Synonym for {@link NumberExpression#standardDeviation() }.
+     *
+     * @return A number expression representing the standard deviation of the grouped rows.
+     */
+    public NumberExpression stddev() {
+        return standardDeviation();
+    }
+
+    public NumberExpression standardDeviation() {
+        return new NumberExpression(new DBUnaryFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getStandardDeviationFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public NumberExpression count() {
+        return new NumberExpression(new DBUnaryFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getCountFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public NumberExpression max() {
+        return new NumberExpression(new DBUnaryFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getMaxFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public NumberExpression min() {
+        return new NumberExpression(new DBUnaryFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getMinFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public NumberExpression sum() {
+        return new NumberExpression(new DBUnaryFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getSumFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public static NumberExpression countAll() {
+        return new NumberExpression(new DBNonaryFunction() {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getCountFunctionName();
+            }
+
+            @Override
+            protected String afterValue(DBDatabase db) {
+                return "(*)";
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
     @Override
     public DBNumber getQueryableDatatypeForExpressionValue() {
         return new DBNumber();
@@ -717,7 +827,6 @@ public class NumberExpression implements NumberResult {
         public boolean isAggregator() {
             return first.isAggregator() || second.isAggregator();
         }
-
     }
 
     private static abstract class DBNonaryFunction implements NumberResult {
@@ -754,9 +863,21 @@ public class NumberExpression implements NumberResult {
         }
 
         @Override
+        public QueryableDatatype getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
+        }
+
+        @Override
         public boolean isAggregator() {
             return false;
         }
+        
+        
+            @Override
+            public Set<DBRow> getTablesInvolved() {
+                return new HashSet<DBRow>();
+            }
+
     }
 
     private static abstract class DBUnaryFunction implements NumberResult {
@@ -1160,5 +1281,4 @@ public class NumberExpression implements NumberResult {
             return only.isAggregator();
         }
     }
-
 }

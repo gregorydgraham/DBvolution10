@@ -90,6 +90,12 @@ public interface DBExpression {
      * expression relies on subexpressions, then the isAggregator method must
      * return TRUE if the subexpressions include an aggregator.
      *
+     * <p>Aggregators collect several rows together to produce a single result.
+     * Examples are MAX, MIN, and AVERAGE.
+     *
+     * <p>They are only appropriate in the SELECT clause and generally require
+     * the GROUP BY clause to be useful.
+     *
      * <p>
      * Aggregators are used with {@link DBReport }. Aggregator expressions are
      * included in the SELECT clause but excluded from the GROUP BY clause.

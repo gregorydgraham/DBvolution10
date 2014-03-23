@@ -570,4 +570,28 @@ public abstract class DBDefinition {
     public Object beginGroupByClause() {
         return " GROUP BY ";
     }
+
+    public String getAverageFunctionName() {
+        return "AVG";
+    }
+
+    public String getCountFunctionName() {
+        return "COUNT";
+    }
+
+    public String getMaxFunctionName() {
+        return "MAX";
+    }
+
+    public String getMinFunctionName() {
+        return "MIN";
+    }
+
+    public String getSumFunctionName() {
+        return "SUM";
+    }
+
+    public String getStandardDeviationFunctionName() {
+        return "stddev";
+    }
 }
