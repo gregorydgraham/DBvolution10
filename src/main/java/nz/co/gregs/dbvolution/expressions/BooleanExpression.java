@@ -21,6 +21,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 public class BooleanExpression implements BooleanResult {
@@ -97,7 +98,6 @@ public class BooleanExpression implements BooleanResult {
      */
     public static BooleanExpression allOf(final BooleanExpression... booleanExpressions) {
         return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return db.getDefinition().beginAndLine();
@@ -131,7 +131,6 @@ public class BooleanExpression implements BooleanResult {
      */
     public static BooleanExpression anyOf(final BooleanExpression... booleanExpressions) {
         return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return db.getDefinition().beginOrLine();
@@ -171,7 +170,6 @@ public class BooleanExpression implements BooleanResult {
      */
     public BooleanExpression negate() {
         return new BooleanExpression(new DBUnaryBooleanArithmetic(this) {
-
             @Override
             protected String getEquationOperator(DBDatabase db) {
                 return db.getDefinition().getNegationFunctionName();
@@ -210,6 +208,20 @@ public class BooleanExpression implements BooleanResult {
      */
     public BooleanExpression not() {
         return this.negate();
+    }
+
+    public NumberExpression count() {
+        return new NumberExpression(new DBUnaryNumberFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getCountFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -319,7 +331,7 @@ public class BooleanExpression implements BooleanResult {
         @Override
         public Set<DBRow> getTablesInvolved() {
             HashSet<DBRow> hashSet = new HashSet<DBRow>();
-            for (BooleanResult boo : bools){
+            for (BooleanResult boo : bools) {
                 hashSet.addAll(boo.getTablesInvolved());
             }
             return hashSet;
@@ -328,4 +340,60 @@ public class BooleanExpression implements BooleanResult {
         protected abstract String getEquationOperator(DBDatabase db);
     }
 
+    private static abstract class DBUnaryNumberFunction implements NumberResult {
+
+        protected BooleanExpression only;
+
+        public DBUnaryNumberFunction() {
+            this.only = null;
+        }
+
+        public DBUnaryNumberFunction(BooleanExpression only) {
+            this.only = only;
+        }
+
+        @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return "" + getFunctionName(db) + "( ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
+        }
+
+        @Override
+        public DBUnaryNumberFunction copy() {
+            DBUnaryNumberFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.only = (only == null ? null : only.copy());
+            return newInstance;
+        }
+
+        @Override
+        public boolean isAggregator() {
+            return only.isAggregator();
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            return only.getTablesInvolved();
+        }
+    }
 }

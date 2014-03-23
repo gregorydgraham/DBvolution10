@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -58,7 +59,6 @@ public class DBReportTests extends AbstractTest {
         Assert.assertThat(simpleReportRows.size(), is(1));
         for (SimpleReport simp : simpleReportRows) {
             Assert.assertThat(simp.marqueUID.stringValue(), not(isEmptyOrNullString()));
-            //          Assert.assertThat(simp.carCompany.uidCarCompany.stringValue(), not(isEmptyOrNullString()));
             Assert.assertThat(simp.carCompanyAndMarque.stringValue(), not(isEmptyOrNullString()));
             System.out.println("" + simp.marque);
             System.out.println("" + simp.carCompany);
@@ -74,26 +74,63 @@ public class DBReportTests extends AbstractTest {
         GroupReport reportExample = new GroupReport();
         List<GroupReport> foundGroupReports = database.getRows(reportExample);
         Assert.assertThat(foundGroupReports.size(), is(4));
-        for(GroupReport rep : foundGroupReports){
-            System.out.println(""+rep.carCompanyName.stringValue());   
+        for (GroupReport rep : foundGroupReports) {
+            System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.average.stringValue() + ": " + rep.stddev.stringValue());
         }
     }
-    
+
+    @Test
+    public void CountAllTest() throws SQLException {
+        CountAllReport reportExample = new CountAllReport();
+        List<CountAllReport> foundGroupReports = database.getRows(reportExample);
+        Assert.assertThat(foundGroupReports.size(), is(4));
+        for (CountAllReport rep : foundGroupReports) {
+            System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.countAll.stringValue());
+            switch (rep.countAll.intValue()) {
+                case 1:
+                    Assert.assertThat(rep.carCompanyName.stringValue(), is("FORD"));
+                    break;
+                case 3:
+                    Assert.assertThat(rep.carCompanyName.stringValue(), is("GENERAL MOTORS"));
+                    break;
+                case 2:
+                    Assert.assertThat(rep.carCompanyName.stringValue(), is("TOYOTA"));
+                    break;
+                case 15:
+                    Assert.assertThat(rep.carCompanyName.stringValue(), is("OTHER"));
+                    break;
+                default:
+                    ;
+            }
+        }
+    }
+
+    @Test
+    public void MinMaxSumTest() throws SQLException {
+        MinMaxSumReport reportExample = new MinMaxSumReport();
+        List<MinMaxSumReport> foundGroupReports = database.getRows(reportExample);
+        Assert.assertThat(foundGroupReports.size(), is(4));
+        for (MinMaxSumReport rep : foundGroupReports) {
+            System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.min.stringValue() + ": " + rep.max.stringValue() + ": " + rep.sum.stringValue());
+            if (rep.carCompanyName.stringValue().equals("TOYOTA")) {
+                //TOYOTA: 1: 4896300: 4896301
+                Assert.assertThat(rep.min.intValue(), is(1));
+                Assert.assertThat(rep.max.intValue(), is(4896300));
+                Assert.assertThat(rep.sum.intValue(), is(4896301));
+            }
+        }
+    }
+
     public static class SimpleReport extends DBReport {
 
         public Marque marque = new Marque();
         public CarCompany carCompany = new CarCompany();
-
         public DBString carCompanyName = new DBString(carCompany.column(carCompany.name));
-
         public DBString marqueName = new DBString(marque.column(marque.name));
-
         public DBString carCompanyAndMarque = new DBString(carCompany.column(carCompany.name).append(": ").append(marque.column(marque.name)));
-
         public DBNumber marqueUID = new DBNumber(marque.column(marque.uidMarque));
-        
         public DBDate marqueCreated = new DBDate(marque.column(marque.creationDate));
-        
+
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
             carCompany.uidCarCompany.excludedValues((Object[]) null);
@@ -103,13 +140,14 @@ public class DBReportTests extends AbstractTest {
             super();
         }
     }
-    
+
     public static class GroupReport extends DBReport {
 
         public Marque marque = new Marque();
         public CarCompany carCompany = new CarCompany();
-
         public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+        public DBNumber average = new DBNumber(marque.column(marque.name).length().average());
+        public DBNumber stddev = new DBNumber(marque.column(marque.name).length().standardDeviation());
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
@@ -117,6 +155,42 @@ public class DBReportTests extends AbstractTest {
         }
 
         public GroupReport() {
+            super();
+        }
+    }
+
+    public static class CountAllReport extends DBReport {
+
+        public Marque marque = new Marque();
+        public CarCompany carCompany = new CarCompany();
+        public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+        public DBNumber countAll = new DBNumber(NumberExpression.countAll());
+
+        {
+            marque.toyotaStatusClassID.permittedValues(1246974);
+            carCompany.uidCarCompany.excludedValues((Object[]) null);
+        }
+
+        public CountAllReport() {
+            super();
+        }
+    }
+
+    public static class MinMaxSumReport extends DBReport {
+
+        public Marque marque = new Marque();
+        public CarCompany carCompany = new CarCompany();
+        public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+        public DBNumber min = new DBNumber(marque.column(marque.uidMarque).min());
+        public DBNumber max = new DBNumber(marque.column(marque.uidMarque).max());
+        public DBNumber sum = new DBNumber(marque.column(marque.uidMarque).sum());
+
+        {
+            marque.toyotaStatusClassID.permittedValues(1246974);
+            carCompany.uidCarCompany.excludedValues((Object[]) null);
+        }
+
+        public MinMaxSumReport() {
             super();
         }
     }

@@ -401,6 +401,49 @@ public class StringExpression implements StringResult {
         });
     }
 
+    public NumberExpression count(){        
+        return new NumberExpression(new DBUnaryNumberFunction(this) {
+
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getCountFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public StringExpression max() {
+        return new StringExpression(new DBUnaryStringFunction(this){
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getMaxFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public StringExpression min() {
+        return new StringExpression(new DBUnaryStringFunction(this){
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getMinFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
     @Override
     public DBString getQueryableDatatypeForExpressionValue() {
         return new DBString();

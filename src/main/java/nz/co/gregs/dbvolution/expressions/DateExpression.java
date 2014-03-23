@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 
 public class DateExpression implements DateResult {
 
@@ -85,91 +86,91 @@ public class DateExpression implements DateResult {
     public static DateExpression currentDate() {
         return new DateExpression(
                 new DBNonaryFunction() {
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return db.getDefinition().getCurrentDateFunctionName();
-                    }
-                });
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getCurrentDateFunctionName();
+            }
+        });
     }
 
     public static DateExpression currentDateTime() {
         return new DateExpression(
                 new DBNonaryFunction() {
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return db.getDefinition().getCurrentTimestampFunction();
-                    }
-                });
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getCurrentTimestampFunction();
+            }
+        });
     }
 
     public static DateExpression currentTime() {
         return new DateExpression(
                 new DBNonaryFunction() {
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return db.getDefinition().getCurrentTimeFunction();
-                    }
-                });
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getCurrentTimeFunction();
+            }
+        });
     }
 
     public NumberExpression year() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-                    @Override
-                    public String toSQLString(DBDatabase db) {
-                        return db.getDefinition().getYearFunction(this.only.toSQLString(db));
-                    }
-                });
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getYearFunction(this.only.toSQLString(db));
+            }
+        });
     }
 
     public NumberExpression month() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-                    @Override
-                    public String toSQLString(DBDatabase db) {
-                        return db.getDefinition().getMonthFunction(this.only.toSQLString(db));
-                    }
-                });
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getMonthFunction(this.only.toSQLString(db));
+            }
+        });
     }
 
     public NumberExpression day() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-                    @Override
-                    public String toSQLString(DBDatabase db) {
-                        return db.getDefinition().getDayFunction(this.only.toSQLString(db));
-                    }
-                });
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getDayFunction(this.only.toSQLString(db));
+            }
+        });
     }
 
     public NumberExpression hour() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-                    @Override
-                    public String toSQLString(DBDatabase db) {
-                        return db.getDefinition().getHourFunction(this.only.toSQLString(db));
-                    }
-                });
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getHourFunction(this.only.toSQLString(db));
+            }
+        });
     }
 
     public NumberExpression minute() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-                    @Override
-                    public String toSQLString(DBDatabase db) {
-                        return db.getDefinition().getMinuteFunction(this.only.toSQLString(db));
-                    }
-                });
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getMinuteFunction(this.only.toSQLString(db));
+            }
+        });
     }
 
     public NumberExpression second() {
         return new NumberExpression(
                 new UnaryComplicatedNumberFunction(this) {
-                    @Override
-                    public String toSQLString(DBDatabase db) {
-                        return db.getDefinition().getSecondFunction(this.only.toSQLString(db));
-                    }
-                });
+            @Override
+            public String toSQLString(DBDatabase db) {
+                return db.getDefinition().getSecondFunction(this.only.toSQLString(db));
+            }
+        });
     }
 
     public BooleanExpression is(Date date) {
@@ -265,21 +266,63 @@ public class DateExpression implements DateResult {
     public DateExpression ifDBNull(Date alternative) {
         return new DateExpression(
                 new DateExpression.DBBinaryFunction(this, new DateExpression(alternative)) {
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return db.getDefinition().getIfNullFunctionName();
-                    }
-                });
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getIfNullFunctionName();
+            }
+        });
     }
 
     public DateExpression ifDBNull(DateResult alternative) {
         return new DateExpression(
                 new DateExpression.DBBinaryFunction(this, alternative) {
-                    @Override
-                    String getFunctionName(DBDatabase db) {
-                        return db.getDefinition().getIfNullFunctionName();
-                    }
-                });
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getIfNullFunctionName();
+            }
+        });
+    }
+
+    public NumberExpression count() {
+        return new NumberExpression(new DBUnaryNumberFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getCountFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public DateExpression max() {
+        return new DateExpression(new DBUnaryDateFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getMaxFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
+    }
+
+    public DateExpression min() {
+        return new DateExpression(new DBUnaryDateFunction(this) {
+            @Override
+            String getFunctionName(DBDatabase db) {
+                return db.getDefinition().getMinFunctionName();
+            }
+
+            @Override
+            public boolean isAggregator() {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -393,7 +436,6 @@ public class DateExpression implements DateResult {
         public boolean isAggregator() {
             return only.isAggregator();
         }
-
     }
 
     private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
@@ -449,7 +491,6 @@ public class DateExpression implements DateResult {
         public boolean isAggregator() {
             return first.isAggregator() || second.isAggregator();
         }
-
     }
 
     private static abstract class DBNnaryDateFunction implements DateResult {
@@ -523,7 +564,6 @@ public class DateExpression implements DateResult {
             }
             return result;
         }
-
     }
 
     private static abstract class DBNnaryBooleanFunction implements BooleanResult {
@@ -611,7 +651,6 @@ public class DateExpression implements DateResult {
             }
             return result;
         }
-
     }
 
     private static abstract class DBBinaryFunction implements DateResult {
@@ -684,7 +723,119 @@ public class DateExpression implements DateResult {
         public boolean isAggregator() {
             return first.isAggregator() || second.isAggregator();
         }
-
     }
 
+    private static abstract class DBUnaryNumberFunction implements NumberResult {
+
+        protected DateExpression only;
+
+        public DBUnaryNumberFunction() {
+            this.only = null;
+        }
+
+        public DBUnaryNumberFunction(DateExpression only) {
+            this.only = only;
+        }
+
+        @Override
+        public DBNumber getQueryableDatatypeForExpressionValue() {
+            return new DBNumber();
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return "" + getFunctionName(db) + "( ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
+        }
+
+        @Override
+        public DBUnaryNumberFunction copy() {
+            DBUnaryNumberFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.only = (only == null ? null : only.copy());
+            return newInstance;
+        }
+
+        @Override
+        public boolean isAggregator() {
+            return only.isAggregator();
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            return only.getTablesInvolved();
+        }
+    }
+
+    private static abstract class DBUnaryDateFunction implements DateResult {
+
+        protected DateExpression only;
+
+        public DBUnaryDateFunction() {
+            this.only = null;
+        }
+
+        public DBUnaryDateFunction(DateExpression only) {
+            this.only = only;
+        }
+
+        @Override
+        public DBString getQueryableDatatypeForExpressionValue() {
+            return new DBString();
+        }
+
+        abstract String getFunctionName(DBDatabase db);
+
+        protected String beforeValue(DBDatabase db) {
+            return "" + getFunctionName(db) + "( ";
+        }
+
+        protected String afterValue(DBDatabase db) {
+            return ") ";
+        }
+
+        @Override
+        public String toSQLString(DBDatabase db) {
+            return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
+        }
+
+        @Override
+        public DBUnaryDateFunction copy() {
+            DBUnaryDateFunction newInstance;
+            try {
+                newInstance = getClass().newInstance();
+            } catch (InstantiationException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+            newInstance.only = only.copy();
+            return newInstance;
+        }
+
+        @Override
+        public boolean isAggregator() {
+            return only.isAggregator();
+        }
+
+        @Override
+        public Set<DBRow> getTablesInvolved() {
+            return only.getTablesInvolved();
+        }
+    }
 }

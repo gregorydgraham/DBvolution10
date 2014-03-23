@@ -66,5 +66,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
         return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public String getStandardDeviationFunctionName() {
+        return "STDEV";
+    }
+
 
 }
