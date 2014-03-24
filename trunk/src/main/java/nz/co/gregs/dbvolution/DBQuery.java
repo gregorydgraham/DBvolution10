@@ -16,6 +16,8 @@
 package nz.co.gregs.dbvolution;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
@@ -1420,12 +1422,12 @@ public class DBQuery {
         edu.uci.ics.jung.graph.Graph<QueryGraph.QueryGraphNode, DBRelationship> jungGraph = queryGraph.getJungGraph();
 
         Layout<QueryGraph.QueryGraphNode, DBRelationship> layout
-                = new SpringLayout2<QueryGraph.QueryGraphNode, DBRelationship>(jungGraph);
-        layout.setSize(new Dimension(300, 300));
+                = new FRLayout<QueryGraph.QueryGraphNode, DBRelationship>(jungGraph);
+        layout.setSize(new Dimension(550, 400));
 
         VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship> vv
                 = new VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship>(layout);
-        vv.setPreferredSize(new Dimension(350, 350));
+        vv.setPreferredSize(new Dimension(600, 480));
 
         DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String> gm
                 = new DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String>();
@@ -1439,6 +1441,7 @@ public class DBQuery {
 
         JFrame frame = new JFrame("DBQuery Graph");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setResizable(true);
         frame.getContentPane().add(vv);
         frame.pack();
         frame.setVisible(true);
