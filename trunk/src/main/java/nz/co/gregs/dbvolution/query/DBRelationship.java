@@ -63,12 +63,12 @@ public class DBRelationship implements Serializable {
      * columnA = columnB relationship like a classic foreign key relation.
      *
      * <p>
-     * Use this constructor to create a equal new relationship or use {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)
-     * }
+     * Use this constructor to create a equal new relationship or use
+     * {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)}
      *
      * <p>
-     * More complex relationships a possible with the longer constructor or null     {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.operators.DBOperator)
-     * }
+     * More complex relationships a possible with the longer constructor or
+     * {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.operators.DBOperator)}
      *
      * @param thisTable
      * @param thisTableField
@@ -182,16 +182,31 @@ public class DBRelationship implements Serializable {
     public boolean equals(Object o) {
         if (o instanceof DBRelationship) {
             DBRelationship otherRel = (DBRelationship) o;
-            if (this.firstTable.getClass().equals(otherRel.firstTable.getClass())
-                    || this.secondTable.getClass().equals(otherRel.secondTable.getClass())
-                    || this.firstColumnPropertyWrapper.referencedPropertyDefinitionIdentity().equals(otherRel.firstColumnPropertyWrapper.referencedPropertyDefinitionIdentity())
-                    || this.secondColumnPropertyWrapper.referencedPropertyDefinitionIdentity().equals(otherRel.secondColumnPropertyWrapper.referencedPropertyDefinitionIdentity())
-                    || this.operation.equals(otherRel.operation)
-                    || this.firstTable.getClass().equals(otherRel.secondTable.getClass())
-                    || this.secondTable.getClass().equals(otherRel.firstTable.getClass())
-                    || this.firstColumnPropertyWrapper.referencedPropertyDefinitionIdentity().equals(otherRel.secondColumnPropertyWrapper.referencedPropertyDefinitionIdentity())
-                    || this.secondColumnPropertyWrapper.referencedPropertyDefinitionIdentity().equals(otherRel.firstColumnPropertyWrapper.referencedPropertyDefinitionIdentity())
-                    ) {
+            final DBRow firstTable1 = this.firstTable;
+            final DBRow firstTable2 = otherRel.firstTable;
+            final DBRow secondTable1 = this.secondTable;
+            final DBRow secondTable2 = otherRel.secondTable;
+            final PropertyWrapper firstColumnPropertyWrapper1 = this.firstColumnPropertyWrapper;
+            final PropertyWrapper firstColumnPropertyWrapper2 = otherRel.firstColumnPropertyWrapper;
+            final PropertyWrapper secondColumnPropertyWrapper1 = this.secondColumnPropertyWrapper;
+            final PropertyWrapper secondColumnPropertyWrapper2 = otherRel.secondColumnPropertyWrapper;
+            final DBOperator operation1 = this.operation;
+            final DBOperator operation2 = otherRel.operation;
+            final Class<? extends DBRow> firstTable1Class = firstTable1.getClass();
+            final Class<? extends DBRow> secondTable1Class = secondTable1.getClass();
+//            final PropertyWrapperDefinition secondColumn2ReferencedPropertyDefinitionIdentity = secondColumnPropertyWrapper2.referencedPropertyDefinitionIdentity();
+//            final PropertyWrapperDefinition firstColumn2ReferencedPropertyDefinitionIdentity = firstColumnPropertyWrapper2.referencedPropertyDefinitionIdentity();
+            if ((firstTable1Class.equals(firstTable2.getClass()))
+                    && (secondTable1Class.equals(secondTable2.getClass()))
+                    && (firstColumnPropertyWrapper1.equals(firstColumnPropertyWrapper2))
+                    && (secondColumnPropertyWrapper1.equals(secondColumnPropertyWrapper2))
+                    && (operation1 == null ? operation2 == null : operation1.equals(operation2))) {
+                return true;
+            } else if ((firstTable1Class.equals(secondTable2.getClass()))
+                    && (secondTable1Class.equals(firstTable2.getClass()))
+                    && (firstColumnPropertyWrapper1.equals(secondColumnPropertyWrapper2))
+                    && (secondColumnPropertyWrapper1.equals(firstColumnPropertyWrapper2))
+                    && (operation1 == null ? operation2 == null : operation1.equals(operation2))) {
                 return true;
             }
         }
