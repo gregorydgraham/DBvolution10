@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQD
  * @author gregorygraham
  */
 abstract public class DBOperator implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     Boolean invertOperator = false;
     Boolean includeNulls = false;
@@ -90,11 +91,11 @@ abstract public class DBOperator implements Serializable {
 
     public boolean equals(DBOperator other) {
         return this.getClass() == other.getClass()
-                && this.invertOperator == other.invertOperator
-                && this.includeNulls == other.includeNulls
-                && firstValue.equals(other.firstValue)
-                && secondValue.equals(other.secondValue)
-                && thirdValue.equals(other.thirdValue);
+                && this.invertOperator.equals(other.invertOperator)
+                && this.includeNulls.equals(other.includeNulls)
+                && (firstValue==null?other.firstValue==null:firstValue.equals(other.firstValue))
+                && (secondValue==null?other.secondValue==null:secondValue.equals(other.secondValue))
+                && (thirdValue==null?other.thirdValue==null:thirdValue.equals(other.thirdValue));
     }
 
     abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);

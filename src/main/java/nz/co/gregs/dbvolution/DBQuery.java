@@ -89,6 +89,9 @@ import nz.co.gregs.dbvolution.query.QueryGraph;
  */
 public class DBQuery {
 
+    private static final int COUNT_QUERY = 1;
+    private static final int SELECT_QUERY = 0;
+
     private final DBDatabase database;
     private final List<DBRow> queryTables;
     private final List<Class<? extends DBRow>> optionalQueryTables;
@@ -248,7 +251,7 @@ public class DBQuery {
      * @throws SQLException
      */
     public String getSQLForQuery() throws SQLException {
-        return getSQLForQuery(null);
+        return getSQLForQuery(SELECT_QUERY);
     }
 
     String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables) {
@@ -295,7 +298,7 @@ public class DBQuery {
         return sqlToReturn;
     }
 
-    private String getSQLForQuery(String providedSelectClause) throws SQLException {
+    private String getSQLForQuery(int queryType) throws SQLException {
 
         if (allQueryTables.isEmpty()) {
             throw new AccidentalBlankQueryException();
@@ -338,16 +341,15 @@ public class DBQuery {
             otherTables.remove(tabRow);
             tableName = tabRow.getTableName();
 
-            if (providedSelectClause == null) {
-                List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
-                for (PropertyWrapper propDefn : tabProps) {
-//                    String formattedColumnName = defn.formatTableAliasAndColumnNameForSelectClause(tabRow, columnName);
-                    selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
-                    colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-                }
-            } else {
-                selectClause = new StringBuilder(providedSelectClause);
+//            if (providedSelectClause == null) {
+            List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
+            for (PropertyWrapper propDefn : tabProps) {
+                selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
+                colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
             }
+//            } else {
+//                selectClause = new StringBuilder(providedSelectClause);
+//            }
             if (!options.isUseANSISyntax()) {
                 fromClause.append(separator).append(tableName);
             } else {
@@ -396,15 +398,30 @@ public class DBQuery {
             }
         }
 
-        final String sqlString = selectClause.append(lineSep)
-                .append(fromClause).append(lineSep)
-                .append(whereClause).append(lineSep)
-                .append(rawSQLClause).append(lineSep)
-                .append(getOrderByClause()).append(lineSep)
-                .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
-                .append(groupByColumns.size() > 0 ? groupByClause : "")
-                .append(defn.endSQLStatement())
-                .toString();
+        String sqlString = "";
+        if (queryType == SELECT_QUERY) {
+            sqlString = selectClause.append(lineSep)
+                    .append(fromClause).append(lineSep)
+                    .append(whereClause).append(lineSep)
+                    .append(rawSQLClause).append(lineSep)
+                    .append(getOrderByClause()).append(lineSep)
+                    .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
+                    .append(groupByColumns.size() > 0 ? groupByClause : "")
+                    .append(defn.endSQLStatement())
+                    .toString();
+        } else if (queryType == COUNT_QUERY) {
+            sqlString = new StringBuilder(defn.beginSelectStatement())
+                    .append(defn.countStarClause())
+                    .append(lineSep)
+                    .append(fromClause).append(lineSep)
+                    .append(whereClause).append(lineSep)
+                    .append(rawSQLClause).append(lineSep)
+                    //                    .append(getOrderByClause()).append(lineSep)
+                    //                    .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
+                    //                    .append(groupByColumns.size() > 0 ? groupByClause : "")
+                    .append(defn.endSQLStatement())
+                    .toString();
+        }
 
         return sqlString;
     }
@@ -452,7 +469,8 @@ public class DBQuery {
      */
     public String getSQLForCount() throws SQLException {
         DBDefinition defn = database.getDefinition();
-        return getSQLForQuery(defn.beginSelectStatement() + defn.countStarClause());
+        return getSQLForQuery(DBQuery.COUNT_QUERY);
+//        return getSQLForQuery(defn.beginSelectStatement() + defn.countStarClause(), DBQuery.COUNT_QUERY);
     }
 
     /**
@@ -810,13 +828,14 @@ public class DBQuery {
      */
     public Long count() throws SQLException {
         if (results != null) {
-            return new Long(results.size());
+            return (long) results.size();
         } else {
             Long result = 0L;
 
             DBStatement dbStatement = database.getDBStatement();
             try {
-                ResultSet resultSet = dbStatement.executeQuery(this.getSQLForCount());
+                final String sqlForCount = this.getSQLForCount();
+                ResultSet resultSet = dbStatement.executeQuery(sqlForCount);
                 try {
                     while (resultSet.next()) {
                         result = resultSet.getLong(1);

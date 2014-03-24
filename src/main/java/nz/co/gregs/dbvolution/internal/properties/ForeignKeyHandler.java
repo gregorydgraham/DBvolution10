@@ -166,8 +166,8 @@ class ForeignKeyHandler {
 	 * single primary key of the referenced table.
 	 * 
 	 * <p> Note that the property definition returned provides identity of
-	 * the property only. It provides access to the property's: java name, column name,
-	 * type, and identity information about the table it belongs to (ie: table name).
+	 * the property only. It provides access to the property's java name, column name,
+	 * type, and identity information about the table it belongs to (ie the table name).
 	 * Attempts to get or set its value or get the type adaptor instance will
 	 * result in an internal exception.
 	 * 
