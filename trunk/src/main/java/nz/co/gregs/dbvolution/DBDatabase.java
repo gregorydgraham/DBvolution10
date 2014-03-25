@@ -1012,6 +1012,26 @@ public abstract class DBDatabase {
      * @return A List of instances of the supplied report from the database
      * @throws SQLException
      */
+    public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException {
+        return DBReport.getRows(this, report, examples);
+    }
+
+    /**
+     * Get The Rows For The Supplied DBReport Constrained By The Examples.
+     *
+     * <p>
+     * Calls the
+     * {@link DBReport#getRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
+     *
+     * Retrieves a list of report rows from the database using the constraints
+     * supplied by the report and the examples supplied.
+     *
+     * @param <A>
+     * @param report
+     * @param examples
+     * @return A List of instances of the supplied report from the database
+     * @throws SQLException
+     */
     public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException {
         return DBReport.getRows(this, report, examples);
     }

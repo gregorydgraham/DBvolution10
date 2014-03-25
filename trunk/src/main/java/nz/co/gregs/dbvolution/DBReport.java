@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  *
@@ -48,13 +49,13 @@ public class DBReport {
      * @param <A>
      * @param database
      * @param exampleReport
-     * @return a list of DBReport instances representing the results of the report query.
+     * @return a list of DBReport instances representing the results of the
+     * report query.
      * @throws SQLException
      */
     public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
+        DBQuery query = setUpQuery(database, exampleReport, new DBRow[]{});
         List<A> reportRows = new ArrayList<A>();
-        DBQuery query = database.getDBQuery();
-        addTablesAndExpressions(query, exampleReport);
         query.setBlankQueryAllowed(true);
         List<DBQueryRow> allRows = query.getAllRows();
         for (DBQueryRow row : allRows) {
@@ -74,19 +75,62 @@ public class DBReport {
      * @param database
      * @param exampleReport
      * @param rows
-     * @return a list of DBReport instances representing the results of the report query.
+     * @return a list of DBReport instances representing the results of the
+     * report query.
      * @throws SQLException
      */
     public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
+        DBQuery query = setUpQuery(database, exampleReport, rows);
         List<A> reportRows = new ArrayList<A>();
-        DBQuery query = database.getDBQuery();
-        addTablesAndExpressions(query, exampleReport);
-        query.addExtraExamples(rows);
         List<DBQueryRow> allRows = query.getAllRows();
         for (DBQueryRow row : allRows) {
             reportRows.add(DBReport.getReportInstance(exampleReport, row));
         }
         return reportRows;
+    }
+
+    public static <A extends DBReport> String getSQLForQuery(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
+        DBQuery query = setUpQuery(database, exampleReport, rows);
+        return query.getSQLForQuery();
+    }
+
+    public static <A extends DBReport> String getSQLForCount(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
+        DBQuery query = setUpQuery(database, exampleReport, rows);
+        return query.getSQLForCount();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        String separator = "";
+
+        for (Field field : fields) {
+            try {
+                final Object get = field.get(this);
+                if (QueryableDatatype.class.isAssignableFrom(get.getClass())) {
+                    string.append(separator);
+                    string.append(" ");
+                    string.append(field.getName());
+                    string.append(":");
+                    string.append(get.toString());
+                    separator = ",";
+                }
+            } catch (IllegalArgumentException ex) {
+                throw new RuntimeException(ex);
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return string.toString();
+    }
+
+    private static <A extends DBReport> DBQuery setUpQuery(DBDatabase database, A exampleReport, DBRow[] rows) {
+        DBQuery query = database.getDBQuery();
+        addTablesAndExpressions(query, exampleReport);
+        query.addExtraExamples(rows);
+        return query;
     }
 
     private static <A extends DBReport> void addTablesAndExpressions(DBQuery query, A exampleReport) {

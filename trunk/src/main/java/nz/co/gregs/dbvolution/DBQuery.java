@@ -15,16 +15,9 @@
  */
 package nz.co.gregs.dbvolution;
 
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
-import edu.uci.ics.jung.visualization.RenderContext;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.algorithms.layout.*;
+import edu.uci.ics.jung.visualization.*;
+import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import java.awt.Color;
@@ -317,6 +310,9 @@ public class DBQuery {
         }
         DBDefinition defn = database.getDefinition();
         StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
+        int columnIndex = 1;
+        String groupByColumnIndex = defn.beginGroupByClause();
+        String groupByColumnIndexSeparator = "";
         StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
         List<DBRow> joinedTables = new ArrayList<DBRow>();
         StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options));
@@ -343,15 +339,14 @@ public class DBQuery {
             otherTables.remove(tabRow);
             tableName = tabRow.getTableName();
 
-//            if (providedSelectClause == null) {
             List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
             for (PropertyWrapper propDefn : tabProps) {
                 selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
                 colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+                groupByColumnIndex+=groupByColumnIndexSeparator+columnIndex;
+                groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
+                columnIndex++;
             }
-//            } else {
-//                selectClause = new StringBuilder(providedSelectClause);
-//            }
             if (!options.isUseANSISyntax()) {
                 fromClause.append(separator).append(tableName);
             } else {
@@ -384,6 +379,11 @@ public class DBQuery {
         for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
             selectClause.append(colSep).append(entry.getValue().toSQLString(database)).append(" ").append(defn.formatExpressionAlias(entry.getKey()));
             colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+            if (!entry.getValue().isAggregator()){
+                groupByColumnIndex+=groupByColumnIndexSeparator+columnIndex;
+                groupByColumnIndexSeparator=defn.getSubsequentGroupBySubClauseSeparator();
+            }
+            columnIndex++;
         }
 
         for (Map.Entry<Object, DBExpression> entry : groupByColumns.entrySet()) {
@@ -400,6 +400,7 @@ public class DBQuery {
             }
         }
 
+        boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
         String sqlString = "";
         if (queryType == SELECT_QUERY) {
             sqlString = selectClause.append(lineSep)
@@ -408,7 +409,7 @@ public class DBQuery {
                     .append(rawSQLClause).append(lineSep)
                     .append(getOrderByClause()).append(lineSep)
                     .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
-                    .append(groupByColumns.size() > 0 ? groupByClause : "")
+                    .append(groupByColumns.size() > 0 ? (useColumnIndexGroupBy?groupByColumnIndex:groupByClause) : "")
                     .append(defn.endSQLStatement())
                     .toString();
         } else if (queryType == COUNT_QUERY) {
@@ -418,9 +419,6 @@ public class DBQuery {
                     .append(fromClause).append(lineSep)
                     .append(whereClause).append(lineSep)
                     .append(rawSQLClause).append(lineSep)
-                    //                    .append(getOrderByClause()).append(lineSep)
-                    //                    .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
-                    //                    .append(groupByColumns.size() > 0 ? groupByClause : "")
                     .append(defn.endSQLStatement())
                     .toString();
         }

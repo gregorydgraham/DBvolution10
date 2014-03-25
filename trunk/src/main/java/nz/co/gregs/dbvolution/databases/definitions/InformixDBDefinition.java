@@ -19,22 +19,26 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 
-
 public class InformixDBDefinition extends DBDefinition {
-    
+
     private final SimpleDateFormat dateFormat;
     private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
     public String informixDateFormat = "%Y-%m-%d %H:%M:%S";
 
-    public InformixDBDefinition(){
-        
+    public InformixDBDefinition() {
+
         this.dateFormat = new SimpleDateFormat(DATE_FORMAT);
     }
 
     @Override
+    public boolean prefersIndexBasedGroupByClause() {
+        return true;
+    }
+
+    @Override
     public String getDateFormattedForQuery(Date date) {
-        return "TO_DATE('" + dateFormat.format(date) + "','"+informixDateFormat+"')";
+        return "TO_DATE('" + dateFormat.format(date) + "','" + informixDateFormat + "')";
     }
 
     /**
@@ -50,8 +54,8 @@ public class InformixDBDefinition extends DBDefinition {
 
     @Override
     public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
-        return " FIRST "+rowLimit+" ";
-    }    
+        return " FIRST " + rowLimit + " ";
+    }
 
     @Override
     public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
@@ -62,6 +66,20 @@ public class InformixDBDefinition extends DBDefinition {
     public String getCurrentDateFunctionName() {
         return " current ";
     }
-    
-    
+
+    @Override
+    public String getDayFunction(String dateExpression) {
+        return "DAY(" + dateExpression + ")";
+    }
+
+    @Override
+    public String getMonthFunction(String dateExpression) {
+        return "MONTH(" + dateExpression + ")";
+    }
+
+    @Override
+    public String getYearFunction(String dateExpression) {
+        return "YEAR(" + dateExpression + ")";
+    }
+
 }
