@@ -15,7 +15,10 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -68,9 +71,23 @@ public class DBInsert extends DBAction {
     @Override
     public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBStatement statement = db.getDBStatement();
+
         DBActionList actions = new DBActionList(new DBInsert(row));
         for (String sql : getSQLStatements(db, row)) {
-            statement.execute(sql);
+            statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet generatedKeys = statement.getGeneratedKeys();
+            try {
+                ResultSetMetaData metaData = generatedKeys.getMetaData();
+                while (generatedKeys.next()) {
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        System.out.println("GENERATED KEYS: " + generatedKeys.getLong(1));
+                    }
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            } finally {
+                generatedKeys.close();
+            }
         }
         actions.addAll(blobSave.execute(db, row));
         row.setDefined();

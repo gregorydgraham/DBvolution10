@@ -62,6 +62,11 @@ public class OracleDBDefinition extends DBDefinition {
     }
 
     @Override
+    public boolean prefersIndexBasedGroupByClause() {
+        return true;
+    }
+
+    @Override
     public Object endSQLStatement() {
         return "";
     }

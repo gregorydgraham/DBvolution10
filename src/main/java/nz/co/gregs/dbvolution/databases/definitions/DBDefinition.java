@@ -128,6 +128,10 @@ public abstract class DBDefinition {
             return beginOrLine();
         }
     }
+    
+    public boolean prefersIndexBasedGroupByClause(){
+        return false;
+    }
 
     public String beginAndLine() {
         return " AND ";
@@ -567,7 +571,7 @@ public abstract class DBDefinition {
         return ", ";
     }
 
-    public Object beginGroupByClause() {
+    public String beginGroupByClause() {
         return " GROUP BY ";
     }
 
