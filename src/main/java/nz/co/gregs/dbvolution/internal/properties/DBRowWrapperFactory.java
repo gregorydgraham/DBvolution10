@@ -17,7 +17,7 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public class DBRowWrapperFactory {
 	/** Thread-safety: access to this object must be synchronized on it */
-	private Map<Class<?>, DBRowClassWrapper> classWrappersByClass = new HashMap<Class<?>, DBRowClassWrapper>();
+	private final Map<Class<?>, DBRowClassWrapper> classWrappersByClass = new HashMap<Class<?>, DBRowClassWrapper>();
 	
 	/**
 	 * Gets the class adaptor for the given class.
