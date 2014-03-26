@@ -20,12 +20,13 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class LargeObjectColumn extends LargeObjectExpression implements ColumnProvider {
 
     private final AbstractColumn column;
 
-    public LargeObjectColumn(DBRow row, DBLargeObject field) {
+    public LargeObjectColumn(RowDefinition row, DBLargeObject field) {
         this.column = new AbstractColumn(row, field);
     }
 

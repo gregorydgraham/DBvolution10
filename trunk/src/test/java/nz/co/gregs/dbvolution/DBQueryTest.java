@@ -22,7 +22,7 @@ import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
-import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -158,7 +158,7 @@ public class DBQueryTest extends AbstractTest {
         try {
             marqueQuery.ignoreForeignKey(wrongMarque.carCompany);
             throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
-        } catch (IncorrectDBRowInstanceSuppliedException wrongDBRowEx) {
+        } catch (IncorrectRowProviderInstanceSuppliedException wrongDBRowEx) {
         }
         marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
         query.setCartesianJoinsAllowed(true);

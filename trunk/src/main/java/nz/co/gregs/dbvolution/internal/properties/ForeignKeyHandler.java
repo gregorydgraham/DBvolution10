@@ -56,7 +56,7 @@ class ForeignKeyHandler {
 		// (from annotations etc. on referenced class)
 		PropertyWrapperDefinition identifiedReferencedProperty = null;
 		if (referencedClass != null) {
-			DBRowClassWrapper referencedClassWrapper = new DBRowClassWrapper(referencedClass, true);
+			RowDefinitionClassWrapper referencedClassWrapper = new RowDefinitionClassWrapper(referencedClass, true);
 
 			// validate: referenced class is valid enough for the purposes of doing queries on this class
 			if (!referencedClassWrapper.isTable()) {

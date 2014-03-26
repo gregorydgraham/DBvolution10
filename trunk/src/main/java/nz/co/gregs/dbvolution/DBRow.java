@@ -4,21 +4,18 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import nz.co.gregs.dbvolution.query.DBRelationship;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.columns.BooleanColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
-import nz.co.gregs.dbvolution.columns.*;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 import org.reflections.Reflections;
 
@@ -30,11 +27,10 @@ import org.reflections.Reflections;
  *
  * @author Gregory Graham
  */
-abstract public class DBRow implements Serializable {
+abstract public class DBRow extends RowDefinition implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    static DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
     boolean isDefined = false;
     final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
     List<PropertyWrapperDefinition> returnColumns = null; //= new ArrayList<PropertyWrapperDefinition>();
@@ -42,7 +38,6 @@ abstract public class DBRow implements Serializable {
     private transient Boolean hasBlobs;
     private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
     private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
-    private transient DBRowInstanceWrapper wrapper = null;
     private transient ArrayList<Class<? extends DBRow>> referencedTables;
     private String tableAlias;
     private Boolean emptyRow = true;
@@ -123,232 +118,6 @@ abstract public class DBRow implements Serializable {
         }
         return newRow;
     }
-
-    /**
-     * Creates a new LargeObjectColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A LargeObjectColumn representing the supplied field
-     */
-    public LargeObjectColumn column(DBLargeObject fieldOfThisInstance) {
-        return new LargeObjectColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Creates a new ColumnProvider instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     * 
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A ColumnProvider representing the supplied field
-     */
-    public ColumnProvider column(QueryableDatatype fieldOfThisInstance) throws IncorrectDBRowInstanceSuppliedException {
-        ColumnProvider col = null;
-        if (DBBoolean.class.isAssignableFrom(fieldOfThisInstance.getClass())){
-            col = this.column((DBBoolean) fieldOfThisInstance);
-        }else if (DBDate.class.isAssignableFrom(fieldOfThisInstance.getClass())){
-            col = this.column((DBDate) fieldOfThisInstance);
-        }else if (DBLargeObject.class.isAssignableFrom(fieldOfThisInstance.getClass())){
-            col = this.column((DBLargeObject) fieldOfThisInstance);
-        }else if (DBNumber.class.isAssignableFrom(fieldOfThisInstance.getClass())){
-            col = this.column((DBNumber) fieldOfThisInstance);
-        }else if (DBString.class.isAssignableFrom(fieldOfThisInstance.getClass())){
-            col = this.column((DBString) fieldOfThisInstance);
-        }
-        if (col == null) {
-            throw new IncorrectDBRowInstanceSuppliedException(this, fieldOfThisInstance);
-        }
-        return col;
-    }
-
-    /**
-     * Creates a new BooleanColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A LargeObjectColumn representing the supplied field
-     */
-    public BooleanColumn column(DBBoolean fieldOfThisInstance) {
-        return new BooleanColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Creates a new BooleanColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A Column representing the supplied field
-     */
-    public BooleanColumn column(Boolean fieldOfThisInstance) {
-        return new BooleanColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Creates a new StringColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A Column representing the supplied field
-     */
-    public StringColumn column(DBString fieldOfThisInstance) {
-        return new StringColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Creates a new StringColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A Column representing the supplied field
-     */
-    public StringColumn column(String fieldOfThisInstance) {
-        return new StringColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Creates a new NumberColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A Column representing the supplied field
-     */
-    public NumberColumn column(DBNumber fieldOfThisInstance) {
-        return new NumberColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Creates a new NumberColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A Column representing the supplied field
-     */
-    public NumberColumn column(Number fieldOfThisInstance) {
-        return new NumberColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Creates a new DateColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A Column representing the supplied field
-     */
-    public DateColumn column(DBDate fieldOfThisInstance) {
-        return new DateColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Creates a new DateColumn instance to help create
-     * {@link DBExpression expressions}
-     *
-     * <p>
-     * This method is the easy way to create a reference to the database column
-     * represented by the field for use in creating complex expressions within
-     * your query.
-     *
-     * <p>
-     * For use with the
-     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-     *
-     * @param fieldOfThisInstance
-     * @return A Column representing the supplied field
-     */
-    public DateColumn column(Date fieldOfThisInstance) {
-        return new DateColumn(this, fieldOfThisInstance);
-    }
-
-    /**
-     * Returns the PropertyWrappers used internally to maintain the relationship
-     * between fields and columns
-     *
-     * @return non-null list of property wrappers, empty if none
-     */
-    public List<PropertyWrapper> getPropertyWrappers() {
-        return getWrapper().getPropertyWrappers();
-    }
-
     /**
      * Remove all the settings on all the fields of this DBRow
      */
@@ -656,34 +425,6 @@ abstract public class DBRow implements Serializable {
     }
 
     /**
-     * Gets a wrapper for the underlying property (field or method) given the
-     * property's object reference.
-     *
-     * <p>
-     * For example the following code snippet will get a property wrapper for
-     * the {@literal name} field:
-     * <pre>
-     * Customer customer = ...;
-     * getPropertyWrapperOf(customer.name);
-     * </pre>
-     *
-     * @param qdt
-     * @return the PropertyWrapper associated with the Object suppled.
-     */
-    public PropertyWrapper getPropertyWrapperOf(Object qdt) {
-        List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
-
-        Object qdtOfProp;
-        for (PropertyWrapper prop : props) {
-            qdtOfProp = prop.rawJavaValue();
-            if (qdtOfProp == qdt) {
-                return prop;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Ignores the foreign key of the property (field or method) given the
      * property's object reference.
      *
@@ -703,7 +444,7 @@ abstract public class DBRow implements Serializable {
     public void ignoreForeignKey(Object qdt) {
         PropertyWrapper fkProp = getPropertyWrapperOf(qdt);
         if (fkProp == null) {
-            throw new IncorrectDBRowInstanceSuppliedException(this, qdt);
+            throw new IncorrectRowProviderInstanceSuppliedException(this, qdt);
         }
         ignoredForeignKeys.add(fkProp.getDefinition());
         fkFields.clear();
@@ -869,7 +610,7 @@ abstract public class DBRow implements Serializable {
         for (T property : properties) {
             propWrapper = getPropertyWrapperOf(property);
             if (propWrapper == null) {
-                throw new IncorrectDBRowInstanceSuppliedException(this, property);
+                throw new IncorrectRowProviderInstanceSuppliedException(this, property);
             }
             returnColumns.add(propWrapper.getDefinition());
         }
@@ -1143,13 +884,6 @@ abstract public class DBRow implements Serializable {
             }
         }
         return relatedTables;
-    }
-
-    protected DBRowInstanceWrapper getWrapper() {
-        if (wrapper == null) {
-            wrapper = wrapperFactory.instanceWrapperFor(this);
-        }
-        return wrapper;
     }
 
     public List<PropertyWrapper> getLargeObjects() {

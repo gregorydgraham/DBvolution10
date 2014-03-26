@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.exceptions.UnknownJavaSQLTypeException;
@@ -814,7 +814,7 @@ public class DBTableOLD<E extends DBRow> {
         for (QueryableDatatype qdt : orderColumns) {
             PropertyWrapper prop = baseRow.getPropertyWrapperOf(qdt);
             if (prop == null) {
-                throw new IncorrectDBRowInstanceSuppliedException(baseRow, qdt);
+                throw new IncorrectRowProviderInstanceSuppliedException(baseRow, qdt);
             }
             sortOrder.add(prop);
         }

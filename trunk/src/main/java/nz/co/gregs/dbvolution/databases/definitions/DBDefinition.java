@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
@@ -65,7 +66,7 @@ public abstract class DBDefinition {
         return formatTableName(table) + "." + formatColumnName(columnName);
     }
 
-    public String formatTableAliasAndColumnName(DBRow table, String columnName) {
+    public String formatTableAliasAndColumnName(RowDefinition table, String columnName) {
         return getTableAlias(table) + "." + formatColumnName(columnName);
     }
 
@@ -92,7 +93,7 @@ public abstract class DBDefinition {
         return formatForColumnAlias(actualName);
     }
 
-    public String formatColumnNameForDBQueryResultSet(DBRow table, String columnName) {
+    public String formatColumnNameForDBQueryResultSet(RowDefinition table, String columnName) {
         final String actualName = formatTableAliasAndColumnName(table, columnName);
         return formatForColumnAlias(actualName);
     }
@@ -438,7 +439,7 @@ public abstract class DBDefinition {
         return " ";
     }
 
-    public Object getTableAlias(DBRow tabRow) {
+    public Object getTableAlias(RowDefinition tabRow) {
         return ("_" + tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
     }
 

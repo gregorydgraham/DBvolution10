@@ -15,25 +15,25 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
-import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
  * @author Gregory Graham
  */
-public class IncorrectDBRowInstanceSuppliedException extends RuntimeException{
+public class IncorrectRowProviderInstanceSuppliedException extends RuntimeException{
     
     public static final long serialVersionUID = 1L;
 
-    public IncorrectDBRowInstanceSuppliedException() {
+    public IncorrectRowProviderInstanceSuppliedException() {
         super("The Field Supplied Is Not A Field Of This Instance: use only fields from this instance.");
     }
 
-    public IncorrectDBRowInstanceSuppliedException(DBRow row, Object qdt) {
+    public IncorrectRowProviderInstanceSuppliedException(RowDefinition row, Object qdt) {
         super(constructMessage(row, qdt));
     }
 
-    public static IncorrectDBRowInstanceSuppliedException newMultiRowInstance(Object qdt) {
+    public static IncorrectRowProviderInstanceSuppliedException newMultiRowInstance(Object qdt) {
     	StringBuilder buf = new StringBuilder();
     	buf.append("The ");
     	if (qdt == null) {
@@ -44,14 +44,14 @@ public class IncorrectDBRowInstanceSuppliedException extends RuntimeException{
     	}
     	buf.append(" Field Supplied Is Not A Field Of Any Of The DBRow ");
     	buf.append(" Instances: use only fields from these instances.");
-        return new IncorrectDBRowInstanceSuppliedException(buf.toString());
+        return new IncorrectRowProviderInstanceSuppliedException(buf.toString());
     }
     
-    public IncorrectDBRowInstanceSuppliedException(String message) {
+    public IncorrectRowProviderInstanceSuppliedException(String message) {
     	super(message);
     }
     
-    private static String constructMessage(DBRow row, Object qdt) {
+    private static String constructMessage(RowDefinition row, Object qdt) {
     	StringBuilder buf = new StringBuilder();
     	buf.append("The ");
     	if (qdt == null) {

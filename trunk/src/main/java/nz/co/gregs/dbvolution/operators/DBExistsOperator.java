@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
-import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
@@ -55,14 +55,14 @@ public class DBExistsOperator<E extends DBRow> extends DBOperator {
      *
      * @param tableRow
      * @param qdtOfTheRow
-     * @throws IncorrectDBRowInstanceSuppliedException if the
+     * @throws IncorrectRowProviderInstanceSuppliedException if the
      * {@code qdtOfTheRow} is not from the {@code tableRow} instance
      */
-    public DBExistsOperator(E tableRow, Object qdtOfTheRow) throws IncorrectDBRowInstanceSuppliedException {
+    public DBExistsOperator(E tableRow, Object qdtOfTheRow) throws IncorrectRowProviderInstanceSuppliedException {
         this.tableRow = DBRow.copyDBRow(tableRow);
         PropertyWrapper qdtField = tableRow.getPropertyWrapperOf(qdtOfTheRow);
         if (qdtField == null) {
-            throw new IncorrectDBRowInstanceSuppliedException(tableRow, qdtOfTheRow);
+            throw new IncorrectRowProviderInstanceSuppliedException(tableRow, qdtOfTheRow);
         }
         this.referencedColumnName = qdtField.columnName();
     }

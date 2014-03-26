@@ -20,16 +20,17 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 
     private final AbstractColumn column;
 
-    public BooleanColumn(DBRow row, Boolean field) {
+    public BooleanColumn(RowDefinition row, Boolean field) {
         this.column = new AbstractColumn(row, field);
     }
 
-    public BooleanColumn(DBRow row, DBBoolean field) {
+    public BooleanColumn(RowDefinition row, DBBoolean field) {
         this.column = new AbstractColumn(row, field);
     }
 

@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class DateColumn extends DateExpression implements ColumnProvider {
 
@@ -29,11 +30,11 @@ public class DateColumn extends DateExpression implements ColumnProvider {
     private DateColumn() {
     }
 
-    public DateColumn(DBRow row, Date field) {
+    public DateColumn(RowDefinition row, Date field) {
         this.column = new AbstractColumn(row, field);
     }
 
-    public DateColumn(DBRow row, DBDate field) {
+    public DateColumn(RowDefinition row, DBDate field) {
         this.column = new AbstractColumn(row, field);
     }
 
