@@ -103,32 +103,32 @@ public class DBReport extends RowDefinition{
         return query.getSQLForCount();
     }
 
-    @Override
-    public String toString() {
-        StringBuilder string = new StringBuilder();
-        Field[] fields = this.getClass().getDeclaredFields();
-
-        String separator = "";
-
-        for (Field field : fields) {
-            try {
-                final Object get = field.get(this);
-                if (QueryableDatatype.class.isAssignableFrom(get.getClass())) {
-                    string.append(separator);
-                    string.append(" ");
-                    string.append(field.getName());
-                    string.append(":");
-                    string.append(get.toString());
-                    separator = ",";
-                }
-            } catch (IllegalArgumentException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        return string.toString();
-    }
+//    @Override
+//    public String toString() {
+//        StringBuilder string = new StringBuilder();
+//        Field[] fields = this.getClass().getDeclaredFields();
+//
+//        String separator = "";
+//
+//        for (Field field : fields) {
+//            try {
+//                final Object get = field.get(this);
+//                if (QueryableDatatype.class.isAssignableFrom(get.getClass())) {
+//                    string.append(separator);
+//                    string.append(" ");
+//                    string.append(field.getName());
+//                    string.append(":");
+//                    string.append(get.toString());
+//                    separator = ",";
+//                }
+//            } catch (IllegalArgumentException ex) {
+//                throw new RuntimeException(ex);
+//            } catch (IllegalAccessException ex) {
+//                throw new RuntimeException(ex);
+//            }
+//        }
+//        return string.toString();
+//    }
 
     public void setSortOrder(QueryableDatatype... columns) {
         List<ColumnProvider> columnProviders = new ArrayList<ColumnProvider>();
@@ -211,23 +211,23 @@ public class DBReport extends RowDefinition{
         }
     }
 
-    private List<DBRow> getAllDBRowTemplates() {
-        ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
-        Field[] fields = this.getClass().getFields();
-        for (Field field : fields) {
-            try {
-                final Object fieldValue = field.get(this);
-                if (DBRow.class.isAssignableFrom(fieldValue.getClass())) {
-                    arrayList.add((DBRow) fieldValue);
-                }
-            } catch (IllegalArgumentException ex) {
-                throw new UnableToAccessDBReportFieldException(this, field, ex);
-            } catch (IllegalAccessException ex) {
-                throw new UnableToAccessDBReportFieldException(this, field, ex);
-            }
-        }
-        return arrayList;
-    }
+//    private List<DBRow> getAllDBRowTemplates() {
+//        ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+//        Field[] fields = this.getClass().getFields();
+//        for (Field field : fields) {
+//            try {
+//                final Object fieldValue = field.get(this);
+//                if (DBRow.class.isAssignableFrom(fieldValue.getClass())) {
+//                    arrayList.add((DBRow) fieldValue);
+//                }
+//            } catch (IllegalArgumentException ex) {
+//                throw new UnableToAccessDBReportFieldException(this, field, ex);
+//            } catch (IllegalAccessException ex) {
+//                throw new UnableToAccessDBReportFieldException(this, field, ex);
+//            }
+//        }
+//        return arrayList;
+//    }
 
     private static class UnableToAccessDBReportFieldException extends RuntimeException {
 

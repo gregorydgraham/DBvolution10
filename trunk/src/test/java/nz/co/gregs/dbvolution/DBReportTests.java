@@ -150,6 +150,37 @@ public class DBReportTests extends AbstractTest {
         Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("TOYOTA"));
     }
 
+    @Test
+    public void MinMaxSumOrderedWithExampleTest() throws SQLException {
+        MinMaxSumReport reportExample = new MinMaxSumReport();
+        reportExample.setSortOrder(reportExample.carCompanyName.setSortOrderAscending(), reportExample.min.setSortOrderAscending());
+        CarCompany carCo  = new CarCompany();
+        carCo.name.permittedPattern("%T%");
+        List<MinMaxSumReport> foundGroupReports = DBReport.getRows(database, reportExample, carCo);
+        database.print(foundGroupReports);
+        Assert.assertThat(foundGroupReports.size(), is(3));
+//        Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("FORD"));
+        Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("GENERAL MOTORS"));
+        Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("OTHER"));
+        Assert.assertThat(foundGroupReports.get(2).carCompanyName.stringValue(), is("TOYOTA"));
+        for (MinMaxSumReport rep : foundGroupReports) {
+            System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.min.stringValue() + ": " + rep.max.stringValue() + ": " + rep.sum.stringValue());
+            if (rep.carCompanyName.stringValue().equals("TOYOTA")) {
+                //TOYOTA: 1: 4896300: 4896301
+                Assert.assertThat(rep.min.intValue(), is(1));
+                Assert.assertThat(rep.max.intValue(), is(4896300));
+                Assert.assertThat(rep.sum.intValue(), is(4896301));
+            }
+        }
+        reportExample.setSortOrder(reportExample.carCompanyName.setSortOrderDescending(), reportExample.min.setSortOrderAscending());
+        foundGroupReports = database.getRows(reportExample, carCo);
+        Assert.assertThat(foundGroupReports.size(), is(3));
+//        Assert.assertThat(foundGroupReports.get(3).carCompanyName.stringValue(), is("FORD"));
+        Assert.assertThat(foundGroupReports.get(2).carCompanyName.stringValue(), is("GENERAL MOTORS"));
+        Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("OTHER"));
+        Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("TOYOTA"));
+    }
+
     public static class SimpleReport extends DBReport {
         private static final long serialVersionUID = 1L;
 
