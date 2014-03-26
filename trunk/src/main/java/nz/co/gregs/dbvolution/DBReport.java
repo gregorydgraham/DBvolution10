@@ -19,15 +19,18 @@ import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBReport {
+public class DBReport extends DBRow{
+    private static final long serialVersionUID = 1L;
+
+    protected ColumnProvider[] sortColumns = new ColumnProvider[]{};
 
     public DBReport() {
         super();
@@ -126,10 +129,20 @@ public class DBReport {
         return string.toString();
     }
 
+    public void setSortOrder(QueryableDatatype... columns) {
+        List<ColumnProvider> columnProviders = new ArrayList<ColumnProvider>();
+        for (QueryableDatatype qdt : columns) {
+                columnProviders.add(this.column(qdt));
+        }
+//        System.out.println("SORT COLUMNS: " + columnProviders.size() + ": " + columnProviders);
+        sortColumns = columnProviders.toArray(new ColumnProvider[]{});
+    }
+
     private static <A extends DBReport> DBQuery setUpQuery(DBDatabase database, A exampleReport, DBRow[] rows) {
         DBQuery query = database.getDBQuery();
         addTablesAndExpressions(query, exampleReport);
         query.addExtraExamples(rows);
+        query.setSortOrder(exampleReport.sortColumns);
         return query;
     }
 
@@ -196,6 +209,24 @@ public class DBReport {
         } catch (IllegalAccessException ex) {
             throw new UnableToCreateDBReportSubclassException(exampleReport, ex);
         }
+    }
+
+    private List<DBRow> getAllDBRowTemplates() {
+        ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+        Field[] fields = this.getClass().getFields();
+        for (Field field : fields) {
+            try {
+                final Object fieldValue = field.get(this);
+                if (DBRow.class.isAssignableFrom(fieldValue.getClass())) {
+                    arrayList.add((DBRow) fieldValue);
+                }
+            } catch (IllegalArgumentException ex) {
+                throw new UnableToAccessDBReportFieldException(this, field, ex);
+            } catch (IllegalAccessException ex) {
+                throw new UnableToAccessDBReportFieldException(this, field, ex);
+            }
+        }
+        return arrayList;
     }
 
     private static class UnableToAccessDBReportFieldException extends RuntimeException {

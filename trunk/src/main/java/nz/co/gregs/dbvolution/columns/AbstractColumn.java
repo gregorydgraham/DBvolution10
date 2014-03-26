@@ -33,7 +33,7 @@ public class AbstractColumn implements DBExpression {
     protected final DBRow dbrow;
     protected final Object field;
 
-    public AbstractColumn(DBRow row, Object field) {
+    public AbstractColumn(DBRow row, Object field) throws IncorrectDBRowInstanceSuppliedException {
         this.dbrow = row;
         this.field = field;
         this.propertyWrapper = row.getPropertyWrapperOf(field);

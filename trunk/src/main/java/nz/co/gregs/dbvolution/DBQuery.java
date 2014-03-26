@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
@@ -343,7 +344,7 @@ public class DBQuery {
             for (PropertyWrapper propDefn : tabProps) {
                 selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
                 colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-                groupByColumnIndex+=groupByColumnIndexSeparator+columnIndex;
+                groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
                 groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
                 columnIndex++;
             }
@@ -379,9 +380,9 @@ public class DBQuery {
         for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
             selectClause.append(colSep).append(entry.getValue().toSQLString(database)).append(" ").append(defn.formatExpressionAlias(entry.getKey()));
             colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-            if (!entry.getValue().isAggregator()){
-                groupByColumnIndex+=groupByColumnIndexSeparator+columnIndex;
-                groupByColumnIndexSeparator=defn.getSubsequentGroupBySubClauseSeparator();
+            if (!entry.getValue().isAggregator()) {
+                groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
+                groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
             }
             columnIndex++;
         }
@@ -403,13 +404,20 @@ public class DBQuery {
         boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
         String sqlString = "";
         if (queryType == SELECT_QUERY) {
+            // Clean up the formatting of the optional clauses
+            String rawSQLClauseFinal = (rawSQLClause.isEmpty()?"":rawSQLClause+lineSep);
+            String groupByClauseFinal = (groupByColumns.size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
+            String orderByClauseFinal = getOrderByClause();
+            if (!orderByClauseFinal.trim().isEmpty()) {
+                orderByClauseFinal += lineSep;
+            }
             sqlString = selectClause.append(lineSep)
                     .append(fromClause).append(lineSep)
                     .append(whereClause).append(lineSep)
-                    .append(rawSQLClause).append(lineSep)
-                    .append(getOrderByClause()).append(lineSep)
+                    .append(rawSQLClauseFinal)
+                    .append(groupByClauseFinal)
+                    .append(orderByClauseFinal)
                     .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
-                    .append(groupByColumns.size() > 0 ? (useColumnIndexGroupBy?groupByColumnIndex:groupByClause) : "")
                     .append(defn.endSQLStatement())
                     .toString();
         } else if (queryType == COUNT_QUERY) {
@@ -958,15 +966,23 @@ public class DBQuery {
 
     private String getOrderByClause() {
         DBDefinition defn = database.getDefinition();
-        if (sortOrder != null) {
+        if (sortOrder != null && !sortOrder.isEmpty()) {
             StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
             String sortSeparator = defn.getStartingOrderByClauseSeparator();
             for (PropertyWrapper prop : sortOrder) {
                 QueryableDatatype qdt = prop.getQueryableDatatype();
-                final String dbColumnName = defn.formatTableAliasAndColumnName(prop.getDBRowInstanceWrapper().adapteeDBRow(), prop.columnName());
-                if (dbColumnName != null) {
-                    orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-                    sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+                if (qdt.hasColumnExpression()) {
+                    final String dbColumnName = qdt.getColumnExpression().toSQLString(database);
+                    if (dbColumnName != null) {
+                        orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+                        sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+                    }
+                } else {
+                    final String dbColumnName = defn.formatTableAliasAndColumnName(prop.getDBRowInstanceWrapper().adapteeDBRow(), prop.columnName());
+                    if (dbColumnName != null) {
+                        orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+                        sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+                    }
                 }
             }
             orderByClause.append(defn.endOrderByClause());

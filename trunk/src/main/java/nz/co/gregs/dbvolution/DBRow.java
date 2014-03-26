@@ -32,6 +32,8 @@ import org.reflections.Reflections;
  */
 abstract public class DBRow implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     static DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
     boolean isDefined = false;
     final List<PropertyWrapperDefinition> ignoredForeignKeys = new ArrayList<PropertyWrapperDefinition>();
@@ -140,6 +142,41 @@ abstract public class DBRow implements Serializable {
      */
     public LargeObjectColumn column(DBLargeObject fieldOfThisInstance) {
         return new LargeObjectColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new ColumnProvider instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     * 
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A ColumnProvider representing the supplied field
+     */
+    public ColumnProvider column(QueryableDatatype fieldOfThisInstance) throws IncorrectDBRowInstanceSuppliedException {
+        ColumnProvider col = null;
+        if (DBBoolean.class.isAssignableFrom(fieldOfThisInstance.getClass())){
+            col = this.column((DBBoolean) fieldOfThisInstance);
+        }else if (DBDate.class.isAssignableFrom(fieldOfThisInstance.getClass())){
+            col = this.column((DBDate) fieldOfThisInstance);
+        }else if (DBLargeObject.class.isAssignableFrom(fieldOfThisInstance.getClass())){
+            col = this.column((DBLargeObject) fieldOfThisInstance);
+        }else if (DBNumber.class.isAssignableFrom(fieldOfThisInstance.getClass())){
+            col = this.column((DBNumber) fieldOfThisInstance);
+        }else if (DBString.class.isAssignableFrom(fieldOfThisInstance.getClass())){
+            col = this.column((DBString) fieldOfThisInstance);
+        }
+        if (col == null) {
+            throw new IncorrectDBRowInstanceSuppliedException(this, fieldOfThisInstance);
+        }
+        return col;
     }
 
     /**
@@ -1014,16 +1051,15 @@ abstract public class DBRow implements Serializable {
                 rels.add(new DBRelationship(newTable, fk.getQueryableDatatype(), this, this.getPrimaryKey()));
             }
         }
-        
+
         List<DBRelationship> adHocs = getAdHocRelationships();
         rels.addAll(adHocs);
         for (DBRelationship adhoc : adHocs) {
             DBRow firstTable = adhoc.getFirstTable();
             DBRow secondTable = adhoc.getSecondTable();
             if (firstTable.getClass().equals(newTable.getClass())
-                    ||secondTable.getClass().equals(newTable.getClass())
-                    ){
-             rels.add(adhoc);
+                    || secondTable.getClass().equals(newTable.getClass())) {
+                rels.add(adhoc);
             }
         }
 

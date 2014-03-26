@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.List;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -121,7 +122,36 @@ public class DBReportTests extends AbstractTest {
         }
     }
 
+    @Test
+    public void MinMaxSumOrderedTest() throws SQLException {
+        MinMaxSumReport reportExample = new MinMaxSumReport();
+        reportExample.setSortOrder(reportExample.carCompanyName.setSortOrderAscending(), reportExample.min.setSortOrderAscending());
+        List<MinMaxSumReport> foundGroupReports = database.getRows(reportExample);
+        Assert.assertThat(foundGroupReports.size(), is(4));
+        Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("FORD"));
+        Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("GENERAL MOTORS"));
+        Assert.assertThat(foundGroupReports.get(2).carCompanyName.stringValue(), is("OTHER"));
+        Assert.assertThat(foundGroupReports.get(3).carCompanyName.stringValue(), is("TOYOTA"));
+        for (MinMaxSumReport rep : foundGroupReports) {
+            System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.min.stringValue() + ": " + rep.max.stringValue() + ": " + rep.sum.stringValue());
+            if (rep.carCompanyName.stringValue().equals("TOYOTA")) {
+                //TOYOTA: 1: 4896300: 4896301
+                Assert.assertThat(rep.min.intValue(), is(1));
+                Assert.assertThat(rep.max.intValue(), is(4896300));
+                Assert.assertThat(rep.sum.intValue(), is(4896301));
+            }
+        }
+        reportExample.setSortOrder(reportExample.carCompanyName.setSortOrderDescending(), reportExample.min.setSortOrderAscending());
+        foundGroupReports = database.getRows(reportExample);
+        Assert.assertThat(foundGroupReports.size(), is(4));
+        Assert.assertThat(foundGroupReports.get(3).carCompanyName.stringValue(), is("FORD"));
+        Assert.assertThat(foundGroupReports.get(2).carCompanyName.stringValue(), is("GENERAL MOTORS"));
+        Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("OTHER"));
+        Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("TOYOTA"));
+    }
+
     public static class SimpleReport extends DBReport {
+        private static final long serialVersionUID = 1L;
 
         public Marque marque = new Marque();
         public CarCompany carCompany = new CarCompany();
@@ -142,6 +172,7 @@ public class DBReportTests extends AbstractTest {
     }
 
     public static class GroupReport extends DBReport {
+        private static final long serialVersionUID = 1L;
 
         public Marque marque = new Marque();
         public CarCompany carCompany = new CarCompany();
@@ -160,6 +191,7 @@ public class DBReportTests extends AbstractTest {
     }
 
     public static class CountAllReport extends DBReport {
+        private static final long serialVersionUID = 1L;
 
         public Marque marque = new Marque();
         public CarCompany carCompany = new CarCompany();
@@ -177,12 +209,17 @@ public class DBReportTests extends AbstractTest {
     }
 
     public static class MinMaxSumReport extends DBReport {
+        private static final long serialVersionUID = 1L;
 
         public Marque marque = new Marque();
         public CarCompany carCompany = new CarCompany();
+        @DBColumn
         public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+        @DBColumn
         public DBNumber min = new DBNumber(marque.column(marque.uidMarque).min());
+        @DBColumn
         public DBNumber max = new DBNumber(marque.column(marque.uidMarque).max());
+        @DBColumn
         public DBNumber sum = new DBNumber(marque.column(marque.uidMarque).sum());
 
         {
