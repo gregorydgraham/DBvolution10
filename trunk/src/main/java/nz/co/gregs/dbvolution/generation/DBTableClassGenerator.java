@@ -271,7 +271,6 @@ public class DBTableClassGenerator {
                     dbTableClass.packageName = packageName;
                     dbTableClass.serialversionUIDBValue = versionNumber;
                     dbTableClass.tableName = tables.getString("TABLE_NAME");
-//            System.out.println(dbTableClass.tableName);
                     dbTableClass.className = toClassCase(dbTableClass.tableName);
 
                     ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.tableName);
