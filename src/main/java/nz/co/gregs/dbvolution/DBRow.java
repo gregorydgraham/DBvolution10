@@ -328,26 +328,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
         return getWrapper().tableName();
     }
 
-    @Override
-    public String toString() {
-        StringBuilder string = new StringBuilder();
-        List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
-
-        String separator = "";
-
-        for (PropertyWrapper field : fields) {
-            if (field.isColumn()) {
-                string.append(separator);
-                string.append(" ");
-                string.append(field.javaName());
-                string.append(":");
-                string.append(field.getQueryableDatatype());
-                separator = ",";
-            }
-        }
-        return string.toString();
-    }
-
     /**
      * Returns the same result as {@link #toString() } but omitting the Foreign
      * Key references.
