@@ -22,12 +22,13 @@ import java.util.List;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBReport extends DBRow{
+public class DBReport extends RowDefinition{
     private static final long serialVersionUID = 1L;
 
     protected ColumnProvider[] sortColumns = new ColumnProvider[]{};
@@ -134,7 +135,6 @@ public class DBReport extends DBRow{
         for (QueryableDatatype qdt : columns) {
                 columnProviders.add(this.column(qdt));
         }
-//        System.out.println("SORT COLUMNS: " + columnProviders.size() + ": " + columnProviders);
         sortColumns = columnProviders.toArray(new ColumnProvider[]{});
     }
 

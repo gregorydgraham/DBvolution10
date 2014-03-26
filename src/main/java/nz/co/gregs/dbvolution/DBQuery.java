@@ -42,6 +42,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * The Definition of a Query on a Database
@@ -87,7 +88,6 @@ public class DBQuery {
 
     private static final int COUNT_QUERY = 1;
     private static final int SELECT_QUERY = 0;
-
     private final DBDatabase database;
     private final List<DBRow> queryTables;
     private final List<Class<? extends DBRow>> optionalQueryTables;
@@ -405,7 +405,7 @@ public class DBQuery {
         String sqlString = "";
         if (queryType == SELECT_QUERY) {
             // Clean up the formatting of the optional clauses
-            String rawSQLClauseFinal = (rawSQLClause.isEmpty()?"":rawSQLClause+lineSep);
+            String rawSQLClauseFinal = (rawSQLClause.isEmpty() ? "" : rawSQLClause + lineSep);
             String groupByClauseFinal = (groupByColumns.size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
             String orderByClauseFinal = getOrderByClause();
             if (!orderByClauseFinal.trim().isEmpty()) {
@@ -978,10 +978,14 @@ public class DBQuery {
                         sortSeparator = defn.getSubsequentOrderByClauseSeparator();
                     }
                 } else {
-                    final String dbColumnName = defn.formatTableAliasAndColumnName(prop.getDBRowInstanceWrapper().adapteeDBRow(), prop.columnName());
-                    if (dbColumnName != null) {
-                        orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-                        sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+                    final RowDefinition possibleDBRow = prop.getRowProviderInstanceWrapper().adapteeRowDefinition();
+                    if (possibleDBRow != null && DBRow.class.isAssignableFrom(possibleDBRow.getClass())) {
+                        final DBRow adapteeDBRow = (DBRow) possibleDBRow;
+                        final String dbColumnName = defn.formatTableAliasAndColumnName(adapteeDBRow, prop.columnName());
+                        if (dbColumnName != null) {
+                            orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+                            sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+                        }
                     }
                 }
             }
@@ -1435,16 +1439,13 @@ public class DBQuery {
 
         edu.uci.ics.jung.graph.Graph<QueryGraph.QueryGraphNode, DBRelationship> jungGraph = queryGraph.getJungGraph();
 
-        Layout<QueryGraph.QueryGraphNode, DBRelationship> layout
-                = new FRLayout<QueryGraph.QueryGraphNode, DBRelationship>(jungGraph);
+        Layout<QueryGraph.QueryGraphNode, DBRelationship> layout = new FRLayout<QueryGraph.QueryGraphNode, DBRelationship>(jungGraph);
         layout.setSize(new Dimension(550, 400));
 
-        VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship> vv
-                = new VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship>(layout);
+        VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship> vv = new VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship>(layout);
         vv.setPreferredSize(new Dimension(600, 480));
 
-        DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String> gm
-                = new DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String>();
+        DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String> gm = new DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String>();
         gm.setMode(ModalGraphMouse.Mode.PICKING);
         vv.setGraphMouse(gm);
 

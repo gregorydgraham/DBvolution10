@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.databases.OracleDB;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.internal.properties.DBRowWrapperFactory;
+import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
 import org.apache.commons.logging.Log;
@@ -83,7 +83,7 @@ public abstract class DBDatabase {
     private final DBDefinition definition;
     private String databaseName;
     private boolean batchIfPossible = true;
-    final DBRowWrapperFactory wrapperFactory = new DBRowWrapperFactory();
+    final RowDefinitionWrapperFactory wrapperFactory = new RowDefinitionWrapperFactory();
     private boolean preventAccidentalDroppingOfTables = true;
     private boolean preventAccidentalDroppingDatabase = true;
 

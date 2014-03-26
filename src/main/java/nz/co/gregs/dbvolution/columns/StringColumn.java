@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class StringColumn extends StringExpression implements ColumnProvider {
 
@@ -29,11 +30,11 @@ public class StringColumn extends StringExpression implements ColumnProvider {
         
     }
 
-    public StringColumn(DBRow row, String field) {
+    public StringColumn(RowDefinition row, String field) {
         this.column = new AbstractColumn(row, field);
     }
 
-    public StringColumn(DBRow row, DBString field) {
+    public StringColumn(RowDefinition row, DBString field) {
         this.column = new AbstractColumn(row, field);
     }
 

@@ -9,6 +9,7 @@ import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Abstracts a java field or bean-property as a DBvolution-centric
@@ -43,7 +44,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * should be marked as {@code transient}.
  */
 public class PropertyWrapperDefinition {
-	private final DBRowClassWrapper classWrapper;
+	private final RowDefinitionClassWrapper classWrapper;
 	private final JavaProperty javaProperty;
 	
 	private final ColumnHandler columnHandler;
@@ -52,7 +53,7 @@ public class PropertyWrapperDefinition {
 	private final EnumTypeHandler enumTypeHandler;
     private boolean checkedForColumnExpression = false;
 	
-	PropertyWrapperDefinition(DBRowClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
+	PropertyWrapperDefinition(RowDefinitionClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
 		this.javaProperty = javaProperty;
 		
@@ -433,7 +434,7 @@ public class PropertyWrapperDefinition {
      * this property.
      * @return
      */
-    public DBRowClassWrapper getDBRowClassWrapper() {
+    public RowDefinitionClassWrapper getDBRowClassWrapper() {
     	return classWrapper;
     }
 
@@ -449,7 +450,7 @@ public class PropertyWrapperDefinition {
         return columnHandler.getColumnExpression() != null;
     }
     
-    protected String getSelectableName(DBDatabase db, DBRow actualRow) {
+    protected String getSelectableName(DBDatabase db, RowDefinition actualRow) {
         DBDefinition defn = db.getDefinition();
         checkForColumnAlias(actualRow);
         if (hasColumnExpression()){
@@ -459,7 +460,7 @@ public class PropertyWrapperDefinition {
         }
     }
 
-    protected String getColumnAlias(DBDatabase db, DBRow actualRow) {
+    protected String getColumnAlias(DBDatabase db, RowDefinition actualRow) {
         DBDefinition defn = db.getDefinition();
         checkForColumnAlias(actualRow);
         if (hasColumnExpression()){
@@ -469,7 +470,7 @@ public class PropertyWrapperDefinition {
         }
     }
 
-    void checkForColumnAlias(DBRow actualRow) {
+    void checkForColumnAlias(RowDefinition actualRow) {
         if(!checkedForColumnExpression && !hasColumnExpression()){
             Object value = this.getRawJavaProperty().get(actualRow);
             if (value!=null && QueryableDatatype.class.isAssignableFrom(value.getClass())){

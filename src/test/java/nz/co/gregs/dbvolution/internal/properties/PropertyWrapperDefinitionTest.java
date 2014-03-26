@@ -1,6 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
-import nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapper;
+import nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -72,7 +72,7 @@ public class PropertyWrapperDefinitionTest {
 
     // note: intentionally doesn't use a wrapper factory for tests on equals() methods
     private PropertyWrapperDefinition propertyDefinitionOf(Class<?> clazz, String javaPropertyName) {
-        DBRowClassWrapper classWrapper = new DBRowClassWrapper(clazz);
+        RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(clazz);
         return classWrapper.getPropertyDefinitionByName(javaPropertyName);
     }
 }

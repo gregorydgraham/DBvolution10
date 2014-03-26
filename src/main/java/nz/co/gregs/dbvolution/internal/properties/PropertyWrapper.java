@@ -1,16 +1,17 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Abstracts a java field or bean-property on a target object as a
@@ -51,7 +52,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
  */
 public class PropertyWrapper {
 
-    private final DBRowInstanceWrapper dbRowInstanceWrapper;
+    private final RowDefinitionInstanceWrapper dbRowInstanceWrapper;
     private final PropertyWrapperDefinition propertyDefinition;
     private final Object target;
 
@@ -59,7 +60,7 @@ public class PropertyWrapper {
      * @param classProperty the class-level wrapper
      * @param target the target object containing the given property
      */
-    public PropertyWrapper(DBRowInstanceWrapper instanceWrapper,
+    public PropertyWrapper(RowDefinitionInstanceWrapper instanceWrapper,
             PropertyWrapperDefinition classProperty, Object target) {
         this.dbRowInstanceWrapper = instanceWrapper;
         this.propertyDefinition = classProperty;
@@ -224,7 +225,8 @@ public class PropertyWrapper {
 
     /**
      * Gets the annotated table name of the table this property belongs to.
-     * Equivalent to calling {@code getDBRowInstanceWrapper().tableName()}.
+     * Equivalent to calling
+     * {@code getRowProviderInstanceWrapper().tableName()}.
      *
      * @return
      */
@@ -500,7 +502,7 @@ public class PropertyWrapper {
      *
      * @return
      */
-    public DBRowInstanceWrapper getDBRowInstanceWrapper() {
+    public RowDefinitionInstanceWrapper getRowProviderInstanceWrapper() {
         return dbRowInstanceWrapper;
     }
 
@@ -541,8 +543,8 @@ public class PropertyWrapper {
      * @return A String of the property for use in SELECT and WHERE clauses.
      */
     public String getSelectableName(DBDatabase db) {
-        final DBRow actualRow = this.getDBRowInstanceWrapper().adapteeDBRow();
-        return getDefinition().getSelectableName(db, actualRow);
+        final RowDefinition adapteeRowProvider = this.getRowProviderInstanceWrapper().adapteeRowDefinition();
+            return getDefinition().getSelectableName(db, adapteeRowProvider);
     }
 
     /**
@@ -553,7 +555,7 @@ public class PropertyWrapper {
      * @return the column alias for this property.
      */
     public String getColumnAlias(DBDatabase db) {
-        final DBRow actualRow = this.getDBRowInstanceWrapper().adapteeDBRow();
+        final RowDefinition actualRow = this.getRowProviderInstanceWrapper().adapteeRowDefinition();
         return propertyDefinition.getColumnAlias(db, actualRow);
     }
 }

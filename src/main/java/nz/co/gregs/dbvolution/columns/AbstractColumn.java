@@ -23,22 +23,23 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class AbstractColumn implements DBExpression {
 
     private final PropertyWrapper propertyWrapper;
-    protected final DBRow dbrow;
+    protected final RowDefinition dbrow;
     protected final Object field;
 
-    public AbstractColumn(DBRow row, Object field) throws IncorrectDBRowInstanceSuppliedException {
+    public AbstractColumn(RowDefinition row, Object field) throws IncorrectRowProviderInstanceSuppliedException {
         this.dbrow = row;
         this.field = field;
         this.propertyWrapper = row.getPropertyWrapperOf(field);
         if (propertyWrapper == null) {
-            throw IncorrectDBRowInstanceSuppliedException.newMultiRowInstance(field);
+            throw IncorrectRowProviderInstanceSuppliedException.newMultiRowInstance(field);
         }
     }
 
@@ -46,7 +47,7 @@ public class AbstractColumn implements DBExpression {
     public String toSQLString(DBDatabase db) {
         return db.getDefinition().formatTableAliasAndColumnName(this.dbrow, propertyWrapper.columnName());
     }
-    
+
     @Override
     public AbstractColumn copy() {
         try {
@@ -54,17 +55,17 @@ public class AbstractColumn implements DBExpression {
             AbstractColumn newInstance = constructor.newInstance(dbrow, field);
             return newInstance;
         } catch (NoSuchMethodException ex) {
-            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public "+this.getClass().getSimpleName()+"(DBRow, Object) constructor.", ex);
+            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
         } catch (SecurityException ex) {
-            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public "+this.getClass().getSimpleName()+"(DBRow, Object) constructor.", ex);
+            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
         } catch (InstantiationException ex) {
-            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public "+this.getClass().getSimpleName()+"(DBRow, Object) constructor.", ex);
+            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
         } catch (IllegalAccessException ex) {
-            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public "+this.getClass().getSimpleName()+"(DBRow, Object) constructor.", ex);
+            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
         } catch (IllegalArgumentException ex) {
-            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public "+this.getClass().getSimpleName()+"(DBRow, Object) constructor.", ex);
+            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
         } catch (InvocationTargetException ex) {
-            throw new DBRuntimeException("Unable To Copy "+this.getClass().getSimpleName()+": please ensure it has a public "+this.getClass().getSimpleName()+"(DBRow, Object) constructor.", ex);
+            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
         }
     }
 
@@ -74,16 +75,17 @@ public class AbstractColumn implements DBExpression {
     public PropertyWrapper getPropertyWrapper() {
         return propertyWrapper;
     }
-    
+
     /**
      * Wrap this column in the equivalent DBValue subclass
-     * 
+     *
      * <p> Probably this should be implemented as:<br>
      * public MyValue asValue(){return new MyValue(this);}
      *
-     * @return this instance as a StringValue, NumberValue, DateValue, or LargeObjectValue as appropriate
+     * @return this instance as a StringValue, NumberValue, DateValue, or
+     * LargeObjectValue as appropriate
      */
-    public DBExpression asValue(){
+    public DBExpression asValue() {
         return this;
     }
 
@@ -100,7 +102,9 @@ public class AbstractColumn implements DBExpression {
     @Override
     public Set<DBRow> getTablesInvolved() {
         HashSet<DBRow> hashSet = new HashSet<DBRow>();
-        hashSet.add(dbrow);
+        if (DBRow.class.isAssignableFrom(dbrow.getClass())) {
+            hashSet.add((DBRow)dbrow);
+        }
         return hashSet;
     }
 }

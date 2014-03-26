@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Wraps the class-type of an end-user's data model object. Generally it's
@@ -30,7 +30,7 @@ import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
  *
  * @author Malcolm Lett
  */
-public class DBRowClassWrapper {
+public class RowDefinitionClassWrapper {
 
     private final Class<?> adaptee;
 	private final boolean identityOnly;
@@ -83,7 +83,7 @@ public class DBRowClassWrapper {
      * @param clazz the {@code DBRow} class to wrap
      * @throws DBPebkacException on any validation errors
      */
-    public DBRowClassWrapper(Class<?> clazz) {
+    public RowDefinitionClassWrapper(Class<?> clazz) {
     	this(clazz, false);
     }
     
@@ -98,7 +98,7 @@ public class DBRowClassWrapper {
      * and primary keys, and to ensure that the primary key columns are valid, but
      * to exclude all other validations on non-primary key columns and types etc.
      */
-    DBRowClassWrapper(Class<?> clazz, boolean processIdentityOnly) {
+    RowDefinitionClassWrapper(Class<?> clazz, boolean processIdentityOnly) {
         adaptee = clazz;
         identityOnly = processIdentityOnly;
 
@@ -221,14 +221,14 @@ public class DBRowClassWrapper {
     /**
      * Gets an object wrapper instance for the given target object
      * @param target the {@code DBRow} instance
-     * @return A DBRowInstanceWrapper for the supplied target.
+     * @return A RowDefinitionInstanceWrapper for the supplied target.
      */
-    public DBRowInstanceWrapper instanceWrapperFor(DBRow target) {
+    public RowDefinitionInstanceWrapper instanceWrapperFor(RowDefinition target) {
     	if (identityOnly) {
     		throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
     	}
 //		checkForRemainingErrorsOnAcccess(database);
-        return new DBRowInstanceWrapper(this, target);
+        return new RowDefinitionInstanceWrapper(this, target);
     }
 
     /**
@@ -278,9 +278,9 @@ public class DBRowClassWrapper {
     }
 
     /**
-     * Indicates whether this class maps to a database column.
+     * Indicates whether this class maps to a database table.
      *
-     * @return TRUE if this DBRowClassWrapper represents a database table, otherwise FALSE.
+     * @return TRUE if this RowDefinitionClassWrapper represents a database table or view, otherwise FALSE.
      */
     public boolean isTable() {
         return tableHandler.isTable();

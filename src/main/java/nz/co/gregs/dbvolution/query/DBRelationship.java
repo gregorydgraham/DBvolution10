@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.IncorrectDBRowInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
@@ -104,7 +104,7 @@ public class DBRelationship implements Serializable {
      * @param otherTable
      * @param otherTableField
      * @param operator
-     * @throws IncorrectDBRowInstanceSuppliedException if {@code thisTableField}
+     * @throws IncorrectRowProviderInstanceSuppliedException if {@code thisTableField}
      * is not from the {@code thisTable} instance or if {@code otherTableField}
      * is not from the {@code otherTable} instance
      */
@@ -115,12 +115,12 @@ public class DBRelationship implements Serializable {
 
         this.firstColumnPropertyWrapper = thisTable.getPropertyWrapperOf(thisTableField);
         if (firstColumnPropertyWrapper == null) {
-            throw new IncorrectDBRowInstanceSuppliedException(thisTable, thisTableField);
+            throw new IncorrectRowProviderInstanceSuppliedException(thisTable, thisTableField);
         }
 
         this.secondColumnPropertyWrapper = otherTable.getPropertyWrapperOf(otherTableField);
         if (secondColumnPropertyWrapper == null) {
-            throw new IncorrectDBRowInstanceSuppliedException(otherTable, otherTableField);
+            throw new IncorrectRowProviderInstanceSuppliedException(otherTable, otherTableField);
         }
     }
 

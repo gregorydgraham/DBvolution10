@@ -1,6 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
-import nz.co.gregs.dbvolution.internal.properties.DBRowClassWrapper;
+import nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -28,7 +28,7 @@ public class DBRowClassWrapperTest {
 
     @Test
     public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
-        DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
+        RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
         assertThat(classWrapper.primaryKeyDefinition(), is(not(nullValue())));
         assertThat(classWrapper.primaryKeyDefinition().columnName(), is("uid"));
     }
@@ -50,7 +50,7 @@ public class DBRowClassWrapperTest {
             public DBInteger fkTable2 = new DBInteger();
         }
 
-        new DBRowClassWrapper(TestClass.class);
+        new RowDefinitionClassWrapper(TestClass.class);
     }
 
 //	@Test
@@ -66,7 +66,7 @@ public class DBRowClassWrapperTest {
 //			public DBInteger type = new DBInteger();
 //		}
 //		
-//		DBRowClassWrapper classWrapper = new DBRowClassWrapper(TestClass.class);
+//		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(TestClass.class);
 //		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
 //		assertThat(classWrapper.primaryKey().size(), is(2));
 //		assertThat(classWrapper.primaryKey().get(0).columnName(), is("uid_2"));
@@ -74,19 +74,19 @@ public class DBRowClassWrapperTest {
 //	}
     @Test
     public void getsProperties() {
-        DBRowClassWrapper classAdaptor = new DBRowClassWrapper(MyTable1.class);
+        RowDefinitionClassWrapper classAdaptor = new RowDefinitionClassWrapper(MyTable1.class);
         assertThat(classAdaptor.getPropertyDefinitions().size(), is(3));
     }
 
     @Test
     public void getsForeignKeyReferencedTableName() {
-        DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
+        RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
         assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedTableName(), is("table2"));
     }
 
     @Test
     public void getsForeignKeyReferencedColumnName() {
-        DBRowClassWrapper classWrapper = new DBRowClassWrapper(MyTable1.class);
+        RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
         assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedColumnName(), is("uid_2"));
     }
 
