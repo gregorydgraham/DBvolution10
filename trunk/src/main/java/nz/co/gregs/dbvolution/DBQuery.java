@@ -213,7 +213,7 @@ public class DBQuery {
      * Previous results and SQL are discarded, and the query is set ready to be
      * re-run.
      *
-     * @param tables
+     * @param tables a list of DBRow instances to remove from the query
      * @return this DBQuery instance
      */
     public DBQuery remove(DBRow... tables) {
@@ -359,7 +359,7 @@ public class DBQuery {
             }
 
             if (!options.isUseANSISyntax()) {
-                getNonANSIJoin(tabRow, whereClause, defn, joinedTables, tableName, lineSep);
+                getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep);
             }
 
             separator = ", " + lineSep;
@@ -421,20 +421,13 @@ public class DBQuery {
                     .append(defn.endSQLStatement())
                     .toString();
         } else if (queryType == COUNT_QUERY) {
-            sqlString = new StringBuilder(defn.beginSelectStatement())
-                    .append(defn.countStarClause())
-                    .append(lineSep)
-                    .append(fromClause).append(lineSep)
-                    .append(whereClause).append(lineSep)
-                    .append(rawSQLClause).append(lineSep)
-                    .append(defn.endSQLStatement())
-                    .toString();
+            sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClause + lineSep + defn.endSQLStatement();
         }
 
         return sqlString;
     }
 
-    private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String tableName, String lineSep) {
+    private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep) {
         for (DBRelationship rel : tabRow.getAdHocRelationships()) {
             whereClause.append(defn.beginWhereClauseLine(options)).append("(").append(rel.toSQLString(database)).append(")");
         }
@@ -476,9 +469,7 @@ public class DBQuery {
      * @throws SQLException
      */
     public String getSQLForCount() throws SQLException {
-        DBDefinition defn = database.getDefinition();
         return getSQLForQuery(DBQuery.COUNT_QUERY);
-//        return getSQLForQuery(defn.beginSelectStatement() + defn.countStarClause(), DBQuery.COUNT_QUERY);
     }
 
     /**
@@ -537,7 +528,6 @@ public class DBQuery {
                     for (DBRow tableRow : allQueryTables) {
                         DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
-                        DBDefinition defn = database.getDefinition();
                         List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
                         for (PropertyWrapper newProp : newProperties) {
                             QueryableDatatype qdt = newProp.getQueryableDatatype();
@@ -634,7 +624,7 @@ public class DBQuery {
      * instances than than specified.
      *
      *
-     * @param <R>
+     * @param <R> a class that extends DBRow
      * @param exemplar The DBRow class that you would like returned.
      * @param expected The expected number of rows, an exception will be thrown
      * if this expectation is not met.
@@ -676,8 +666,8 @@ public class DBQuery {
      * Facilitates processing of rows on a single table retrieved via a
      * complicated series of tables.
      *
-     * @param <R>
-     * @param exemplar
+     * @param <R> a class that extends DBRow
+     * @param exemplar an instance of R that has been included in the query
      * @return A List of all the instances found of the exemplar.
      * @throws SQLException
      */
@@ -714,7 +704,7 @@ public class DBQuery {
      *
      * myTable.printRows(System.err);
      *
-     * @param ps
+     * @param ps a printstream to print to.
      * @throws java.sql.SQLException
      */
     public void print(PrintStream ps) throws SQLException {
@@ -748,7 +738,7 @@ public class DBQuery {
      * <p>
      * Example: myQuery.printAllDataColumns(System.err);
      *
-     * @param printStream
+     * @param printStream a printstream to print to
      * @throws java.sql.SQLException
      */
     public void printAllDataColumns(PrintStream printStream) throws SQLException {
@@ -779,7 +769,7 @@ public class DBQuery {
      * <p>
      * Example: myQuery.printAllPrimaryKeys(System.err);
      *
-     * @param ps
+     * @param ps a printstream to print to.
      * @throws java.sql.SQLException
      */
     public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
@@ -898,7 +888,7 @@ public class DBQuery {
      * Only the specified number of rows will be returned from the database and
      * DBvolution.
      *
-     * @param maximumNumberOfRowsReturned
+     * @param maximumNumberOfRowsReturned the require limit to the number of rows returned
      * @return this DBQuery instance
      */
     public DBQuery setRowLimit(long maximumNumberOfRowsReturned) {
@@ -935,7 +925,7 @@ public class DBQuery {
      * query.setSortOrder(customer.column(customer.name));
      * </pre>
      *
-     * @param sortColumns
+     * @param sortColumns a list of columns to sort the query by.
      * @return this DBQuery instance
      */
     public DBQuery setSortOrder(ColumnProvider... sortColumns) {
@@ -1229,7 +1219,7 @@ public class DBQuery {
      * status table DBRows and then process the DBQueryRows that have each
      * status DBRow as a block.
      *
-     * @param instance
+     * @param instance the DBRow instance you are interested in.
      * @return A list of DBQueryRow instances that relate to the exemplar
      * @throws SQLException
      */
@@ -1292,7 +1282,7 @@ public class DBQuery {
      * );
      * </pre>
      *
-     * @param condition
+     * @param condition a boolean expression that defines a require limit on the results of the query
      * @return this DBQuery instance
      */
     public DBQuery addCondition(BooleanExpression condition) {
@@ -1355,7 +1345,7 @@ public class DBQuery {
      * which some database don't handle. You may want to test that the query is
      * not blank after adding all your tables.
      *
-     * @param exampleWithOrWithoutCriteria
+     * @param exampleWithOrWithoutCriteria an example DBRow that should be added to the query as a required or optional table as appropriate.
      * @return this DBQuery instance
      */
     public DBQuery addOptionalIfNonspecific(DBRow exampleWithOrWithoutCriteria) {
@@ -1406,10 +1396,12 @@ public class DBQuery {
     /**
      * Adds Extra Examples to the Query.
      *
-     * The included DBRow instances will be used to add extra criteria as though
+     * <p>The included DBRow instances will be used to add extra criteria as though
      * they were an added table.
      *
-     * They will NOT be added as tables however, for that use
+     * <p>Only useful for DBReports or queries that have been {@link DBQuery#setToMatchAnyCondition() set to match any of the conditions}.
+     *
+     * <p>They will NOT be added as tables however, for that use
      * {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
      *
      * @param extraExamples
