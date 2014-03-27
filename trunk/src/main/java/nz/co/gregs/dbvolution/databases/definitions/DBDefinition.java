@@ -599,4 +599,8 @@ public abstract class DBDefinition {
     public String getStandardDeviationFunctionName() {
         return "stddev";
     }
+
+    public boolean prefersIndexBasedOrderByClause() {
+        return false;
+    }
 }

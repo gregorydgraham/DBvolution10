@@ -37,6 +37,11 @@ public class InformixDBDefinition extends DBDefinition {
     }
 
     @Override
+    public boolean prefersIndexBasedOrderByClause() {
+        return true;
+    }
+    
+    @Override
     public String getDateFormattedForQuery(Date date) {
         return "TO_DATE('" + dateFormat.format(date) + "','" + informixDateFormat + "')";
     }

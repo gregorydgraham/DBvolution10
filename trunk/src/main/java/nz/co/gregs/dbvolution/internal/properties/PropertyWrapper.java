@@ -57,6 +57,7 @@ public class PropertyWrapper {
     private final Object target;
 
     /**
+     * @param instanceWrapper
      * @param classProperty the class-level wrapper
      * @param target the target object containing the given property
      */
@@ -69,8 +70,13 @@ public class PropertyWrapper {
 
     /**
      * Gets a string representation of the wrapped property, suitable for
-     * debugging and logging. eg
+     * debugging and logging.
+     *
+     * <p>
+     * For example: <br>
      * {@code "DBInteger nz.co.mycompany.myproject.Vehicle.fkSpecOptionColour<fk_17> = [15241672]"}
+     *
+     * @return a String representing this PropertyWrapper
      */
     @Override
     public String toString() {
@@ -111,6 +117,8 @@ public class PropertyWrapper {
     /**
      * Generates a hash-code of this property wrapper definition, based on the
      * java property it wraps and the referenced target object.
+     *
+     * @return a hash code for this instance
      */
     @Override
     public int hashCode() {
@@ -126,9 +134,16 @@ public class PropertyWrapper {
     /**
      * Equality of this property wrapper definition, based on the java property
      * it wraps in a specific class, plus the underlying object reference
-     * containing the wrapped property. Two instances are identical if they wrap
-     * the same java property (field or bean-property) in the same object
-     * instance (by object reference, rather than {@code .equals()} equality).
+     * containing the wrapped property.
+     *
+     * <p>
+     * Two instances are identical if they wrap the same java property (field or
+     * bean-property) in the same object instance (by object reference, rather
+     * than {@code .equals()} equality).
+     *
+     * @param obj
+     * @return TRUE if this PropertyWrapper wraps the same property on the same
+     * RowDefinition as the object supplied, FALSE otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -149,10 +164,7 @@ public class PropertyWrapper {
         } else if (!propertyDefinition.equals(other.propertyDefinition)) {
             return false;
         }
-        if (target != other.target) {
-            return false;
-        }
-        return true;
+        return target == other.target;
     }
 
     /**
@@ -544,7 +556,7 @@ public class PropertyWrapper {
      */
     public String getSelectableName(DBDatabase db) {
         final RowDefinition adapteeRowProvider = this.getRowProviderInstanceWrapper().adapteeRowDefinition();
-            return getDefinition().getSelectableName(db, adapteeRowProvider);
+        return getDefinition().getSelectableName(db, adapteeRowProvider);
     }
 
     /**
