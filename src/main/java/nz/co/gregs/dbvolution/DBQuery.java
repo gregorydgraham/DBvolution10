@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.PrintStream;
-import java.io.Serializable;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
@@ -318,7 +317,6 @@ public class DBQuery {
         List<DBRow> joinedTables = new ArrayList<DBRow>();
         StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options));
         StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
-        ArrayList<DBRow> otherTables = new ArrayList<DBRow>();
         String lineSep = System.getProperty("line.separator");
         DBRow startQueryFromTable = queryTables.isEmpty() ? allQueryTables.get(0) : queryTables.get(0);
         List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
@@ -335,15 +333,14 @@ public class DBQuery {
         String tableName;
 
         for (DBRow tabRow : sortedQueryTables) {
-            otherTables.clear();
-            otherTables.addAll(sortedQueryTables);
-            otherTables.remove(tabRow);
             tableName = tabRow.getTableName();
 
             List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
-            for (PropertyWrapper propDefn : tabProps) {
-                selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
+            for (PropertyWrapper propWrapper : tabProps) {
+                selectClause.append(colSep).append(propWrapper.getSelectableName(database)).append(" ").append(propWrapper.getColumnAlias(database));
                 colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+
+                // Now deal with the GROUP BY and ORDER BY clause requirements
                 groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
                 groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
                 columnIndex++;
@@ -366,7 +363,6 @@ public class DBQuery {
             }
 
             separator = ", " + lineSep;
-            otherTables.addAll(allQueryTables);
         }
 
         for (DBDataComparison comp : comparisons) {
@@ -378,16 +374,19 @@ public class DBQuery {
         }
 
         for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
-            selectClause.append(colSep).append(entry.getValue().toSQLString(database)).append(" ").append(defn.formatExpressionAlias(entry.getKey()));
+            final Object key = entry.getKey();
+            final DBExpression expression = entry.getValue();
+            selectClause.append(colSep).append(expression.toSQLString(database)).append(" ").append(defn.formatExpressionAlias(key));
             colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-            if (!entry.getValue().isAggregator()) {
+            if (!expression.isAggregator()) {
                 groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
                 groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
             }
             columnIndex++;
         }
 
-        for (Map.Entry<Object, DBExpression> entry : groupByColumns.entrySet()) {
+        for (Map.Entry<Object, DBExpression> entry
+                : groupByColumns.entrySet()) {
             groupByClause.append(groupByColSep).append(entry.getValue().toSQLString(database));
             groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
         }
@@ -402,6 +401,7 @@ public class DBQuery {
         }
 
         boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
+
         String sqlString = "";
         if (queryType == SELECT_QUERY) {
             // Clean up the formatting of the optional clauses
@@ -979,10 +979,13 @@ public class DBQuery {
                     }
                 } else {
                     final RowDefinition possibleDBRow = prop.getRowProviderInstanceWrapper().adapteeRowDefinition();
-                    if (possibleDBRow != null && DBRow.class.isAssignableFrom(possibleDBRow.getClass())) {
+
+                    if (possibleDBRow != null && DBRow.class
+                            .isAssignableFrom(possibleDBRow.getClass())) {
                         final DBRow adapteeDBRow = (DBRow) possibleDBRow;
                         final String dbColumnName = defn.formatTableAliasAndColumnName(adapteeDBRow, prop.columnName());
-                        if (dbColumnName != null) {
+                        if (dbColumnName
+                                != null) {
                             orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
                             sortSeparator = defn.getSubsequentOrderByClauseSeparator();
                         }

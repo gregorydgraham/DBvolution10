@@ -32,9 +32,7 @@ public class H2DBDefinition extends DBDefinition {
         if (date == null) {
             return getNull();
         }
-//        yyyy-MM-dd hh:mm:ss[.nnnnnnnnn]
         return " PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "') ";
-        //return "'"+strToDateFormat.format(date)+"'";
     }
 
     @Override
