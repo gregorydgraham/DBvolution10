@@ -555,7 +555,9 @@ public abstract class DBDatabase {
                 throw ex;
             } finally {
                 connection.setAutoCommit(wasAutoCommit);
-                connection.close();
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
             }
         } finally {
             this.transactionStatement.transactionFinished();
