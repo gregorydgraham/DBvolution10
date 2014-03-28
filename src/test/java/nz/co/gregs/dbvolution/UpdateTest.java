@@ -30,7 +30,7 @@ public class UpdateTest extends AbstractTest {
     }
 
     @Test
-    public void updateNewRow() throws SQLException {
+    public void updateNewRow() throws SQLException, ClassNotFoundException {
         Marque myMarqueRow = new Marque();
         myMarqueRow.uidMarque.setValue(4);
         marques.insert(myMarqueRow);

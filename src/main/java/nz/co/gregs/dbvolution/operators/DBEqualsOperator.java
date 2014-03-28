@@ -70,7 +70,6 @@ public class DBEqualsOperator extends DBOperator {
         } else {
             whereLine =  columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + firstValue.toSQLString(db);
         }
-        defn = null;
         return whereLine;
     }
 
@@ -78,7 +77,6 @@ public class DBEqualsOperator extends DBOperator {
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
         DBDefinition defn = database.getDefinition();
         String relationStr = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + otherColumnName;
-        defn = null;
         return relationStr;
     }
 

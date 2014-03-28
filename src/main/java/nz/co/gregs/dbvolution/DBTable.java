@@ -24,10 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
@@ -257,9 +262,24 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException {
+    private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException, ClassNotFoundException {
         exemplar.clear();
-        exemplar.getPrimaryKey().permittedValues(pkValue);
+        final QueryableDatatype primaryKey = exemplar.getPrimaryKey();
+        if ((primaryKey instanceof DBString) && (pkValue instanceof String)) {
+            ((DBString) primaryKey).permittedValues((String) pkValue);
+        } else if ((primaryKey instanceof DBInteger) && (pkValue instanceof Long)) {
+            ((DBInteger) primaryKey).permittedValues((Long) pkValue);
+        } else if ((primaryKey instanceof DBInteger) && (pkValue instanceof Integer)) {
+            ((DBInteger) primaryKey).permittedValues((Integer) pkValue);
+        } else if ((primaryKey instanceof DBNumber) && (pkValue instanceof Number)) {
+            ((DBNumber) primaryKey).permittedValues((Number) pkValue);
+        } else if ((primaryKey instanceof DBDate) && (pkValue instanceof Date)) {
+            ((DBDate) primaryKey).permittedValues((Date) pkValue);
+        } else if ((primaryKey instanceof DBBoolean) && (pkValue instanceof Boolean)) {
+            ((DBBoolean) primaryKey).permittedValues((Boolean) pkValue);
+        } else {
+            throw new ClassNotFoundException("The value supplied is not in a supported class or it does not match the primary key class.");
+        }
         this.query = database.getDBQuery(exemplar);
         return getAllRows();
     }
@@ -275,8 +295,9 @@ public class DBTable<E extends DBRow> {
      * @param pkValue
      * @return a List containing the row(s) for the primary key
      * @throws SQLException
+     * @throws java.lang.ClassNotFoundException
      */
-    public List<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
+    public List<E> getRowsByPrimaryKey(Number pkValue) throws SQLException, ClassNotFoundException {
         return getRowsByPrimaryKeyObject(pkValue);
     }
 
@@ -291,8 +312,9 @@ public class DBTable<E extends DBRow> {
      * @param pkValue
      * @return a List containing the row(s) for the primary key
      * @throws SQLException
+     * @throws java.lang.ClassNotFoundException
      */
-    public List<E> getRowsByPrimaryKey(String pkValue) throws SQLException {
+    public List<E> getRowsByPrimaryKey(String pkValue) throws SQLException, ClassNotFoundException {
         return getRowsByPrimaryKeyObject(pkValue);
     }
 
@@ -307,8 +329,9 @@ public class DBTable<E extends DBRow> {
      * @param pkValue
      * @return a List containing the row(s) for the primary key
      * @throws SQLException
+     * @throws java.lang.ClassNotFoundException
      */
-    public List<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
+    public List<E> getRowsByPrimaryKey(Date pkValue) throws SQLException, ClassNotFoundException {
         return getRowsByPrimaryKeyObject(pkValue);
     }
 

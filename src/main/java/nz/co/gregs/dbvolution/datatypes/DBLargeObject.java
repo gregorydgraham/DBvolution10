@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
  * @author gregorygraham
  */
 public abstract class DBLargeObject extends QueryableDatatype implements LargeObjectResult{
+    private static final long serialVersionUID = 1L;
 
     public DBLargeObject() {
         super();
