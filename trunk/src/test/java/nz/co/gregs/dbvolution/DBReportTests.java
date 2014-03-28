@@ -194,7 +194,7 @@ public class DBReportTests extends AbstractTest {
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues((Object[]) null);
+            carCompany.uidCarCompany.excludedValues((NumberExpression[]) null);
         }
 
         public SimpleReport() {
@@ -213,7 +213,7 @@ public class DBReportTests extends AbstractTest {
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues((Object[]) null);
+            carCompany.uidCarCompany.excludedValues((Number[]) null);
         }
 
         public GroupReport() {
@@ -231,7 +231,7 @@ public class DBReportTests extends AbstractTest {
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues((Object[]) null);
+            carCompany.uidCarCompany.excludedValues((Number[]) null);
         }
 
         public CountAllReport() {
@@ -255,7 +255,7 @@ public class DBReportTests extends AbstractTest {
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues((Object[]) null);
+            carCompany.uidCarCompany.excludedValues((Number[]) null);
         }
 
         public MinMaxSumReport() {

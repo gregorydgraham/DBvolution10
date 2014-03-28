@@ -82,20 +82,6 @@ public class DBEnumTest extends AbstractTest {
         System.out.println(sqlFragment);
         assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
     }
-
-    // In this test, the QueryableDatatype.permittedValues(Object...) method is called,
-    // which isn't aware of enums and won't know to get the literal values from them
-    // Ignored because there's currently nothing to protect against this.
-    @Ignore
-    @Test(expected=Exception.class)
-    public void protectsAgainstPassingEnumValueStraightIn() {
-        IntegerTable rowExemplar = new IntegerTable();
-        ((QueryableDatatype)rowExemplar.recordType).permittedValues(
-        		RecordType.MOVEMENT_REQUEST_RECORD,
-        		RecordType.SHIPPING_MANIFEST_RECORD);
-
-        rowExemplar.recordType.getWhereClause(database, "column");
-    }
     
     @Test
     public void processIntegerRecord() throws SQLException {

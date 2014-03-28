@@ -55,7 +55,7 @@ public class DBTableGetTest extends AbstractTest {
     }
 
     @Test
-    public void testGetFirstAndPrimaryKey() throws SQLException {
+    public void testGetFirstAndPrimaryKey() throws SQLException, ClassNotFoundException {
         DBTable<Marque> singleMarque = DBTable.getInstance(database, new Marque());
         DBRow row = marqueRows.get(0);
         String primaryKey;

@@ -200,45 +200,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
             return qdt.formatValueForSQLStatement(db);
         }
     }
-
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(E... permitted) {
-        super.permittedValues(convertToLiteral(permitted));
-    }
-
-    /**
-     *
-     * excludes the object, Set, List, Array, or vararg of objects
-     *
-     *
-     * @param excluded
-     */
-    public void excludedValues(E... excluded) {
-        super.excludedValues(convertToLiteral(excluded));
-    }
-
-    public void permittedRange(E lowerBound, E upperBound) {
-        super.permittedRange(convertToLiteral(lowerBound), convertToLiteral(upperBound));
-    }
-
-    public void permittedRangeInclusive(E lowerBound, E upperBound) {
-        super.permittedRangeInclusive(convertToLiteral(lowerBound), convertToLiteral(upperBound));
-    }
-
-    public void excludedRange(E lowerBound, E upperBound) {
-        super.excludedRange(convertToLiteral(lowerBound), convertToLiteral(upperBound));
-    }
-
-    public void excludedRangeInclusive(E lowerBound, E upperBound) {
-        super.excludedRangeInclusive(convertToLiteral(lowerBound), convertToLiteral(upperBound));
-    }
-
+    
     protected Object[] convertToLiteral(E... enumValues) {
         Object[] result = new Object[enumValues.length];
         for (int i = 0; i < enumValues.length; i++) {

@@ -59,7 +59,7 @@ public class DBStatement implements Statement {
         }catch(SQLException e){
             // Someone please tell me how you are supposed to cope 
             // with an exception during the close method????????
-            log.warn("Exception occurred during Statament.close(): "+e.getMessage(), e);
+            log.warn("Exception occurred during Statement.close(): "+e.getMessage(), e);
             throw e;
 //            e.printStackTrace(System.err);
         }

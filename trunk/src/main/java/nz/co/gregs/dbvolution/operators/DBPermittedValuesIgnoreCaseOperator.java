@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDatatypeForObject;
@@ -42,7 +42,7 @@ public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
         }
     }
 
-    public DBPermittedValuesIgnoreCaseOperator(StringExpression... permitted) {
+    public DBPermittedValuesIgnoreCaseOperator(StringExpression[] permitted) {
         ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
         for (StringExpression obj : permitted) {
                 qdts.add(getQueryableDatatypeForObject(obj));
@@ -58,23 +58,7 @@ public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
         }
     }
 
-    public DBPermittedValuesIgnoreCaseOperator(List<String> permitted) {
-        ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
-        for (String obj : permitted) {
-            qdts.add(getQueryableDatatypeForObject(obj));
-        }
-        if (permitted == null) {
-            operator = new DBIsNullOperator();
-        } else if (qdts.isEmpty()) {
-            operator = new DBIsNullOperator();
-        } else if (qdts.size() == 1) {
-            operator = new DBEqualsIgnoreCaseOperator(qdts.get(0));
-        } else {
-            operator = new DBInIgnoreCaseOperator(qdts);
-        }
-    }
-
-    public DBPermittedValuesIgnoreCaseOperator(Set<String> permitted) {
+    public DBPermittedValuesIgnoreCaseOperator(Collection<String> permitted) {
         ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
         for (String obj : permitted) {
             qdts.add(getQueryableDatatypeForObject(obj));

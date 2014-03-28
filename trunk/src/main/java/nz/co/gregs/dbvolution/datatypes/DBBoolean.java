@@ -16,11 +16,20 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
@@ -103,4 +112,49 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
         return new HashSet<DBRow>();
     }
 
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(Boolean permitted) {
+        this.setOperator(new DBPermittedValuesOperator(permitted));
+    }
+
+    /**
+     *
+     * excludes the object, Set, List, Array, or vararg of objects
+     *
+     *
+     * @param excluded
+     */
+    public void excludedValues(Boolean excluded) {
+        this.setOperator(new DBPermittedValuesOperator(excluded));
+        negateOperator();
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(BooleanExpression permitted) {
+        this.setOperator(new DBPermittedValuesOperator(permitted));
+    }
+
+    /**
+     *
+     * excludes the object, Set, List, Array, or vararg of objects
+     *
+     *
+     * @param excluded
+     */
+    public void excludedValues(BooleanExpression excluded) {
+        this.setOperator(new DBPermittedValuesOperator(excluded));
+        negateOperator();
+    }
 }

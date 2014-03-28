@@ -25,8 +25,11 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.operators.DBLikeOperator;
-import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
  *
@@ -245,4 +248,223 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
         return new HashSet<DBRow>();
     }
 
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(Number... permitted) {
+        this.setOperator(new DBPermittedValuesOperator((Object[])permitted));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(NumberResult... permitted) {
+        this.setOperator(new DBPermittedValuesOperator((Object[])permitted));
+    }
+
+    /**
+     *
+     * excludes the object, Set, List, Array, or vararg of objects
+     *
+     *
+     * @param excluded
+     */
+    public void excludedValues(Number... excluded) {
+        this.setOperator(new DBPermittedValuesOperator((Object[])excluded));
+        negateOperator();
+    }
+
+    /**
+     *
+     * excludes the object, Set, List, Array, or vararg of objects
+     *
+     *
+     * @param excluded
+     */
+    public void excludedValues(NumberResult... excluded) {
+        this.setOperator(new DBPermittedValuesOperator((Object[])excluded));
+        negateOperator();
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
+    public void permittedRange(Number lowerBound, Number upperBound) {
+        setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
+    public void permittedRange(NumberResult lowerBound, NumberResult upperBound) {
+        setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
+    public void permittedRangeInclusive(Number lowerBound, Number upperBound) {
+        setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
+    public void permittedRangeInclusive(NumberResult lowerBound, NumberResult upperBound) {
+        setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
+    public void permittedRangeExclusive(Number lowerBound, Number upperBound) {
+        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+     */
+    public void permittedRangeExclusive(NumberResult lowerBound, NumberResult upperBound) {
+        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+    }
+
+    public void excludedRange(Number lowerBound, Number upperBound) {
+        setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+        negateOperator();
+    }
+
+    public void excludedRange(NumberResult lowerBound, NumberResult upperBound) {
+        setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+        negateOperator();
+    }
+
+    public void excludedRangeInclusive(Number lowerBound, Number upperBound) {
+        setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+        negateOperator();
+    }
+
+    public void excludedRangeInclusive(NumberResult lowerBound, NumberResult upperBound) {
+        setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+        negateOperator();
+    }
+
+    public void excludedRangeExclusive(Number lowerBound, Number upperBound) {
+        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+        negateOperator();
+    }
+
+    public void excludedRangeExclusive(NumberResult lowerBound, NumberResult upperBound) {
+        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+        negateOperator();
+    }
 }

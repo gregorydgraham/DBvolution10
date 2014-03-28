@@ -65,7 +65,7 @@ public class ByteArrayTest extends AbstractTest {
     }
 
     @Test
-    public void retrieveRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException {
+    public void retrieveRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException {
 
         CompanyLogo companyLogo = new CompanyLogo();
 //        database.print(database.get(companyLogo));

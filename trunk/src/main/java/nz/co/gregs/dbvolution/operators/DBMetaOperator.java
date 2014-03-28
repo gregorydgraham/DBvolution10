@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
  * @author Gregory Graham
  */
 abstract class DBMetaOperator extends DBOperator{
+    private static final long serialVersionUID = 1L;
     
     protected DBOperator operator;
 
