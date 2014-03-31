@@ -30,7 +30,7 @@ public class DBRowClassWrapperTest {
     public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
         RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
         assertThat(classWrapper.primaryKeyDefinition(), is(not(nullValue())));
-        assertThat(classWrapper.primaryKeyDefinition().columnName(), is("uid"));
+        assertThat(classWrapper.primaryKeyDefinition().getColumnName(), is("uid"));
     }
 
     @SuppressWarnings("serial")
@@ -69,8 +69,8 @@ public class DBRowClassWrapperTest {
 //		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(TestClass.class);
 //		assertThat(classWrapper.primaryKey(), is(not(nullValue())));
 //		assertThat(classWrapper.primaryKey().size(), is(2));
-//		assertThat(classWrapper.primaryKey().get(0).columnName(), is("uid_2"));
-//		assertThat(classWrapper.primaryKey().get(1).columnName(), is("type"));
+//		assertThat(classWrapper.primaryKey().get(0).getColumnName(), is("uid_2"));
+//		assertThat(classWrapper.primaryKey().get(1).getColumnName(), is("type"));
 //	}
     @Test
     public void getsProperties() {

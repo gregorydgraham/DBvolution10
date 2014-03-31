@@ -156,7 +156,7 @@ class ForeignKeyHandler {
     	if (identityOnly) {
     		throw new AssertionError("Attempt to access non-identity information of identity-only foreign key handler");
     	}
-		return (identityOnlyReferencedProperty == null) ? null : identityOnlyReferencedProperty.columnName();
+		return (identityOnlyReferencedProperty == null) ? null : identityOnlyReferencedProperty.getColumnName();
 	}
 	
 	/**
