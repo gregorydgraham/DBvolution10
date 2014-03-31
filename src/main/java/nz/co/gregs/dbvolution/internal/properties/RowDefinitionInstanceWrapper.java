@@ -153,9 +153,6 @@ public class RowDefinitionInstanceWrapper {
      * If the {@link DBTableName} annotation is missing, this method returns
      * {@code null}.
      *
-     * <p>
-     * Use {@link #getDBTableNameAnnotation} for low level access.
-     *
      * @return the table name, if specified explicitly or implicitly.
      */
     public String tableName() {
@@ -250,10 +247,6 @@ public class RowDefinitionInstanceWrapper {
      * Gets all property definitions that are annotated with {@code DBColumn}.
      * This method is intended for where you need to examine meta-information
      * about all properties in a class.
-     *
-     * <p>
-     * If you wish to get/set property values while iterating over the
-     * properties, use {@link #getDBProperties()} instead.
      *
      * @return a list of PropertyWrapperDefinitions for the PropertyWrappers of this RowDefinition
      */

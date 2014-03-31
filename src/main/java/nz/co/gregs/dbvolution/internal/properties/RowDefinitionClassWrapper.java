@@ -20,7 +20,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * this class will work against any class type.
  *
  * <p> To wrap a target object instance, use the
- * {@link #instanceWrapperFor(nz.co.gregs.dbvolution.DBRow)} method.
+ * {@link #instanceWrapperFor(nz.co.gregs.dbvolution.query.RowDefinition) } method.
  *
  * <p> Note: instances of this class are expensive to create, and are intended
  * to be cached and kept long-term. Instances can be safely shared between
