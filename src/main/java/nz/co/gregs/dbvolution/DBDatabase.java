@@ -290,6 +290,18 @@ public abstract class DBDatabase {
                         actions.addAll(this.getDBTable(row).update(row));
                     }
                 }
+            } else if (obj instanceof Set) {
+                Set<?> list = (Set<?>) obj;
+                Iterator<?> iterator = list.iterator();
+                while (iterator.hasNext()) {
+                    Object next = iterator.next();
+                    if (next instanceof DBRow) {
+                        @SuppressWarnings("unchecked")
+                        DBRow row = (DBRow) next;
+                        actions.addAll(this.getDBTable(row).update(row));
+                    }
+                }
+
             } else if (obj instanceof DBRow) {
                 DBRow row = (DBRow) obj;
                 actions.addAll(this.getDBTable(row).update(row));

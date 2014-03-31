@@ -21,11 +21,13 @@ import java.util.List;
 import nz.co.gregs.dbvolution.columns.BooleanColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.columns.DateColumn;
+import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
 import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -135,6 +137,8 @@ public class RowDefinition implements Serializable {
             col = this.column((DBDate) fieldOfThisInstance);
         } else if (DBLargeObject.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
             col = this.column((DBLargeObject) fieldOfThisInstance);
+        } else if (DBInteger.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+            col = this.column((DBInteger) fieldOfThisInstance);
         } else if (DBNumber.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
             col = this.column((DBNumber) fieldOfThisInstance);
         } else if (DBString.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
@@ -264,6 +268,66 @@ public class RowDefinition implements Serializable {
      */
     public NumberColumn column(Number fieldOfThisInstance) {
         return new NumberColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new NumberColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public IntegerColumn column(DBInteger fieldOfThisInstance) {
+        return new IntegerColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new NumberColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public IntegerColumn column(Long fieldOfThisInstance) {
+        return new IntegerColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new NumberColumn instance to help create
+     * {@link DBExpression expressions}
+     *
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+     * @return A Column representing the supplied field
+     */
+    public IntegerColumn column(Integer fieldOfThisInstance) {
+        return new IntegerColumn(this, fieldOfThisInstance);
     }
 
     /**

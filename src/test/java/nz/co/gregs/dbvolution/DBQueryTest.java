@@ -72,7 +72,7 @@ public class DBQueryTest extends AbstractTest {
             String carCoName = carCo.name.toString();
 
             Marque marque = queryRow.get(new Marque());
-            Long marqueUID = marque.getUidMarque().longValue();
+            Long marqueUID = marque.getUidMarque().getValue();
 
             System.out.println(carCoName + ": " + marqueUID);
             assertTrue(carCoName.equals("TOYOTA"));
@@ -98,7 +98,7 @@ public class DBQueryTest extends AbstractTest {
             String carCoName = carCo.name.toString();
 
             Marque marque = queryRow.get(new Marque());
-            Long marqueUID = marque.getUidMarque().longValue();
+            Long marqueUID = marque.getUidMarque().getValue();
 
             System.out.println(carCoName + ": " + marqueUID);
             assertTrue(carCoName.equals("TOYOTA"));
@@ -152,7 +152,7 @@ public class DBQueryTest extends AbstractTest {
     public void thrownExceptionIfTheForeignKeyFieldToBeIgnoredIsNotInTheInstance() throws Exception {
         Marque wrongMarque = new Marque();
         Marque marqueQuery = new Marque();
-        marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.longValue());
+        marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.getValue());
 
         DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
         try {

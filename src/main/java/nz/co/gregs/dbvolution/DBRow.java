@@ -140,14 +140,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
      * field, then the QueryableDatatype instance of that field is returned.
      *
+     * @param <A>
      * @return the QDT of the primary key or null if there is no primary key.
      */
-    public QueryableDatatype getPrimaryKey() {
+    public <A extends QueryableDatatype> A getPrimaryKey() {
         final PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
         if (primaryKeyPropertyWrapper == null) {
             return null;
         } else {
-            QueryableDatatype queryableValueOfField = primaryKeyPropertyWrapper.getQueryableDatatype();
+            A queryableValueOfField = primaryKeyPropertyWrapper.getQueryableDatatype();
             return queryableValueOfField;
         }
     }

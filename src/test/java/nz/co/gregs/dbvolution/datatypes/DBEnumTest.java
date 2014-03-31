@@ -101,10 +101,10 @@ public class DBEnumTest extends AbstractTest {
 	        database.print(rows);
 	        
 	        for (IntegerTable row: rows) {
-	        	if (row.uid_202.intValue() == 1) {
+	        	if (row.uid_202.getValue().intValue() == 1) {
 	        		assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
 	        	}
-	        	if (row.uid_202.intValue() == 2) {
+	        	if (row.uid_202.getValue().intValue() == 2) {
 	        		assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
 	        	}
 	        }
@@ -132,10 +132,10 @@ public class DBEnumTest extends AbstractTest {
 	        database.print(rows);
 	        
 	        for (StringTable row: rows) {
-	        	if (row.uid_202.intValue() == 1) {
+	        	if (row.uid_202.getValue().intValue() == 1) {
 	        		assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
 	        	}
-	        	if (row.uid_202.intValue() == 2) {
+	        	if (row.uid_202.getValue().intValue() == 2) {
 	        		assertThat(row.recordType.enumValue(), is(StringEnumType.SHIPPING_MANIFEST_RECORD));
 	        	}
 	        }
@@ -221,7 +221,7 @@ public class DBEnumTest extends AbstractTest {
             }
 
             public static RecordType valueOfCode(DBInteger code) {
-                return valueOfCode(code == null ? null : code.intValue());
+                return valueOfCode(code == null ? null : code.getValue().intValue());
             }
 
             public static RecordType valueOfCode(Integer code) {
@@ -229,7 +229,7 @@ public class DBEnumTest extends AbstractTest {
                     return null;
                 }
                 for (RecordType recordType : values()) {
-                    if (recordType.getCode() == code) {
+                    if (recordType.getCode().equals(code)) {
                         return recordType;
                     }
                 }
@@ -327,8 +327,8 @@ public class DBEnumTest extends AbstractTest {
             SHIPPING_MANIFEST_RECORD("MANRECORD", "Shipping Manifest Record"),
             MOVEMENT_REQUEST_RECORD("MOVEREQ", "Movement Request Record"),
             MOVEMENT_CANCELLATION_REQUEST("CANCREQ", "Movement Cancellation Request");
-            private String literalValue;
-            private String displayName;
+            private final String literalValue;
+            private final String displayName;
 
             private StringEnumType(String code, String displayName) {
                 this.literalValue = code;

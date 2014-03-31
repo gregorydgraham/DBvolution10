@@ -149,7 +149,7 @@ public class Marque extends DBRow {
     /**
      * @return the updateCount
      */
-    public DBNumber getUpdateCount() {
+    public DBInteger getUpdateCount() {
         return updateCount;
     }
 

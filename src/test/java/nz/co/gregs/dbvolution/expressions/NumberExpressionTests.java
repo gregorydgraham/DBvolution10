@@ -48,7 +48,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(11));
         for (Marque marque : dbQuery.getAllInstancesOf(marq)) {
-            Assert.assertThat(marque.uidMarque.intValue() % 2, is(0));
+            Assert.assertThat(marque.uidMarque.getValue().intValue() % 2, is(0));
         }
 
     }
@@ -69,7 +69,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         Marque marque = allRows.get(0).get(marq);
-        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+        Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         Marque marque = allRows.get(0).get(marq);
-        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+        Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
 
         dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
@@ -96,7 +96,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         marque = allRows.get(0).get(marq);
-        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+        Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         Marque marque = allRows.get(0).get(marq);
-        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+        Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
 
         dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
@@ -122,7 +122,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         marque = allRows.get(0).get(marq);
-        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+        Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         Marque marque = allRows.get(0).get(marq);
-        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+        Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         Marque marque = allRows.get(0).get(marq);
-        Assert.assertThat(marque.uidMarque.intValue(), is(1));
+        Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class NumberExpressionTests extends AbstractTest {
 //        database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         CarCompany carCompany = allRows.get(0).get(carCo);
-        Assert.assertThat(carCompany.uidCarCompany.intValue(), is(2));
+        Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(), is(2));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class NumberExpressionTests extends AbstractTest {
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
         for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
-            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue())) > 0,
+            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.getValue().doubleValue())) > 0,
                     is(true));
         }
     }
@@ -197,7 +197,7 @@ public class NumberExpressionTests extends AbstractTest {
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
         for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
-            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.doubleValue())) > 0,
+            Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.getValue().doubleValue())) > 0,
                     is(true));
         }
     }
@@ -211,7 +211,7 @@ public class NumberExpressionTests extends AbstractTest {
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
-            Assert.assertThat(carCompany.uidCarCompany.intValue(),
+            Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(),
                     is(4));
         }
     }
@@ -225,7 +225,7 @@ public class NumberExpressionTests extends AbstractTest {
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
         for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
-            Assert.assertThat(carCompany.uidCarCompany.intValue(),
+            Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(),
                     is(2));
         }
     }
