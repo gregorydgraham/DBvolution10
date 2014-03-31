@@ -109,8 +109,8 @@ public class TypeAdaptorTest {
 
         List<CustomerWithDBInteger> rows = db.get(query);
         assertThat(rows.size(), is(1));
-        assertThat(rows.get(0).uid.intValue(), is(23));
-        assertThat(rows.get(0).year.intValue(), is(2013));
+        assertThat(rows.get(0).uid.getValue().intValue(), is(23));
+        assertThat(rows.get(0).year.getValue().intValue(), is(2013));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class TypeAdaptorTest {
 
         List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
         assertThat(rows.size(), is(1));
-        assertThat(rows.get(0).uid.intValue(), is(23));
+        assertThat(rows.get(0).uid.getValue().intValue(), is(23));
         assertThat(rows.get(0).year, is("2013"));
     }
 
@@ -169,7 +169,7 @@ public class TypeAdaptorTest {
 
         List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
         assertThat(rows.size(), is(1));
-        assertThat(rows.get(0).uid.intValue(), is(23));
+        assertThat(rows.get(0).uid.getValue().intValue(), is(23));
         assertThat(rows.get(0).year, is("2013"));
     }
 
@@ -184,8 +184,8 @@ public class TypeAdaptorTest {
         q.uid.permittedValues(50);
         List<CustomerWithDBInteger> rows = db.get(q);
         assertThat(rows.size(), is(1));
-        assertThat(rows.get(0).uid.intValue(), is(50));
-        assertThat(rows.get(0).year.intValue(), is(2050));
+        assertThat(rows.get(0).uid.getValue().intValue(), is(50));
+        assertThat(rows.get(0).year.getValue().intValue(), is(2050));
     }
 
     // base-case "Customer": DBInteger uid (PK), DBInteger year

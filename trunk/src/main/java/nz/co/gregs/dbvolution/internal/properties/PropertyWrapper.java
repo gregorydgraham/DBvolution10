@@ -408,14 +408,16 @@ public class PropertyWrapper {
      * Use {@link #isReadable()} beforehand to check whether the property can be
      * read.
      *
-     * @return
+     * @param <A>
+     * @return The queryableDatatype instance representing this property
      * @throws IllegalStateException if not readable (you should have called
      * isReadable() first)
      * @throws DBThrownByEndUserCodeException if any user code throws an
      * exception
      */
-    public QueryableDatatype getQueryableDatatype() {
-        return propertyDefinition.getQueryableDatatype(target);
+    @SuppressWarnings("unchecked")
+    public <A extends QueryableDatatype> A getQueryableDatatype() {
+        return (A)propertyDefinition.getQueryableDatatype(target);
     }
 
     /**

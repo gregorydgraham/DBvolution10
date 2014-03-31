@@ -63,7 +63,7 @@ public class DBActionListCreationTest extends AbstractTest {
     @Test
     public void multiActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
         Marque marqueExample = new Marque();
-        final int toyotaUID = 1;
+        final Long toyotaUID = 1L;
         marqueExample.getUidMarque().permittedValues(toyotaUID);
 
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
@@ -72,7 +72,7 @@ public class DBActionListCreationTest extends AbstractTest {
         marqueExample.clear();
         marqueExample.name.permittedValuesIgnoreCase("ford");
         Marque ford = marques.getOnlyRowByExample(marqueExample);
-        final Integer fordOriginalUpdateCount = ford.updateCount.intValue();
+        final Long fordOriginalUpdateCount = ford.updateCount.getValue();
         ford.updateCount.setValue(fordOriginalUpdateCount + 10);
 
         DBActionList updates = database.update(toyota, ford);
@@ -97,8 +97,8 @@ public class DBActionListCreationTest extends AbstractTest {
         marqueExample.name.permittedValuesIgnoreCase("ford");
         ford = marques.getOnlyRowByExample(marqueExample);
 
-        Assert.assertThat(toyota.uidMarque.intValue(), is(toyotaUID));
-        Assert.assertThat(ford.updateCount.intValue(), is(fordOriginalUpdateCount));
+        Assert.assertThat(toyota.uidMarque.getValue(), is(toyotaUID));
+        Assert.assertThat(ford.updateCount.getValue(), is(fordOriginalUpdateCount));
     }
 
     @Test
@@ -171,7 +171,7 @@ public class DBActionListCreationTest extends AbstractTest {
         example.clear();
         example.name.permittedValuesIgnoreCase("ford");
         Marque ford = marques.getOnlyRowByExample(example);
-        final Integer fordOriginalUpdateCount = ford.updateCount.intValue();
+        final Integer fordOriginalUpdateCount = ford.updateCount.getValue().intValue();
         ford.updateCount.setValue(fordOriginalUpdateCount + 10);
 
         DBActionList dataChanges = database.update(toyota, ford);
@@ -202,12 +202,12 @@ public class DBActionListCreationTest extends AbstractTest {
         example.clear();
         example.name.permittedValuesIgnoreCase("toyota");
         toyota = database.getDBTable(example).getOnlyRowByExample(example);
-        Assert.assertThat(toyota.uidMarque.intValue(), is(toyotaUID));
+        Assert.assertThat(toyota.uidMarque.getValue().intValue(), is(toyotaUID));
         
         example.clear();
         example.name.permittedValuesIgnoreCase("ford");
         ford = database.getDBTable(example).getOnlyRowByExample(example);
-        Assert.assertThat(ford.updateCount.intValue(), is(fordOriginalUpdateCount));
+        Assert.assertThat(ford.updateCount.getValue().intValue(), is(fordOriginalUpdateCount));
         
         example.clear();
         example.name.permittedValuesIgnoreCase("tvr");

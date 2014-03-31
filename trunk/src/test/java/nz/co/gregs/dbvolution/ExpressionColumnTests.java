@@ -96,13 +96,13 @@ public class ExpressionColumnTests extends AbstractTest {
         query.addExpressionColumn(strangeEquation, marque.column(marque.uidMarque).times(5).dividedBy(3).plus(2));
 
         for (DBQueryRow row : query.getAllRows()) {
-            int uid = row.get(new Marque()).uidMarque.intValue();
+            Long uid = row.get(new Marque()).uidMarque.getValue();
             QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
             System.out.println(expressionColumnValue.toSQLString(database));
             if (expressionColumnValue instanceof DBNumber) {
                 DBNumber eqValue = (DBNumber) expressionColumnValue;
                 System.out.println("" + eqValue.numberValue());
-                Assert.assertThat(eqValue.intValue(), is(uid * 5 / 3 + 2));
+                Assert.assertThat(eqValue.longValue(), is(uid * 5 / 3 + 2));
             } else {
                 throw new RuntimeException("String Expression Failed To Create DBString Instance");
             }

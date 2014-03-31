@@ -38,6 +38,7 @@ public class DBReportTests extends AbstractTest {
     @Test
     public void createReportTest() throws SQLException {
         SimpleReport reportExample = new SimpleReport();
+        System.out.println(DBReport.getSQLForQuery(database, reportExample));
         List<SimpleReport> simpleReportRows = DBReport.getAllRows(database, reportExample);
         Assert.assertThat(simpleReportRows.size(), is(21));
         for (SimpleReport simp : simpleReportRows) {
@@ -194,7 +195,7 @@ public class DBReportTests extends AbstractTest {
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues((NumberExpression[]) null);
+            carCompany.uidCarCompany.excludedValues((Long) null);
         }
 
         public SimpleReport() {
@@ -213,7 +214,7 @@ public class DBReportTests extends AbstractTest {
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues((Number[]) null);
+            carCompany.uidCarCompany.excludedValues((Integer) null);
         }
 
         public GroupReport() {
@@ -231,7 +232,7 @@ public class DBReportTests extends AbstractTest {
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues((Number[]) null);
+            carCompany.uidCarCompany.excludedValues((Integer) null);
         }
 
         public CountAllReport() {
@@ -255,7 +256,7 @@ public class DBReportTests extends AbstractTest {
 
         {
             marque.toyotaStatusClassID.permittedValues(1246974);
-            carCompany.uidCarCompany.excludedValues((Number[]) null);
+            carCompany.uidCarCompany.excludedValues((Integer) null);
         }
 
         public MinMaxSumReport() {

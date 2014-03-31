@@ -133,6 +133,17 @@ public class DBString extends QueryableDatatype implements StringResult {
      *
      * @param permitted
      */
+    public void permittedValues(Object... permitted) {
+        this.setOperator(new DBPermittedValuesOperator(permitted));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
     public void permittedValues(Collection<String> permitted) {
         this.setOperator(new DBPermittedValuesOperator(permitted));
     }

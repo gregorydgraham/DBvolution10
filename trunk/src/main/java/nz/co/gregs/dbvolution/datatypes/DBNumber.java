@@ -18,7 +18,9 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
@@ -55,6 +57,22 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
         super(aNumber);
     }
 
+    /**
+     *
+     * @param aNumber
+     */
+    public DBNumber(Integer aNumber) {
+        super(aNumber);
+    }
+
+    /**
+     *
+     * @param aNumber
+     */
+    public DBNumber(Long aNumber) {
+        super(aNumber);
+    }
+
     @Override
     public DBNumber copy() {
         return (DBNumber) super.copy();
@@ -65,10 +83,14 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
         if (newLiteralValue instanceof Number) {
             setValue((Number) newLiteralValue);
         } else if (newLiteralValue instanceof DBNumber) {
-            setValue(((DBNumber) newLiteralValue).getValue());
+            setValue((DBNumber) newLiteralValue);
         } else {
             throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A " + newLiteralValue.getClass().getSimpleName() + ": Use only Numbers with this class");
         }
+    }
+
+    public void setValue(DBNumber newLiteralValue) {
+        setValue((newLiteralValue).getValue());
     }
 
     public void setValue(Number newLiteralValue) {
@@ -266,6 +288,28 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
      *
      * @param permitted
      */
+    public void permittedValues(List<Number> permitted) {
+        this.setOperator(new DBPermittedValuesOperator(permitted));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(Set<Number> permitted) {
+        this.setOperator(new DBPermittedValuesOperator(permitted));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
     public void permittedValues(NumberResult... permitted) {
         this.setOperator(new DBPermittedValuesOperator((Object[])permitted));
     }
@@ -279,6 +323,18 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
      */
     public void excludedValues(Number... excluded) {
         this.setOperator(new DBPermittedValuesOperator((Object[])excluded));
+        negateOperator();
+    }
+
+    /**
+     *
+     * excludes the object, Set, List, Array, or vararg of objects
+     *
+     *
+     * @param excluded
+     */
+    public void excludedValues(Collection<Number> excluded) {
+        this.setOperator(new DBPermittedValuesOperator(excluded));
         negateOperator();
     }
 

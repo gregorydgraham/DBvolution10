@@ -302,7 +302,7 @@ public class InterfaceInfoTest {
 		System.out.println(Arrays.toString(info.getInterfaceParameterValueBounds()));
 		assertThat(info.getInterfaceParameterValueBounds().length, is(2));
 		assertThat(info.getInterfaceParameterValueBounds()[0].upperClass(), is((Object) Number.class));
-		assertThat(info.getInterfaceParameterValueBounds()[1].upperClass(), is((Object) DBNumber.class));
+		assertThat(info.getInterfaceParameterValueBounds()[1].upperClass(), is((Object) QueryableDatatype.class));
 	}
 
 	@Test
@@ -394,7 +394,7 @@ public class InterfaceInfoTest {
 		}
 	}
 
-	public abstract class AbstractPartialImplementationWithWildcardType<T extends Number, Q extends DBNumber> implements MyInterface<T, Q> {
+	public abstract class AbstractPartialImplementationWithWildcardType<T extends Number, Q extends QueryableDatatype> implements MyInterface<T, Q> {
 		@Override
 		public T toObjectValue(Q dbvValue) {
 			return null;

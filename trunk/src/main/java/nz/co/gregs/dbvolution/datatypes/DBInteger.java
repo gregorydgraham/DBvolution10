@@ -17,22 +17,22 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
  *
  * @author Gregory Graham
  */
-public class DBInteger extends DBNumber {
+public class DBInteger extends QueryableDatatype {
 
     private static final long serialVersionUID = 1L;
 
@@ -106,7 +106,13 @@ public class DBInteger extends DBNumber {
 
     @Override
     public Long getValue() {
-        return longValue();
+        if (this.literalValue instanceof Long) {
+            return (Long) this.literalValue;
+        } else if (this.literalValue == null) {
+            return null;
+        } else {
+            return Long.parseLong(this.literalValue.toString());
+        }
     }
 
     /**
@@ -117,7 +123,88 @@ public class DBInteger extends DBNumber {
      * @param permitted
      */
     public void permittedValues(Long... permitted) {
-        this.setOperator(new DBPermittedValuesOperator((Object[])permitted));
+        this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(NumberResult... permitted) {
+        this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(Number... permitted) {
+        List<Long> ints = new ArrayList<Long>();
+        for (Number dbint : permitted) {
+            ints.add(dbint.longValue());
+        }
+        final Long[] longArray = ints.toArray(new Long[]{});
+        this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(DBInteger... permitted) {
+        List<Long> ints = new ArrayList<Long>();
+        for (DBInteger dbint : permitted) {
+            ints.add(dbint.getValue());
+        }
+        final Long[] longArray = ints.toArray(new Long[]{});
+        this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValues(DBNumber... permitted) {
+        List<Long> ints = new ArrayList<Long>();
+        for (DBNumber dbint : permitted) {
+            ints.add(dbint.getValue().longValue());
+        }
+        final Long[] longArray = ints.toArray(new Long[]{});
+        this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValuesLong(Collection<Long> permitted) {
+        this.setOperator(new DBPermittedValuesOperator(permitted));
+    }
+
+    /**
+     *
+     * reduces the rows to only the object, Set, List, Array, or vararg of
+     * objects
+     *
+     * @param permitted
+     */
+    public void permittedValuesInteger(Collection<Integer> permitted) {
+        this.setOperator(new DBPermittedValuesOperator(permitted));
     }
 
     /**
@@ -128,7 +215,7 @@ public class DBInteger extends DBNumber {
      * @param permitted
      */
     public void permittedValues(Integer... permitted) {
-        this.setOperator(new DBPermittedValuesOperator((Object[])permitted));
+        this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
     }
 
     /**
@@ -150,8 +237,44 @@ public class DBInteger extends DBNumber {
      *
      * @param excluded
      */
-    public void excludedValues(Integer... excluded) {
+    public void excludedValues(DBInteger... excluded) {
         this.setOperator(new DBPermittedValuesOperator((Object[])excluded));
+        negateOperator();
+    }
+
+    /**
+     *
+     * excludes the object, Set, List, Array, or vararg of objects
+     *
+     *
+     * @param excluded
+     */
+    public void excludedValues(Integer... excluded) {
+        this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+        negateOperator();
+    }
+
+    /**
+     *
+     * excludes the object, Set, List, Array, or vararg of objects
+     *
+     *
+     * @param excluded
+     */
+    public void excludedValuesLong(List<Long> excluded) {
+        this.setOperator(new DBPermittedValuesOperator(excluded));
+        negateOperator();
+    }
+
+    /**
+     *
+     * excludes the object, Set, List, Array, or vararg of objects
+     *
+     *
+     * @param excluded
+     */
+    public void excludedValuesInteger(List<Integer> excluded) {
+        this.setOperator(new DBPermittedValuesOperator(excluded));
         negateOperator();
     }
 
@@ -328,4 +451,89 @@ public class DBInteger extends DBNumber {
         setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
         negateOperator();
     }
+
+    @Override
+    public void setValue(Object newLiteralValue) {
+        if (newLiteralValue == null) {
+            super.setLiteralValue(null);
+//        } else if (newLiteralValue instanceof Long) {
+//            super.setLiteralValue(newLiteralValue);
+//        } else if (newLiteralValue instanceof Integer) {
+//            super.setLiteralValue(newLiteralValue);
+//        } else if (newLiteralValue instanceof Number) {
+//            super.setLiteralValue(newLiteralValue);
+//        } else if (newLiteralValue instanceof DBInteger) {
+//            final DBInteger dbInteger = (DBInteger) newLiteralValue;
+//            setValue(dbInteger.getValue());
+//        } else if (newLiteralValue instanceof DBNumber) {
+//            final DBNumber dbNumber = (DBNumber) newLiteralValue;
+//            setValue(dbNumber.getValue());
+        } else if (newLiteralValue.toString().isEmpty()) {
+            super.setLiteralValue(null);
+        } else {
+            try {
+                Long literalLong = Long.parseLong(newLiteralValue.toString());
+                setLiteralValue(literalLong);
+            } catch (NumberFormatException noFormat) {
+                setLiteralValue(null);
+            }
+        }
+    }
+
+    public void setValue(DBNumber newLiteralValue) {
+        setValue((newLiteralValue).getValue());
+    }
+
+    public void setValue(DBInteger newLiteralValue) {
+        setValue((newLiteralValue).getValue());
+    }
+
+    public void setValue(Number newLiteralValue) {
+        if (newLiteralValue == null) {
+            super.setLiteralValue(null);
+        } else {
+            super.setLiteralValue(newLiteralValue);
+        }
+    }
+
+    public void setValue(Long newLiteralValue) {
+        if (newLiteralValue == null) {
+            super.setLiteralValue(null);
+        } else {
+            super.setLiteralValue(newLiteralValue);
+        }
+    }
+
+    public void setValue(Integer newLiteralValue) {
+        if (newLiteralValue == null) {
+            super.setLiteralValue(null);
+        } else {
+            super.setLiteralValue(newLiteralValue);
+        }
+    }
+
+    /**
+     *
+     * @param db
+     * @return the underlying number formatted for a SQL statement
+     */
+    @Override
+    public String formatValueForSQLStatement(DBDatabase db) {
+        DBDefinition defn = db.getDefinition();
+        if (isNull()) {
+            return defn.getNull();
+        }
+        return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
+    }
+
+    @Override
+    public boolean isAggregator() {
+        return false;
+    }
+
+    @Override
+    public void blankQuery() {
+        super.blankQuery();
+    }
+
 }

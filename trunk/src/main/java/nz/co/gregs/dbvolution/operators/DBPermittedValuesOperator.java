@@ -16,8 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDatatypeForObject;
 
@@ -32,16 +31,16 @@ public class DBPermittedValuesOperator extends DBMetaOperator {
             operator = new DBIsNullOperator();
         } else {
             for (Object obj : permitted) {
-                if (obj instanceof List) {
-                    List<Object> myList = (List) obj;
+                if (obj instanceof Collection) {
+                    Collection<Object> myList = (Collection) obj;
                     for (Object obj1 : myList) {
                         qdts.add(getQueryableDatatypeForObject(obj1));
                     }
-                } else if (obj instanceof Set) {
-                    Set<Object> myList = (Set) obj;
-                    for (Object obj1 : myList) {
-                        qdts.add(getQueryableDatatypeForObject(obj1));
-                    }
+//                } else if (obj instanceof Set) {
+//                    Set<Object> myList = (Set) obj;
+//                    for (Object obj1 : myList) {
+//                        qdts.add(getQueryableDatatypeForObject(obj1));
+//                    }
                 } else {
                     qdts.add(getQueryableDatatypeForObject(obj));
                 }

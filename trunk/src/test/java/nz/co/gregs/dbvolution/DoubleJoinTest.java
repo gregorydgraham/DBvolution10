@@ -57,10 +57,10 @@ public class DoubleJoinTest extends AbstractTest {
         List<DBQueryRow> allRows = query.getAllRows();
         Assert.assertThat(allRows.size(), 
                 is(1));
-        Assert.assertThat(allRows.get(0).get(marketer).uidCarCompany.intValue(), 
-                is(doubleLinked.marketer.intValue()));
-        Assert.assertThat(allRows.get(0).get(manufacturer).uidCarCompany.intValue(), 
-                is(doubleLinked.manufacturer.intValue()));
+        Assert.assertThat(allRows.get(0).get(marketer).uidCarCompany.getValue().intValue(), 
+                is(doubleLinked.marketer.getValue().intValue()));
+        Assert.assertThat(allRows.get(0).get(manufacturer).uidCarCompany.getValue().intValue(), 
+                is(doubleLinked.manufacturer.getValue().intValue()));
         
         database.print(allRows);
     }

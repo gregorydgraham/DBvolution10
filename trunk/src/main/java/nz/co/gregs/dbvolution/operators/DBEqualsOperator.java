@@ -66,6 +66,7 @@ public class DBEqualsOperator extends DBOperator {
         String whereLine;
         if ((firstValue instanceof QueryableDatatype) && ((QueryableDatatype)firstValue).isNull()) {
             DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
+            dbIsNullOperator.invertOperator(this.invertOperator);
             whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
         } else {
             whereLine =  columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + firstValue.toSQLString(db);
