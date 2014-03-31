@@ -147,7 +147,7 @@ public class PropertyWrapperDefinition {
      * <p>
      * Use {@link #getColumnName()} to determine column name.
      *
-     * @return
+     * @return a String of the Java field name for this property
      */
     public String javaName() {
         return javaProperty.name();
@@ -161,7 +161,7 @@ public class PropertyWrapperDefinition {
      * <p>
      * Use {@link #getColumnName()} to determine column name.
      *
-     * @return
+     * @return a String of the short name of the declared class of this property
      */
     public String shortQualifiedJavaName() {
         return javaProperty.shortQualifiedName();
@@ -176,7 +176,7 @@ public class PropertyWrapperDefinition {
      * <p>
      * Use {@link #getColumnName()} to determine column name.
      *
-     * @return
+     * @return a String of the full name of the class of this property
      */
     public String qualifiedJavaName() {
         return javaProperty.qualifiedName();
@@ -191,7 +191,7 @@ public class PropertyWrapperDefinition {
      * Use {@link #getRawJavaType()} in the rare case that you need to know the
      * underlying java property type.
      *
-     * @return
+     * @return the Class of the internal QueryableDatatype used by this property
      */
     public Class<? extends QueryableDatatype> type() {
         return typeHandler.getType();
@@ -202,7 +202,7 @@ public class PropertyWrapperDefinition {
      * {@code refType.isAssignableFrom(this.type())}.
      *
      * @param refType
-     * @return
+     * @return TRUE if the supplied type is assignable from the internal QueryableDatatype, FALSE otherwise.
      */
     public boolean isInstanceOf(Class<? extends QueryableDatatype> refType) {
         return refType.isAssignableFrom(type());
@@ -210,9 +210,9 @@ public class PropertyWrapperDefinition {
 
     /**
      * Gets the annotated table name of the table this property belongs to.
-     * Equivalent to {@code getDBRowClassWrapper().tableName()}.
+     * Equivalent to {@code getRowDefinitionClassWrapper().tableName()}.
      *
-     * @return
+     * @return a String of the table name containing this property.
      */
     public String tableName() {
         return classWrapper.tableName();
@@ -465,23 +465,23 @@ public class PropertyWrapperDefinition {
      *
      * <p>
      * In most cases you will not need to call this method, as type conversion
-     * is done transparently via the {@link #getQueryableDatatype(Object)} and
+     * is done transparently via the {@link #getQueryableDatatype(Object) } and
      * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods. Use the
      * {@link #type()} method to get the DBv-centric property type, after type
      * conversion.
      *
-     * @return
+     * @return the declared class of the property
      */
     public Class<?> getRawJavaType() {
         return javaProperty.type();
     }
 
     /**
-     * Gets the wrapper for the DBRow class containing this property.
+     * Gets the wrapper for the RowDefinition (DBRow or DBReport) subclass containing this property.
      *
-     * @return
+     * @return the RowDefinitionClassWrapper representing the enclosing object of this property
      */
-    public RowDefinitionClassWrapper getDBRowClassWrapper() {
+    public RowDefinitionClassWrapper getRowDefinitionClassWrapper() {
         return classWrapper;
     }
 
