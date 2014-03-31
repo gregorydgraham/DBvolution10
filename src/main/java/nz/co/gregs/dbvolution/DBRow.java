@@ -300,7 +300,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
     /**
      * Tests whether this DBRow instance has any criteria
-     * ({@link QueryableDatatype#permittedValues(java.lang.Object[])}, etc) set.
+     * ({@link DBNumber#permittedValues(java.lang.Number...) }, etc) set.
      *
      * <p>
      * The database is not accessed and this method does not protect against

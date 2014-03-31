@@ -36,6 +36,7 @@ import nz.co.gregs.dbvolution.expressions.DBDataComparison;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
@@ -489,7 +490,7 @@ public class DBQuery {
      * are not used.
      * <p>
      * Criteria such as
-     * {@link nz.co.gregs.dbvolution.datatypes.QueryableDatatype#permittedValues(java.lang.Object...) permitted values}
+     * {@link DBNumber#permittedValues(java.lang.Number...)  permitted values}
      * defined on the fields of the DBRow examples are added as part of the
      * WHERE clause.
      *
@@ -968,7 +969,7 @@ public class DBQuery {
                         sortSeparator = defn.getSubsequentOrderByClauseSeparator();
                     }
                 } else {
-                    final RowDefinition possibleDBRow = prop.getRowProviderInstanceWrapper().adapteeRowDefinition();
+                    final RowDefinition possibleDBRow = prop.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 
                     if (possibleDBRow != null && DBRow.class
                             .isAssignableFrom(possibleDBRow.getClass())) {
@@ -1063,7 +1064,7 @@ public class DBQuery {
      * are not used.
      * <p>
      * Criteria such as
-     * {@link nz.co.gregs.dbvolution.datatypes.QueryableDatatype#permittedValues(java.lang.Object...) permitted values}
+     * {@link DBNumber#permittedValues(java.lang.Number...)  permitted values}
      * defined on the fields of the DBRow examples are added as part of the
      * WHERE clause.
      *

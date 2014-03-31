@@ -28,8 +28,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * DB properties can be seen to have the types and values in the table that
  * follows. This class provides a virtual view over the property whereby the
  * DBv-centric type and value are easily accessible via the
- * {@link #getQueryableDatatype(Object) value()} and
- * {@link #setQueryableDatatype(Object, QueryableDatatype) setValue()} methods.
+ * {@link #getQueryableDatatype()} and
+ * {@link #setQueryableDatatype(QueryableDatatype) } methods.
  * <ul>
  * <li> rawType/rawValue - the type and value actually stored on the declared
  * java property
@@ -174,7 +174,7 @@ public class PropertyWrapper {
      * <p>
      * Use {@link #columnName()} to determine column name.
      *
-     * @return
+     * @return a String of the declared field name of this property
      */
     public String javaName() {
         return propertyDefinition.javaName();
@@ -188,7 +188,7 @@ public class PropertyWrapper {
      * <p>
      * Use {@link #columnName()} to determine column name.
      *
-     * @return
+     * @return a convenient String including the class name of the RowDefinition and the field name for this property
      */
     public String shortQualifiedJavaName() {
         return propertyDefinition.shortQualifiedJavaName();
@@ -203,7 +203,7 @@ public class PropertyWrapper {
      * <p>
      * Use {@link #columnName()} to determine column name.
      *
-     * @return
+     * @return the String of the full class name of the containing RowDefinition.
      */
     public String qualifiedJavaName() {
         return propertyDefinition.qualifiedJavaName();
@@ -218,7 +218,7 @@ public class PropertyWrapper {
      * Use {@link #getRawJavaType()} in the rare case that you need to know the
      * underlying java property type.
      *
-     * @return
+     * @return the Class of the QDT used internally to handle database values.
      */
     public Class<? extends QueryableDatatype> type() {
         return propertyDefinition.type();
@@ -229,7 +229,7 @@ public class PropertyWrapper {
      * Equivalent to {@code refType.isAssignableFrom(this.type())}.
      *
      * @param refType
-     * @return
+     * @return TRUE if this property's internal QueryableDatatype is the similar to that of the supplied instance.
      */
     public boolean isInstanceOf(Class<? extends QueryableDatatype> refType) {
         return propertyDefinition.isInstanceOf(refType);
@@ -238,9 +238,9 @@ public class PropertyWrapper {
     /**
      * Gets the annotated table name of the table this property belongs to.
      * Equivalent to calling
-     * {@code getRowProviderInstanceWrapper().tableName()}.
+     * {@code getRowDefinitionInstanceWrapper().tableName()}.
      *
-     * @return
+     * @return a String of the table name for this property
      */
     public String tableName() {
         return propertyDefinition.tableName();
@@ -255,13 +255,10 @@ public class PropertyWrapper {
      * If the {@code DBColumn} annotation is missing, this method returns
      * {@code null}.
      *
-     * <p>
-     * Use {@link #getDBColumnAnnotation} for low level access.
-     *
      * @return the column name, if specified explicitly or implicitly
      */
     public String columnName() {
-        return propertyDefinition.columnName();
+        return propertyDefinition.getColumnName();
     }
 
     /**
@@ -371,7 +368,7 @@ public class PropertyWrapper {
      * properties which are missing a 'getter' can not be read, but may be able
      * to be set.
      *
-     * @return
+     * @return TRUE if this property is readable, FALSE otherwise.
      */
     public boolean isReadable() {
         return propertyDefinition.isReadable();
@@ -382,7 +379,7 @@ public class PropertyWrapper {
      * properties which are missing a 'setter' can not be written to, but may be
      * able to be read.
      *
-     * @return
+     * @return TRUE if the property can set, FALSE otherwise.
      */
     public boolean isWritable() {
         return propertyDefinition.isWritable();
@@ -445,8 +442,8 @@ public class PropertyWrapper {
      *
      * <p>
      * In most cases you will not need to call this method, as type conversion
-     * is done transparently via the {@link #getQueryableDatatype(Object)} and
-     * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods.
+     * is done transparently via the {@link #getQueryableDatatype()} and
+     * {@link #setQueryableDatatype(QueryableDatatype)} methods.
      *
      * <p>
      * Use {@link #isReadable()} beforehand to check whether the property can be
@@ -468,8 +465,8 @@ public class PropertyWrapper {
      *
      * <p>
      * In most cases you will not need to call this method, as type conversion
-     * is done transparently via the {@link #getQueryableDatatype(Object)} and
-     * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods.
+     * is done transparently via the {@link #getQueryableDatatype()} and
+     * {@link #setQueryableDatatype(QueryableDatatype)} methods.
      *
      * <p>
      * Use {@link #isWritable()} beforehand to check whether the property can be
@@ -491,12 +488,12 @@ public class PropertyWrapper {
      *
      * <p>
      * In most cases you will not need to call this method, as type conversion
-     * is done transparently via the {@link #getQueryableDatatype(Object)} and
-     * {@link #setQueryableDatatype(Object, QueryableDatatype)} methods. Use the
+     * is done transparently via the {@link #getQueryableDatatype()} and
+     * {@link #setQueryableDatatype(QueryableDatatype)} methods. Use the
      * {@link #type()} method to get the DBv-centric property type, after type
      * conversion.
      *
-     * @return
+     * @return the declared Java class of the property.
      */
     public Class<?> getRawJavaType() {
         return propertyDefinition.getRawJavaType();
@@ -514,9 +511,9 @@ public class PropertyWrapper {
     /**
      * Gets the wrapper for the DBRow instance containing this property.
      *
-     * @return
+     * @return the RowDefinitionInstanceWrapper for this property.
      */
-    public RowDefinitionInstanceWrapper getRowProviderInstanceWrapper() {
+    public RowDefinitionInstanceWrapper getRowDefinitionInstanceWrapper() {
         return dbRowInstanceWrapper;
     }
 
@@ -557,7 +554,7 @@ public class PropertyWrapper {
      * @return A String of the property for use in SELECT and WHERE clauses.
      */
     public String getSelectableName(DBDatabase db) {
-        final RowDefinition adapteeRowProvider = this.getRowProviderInstanceWrapper().adapteeRowDefinition();
+        final RowDefinition adapteeRowProvider = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
         return getDefinition().getSelectableName(db, adapteeRowProvider);
     }
 
@@ -569,7 +566,7 @@ public class PropertyWrapper {
      * @return the column alias for this property.
      */
     public String getColumnAlias(DBDatabase db) {
-        final RowDefinition actualRow = this.getRowProviderInstanceWrapper().adapteeRowDefinition();
+        final RowDefinition actualRow = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
         return propertyDefinition.getColumnAlias(db, actualRow);
     }
 }

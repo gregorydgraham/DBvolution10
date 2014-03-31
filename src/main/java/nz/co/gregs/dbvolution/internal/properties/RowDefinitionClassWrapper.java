@@ -155,28 +155,28 @@ public class RowDefinitionClassWrapper {
 
             // add unique values for case-sensitive lookups
             // (error immediately on collisions)
-            if (propertiesByCaseSensitiveColumnName.containsKey(property.columnName())) {
+            if (propertiesByCaseSensitiveColumnName.containsKey(property.getColumnName())) {
             	if (!processIdentityOnly) {
-            		throw new DBPebkacException("Class " + clazz.getName() + " has multiple properties for column " + property.columnName());
+            		throw new DBPebkacException("Class " + clazz.getName() + " has multiple properties for column " + property.getColumnName());
             	}
             } else {
-                propertiesByCaseSensitiveColumnName.put(property.columnName(), property);
+                propertiesByCaseSensitiveColumnName.put(property.getColumnName(), property);
             }
 
             // add unique values for case-insensitive lookups
             // (defer erroring until actually know database is case insensitive)
-            if (propertiesByUpperCaseColumnName.containsKey(property.columnName().toUpperCase())) {
+            if (propertiesByUpperCaseColumnName.containsKey(property.getColumnName().toUpperCase())) {
             	if (!processIdentityOnly) {
-	                List<PropertyWrapperDefinition> list = duplicatedPropertiesByUpperCaseColumnName.get(property.columnName().toUpperCase());
+	                List<PropertyWrapperDefinition> list = duplicatedPropertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase());
 	                if (list == null) {
 	                    list = new ArrayList<PropertyWrapperDefinition>();
-	                    list.add(propertiesByUpperCaseColumnName.get(property.columnName().toUpperCase()));
+	                    list.add(propertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase()));
 	                }
 	                list.add(property);
-	                duplicatedPropertiesByUpperCaseColumnName.put(property.columnName().toUpperCase(), list);
+	                duplicatedPropertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), list);
             	}
             } else {
-                propertiesByUpperCaseColumnName.put(property.columnName().toUpperCase(), property);
+                propertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), property);
             }
         }
     }
@@ -209,7 +209,7 @@ public class RowDefinitionClassWrapper {
                         if (buf.length() > 0) {
                             buf.append(", ");
                         }
-                        buf.append(property.columnName());
+                        buf.append(property.getColumnName());
                     }
                 }
 
@@ -323,7 +323,7 @@ public class RowDefinitionClassWrapper {
      *
      * @param database active database
      * @param columnName
-     * @return the PropertyWrapperDefinition for the columnName supplied.
+     * @return the PropertyWrapperDefinition for the getColumnName supplied.
      */
     public PropertyWrapperDefinition getPropertyDefinitionByColumn(DBDatabase database, String columnName) {
     	if (identityOnly) {
@@ -361,11 +361,11 @@ public class RowDefinitionClassWrapper {
         return list;
 
 //    	List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
-//    	if (duplicatedPropertiesByUpperCaseColumnName.containsKey(columnName.toUpperCase())) {
-//    		list.addAll(duplicatedPropertiesByUpperCaseColumnName.get(columnName.toUpperCase()));
+//    	if (duplicatedPropertiesByUpperCaseColumnName.containsKey(getColumnName.toUpperCase())) {
+//    		list.addAll(duplicatedPropertiesByUpperCaseColumnName.get(getColumnName.toUpperCase()));
 //    	}
 //    	else {
-//    		PropertyWrapperDefinition property = propertiesByUpperCaseColumnName.get(columnName.toUpperCase());
+//    		PropertyWrapperDefinition property = propertiesByUpperCaseColumnName.get(getColumnName.toUpperCase());
 //    		if (property != null) {
 //    			list.add(property);
 //    		}
