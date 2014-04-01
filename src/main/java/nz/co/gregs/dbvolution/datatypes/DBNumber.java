@@ -288,18 +288,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
      *
      * @param permitted
      */
-    public void permittedValues(List<Number> permitted) {
-        this.setOperator(new DBPermittedValuesOperator(permitted));
-    }
-
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(Set<Number> permitted) {
+    public void permittedValues(Collection<Number> permitted) {
         this.setOperator(new DBPermittedValuesOperator(permitted));
     }
 
