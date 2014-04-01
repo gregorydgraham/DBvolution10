@@ -192,7 +192,7 @@ public class DBInteger extends QueryableDatatype {
      *
      * @param permitted
      */
-    public void permittedValuesLong(Collection<Long> permitted) {
+    public void permittedValues(Collection<Long> permitted) {
         this.setOperator(new DBPermittedValuesOperator(permitted));
     }
 
