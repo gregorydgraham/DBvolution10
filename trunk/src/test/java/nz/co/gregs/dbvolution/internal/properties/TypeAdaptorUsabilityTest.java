@@ -27,10 +27,12 @@ public class TypeAdaptorUsabilityTest {
     public void integerFieldAdaptedAsDBInteger_whenAdaptingOnSimpleTypes() {
         class MyTypeAdaptor implements DBTypeAdaptor<Integer, Integer> {
 
+            @Override
             public Integer fromDatabaseValue(Integer dbvValue) {
                 return dbvValue;
             }
             
+            @Override
             public Integer toDatabaseValue(Integer objectValue) {
                 return objectValue;
             }
@@ -49,10 +51,12 @@ public class TypeAdaptorUsabilityTest {
     public void stringFieldAdaptedAsDBInteger_whenAdaptingOnSimpleTypes() {
         class MyTypeAdaptor implements DBTypeAdaptor<String, Long> {
 
+            @Override
             public String fromDatabaseValue(Long dbvValue) {
                 return (dbvValue == null) ? null : dbvValue.toString();
             }
             
+            @Override
             public Long toDatabaseValue(String objectValue) {
                 return (objectValue == null) ? null : Long.parseLong(objectValue);
             }
@@ -71,10 +75,12 @@ public class TypeAdaptorUsabilityTest {
     public void dbstringFieldAdaptedAsDBInteger_whenAdaptingOnSimpleTypes() {
         class MyTypeAdaptor implements DBTypeAdaptor<String, Long> {
 
+            @Override
             public String fromDatabaseValue(Long dbvValue) {
                 return (dbvValue == null) ? null : dbvValue.toString();
             }
             
+            @Override
             public Long toDatabaseValue(String objectValue) {
                 return (objectValue == null) ? null : Long.parseLong(objectValue);
             }
@@ -94,10 +100,12 @@ public class TypeAdaptorUsabilityTest {
         @SuppressWarnings("deprecation")
         class MyTypeAdaptor implements DBTypeAdaptor<Integer, Date> {
 
+            @Override
             public Integer fromDatabaseValue(Date dbvValue) {
                 return (dbvValue == null) ? null : dbvValue.getYear() + 1900;
             }
             
+            @Override
             public Date toDatabaseValue(Integer objectValue) {
                 return (objectValue == null) ? null : new Date(objectValue - 1900, 0, 1);
             }
@@ -117,10 +125,12 @@ public class TypeAdaptorUsabilityTest {
         @SuppressWarnings("deprecation")
         class MyTypeAdaptor implements DBTypeAdaptor<Long, Date> {
 
+            @Override
             public Long fromDatabaseValue(Date dbvValue) {
                 return (dbvValue == null) ? null : (long) (dbvValue.getYear() + 1900);
             }
             
+            @Override
             public Date toDatabaseValue(Long objectValue) {
                 return (objectValue == null) ? null : new Date(objectValue.intValue() - 1900, 0, 1);
             }
@@ -140,10 +150,12 @@ public class TypeAdaptorUsabilityTest {
     public void dateFieldAdaptedAsDBInteger_whenAdaptingOnSimpleTypes() {
         class MyTypeAdaptor implements DBTypeAdaptor<Date, Integer> {
 
+            @Override
             public Date fromDatabaseValue(Integer dbvValue) {
                 return (dbvValue == null) ? null : new Date(dbvValue - 1900, 0, 1);
             }
             
+            @Override
             public Integer toDatabaseValue(Date objectValue) {
                 return (objectValue == null) ? null : objectValue.getYear() + 1900;
             }
@@ -163,10 +175,12 @@ public class TypeAdaptorUsabilityTest {
         @SuppressWarnings("deprecation")
         class MyTypeAdaptor implements DBTypeAdaptor<Date, Integer> {
 
+            @Override
             public Date fromDatabaseValue(Integer dbvValue) {
                 return (dbvValue == null) ? null : new Date(dbvValue - 1900, 0, 1);
             }
             
+            @Override
             public Integer toDatabaseValue(Date objectValue) {
                 return (objectValue == null) ? null : objectValue.getYear() + 1900;
             }
@@ -197,10 +211,12 @@ public class TypeAdaptorUsabilityTest {
         
         class MyTypeAdaptor implements DBTypeAdaptor<MyDataType, String> {
 
+            @Override
             public MyDataType fromDatabaseValue(String dbvValue) {
                 return (dbvValue == null) ? null : new MyDataType().parse(dbvValue);
             }
             
+            @Override
             public String toDatabaseValue(MyDataType objectValue) {
                 return (objectValue == null) ? null : objectValue.toString();
             }
@@ -222,7 +238,7 @@ public class TypeAdaptorUsabilityTest {
 
             @SuppressWarnings("unused")
             public MyQDT() {
-                super(new Integer(23));
+                super(23);
             }
             
             @Override
