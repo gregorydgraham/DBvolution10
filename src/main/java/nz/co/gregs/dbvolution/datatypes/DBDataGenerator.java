@@ -96,7 +96,7 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     public boolean isAggregator() {
-        return ((DBExpression)this.getValue()).isAggregator();
+        return this.getValue().isAggregator();
     }
 
     @Override
@@ -104,6 +104,11 @@ public class DBDataGenerator extends QueryableDatatype {
         HashSet<DBRow> hashSet = new HashSet<DBRow>();
         hashSet.addAll(((DBExpression) literalValue).getTablesInvolved());
         return hashSet;
+    }
+
+    @Override
+    public DBExpression getValue() {
+        return (DBExpression)super.literalValue;
     }
 
 }

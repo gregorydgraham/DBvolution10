@@ -321,7 +321,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
     /**
      * Gets the current literal value of this queryable data type. The returned
-     * value <i>should<i> be in the correct type as appropriate for the type of
+     * value <i>should</i> be in the correct type as appropriate for the type of
      * queryable data type.
      *
      * <p>

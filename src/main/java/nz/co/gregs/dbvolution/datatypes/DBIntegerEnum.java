@@ -463,4 +463,20 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
         setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
         negateOperator();
     }
+
+
+    public Number numberValue() {
+        if (literalValue == null) {
+            return null;
+        } else if (literalValue instanceof Number) {
+            return (Number) literalValue;
+        } else {
+            return Double.parseDouble(literalValue.toString());
+        }
+    }
+    
+    @Override
+    public Number getValue() {
+        return numberValue();
+    }
 }

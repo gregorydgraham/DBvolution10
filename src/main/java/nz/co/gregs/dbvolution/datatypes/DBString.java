@@ -69,7 +69,7 @@ public class DBString extends QueryableDatatype implements StringResult {
     public String getValue() {
         final Object value = super.getValue();
         if (value == null) {
-            return (String) null;
+            return null;
         } else if (value instanceof String) {
             return (String) value;
         } else {

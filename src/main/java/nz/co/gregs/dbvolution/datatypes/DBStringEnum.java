@@ -138,7 +138,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
      * @param permitted
      */
     public void permittedValues(String... permitted) {
-        this.setOperator(new DBPermittedValuesOperator((Object[])permitted));
+        this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
     }
 
     /**
@@ -235,7 +235,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
      * @param excluded
      */
     public void excludedValues(String... excluded) {
-        this.setOperator(new DBPermittedValuesOperator((Object[])excluded));
+        this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
         negateOperator();
     }
 
@@ -410,7 +410,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
      * @param excluded
      */
     public void excludedValues(E... excluded) {
-        this.setOperator(new DBPermittedValuesOperator((Object[])convertToLiteralString(excluded)));
+        this.setOperator(new DBPermittedValuesOperator((Object[]) convertToLiteralString(excluded)));
         negateOperator();
     }
 
@@ -499,5 +499,17 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
     public void excludedRangeExclusive(E lowerBound, E upperBound) {
         setOperator(new DBPermittedRangeExclusiveOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
         negateOperator();
+    }
+
+    @Override
+    public String getValue() {
+        final Object value = super.literalValue;
+        if (value == null) {
+            return null;
+        } else if (value instanceof String) {
+            return (String) value;
+        } else {
+            return value.toString();
+        }
     }
 }
