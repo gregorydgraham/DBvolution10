@@ -20,19 +20,15 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import nz.co.gregs.dbvolution.expressions.DateResult;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
@@ -96,7 +92,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
         if (newLiteralValue instanceof Date) {
             setValue((Date) newLiteralValue);
         } else if (newLiteralValue instanceof DBDate) {
-            setValue(((DBDate) newLiteralValue).literalValue);
+            setValue(((QueryableDatatype) newLiteralValue).literalValue);
         } else {
             throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Date: Use only Dates with this class");
         }

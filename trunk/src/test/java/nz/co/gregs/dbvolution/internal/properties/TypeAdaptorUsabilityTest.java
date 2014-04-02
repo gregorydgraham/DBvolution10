@@ -12,7 +12,6 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -245,7 +244,7 @@ public class TypeAdaptorUsabilityTest {
             public boolean isAggregator() {
                 return false;
             }
-        }
+       }
         
         class MyTypeAdaptor implements DBTypeAdaptor<String, Integer> {
 
