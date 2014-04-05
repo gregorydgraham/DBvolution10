@@ -19,40 +19,38 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 
-
 public class H2DBDefinition extends DBDefinition {
 
-    String dateFormatStr = "yyyy-M-d hh:mm:ss";
-    String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
-    SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
+	String dateFormatStr = "yyyy-M-d hh:mm:ss";
+	String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
+	SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
 
+	@Override
+	public String getDateFormattedForQuery(Date date) {
+		if (date == null) {
+			return getNull();
+		}
+		return " PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "') ";
+	}
 
-    @Override
-    public String getDateFormattedForQuery(Date date) {
-        if (date == null) {
-            return getNull();
-        }
-        return " PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "') ";
-    }
+	@Override
+	public String formatTableName(DBRow table) {
+		return table.getTableName().toUpperCase();
+	}
 
-    @Override
-    public String formatTableName(DBRow table) {
-        return table.getTableName().toUpperCase();
-    }
+	@Override
+	public String formatColumnName(String columnName) {
+		return columnName.toUpperCase();
+	}
 
-    @Override
-    public String formatColumnName(String columnName) {
-        return columnName.toUpperCase();
-    }
+	@Override
+	public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
+		return " TOP " + rowLimit + " ";
+	}
 
-    @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
-        return " TOP " + rowLimit + " ";
-    }
+	@Override
+	public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+		return "";
+	}
 
-    @Override
-    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
-        return "";
-    }
-    
 }
