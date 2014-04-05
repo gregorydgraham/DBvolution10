@@ -65,7 +65,7 @@ public interface DBExpression {
     public String toSQLString(DBDatabase db);
 
     /**
-     * A Complete Copy Of This DBValue
+     * A Complete Copy Of This DBValue.
      *
      * <p>
      * Immutability in DBvolution is maintain by internally copying objects.
@@ -82,7 +82,7 @@ public interface DBExpression {
     public DBExpression copy();
 
     /**
-     * Returns TRUE if this expression is an Aggregator like SUM() or LEAST()
+     * Returns TRUE if this expression is an Aggregator like SUM() or LEAST().
      *
      * <p>
      * Subclasses must implement this method returning TRUE if the expression
