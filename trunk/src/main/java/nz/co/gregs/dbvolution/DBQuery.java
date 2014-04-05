@@ -325,8 +325,8 @@ public class DBQuery {
 		String lineSep = System.getProperty("line.separator");
 		DBRow startQueryFromTable = queryTables.isEmpty() ? allQueryTables.get(0) : queryTables.get(0);
 		List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
-				? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
-				: queryGraph.toList(startQueryFromTable.getClass());
+			? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
+			: queryGraph.toList(startQueryFromTable.getClass());
 
 		if (options.getRowLimit() != null) {
 			selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options.getRowLimit()));
@@ -418,14 +418,14 @@ public class DBQuery {
 				orderByClauseFinal += lineSep;
 			}
 			sqlString = selectClause.append(lineSep)
-					.append(fromClause).append(lineSep)
-					.append(whereClause).append(lineSep)
-					.append(rawSQLClauseFinal)
-					.append(groupByClauseFinal)
-					.append(orderByClauseFinal)
-					.append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
-					.append(defn.endSQLStatement())
-					.toString();
+				.append(fromClause).append(lineSep)
+				.append(whereClause).append(lineSep)
+				.append(rawSQLClauseFinal)
+				.append(groupByClauseFinal)
+				.append(orderByClauseFinal)
+				.append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
+				.append(defn.endSQLStatement())
+				.toString();
 		} else if (queryType == COUNT_QUERY) {
 			sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClause + lineSep + defn.endSQLStatement();
 		}
@@ -445,19 +445,19 @@ public class DBQuery {
 
 				if (fkReferencedClass.isAssignableFrom(tabRow.getClass())) {
 					String formattedForeignKey = defn.formatTableAliasAndColumnName(
-							otherTab, otherTableFk.columnName());
+						otherTab, otherTableFk.columnName());
 
 					String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
-							tabRow, otherTableFk.referencedColumnName());
+						tabRow, otherTableFk.referencedColumnName());
 
 					whereClause
-							.append(lineSep)
-							.append(defn.beginWhereClauseLine(options))
-							.append("(")
-							.append(formattedForeignKey)
-							.append(defn.getEqualsComparator())
-							.append(formattedReferencedColumn)
-							.append(")");
+						.append(lineSep)
+						.append(defn.beginWhereClauseLine(options))
+						.append("(")
+						.append(formattedForeignKey)
+						.append(defn.getEqualsComparator())
+						.append(formattedReferencedColumn)
+						.append(")");
 				}
 			}
 		}
@@ -538,11 +538,6 @@ public class DBQuery {
 						for (PropertyWrapper newProp : newProperties) {
 							QueryableDatatype qdt = newProp.getQueryableDatatype();
 
-							//from getSQLForQuery()
-//                List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
-//                for (PropertyWrapper propDefn : tabProps) {
-//                    selectClause.append(colSep).append(propDefn.getSelectableName(database)).append(" ").append(propDefn.getColumnAlias(database));
-//                            String resultSetColumnName = defn.formatColumnNameForDBQueryResultSet(newInstance, newProp.columnName());
 							String resultSetColumnName = newProp.getColumnAlias(database);
 							qdt.setFromResultSet(resultSet, resultSetColumnName);
 							if (newInstance.isEmptyRow() && !qdt.isNull()) {
@@ -653,9 +648,9 @@ public class DBQuery {
 	private boolean needsResults() {
 		try {
 			return results == null
-					|| results.isEmpty()
-					|| resultSQL == null
-					|| !resultSQL.equals(getSQLForQuery());
+				|| results.isEmpty()
+				|| resultSQL == null
+				|| !resultSQL.equals(getSQLForQuery());
 		} catch (SQLException ex) {
 			return true;
 		}
@@ -998,7 +993,7 @@ public class DBQuery {
 							final DBRow adapteeDBRow = (DBRow) possibleDBRow;
 							final String dbColumnName = defn.formatTableAliasAndColumnName(adapteeDBRow, prop.columnName());
 							if (dbColumnName
-									!= null) {
+								!= null) {
 								orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
 								sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 							}
