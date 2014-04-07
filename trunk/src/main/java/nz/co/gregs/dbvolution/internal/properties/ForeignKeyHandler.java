@@ -191,4 +191,8 @@ class ForeignKeyHandler {
     	}
 		return foreignKeyAnnotation;
 	}
+
+    boolean isForeignKeyTo(Class<? extends DBRow> aClass) {
+        return getReferencedClass().isAssignableFrom(aClass);
+    }
 }
