@@ -29,7 +29,7 @@ public abstract class DBAction {
     protected final DBRow row;
 
     protected abstract List<String> getSQLStatements(DBDatabase db, DBRow row);
-    public abstract DBActionList getRevertDBActionList();
+    protected abstract DBActionList getRevertDBActionList();
     protected abstract DBActionList getActions(DBRow row);
 
     DBAction() {

@@ -29,7 +29,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 
     private List<DBRow> savedRows = new ArrayList<DBRow>();
 
-    public <R extends DBRow> DBDeleteUsingAllColumns(R row) {
+    protected <R extends DBRow> DBDeleteUsingAllColumns(R row) {
         super(row);
     }
 
@@ -47,7 +47,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
     
     
     @Override
-    public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
+    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBActionList actions = new DBActionList(new DBDeleteUsingAllColumns(row));
         DBStatement statement = db.getDBStatement();
         List<DBRow> rowsToBeDeleted = db.get(row);
@@ -62,7 +62,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 
 
     @Override
-    public ArrayList<String> getSQLStatements(DBDatabase db, DBRow row) {
+    protected ArrayList<String> getSQLStatements(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();
 
         String sql = defn.beginDeleteLine()
@@ -84,10 +84,10 @@ public class DBDeleteUsingAllColumns extends DBDelete {
     }
     
         @Override
-    public DBActionList getRevertDBActionList() {
+    protected DBActionList getRevertDBActionList() {
         DBActionList reverts = new DBActionList();
-        for (DBRow row : savedRows) {
-            reverts.add(new DBInsert(row));
+        for (DBRow savedRow : savedRows) {
+            reverts.add(new DBInsert(savedRow));
         }
         return reverts;
     }

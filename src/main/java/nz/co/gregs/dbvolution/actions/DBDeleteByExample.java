@@ -27,7 +27,7 @@ public class DBDeleteByExample extends DBDelete {
 
     private List<DBRow> savedRows = new ArrayList<DBRow>();
 
-    public <R extends DBRow> DBDeleteByExample(R row) {
+    protected <R extends DBRow> DBDeleteByExample(R row) {
         super(row);
     }
 
@@ -44,7 +44,7 @@ public class DBDeleteByExample extends DBDelete {
     }
 
     @Override
-    public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
+    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         final DBDeleteByExample deleteAction = new DBDeleteByExample(row);
         DBActionList actions = new DBActionList(deleteAction);
         List<DBRow> rowsToBeDeleted = db.get(row);
@@ -59,7 +59,7 @@ public class DBDeleteByExample extends DBDelete {
     }
 
     @Override
-    public List<String> getSQLStatements(DBDatabase db, DBRow row) {
+    protected List<String> getSQLStatements(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();
         String whereClause = "";
         for (String clause : row.getWhereClausesWithoutAliases(db)) {
@@ -77,7 +77,7 @@ public class DBDeleteByExample extends DBDelete {
     }
 
     @Override
-    public DBActionList getRevertDBActionList() {
+    protected DBActionList getRevertDBActionList() {
         DBActionList reverts = new DBActionList();
         for (DBRow savedRow : savedRows) {
             reverts.add(new DBInsert(savedRow));

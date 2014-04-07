@@ -41,7 +41,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
     }
 
     @Override
-    public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
+    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBStatement statement = db.getDBStatement();
         DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(row));
         for (String sql : getSQLStatements(db, row)) {
@@ -52,7 +52,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
     }
 
     @Override
-    public List<String> getSQLStatements(DBDatabase db, DBRow row) {
+    protected List<String> getSQLStatements(DBDatabase db, DBRow row) {
         List<String> sqls = new ArrayList<String>();
         DBDefinition defn = db.getDefinition();
 
@@ -91,13 +91,13 @@ public class DBUpdateSimpleTypes extends DBUpdate {
     }
 
     @Override
-    public DBActionList getRevertDBActionList() {
+    protected DBActionList getRevertDBActionList() {
         DBActionList dbActionList = new DBActionList();
         dbActionList.add(new DBUpdateToPreviousValues(this.row));
         return dbActionList;
     }
 
-    String getWhereClause(DBDatabase db, DBRow row) {
+    protected String getWhereClause(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();
         QueryableDatatype primaryKey = row.getPrimaryKey();
         String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));

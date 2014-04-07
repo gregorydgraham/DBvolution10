@@ -29,16 +29,16 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 public class DBUpdateLargeObjects extends DBUpdate {
 
-    DBUpdateLargeObjects(DBRow row){
+    protected DBUpdateLargeObjects(DBRow row){
         super(row);
     }
 
-    DBUpdateLargeObjects() {
+    protected DBUpdateLargeObjects() {
         super();
     }
 
     @Override
-    public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
+    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBDefinition defn = db.getDefinition();
         DBStatement statement = db.getDBStatement();
         DBActionList actions = new DBActionList();
@@ -82,7 +82,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
     }
 
     @Override
-    public DBActionList getRevertDBActionList() {
+    protected DBActionList getRevertDBActionList() {
         return new DBActionList();
     }
 

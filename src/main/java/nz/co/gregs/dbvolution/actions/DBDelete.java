@@ -25,11 +25,11 @@ public abstract class DBDelete extends DBAction {
     private static DBDeleteByPrimaryKey pk = new DBDeleteByPrimaryKey();
     private static DBDeleteUsingAllColumns allCols = new DBDeleteUsingAllColumns();
 
-    public DBDelete() {
+    protected DBDelete() {
         super();
     }
 
-    public <R extends DBRow> DBDelete(R row) {
+    protected <R extends DBRow> DBDelete(R row) {
         super(row);
     }
 
@@ -45,20 +45,13 @@ public abstract class DBDelete extends DBAction {
     public static DBActionList delete(DBDatabase database, DBRow row) throws SQLException {
         DBActionList delete = getDeletes(row);
         return delete.execute(database);
-//        if (row.getDefined()) {
-//            if (row.getPrimaryKey() == null) {
-//                return allCols.execute(database, row);
-//            } else {
-//                return pk.execute(database, row);
-//            }
-//        } else {
-//            return example.execute(database, row);
-//        }
     }
 
     /**
      * Creates a DBActionList of delete actions for the rows.
-     *
+     * <p>
+     * You probably want to use {@link #getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
+     * } instead.
      * <p>
      * The actions created can be applied on a particular database using
      * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
@@ -97,10 +90,11 @@ public abstract class DBDelete extends DBAction {
      * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
      *
      * <p>
-     * The DBDatabase instance will be used to create DBInsert actions for the revert
-     * action list.
+     * The DBDatabase instance will be used to create DBInsert actions for the
+     * revert action list.
      *
      *
+     * @param db
      * @param rows
      * @return a DBActionList of deletes.
      * @throws SQLException
@@ -120,6 +114,6 @@ public abstract class DBDelete extends DBAction {
         }
         return actions;
     }
-    
+
     protected abstract DBActionList getActions(DBDatabase db, DBRow row) throws SQLException;
 }

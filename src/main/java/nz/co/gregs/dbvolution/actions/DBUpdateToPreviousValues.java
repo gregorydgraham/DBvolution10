@@ -66,7 +66,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
     }
 
     @Override
-    String getWhereClause(DBDatabase db, DBRow row) {
+    protected String getWhereClause(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();
         QueryableDatatype primaryKey = row.getPrimaryKey();
         String pkCurrentValue = primaryKey.toSQLString(db);
