@@ -47,7 +47,7 @@ public class RowDefinition implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    static RowDefinitionWrapperFactory wrapperFactory = new RowDefinitionWrapperFactory();
+    private static final RowDefinitionWrapperFactory wrapperFactory = new RowDefinitionWrapperFactory();
     private transient RowDefinitionInstanceWrapper wrapper = null;
 
     /**

@@ -537,4 +537,8 @@ public class PropertyWrapperDefinition {
 		}
 	}
 
+    boolean isForeignKeyTo(DBRow table) {
+        return foreignKeyHandler.isForeignKeyTo(table.getClass());
+    }
+
 }

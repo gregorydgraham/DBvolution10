@@ -569,4 +569,8 @@ public class PropertyWrapper {
         final RowDefinition actualRow = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
         return propertyDefinition.getColumnAlias(db, actualRow);
     }
+
+    public boolean isForeignKeyTo(DBRow table) {
+        return propertyDefinition.isForeignKeyTo(table);
+    }
 }

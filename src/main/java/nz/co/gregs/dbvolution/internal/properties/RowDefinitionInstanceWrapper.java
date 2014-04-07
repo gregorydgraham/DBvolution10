@@ -85,6 +85,10 @@ public class RowDefinitionInstanceWrapper {
             return getClass().getSimpleName() + "<no-table:" + classWrapper.adaptee().getName() + ">";
         }
     }
+    
+    public RowDefinitionClassWrapper getClassWrapper(){
+        return classWrapper;
+    }
 
     /**
      * Gets the wrapped object type supported by this {@code ObjectAdaptor}.
