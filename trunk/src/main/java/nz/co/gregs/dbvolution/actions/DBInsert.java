@@ -40,7 +40,7 @@ public class DBInsert extends DBAction {
     private transient StringBuilder allColumns;
     private transient StringBuilder allValues;
 
-    public <R extends DBRow> DBInsert(R row) {
+    protected <R extends DBRow> DBInsert(R row) {
         super(row);
     }
 
@@ -53,7 +53,7 @@ public class DBInsert extends DBAction {
     }
 
     @Override
-    public ArrayList<String> getSQLStatements(DBDatabase db, DBRow row) {
+    protected ArrayList<String> getSQLStatements(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();
         processAllFieldsForInsert(db, row);
 
@@ -69,7 +69,7 @@ public class DBInsert extends DBAction {
     }
 
     @Override
-    public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
+    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         DBStatement statement = db.getDBStatement();
 
         DBActionList actions = new DBActionList(new DBInsert(row));
@@ -123,7 +123,7 @@ public class DBInsert extends DBAction {
     }
 
     @Override
-    public DBActionList getRevertDBActionList() {
+    protected DBActionList getRevertDBActionList() {
         DBActionList reverts = new DBActionList();
         if (this.row.getPrimaryKey() == null) {
             reverts.add(new DBDeleteUsingAllColumns(row));
@@ -149,7 +149,7 @@ public class DBInsert extends DBAction {
      * @return a DBActionList of inserts.
      * @throws SQLException
      */
-    public static DBActionList getInserts(DBRow... rows) throws SQLException {
+    protected static DBActionList getInserts(DBRow... rows) throws SQLException {
         DBActionList inserts = new DBActionList();
         for (DBRow row : rows) {
             inserts.add(new DBInsert(row));

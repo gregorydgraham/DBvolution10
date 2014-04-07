@@ -25,9 +25,9 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 public class DBDeleteByPrimaryKey extends DBDelete {
 
-    private List<DBRow> savedRows = new ArrayList<DBRow>();
+    private final List<DBRow> savedRows = new ArrayList<DBRow>();
 
-    public <R extends DBRow> DBDeleteByPrimaryKey(R row) {
+    protected <R extends DBRow> DBDeleteByPrimaryKey(R row) {
         super(row);
     }
 
@@ -46,7 +46,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
     }
 
     @Override
-    public DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
+    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
         final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(row);
         DBActionList actions = new DBActionList(newDeleteAction);
         DBRow example = DBRow.getDBRow(row.getClass());
@@ -63,7 +63,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
     }
 
     @Override
-    public ArrayList<String> getSQLStatements(DBDatabase db, DBRow row) {
+    protected ArrayList<String> getSQLStatements(DBDatabase db, DBRow row) {
         DBDefinition defn = db.getDefinition();
 
         ArrayList<String> strs = new ArrayList<String>();
@@ -78,7 +78,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
     }
 
     @Override
-    public DBActionList getRevertDBActionList() {
+    protected DBActionList getRevertDBActionList() {
         DBActionList reverts = new DBActionList();
         for (DBRow savedRow : savedRows) {
             reverts.add(new DBInsert(savedRow));
