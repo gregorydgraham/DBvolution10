@@ -47,23 +47,41 @@ public class RelatedTableTest extends AbstractTest {
     }
 
     @Test
+    public void getAllConnectedTablesTest() {
+        Marque marque = new Marque();
+        
+        List<Class<? extends DBRow>> allConnectedTables = (new CarCompany()).getAllConnectedTables();
+        Assert.assertThat(allConnectedTables.size(), is(4));
+        Assert.assertThat(allConnectedTables.contains(Marque.class), is(true));
+        Assert.assertThat(allConnectedTables.contains(CompanyLogo.class), is(true));
+        Assert.assertThat(allConnectedTables.contains(LinkCarCompanyAndLogo.class), is(true));
+        
+        allConnectedTables = marque.getAllConnectedTables();
+        Assert.assertThat(allConnectedTables.size(), is(1));
+        Assert.assertThat(allConnectedTables.contains(CarCompany.class), is(true));
+        
+
+        allConnectedTables = (new LinkCarCompanyAndLogo()).getAllConnectedTables();
+        Assert.assertThat(allConnectedTables.size(), is(2));
+        Assert.assertThat(allConnectedTables.contains(CarCompany.class), is(true));
+        Assert.assertThat(allConnectedTables.contains(CompanyLogo.class), is(true));
+    }
+
+    @Test
     public void getRelatedTablesTest() {
         Marque marque = new Marque();
         
-        List<Class<? extends DBRow>> allRelatedTables = (new CarCompany()).getAllRelatedTables();
+        List<Class<? extends DBRow>> allRelatedTables = (new CarCompany()).getRelatedTables();
         Assert.assertThat(allRelatedTables.size(), is(4));
         Assert.assertThat(allRelatedTables.contains(Marque.class), is(true));
         Assert.assertThat(allRelatedTables.contains(CompanyLogo.class), is(true));
         Assert.assertThat(allRelatedTables.contains(LinkCarCompanyAndLogo.class), is(true));
+        Assert.assertThat(allRelatedTables.contains(LinkCarCompanyAndLogoWithPreviousLink.class), is(true));
         
-        allRelatedTables = marque.getAllRelatedTables();
-        Assert.assertThat(allRelatedTables.size(), is(1));
-        Assert.assertThat(allRelatedTables.contains(CarCompany.class), is(true));
+        allRelatedTables = marque.getRelatedTables();
+        Assert.assertThat(allRelatedTables.size(), is(0));
         
-
-        allRelatedTables = (new LinkCarCompanyAndLogo()).getAllRelatedTables();
-        Assert.assertThat(allRelatedTables.size(), is(2));
-        Assert.assertThat(allRelatedTables.contains(CarCompany.class), is(true));
-        Assert.assertThat(allRelatedTables.contains(CompanyLogo.class), is(true));
+        allRelatedTables = (new LinkCarCompanyAndLogo()).getRelatedTables();
+        Assert.assertThat(allRelatedTables.size(), is(0));
     }
 }

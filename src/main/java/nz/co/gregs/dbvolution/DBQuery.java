@@ -1158,8 +1158,8 @@ public class DBQuery {
     }
 
     /**
-     * Search the classpath and add any DBRow classes that reference the DBRows
-     * within this DBQuery
+     * Search the classpath and add any DBRow classes that are connected to the
+     * DBRows within this DBQuery
      *
      * <p>
      * This method automatically enlarges the query by finding all associated
@@ -1176,10 +1176,10 @@ public class DBQuery {
      * @throws IllegalAccessException
      * @return this DBQuery instance
      */
-    public DBQuery addAllRelatedTables() throws InstantiationException, IllegalAccessException {
+    public DBQuery addAllConnectedTables() throws InstantiationException, IllegalAccessException {
         List<DBRow> tablesToAdd = new ArrayList<DBRow>();
         for (DBRow table : allQueryTables) {
-            List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
+            List<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
             for (Class<? extends DBRow> relatedTable : allRelatedTables) {
                 tablesToAdd.add(relatedTable.newInstance());
             }
@@ -1208,7 +1208,7 @@ public class DBQuery {
      * @throws IllegalAccessException
      * @return this DBQuery instance
      */
-    public DBQuery addAllRelatedTablesAsOptional() throws InstantiationException, IllegalAccessException {
+    public DBQuery addAllConnectedTablesAsOptional() throws InstantiationException, IllegalAccessException {
         Set<DBRow> tablesToAdd = new HashSet<DBRow>();
         List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
         for (DBRow table : allQueryTables) {
@@ -1217,7 +1217,7 @@ public class DBQuery {
             alreadyAddedClasses.add(aClass);
         }
         for (DBRow table : allQueryTables) {
-            List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
+            List<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
             for (Class<? extends DBRow> relatedTable : allRelatedTables) {
                 DBRow newInstance = relatedTable.newInstance();
                 @SuppressWarnings("unchecked")
@@ -1233,18 +1233,18 @@ public class DBQuery {
         return this;
     }
 
-    public DBQuery addAllRelatedTablesAsOptionalWithoutInternalRelations() throws InstantiationException, IllegalAccessException {
+    public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws InstantiationException, IllegalAccessException {
         Set<DBRow> tablesToAdd = new HashSet<DBRow>();
         List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
         DBRow[] originalTables = allQueryTables.toArray(new DBRow[]{});
-        
+
         for (DBRow table : allQueryTables) {
             @SuppressWarnings("unchecked")
             Class<DBRow> aClass = (Class<DBRow>) table.getClass();
             alreadyAddedClasses.add(aClass);
         }
         for (DBRow table : allQueryTables) {
-            List<Class<? extends DBRow>> allRelatedTables = table.getAllRelatedTables();
+            List<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
             for (Class<? extends DBRow> relatedTable : allRelatedTables) {
                 DBRow newInstance = relatedTable.newInstance();
                 @SuppressWarnings("unchecked")

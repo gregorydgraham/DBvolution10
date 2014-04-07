@@ -875,9 +875,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * keys
      *
      * <p>
-     * Similar to {@link #getAllRelatedTables() } but where this class directly
-     * references the external DBRow subclass with an {@code @DBForeignKey}
-     * annotation.
+     * Similar to {@link #getAllConnectedTables() } but where this class
+     * directly references the external DBRow subclass with an
+     * {@code @DBForeignKey} annotation.
      *
      * <p>
      * That is to say: where A is this class, returns a List of B such that A =>
@@ -899,22 +899,25 @@ abstract public class DBRow extends RowDefinition implements Serializable {
     }
 
     /**
-     * Creates a list of all DBRow subclasses that reference this class with
-     * foreign keys.
+     * Creates a list of all DBRow subclasses that are connected to this class.
      *
      * <p>
-     * Similar to {@link #getReferencedTables() } but where this class is being
-     * referenced by the external DBRow subclass.
+     * Uses {@link #getReferencedTables() } and {@link #getRelatedTables() } to
+     * produce a complete list of tables connected by a foreign key to this
+     * DBRow class.
      *
      * <p>
      * That is to say: where A is this class, returns a List of B such that B =>
-     * A
+     * A or A => B
      *
      * @return a list of classes that have a {@code @DBForeignKey} reference to
-     * this class
+     * or from this class
      */
-    public List<Class<? extends DBRow>> getAllRelatedTables() {
-        return getRelatedTables();
+    public List<Class<? extends DBRow>> getAllConnectedTables() {
+        final List<Class<? extends DBRow>> relatedTables = new ArrayList<Class<? extends DBRow>>();
+        relatedTables.addAll(getRelatedTables());
+        relatedTables.addAll(getReferencedTables());
+        return relatedTables;
     }
 
     /**
@@ -933,7 +936,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * this class
      */
     public List<Class<? extends DBRow>> getRelatedTables() {
-        List<Class<? extends DBRow>> relatedTables = getReferencedTables();
+        List<Class<? extends DBRow>> relatedTables = new ArrayList<Class<? extends DBRow>>();
         Reflections reflections = new Reflections(this.getClass().getPackage().getName());
 
         Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
