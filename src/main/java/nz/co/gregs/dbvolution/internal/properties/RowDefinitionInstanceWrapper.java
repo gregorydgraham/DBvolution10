@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 public class RowDefinitionInstanceWrapper {
 
     private final RowDefinitionClassWrapper classWrapper;
-    private final RowDefinition target;
+    private final RowDefinition rowDefinition;
     private final List<PropertyWrapper> allProperties;
     private final List<PropertyWrapper> foreignKeyProperties;
 
@@ -41,33 +41,33 @@ public class RowDefinitionInstanceWrapper {
      * Called by
      * {@link DBRowClassWrapper#instanceAdaptorFor(DBDefinition, Object)}.
      *
-     * @param dbDefn
      * @param classWrapper
-     * @param target the target object of the same type as analyzed by
-     * {@code classAdaptor}
+     * @param rowDefinition the target object of the same type as analyzed by {@code classWrapper}
      */
-    RowDefinitionInstanceWrapper(RowDefinitionClassWrapper classWrapper, RowDefinition target) {
-        if (target == null) {
+    RowDefinitionInstanceWrapper(RowDefinitionClassWrapper classWrapper, RowDefinition rowDefinition) {
+        if (rowDefinition == null) {
             throw new DBRuntimeException("Target object is null");
         }
-        if (!classWrapper.adaptee().isInstance(target)) {
-            throw new DBRuntimeException("Target object's type (" + target.getClass().getName()
-                    + ") is not compatible with given class adaptor for type " + classWrapper.adaptee().getName()
+        if (!classWrapper.adapteeClass().isInstance(rowDefinition)) {
+            throw new DBRuntimeException("Target object's type (" + rowDefinition.getClass().getName()
+                    + ") is not compatible with given class adaptor for type " + classWrapper.adapteeClass().getName()
                     + " (this is probably a bug in DBvolution)");
         }
 
-        this.target = target;
+        this.rowDefinition = rowDefinition;
         this.classWrapper = classWrapper;
 
         // pre-cache commonly used things
+        // (note: if you change this to use lazy-initialisation, you'll have to
+        // add explicit synchronisation, or it won't be thread-safe anymore)
         this.allProperties = new ArrayList<PropertyWrapper>();
         for (PropertyWrapperDefinition propertyDefinition : classWrapper.getPropertyDefinitions()) {
-            this.allProperties.add(new PropertyWrapper(this, propertyDefinition, target));
+            this.allProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
         }
 
         this.foreignKeyProperties = new ArrayList<PropertyWrapper>();
         for (PropertyWrapperDefinition propertyDefinition : classWrapper.getForeignKeyPropertyDefinitions()) {
-            this.foreignKeyProperties.add(new PropertyWrapper(this, propertyDefinition, target));
+            this.foreignKeyProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
         }
     }
 
@@ -80,13 +80,65 @@ public class RowDefinitionInstanceWrapper {
     @Override
     public String toString() {
         if (isTable()) {
-            return getClass().getSimpleName() + "<" + tableName() + ":" + classWrapper.adaptee().getName() + ">";
+            return getClass().getSimpleName() + "<" + tableName() + ":" + classWrapper.adapteeClass().getName() + ">";
         } else {
-            return getClass().getSimpleName() + "<no-table:" + classWrapper.adaptee().getName() + ">";
+            return getClass().getSimpleName() + "<no-table:" + classWrapper.adapteeClass().getName() + ">";
         }
     }
     
-    public RowDefinitionClassWrapper getClassWrapper(){
+	/**
+	 * Two {@code RowDefinitionInstanceWrappers} are equal if they wrap two {@code RowDefinition} instances
+	 * that are themselves equal, and are instances of the same class.
+	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof RowDefinitionInstanceWrapper)) {
+			return false;
+		}
+		RowDefinitionInstanceWrapper other = (RowDefinitionInstanceWrapper) obj;
+		if (classWrapper == null) {
+			if (other.classWrapper != null) {
+				return false;
+			}
+		} else if (!classWrapper.equals(other.classWrapper)) {
+			return false;
+		}
+		if (rowDefinition == null) {
+			if (other.rowDefinition != null) {
+				return false;
+			}
+		} else if (!rowDefinition.equals(other.rowDefinition)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Calculates the hash-code based on the hash-code of the wrapped @{code RowDefinition}
+	 * instance and its class.
+	 * @return the hash-code
+	 */
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((classWrapper == null) ? 0 : classWrapper.hashCode());
+		result = prime * result + ((rowDefinition == null) ? 0 : rowDefinition.hashCode());
+		return result;
+	}
+	
+    /**
+     * Gets the class-wrapper for the class of wrapped {@code RowDefinition}
+     * @return the class-wrapper
+     */
+	public RowDefinitionClassWrapper getClassWrapper() {
         return classWrapper;
     }
 
@@ -96,8 +148,8 @@ public class RowDefinitionInstanceWrapper {
      *
      * @return the class of the wrapped instance
      */
-    public Class<?> adapteeType() {
-        return classWrapper.adaptee();
+    public Class<?> adapteeRowDefinitionClass() {
+        return classWrapper.adapteeClass();
     }
 
     /**
@@ -108,7 +160,7 @@ public class RowDefinitionInstanceWrapper {
      * {@link DBReport}) for this instance.
      */
     public RowDefinition adapteeRowDefinition() {
-        return target;
+        return rowDefinition;
     }
 
     /**
@@ -171,7 +223,7 @@ public class RowDefinitionInstanceWrapper {
      */
     public PropertyWrapper primaryKey() {
         if (classWrapper.primaryKeyDefinition() != null) {
-            return new PropertyWrapper(this, classWrapper.primaryKeyDefinition(), target);
+            return new PropertyWrapper(this, classWrapper.primaryKeyDefinition(), rowDefinition);
         } else {
             return null;
         }
@@ -197,7 +249,7 @@ public class RowDefinitionInstanceWrapper {
      */
     public PropertyWrapper getPropertyByColumn(DBDatabase database, String columnName) {
         PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByColumn(database, columnName);
-        return (classProperty == null) ? null : new PropertyWrapper(this, classProperty, target);
+        return (classProperty == null) ? null : new PropertyWrapper(this, classProperty, rowDefinition);
     }
 
     /**
@@ -210,7 +262,7 @@ public class RowDefinitionInstanceWrapper {
      */
     public PropertyWrapper getPropertyByName(String propertyName) {
         PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByName(propertyName);
-        return (classProperty == null) ? null : new PropertyWrapper(this, classProperty, target);
+        return (classProperty == null) ? null : new PropertyWrapper(this, classProperty, rowDefinition);
     }
 
     /**

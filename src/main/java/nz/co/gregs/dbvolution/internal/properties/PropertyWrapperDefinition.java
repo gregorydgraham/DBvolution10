@@ -120,7 +120,7 @@ public class PropertyWrapperDefinition {
 	 * it wraps in a specific class. Two instances are identical if they wrap
 	 * the same java property (field or bean-property) in the same class and the
 	 * same class-loader.
-	 * @return  TRUE if the 2 objects are equal, FALSE otherwise.
+	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
 	 */
 	@Override
 	public boolean equals(Object obj) {
