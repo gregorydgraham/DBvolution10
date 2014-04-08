@@ -32,21 +32,21 @@ package nz.co.gregs.dbvolution.datatypes;
  * any object type can be used that is assignable with the type of the
  * property this adaptor is used on. 
  * 
- * @param <T> the type of the property on the target object
+ * @param <J> the Java side type of the property on the target Java object
  * @param <D> the database side type: the type of the property once translated for DBvolution use
  */
-public interface DBTypeAdaptor<T, D> {
+public interface DBTypeAdaptor<J, D> {
 	/**
 	 * Null values must be handled correctly.
-	 * @param dbvValue
+	 * @param dbValue
 	 * @return The database value transformed into the Java value
 	 */
-	public T fromDatabaseValue(D dbvValue);
+	public J fromDatabaseValue(D dbValue);
 
 	/**
 	 * Null values must be handled correctly.
-	 * @param objectValue
+	 * @param javaValue
 	 * @return The Java value transformed into the database value
 	 */
-	public D toDatabaseValue(T objectValue);
+	public D toDatabaseValue(J javaValue);
 }
