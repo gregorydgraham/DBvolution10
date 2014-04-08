@@ -36,7 +36,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class RowDefinitionClassWrapper {
 
-	private final Class<?> adaptee;
+	private final Class<?> adapteeClass;
 	private final boolean identityOnly;
 	private final TableHandler tableHandler;
 	/**
@@ -108,7 +108,7 @@ public class RowDefinitionClassWrapper {
 	 * and types etc.
 	 */
 	RowDefinitionClassWrapper(Class<?> clazz, boolean processIdentityOnly) {
-		adaptee = clazz;
+		adapteeClass = clazz;
 		identityOnly = processIdentityOnly;
 
 		// annotation handlers
@@ -241,25 +241,63 @@ public class RowDefinitionClassWrapper {
 
 	/**
 	 * Gets a string representation suitable for debugging.
-	 *
+	 * 
 	 * @return a string representation of this object.
 	 */
 	@Override
 	public String toString() {
 		if (isTable()) {
-			return getClass().getSimpleName() + "<" + tableName() + ":" + adaptee.getName() + ">";
+			return getClass().getSimpleName() + "<" + tableName() + ":" + adapteeClass.getName() + ">";
 		} else {
-			return getClass().getSimpleName() + "<no-table:" + adaptee.getName() + ">";
+			return getClass().getSimpleName() + "<no-table:" + adapteeClass.getName() + ">";
 		}
 	}
 
+	/**
+	 * Two {@code RowDefinitionClassWrappers} are equal if they wrap the same classes.
+	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof RowDefinitionClassWrapper)) {
+			return false;
+		}
+		RowDefinitionClassWrapper other = (RowDefinitionClassWrapper) obj;
+		if (adapteeClass == null) {
+			if (other.adapteeClass != null) {
+				return false;
+			}
+		} else if (!adapteeClass.equals(other.adapteeClass)) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Calculates the hash-code based on the hash-code of the wrapped class.
+	 * @return the hash-code
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((adapteeClass == null) ? 0 : adapteeClass.hashCode());
+		return result;
+	}
+	
 	/**
 	 * Gets the underlying wrapped class.
 	 *
 	 * @return the DBRow or Object wrapped by this instance.
 	 */
-	public Class<?> adaptee() {
-		return adaptee;
+	public Class<?> adapteeClass() {
+		return adapteeClass;
 	}
 
 	/**
@@ -273,7 +311,7 @@ public class RowDefinitionClassWrapper {
 	 * @return the SimpleName of the class being wrapped.
 	 */
 	public String javaName() {
-		return adaptee.getSimpleName();
+		return adapteeClass.getSimpleName();
 	}
 
 	/**
@@ -284,7 +322,7 @@ public class RowDefinitionClassWrapper {
 	 * @return the fully qualified name of the class being wrapped.
 	 */
 	public String qualifiedJavaName() {
-		return adaptee.getName();
+		return adapteeClass.getName();
 	}
 
 	/**
@@ -370,7 +408,7 @@ public class RowDefinitionClassWrapper {
 	List<PropertyWrapperDefinition> getPropertyDefinitionIdentitiesByColumnNameCaseInsensitive(String columnName) {
 		List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
 		JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
-		for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(adaptee)) {
+		for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(adapteeClass)) {
 			ColumnHandler column = new ColumnHandler(javaProperty);
 			if (column.isColumn() && column.getColumnName().equalsIgnoreCase(columnName)) {
 				PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty, true);
@@ -378,18 +416,6 @@ public class RowDefinitionClassWrapper {
 			}
 		}
 		return list;
-
-//    	List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
-//    	if (duplicatedPropertiesByUpperCaseColumnName.containsKey(getColumnName.toUpperCase())) {
-//    		list.addAll(duplicatedPropertiesByUpperCaseColumnName.get(getColumnName.toUpperCase()));
-//    	}
-//    	else {
-//    		PropertyWrapperDefinition property = propertiesByUpperCaseColumnName.get(getColumnName.toUpperCase());
-//    		if (property != null) {
-//    			list.add(property);
-//    		}
-//    	}
-//    	return list;
 	}
 
 	/**
