@@ -560,19 +560,23 @@ public class DBQuery {
                             existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
                             existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
                         }
-                        DBRow existingInstance = newInstance;
-                        final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
-                        if (primaryKey != null) {
-                            final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
-                            if (qdt != null) {
-                                existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
-                                if (existingInstance == null) {
-                                    existingInstance = newInstance;
-                                    existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
+                        if (newInstance.isEmptyRow()) {
+                            queryRow.put(newInstance.getClass(), null);
+                        } else {
+                            DBRow existingInstance = newInstance;
+                            final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
+                            if (primaryKey != null) {
+                                final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
+                                if (qdt != null) {
+                                    existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
+                                    if (existingInstance == null) {
+                                        existingInstance = newInstance;
+                                        existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
+                                    }
                                 }
                             }
+                            queryRow.put(existingInstance.getClass(), existingInstance);
                         }
-                        queryRow.put(existingInstance.getClass(), existingInstance);
                     }
                     results.add(queryRow);
                 }

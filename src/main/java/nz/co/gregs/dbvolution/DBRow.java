@@ -1045,7 +1045,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * @return TRUE if the row has no non-null values or is undefined, FALSE
      * otherwise
      */
-    public Boolean isEmptyRow() {
+    protected Boolean isEmptyRow() {
         return emptyRow;
     }
 
