@@ -357,21 +357,15 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
             setChanged(newLiteralValue);
             setToNull();
         } else {
+            setChanged(newLiteralValue);
+            this.literalValue = newLiteralValue;
             if (newLiteralValue instanceof DBExpression) {
-                setChanged((DBExpression) newLiteralValue);
-                this.literalValue = newLiteralValue;
                 this.setOperator(new DBEqualsOperator(new DBDataGenerator((DBExpression) newLiteralValue)));
             } else if (newLiteralValue instanceof Date) {
-                setChanged((Date) newLiteralValue);
-                this.literalValue = newLiteralValue;
                 this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
             } else if (newLiteralValue instanceof Timestamp) {
-                setChanged((Timestamp) newLiteralValue);
-                this.literalValue = newLiteralValue;
                 this.setOperator(new DBEqualsOperator(new DBDate((Timestamp) newLiteralValue)));
             } else {
-                setChanged(newLiteralValue);
-                this.literalValue = newLiteralValue;
                 this.setOperator(new DBEqualsOperator(this.copy()));
             }
         }

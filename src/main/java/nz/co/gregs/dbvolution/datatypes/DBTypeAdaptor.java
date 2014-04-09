@@ -24,6 +24,7 @@ package nz.co.gregs.dbvolution.datatypes;
  * <li> String
  * <li> Integer, Long
  * <li> Float, Double
+ * <li> Boolean
  * <li> arbitrary object type (requires the use of DBJavaObject)
  * </ul>
  * 

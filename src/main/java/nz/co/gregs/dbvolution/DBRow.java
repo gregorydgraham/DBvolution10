@@ -188,8 +188,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
     }
 
     /**
-     * Remove all the settings on all the fields of this DBRow
+     * Remove all the settings on all the fields of this DBRow.
+     *
+     * <p>
+     * Deprecated as it is inefficient and promotes unsafe programming
+     * practices. Use {@code new DBRowSubclass()} instead.
      */
+    @Deprecated
     public void clear() {
         for (PropertyWrapper prop : getPropertyWrappers()) {
             QueryableDatatype qdt = prop.getQueryableDatatype();
@@ -821,7 +826,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      */
     public List<DBRelationship> getRelationshipsFromThisInstance(DBDatabase db, DBRow newTable, QueryOptions options) {
         List<DBRelationship> rels = new ArrayList<DBRelationship>();
-        DBDefinition defn = db.getDefinition();
+//        DBDefinition defn = db.getDefinition();
 
         List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
         for (PropertyWrapper fk : fks) {
