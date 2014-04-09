@@ -377,7 +377,7 @@ public class RowDefinition implements Serializable {
         StringBuilder string = new StringBuilder();
         List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
 
-        String separator = "";
+        String separator = ""+this.getClass().getSimpleName();
 
         for (PropertyWrapper field : fields) {
             if (field.isColumn()) {

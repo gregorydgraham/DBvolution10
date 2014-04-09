@@ -18,8 +18,6 @@ package nz.co.gregs.dbvolution;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
@@ -251,6 +249,21 @@ public class OuterJoinTest extends AbstractTest {
         if (database.supportsFullOuterJoin()) {
             dbQuery.print(System.out);
             Assert.assertThat(dbQuery.count(), is(22L));
+        }
+    }
+    @Test
+    public void testOuterJoinQueryCreatesEmptyRows() throws SQLException {
+        DBQuery dbQuery = database.getDBQuery();
+        dbQuery.setUseANSISyntax(true);
+        dbQuery.add(new CarCompany());
+        dbQuery.addOptional(new LinkCarCompanyAndLogo());
+        dbQuery.setBlankQueryAllowed(true);
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        Assert.assertThat(allRows.size(), is(4));
+        List<LinkCarCompanyAndLogo> links = dbQuery.getAllInstancesOf(new LinkCarCompanyAndLogo());
+        Assert.assertThat(links.size(), is(0));
+        for (DBQueryRow queryrow : allRows) {
+            Assert.assertThat(queryrow.get(new LinkCarCompanyAndLogo()), is(nullValue()));
         }
     }
 }
