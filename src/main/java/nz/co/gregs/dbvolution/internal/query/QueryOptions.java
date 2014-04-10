@@ -24,7 +24,8 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 public class QueryOptions {
     
     private boolean matchAll = true;
-    private Long rowLimit = null;
+    private Long rowLimit = -1L;
+    private Long pageIndex = 0L;
     private ColumnProvider[] sortColumns = new ColumnProvider[]{};
     private boolean blankQueryAllowed = false;
     private boolean cartesianJoinAllowed = false;
@@ -127,6 +128,20 @@ public class QueryOptions {
      */
     public void setCartesianJoinAllowed(boolean cartesianJoinAllowed) {
         this.cartesianJoinAllowed = cartesianJoinAllowed;
+    }
+
+    /**
+     * @return the pageIndex
+     */
+    public Long getPageIndex() {
+        return pageIndex;
+    }
+
+    /**
+     * @param pageIndex the pageIndex to set
+     */
+    public void setPageIndex(Long pageIndex) {
+        this.pageIndex = pageIndex;
     }
     
     

@@ -95,6 +95,8 @@ public class DBQuery {
     private final List<Class<? extends DBRow>> optionalQueryTables;
     private final List<DBRow> allQueryTables;
     private List<DBQueryRow> results;
+    private Long resultsRowLimit = -1L;
+    private Long resultsPageIndex = 0L;
     private String resultSQL;
     private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
     private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
@@ -336,7 +338,7 @@ public class DBQuery {
                 : queryGraph.toList(startQueryFromTable.getClass());
 
         if (options.getRowLimit() != null) {
-            selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options.getRowLimit()));
+            selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
         }
 
         String separator = "";
@@ -430,7 +432,7 @@ public class DBQuery {
                     .append(rawSQLClauseFinal)
                     .append(groupByClauseFinal)
                     .append(orderByClauseFinal)
-                    .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options.getRowLimit()) : "")
+                    .append(options.getRowLimit() != null ? defn.getLimitRowsSubClauseAfterWhereClause(options) : "")
                     .append(defn.endSQLStatement())
                     .toString();
         } else if (queryType == COUNT_QUERY) {
@@ -521,8 +523,8 @@ public class DBQuery {
      * @see DBDatabase
      */
     public List<DBQueryRow> getAllRows() throws SQLException {
-        results = new ArrayList<DBQueryRow>();
-        resultSQL = this.getSQLForQuery();
+        prepareForQuery();
+
         DBQueryRow queryRow;
 
         DBStatement dbStatement = database.getDBStatement();
@@ -587,6 +589,13 @@ public class DBQuery {
             dbStatement.close();
         }
         return results;
+    }
+
+    private void prepareForQuery() throws SQLException {
+        results = new ArrayList<DBQueryRow>();
+        resultsRowLimit = options.getRowLimit();
+        resultsPageIndex = options.getPageIndex();
+        resultSQL = this.getSQLForQuery();
     }
 
     /**
@@ -661,6 +670,8 @@ public class DBQuery {
             return results == null
                     || results.isEmpty()
                     || resultSQL == null
+                    || !resultsPageIndex.equals(options.getPageIndex())
+                    || !resultsRowLimit.equals(options.getRowLimit())
                     || !resultSQL.equals(getSQLForQuery());
         } catch (SQLException ex) {
             return true;
@@ -891,10 +902,11 @@ public class DBQuery {
     }
 
     /**
-     * Limit the query to only returning a certain number of rows
+     * Limit the query to only returning a certain number of rows.
      *
      * <p>
-     * Implements support of the LIMIT and TOP operators of many databases.
+     * Implements support of the LIMIT and TOP operators of many databases. Also
+     * sets the "page" length for retrieve rows by pages.
      *
      * <p>
      * Only the specified number of rows will be returned from the database and
@@ -921,7 +933,7 @@ public class DBQuery {
      * @return this DBQuery instance
      */
     public DBQuery clearRowLimit() {
-        options.setRowLimit(null);
+        options.setRowLimit(-1L);
         results = null;
 
         return this;
@@ -1292,6 +1304,17 @@ public class DBQuery {
             }
         }
         return returnList;
+    }
+
+    public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
+
+        if (database.supportsPaging(options)) {
+            this.options.setPageIndex(pageNumber.longValue());
+        }
+        if (this.needsResults()) {
+            getAllRows();
+        }
+        return results;
     }
 
     /**

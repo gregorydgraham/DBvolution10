@@ -124,7 +124,7 @@ public class DBTableOLD<E extends DBRow> {
         } else {
             selectStatement.append(defn.beginSelectStatement());
             if (rowLimit != null) {
-                selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
+                selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
             }
 //            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
             selectStatement.append(getAllFieldsForSelect())
@@ -132,7 +132,7 @@ public class DBTableOLD<E extends DBRow> {
                     .append(defn.formatTableName(template))
                     .append(defn.beginTableAlias()).append(defn.getTableAlias(template)).append(defn.endTableAlias())
                     .append(getOrderByClause())
-                    .append(defn.getLimitRowsSubClauseAfterWhereClause(rowLimit))
+                    .append(defn.getLimitRowsSubClauseAfterWhereClause(options))
                     .append(defn.endSQLStatement());
         }
 
@@ -167,7 +167,7 @@ public class DBTableOLD<E extends DBRow> {
         } else {
             selectStatement.append(defn.beginSelectStatement());
             if (rowLimit != null) {
-                selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(rowLimit));
+                selectStatement.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
             }
 
 //            String tableAlias = ("_"+dummy.getClass().getSimpleName().hashCode()).replaceAll("-", "_");

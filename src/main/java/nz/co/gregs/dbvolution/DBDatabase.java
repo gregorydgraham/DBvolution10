@@ -36,6 +36,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1048,5 +1049,9 @@ public abstract class DBDatabase {
      */
     public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException {
         return DBReport.getRows(this, report, examples);
+    }
+
+    boolean supportsPaging(QueryOptions options) {
+        return definition.supportsPaging(options);
     }
 }

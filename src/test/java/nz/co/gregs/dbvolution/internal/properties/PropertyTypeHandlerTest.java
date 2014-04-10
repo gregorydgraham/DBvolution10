@@ -663,6 +663,7 @@ public class PropertyTypeHandlerTest {
 //	}
 	
 	@Test
+        @SuppressWarnings("deprecation")
 	public void nullifiesSimpleFieldsWhenClearingGivenTypeAdaptor() throws SQLException {
 		class MyClass extends DBRow {
 			@DBAdaptType(value=StringLongAdaptor.class)

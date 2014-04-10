@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 public class MSSQLServerDBDefinition extends DBDefinition {
 
@@ -40,12 +41,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
-        return " TOP("+rowLimit+") "; //To change body of generated methods, choose Tools | Templates.
+    public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+        return " TOP("+options.getRowLimit()+") "; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+    public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
         return "";
     }
 
@@ -71,5 +72,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
         return "STDEV";
     }
 
-
+    @Override
+    public boolean supportsPaging(QueryOptions options) {
+        return false;
+    }
 }

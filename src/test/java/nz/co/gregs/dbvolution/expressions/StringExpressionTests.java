@@ -56,7 +56,7 @@ public class StringExpressionTests extends AbstractTest {
         List<Marque> got = dbQuery.getAllInstancesOf(marq);
         Assert.assertThat(got.size(), is(1));
 
-        marq.clear();
+        marq = new Marque();
         dbQuery = database.getDBQuery(marq);
         dbQuery.addComparison(
                 marq.column(marq.name).trim(),
@@ -116,7 +116,7 @@ public class StringExpressionTests extends AbstractTest {
         List<Marque> got = dbQuery.getAllInstancesOf(marq);
         Assert.assertThat(got.size(), is(1));
 
-        marq.clear();
+        marq = new Marque();
 
         DBOperator hummerLowerCaseOp = new DBPermittedValuesOperator("hummer");
         final DBOperator hummerUpperCaseOp = new DBPermittedValuesOperator("HUMMER");

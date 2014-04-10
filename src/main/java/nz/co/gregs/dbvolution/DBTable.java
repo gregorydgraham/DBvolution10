@@ -262,9 +262,9 @@ public class DBTable<E extends DBRow> {
         }
     }
 
-    private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException, ClassNotFoundException {
-        exemplar.clear();
-        final QueryableDatatype primaryKey = exemplar.getPrimaryKey();
+    private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException, ClassNotFoundException{
+        DBRow newInstance = DBRow.getDBRow(exemplar.getClass());
+        final QueryableDatatype primaryKey = newInstance.getPrimaryKey();
         if ((primaryKey instanceof DBString) && (pkValue instanceof String)) {
             ((DBString) primaryKey).permittedValues((String) pkValue);
         } else if ((primaryKey instanceof DBInteger) && (pkValue instanceof Long)) {
@@ -280,7 +280,7 @@ public class DBTable<E extends DBRow> {
         } else {
             throw new ClassNotFoundException("The value supplied is not in a supported class or it does not match the primary key class.");
         }
-        this.query = database.getDBQuery(exemplar);
+        this.query = database.getDBQuery(newInstance);
         return getAllRows();
     }
 
