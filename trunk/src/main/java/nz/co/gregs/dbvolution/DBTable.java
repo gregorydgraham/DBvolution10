@@ -573,12 +573,12 @@ public class DBTable<E extends DBRow> {
      * @return this DBTable instance
      */
     public DBTable<E> setRowLimit(int rowLimit) {
-        this.options.setRowLimit(new Long(rowLimit));
+        this.options.setRowLimit(rowLimit);
         return this;
     }
 
     private DBTable<E> applyRowLimit() {
-        if (options.getRowLimit() != null) {
+        if (options.getRowLimit() > 0) {
             query.setRowLimit(options.getRowLimit());
         } else {
             query.clearRowLimit();
@@ -587,7 +587,7 @@ public class DBTable<E extends DBRow> {
     }
 
     public DBTable<E> clearRowLimit() {
-        this.options.setRowLimit(null);
+        this.options.setRowLimit(-1);
         return this;
     }
 

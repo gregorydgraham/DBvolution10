@@ -60,13 +60,13 @@ public class InformixDBDefinition extends DBDefinition {
 
     @Override
     public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-        Long rowLimit = options.getRowLimit();
-        Long pageNumber = options.getPageIndex();
-        if (rowLimit == null) {
+        int rowLimit = options.getRowLimit();
+        Integer pageNumber = options.getPageIndex();
+        if (rowLimit < 1) {
             return "";
         } else {
-            if (supportsPaging(options) && pageNumber != null) {
-                Long offset = pageNumber * rowLimit;
+            if (supportsPaging(options)) {
+                long offset = pageNumber * rowLimit;
                 if (offset > 0L) {
                     return " SKIP " + offset + " FIRST " + rowLimit + " ";
                 } else {
