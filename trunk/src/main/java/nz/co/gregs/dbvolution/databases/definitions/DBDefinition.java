@@ -129,8 +129,8 @@ public abstract class DBDefinition {
             return beginOrLine();
         }
     }
-    
-    public boolean prefersIndexBasedGroupByClause(){
+
+    public boolean prefersIndexBasedGroupByClause() {
         return false;
     }
 
@@ -304,10 +304,10 @@ public abstract class DBDefinition {
      * If the database does not limit rows during the select clause this method
      * should return ""
      *
-     * @param rowLimit
+     * @param options
      * @return a string for the row limit sub-clause or ""
      */
-    abstract public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit);
+    abstract public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options);
 
     public String beginOrderByClause() {
         return " ORDER BY ";
@@ -387,10 +387,23 @@ public abstract class DBDefinition {
      * If the database does not limit rows after the where clause this method
      * should return ""
      *
-     * @param rowLimit
+     * @param options
      * @return the row limiting sub-clause or ""
      */
-    abstract public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit);
+    public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options){
+        Long rowLimit = options.getRowLimit();
+        Long pageNumber = options.getPageIndex();
+        if (rowLimit == null||rowLimit<1L) {
+            return "";
+        } else {
+            Long offset = 0L;
+            if (pageNumber != null) {
+                offset = pageNumber * rowLimit;
+            }
+            
+            return "LIMIT " + rowLimit + " OFFSET " + offset;
+        }
+    }
 
     /**
      *
@@ -602,5 +615,9 @@ public abstract class DBDefinition {
 
     public boolean prefersIndexBasedOrderByClause() {
         return false;
+    }
+
+    public boolean supportsPaging(QueryOptions options) {
+        return true;
     }
 }

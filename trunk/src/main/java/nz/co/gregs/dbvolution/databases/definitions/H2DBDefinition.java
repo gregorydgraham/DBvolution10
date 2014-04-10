@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 public class H2DBDefinition extends DBDefinition {
 
@@ -44,13 +45,8 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
-		return " TOP " + rowLimit + " ";
+	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+//		return " TOP " + rowLimit + " ";
+            return "";
 	}
-
-	@Override
-	public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
-		return "";
-	}
-
 }

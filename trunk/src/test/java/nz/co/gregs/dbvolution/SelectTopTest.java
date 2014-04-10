@@ -87,4 +87,25 @@ public class SelectTopTest extends AbstractTest {
     }
     
     
+    @Test
+    public void queryPagingTest() throws SQLException {
+        CarCompany carCompany = new CarCompany();
+        final Marque marque = new Marque();
+        DBQuery query = database.getDBQuery(carCompany, marque);
+        query.setSortOrder(carCompany.column(carCompany.name), marque.column(marque.name));
+        query.setBlankQueryAllowed(true);
+        query.setRowLimit(5);
+        System.out.println("PAGE 1:");
+        List<DBQueryRow> firstPage = query.getAllRowsForPage(0);
+        query.print();
+        Assert.assertThat(firstPage.get(0).get(carCompany).name.stringValue(), is("Ford"));
+        Assert.assertThat(firstPage.get(1).get(carCompany).name.stringValue(), is("GENERAL MOTORS"));
+        System.out.println("PAGE 2:");
+        List<DBQueryRow> secondPage = query.getAllRowsForPage(1);
+        query.print();
+        Assert.assertThat(secondPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
+        Assert.assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
+        Assert.assertThat(secondPage.get(0).get(marque).name.stringValue(), is("CHRYSLER"));
+        Assert.assertThat(secondPage.get(1).get(marque).name.stringValue(), is("DAEWOO"));
+    }
 }

@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 public class InformixDBDefinition extends DBDefinition {
 
@@ -40,7 +41,7 @@ public class InformixDBDefinition extends DBDefinition {
     public boolean prefersIndexBasedOrderByClause() {
         return true;
     }
-    
+
     @Override
     public String getDateFormattedForQuery(Date date) {
         return "TO_DATE('" + dateFormat.format(date) + "','" + informixDateFormat + "')";
@@ -58,12 +59,27 @@ public class InformixDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
-        return " FIRST " + rowLimit + " ";
+    public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+        Long rowLimit = options.getRowLimit();
+        Long pageNumber = options.getPageIndex();
+        if (rowLimit == null) {
+            return "";
+        } else {
+            if (supportsPaging(options) && pageNumber != null) {
+                Long offset = pageNumber * rowLimit;
+                if (offset > 0L) {
+                    return " SKIP " + offset + " FIRST " + rowLimit + " ";
+                } else {
+                    return " FIRST " + rowLimit + " ";
+                }
+            } else {
+                return " FIRST " + rowLimit + " ";
+            }
+        }
     }
 
     @Override
-    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+    public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
         return "";
     }
 
@@ -87,4 +103,8 @@ public class InformixDBDefinition extends DBDefinition {
         return "YEAR(" + dateExpression + ")";
     }
 
+    @Override
+    public boolean supportsPaging(QueryOptions options) {
+        return false;
+    }
 }

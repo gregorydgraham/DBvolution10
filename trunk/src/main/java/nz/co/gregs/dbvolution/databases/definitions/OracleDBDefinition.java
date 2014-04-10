@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 public class OracleDBDefinition extends DBDefinition {
 
@@ -82,14 +83,14 @@ public class OracleDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
-        return "/*+ FIRST_ROWS(" + rowLimit + ") */";
+    public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+        return "/*+ FIRST_ROWS(" + options.getRowLimit() + ") */";
     }
 
-    @Override
-    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
-        return "";
-    }
+//    @Override
+//    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+//        return "";
+//    }
 
     @Override
     public String getCurrentDateFunctionName() {
@@ -119,5 +120,10 @@ public class OracleDBDefinition extends DBDefinition {
     @Override
     public String getIfNullFunctionName() {
         return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean supportsPaging(QueryOptions options) {
+        return false;
     }
 }

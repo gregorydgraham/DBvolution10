@@ -69,7 +69,7 @@ public class DBActionListCreationTest extends AbstractTest {
         Marque toyota = marques.getOnlyRowByExample(marqueExample);
         toyota.uidMarque.setValue(999999);
 
-        marqueExample.clear();
+        marqueExample = new Marque();
         marqueExample.name.permittedValuesIgnoreCase("ford");
         Marque ford = marques.getOnlyRowByExample(marqueExample);
         final Long fordOriginalUpdateCount = ford.updateCount.getValue();
@@ -88,12 +88,12 @@ public class DBActionListCreationTest extends AbstractTest {
         }
 
         reverts.execute(database);
-        marqueExample.clear();
+        marqueExample = new Marque();
         marqueExample.getUidMarque().permittedValues(toyotaUID);
 
         toyota = marques.getOnlyRowByExample(marqueExample);
 
-        marqueExample.clear();
+        marqueExample = new Marque();
         marqueExample.name.permittedValuesIgnoreCase("ford");
         ford = marques.getOnlyRowByExample(marqueExample);
 
@@ -168,7 +168,7 @@ public class DBActionListCreationTest extends AbstractTest {
         Marque toyota = marques.getOnlyRowByExample(example);
         toyota.uidMarque.setValue(999999);
 
-        example.clear();
+        example = new Marque();
         example.name.permittedValuesIgnoreCase("ford");
         Marque ford = marques.getOnlyRowByExample(example);
         final Integer fordOriginalUpdateCount = ford.updateCount.getValue().intValue();
@@ -179,7 +179,7 @@ public class DBActionListCreationTest extends AbstractTest {
         Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
         dataChanges.addAll(database.insert(marque));
 
-        example.clear();
+        example = new Marque();
         example.name.permittedValuesIgnoreCase("honda");
         List<Marque> foundToyota = database.get(example);
         Assert.assertThat(foundToyota.size(), is(1));
@@ -199,22 +199,22 @@ public class DBActionListCreationTest extends AbstractTest {
 
         revertActionList.execute(database);
 
-        example.clear();
+        example = new Marque();
         example.name.permittedValuesIgnoreCase("toyota");
         toyota = database.getDBTable(example).getOnlyRowByExample(example);
         Assert.assertThat(toyota.uidMarque.getValue().intValue(), is(toyotaUID));
         
-        example.clear();
+        example = new Marque();
         example.name.permittedValuesIgnoreCase("ford");
         ford = database.getDBTable(example).getOnlyRowByExample(example);
         Assert.assertThat(ford.updateCount.getValue().intValue(), is(fordOriginalUpdateCount));
         
-        example.clear();
+        example = new Marque();
         example.name.permittedValuesIgnoreCase("tvr");
         DBTable<Marque> rowsByExample = database.getDBTable(example);
         Assert.assertThat(rowsByExample.getAllRows().size(), is(0));
         
-        example.clear();
+        example = new Marque();
         example.name.permittedValuesIgnoreCase("honda");
         rowsByExample = database.getDBTable(example);
         Assert.assertThat(rowsByExample.getAllRows().size(), is(1));
@@ -254,7 +254,6 @@ public class DBActionListCreationTest extends AbstractTest {
         Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
         dataChanges.addAll(database.insert(marque));
 
-        example.clear();
         example.name.permittedValuesIgnoreCase("TVR");
         List<Marque> foundTVR = database.get(example);
         Assert.assertThat(foundTVR.size(), is(1));

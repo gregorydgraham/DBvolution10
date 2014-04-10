@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 public class MySQLDBDefinition extends DBDefinition {
 
@@ -63,17 +64,17 @@ public class MySQLDBDefinition extends DBDefinition {
     }
 
     @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(Long rowLimit) {
+    public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
         return "";
     }
 
-    @Override
-    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
-        if (rowLimit != null) {
-            return " Limit  " + rowLimit + " ";
-        }else
-            return "";
-    }
+//    @Override
+//    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
+//        if (rowLimit != null) {
+//            return " Limit  " + rowLimit + " ";
+//        }else
+//            return "";
+//    }
 
     @Override
     public String getDropDatabase(String databaseName) {
