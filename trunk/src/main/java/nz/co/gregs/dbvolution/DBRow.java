@@ -143,6 +143,21 @@ abstract public class DBRow extends RowDefinition implements Serializable {
     }
 
     /**
+     * Returns a new example of the sourceRow with the primary key set for use
+     * in a query.
+     *
+     * @param <R>
+     * @param sourceRow
+     * @return
+     */
+    public static <R extends DBRow> R getPrimaryKeyExample(R sourceRow) {
+        @SuppressWarnings("unchecked")
+        R dbRow = (R) getDBRow(sourceRow.getClass());
+        dbRow.getPrimaryKey().setValue(sourceRow.getPrimaryKey());
+        return dbRow;
+    }
+
+    /**
      * Creates a new instance of the supplied DBRow subclass and duplicates it's
      * values.
      *
@@ -1080,5 +1095,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
         final RowDefinitionClassWrapper thisClassWrapper = this.getWrapper().getClassWrapper();
         final RowDefinitionClassWrapper thatClassWrapper = table.getWrapper().getClassWrapper();
         return thisClassWrapper.equals(thatClassWrapper);
+    }
+
+    public <R extends DBRow> List<QueryableDatatype> getForeignKeysTo(R badRow) {
+        List<QueryableDatatype> fksToR = new ArrayList<QueryableDatatype>();
+        RowDefinitionInstanceWrapper wrapper = getWrapper();
+        List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getForeignKeyPropertyWrappers();
+        for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+            if (propertyWrapper.isForeignKeyTo(badRow)) {
+                fksToR.add(propertyWrapper.getQueryableDatatype());
+            }
+        }
+        return fksToR;
     }
 }

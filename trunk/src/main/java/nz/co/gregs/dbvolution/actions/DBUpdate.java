@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.actions;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException;
 
 public abstract class DBUpdate extends DBAction {
 
@@ -56,8 +57,9 @@ public abstract class DBUpdate extends DBAction {
      * <p>
      * The actions created can be applied on a particular database using
      * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
-     * 
-     * <p>Synonym for {@link #getUpdates(nz.co.gregs.dbvolution.DBRow...) }
+     *
+     * <p>
+     * Synonym for {@link #getUpdates(nz.co.gregs.dbvolution.DBRow...) }
      *
      * @param rows
      * @return a DBActionList of updates.
@@ -81,15 +83,19 @@ public abstract class DBUpdate extends DBAction {
     public static DBActionList getUpdates(DBRow... rows) throws SQLException {
         DBActionList updates = new DBActionList();
         for (DBRow row : rows) {
-            if (row.hasChangedSimpleTypes()) {
-                if (row.getPrimaryKey() == null) {
-                    updates.add(new DBUpdateSimpleTypesUsingAllColumns(row));
-                } else {
-                    updates.add(new DBUpdateSimpleTypes(row));
+            if (row.getDefined()) {
+                if (row.hasChangedSimpleTypes()) {
+                    if (row.getPrimaryKey() == null) {
+                        updates.add(new DBUpdateSimpleTypesUsingAllColumns(row));
+                    } else {
+                        updates.add(new DBUpdateSimpleTypes(row));
+                    }
                 }
-            }
-            if (row.hasChangedLargeObjects()) {
-                updates.add(new DBUpdateLargeObjects(row));
+                if (row.hasChangedLargeObjects()) {
+                    updates.add(new DBUpdateLargeObjects(row));
+                }
+            } else {
+                throw new AccidentalUpdateOfUndefinedRowException(row);
             }
         }
         return updates;
