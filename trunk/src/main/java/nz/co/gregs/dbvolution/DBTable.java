@@ -32,7 +32,6 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
@@ -414,8 +413,7 @@ public class DBTable<E extends DBRow> {
     }
 
     /**
-     *
-     * Inserts DBRows into the database
+     * Inserts DBRows into the database.
      *
      * @param newRows
      * @return a DBActionList of all the actions performed

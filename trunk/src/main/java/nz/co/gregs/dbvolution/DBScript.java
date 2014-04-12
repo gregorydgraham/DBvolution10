@@ -20,7 +20,20 @@ import java.util.List;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 
 /**
- * A convenient method of implement a database script in DBvolution
+ * A convenient method of implement a database script in DBvolution.
+ *
+ * <p>
+ * DBScript provides automatic transaction control for a collection of
+ * DBvolution operations.
+ *
+ * <p>
+ * Use {@link DBDatabase#test(nz.co.gregs.dbvolution.DBScript) } or
+ * {@link DBScript#test(nz.co.gregs.dbvolution.DBDatabase)} to run the script
+ * within a Read Only Transaction.
+ *
+ * <p>
+ * Use {@link DBDatabase#implement(nz.co.gregs.dbvolution.DBScript)} or 
+ * {@link DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) } to run the script within a Committed Transaction.
  *
  * <p>
  * DBvolution is available on <a
@@ -31,81 +44,93 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
  */
 public abstract class DBScript {
 
-    /**
-     *
-     * Create all the database interaction is this method.
-     * 
-     * Call test() or implement() to safely run the script within a transaction.
-     * 
-     * Use the List<String> to return a revert script.
-     * 
-     * @param db
-     * @return List<String>
-     * @throws Exception
-     */
-    public abstract DBActionList script(DBDatabase db) throws Exception;
+	/**
+	 *
+	 * Create all the database interaction is this method.
+	 *
+	 * Call test() or implement() to safely run the script within a transaction.
+	 *
+	 * Use the {@link DBActionList} to collect the script's actions for saving
+	 * or later use.
+	 *
+	 * @param db
+	 * @return DBActionList
+	 * @throws Exception
+	 */
+	public abstract DBActionList script(DBDatabase db) throws Exception;
 
-    /**
-     * Run the script in a committed transaction.
-     * 
-     * <P>Implement() wraps the script() method in a transaction and commits it.
-     * 
-     * <P>Any exceptions will cause the script to abort and rollback safely.
-     * 
-     * <P>When the script executes without exceptions the changes will be committed and made permanent.
-     *
-     * @param db
-     * @return a DBActionList of all the actions performed on the database
-     * @throws Exception
-     */
-    public final DBActionList implement(DBDatabase db) throws Exception {
-        DBTransaction<DBActionList> trans = getDBTransaction();
-        DBActionList revertScript = db.doTransaction(trans);
-        return revertScript;
-    }
+	/**
+	 * Run the script in a committed transaction.
+	 *
+	 * <P>
+	 * Implement() wraps the {@link #script(nz.co.gregs.dbvolution.DBDatabase) }
+	 * method in a transaction and commits it.
+	 *
+	 * <P>
+	 * Any exceptions will cause the script to abort and rollback safely.
+	 *
+	 * <P>
+	 * When the script executes without exceptions the changes will be committed
+	 * and made permanent.
+	 *
+	 * @param db
+	 * @return a DBActionList of all the actions performed on the database
+	 * @throws Exception
+	 */
+	public final DBActionList implement(DBDatabase db) throws Exception {
+		DBTransaction<DBActionList> trans = getDBTransaction();
+		DBActionList revertScript = db.doTransaction(trans);
+		return revertScript;
+	}
 
-    /**
-     * Run the script in a read-only transaction.
-     * 
-     * Test() wraps the script() method in a transaction but rolls it back.
-     * 
-     * Any changes will be safely rolled back.
-     *
-     * @param db
-     * @return a DBActionList of all the actions performed on the database
-     * @throws Exception
-     */
-    public final DBActionList test(DBDatabase db) throws Exception {
-        DBTransaction<DBActionList> trans = getDBTransaction();
-        DBActionList revertScript = db.doReadOnlyTransaction(trans);
-        return revertScript;
-    }
+	/**
+	 * Run the script in a read-only transaction.
+	 *
+	 * Test() wraps the {@link #script(nz.co.gregs.dbvolution.DBDatabase) }
+	 * method in a transaction but rolls it back.
+	 *
+	 * <p>
+	 * Any changes will be safely rolled back.
+	 *
+	 * <P>
+	 * Any exceptions will cause the script to abort and rollback safely.
+	 *
+	 * @param db
+	 * @return a DBActionList of all the actions performed on the database
+	 * @throws Exception
+	 */
+	public final DBActionList test(DBDatabase db) throws Exception {
+		DBTransaction<DBActionList> trans = getDBTransaction();
+		DBActionList revertScript = db.doReadOnlyTransaction(trans);
+		return revertScript;
+	}
 
-    public final DBTransaction<DBActionList> getDBTransaction() {
-        return new DBTransaction<DBActionList>() {
-            @Override
-            public DBActionList doTransaction(DBDatabase dbd) throws Exception {
-                DBActionList revertScript = script(dbd);
-                return revertScript;
-            }
-        };
-    }
+	public final DBTransaction<DBActionList> getDBTransaction() {
+		return new DBTransaction<DBActionList>() {
+			@Override
+			public DBActionList doTransaction(DBDatabase dbd) throws Exception {
+				DBActionList revertScript = script(dbd);
+				return revertScript;
+			}
+		};
+	}
 
-    /**
-     * Convenience method to print out the List<String> as an SQL script.
-     *
-     * @param statementList
-     */
-    public static void printStatementList(List<String> statementList) {
-        System.out.println("--BEGIN SCRIPT--");
-        System.out.println("begin;");
-        System.out.println("");
-        for (String sql : statementList) {
-            System.out.println("" + sql);
-        }
-        System.out.println("");
-        System.out.println("rollback;");
-        System.out.println("--END SCRIPT--");
-    }
+	/**
+	 * Convenience method to print out the List<String> as an SQL script.
+	 *
+	 * @param statementList
+	 */
+	@Deprecated
+	public static void printStatementList(List<String> statementList) {
+		System.out.println("--BEGIN SCRIPT--");
+		System.out.println("begin;");
+		System.out.println("");
+		for (String sql : statementList) {
+			System.out.println("" + sql);
+		}
+		System.out.println("");
+		System.out.println("rollback;");
+		System.out.println("--END SCRIPT--");
+	}
 
 }
