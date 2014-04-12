@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.List;
+import nz.co.gregs.dbvolution.columns.IntegerColumn;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -30,43 +32,100 @@ import org.junit.Test;
  */
 public class IgnoreForeignKeyTest extends AbstractTest {
 
-    public IgnoreForeignKeyTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public IgnoreForeignKeyTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void testIgnoreForeignKey() throws SQLException{
-        Marque marque = new Marque();
-        CarCompany carCompany = new CarCompany();
-        DBQuery dbQuery = database.getDBQuery(carCompany, marque);
-        dbQuery.setBlankQueryAllowed(true);
-        List<DBQueryRow> allRows = dbQuery.getAllRows();
-        dbQuery.print();
-        Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
+	@Test
+	public void testIgnoreForeignKey() throws SQLException {
+		Marque marque = new Marque();
+		CarCompany carCompany = new CarCompany();
+		DBQuery dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 
-        marque.ignoreForeignKey(marque.getCarCompany());
-        dbQuery = database.getDBQuery(carCompany, marque);
-        dbQuery.setBlankQueryAllowed(true);
-        dbQuery.setCartesianJoinsAllowed(true);
-        System.out.println(dbQuery.getSQLForQuery());
-        allRows = dbQuery.getAllRows();
-        dbQuery.print();
-        Assert.assertThat(allRows.size(), is(88));
+		marque.ignoreForeignKey(marque.getCarCompany());
+		dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		dbQuery.setCartesianJoinsAllowed(true);
+		System.out.println(dbQuery.getSQLForQuery());
+		allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertThat(allRows.size(), is(88));
 
-        marque.useAllForeignKeys();
-        dbQuery = database.getDBQuery(carCompany, marque);
-        dbQuery.setBlankQueryAllowed(true);
-        allRows = dbQuery.getAllRows();
-        dbQuery.print();
-        Assert.assertTrue("Number of rows should be 88", allRows.size() == 22);
+		marque.useAllForeignKeys();
+		dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertTrue("Number of rows should be 88", allRows.size() == 22);
 
-        marque.ignoreAllForeignKeys();
-        dbQuery = database.getDBQuery(carCompany, marque);
-        dbQuery.setBlankQueryAllowed(true);
-        dbQuery.setCartesianJoinsAllowed(true);
-        allRows = dbQuery.getAllRows();
-        dbQuery.print();
-        Assert.assertTrue("Number of rows should be 88", allRows.size() == 88);
+		marque.ignoreAllForeignKeys();
+		dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		dbQuery.setCartesianJoinsAllowed(true);
+		allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertTrue("Number of rows should be 88", allRows.size() == 88);
 
-    }
+	}
+
+	@Test
+	public void testIgnoreForeignKeyUsingColumnProviders() throws SQLException {
+		Marque marque = new Marque();
+		CarCompany carCompany = new CarCompany();
+		DBQuery dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
+		final IntegerColumn carCompanyColumn = marque.column(marque.carCompany);
+
+		marque.ignoreForeignKey(carCompanyColumn);
+		dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		dbQuery.setCartesianJoinsAllowed(true);
+		System.out.println(dbQuery.getSQLForQuery());
+		allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertThat(allRows.size(), is(88));
+
+		marque.useAllForeignKeys();
+		dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
+	}
+	
+	@Test
+	public void testIgnoreForeignKeyUsingColumnProvidersAndADifferentObject() throws SQLException {
+		Marque marque = new Marque();
+		CarCompany carCompany = new CarCompany();
+		DBQuery dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
+		final IntegerColumn carCompanyColumn = marque.column(marque.carCompany);
+
+		marque = new Marque();
+		marque.ignoreForeignKey(carCompanyColumn);
+		dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		dbQuery.setCartesianJoinsAllowed(true);
+		System.out.println(dbQuery.getSQLForQuery());
+		allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertThat(allRows.size(), is(88));
+
+		marque.useAllForeignKeys();
+		dbQuery = database.getDBQuery(carCompany, marque);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		dbQuery.print();
+		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
+	}
 }

@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 public class DBUpdateLargeObjects extends DBUpdate {
@@ -78,7 +79,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
     }
 
     protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
-        return row.getChangedLargeObjects();
+        return getChangedLargeObjects(row);
     }
 
     @Override
@@ -90,4 +91,19 @@ public class DBUpdateLargeObjects extends DBUpdate {
     protected DBActionList getActions(DBRow row) {
         return new DBActionList(new DBUpdateLargeObjects(row));
     }
+
+	protected List<PropertyWrapper> getChangedLargeObjects(DBRow row) {
+		List<PropertyWrapper> changed = new ArrayList<PropertyWrapper>();
+		if (row.hasLargeObjects()) {
+			for (QueryableDatatype qdt : row.getLargeObjects()) {
+				if (qdt instanceof DBLargeObject) {
+					DBLargeObject large = (DBLargeObject) qdt;
+					if (large.hasChanged()) {
+						changed.add(row.getPropertyWrapperOf(qdt));
+					}
+				}
+			}
+		}
+		return changed;
+	}
 }

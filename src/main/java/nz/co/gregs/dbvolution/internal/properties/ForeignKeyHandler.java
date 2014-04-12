@@ -193,6 +193,8 @@ class ForeignKeyHandler {
 	}
 
     boolean isForeignKeyTo(Class<? extends DBRow> aClass) {
-        return getReferencedClass().isAssignableFrom(aClass);
+		final Class<? extends DBRow> reffedClass = getReferencedClass();
+		final boolean assignableFrom = reffedClass.isAssignableFrom(aClass);
+		return assignableFrom;
     }
 }
