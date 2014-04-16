@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 
@@ -96,10 +97,43 @@ public abstract class DBDelete extends DBAction {
      *
      * @param db
      * @param rows
-     * @return a DBActionList of deletes.
+     * @return a DBActionList of delete actions.
      * @throws SQLException
      */
     public static DBActionList getDeletes(DBDatabase db, DBRow... rows) throws SQLException {
+        DBActionList actions = new DBActionList();
+        for (DBRow row : rows) {
+            if (row.getDefined()) {
+                if (row.getPrimaryKey() == null) {
+                    actions.addAll(allCols.getActions(db, row));
+                } else {
+                    actions.addAll(pk.getActions(db, row));
+                }
+            } else {
+                actions.addAll(example.getActions(db, row));
+            }
+        }
+        return actions;
+    }
+
+    /**
+     * Creates a DBActionList of delete actions for the rows.
+     *
+     * <p>
+     * The actions created can be applied on a particular database using
+     * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
+     *
+     * <p>
+     * The DBDatabase instance will be used to create DBInsert actions for the
+     * revert action list.
+     *
+     *
+     * @param db
+     * @param rows
+     * @return a DBActionList of delete actions.
+     * @throws SQLException
+     */
+    public static DBActionList getDeletes(DBDatabase db, Collection<? extends DBRow> rows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (DBRow row : rows) {
             if (row.getDefined()) {

@@ -377,7 +377,7 @@ public class RowDefinition implements Serializable {
         StringBuilder string = new StringBuilder();
         List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
 
-        String separator = ""+this.getClass().getSimpleName();
+        String separator = "" + this.getClass().getSimpleName();
 
         for (PropertyWrapper field : fields) {
             if (field.isColumn()) {
@@ -389,6 +389,39 @@ public class RowDefinition implements Serializable {
                 separator = ",";
             }
         }
+        return string.toString();
+    }
+
+    public String getHTMLTableRow(String tableRowCSSClass) {
+        StringBuilder string = new StringBuilder();
+        List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+
+        
+        string.append("<tr class=\"").append(tableRowCSSClass).append("\">");
+        for (PropertyWrapper field : fields) {
+            if (field.isColumn()) {
+                string.append("<td>");
+                string.append(field.getQueryableDatatype().stringValue());
+                string.append("</td>");
+            }
+        }
+        string.append("</tr>");
+        return string.toString();
+    }
+    
+    public String getHTMLTableHeader(String tableRowCSSClass, String tableHeaderCellCSSClass) {
+        StringBuilder string = new StringBuilder();
+        List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+
+        string.append("<tr class=\"").append(tableRowCSSClass).append("\">");
+        for (PropertyWrapper field : fields) {
+            if (field.isColumn()) {
+                string.append("<th class=\"").append(tableHeaderCellCSSClass).append("\">");
+                string.append(field.javaName());
+                string.append("</th>");
+            }
+        }
+        string.append("</tr>");
         return string.toString();
     }
 

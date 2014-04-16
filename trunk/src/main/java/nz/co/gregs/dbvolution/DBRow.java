@@ -146,7 +146,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Returns a new example of the sourceRow with the primary key set for use
+	 * Returns a new example of the sourceRow with only the primary key set for use
 	 * in a query.
 	 *
 	 * @param <R>
@@ -780,7 +780,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		for (PropertyWrapper fk : fks) {
 			Class<? extends DBRow> referencedClass = fk.referencedClass();
 
-			if (referencedClass.isAssignableFrom(newTable.getClass())) {
+			if (referencedClass.isAssignableFrom(newTable.getClass())||newTable.getClass().isAssignableFrom(referencedClass)) {
 				String formattedForeignKey = defn.formatTableAliasAndColumnName(
 					this, fk.columnName());
 
@@ -847,7 +847,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		for (PropertyWrapper fk : fks) {
 			Class<? extends DBRow> value = fk.referencedClass();
 
-			if (this.getClass().equals(value)) {
+			if (this.getClass().isAssignableFrom(value)) {
 
 				String fkColumnName = fk.columnName();
 				String formattedForeignKey = defn.formatTableAliasAndColumnName(
