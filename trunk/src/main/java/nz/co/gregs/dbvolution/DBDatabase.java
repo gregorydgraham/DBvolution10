@@ -36,7 +36,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.transactions.DBRawSQLTransaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

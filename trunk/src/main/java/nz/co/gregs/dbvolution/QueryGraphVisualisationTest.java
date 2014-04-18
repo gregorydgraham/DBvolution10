@@ -29,46 +29,47 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class QueryGraphVisualisationTest {
 
-    public DBDatabase database;
-    
-    public static void main(String[] args) throws Exception{
-        H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
-        QueryGraphVisualisationTest myObject = new QueryGraphVisualisationTest();
-        myObject.setup(h2MemoryDB);
-        final LinkCarCompanyAndLogoWithPreviousLink linkCarCompanyAndLogoWithPreviousLink = new LinkCarCompanyAndLogoWithPreviousLink();
-        
-        DBQuery dbQuery = h2MemoryDB.getDBQuery(new CarCompany(), new CompanyLogo(), linkCarCompanyAndLogoWithPreviousLink, new Marque());
-        dbQuery.displayQueryGraph();
-        
-        tearDown(h2MemoryDB);
-    }
-    
-    public void setup(DBDatabase database) throws Exception {
-        database.setPrintSQLBeforeExecuting(false);
-        database.dropTableNoExceptions(new Marque());
-        database.createTable(new Marque());
+	public DBDatabase database;
 
-        database.dropTableNoExceptions(new CarCompany());
-        database.createTable(new CarCompany());
+	public static void main(String[] args) throws Exception {
+		H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
+		QueryGraphVisualisationTest myObject = new QueryGraphVisualisationTest();
+		myObject.setup(h2MemoryDB);
+		final LinkCarCompanyAndLogoWithPreviousLink linkCarCompanyAndLogoWithPreviousLink = new LinkCarCompanyAndLogoWithPreviousLink();
 
-        database.dropTableNoExceptions(new CompanyLogo());
-        database.createTable(new CompanyLogo());
+		DBQuery dbQuery = h2MemoryDB.getDBQuery(new CarCompany(), new Marque());
+		dbQuery.addOptional(new CompanyLogo(), linkCarCompanyAndLogoWithPreviousLink);
+		dbQuery.displayQueryGraph();
 
-        database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
-        database.createTable(new LinkCarCompanyAndLogo());
+		tearDown(h2MemoryDB);
+	}
 
-        database.dropTableNoExceptions(new LinkCarCompanyAndLogoWithPreviousLink());
-        database.createTable(new LinkCarCompanyAndLogoWithPreviousLink());
+	public void setup(DBDatabase database) throws Exception {
+		database.setPrintSQLBeforeExecuting(false);
+		database.dropTableNoExceptions(new Marque());
+		database.createTable(new Marque());
 
-        database.setPrintSQLBeforeExecuting(true);
-    }
+		database.dropTableNoExceptions(new CarCompany());
+		database.createTable(new CarCompany());
 
-    private static void tearDown(H2MemoryDB database) {
-        database.dropTableNoExceptions(new LinkCarCompanyAndLogoWithPreviousLink());
-        database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
-        database.dropTableNoExceptions(new CompanyLogo());
-        database.dropTableNoExceptions(new CarCompany());
-        database.dropTableNoExceptions(new Marque());
-    }
-    
+		database.dropTableNoExceptions(new CompanyLogo());
+		database.createTable(new CompanyLogo());
+
+		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
+		database.createTable(new LinkCarCompanyAndLogo());
+
+		database.dropTableNoExceptions(new LinkCarCompanyAndLogoWithPreviousLink());
+		database.createTable(new LinkCarCompanyAndLogoWithPreviousLink());
+
+		database.setPrintSQLBeforeExecuting(true);
+	}
+
+	private static void tearDown(H2MemoryDB database) {
+		database.dropTableNoExceptions(new LinkCarCompanyAndLogoWithPreviousLink());
+		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
+		database.dropTableNoExceptions(new CompanyLogo());
+		database.dropTableNoExceptions(new CarCompany());
+		database.dropTableNoExceptions(new Marque());
+	}
+
 }

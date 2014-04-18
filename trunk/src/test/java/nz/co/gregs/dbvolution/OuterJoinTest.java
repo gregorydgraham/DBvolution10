@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBEqualsIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
 import org.junit.Assert;
