@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 
 public class MySQLDBDefinition extends DBDefinition {
 

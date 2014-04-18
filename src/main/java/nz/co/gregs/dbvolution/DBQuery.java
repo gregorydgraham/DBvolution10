@@ -22,6 +22,7 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Paint;
 import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.PrintStream;
 import java.sql.*;
@@ -40,10 +41,12 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
-import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryGraph;
+import nz.co.gregs.dbvolution.query.QueryGraphNode;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import org.apache.commons.collections15.Transformer;
 
 /**
  * The Definition of a Query on a Database
@@ -90,8 +93,8 @@ public class DBQuery {
 	private static final int COUNT_QUERY = 1;
 	private static final int SELECT_QUERY = 0;
 	private final DBDatabase database;
-	private final List<DBRow> requireQueryTables;
-	private final List<Class<? extends DBRow>> optionalQueryTables;
+	private final List<DBRow> requiredQueryTables;
+	private final List<DBRow> optionalQueryTables;
 	private final List<DBRow> allQueryTables;
 	private List<DBQueryRow> results;
 	private Integer resultsRowLimit = -1;
@@ -110,12 +113,11 @@ public class DBQuery {
 	private ColumnProvider[] sortOrderColumns;
 
 	private DBQuery(DBDatabase database) {
-		this.requireQueryTables = new ArrayList<DBRow>();
-		this.optionalQueryTables = new ArrayList<Class<? extends DBRow>>();
+		this.requiredQueryTables = new ArrayList<DBRow>();
+		this.optionalQueryTables = new ArrayList<DBRow>();
 		this.allQueryTables = new ArrayList<DBRow>();
 		this.database = database;
-		this.results = null;
-		this.resultSQL = null;
+		blankResults();
 	}
 
 	static DBQuery getInstance(DBDatabase database, DBRow... examples) {
@@ -144,10 +146,9 @@ public class DBQuery {
 	 */
 	public DBQuery add(DBRow... tables) {
 		for (DBRow table : tables) {
-			requireQueryTables.add(table);
+			requiredQueryTables.add(table);
 			allQueryTables.add(table);
-			results = null;
-			resultSQL = null;
+			blankResults();
 		}
 		return this;
 	}
@@ -170,10 +171,9 @@ public class DBQuery {
 	 */
 	public DBQuery add(List<DBRow> tables) {
 		for (DBRow table : tables) {
-			requireQueryTables.add(table);
+			requiredQueryTables.add(table);
 			allQueryTables.add(table);
-			results = null;
-			resultSQL = null;
+			blankResults();
 		}
 		return this;
 	}
@@ -200,10 +200,9 @@ public class DBQuery {
 	 */
 	public DBQuery addOptional(DBRow... tables) {
 		for (DBRow table : tables) {
-			optionalQueryTables.add(table.getClass());
+			optionalQueryTables.add(table);
 			allQueryTables.add(table);
-			results = null;
-			resultSQL = null;
+			blankResults();
 		}
 		return this;
 	}
@@ -227,14 +226,13 @@ public class DBQuery {
 			while (iterator.hasNext()) {
 				DBRow qtab = iterator.next();
 				if (qtab.isPeerOf(table)) {
-					requireQueryTables.remove(qtab);
-					optionalQueryTables.remove(qtab.getClass());
+					requiredQueryTables.remove(qtab);
+					optionalQueryTables.remove(qtab);
 					iterator.remove();
 				}
 			}
 		}
-		results = null;
-		resultSQL = null;
+		blankResults();
 		return this;
 	}
 
@@ -266,9 +264,9 @@ public class DBQuery {
 		DBDefinition defn = database.getDefinition();
 		boolean isLeftOuterJoin = false;
 		boolean isFullOuterJoin = false;
-		if (requireQueryTables.isEmpty() && optionalQueryTables.size() == allQueryTables.size()) {
+		if (requiredQueryTables.isEmpty() && optionalQueryTables.size() == allQueryTables.size()) {
 			isFullOuterJoin = true;
-		} else if (optionalQueryTables.contains(newTable.getClass())) {
+		} else if (optionalQueryTables.contains(newTable)) {
 			isLeftOuterJoin = true;
 		}
 		for (DBRow otherTable : previousTables) {
@@ -306,7 +304,7 @@ public class DBQuery {
 
 	private String getSQLForQuery(int queryType) throws SQLException {
 
-		if (allQueryTables.isEmpty()) {
+		if (requiredQueryTables.isEmpty() && optionalQueryTables.isEmpty()) {
 			throw new AccidentalBlankQueryException();
 		}
 
@@ -316,7 +314,7 @@ public class DBQuery {
 
 		initialiseQueryGraph();
 
-		if (!options.isCartesianJoinAllowed() && allQueryTables.size() > 1 && queryGraph.willCreateCartesianJoin()) {
+		if (!options.isCartesianJoinAllowed() && (requiredQueryTables.size() + optionalQueryTables.size()) > 1 && queryGraph.willCreateCartesianJoin()) {
 			throw new AccidentalCartesianJoinException();
 		}
 		DBDefinition defn = database.getDefinition();
@@ -331,7 +329,7 @@ public class DBQuery {
 		StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options));
 		StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
 		String lineSep = System.getProperty("line.separator");
-		DBRow startQueryFromTable = requireQueryTables.isEmpty() ? allQueryTables.get(0) : requireQueryTables.get(0);
+		DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
 		List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
 			? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
 			: queryGraph.toList(startQueryFromTable.getClass());
@@ -827,13 +825,13 @@ public class DBQuery {
 	 * @return this DBQuery instance.
 	 */
 	public DBQuery clear() {
-		this.requireQueryTables.clear();
+		this.requiredQueryTables.clear();
 		this.optionalQueryTables.clear();
 		this.allQueryTables.clear();
 		this.comparisons.clear();
 		this.expressions.clear();
 		this.extraExamples.clear();
-		results = null;
+		blankResults();
 		return this;
 	}
 
@@ -920,7 +918,7 @@ public class DBQuery {
 	 */
 	public DBQuery setRowLimit(int maximumNumberOfRowsReturned) {
 		options.setRowLimit(maximumNumberOfRowsReturned);
-		results = null;
+		blankResults();
 
 		return this;
 	}
@@ -936,7 +934,7 @@ public class DBQuery {
 	 */
 	public DBQuery clearRowLimit() {
 		options.setRowLimit(-1);
-		results = null;
+		blankResults();
 
 		return this;
 	}
@@ -956,7 +954,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setSortOrder(ColumnProvider... sortColumns) {
-		results = null;
+		blankResults();
 
 		sortOrderColumns = sortColumns;
 
@@ -1349,7 +1347,7 @@ public class DBQuery {
 //    @Deprecated
 	public void addComparison(DBExpression leftHandSide, DBOperator operatorWithRightHandSideValues) {
 		comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
-		results = null;
+		blankResults();
 	}
 
 	/**
@@ -1387,7 +1385,7 @@ public class DBQuery {
 	 */
 	public DBQuery addCondition(BooleanExpression condition) {
 		expressions.add(condition);
-		results = null;
+		blankResults();
 		return this;
 	}
 
@@ -1406,7 +1404,7 @@ public class DBQuery {
 	 */
 	public DBQuery setToMatchAnyCondition() {
 		options.setMatchAny();
-		results = null;
+		blankResults();
 		return this;
 	}
 
@@ -1424,7 +1422,7 @@ public class DBQuery {
 	 */
 	public DBQuery setToMatchAllConditions() {
 		options.setMatchAll();
-		results = null;
+		blankResults();
 		return this;
 	}
 
@@ -1467,6 +1465,7 @@ public class DBQuery {
 	 */
 	public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd) {
 		expressionColumns.put(identifyingObject, expressionToAdd);
+		blankResults();
 		return this;
 	}
 
@@ -1483,7 +1482,7 @@ public class DBQuery {
 	}
 
 	protected void refreshQuery() {
-		results = null;
+		blankResults();
 	}
 
 	void setRawSQL(String rawQuery) {
@@ -1513,6 +1512,13 @@ public class DBQuery {
 	 */
 	void addExtraExamples(DBRow... extraExamples) {
 		this.extraExamples.addAll(Arrays.asList(extraExamples));
+		blankResults();
+	}
+
+	private void blankResults() {
+		results = null;
+		resultSQL = null;
+		queryGraph = null;
 	}
 
 	/**
@@ -1537,22 +1543,34 @@ public class DBQuery {
 	public void displayQueryGraph() {
 		initialiseQueryGraph();
 
-		edu.uci.ics.jung.graph.Graph<QueryGraph.QueryGraphNode, DBRelationship> jungGraph = queryGraph.getJungGraph();
+		edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBRelationship> jungGraph = queryGraph.getJungGraph();
 
-		Layout<QueryGraph.QueryGraphNode, DBRelationship> layout = new FRLayout<QueryGraph.QueryGraphNode, DBRelationship>(jungGraph);
+		Layout<QueryGraphNode, DBRelationship> layout = new FRLayout<QueryGraphNode, DBRelationship>(jungGraph);
 		layout.setSize(new Dimension(550, 400));
 
-		VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship> vv = new VisualizationViewer<QueryGraph.QueryGraphNode, DBRelationship>(layout);
+		VisualizationViewer<QueryGraphNode, DBRelationship> vv = new VisualizationViewer<QueryGraphNode, DBRelationship>(layout);
 		vv.setPreferredSize(new Dimension(600, 480));
 
-		DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String> gm = new DefaultModalGraphMouse<QueryGraph.QueryGraphNode, String>();
+		DefaultModalGraphMouse<QueryGraphNode, String> gm = new DefaultModalGraphMouse<QueryGraphNode, String>();
 		gm.setMode(ModalGraphMouse.Mode.PICKING);
 		vv.setGraphMouse(gm);
 
-		RenderContext<QueryGraph.QueryGraphNode, DBRelationship> renderContext = vv.getRenderContext();
+		RenderContext<QueryGraphNode, DBRelationship> renderContext = vv.getRenderContext();
 		renderContext.setEdgeLabelTransformer(new ToStringLabeller<DBRelationship>());
-		renderContext.setVertexLabelTransformer(new ToStringLabeller<QueryGraph.QueryGraphNode>());
+		renderContext.setVertexLabelTransformer(new ToStringLabeller<QueryGraphNode>());
 		renderContext.setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.yellow, false));
+		renderContext.setVertexFillPaintTransformer(new Transformer<QueryGraphNode, Paint>() {
+
+			@Override
+			public Paint transform(QueryGraphNode i) {
+				if (i.isRequiredNode()) {
+					return Color.RED;
+				} else {
+					return Color.ORANGE;
+				}
+			}
+
+		});
 
 		JFrame frame = new JFrame("DBQuery Graph");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1573,10 +1591,12 @@ public class DBQuery {
 
 	private void initialiseQueryGraph() {
 		if (queryGraph == null) {
-			queryGraph = new QueryGraph(database, allQueryTables, expressions, options);
+			queryGraph = new QueryGraph(database, requiredQueryTables, expressions, options);
+			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, expressions, options);
 		} else {
 			queryGraph.clear();
-			queryGraph.addAndConnectToRelevant(database, allQueryTables, expressions, options);
+			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, expressions, options);
+			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, expressions, options);
 		}
 	}
 }
