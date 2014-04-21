@@ -20,25 +20,25 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
+/**
+ * Provides support for the abstract concept of updating rows.
+ *
+ * @author gregorygraham
+ */
 public abstract class DBUpdate extends DBAction {
-
-	static final DBUpdateLargeObjects blobUpdate = new DBUpdateLargeObjects();
-	static final DBUpdateSimpleTypes simpleUpdate = new DBUpdateSimpleTypes();
-	static final DBUpdateSimpleTypesUsingAllColumns notsosimpleUpdate = new DBUpdateSimpleTypesUsingAllColumns();
-
-	public DBUpdate() {
-		super();
-	}
 
 	public <R extends DBRow> DBUpdate(R row) {
 		super(row);
 	}
 
 	/**
-	 * Executes required update actions for the row and returns a DBACtionList
-	 * of those actions.
+	 * Executes required update actions for the row and returns a
+	 * {@link DBActionList} of those actions.
+	 *
+	 * The original rows are not changed by this method, or any DBUpdate method.
+	 * Use {@link DBRow#setSimpleTypesToUnchanged() } if you need to ignore the
+	 * changes to the row.
 	 *
 	 * @param db
 	 * @param row
@@ -48,7 +48,7 @@ public abstract class DBUpdate extends DBAction {
 	public static DBActionList update(DBDatabase db, DBRow row) throws SQLException {
 		DBActionList updates = getUpdates(row);
 		for (DBAction act : updates) {
-			act.execute(db, row);
+			act.execute(db);
 		}
 		return updates;
 	}

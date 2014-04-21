@@ -21,11 +21,12 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
+/**
+ * Used by {@link DBInsert} to insert BLOB columns.
+ *
+ * @author gregorygraham
+ */
 public class DBInsertLargeObjects extends DBUpdateLargeObjects {
-
-	public DBInsertLargeObjects() {
-		super();
-	}
 
 	public DBInsertLargeObjects(DBRow row) {
 		super(row);
@@ -41,8 +42,8 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	}
 
 	@Override
-	protected DBActionList getActions(DBRow row) {
-		return new DBActionList(new DBInsertLargeObjects(row));
+	protected DBActionList getActions(){//DBRow row) {
+		return new DBActionList(new DBInsertLargeObjects(getRow()));
 	}
 
 }

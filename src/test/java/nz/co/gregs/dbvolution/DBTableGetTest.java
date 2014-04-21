@@ -47,11 +47,11 @@ public class DBTableGetTest extends AbstractTest {
 
     @Test
     public void testGetAllRows() throws SQLException {
-        marques.setBlankQueryAllowed(true);
-        for (DBRow row : marques.getAllRows()) {
+        marquesTable.setBlankQueryAllowed(true);
+        for (DBRow row : marquesTable.getAllRows()) {
             System.out.println(row);
         }
-        Assert.assertTrue("Incorrect number of marques retreived", marques.getAllRows().size() == marqueRows.size());
+        Assert.assertTrue("Incorrect number of marques retreived", marquesTable.getAllRows().size() == marqueRows.size());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class DBTableGetTest extends AbstractTest {
     public void testNumberIsBetween() throws SQLException {
         Marque marqueQuery = new Marque();
         marqueQuery.getUidMarque().permittedRange(0, 90000000);
-        List<Marque> rowsByExample = marques.getRowsByExample(marqueQuery);
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(marqueQuery);
         for (Marque row : rowsByExample) {
             System.out.println(row);
         }
@@ -95,8 +95,8 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsLiterally() throws SQLException {
         Marque literalQuery = new Marque();
         literalQuery.getUidMarque().permittedValues(4893059);
-        List<Marque> rowsByExample = marques.getRowsByExample(literalQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
+        marquesTable.print();
         Assert.assertEquals(1, rowsByExample.size());
         Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
     }
@@ -105,8 +105,8 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsLike() throws SQLException {
         Marque likeQuery = new Marque();
         likeQuery.name.permittedPattern("TOY%");
-        List<Marque> rowsByExample = marques.getRowsByExample(likeQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+        marquesTable.print();
         Assert.assertEquals(1, rowsByExample.size());
         Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
     }
@@ -115,8 +115,8 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsNotLike() throws SQLException {
         Marque likeQuery = new Marque();
         likeQuery.name.excludedPattern("%E%");
-        List<Marque> rowsByExample = marques.getRowsByExample(likeQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+        marquesTable.print();
         Assert.assertEquals(14, rowsByExample.size());
     }
 
@@ -124,8 +124,8 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsNotLikeStringExpression() throws SQLException {
         Marque likeQuery = new Marque();
         likeQuery.name.excludedPattern(new StringExpression("%e%").uppercase());
-        List<Marque> rowsByExample = marques.getRowsByExample(likeQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+        marquesTable.print();
         Assert.assertEquals(14, rowsByExample.size());
     }
 
@@ -133,8 +133,8 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsWhileIgnoringCase() throws SQLException {
         Marque literalQuery = new Marque();
         literalQuery.name.permittedValuesIgnoreCase("toYOTA");
-        List<Marque> rowsByExample = marques.getRowsByExample(literalQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
+        marquesTable.print();
         Assert.assertEquals(1, rowsByExample.size());
         Assert.assertEquals("TOYOTA", rowsByExample.get(0).name.stringValue());
     }
@@ -143,8 +143,8 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsWhileIgnoringCaseStringExpression() throws SQLException {
         Marque literalQuery = new Marque();
         literalQuery.name.permittedValuesIgnoreCase(new StringExpression("toYOTA").lowercase());
-        List<Marque> rowsByExample = marques.getRowsByExample(literalQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
+        marquesTable.print();
         Assert.assertEquals(1, rowsByExample.size());
         Assert.assertEquals("TOYOTA", rowsByExample.get(0).name.stringValue());
     }
@@ -153,8 +153,8 @@ public class DBTableGetTest extends AbstractTest {
     public void testMultiplePermittedValues() throws SQLException {
         Marque literalQuery = new Marque();
         literalQuery.getUidMarque().permittedValues(4893059, 4893090);
-        List<Marque> rowsByExample = marques.getRowsByExample(literalQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
+        marquesTable.print();
         Assert.assertEquals(2, rowsByExample.size());
         Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
         Assert.assertEquals("" + 4893090, rowsByExample.get(1).getPrimaryKey().toSQLString(database));
@@ -165,8 +165,8 @@ public class DBTableGetTest extends AbstractTest {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
         hummerQuery.getName().permittedValues("PEUGEOT", "HUMMER");
-        List<Marque> rowsByExample = marques.getRowsByExample(hummerQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
+        marquesTable.print();
         Assert.assertThat(rowsByExample.size(), is(2));
     }
 
@@ -178,13 +178,13 @@ public class DBTableGetTest extends AbstractTest {
 
         Marque oldQuery = new Marque();
         oldQuery.getCreationDate().permittedRange(new Date(0L), afterAllTheDates);
-        List<Marque> rowsByExample = marques.getRowsByExample(oldQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(oldQuery);
+        marquesTable.print();
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", rowsByExample.size() == marqueRows.size() - 1);
 
         oldQuery.getCreationDate().permittedRange(coversFirstDate.getStart(), coversFirstDate.getEnd());
-        rowsByExample = marques.getRowsByExample(oldQuery);
-        marques.print();
+        rowsByExample = marquesTable.getRowsByExample(oldQuery);
+        marquesTable.print();
         Assert.assertThat(rowsByExample.size(), is(18));
     }
 
@@ -195,30 +195,30 @@ public class DBTableGetTest extends AbstractTest {
         Date future = gregorianCalendar.getTime();
         Marque oldQuery = new Marque();
         oldQuery.getCreationDate().permittedRange(null, future);
-        List<Marque> rowsByExample = marques.getRowsByExample(oldQuery);
-        marques.print();
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(oldQuery);
+        marquesTable.print();
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", rowsByExample.size() == marqueRows.size() - 1);
         oldQuery.getCreationDate().permittedRange(future, null);
-        rowsByExample = marques.getRowsByExample(oldQuery);
-        marques.print();
+        rowsByExample = marquesTable.getRowsByExample(oldQuery);
+        marquesTable.print();
         Assert.assertTrue("Wrong number of rows selected, should be NONE of them", rowsByExample.isEmpty());
         oldQuery = new Marque();
         oldQuery.getCreationDate().permittedRangeInclusive(null, future);
-        rowsByExample = marques.getRowsByExample(oldQuery);
-        marques.print();
+        rowsByExample = marquesTable.getRowsByExample(oldQuery);
+        marquesTable.print();
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", rowsByExample.size() == marqueRows.size() - 1);
         oldQuery.getCreationDate().permittedRange(new Date(0L), null);
-        rowsByExample = marques.getRowsByExample(oldQuery);
-        marques.print();
+        rowsByExample = marquesTable.getRowsByExample(oldQuery);
+        marquesTable.print();
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", rowsByExample.size() == marqueRows.size() - 1);
         oldQuery.getCreationDate().permittedRange(null, new Date(0L));
-        rowsByExample = marques.getRowsByExample(oldQuery);
-        marques.print();
+        rowsByExample = marquesTable.getRowsByExample(oldQuery);
+        marquesTable.print();
         Assert.assertTrue("Wrong number of rows selected, should be NONE of them", rowsByExample.isEmpty());
         oldQuery = new Marque();
         oldQuery.getCreationDate().permittedRangeInclusive(new Date(0L), null);
-        rowsByExample = marques.getRowsByExample(oldQuery);
-        marques.print();
+        rowsByExample = marquesTable.getRowsByExample(oldQuery);
+        marquesTable.print();
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", rowsByExample.size() == marqueRows.size() - 1);
     }
 
@@ -228,7 +228,7 @@ public class DBTableGetTest extends AbstractTest {
         if (database instanceof OracleDB) {
             rawQuery = "and lower(\"name\") in ('peugeot','hummer')  ";
         }
-        List<Marque> rowsByRawSQL = marques.setRawSQL(rawQuery).getAllRows();
+        List<Marque> rowsByRawSQL = marquesTable.setRawSQL(rawQuery).getAllRows();
         database.print(rowsByRawSQL);
         Assert.assertEquals(2, rowsByRawSQL.size());
     }

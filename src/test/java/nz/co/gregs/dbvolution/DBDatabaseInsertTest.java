@@ -42,7 +42,7 @@ public class DBDatabaseInsertTest extends AbstractTest{
     
     @Test
     public void testInsertRows() throws SQLException{
-        int originalNumberOfMarques = marques.setBlankQueryAllowed(true).getAllRows().size();
+        int originalNumberOfMarques = marquesTable.setBlankQueryAllowed(true).getAllRows().size();
         final DBTable<CarCompany> allCarCompanies = database.getDBTable(new CarCompany()).setBlankQueryAllowed(true);
         int originalNumberOfCarCos = allCarCompanies.getAllRows().size();
 
@@ -58,12 +58,12 @@ public class DBDatabaseInsertTest extends AbstractTest{
         myTableRows.add(newMarque2);
         CarCompany carCompany = new CarCompany("TATA", 569);
         DBActionList changes = database.insert(myTableRows, carCompany);
-        marques.getAllRows();
-        marques.print();
+        marquesTable.getAllRows();
+        marquesTable.print();
         database.print(allCarCompanies.getAllRows());
         final int updatedNumberOfCarCompanies = allCarCompanies.getAllRows().size();
         Assert.assertThat(changes.size(), is(3));
-        Assert.assertThat(marques.getAllRows().size(), is(originalNumberOfMarques+2));
+        Assert.assertThat(marquesTable.getAllRows().size(), is(originalNumberOfMarques+2));
         Assert.assertThat(
                 updatedNumberOfCarCompanies, 
                 is(originalNumberOfCarCos+1));

@@ -40,16 +40,16 @@ public class DBTableInsertTest extends AbstractTest {
         myTableRow.getUidMarque().setValue(999);
         myTableRow.getName().setValue("TOYOTA");
         myTableRow.getNumericCode().setValue(10);
-        marques.insert(myTableRow);
-        marques.setBlankQueryAllowed(true).getAllRows();
-        marques.print();
+        marquesTable.insert(myTableRow);
+        marquesTable.setBlankQueryAllowed(true).getAllRows();
+        marquesTable.print();
 
         Date creationDate = new Date();
         List<Marque> myTableRows = new ArrayList<Marque>();
         myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", creationDate, 4, null));
 
-        marques.insert(myTableRows);
-        marques.getAllRows();
-        marques.print();
+        marquesTable.insert(myTableRows);
+        marquesTable.getAllRows();
+        marquesTable.print();
     }
 }

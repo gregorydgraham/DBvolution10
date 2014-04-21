@@ -43,7 +43,7 @@ public abstract class AbstractTest {
     public DBDatabase database;
     Marque myMarqueRow = new Marque();
     CarCompany myCarCompanyRow = new CarCompany();
-    public DBTable<Marque> marques;
+    public DBTable<Marque> marquesTable;
     DBTable<CarCompany> carCompanies;
     public List<Marque> marqueRows = new ArrayList<Marque>();
     public List<CarCompany> carTableRows = new ArrayList<CarCompany>();
@@ -117,7 +117,7 @@ public abstract class AbstractTest {
         database.dropTableNoExceptions(myCarCompanyRow);
         database.createTable(myCarCompanyRow);
 
-        marques = DBTable.getInstance(database, myMarqueRow);
+        marquesTable = DBTable.getInstance(database, myMarqueRow);
         carCompanies = DBTable.getInstance(database, myCarCompanyRow);
         carCompanies.insert(new CarCompany("TOYOTA", 1));
         carTableRows.add(new CarCompany("Ford", 2));
@@ -151,7 +151,7 @@ public abstract class AbstractTest {
         marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, null));
         marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
-        marques.insert(marqueRows);
+        marquesTable.insert(marqueRows);
 
         database.dropTableNoExceptions(new CompanyLogo());
         database.createTable(new CompanyLogo());

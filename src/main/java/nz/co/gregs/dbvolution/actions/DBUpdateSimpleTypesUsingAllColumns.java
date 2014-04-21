@@ -24,43 +24,49 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 
+/**
+ * Provides support for the abstract concept of updating rows without primary keys.
+ *
+ * <p>
+ * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
+ * } to automatically use this action.
+ *
+ * @author Gregory Graham
+ */
 public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 
-    DBUpdateSimpleTypesUsingAllColumns() {
-        super();
-    }
+	DBUpdateSimpleTypesUsingAllColumns(DBRow row) {
+		super(row);
+	}
 
-    DBUpdateSimpleTypesUsingAllColumns(DBRow row) {
-        super(row);
-    }
+	@Override
+	public List<String> getSQLStatements(DBDatabase db) {
+		DBRow row = getRow();
+		DBDefinition defn = db.getDefinition();
 
-    @Override
-    public List<String> getSQLStatements(DBDatabase db, DBRow row) {
-        DBDefinition defn = db.getDefinition();
-
-        String sql = defn.beginUpdateLine()
-                + defn.formatTableName(row)
-                + defn.beginSetClause()
-                + getSetClause(db, row)
-                + defn.beginWhereClause()
-                + defn.getWhereClauseBeginningCondition();
-        for (PropertyWrapper prop : row.getPropertyWrappers()) {
-            QueryableDatatype qdt = prop.getQueryableDatatype();
-            if (qdt.isNull()) {
-                DBIsNullOperator isNullOp = new DBIsNullOperator();
-                sql = sql
-                        + isNullOp.generateWhereLine(db, prop.columnName());
-            } else {
-                sql = sql
-                        + defn.beginWhereClauseLine()
-                        + prop.columnName()
-                        + defn.getEqualsComparator()
-                        + (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
-            }
-        }
-        sql = sql + defn.endDeleteLine();
-        List<String> sqls = new ArrayList<String>();
-        sqls.add(sql);
-        return sqls;
-    }
+		String sql = defn.beginUpdateLine()
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ getSetClause(db, row)
+				+ defn.beginWhereClause()
+				+ defn.getWhereClauseBeginningCondition();
+		for (PropertyWrapper prop : row.getPropertyWrappers()) {
+			QueryableDatatype qdt = prop.getQueryableDatatype();
+			if (qdt.isNull()) {
+				DBIsNullOperator isNullOp = new DBIsNullOperator();
+				sql = sql
+						+ isNullOp.generateWhereLine(db, prop.columnName());
+			} else {
+				sql = sql
+						+ defn.beginWhereClauseLine()
+						+ prop.columnName()
+						+ defn.getEqualsComparator()
+						+ (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
+			}
+		}
+		sql = sql + defn.endDeleteLine();
+		List<String> sqls = new ArrayList<String>();
+		sqls.add(sql);
+		return sqls;
+	}
 }

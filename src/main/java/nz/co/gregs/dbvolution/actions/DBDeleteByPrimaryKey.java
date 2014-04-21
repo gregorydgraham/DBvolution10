@@ -23,76 +23,84 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
+/**
+ * Provides support for the abstract concept of deleting rows based on a primary
+ * key.
+ *
+ * <p>
+ * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
+ * } to automatically use this action.
+ *
+ * @author gregorygraham
+ */
 public class DBDeleteByPrimaryKey extends DBDelete {
 
-    private final List<DBRow> savedRows = new ArrayList<DBRow>();
+	private final List<DBRow> savedRows = new ArrayList<DBRow>();
 
-    protected <R extends DBRow> DBDeleteByPrimaryKey(R row) {
-        super(row);
-    }
+	protected <R extends DBRow> DBDeleteByPrimaryKey(R row) {
+		super(row);
+	}
 
-    private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
-        super(row);
-        DBRow example = DBRow.getDBRow(row.getClass());
-        example.getPrimaryKey().setValue(row.getPrimaryKey());
-        List<DBRow> gotRows = db.get(example);
-        for (DBRow gotRow : gotRows) {
-            savedRows.add(gotRow);
-        }
-    }
+	private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
+		super(row);
+		DBRow example = DBRow.getDBRow(row.getClass());
+		example.getPrimaryKey().setValue(row.getPrimaryKey());
+		List<DBRow> gotRows = db.get(example);
+		for (DBRow gotRow : gotRows) {
+			savedRows.add(gotRow);
+		}
+	}
 
-    DBDeleteByPrimaryKey() {
-        super();
-    }
+	@Override
+	protected DBActionList execute(DBDatabase db) throws SQLException {
+		DBRow row = getRow();
+		final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(row);
+		DBActionList actions = new DBActionList(newDeleteAction);
+		DBRow example = DBRow.getDBRow(row.getClass());
+		example.getPrimaryKey().setValue(row.getPrimaryKey());
+		List<DBRow> rowsToBeDeleted = db.get(example);
+		for (DBRow deletingRow : rowsToBeDeleted) {
+			newDeleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
+		}
+		DBStatement statement = db.getDBStatement();
+		for (String str : getSQLStatements(db)) {
+			statement.execute(str);
+		}
+		return actions;
+	}
 
-    @Override
-    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
-        final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(row);
-        DBActionList actions = new DBActionList(newDeleteAction);
-        DBRow example = DBRow.getDBRow(row.getClass());
-        example.getPrimaryKey().setValue(row.getPrimaryKey());
-        List<DBRow> rowsToBeDeleted = db.get(example);
-        for (DBRow deletingRow : rowsToBeDeleted) {
-            newDeleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
-        }
-        DBStatement statement = db.getDBStatement();
-        for (String str : getSQLStatements(db, row)) {
-            statement.execute(str);
-        }
-        return actions;
-    }
+	@Override
+	public ArrayList<String> getSQLStatements(DBDatabase db) {
+		DBDefinition defn = db.getDefinition();
+		DBRow row = getRow();
 
-    @Override
-    protected ArrayList<String> getSQLStatements(DBDatabase db, DBRow row) {
-        DBDefinition defn = db.getDefinition();
+		ArrayList<String> strs = new ArrayList<String>();
+		strs.add(defn.beginDeleteLine()
+				+ defn.formatTableName(row)
+				+ defn.beginWhereClause()
+				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
+				+ defn.getEqualsComparator()
+				+ row.getPrimaryKey().toSQLString(db)
+				+ defn.endDeleteLine());
+		return strs;
+	}
 
-        ArrayList<String> strs = new ArrayList<String>();
-        strs.add(defn.beginDeleteLine()
-                + defn.formatTableName(row)
-                + defn.beginWhereClause()
-                + defn.formatColumnName(row.getPrimaryKeyColumnName())
-                + defn.getEqualsComparator()
-                + row.getPrimaryKey().toSQLString(db)
-                + defn.endDeleteLine());
-        return strs;
-    }
+	@Override
+	protected DBActionList getRevertDBActionList() {
+		DBActionList reverts = new DBActionList();
+		for (DBRow savedRow : savedRows) {
+			reverts.add(new DBInsert(savedRow));
+		}
+		return reverts;
+	}
 
-    @Override
-    protected DBActionList getRevertDBActionList() {
-        DBActionList reverts = new DBActionList();
-        for (DBRow savedRow : savedRows) {
-            reverts.add(new DBInsert(savedRow));
-        }
-        return reverts;
-    }
+	@Override
+	protected DBActionList getActions() {//DBRow row) {
+		return new DBActionList(new DBDeleteByPrimaryKey(getRow()));
+	}
 
-    @Override
-    protected DBActionList getActions(DBRow row) {
-        return new DBActionList(new DBDeleteByPrimaryKey(row));
-    }
-
-    @Override
-    protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {
-        return new DBActionList(new DBDeleteByPrimaryKey(db, row));
-    }
+	@Override
+	protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {
+		return new DBActionList(new DBDeleteByPrimaryKey(db, row));
+	}
 }

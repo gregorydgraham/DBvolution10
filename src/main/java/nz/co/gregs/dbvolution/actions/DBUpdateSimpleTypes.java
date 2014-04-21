@@ -26,88 +26,89 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
+ * Provides support for the abstract concept of updating rows with standard columns.
+ *
+ * <p>
+ * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
+ * } to automatically use this action.
  *
  * @author Gregory Graham
  */
 public class DBUpdateSimpleTypes extends DBUpdate {
-//    private List<QueryableDatatype> changedQDTs = new ArrayList<QueryableDatatype>();
 
-    DBUpdateSimpleTypes(DBRow row) {
-        super(row);
-    }
+	DBUpdateSimpleTypes(DBRow row) {
+		super(row);
+	}
 
-    DBUpdateSimpleTypes() {
-        super();
-    }
+	@Override
+	protected DBActionList execute(DBDatabase db) throws SQLException {
+		DBRow row = getRow();
+		DBStatement statement = db.getDBStatement();
+		DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(row));
+		for (String sql : getSQLStatements(db)) {
+			statement.execute(sql);
+		}
+		return actions;
+	}
 
-    @Override
-    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
-        DBStatement statement = db.getDBStatement();
-        DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(row));
-        for (String sql : getSQLStatements(db, row)) {
-            statement.execute(sql);
-            row.setSimpleTypesToUnchanged();
-        }
-        return actions;
-    }
+	@Override
+	public List<String> getSQLStatements(DBDatabase db) {
+		DBRow row = getRow();
+		List<String> sqls = new ArrayList<String>();
+		DBDefinition defn = db.getDefinition();
 
-    @Override
-    protected List<String> getSQLStatements(DBDatabase db, DBRow row) {
-        List<String> sqls = new ArrayList<String>();
-        DBDefinition defn = db.getDefinition();
+		String sql = defn.beginUpdateLine()
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ getSetClause(db, row)
+				+ defn.beginWhereClause()
+				+ getWhereClause(db, row)
+				+ defn.endDeleteLine();
+		sqls.add(sql);
+		return sqls;
+	}
 
-        String sql = defn.beginUpdateLine()
-                + defn.formatTableName(row)
-                + defn.beginSetClause()
-                + getSetClause(db, row)
-                + defn.beginWhereClause()
-                + getWhereClause(db, row)
-                + defn.endDeleteLine();
-        sqls.add(sql);
-        return sqls;
-    }
+	protected String getSetClause(DBDatabase db, DBRow row) {
+		DBDefinition defn = db.getDefinition();
+		StringBuilder sql = new StringBuilder();
+		List<PropertyWrapper> fields = row.getPropertyWrappers();
 
-    protected String getSetClause(DBDatabase db, DBRow row) {
-        DBDefinition defn = db.getDefinition();
-        StringBuilder sql = new StringBuilder();
-        List<PropertyWrapper> fields = row.getPropertyWrappers();
+		String separator = defn.getStartingSetSubClauseSeparator();
+		for (PropertyWrapper field : fields) {
+			if (field.isColumn()) {
+				final QueryableDatatype qdt = field.getQueryableDatatype();
+				if (qdt.hasChanged()) {
+					String columnName = field.columnName();
+					sql.append(separator)
+							.append(defn.formatColumnName(columnName))
+							.append(defn.getEqualsComparator())
+							.append(qdt
+									.toSQLString(db));
+					separator = defn.getSubsequentSetSubClauseSeparator();
+				}
+			}
+		}
+		return sql.toString();
+	}
 
-        String separator = defn.getStartingSetSubClauseSeparator();
-        for (PropertyWrapper field : fields) {
-            if (field.isColumn()) {
-                final QueryableDatatype qdt = field.getQueryableDatatype();
-                if (qdt.hasChanged()) {
-                    String columnName = field.columnName();
-                    sql.append(separator)
-                            .append(defn.formatColumnName(columnName))
-                            .append(defn.getEqualsComparator())
-                            .append(qdt
-                            .toSQLString(db));
-                    separator = defn.getSubsequentSetSubClauseSeparator();
-                }
-            }
-        }
-        return sql.toString();
-    }
+	@Override
+	protected DBActionList getRevertDBActionList() {
+		DBActionList dbActionList = new DBActionList();
+		dbActionList.add(new DBUpdateToPreviousValues(this.getRow()));
+		return dbActionList;
+	}
 
-    @Override
-    protected DBActionList getRevertDBActionList() {
-        DBActionList dbActionList = new DBActionList();
-        dbActionList.add(new DBUpdateToPreviousValues(this.row));
-        return dbActionList;
-    }
+	protected String getWhereClause(DBDatabase db, DBRow row) {
+		DBDefinition defn = db.getDefinition();
+		QueryableDatatype primaryKey = row.getPrimaryKey();
+		String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
+		return defn.formatColumnName(row.getPrimaryKeyColumnName())
+				+ defn.getEqualsComparator()
+				+ pkOriginalValue;
+	}
 
-    protected String getWhereClause(DBDatabase db, DBRow row) {
-        DBDefinition defn = db.getDefinition();
-        QueryableDatatype primaryKey = row.getPrimaryKey();
-        String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
-        return defn.formatColumnName(row.getPrimaryKeyColumnName())
-                + defn.getEqualsComparator()
-                + pkOriginalValue;
-    }
-
-    @Override
-    protected DBActionList getActions(DBRow row){
-       return new DBActionList(new DBUpdateSimpleTypes(row));
-    }
+	@Override
+	protected DBActionList getActions(){
+		return new DBActionList(new DBUpdateSimpleTypes(getRow()));
+	}
 }
