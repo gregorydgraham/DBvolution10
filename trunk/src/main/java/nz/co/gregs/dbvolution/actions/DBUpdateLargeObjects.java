@@ -28,69 +28,76 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
+/**
+ * Provides support for the abstract concept of updating rows with BLOB columns.
+ *
+ * <p>
+ * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
+ * } to automatically use this action.
+ *
+ * @author Gregory Graham
+ */
 public class DBUpdateLargeObjects extends DBUpdate {
 
-    protected DBUpdateLargeObjects(DBRow row){
-        super(row);
-    }
+	protected DBUpdateLargeObjects(DBRow row) {
+		super(row);
+	}
 
-    protected DBUpdateLargeObjects() {
-        super();
-    }
+	@Override
+	protected DBActionList execute(DBDatabase db) throws SQLException {
+		DBRow row = getRow();
+		DBDefinition defn = db.getDefinition();
+		DBStatement statement = db.getDBStatement();
+		DBActionList actions = new DBActionList();
+		for (PropertyWrapper prop : getInterestingLargeObjects(row)) {
+			final String col = prop.columnName();
+			final DBLargeObject largeObject = (DBLargeObject) prop.getQueryableDatatype();
 
-    @Override
-    protected DBActionList execute(DBDatabase db, DBRow row) throws SQLException {
-        DBDefinition defn = db.getDefinition();
-        DBStatement statement = db.getDBStatement();
-        DBActionList actions = new DBActionList();
-        for (PropertyWrapper prop : getInterestingLargeObjects(row)) {
-            final String col = prop.columnName();
-            final DBLargeObject largeObject = (DBLargeObject) prop.getQueryableDatatype();
+			String sqlString = defn.beginUpdateLine()
+					+ defn.formatTableName(row)
+					+ defn.beginSetClause()
+					+ defn.formatColumnName(col)
+					+ defn.getEqualsComparator()
+					+ defn.getPreparedVariableSymbol()
+					+ defn.beginWhereClause()
+					+ defn.formatColumnName(row.getPrimaryKeyColumnName())
+					+ defn.getEqualsComparator()
+					+ row.getPrimaryKey().toSQLString(db)
+					+ defn.endSQLStatement();
+			db.printSQLIfRequested(sqlString);
+			PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+			prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
+			prep.execute();
 
-            String sqlString = defn.beginUpdateLine()
-                    + defn.formatTableName(row)
-                    + defn.beginSetClause()
-                    + defn.formatColumnName(col)
-                    + defn.getEqualsComparator()
-                    + defn.getPreparedVariableSymbol()
-                    + defn.beginWhereClause()
-                    + defn.formatColumnName(row.getPrimaryKeyColumnName())
-                    + defn.getEqualsComparator()
-                    + row.getPrimaryKey().toSQLString(db)
-                    + defn.endSQLStatement();
-            db.printSQLIfRequested(sqlString);
-            PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-            prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
-            prep.execute();
+			DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
+			actions.add(update);
 
-            DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
-            actions.add(update);
-            
-            largeObject.setUnchanged();
-        }
-        return actions;
-    }
+			largeObject.setUnchanged();
+		}
+		return actions;
+	}
 
-    @Override
-    protected List<String> getSQLStatements(DBDatabase db, DBRow row) {
-        List<String> strs = new ArrayList<String>();
-        strs.add(db.getDefinition().startMultilineComment() + " SAVE BINARY DATA" + db.getDefinition().endMultilineComment());
-        return strs;
-    }
+	@Override
+	public List<String> getSQLStatements(DBDatabase db) {
+		DBRow row = getRow();
+		List<String> strs = new ArrayList<String>();
+		strs.add(db.getDefinition().startMultilineComment() + " SAVE BINARY DATA" + db.getDefinition().endMultilineComment());
+		return strs;
+	}
 
-    protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
-        return getChangedLargeObjects(row);
-    }
+	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
+		return getChangedLargeObjects(row);
+	}
 
-    @Override
-    protected DBActionList getRevertDBActionList() {
-        return new DBActionList();
-    }
+	@Override
+	protected DBActionList getRevertDBActionList() {
+		return new DBActionList();
+	}
 
-    @Override
-    protected DBActionList getActions(DBRow row) {
-        return new DBActionList(new DBUpdateLargeObjects(row));
-    }
+	@Override
+	protected DBActionList getActions() {
+		return new DBActionList(new DBUpdateLargeObjects(getRow()));
+	}
 
 	protected List<PropertyWrapper> getChangedLargeObjects(DBRow row) {
 		List<PropertyWrapper> changed = new ArrayList<PropertyWrapper>();

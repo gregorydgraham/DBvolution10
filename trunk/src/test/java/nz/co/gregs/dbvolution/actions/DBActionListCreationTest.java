@@ -39,10 +39,10 @@ public class DBActionListCreationTest extends AbstractTest {
     public void simpleActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
         Marque marqueExample = new Marque();
         marqueExample.getUidMarque().permittedValues(1);
-        Marque toyota = marques.getOnlyRowByExample(marqueExample);
+        Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
 
         toyota.uidMarque.setValue(99999);
-        DBActionList updateList = marques.update(toyota);
+        DBActionList updateList = marquesTable.update(toyota);
         Assert.assertThat(updateList.size(), is(1));
 
         final DBAction firstAction = updateList.get(0);
@@ -66,12 +66,12 @@ public class DBActionListCreationTest extends AbstractTest {
         final Long toyotaUID = 1L;
         marqueExample.getUidMarque().permittedValues(toyotaUID);
 
-        Marque toyota = marques.getOnlyRowByExample(marqueExample);
+        Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
         toyota.uidMarque.setValue(999999);
 
         marqueExample = new Marque();
         marqueExample.name.permittedValuesIgnoreCase("ford");
-        Marque ford = marques.getOnlyRowByExample(marqueExample);
+        Marque ford = marquesTable.getOnlyRowByExample(marqueExample);
         final Long fordOriginalUpdateCount = ford.updateCount.getValue();
         ford.updateCount.setValue(fordOriginalUpdateCount + 10);
 
@@ -91,11 +91,11 @@ public class DBActionListCreationTest extends AbstractTest {
         marqueExample = new Marque();
         marqueExample.getUidMarque().permittedValues(toyotaUID);
 
-        toyota = marques.getOnlyRowByExample(marqueExample);
+        toyota = marquesTable.getOnlyRowByExample(marqueExample);
 
         marqueExample = new Marque();
         marqueExample.name.permittedValuesIgnoreCase("ford");
-        ford = marques.getOnlyRowByExample(marqueExample);
+        ford = marquesTable.getOnlyRowByExample(marqueExample);
 
         Assert.assertThat(toyota.uidMarque.getValue(), is(toyotaUID));
         Assert.assertThat(ford.updateCount.getValue(), is(fordOriginalUpdateCount));
@@ -165,12 +165,12 @@ public class DBActionListCreationTest extends AbstractTest {
         final int toyotaUID = 1;
         example.getUidMarque().permittedValues(toyotaUID);
 
-        Marque toyota = marques.getOnlyRowByExample(example);
+        Marque toyota = marquesTable.getOnlyRowByExample(example);
         toyota.uidMarque.setValue(999999);
 
         example = new Marque();
         example.name.permittedValuesIgnoreCase("ford");
-        Marque ford = marques.getOnlyRowByExample(example);
+        Marque ford = marquesTable.getOnlyRowByExample(example);
         final Integer fordOriginalUpdateCount = ford.updateCount.getValue().intValue();
         ford.updateCount.setValue(fordOriginalUpdateCount + 10);
 
@@ -224,7 +224,7 @@ public class DBActionListCreationTest extends AbstractTest {
     public void simpleDeferredActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
         Marque marqueExample = new Marque();
         marqueExample.getUidMarque().permittedValues(1);
-        Marque toyota = marques.getOnlyRowByExample(marqueExample);
+        Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
 
         toyota.uidMarque.setValue(99999);
         DBActionList updateList = DBUpdate.getUpdates(toyota);

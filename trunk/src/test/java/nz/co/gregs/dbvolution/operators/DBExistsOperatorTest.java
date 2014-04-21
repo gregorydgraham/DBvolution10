@@ -44,8 +44,8 @@ public class DBExistsOperatorTest extends AbstractTest {
         Marque marque = new Marque();
         marque.getCarCompany().setOperator(carCompanyExists);
         
-        marques.getRowsByExample(marque);
-        List<Marque> rowList = marques.toList();
+        marquesTable.getRowsByExample(marque);
+        List<Marque> rowList = marquesTable.toList();
         for (DBRow row : rowList) {
             System.out.println(row);
         }
@@ -55,8 +55,8 @@ public class DBExistsOperatorTest extends AbstractTest {
         marque.getCarCompany().setOperator(new DBExistsOperator<CarCompany>(carCompany, carCompany.uidCarCompany));
         marque.getCarCompany().negateOperator();
         
-        marques.getRowsByExample(marque);
-        rowList = marques.toList();
+        marquesTable.getRowsByExample(marque);
+        rowList = marquesTable.toList();
         for (DBRow row : rowList) {
             System.out.println(row);
         }

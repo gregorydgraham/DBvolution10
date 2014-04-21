@@ -33,14 +33,14 @@ public class UpdateTest extends AbstractTest {
     public void updateNewRow() throws SQLException, ClassNotFoundException {
         Marque myMarqueRow = new Marque();
         myMarqueRow.uidMarque.setValue(4);
-        marques.insert(myMarqueRow);
-        Marque insertedRow = marques.getRowsByPrimaryKey(4).get(0);
+        marquesTable.insert(myMarqueRow);
+        Marque insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
         insertedRow.individualAllocationsAllowed.setValue("Y");
-        String sqlForUpdate = marques.update(insertedRow).get(0).getSQLStatements(database).get(0);
+        String sqlForUpdate = marquesTable.update(insertedRow).get(0).getSQLStatements(database).get(0);
         Assert.assertThat(sqlForUpdate.toLowerCase(),
                 is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;".toLowerCase()));
-//        marques.update(insertedRow);
-        insertedRow = marques.getRowsByPrimaryKey(4).get(0);
+//        marquesTable.update(insertedRow);
+        insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
         Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
     }
 
@@ -48,16 +48,16 @@ public class UpdateTest extends AbstractTest {
     public void updateExistingRow() throws SQLException {
         Marque marque = new Marque();
         marque.name.permittedValues("PEUGEOT");
-        List<Marque> rowsByExample = marques.getRowsByExample(marque);
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(marque);
         Assert.assertThat(rowsByExample.size(), is(1));
         Marque peugeot = rowsByExample.get(0);
         System.out.println(peugeot);
         peugeot.individualAllocationsAllowed.setValue("Y");
-        String sqlForUpdate = marques.update(peugeot).get(0).getSQLStatements(database).get(0);
+        String sqlForUpdate = marquesTable.update(peugeot).get(0).getSQLStatements(database).get(0);
         Assert.assertThat(sqlForUpdate.toLowerCase(),
                 is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;".toLowerCase()));
-        marques.update(peugeot);
-        Marque updatePeugeot = marques.getRowsByExample(marque).get(0);
+        marquesTable.update(peugeot);
+        Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
         Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));
     }
 }

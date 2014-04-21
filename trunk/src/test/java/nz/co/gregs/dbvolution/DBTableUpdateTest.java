@@ -35,21 +35,21 @@ public class DBTableUpdateTest extends AbstractTest {
         Marque marqueExample = new Marque();
         marqueExample.getUidMarque().permittedValues(1);
 
-        marques.getRowsByExample(marqueExample);
-        marques.print();
-        Marque toyota = marques.getOnlyRowByExample(marqueExample);
+        marquesTable.getRowsByExample(marqueExample);
+        marquesTable.print();
+        Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
         toyota.uidMarque.setValue(99999);
-        DBActionList updateList = marques.update(toyota);
+        DBActionList updateList = marquesTable.update(toyota);
         Assert.assertThat(testableSQL(updateList.get(0).getSQLStatements(database).get(0)),
                 is(testableSQL("UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;")));
-        marques.update(toyota);
+        marquesTable.update(toyota);
         toyota.name.setValue("NOTOYOTA");
-        Assert.assertThat(testableSQL(marques.update(toyota).get(0).getSQLStatements(database).get(0)), 
+        Assert.assertThat(testableSQL(marquesTable.update(toyota).get(0).getSQLStatements(database).get(0)), 
                 is(testableSQL("UPDATE MARQUE SET NAME = 'NOTOYOTA' WHERE UID_MARQUE = 99999;")));
         
         marqueExample = new Marque();
         marqueExample.uidMarque.permittedValues(99999);
-        toyota = marques.getOnlyRowByExample(marqueExample);
+        toyota = marquesTable.getOnlyRowByExample(marqueExample);
         Assert.assertThat(toyota.name.toString(), is("NOTOYOTA"));
     }
     
@@ -58,21 +58,21 @@ public class DBTableUpdateTest extends AbstractTest {
         Marque myTableRow = new Marque();
         myTableRow.getUidMarque().permittedValues(1);
 
-        marques.getRowsByExample(myTableRow);
-        marques.print();
-        Marque toyota = marques.getFirstRow();
+        marquesTable.getRowsByExample(myTableRow);
+        marquesTable.print();
+        Marque toyota = marquesTable.getFirstRow();
         System.out.println("===" + toyota.name.toString());
         Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
         toyota.name.setValue("NOTTOYOTA");
-        String sqlForUpdate = marques.update(toyota).get(0).getSQLStatements(database).get(0);
+        String sqlForUpdate = marquesTable.update(toyota).get(0).getSQLStatements(database).get(0);
         Assert.assertEquals("Update statement doesn't look right:", testableSQL("UPDATE MARQUE SET NAME = 'NOTTOYOTA' WHERE UID_MARQUE = 1;"), testableSQL(sqlForUpdate));
 
-        marques.update(toyota);
+        marquesTable.update(toyota);
         
-        marques.getRowsByExample(myTableRow);
-        marques.print();
-        toyota = marques.getFirstRow();
+        marquesTable.getRowsByExample(myTableRow);
+        marquesTable.print();
+        toyota = marquesTable.getFirstRow();
         Assert.assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
     }
 }

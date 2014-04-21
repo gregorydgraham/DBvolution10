@@ -23,14 +23,14 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
+ * Provides support for the abstract concept of updating rows to the previous value of the updated columns.
  *
- * @author gregorygraham
+ * <p>
+ * Used to provide revert actions for updates.
+ *
+ * @author Gregory Graham
  */
 public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
-
-    public DBUpdateToPreviousValues() {
-        super();
-    }
 
     DBUpdateToPreviousValues(DBRow row) {
         super(row);
@@ -50,7 +50,6 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
                     String previousSQLValue = qdt.getPreviousSQLValue(db);
                     if (previousSQLValue == null) {
                         previousSQLValue = defn.getNull();
-                        //throw new NullPointerException("Property has changed but is missing previous value: " + field);
                     }
 
                     String columnName = field.columnName();
