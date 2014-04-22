@@ -19,8 +19,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.actions.DBAction;
+import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.DBInsert;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -29,27 +34,46 @@ import org.junit.Test;
  */
 public class DBTableInsertTest extends AbstractTest {
 
-    Marque myTableRow = new Marque();
+	Marque myTableRow = new Marque();
 
-    public DBTableInsertTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public DBTableInsertTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void testInsertRows() throws SQLException {
-        myTableRow.getUidMarque().setValue(999);
-        myTableRow.getName().setValue("TOYOTA");
-        myTableRow.getNumericCode().setValue(10);
-        marquesTable.insert(myTableRow);
-        marquesTable.setBlankQueryAllowed(true).getAllRows();
-        marquesTable.print();
+	@Test
+	public void testInsertRows() throws SQLException {
+		myTableRow.getUidMarque().setValue(999);
+		myTableRow.getName().setValue("TOYOTA");
+		myTableRow.getNumericCode().setValue(10);
+		marquesTable.insert(myTableRow);
+		marquesTable.setBlankQueryAllowed(true).getAllRows();
+		marquesTable.print();
 
-        Date creationDate = new Date();
-        List<Marque> myTableRows = new ArrayList<Marque>();
-        myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", creationDate, 4, null));
+		Date creationDate = new Date();
+		List<Marque> myTableRows = new ArrayList<Marque>();
+		myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", creationDate, 4, null));
 
-        marquesTable.insert(myTableRows);
-        marquesTable.getAllRows();
-        marquesTable.print();
-    }
+		marquesTable.insert(myTableRows);
+		marquesTable.getAllRows();
+		marquesTable.print();
+	}
+
+	@Test
+	public void testInsertIncompleteRows() throws SQLException {
+		Marque marque = new Marque();
+		marque.getUidMarque().setValue(999);
+		marque.getName().setValue("TOYOTA");
+		marque.getNumericCode().setValue(10);
+		DBActionList insertActions = DBInsert.getInserts(marque);
+		DBAction possibleInsert = insertActions.get(0);
+		Assert.assertThat(possibleInsert.getClass().getSimpleName(), Matchers.is(DBInsert.class.getSimpleName()));
+		if (possibleInsert instanceof DBInsert){
+			DBInsert insert = (DBInsert)possibleInsert;
+			String sql = insert.getSQLStatements(database).get(0);
+			System.out.println(""+sql);
+			Assert.assertThat(sql.toUpperCase(), Matchers.containsString("NAME"));
+			Assert.assertThat(sql.toUpperCase(), Matchers.not(Matchers.containsString("CREATION_DATE")));
+			Assert.assertThat(sql.toUpperCase(), Matchers.not(Matchers.containsString("FK_CARCOMPANY")));
+		}
+	}
 }
