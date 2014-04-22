@@ -617,4 +617,8 @@ public abstract class DBDefinition {
 	public boolean supportsPaging(QueryOptions options) {
 		return true;
 	}
+        
+	public boolean supportsGeneratedKeys(QueryOptions options) {
+		return true;
+	}
 }

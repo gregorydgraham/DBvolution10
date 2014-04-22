@@ -107,4 +107,9 @@ public class InformixDBDefinition extends DBDefinition {
     public boolean supportsPaging(QueryOptions options) {
         return false;
     }
+
+    @Override
+    public boolean supportsGeneratedKeys(QueryOptions options) {
+        return false;
+    }
 }
