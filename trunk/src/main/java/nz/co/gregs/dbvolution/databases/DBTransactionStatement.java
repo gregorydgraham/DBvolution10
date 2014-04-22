@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 public class DBTransactionStatement extends DBStatement {
 
     public DBTransactionStatement(DBDatabase database, DBStatement realStatement) {
-        super(database, realStatement);
+        super(database, realStatement.realStatement);
     }
 
     @Override
@@ -35,6 +35,6 @@ public class DBTransactionStatement extends DBStatement {
     public void transactionFinished() throws SQLException {
         realStatement.close();
     }
-    
+
     
 }

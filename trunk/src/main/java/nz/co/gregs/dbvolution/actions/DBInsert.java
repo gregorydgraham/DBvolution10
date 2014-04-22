@@ -68,29 +68,39 @@ public class DBInsert extends DBAction {
 
     @Override
     protected DBActionList execute(DBDatabase db) throws SQLException {
+        final DBDefinition defn = db.getDefinition();
         DBStatement statement = db.getDBStatement();
         DBRow row = getRow();
 
         DBActionList actions = new DBActionList(new DBInsert(row));
         for (String sql : getSQLStatements(db)) {
-            try {
-                statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
-
-                ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+            if (defn.supportsGeneratedKeys(null)) {
                 try {
-                    ResultSetMetaData metaData = generatedKeysResultSet.getMetaData();
-                    while (generatedKeysResultSet.next()) {
-                        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                            this.getGeneratedKeys().add(generatedKeysResultSet.getLong(1));
-                            System.out.println("GENERATED KEYS: " + generatedKeysResultSet.getLong(1));
+                    statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+
+                    ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+                    try {
+                        ResultSetMetaData metaData = generatedKeysResultSet.getMetaData();
+                        while (generatedKeysResultSet.next()) {
+                            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                                this.getGeneratedKeys().add(generatedKeysResultSet.getLong(1));
+                                System.out.println("GENERATED KEYS: " + generatedKeysResultSet.getLong(1));
+                            }
                         }
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    } finally {
+                        generatedKeysResultSet.close();
                     }
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                } finally {
-                    generatedKeysResultSet.close();
+                } catch (SQLException sqlex) {
+                    try {
+                        sqlex.printStackTrace();
+                        statement.execute(sql);
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
-            } catch (SQLException sqlex) {
+            } else {
                 try {
                     statement.execute(sql);
                 } catch (SQLException ex) {
@@ -168,8 +178,8 @@ public class DBInsert extends DBAction {
     }
 
     /**
-     * Returns all generated values created during the insert actions. 
-     * 
+     * Returns all generated values created during the insert actions.
+     *
      * @return the generatedKeys
      */
     public List<Long> getGeneratedKeys() {
