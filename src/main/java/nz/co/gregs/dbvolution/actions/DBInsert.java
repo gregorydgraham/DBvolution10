@@ -115,7 +115,7 @@ public class DBInsert extends DBAction {
             // BLOBS are not inserted normally so don't include them
             if (prop.isColumn()) {
                 final QueryableDatatype qdt = prop.getQueryableDatatype();
-                if (!(qdt instanceof DBLargeObject)) {
+                if (!(qdt instanceof DBLargeObject) && qdt.hasBeenSet()) {
                     // nice normal columns
                     // Add the column
                     allColumns
@@ -159,7 +159,7 @@ public class DBInsert extends DBAction {
      * @return a DBActionList of inserts.
      * @throws SQLException
      */
-    protected static DBActionList getInserts(DBRow... rows) throws SQLException {
+    public static DBActionList getInserts(DBRow... rows) throws SQLException {
         DBActionList inserts = new DBActionList();
         for (DBRow row : rows) {
             inserts.add(new DBInsert(row));
