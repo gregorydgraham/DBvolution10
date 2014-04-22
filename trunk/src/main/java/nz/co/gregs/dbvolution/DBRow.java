@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -249,6 +247,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 *
 	 * Indicates that the DBRow is a defined row within the database.
+         * 
+         * Deprecated. Please use {@link #setDefined() } or {@link #setUndefined() } instead.
 	 *
 	 * Example objects and blank rows from an optional table are "undefined".
 	 *
