@@ -40,6 +40,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
 
 /**
+ * Encapsulates the concept of a row that has fields/columns and is part of a table/view on a database.
  *
  * @author gregory.graham
  */
@@ -408,7 +409,7 @@ public class RowDefinition implements Serializable {
         string.append("</tr>");
         return string.toString();
     }
-    
+
     public String getHTMLTableHeader(String tableRowCSSClass, String tableHeaderCellCSSClass) {
         StringBuilder string = new StringBuilder();
         List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();

@@ -36,123 +36,143 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBInsert extends DBAction {
 
-	private transient StringBuilder allColumns;
-	private transient StringBuilder allValues;
+    private transient StringBuilder allColumns;
+    private transient StringBuilder allValues;
+    public List<Long> generatedKeys = new ArrayList<Long>();
 
-	protected <R extends DBRow> DBInsert(R row) {
-		super(row);
-	}
+    protected <R extends DBRow> DBInsert(R row) {
+        super(row);
+    }
 
-	public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
-		DBInsert dbInsert = new DBInsert(row);
-		return dbInsert.execute(database);
-	}
+    public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
+        DBInsert dbInsert = new DBInsert(row);
+        return dbInsert.execute(database);
+    }
 
-	@Override
-	public ArrayList<String> getSQLStatements(DBDatabase db) {
-		DBRow row = getRow();
-		DBDefinition defn = db.getDefinition();
-		processAllFieldsForInsert(db, row);
+    @Override
+    public ArrayList<String> getSQLStatements(DBDatabase db) {
+        DBRow row = getRow();
+        DBDefinition defn = db.getDefinition();
+        processAllFieldsForInsert(db, row);
 
-		ArrayList<String> strs = new ArrayList<String>();
-		strs.add(defn.beginInsertLine()
-				+ defn.formatTableName(row)
-				+ defn.beginInsertColumnList()
-				+ allColumns
-				+ defn.endInsertColumnList()
-				+ allValues
-				+ defn.endInsertLine());
-		return strs;
-	}
+        ArrayList<String> strs = new ArrayList<String>();
+        strs.add(defn.beginInsertLine()
+                + defn.formatTableName(row)
+                + defn.beginInsertColumnList()
+                + allColumns
+                + defn.endInsertColumnList()
+                + allValues
+                + defn.endInsertLine());
+        return strs;
+    }
 
-	@Override
-	protected DBActionList execute(DBDatabase db) throws SQLException {
-		DBStatement statement = db.getDBStatement();
-		DBRow row = getRow();
+    @Override
+    protected DBActionList execute(DBDatabase db) throws SQLException {
+        DBStatement statement = db.getDBStatement();
+        DBRow row = getRow();
 
-		DBActionList actions = new DBActionList(new DBInsert(row));
-		for (String sql : getSQLStatements(db)) {
-			statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
-			ResultSet generatedKeys = statement.getGeneratedKeys();
-			try {
-				ResultSetMetaData metaData = generatedKeys.getMetaData();
-				while (generatedKeys.next()) {
-					for (int i = 1; i <= metaData.getColumnCount(); i++) {
-						System.out.println("GENERATED KEYS: " + generatedKeys.getLong(1));
-					}
-				}
-			} catch (SQLException ex) {
-				throw new RuntimeException(ex);
-			} finally {
-				generatedKeys.close();
-			}
-		}
-		DBInsertLargeObjects blobSave = new DBInsertLargeObjects(row);
-		actions.addAll(blobSave.execute(db));
-		row.setDefined();
-		return actions;
-	}
+        DBActionList actions = new DBActionList(new DBInsert(row));
+        for (String sql : getSQLStatements(db)) {
+            try {
+                statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
 
-	private void processAllFieldsForInsert(DBDatabase database, DBRow row) {
-		allColumns = new StringBuilder();
-		allValues = new StringBuilder();
-		DBDefinition defn = database.getDefinition();
-		List<PropertyWrapper> props = row.getPropertyWrappers();
-		String columnSeparator = "";
-		String valuesSeparator = defn.beginValueClause();
-		for (PropertyWrapper prop : props) {
-			// BLOBS are not inserted normally so don't include them
-			if (prop.isColumn()) {
-				final QueryableDatatype qdt = prop.getQueryableDatatype();
-				if (!(qdt instanceof DBLargeObject)) {
+                ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+                try {
+                    ResultSetMetaData metaData = generatedKeysResultSet.getMetaData();
+                    while (generatedKeysResultSet.next()) {
+                        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                            this.getGeneratedKeys().add(generatedKeysResultSet.getLong(1));
+                            System.out.println("GENERATED KEYS: " + generatedKeysResultSet.getLong(1));
+                        }
+                    }
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                } finally {
+                    generatedKeysResultSet.close();
+                }
+            } catch (SQLException sqlex) {
+                try {
+                    statement.execute(sql);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        DBInsertLargeObjects blobSave = new DBInsertLargeObjects(row);
+        actions.addAll(blobSave.execute(db));
+        row.setDefined();
+        return actions;
+    }
+
+    private void processAllFieldsForInsert(DBDatabase database, DBRow row) {
+        allColumns = new StringBuilder();
+        allValues = new StringBuilder();
+        DBDefinition defn = database.getDefinition();
+        List<PropertyWrapper> props = row.getPropertyWrappers();
+        String columnSeparator = "";
+        String valuesSeparator = defn.beginValueClause();
+        for (PropertyWrapper prop : props) {
+            // BLOBS are not inserted normally so don't include them
+            if (prop.isColumn()) {
+                final QueryableDatatype qdt = prop.getQueryableDatatype();
+                if (!(qdt instanceof DBLargeObject)) {
                     // nice normal columns
-					// Add the column
-					allColumns
-							.append(columnSeparator)
-							.append(" ")
-							.append(defn.formatColumnName(prop.columnName()));
-					columnSeparator = defn.getValuesClauseColumnSeparator();
-					// add the value
-					allValues.append(valuesSeparator).append(qdt.toSQLString(database));
-					valuesSeparator = defn.getValuesClauseValueSeparator();
-				}
-			}
-		}
-		allValues.append(defn.endValueClause());
-	}
+                    // Add the column
+                    allColumns
+                            .append(columnSeparator)
+                            .append(" ")
+                            .append(defn.formatColumnName(prop.columnName()));
+                    columnSeparator = defn.getValuesClauseColumnSeparator();
+                    // add the value
+                    allValues.append(valuesSeparator).append(qdt.toSQLString(database));
+                    valuesSeparator = defn.getValuesClauseValueSeparator();
+                }
+            }
+        }
+        allValues.append(defn.endValueClause());
+    }
 
-	@Override
-	protected DBActionList getRevertDBActionList() {
-		DBActionList reverts = new DBActionList();
-		if (this.getRow().getPrimaryKey() == null) {
-			reverts.add(new DBDeleteUsingAllColumns(getRow()));
-		} else {
-			reverts.add(new DBDeleteByPrimaryKey(getRow()));
-		}
-		return reverts;
-	}
+    @Override
+    protected DBActionList getRevertDBActionList() {
+        DBActionList reverts = new DBActionList();
+        if (this.getRow().getPrimaryKey() == null) {
+            reverts.add(new DBDeleteUsingAllColumns(getRow()));
+        } else {
+            reverts.add(new DBDeleteByPrimaryKey(getRow()));
+        }
+        return reverts;
+    }
 
-	@Override
-	protected DBActionList getActions(){//DBRow row) {
-		return new DBActionList(new DBInsert(getRow()));
-	}
+    @Override
+    protected DBActionList getActions() {//DBRow row) {
+        return new DBActionList(new DBInsert(getRow()));
+    }
 
-	/**
-	 * Creates a DBActionList of inserts actions for the rows.
-	 *
-	 * <p>
-	 * The actions created can be applied on a particular database using
-	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
-	 *
-	 * @param rows
-	 * @return a DBActionList of inserts.
-	 * @throws SQLException
-	 */
-	protected static DBActionList getInserts(DBRow... rows) throws SQLException {
-		DBActionList inserts = new DBActionList();
-		for (DBRow row : rows) {
-			inserts.add(new DBInsert(row));
-		}
-		return inserts;
-	}
+    /**
+     * Creates a DBActionList of inserts actions for the rows.
+     *
+     * <p>
+     * The actions created can be applied on a particular database using
+     * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
+     *
+     * @param rows
+     * @return a DBActionList of inserts.
+     * @throws SQLException
+     */
+    protected static DBActionList getInserts(DBRow... rows) throws SQLException {
+        DBActionList inserts = new DBActionList();
+        for (DBRow row : rows) {
+            inserts.add(new DBInsert(row));
+        }
+        return inserts;
+    }
+
+    /**
+     * Returns all generated values created during the insert actions. 
+     * 
+     * @return the generatedKeys
+     */
+    public List<Long> getGeneratedKeys() {
+        return generatedKeys;
+    }
 }
