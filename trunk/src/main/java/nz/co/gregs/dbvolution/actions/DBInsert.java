@@ -44,9 +44,32 @@ public class DBInsert extends DBAction {
         super(row);
     }
 
+    /**
+     * Saves the row to the database.
+     *
+     * Creates the appropriate actions to save the row permanently in the
+     * database and executes them.
+     * <p>
+     * Supports automatic retrieval of the new primary key in limited cases:
+     * <ul>
+     * <li>If the database supports generated keys, </li>
+     * <li> and the primary key has not been set, </li>
+     * <li>and there is exactly one generated key</li>
+     * <li>then the primary key will be set to the generated key.</li>
+     * </ul>
+     *
+     * @param database
+     * @param row
+     * @return a DBActionList of the actions performed on the database.
+     * @throws SQLException
+     */
     public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
         DBInsert dbInsert = new DBInsert(row);
-        return dbInsert.execute(database);
+        final DBActionList executedActions = dbInsert.execute(database);
+        if (dbInsert.generatedKeys.size() == 1 && !row.getPrimaryKey().hasBeenSet()) {
+            row.getPrimaryKey().setValue(dbInsert.generatedKeys.get(0));
+        }
+        return executedActions;
     }
 
     @Override
