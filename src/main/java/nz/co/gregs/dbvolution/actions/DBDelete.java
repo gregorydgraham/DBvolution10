@@ -41,7 +41,7 @@ public abstract class DBDelete extends DBAction {
 	 * @throws SQLException
 	 */
 	public static DBActionList delete(DBDatabase database, DBRow row) throws SQLException {
-		DBActionList delete = getDeletes(row);
+		DBActionList delete = getDeletes(database, row);
 		return delete.execute(database);
 	}
 
@@ -64,7 +64,7 @@ public abstract class DBDelete extends DBAction {
 	 * @return a DBActionList of deletes.
 	 * @throws SQLException
 	 */
-	public static DBActionList getDeletes(DBRow... rows) throws SQLException {
+	public static DBActionList getDeletesWithRevertCapability(DBRow... rows) throws SQLException {
 		DBActionList actions = new DBActionList();
 		for (DBRow row : rows) {
 			if (row.getDefined()) {
