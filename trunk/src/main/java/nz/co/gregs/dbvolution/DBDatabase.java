@@ -370,7 +370,7 @@ public abstract class DBDatabase {
         if (expectedNumberOfRows == null) {
             return get(exampleRow);
         } else {
-            return getDBTable(exampleRow).getRowsByExample(exampleRow, expectedNumberOfRows.longValue());
+            return getDBTable(exampleRow).getRowsByExample(exampleRow, expectedNumberOfRows);
         }
     }
 
@@ -709,9 +709,8 @@ public abstract class DBDatabase {
 
     void printSQLIfRequested(String sqlString, PrintStream out) {
         if (printSQLBeforeExecuting) {
-            out.flush();
             out.println(sqlString);
-            out.flush();
+            log.info(sqlString);
         }
     }
 
