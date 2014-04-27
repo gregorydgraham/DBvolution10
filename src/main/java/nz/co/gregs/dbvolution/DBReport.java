@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBReportFieldException;
+import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBReportSubclassException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -316,32 +318,9 @@ public class DBReport extends RowDefinition {
 			}
 			return newReport;
 		} catch (InstantiationException ex) {
-			throw new UnableToCreateDBReportSubclassException(exampleReport, ex);
+			throw new UnableToInstantiateDBReportSubclassException(exampleReport, ex);
 		} catch (IllegalAccessException ex) {
-			throw new UnableToCreateDBReportSubclassException(exampleReport, ex);
+			throw new UnableToInstantiateDBReportSubclassException(exampleReport, ex);
 		}
 	}
-
-	public static class UnableToAccessDBReportFieldException extends RuntimeException {
-
-		public static final long serialVersionUID = 1L;
-
-		public UnableToAccessDBReportFieldException(Object badReport, Field field, Exception ex) {
-			super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null: Especially field: " + field.getName(), ex);
-		}
-
-		public UnableToAccessDBReportFieldException(Object badReport, Exception ex) {
-			super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null.", ex);
-		}
-	}
-
-	public static class UnableToCreateDBReportSubclassException extends RuntimeException {
-
-		public static final long serialVersionUID = 1L;
-
-		public UnableToCreateDBReportSubclassException(Object badReport, Exception ex) {
-			super("Unable To Create DBReport Instance: please ensure that your DBReport subclass, " + badReport.getClass().getSimpleName() + ", has a Public, No Parameter Constructor. The class itself may need to be \"public static\" as well.", ex);
-		}
-	}
-
 }
