@@ -14,6 +14,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -125,21 +126,21 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param requiredDBRowClass
 	 * @return a new blank version of the specified class
 	 */
-	public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) {
+	public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException{
 		try {
 			return requiredDBRowClass.getConstructor().newInstance();
 		} catch (NoSuchMethodException ex) {
-			throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public. If you are using an Inner Class, make sure the inner class is \"static\" as well.", ex);
+			throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>)requiredDBRowClass), ex);
 		} catch (SecurityException ex) {
-			throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+			throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>)requiredDBRowClass), ex);
 		} catch (InstantiationException ex) {
-			throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+			throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>)requiredDBRowClass), ex);
 		} catch (IllegalAccessException ex) {
-			throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+			throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>)requiredDBRowClass), ex);
 		} catch (IllegalArgumentException ex) {
-			throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+			throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>)requiredDBRowClass), ex);
 		} catch (InvocationTargetException ex) {
-			throw new RuntimeException("Unable To Create " + requiredDBRowClass.getClass().getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRowClass.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+			throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>)requiredDBRowClass), ex);
 		}
 	}
 
