@@ -59,14 +59,14 @@ public class GeneratedMarqueTest extends AbstractTest {
         for (DBTableClass dbcl : generateSchema) {
             if (testClassNames.contains(dbcl.className)) {
                 classesTested++;
-                System.out.print("" + dbcl.javaSource);
+                System.out.print("" + dbcl.getJavaSource());
                 boolean found = false;
                 for (String str : testClasses) {
-                    if (str.replaceAll("[ \n\r\t]*", " ").equals(dbcl.javaSource.replaceAll("[ \n\r\t]*", " "))) {
+                    if (str.replaceAll("[ \n\r\t]*", " ").equals(dbcl.getJavaSource().replaceAll("[ \n\r\t]*", " "))) {
                         found = true;
                     }
                 }
-                Assert.assertTrue("Unable to find: \n\"" + dbcl.javaSource + "\"", found);
+                Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
             } else {
                 System.out.println("SKIPPED: " + dbcl.className);
             }
@@ -89,14 +89,14 @@ public class GeneratedMarqueTest extends AbstractTest {
         for (DBTableClass dbcl : generateSchema) {
             if (testClassNames.contains(dbcl.className)) {
                 classesTested++;
-                System.out.println(dbcl.javaSource);
+                System.out.println(dbcl.getJavaSource());
                 boolean found = false;
                 for (String str : testGetSchemaWithRecognisorTestClasses) {
-                    if (str.replaceAll("[ \n\r\t]*", " ").equals(dbcl.javaSource.replaceAll("[ \n\r\t]*", " "))) {
+                    if (str.replaceAll("[ \n\r\t]*", " ").equals(dbcl.getJavaSource().replaceAll("[ \n\r\t]*", " "))) {
                         found = true;
                     }
                 }
-                Assert.assertTrue("Unable to find: \n\"" + dbcl.javaSource + "\"", found);
+                Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
             } else {
                 System.out.println("SKIPPED: " + dbcl.className);
             }
@@ -112,7 +112,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
         List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
-            Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), dbcl.javaSource);
+            Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), dbcl.getJavaSource());
             Object newInstance = compiledClass.newInstance();
             DBRow row = (DBRow) newInstance;
             List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
@@ -136,7 +136,7 @@ public class GeneratedMarqueTest extends AbstractTest {
         List<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>(); // input for first compilation task
         List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
-            compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.javaSource));
+            compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.getJavaSource()));
         }
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
