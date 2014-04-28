@@ -163,7 +163,7 @@ public class DBTableClassGenerator {
                 fileOutputStream = new FileOutputStream(file);
 //                System.out.println(clazz.javaSource);
 //                System.out.println("");
-                fileOutputStream.write(clazz.javaSource.getBytes());
+                fileOutputStream.write(clazz.getJavaSource().getBytes());
                 fileOutputStream.close();
             }
         }
@@ -268,12 +268,12 @@ public class DBTableClassGenerator {
             try {
                 while (tables.next()) {
                     DBTableClass dbTableClass = new DBTableClass();
-                    dbTableClass.packageName = packageName;
+                    dbTableClass.setPackageName(packageName);
                     dbTableClass.serialversionUIDBValue = versionNumber;
-                    dbTableClass.tableName = tables.getString("TABLE_NAME");
-                    dbTableClass.className = toClassCase(dbTableClass.tableName);
+                    dbTableClass.setTableName(tables.getString("TABLE_NAME"));
+                    dbTableClass.className = toClassCase(dbTableClass.getTableName());
 
-                    ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.tableName);
+                    ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
                     List<String> pkNames = new ArrayList<String>();
                     try {
                         while (primaryKeysRS.next()) {
@@ -284,7 +284,7 @@ public class DBTableClassGenerator {
                         primaryKeysRS.close();
                     }
 
-                    ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.tableName);
+                    ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.getTableName());
                     Map<String, String[]> fkNames = new HashMap<String, String[]>();
                     try {
                         while (foreignKeysRS.next()) {
@@ -297,7 +297,7 @@ public class DBTableClassGenerator {
                         foreignKeysRS.close();
                     }
 
-                    ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.tableName, null);
+                    ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null);
                     try {
                         while (columns.next()) {
                             DBTableField dbTableField = new DBTableField();
@@ -310,7 +310,7 @@ public class DBTableClassGenerator {
                                 dbTableField.columnType = DBUnknownDatatype.class.getSimpleName();
                                 dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
                             }
-                            if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
+                            if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
                                 dbTableField.isPrimaryKey = true;
                             }
                             String[] pkData = fkNames.get(dbTableField.columnName);
@@ -318,12 +318,12 @@ public class DBTableClassGenerator {
                                 dbTableField.isForeignKey = true;
                                 dbTableField.referencesClass = toClassCase(pkData[0]);
                                 dbTableField.referencesField = pkData[1];
-                            } else if (fkRecog.isForeignKeyColumn(dbTableClass.tableName, dbTableField.columnName)) {
+                            } else if (fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
                                 dbTableField.isForeignKey = true;
-                                dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.tableName, dbTableField.columnName);
-                                dbTableField.referencesClass = fkRecog.getReferencedTable(dbTableClass.tableName, dbTableField.columnName);
+                                dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.columnName);
+                                dbTableField.referencesClass = fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName);
                             }
-                            dbTableClass.fields.add(dbTableField);
+                            dbTableClass.getFields().add(dbTableField);
                         }
                     } finally {
                         columns.close();
@@ -348,7 +348,7 @@ public class DBTableClassGenerator {
             dbTableClassNames.add(dbt.className);
         }
         for (DBTableClass dbt : dbTableClasses) {
-            for (DBTableField dbf : dbt.fields) {
+            for (DBTableField dbf : dbt.getFields()) {
                 if (dbf.isForeignKey) {
                     if (!dbTableClassNames.contains(dbf.referencesClass)) {
                         List<String> matchingNames = new ArrayList<String>();
