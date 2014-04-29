@@ -104,6 +104,12 @@ public class DBInteger extends QueryableDatatype {
         setDefined(true);
     }
 
+    /**
+     * Returns a Long of the database value or NULL if the database value is
+     * null
+     *
+     * @return the long value or null
+     */
     @Override
     public Long getValue() {
         if (this.literalValue instanceof Long) {
@@ -113,6 +119,31 @@ public class DBInteger extends QueryableDatatype {
         } else {
             return Long.parseLong(this.literalValue.toString());
         }
+    }
+
+    /**
+     * Returns an Integer of the database value or NULL if the database value is
+     * null
+     *
+     * @return the integer value or null
+     */
+    @Override
+    @SuppressWarnings("deprecation")
+    public Integer intValue() {
+        Long value = getValue();
+        return value == null ? null : value.intValue();
+    }
+
+    /**
+     * Returns a Long of the database value or NULL if the database value is
+     * null
+     *
+     * @return the long value or null
+     */
+    @Override
+    @SuppressWarnings("deprecation")
+    public Long longValue() {
+        return getValue();
     }
 
     /**
@@ -226,7 +257,7 @@ public class DBInteger extends QueryableDatatype {
      * @param excluded
      */
     public void excludedValues(Long... excluded) {
-        this.setOperator(new DBPermittedValuesOperator((Object[])excluded));
+        this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
         negateOperator();
     }
 
@@ -238,7 +269,7 @@ public class DBInteger extends QueryableDatatype {
      * @param excluded
      */
     public void excludedValues(DBInteger... excluded) {
-        this.setOperator(new DBPermittedValuesOperator((Object[])excluded));
+        this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
         negateOperator();
     }
 
