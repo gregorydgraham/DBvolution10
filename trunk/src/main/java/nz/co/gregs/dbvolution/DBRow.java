@@ -1044,7 +1044,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * If this row is the result of the database sending back a row with NULL in every column, this method returns TRUE.
      *
      * <p>
-     * An empty row is probably the result an optional DBRow not having a matching row for the query. In database
+     * An empty row is probably the result an optional table not having a matching row for the query. In database
      * parlance this row is a null row of an OUTER JOIN and this table did not have any matching rows.
      *
      * <p>
@@ -1052,7 +1052,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      *
      * @return TRUE if the row has no non-null values or is undefined, FALSE otherwise
      */
-    protected Boolean isEmptyRow() {
+    public Boolean isEmptyRow() {
         return emptyRow;
     }
 
