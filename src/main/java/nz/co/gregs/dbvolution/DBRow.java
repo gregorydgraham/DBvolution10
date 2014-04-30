@@ -1047,12 +1047,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * An empty row is probably the result an optional table not having a matching row for the query. In database
      * parlance this row is a null row of an OUTER JOIN and this table did not have any matching rows.
      *
+	 * <p>
+	 * Only used internally as DBQuery results produce NULLs for non-existent rows.
+	 * 
      * <p>
      * Please note: if the row is undefined {@link DBRow#isDefined (see isDefined)} then this is meaningless
      *
      * @return TRUE if the row has no non-null values or is undefined, FALSE otherwise
      */
-    public Boolean isEmptyRow() {
+    protected Boolean isEmptyRow() {
         return emptyRow;
     }
 
