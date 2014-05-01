@@ -30,68 +30,78 @@ import java.util.Map;
  * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
  * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
  *
- * <p>DBQueryRow represents an individual line within the results of a query.
+ * <p>
+ * DBQueryRow represents an individual line within the results of a query.
  * However the results within the line are contained in instances of all the
  * DBRow subclasses included in the DBQuery.
- * 
- * <p>Each instance is accessible thru the {@link #get(nz.co.gregs.dbvolution.DBRow) get(DBRow) method}.
+ *
+ * <p>
+ * Each instance is accessible thru the
+ * {@link #get(nz.co.gregs.dbvolution.DBRow) get(DBRow) method}.
  *
  * @author gregorygraham
  *
  */
 public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
-    private static final long serialVersionUID = 1;
-    private final Map<Object, QueryableDatatype> expressionColumnValues = new LinkedHashMap<Object, QueryableDatatype>();
+	private static final long serialVersionUID = 1;
+	private final Map<Object, QueryableDatatype> expressionColumnValues = new LinkedHashMap<Object, QueryableDatatype>();
 
-    /**
-     * Returns the instance of exemplar contained within this DBQueryRow.
-     *
-     * <p>Finds the instance of the class supplied that is relevant to the DBRow
-     * and returns it.
-     *
-     * <p>Criteria set on the exemplar are ignored.
-     *
-     * <p>For example: Marque thisMarque = myQueryRow.get(new Marque());
-     *
-     * @param <E>
-     * @param exemplar
-     * @return the instance of exemplar that is in the DBQueryRow instance
-     */
-    @SuppressWarnings("unchecked")
-    public <E extends DBRow> E get(E exemplar) {
-        return (E) get(exemplar.getClass());
-    }
+	/**
+	 * Returns the instance of exemplar contained within this DBQueryRow.
+	 *
+	 * <p>
+	 * Finds the instance of the class supplied that is relevant to the DBRow
+	 * and returns it.
+	 *
+	 * <p>
+	 * If the exemplar represents an optional table an there were no appropriate
+	 * rows found for that table then NULL will be returned.
+	 *
+	 * <p>
+	 * Criteria set on the exemplar are ignored.
+	 *
+	 * <p>
+	 * For example: Marque thisMarque = myQueryRow.get(new Marque());
+	 *
+	 * @param <E>
+	 * @param exemplar
+	 * @return the instance of exemplar that is in the DBQueryRow instance
+	 */
+	@SuppressWarnings("unchecked")
+	public <E extends DBRow> E get(E exemplar) {
+		return (E) get(exemplar.getClass());
+	}
 
-    /**
-     * Print the specified columns to the specified PrintStream as one line.
-     *
-     * @param ps
-     * @param columns
-     */
-    public void print(PrintStream ps, QueryableDatatype... columns) {
-        for (QueryableDatatype qdt : columns) {
-            ps.print("" + qdt + " ");
-        }
-        ps.println();
-    }
+	/**
+	 * Print the specified columns to the specified PrintStream as one line.
+	 *
+	 * @param ps
+	 * @param columns
+	 */
+	public void print(PrintStream ps, QueryableDatatype... columns) {
+		for (QueryableDatatype qdt : columns) {
+			ps.print("" + qdt + " ");
+		}
+		ps.println();
+	}
 
-    /**
-     * Print the all columns to the specified PrintStream as one line.
-     *
-     * @param ps
-     */
-    public void print(PrintStream ps) {
-        for (DBRow row : values()) {
-            ps.print("" + row);
-        }
-    }
+	/**
+	 * Print the all columns to the specified PrintStream as one line.
+	 *
+	 * @param ps
+	 */
+	public void print(PrintStream ps) {
+		for (DBRow row : values()) {
+			ps.print("" + row);
+		}
+	}
 
-    void addExpressionColumnValue(Object key, QueryableDatatype expressionQDT) {
-        expressionColumnValues.put(key, expressionQDT);
-    }
+	void addExpressionColumnValue(Object key, QueryableDatatype expressionQDT) {
+		expressionColumnValues.put(key, expressionQDT);
+	}
 
-    QueryableDatatype getExpressionColumnValue(Object key) {
-        return expressionColumnValues.get(key);
-    }
+	QueryableDatatype getExpressionColumnValue(Object key) {
+		return expressionColumnValues.get(key);
+	}
 }

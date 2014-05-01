@@ -65,6 +65,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 					+ row.getPrimaryKey().toSQLString(db)
 					+ defn.endSQLStatement();
 			db.printSQLIfRequested(sqlString);
+			db.logSQLIfRequested(sqlString);
 			PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 			prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
 			prep.execute();

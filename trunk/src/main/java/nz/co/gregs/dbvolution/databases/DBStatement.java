@@ -43,7 +43,9 @@ public class DBStatement implements Statement {
 
     @Override
     public ResultSet executeQuery(String string) throws SQLException {
-        database.printSQLIfRequested("EXECUTING QUERY: "+string);
+		final String logSQL = "EXECUTING QUERY: "+string;
+        database.printSQLIfRequested(logSQL);
+        database.logSQLIfRequested(logSQL);
         return realStatement.executeQuery(string);
     }
 
@@ -122,7 +124,9 @@ public class DBStatement implements Statement {
 
     @Override
     public boolean execute(String string) throws SQLException {
-        database.printSQLIfRequested("EXECUTING: "+string);
+		final String logSQL = "EXECUTING: "+string;
+        database.printSQLIfRequested(logSQL);
+        database.logSQLIfRequested(logSQL);
         return realStatement.execute(string);
     }
 

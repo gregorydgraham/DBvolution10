@@ -158,7 +158,7 @@ public class DBTable<E extends DBRow> {
 	 */
 	public List<E> getRowsByExample(E example) throws SQLException {
 		this.exemplar = DBRow.copyDBRow(example);
-		this.query = database.getDBQuery(example);
+		this.query = database.getDBQuery(exemplar);
 		return getAllRows();
 	}
 

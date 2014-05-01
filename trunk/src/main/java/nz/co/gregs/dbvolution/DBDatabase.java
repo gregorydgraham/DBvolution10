@@ -87,6 +87,7 @@ public abstract class DBDatabase {
     final RowDefinitionWrapperFactory wrapperFactory = new RowDefinitionWrapperFactory();
     private boolean preventAccidentalDroppingOfTables = true;
     private boolean preventAccidentalDroppingDatabase = true;
+	private boolean logSQLBeforeExecuting;
 
     /**
      * Define a new DBDatabase.
@@ -710,6 +711,39 @@ public abstract class DBDatabase {
     void printSQLIfRequested(String sqlString, PrintStream out) {
         if (printSQLBeforeExecuting) {
             out.println(sqlString);
+        }
+    }
+
+    /**
+     * Enables the logging of all SQL before the SQL is executed.
+     *
+     * @param b TRUE to log SQL before execution, FALSE otherwise.
+     */
+    public void setLogSQLBeforeExecuting(boolean b) {
+        logSQLBeforeExecuting = b;
+    }
+
+    /**
+     * Indicates whether SQL will be logged before it is executed.
+     *
+     * @return TRUE if the SQL will be logged before execution, otherwise FALSE
+     */
+    public boolean isLogSQLBeforeExecuting() {
+        return logSQLBeforeExecuting;
+    }
+
+    /**
+     * Called by internal methods that are about to execute SQL so the SQL can
+     * be logged.
+     *
+     * @param sqlString
+     */
+    public void logSQLIfRequested(String sqlString) {
+        logSQLIfRequested(sqlString, log);
+    }
+
+    void logSQLIfRequested(String sqlString, Log log) {
+        if (logSQLBeforeExecuting) {
             log.info(sqlString);
         }
     }
@@ -771,7 +805,6 @@ public abstract class DBDatabase {
         //finish
         sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
         String sqlString = sqlScript.toString();
-//		printSQLIfRequested(sqlString);
         getDBStatement().execute(sqlString);
     }
 
@@ -801,7 +834,6 @@ public abstract class DBDatabase {
 
         sqlScript.append(definition.getDropTableStart()).append(definition.formatTableName(tableRow)).append(definition.endSQLStatement());
         String sqlString = sqlScript.toString();
-//		printSQLIfRequested(sqlString);
         getDBStatement().execute(sqlString);
     }
 
@@ -890,8 +922,10 @@ public abstract class DBDatabase {
             throw new AccidentalDroppingOfDatabaseException();
         }
 
-        String dropStr = getDefinition().getDropDatabase(getDatabaseName());//;
+        String dropStr = getDefinition().getDropDatabase(getDatabaseName());
+		
         printSQLIfRequested(dropStr);
+        logSQLIfRequested(dropStr);
 
         this.doTransaction(new DBRawSQLTransaction(dropStr));
     }
