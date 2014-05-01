@@ -134,6 +134,342 @@ public class NumberExpression implements NumberResult {
         return is(number).not();
     }
 
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetween(NumberResult lowerBound, NumberResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetween(Number lowerBound, NumberResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetween(NumberResult lowerBound, Number upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetween(Number lowerBound, Number upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, NumberResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenInclusive(Number lowerBound, NumberResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, Number upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenInclusive(Number lowerBound, Number upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, NumberResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThan(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenExclusive(Number lowerBound, NumberResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThan(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, Number upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThan(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenExclusive(Number lowerBound, Number upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThan(upperBound)
+		);
+    }
+	
     public BooleanExpression isLessThan(Number number) {
         return isLessThan(value(number));
     }
