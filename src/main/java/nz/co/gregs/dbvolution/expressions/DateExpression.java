@@ -74,7 +74,8 @@ public class DateExpression implements DateResult {
      * <li>Only object classes that are appropriate need to be handle by the
      * DBExpression subclass.<li>
      * <li>The implementation should be {@code static}</li>
-     *
+     * </ul>
+	 * 
      * @param date
      * @return a DBExpression instance that is appropriate to the subclass and
      * the value supplied.
@@ -184,6 +185,342 @@ public class DateExpression implements DateResult {
                 return " = ";
             }
         });
+    }
+	
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetween(DateResult lowerBound, DateResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetween(Date lowerBound, DateResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetween(DateResult lowerBound, Date upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified the lower-bound will be included
+     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+     * return 1 and 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and exclusive.
+     * <br>
+     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetween(Date lowerBound, Date upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenInclusive(DateResult lowerBound, DateResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenInclusive(Date lowerBound, DateResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenInclusive(DateResult lowerBound, Date upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+    /**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be included in the search. I.e permittedRangeInclusive(1,3) will
+     * return 1, 2, and 3.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended and inclusive.
+     * <br>
+     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenInclusive(Date lowerBound, Date upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(lowerBound),
+				this.isLessThanOrEqual(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenExclusive(DateResult lowerBound, DateResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThan(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenExclusive(Date lowerBound, DateResult upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThan(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenExclusive(DateResult lowerBound, Date upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThan(upperBound)
+		);
+    }
+
+	/**
+     * Performs searches based on a range.
+     *
+     * if both ends of the range are specified both the lower- and upper-bound
+     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+     * return 2.
+     *
+     * <p>
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     *
+     * <p>
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
+     * <br>
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     *
+     * @param lowerBound
+     * @param upperBound
+	 * @return a boolean expression representing the required comparison
+     */
+	public BooleanExpression isBetweenExclusive(Date lowerBound, Date upperBound) {
+        return BooleanExpression.allOf(
+				this.isGreaterThan(lowerBound),
+				this.isLessThan(upperBound)
+		);
     }
 
     public BooleanExpression isLessThan(Date date) {
@@ -342,7 +679,7 @@ public class DateExpression implements DateResult {
 
     private static abstract class DBNonaryFunction implements DateResult {
 
-        public DBNonaryFunction() {
+        DBNonaryFunction() {
         }
 
         abstract String getFunctionName(DBDatabase db);
@@ -393,11 +730,11 @@ public class DateExpression implements DateResult {
 
         protected DateExpression only;
 
-        public UnaryComplicatedNumberFunction() {
+        UnaryComplicatedNumberFunction() {
             this.only = null;
         }
 
-        public UnaryComplicatedNumberFunction(DateExpression only) {
+        UnaryComplicatedNumberFunction(DateExpression only) {
             this.only = only;
         }
 
@@ -443,7 +780,7 @@ public class DateExpression implements DateResult {
         private DateExpression first;
         private DateResult second;
 
-        public DBBinaryBooleanArithmetic(DateExpression first, DateResult second) {
+        DBBinaryBooleanArithmetic(DateExpression first, DateResult second) {
             this.first = first;
             this.second = second;
         }
@@ -498,11 +835,11 @@ public class DateExpression implements DateResult {
         protected DateExpression column;
         protected DateResult[] values;
 
-        public DBNnaryDateFunction() {
+        DBNnaryDateFunction() {
             this.values = null;
         }
 
-        public DBNnaryDateFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
+        DBNnaryDateFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
             this.values = new DateResult[rightHandSide.length];
             this.column = leftHandSide;
             System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
@@ -571,11 +908,11 @@ public class DateExpression implements DateResult {
         protected DateExpression column;
         protected DateResult[] values;
 
-        public DBNnaryBooleanFunction() {
+        DBNnaryBooleanFunction() {
             this.values = null;
         }
 
-        public DBNnaryBooleanFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
+        DBNnaryBooleanFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
             this.values = new DateResult[rightHandSide.length];
             this.column = leftHandSide;
             System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
@@ -658,12 +995,12 @@ public class DateExpression implements DateResult {
         private DateExpression first;
         private DateResult second;
 
-        public DBBinaryFunction(DateExpression first) {
+        DBBinaryFunction(DateExpression first) {
             this.first = first;
             this.second = null;
         }
 
-        public DBBinaryFunction(DateExpression first, DateResult second) {
+        DBBinaryFunction(DateExpression first, DateResult second) {
             this.first = first;
             this.second = second;
         }
@@ -729,11 +1066,11 @@ public class DateExpression implements DateResult {
 
         protected DateExpression only;
 
-        public DBUnaryNumberFunction() {
+        DBUnaryNumberFunction() {
             this.only = null;
         }
 
-        public DBUnaryNumberFunction(DateExpression only) {
+        DBUnaryNumberFunction(DateExpression only) {
             this.only = only;
         }
 
@@ -786,11 +1123,11 @@ public class DateExpression implements DateResult {
 
         protected DateExpression only;
 
-        public DBUnaryDateFunction() {
+        DBUnaryDateFunction() {
             this.only = null;
         }
 
-        public DBUnaryDateFunction(DateExpression only) {
+        DBUnaryDateFunction(DateExpression only) {
             this.only = only;
         }
 

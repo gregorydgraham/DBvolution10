@@ -220,12 +220,12 @@ public class DBDate extends QueryableDatatype implements DateResult {
      * return 1 and 2.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
+     * if the upper-bound is null the range will be open ended upwards and inclusive.
      * <br>
      * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
      * <br>
      * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
      *
@@ -244,12 +244,12 @@ public class DBDate extends QueryableDatatype implements DateResult {
      * return 1, 2, and 3.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
+     * if the upper-bound is null the range will be open ended upwards and inclusive.
      * <br>
      * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
+     * if the upper-bound is null the range will be open ended downwards and inclusive.
      * <br>
      * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
      *
@@ -268,14 +268,14 @@ public class DBDate extends QueryableDatatype implements DateResult {
      * return 2.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
      * <br>
-     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5,...
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
+     * if the upper-bound is null the range will be open ended downwards and exclusive.
      * <br>
-     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1,...
      *
      * @param lowerBound
      * @param upperBound
@@ -330,12 +330,12 @@ public class DBDate extends QueryableDatatype implements DateResult {
      * return 1 and 2.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
+     * if the upper-bound is null the range will be open ended upwards and inclusive.
      * <br>
      * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
      * <br>
      * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
      *
@@ -354,12 +354,12 @@ public class DBDate extends QueryableDatatype implements DateResult {
      * return 1, 2, and 3.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
+     * if the upper-bound is null the range will be open ended upwards and inclusive.
      * <br>
      * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
+     * if the lower-bound is null the range will be open ended downwards and inclusive.
      * <br>
      * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
      *
@@ -378,12 +378,12 @@ public class DBDate extends QueryableDatatype implements DateResult {
      * return 2.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
+     * if the upper-bound is null the range will be open ended upwards and exclusive.
      * <br>
      * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
      *
      * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
+     * if the lower-bound is null the range will be open ended downwards and exclusive.
      * <br>
      * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
      *
