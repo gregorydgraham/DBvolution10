@@ -19,9 +19,12 @@ package nz.co.gregs.dbvolution.expressions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 
 /**
+ * SOON TO BE REMOVED.
  *
  * @author Gregory Graham
+ * @deprecated Replaced by {@link DBExpression} such as {@link NumberExpression}, {@link StringExpression}, and {@link DateExpression}.  For most instances you should change the addComparison method to the addCondition method, remove the operator and use the tests provided by the expression.
  */
+@Deprecated
 public class DBDataComparison {
     private final DBOperator operator;
     private final DBExpression leftHandSide;
