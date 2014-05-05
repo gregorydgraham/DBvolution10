@@ -21,7 +21,6 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,17 +57,15 @@ public class DateExpressionTest extends AbstractTest {
 //        database.setPrintSQLBeforeExecuting(true);
         Marque marq = new Marque();
         DBQuery query = database.getDBQuery(marq);
-        query.addComparison(
-                marq.column(marq.creationDate).year(),
-                new DBEqualsOperator(2014));
+        query.addCondition(
+                marq.column(marq.creationDate).year().is(2014));
         List<Marque> got = query.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(0));
 
         query = database.getDBQuery(marq);
-        query.addComparison(
-                marq.column(marq.creationDate).year(),
-                new DBEqualsOperator(2013));
+        query.addCondition(
+                marq.column(marq.creationDate).year().is(2013));
         got = query.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(21));
@@ -80,17 +77,15 @@ public class DateExpressionTest extends AbstractTest {
 //        database.setPrintSQLBeforeExecuting(true);
         Marque marq = new Marque();
         DBQuery query = database.getDBQuery(marq);
-        query.addComparison(
-                marq.column(marq.creationDate).month(),
-                new DBEqualsOperator(3));
+        query.addCondition(
+                marq.column(marq.creationDate).month().is(3));
         List<Marque> got = query.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(18));
 
         query = database.getDBQuery(marq);
-        query.addComparison(
-                marq.column(marq.creationDate).month(),
-                new DBEqualsOperator(4));
+        query.addCondition(
+                marq.column(marq.creationDate).month().is(4));
         got = query.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(3));
@@ -102,17 +97,15 @@ public class DateExpressionTest extends AbstractTest {
 //        database.setPrintSQLBeforeExecuting(true);
         Marque marq = new Marque();
         DBQuery query = database.getDBQuery(marq);
-        query.addComparison(
-                marq.column(marq.creationDate).day(),
-                new DBEqualsOperator(23));
+        query.addCondition(
+                marq.column(marq.creationDate).day().is(23));
         List<Marque> got = query.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(18));
 
         query = database.getDBQuery(marq);
-        query.addComparison(
-                marq.column(marq.creationDate).day(),
-                new DBEqualsOperator(2));
+        query.addCondition(
+                marq.column(marq.creationDate).day().is(2));
         got = query.getAllInstancesOf(marq);
         database.print(got);
         Assert.assertThat(got.size(), is(3));
