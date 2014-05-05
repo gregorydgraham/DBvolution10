@@ -312,9 +312,6 @@ public class DBQuery {
 
 		initialiseQueryGraph();
 
-		if (!options.isCartesianJoinAllowed() && (requiredQueryTables.size() + optionalQueryTables.size()) > 1 && queryGraph.willCreateCartesianJoin()) {
-			throw new AccidentalCartesianJoinException();
-		}
 		DBDefinition defn = database.getDefinition();
 		StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
 		int columnIndex = 1;
@@ -434,6 +431,9 @@ public class DBQuery {
 			sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClause + lineSep + defn.endSQLStatement();
 		}
 
+		if (!options.isCartesianJoinAllowed() && (requiredQueryTables.size() + optionalQueryTables.size()) > 1 && queryGraph.willCreateCartesianJoin()) {
+			throw new AccidentalCartesianJoinException(sqlString);
+		}
 		return sqlString;
 	}
 
