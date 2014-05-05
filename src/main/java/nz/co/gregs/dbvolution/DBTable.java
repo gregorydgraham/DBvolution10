@@ -197,7 +197,7 @@ public class DBTable<E extends DBRow> {
 	 */
 	public E getOnlyRow() throws SQLException, UnexpectedNumberOfRowsException {
 		List<E> allRows = getAllRows();
-		if (allRows.size() > 1) {
+		if (allRows.size() != 1) {
 			throw new UnexpectedNumberOfRowsException(1, allRows.size());
 		} else {
 			return allRows.get(0);
