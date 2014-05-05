@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.List;
+import java.util.Set;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
@@ -32,7 +33,7 @@ public class RelatedTableTest extends AbstractTest {
     public void getReferencedTablesTest() {
         Marque marque = new Marque();
         
-        List<Class<? extends DBRow>> allReferencedTables = (new CarCompany()).getReferencedTables();
+        Set<Class<? extends DBRow>> allReferencedTables = (new CarCompany()).getReferencedTables();
         Assert.assertThat(allReferencedTables.size(), is(0));
         
         allReferencedTables = marque.getReferencedTables();
@@ -50,7 +51,7 @@ public class RelatedTableTest extends AbstractTest {
     public void getAllConnectedTablesTest() {
         Marque marque = new Marque();
         
-        List<Class<? extends DBRow>> allConnectedTables = (new CarCompany()).getAllConnectedTables();
+        Set<Class<? extends DBRow>> allConnectedTables = (new CarCompany()).getAllConnectedTables();
         Assert.assertThat(allConnectedTables.size(), is(4));
         Assert.assertThat(allConnectedTables.contains(Marque.class), is(true));
         Assert.assertThat(allConnectedTables.contains(CompanyLogo.class), is(true));
@@ -71,7 +72,7 @@ public class RelatedTableTest extends AbstractTest {
     public void getRelatedTablesTest() {
         Marque marque = new Marque();
         
-        List<Class<? extends DBRow>> allRelatedTables = (new CarCompany()).getRelatedTables();
+        Set<Class<? extends DBRow>> allRelatedTables = (new CarCompany()).getRelatedTables();
         Assert.assertThat(allRelatedTables.size(), is(4));
         Assert.assertThat(allRelatedTables.contains(Marque.class), is(true));
         Assert.assertThat(allRelatedTables.contains(CompanyLogo.class), is(true));

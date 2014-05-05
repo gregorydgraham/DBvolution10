@@ -789,7 +789,7 @@ public class DBQuery {
 	 * <p>
 	 * Example: myQuery.printAllPrimaryKeys(System.err);
 	 *
-	 * @param ps a printstream to print to.
+	 * @param ps a PrintStream to print to.
 	 * @throws java.sql.SQLException
 	 */
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
@@ -1188,12 +1188,15 @@ public class DBQuery {
 	 * @see DBRow#getReferencedTables()
 	 */
 	public Set<DBRow> getRelatedTables() throws UnableToInstantiateDBRowSubclassException {
+		HashSet<Class<? extends DBRow>> resultClasses = new HashSet<Class<? extends DBRow>>();
 		Set<DBRow> result = new HashSet<DBRow>();
 		for (DBRow table : allQueryTables) {
-			List<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
+			Set<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
 				try {
-					result.add(connectedTable.newInstance());
+					if (resultClasses.add(connectedTable)) {
+						result.add(connectedTable.newInstance());
+					}
 				} catch (IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
 				} catch (InstantiationException ex) {
@@ -1206,17 +1209,17 @@ public class DBQuery {
 	}
 
 	/**
-	 * Returns all the DBRow subclasses referenced by the DBrows within this query
-	 * with foreign keys
+	 * Returns all the DBRow subclasses referenced by the DBrows within this
+	 * query with foreign keys
 	 *
 	 * <p>
-	 * Similar to {@link #getAllConnectedTables() } but where this class directly
-	 * references the external DBRow subclass with an {@code @DBForeignKey}
-	 * annotation.
+	 * Similar to {@link #getAllConnectedTables() } but where this class
+	 * directly references the external DBRow subclass with an
+	 * {@code @DBForeignKey} annotation.
 	 *
 	 * <p>
-	 * That is to say: where A is A DBRow in this class, returns a List of B such
-	 * that A => B
+	 * That is to say: where A is A DBRow in this class, returns a List of B
+	 * such that A => B
 	 *
 	 * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
 	 * @see #getRelatedTables()
@@ -1228,7 +1231,7 @@ public class DBQuery {
 	public Set<DBRow> getReferencedTables() {
 		HashSet<DBRow> result = new HashSet<DBRow>();
 		for (DBRow table : allQueryTables) {
-			List<Class<? extends DBRow>> allRelatedTables = table.getReferencedTables();
+			Set<Class<? extends DBRow>> allRelatedTables = table.getReferencedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
 				try {
 					result.add(connectedTable.newInstance());
@@ -1252,11 +1255,11 @@ public class DBQuery {
 	 * classes within this query.
 	 *
 	 * <p>
-	 * That is to say: where A is a DBRow in this query, returns a List of B such
-	 * that B => A or A => B
+	 * That is to say: where A is a DBRow in this query, returns a List of B
+	 * such that B => A or A => B
 	 *
-	 * @return a list of classes that have a {@code @DBForeignKey} reference to or
-	 * from this class
+	 * @return a list of classes that have a {@code @DBForeignKey} reference to
+	 * or from this class
 	 * @see #getRelatedTables()
 	 * @see #getReferencedTables()
 	 * @see DBRow#getAllConnectedTables()
@@ -1292,7 +1295,7 @@ public class DBQuery {
 	public DBQuery addAllConnectedTables() throws InstantiationException, IllegalAccessException {
 		List<DBRow> tablesToAdd = new ArrayList<DBRow>();
 		for (DBRow table : allQueryTables) {
-			List<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedTables();
+			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> ConnectedTable : allConnectedTables) {
 				tablesToAdd.add(ConnectedTable.newInstance());
 			}
@@ -1303,8 +1306,8 @@ public class DBQuery {
 	}
 
 	/**
-	 * Search the classpath and add, as optional, any DBRow classes that reference
-	 * the DBRows within this DBQuery
+	 * Search the classpath and add, as optional, any DBRow classes that
+	 * reference the DBRows within this DBQuery
 	 *
 	 * <p>
 	 * This method automatically enlarges the query by finding all associated
@@ -1330,7 +1333,7 @@ public class DBQuery {
 			alreadyAddedClasses.add(aClass);
 		}
 		for (DBRow table : allQueryTables) {
-			List<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
+			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
 				DBRow newInstance = relatedTable.newInstance();
 				@SuppressWarnings("unchecked")
@@ -1357,7 +1360,7 @@ public class DBQuery {
 			alreadyAddedClasses.add(aClass);
 		}
 		for (DBRow table : allQueryTables) {
-			List<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
+			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
 				DBRow newInstance = relatedTable.newInstance();
 				@SuppressWarnings("unchecked")
@@ -1438,10 +1441,11 @@ public class DBQuery {
 	 * {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition}
 	 * instead.
 	 *
+	 * @deprecated Replaced by {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) } and {@link DBExpression expressions}
 	 * @param leftHandSide
 	 * @param operatorWithRightHandSideValues
 	 */
-//    @Deprecated
+    @Deprecated
 	public void addComparison(DBExpression leftHandSide, DBOperator operatorWithRightHandSideValues) {
 		comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
 		blankResults();
