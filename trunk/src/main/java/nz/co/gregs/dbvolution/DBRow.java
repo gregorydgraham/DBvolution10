@@ -5,10 +5,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import nz.co.gregs.dbvolution.query.DBRelationship;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -18,10 +17,10 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedExc
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.*;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.query.DBRelationship;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
-
 import org.reflections.Reflections;
 
 /**
@@ -103,7 +102,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
     private transient Boolean hasBlobs;
     private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
     private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
-    private transient final ArrayList<Class<? extends DBRow>> referencedTables = new ArrayList<Class<? extends DBRow>>();
+    private transient final Set<Class<? extends DBRow>> referencedTables = new HashSet<Class<? extends DBRow>>();
     private String tableAlias;
     private Boolean emptyRow = true;
 
@@ -900,11 +899,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * <p>
      * That is to say: where A is this class, returns a List of B such that A => B
      *
-     * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
+     * @return A set of DBRow subclasses referenced with {@code @DBForeignKey}
      *
      */
     @SuppressWarnings("unchecked")
-    public List<Class<? extends DBRow>> getReferencedTables() {
+    public Set<Class<? extends DBRow>> getReferencedTables() {
         synchronized (referencedTables) {
             if (referencedTables.isEmpty()) {
                 List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
@@ -913,11 +912,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
                 }
             }
         }
-        return (List<Class<? extends DBRow>>) referencedTables.clone();
+        return new HashSet<Class<? extends DBRow>>(referencedTables);
     }
 
     /**
-     * Creates a list of all DBRow subclasses that are connected to this class.
+     * Creates a set of all DBRow subclasses that are connected to this class.
      *
      * <p>
      * Uses {@link #getReferencedTables() } and {@link #getRelatedTables() } to produce a complete list of tables
@@ -926,17 +925,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * <p>
      * That is to say: where A is this class, returns a List of B such that B => A or A => B
      *
-     * @return a list of classes that have a {@code @DBForeignKey} reference to or from this class
+     * @return a set of classes that have a {@code @DBForeignKey} reference to or from this class
      */
-    public List<Class<? extends DBRow>> getAllConnectedTables() {
-        final List<Class<? extends DBRow>> relatedTables = new ArrayList<Class<? extends DBRow>>();
+    public Set<Class<? extends DBRow>> getAllConnectedTables() {
+        final Set<Class<? extends DBRow>> relatedTables = new HashSet<Class<? extends DBRow>>();
         relatedTables.addAll(getRelatedTables());
         relatedTables.addAll(getReferencedTables());
         return relatedTables;
     }
 
     /**
-     * Creates a list of all DBRow subclasses that reference this class with foreign keys.
+     * Creates a set of all DBRow subclasses that reference this class with foreign keys.
      *
      * <p>
      * Similar to {@link #getReferencedTables() } but where this class is being referenced by the external DBRow
@@ -945,10 +944,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      * <p>
      * That is to say: where A is this class, returns a List of B such that B => A
      *
-     * @return a list of classes that have a {@code @DBForeignKey} reference to this class
+     * @return a set of classes that have a {@code @DBForeignKey} reference to this class
      */
-    public List<Class<? extends DBRow>> getRelatedTables() {
-        List<Class<? extends DBRow>> relatedTables = new ArrayList<Class<? extends DBRow>>();
+    public Set<Class<? extends DBRow>> getRelatedTables() {
+        Set<Class<? extends DBRow>> relatedTables = new HashSet<Class<? extends DBRow>>();
         Reflections reflections = new Reflections(this.getClass().getPackage().getName());
 
         Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
