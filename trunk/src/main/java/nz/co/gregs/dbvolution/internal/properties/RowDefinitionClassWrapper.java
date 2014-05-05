@@ -191,7 +191,7 @@ public class RowDefinitionClassWrapper {
 	/**
 	 * Gets a new instance of the java property finder, configured as required
 	 *
-	 * @return
+	 * @return A new JavePropertyFinder with the required settings
 	 */
 	private static JavaPropertyFinder getJavaPropertyFinder() {
 		return new JavaPropertyFinder(
@@ -255,6 +255,7 @@ public class RowDefinitionClassWrapper {
 
 	/**
 	 * Two {@code RowDefinitionClassWrappers} are equal if they wrap the same classes.
+	 * @param obj
 	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
 	 */
 	@Override
