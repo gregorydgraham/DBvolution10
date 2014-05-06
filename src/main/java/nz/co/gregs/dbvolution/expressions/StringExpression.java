@@ -40,6 +40,14 @@ public class StringExpression implements StringResult {
         string1 = new DBString(stringVariable);
     }
 
+    public StringExpression(NumberExpression numberVariable) {
+        string1 = numberVariable.stringResult();
+    }
+
+    public StringExpression(Number numberVariable) {
+        string1 = NumberExpression.value(numberVariable).stringResult();
+    }
+
     public StringExpression(DBString stringVariable) {
         string1 = stringVariable.copy();
     }
@@ -121,6 +129,14 @@ public class StringExpression implements StringResult {
 
     public BooleanExpression is(String equivalentString) {
         return is(value(equivalentString));
+    }
+
+    public BooleanExpression is(NumberExpression numberResult) {
+        return is(numberResult.stringResult());
+    }
+
+    public BooleanExpression is(Number number) {
+        return is(NumberExpression.value(number).stringResult());
     }
 
     public BooleanExpression is(StringResult equivalentString) {
