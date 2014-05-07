@@ -35,6 +35,10 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
@@ -195,7 +199,7 @@ public class RowDefinition implements Serializable {
 
     /**
      * Creates a new StringColumn instance to help create
-     * {@link DBExpression expressions}
+     * {@link DBExpression expressions}.
      *
      * <p>
      * This method is the easy way to create a reference to the database column
@@ -233,6 +237,86 @@ public class RowDefinition implements Serializable {
         return new StringColumn(this, fieldOfThisInstance);
     }
 
+    /**
+     * Creates a new StringExpression for the field with a default value for NULL entries.
+     *
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A StringExpression representing the supplied field with a default value for NULLs
+     */
+    public StringExpression column(DBString fieldOfThisInstance, StringResult valueToUseIfDBNull) {
+        return (new StringColumn(this, fieldOfThisInstance)).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new StringExpression for the field with a default value for NULL entries.
+     *
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A StringExpression representing the supplied field with a default value for NULLs
+     */
+    public StringExpression column(DBString fieldOfThisInstance, String valueToUseIfDBNull) {
+        return (new StringColumn(this, fieldOfThisInstance)).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new StringExpression for the field with a default value for NULL entries.
+     *
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A StringExpression representing the supplied field with a default value for NULLs
+     */
+    public StringExpression column(String fieldOfThisInstance, StringResult valueToUseIfDBNull) {
+        return (new StringColumn(this, fieldOfThisInstance)).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new StringExpression for the field with a default value for NULL entries.
+     *
+     * <p>
+     * This method is the easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A StringExpression representing the supplied field with a default value for NULLs
+     */
+    public StringExpression column(String fieldOfThisInstance, String valueToUseIfDBNull) {
+        return (new StringColumn(this, fieldOfThisInstance)).ifDBNull(valueToUseIfDBNull);
+    }
+	
     /**
      * Creates a new NumberColumn instance to help create
      * {@link DBExpression expressions}
@@ -274,7 +358,69 @@ public class RowDefinition implements Serializable {
     }
 
     /**
-     * Creates a new NumberColumn instance to help create
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(Number fieldOfThisInstance, Number valueToUseIfDBNull) {
+        return new NumberColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(DBNumber fieldOfThisInstance, Number valueToUseIfDBNull) {
+        return new NumberColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(DBNumber fieldOfThisInstance, NumberResult valueToUseIfDBNull) {
+        return new NumberColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new IntegerColumn instance to help create
      * {@link DBExpression expressions}
      *
      * <p>
@@ -294,7 +440,7 @@ public class RowDefinition implements Serializable {
     }
 
     /**
-     * Creates a new NumberColumn instance to help create
+     * Creates a new IntegerColumn instance to help create
      * {@link DBExpression expressions}
      *
      * <p>
@@ -314,7 +460,7 @@ public class RowDefinition implements Serializable {
     }
 
     /**
-     * Creates a new NumberColumn instance to help create
+     * Creates a new IntegerColumn instance to help create
      * {@link DBExpression expressions}
      *
      * <p>
@@ -331,6 +477,186 @@ public class RowDefinition implements Serializable {
      */
     public IntegerColumn column(Integer fieldOfThisInstance) {
         return new IntegerColumn(this, fieldOfThisInstance);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(Integer fieldOfThisInstance, Integer valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(Integer fieldOfThisInstance, Long valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(Integer fieldOfThisInstance, NumberResult valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(DBInteger fieldOfThisInstance, Integer valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(DBInteger fieldOfThisInstance, Long valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(DBInteger fieldOfThisInstance, NumberResult valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(Long fieldOfThisInstance, Integer valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(Long fieldOfThisInstance, Long valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
+    }
+
+    /**
+     * Creates a new NumberExpression representing the column and supplying a default value for NULL entries.
+     *
+     * <p>
+     * This method is an easy way to create a reference to the database column
+     * represented by the field for use in creating complex expressions within
+     * your query.
+     *
+     * <p>
+     * For use with the
+     * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+     *
+     * @param fieldOfThisInstance
+	 * @param valueToUseIfDBNull
+     * @return A NumberExpression representing the supplied field with a default for DBNULL values
+     */
+    public NumberExpression column(Long fieldOfThisInstance, NumberResult valueToUseIfDBNull) {
+        return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
     }
 
     /**
