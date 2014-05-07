@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -492,7 +493,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
      *
      * @param qdt
      */
-    public void ignoreForeignKey(Object qdt) {
+    public void ignoreForeignKey(Object qdt) throws IncorrectRowProviderInstanceSuppliedException{
         PropertyWrapper fkProp = getPropertyWrapperOf(qdt);
         if (fkProp == null) {
             throw new IncorrectRowProviderInstanceSuppliedException(this, qdt);
@@ -1122,4 +1123,54 @@ abstract public class DBRow extends RowDefinition implements Serializable {
     protected List<PropertyWrapperDefinition> getIgnoredForeignKeys() {
         return ignoredForeignKeys;
     }
+
+    /**
+     * Ignores the foreign keys of the property (field or method) given the property's object reference.
+     *
+     * <p>
+     * For example the following code snippet will ignore the foreign key on the fkAddress field:
+     * <pre>
+     * Customer customer = ...;
+	 * fksToIgnore.add(customer.fkAddress);
+     * customer.ignoreForeignKeyProperties(fksToIgnore);
+     * </pre>
+     *
+     * <p>
+     * Requires the field to be from this instance to work.
+     *
+	 * @param ignoreTheseFKs
+	 * @see #ignoreForeignKey(java.lang.Object) 
+     */
+	public void ignoreForeignKeyProperties(Collection<Object> ignoreTheseFKs) {
+		for (Object qdt : ignoreTheseFKs) {
+			this.ignoreForeignKey(qdt);
+		}
+	}
+
+    /**
+     * Ignores the foreign keys of the columns provided.
+     * <p>
+     * Similar to {@link #ignoreForeignKeyProperties(java.util.Collection) } but uses a ColumnProvider which is portable between
+     * instances of DBRow.
+     * <p>
+     * For example the following code snippet will ignore the foreign key provided by a different instance of Customer:
+     * <pre>
+     * 
+	 * Customer customer = new Customer();
+     * IntegerColumn addressColumn = customer.column(customer.fkAddress);
+	 * fksToIgnore.add(addressColumn);
+	 * 
+     * Customer cust2 = new Customer();
+     * cust2.ignoreForeignKeyColumns(fksToIgnore);
+     * 
+	 * </pre>
+     *
+	 * @param ignoreTheseFKColumns
+	 * @see #ignoreForeignKey(nz.co.gregs.dbvolution.columns.ColumnProvider) 
+     */	
+	public void ignoreForeignKeyColumns(Collection<ColumnProvider> ignoreTheseFKColumns) {
+		for (ColumnProvider qdt : ignoreTheseFKColumns) {
+			this.ignoreForeignKey(qdt);
+		}
+	}
 }
