@@ -99,7 +99,7 @@ public class RowDefinition implements Serializable {
     public List<PropertyWrapper> getPropertyWrappers() {
         return getWrapper().getPropertyWrappers();
     }
-
+	
     /**
      * Creates a new LargeObjectColumn instance to help create
      * {@link DBExpression expressions}

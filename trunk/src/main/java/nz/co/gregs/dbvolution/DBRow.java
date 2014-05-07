@@ -118,17 +118,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
         try {
             return requiredDBRowClass.getConstructor().newInstance();
         } catch (NoSuchMethodException ex) {
-            throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>) requiredDBRowClass), ex);
+            throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
         } catch (SecurityException ex) {
-            throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>) requiredDBRowClass), ex);
+            throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
         } catch (InstantiationException ex) {
-            throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>) requiredDBRowClass), ex);
+            throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
         } catch (IllegalAccessException ex) {
-            throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>) requiredDBRowClass), ex);
+            throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
         } catch (IllegalArgumentException ex) {
-            throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>) requiredDBRowClass), ex);
+            throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
         } catch (InvocationTargetException ex) {
-            throw new UnableToInstantiateDBRowSubclassException(((Class<? extends DBRow>) requiredDBRowClass), ex);
+            throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
         }
     }
 
