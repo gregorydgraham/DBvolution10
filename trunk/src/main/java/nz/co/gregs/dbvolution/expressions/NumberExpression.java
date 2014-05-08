@@ -77,6 +77,7 @@ public class NumberExpression implements NumberResult {
      * <li>Only object classes that are appropriate need to be handle by the
      * DBExpression subclass.<li>
      * <li>The implementation should be {@code static}</li>
+	 * </ul>
      *
      * @param object
      * @return a DBExpression instance that is appropriate to the subclass and
@@ -1167,7 +1168,7 @@ public class NumberExpression implements NumberResult {
 
     private static abstract class DBNonaryFunction implements NumberResult {
 
-        public DBNonaryFunction() {
+        DBNonaryFunction() {
         }
 
         abstract String getFunctionName(DBDatabase db);
@@ -1220,11 +1221,11 @@ public class NumberExpression implements NumberResult {
 
         protected DBExpression only;
 
-        public DBUnaryFunction() {
+        DBUnaryFunction() {
             this.only = null;
         }
 
-        public DBUnaryFunction(DBExpression only) {
+        DBUnaryFunction(DBExpression only) {
             this.only = only;
         }
 
@@ -1282,12 +1283,12 @@ public class NumberExpression implements NumberResult {
         private DBExpression first;
         private DBExpression second;
 
-        public DBBinaryFunction(NumberExpression first) {
+        DBBinaryFunction(NumberExpression first) {
             this.first = first;
             this.second = null;
         }
 
-        public DBBinaryFunction(DBExpression first, DBExpression second) {
+        DBBinaryFunction(DBExpression first, DBExpression second) {
             this.first = first;
             this.second = second;
         }
@@ -1355,18 +1356,18 @@ public class NumberExpression implements NumberResult {
         private DBExpression second;
         private DBExpression third;
 
-        public DBTrinaryFunction(DBExpression first) {
+        DBTrinaryFunction(DBExpression first) {
             this.first = first;
             this.second = null;
             this.third = null;
         }
 
-        public DBTrinaryFunction(DBExpression first, DBExpression second) {
+        DBTrinaryFunction(DBExpression first, DBExpression second) {
             this.first = first;
             this.second = second;
         }
 
-        public DBTrinaryFunction(DBExpression first, DBExpression second, DBExpression third) {
+        DBTrinaryFunction(DBExpression first, DBExpression second, DBExpression third) {
             this.first = first;
             this.second = second;
             this.third = third;
@@ -1420,7 +1421,7 @@ public class NumberExpression implements NumberResult {
         private NumberExpression first;
         private NumberResult second;
 
-        public DBBinaryBooleanArithmetic(NumberExpression first, NumberResult second) {
+        DBBinaryBooleanArithmetic(NumberExpression first, NumberResult second) {
             this.first = first;
             this.second = second;
         }
@@ -1475,11 +1476,11 @@ public class NumberExpression implements NumberResult {
         protected NumberExpression column;
         protected NumberResult[] values;
 
-        public DBNnaryBooleanFunction() {
+        DBNnaryBooleanFunction() {
             this.values = null;
         }
 
-        public DBNnaryBooleanFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
+        DBNnaryBooleanFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
             this.values = new NumberResult[rightHandSide.length];
             this.column = leftHandSide;
             System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
@@ -1561,11 +1562,11 @@ public class NumberExpression implements NumberResult {
 
         protected DBExpression only;
 
-        public DBUnaryStringFunction() {
+        DBUnaryStringFunction() {
             this.only = null;
         }
 
-        public DBUnaryStringFunction(DBExpression only) {
+        DBUnaryStringFunction(DBExpression only) {
             this.only = only;
         }
 
