@@ -39,10 +39,6 @@ public class QueryGraph {
 	final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
 	edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBRelationship> jungGraph = new SparseMultigraph<QueryGraphNode, DBRelationship>();
 
-//	public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, QueryOptions options) {
-//		addAndConnectToRelevant(database, allQueryTables, null, options);
-//	}
-
 	public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, List<BooleanExpression> expressions, QueryOptions options) {
 		addAndConnectToRelevant(database, allQueryTables, expressions, options);
 	}
@@ -73,18 +69,12 @@ public class QueryGraph {
 		while (tablesRemaining.size() > 0) {
 			DBRow table1 = tablesRemaining.get(0);
 			Class<? extends DBRow> table1Class = table1.getClass();
-			QueryGraphNode node1 = nodes.get(table1Class);
-			if (node1 == null) {
-				node1 = new QueryGraphNode(table1Class, requiredTables);
-				addNodeToDisplayGraph(node1);
-				nodes.put(table1Class, node1);
-				rows.put(table1Class, table1);
-			}
+			QueryGraphNode node1 = getOrCreateNode(table1, table1Class, requiredTables);
 			for (DBRow table2 : tablesAdded) {
 				if (!table1.getClass().equals(table2.getClass())) {
 					if (table1.willBeConnectedTo(database, table2, options)) {
 						Class<? extends DBRow> table2Class = table2.getClass();
-						QueryGraphNode node2 = nodes.get(table2Class);
+						QueryGraphNode node2 = getOrCreateNode(table2, table2Class, requiredTables);
 						node1.connectTable(table2Class);
 						node2.connectTable(table1Class);
 						addEdgesToDisplayGraph(database, table1, node1, table2, node2, options);
@@ -97,18 +87,34 @@ public class QueryGraph {
 
 		for (BooleanExpression expr : expressions) {
 			Set<DBRow> tables = expr.getTablesInvolved();
-			for (DBRow table : tables) {
+			if (tables.size() > 0) {
+				DBRow table1 = tables.iterator().next();
 				Set<DBRow> tablesToConnectTo = new HashSet<DBRow>(tables);
-				tablesToConnectTo.remove(table);
-				final QueryGraphNode node1 = new QueryGraphNode(table.getClass());
+				tablesToConnectTo.remove(table1);
+				final Class<? extends DBRow> table1Class = table1.getClass();
+				final QueryGraphNode node1 = getOrCreateNode(table1, table1Class, requiredTables);
 				addNodeToDisplayGraph(node1);
-				for (DBRow tab2 : tablesToConnectTo) {
-					final QueryGraphNode node2 = new QueryGraphNode(tab2.getClass());
+				for (DBRow table2 : tablesToConnectTo) {
+					final Class<? extends DBRow> table2Class = table2.getClass();
+					final QueryGraphNode node2 = getOrCreateNode(table2, table2Class,requiredTables);
+					node1.connectTable(table2Class);
+					node2.connectTable(table1Class);
 					addNodeToDisplayGraph(node2);
-					addEdgeToDisplayGraph(table, node1, tab2, node2);
+					addEdgeToDisplayGraph(table1, node1, table2, node2);
 				}
 			}
 		}
+	}
+
+	private QueryGraphNode getOrCreateNode(DBRow table1, Class<? extends DBRow> table1Class, boolean requiredTables) {
+		QueryGraphNode node1 = nodes.get(table1Class);
+		if (node1 == null) {
+			node1 = new QueryGraphNode(table1Class, requiredTables);
+			addNodeToDisplayGraph(node1);
+			nodes.put(table1Class, node1);
+			rows.put(table1Class, table1);
+		}
+		return node1;
 	}
 
 	private void addNodeToDisplayGraph(QueryGraphNode node1) {
@@ -140,6 +146,7 @@ public class QueryGraph {
 
 		for (DBRow row : rows.values()) {
 			if (!returnTables.contains(row)) {
+				System.err.println("COULD NOT FIND TABLE: " + row.getClass().getSimpleName());
 				return true;
 			}
 		}
