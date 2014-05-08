@@ -39,6 +39,7 @@ public interface BooleanResult extends DBExpression {
     @Override
     public BooleanResult copy();
 
+	@Override
     public Set<DBRow> getTablesInvolved();
 
 }

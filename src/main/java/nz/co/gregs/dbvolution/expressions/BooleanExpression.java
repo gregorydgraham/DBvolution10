@@ -25,28 +25,28 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 public class BooleanExpression implements BooleanResult {
 
-    private final BooleanResult bool1;
+    private final BooleanResult onlyBool;
 
     protected BooleanExpression() {
-        bool1 = new DBBoolean();
+        onlyBool = new DBBoolean();
     }
 
     public BooleanExpression(BooleanResult booleanResult) {
-        bool1 = booleanResult;
+        onlyBool = booleanResult;
     }
 
     public BooleanExpression(Boolean bool) {
-        bool1 = new DBBoolean(bool);
+        onlyBool = new DBBoolean(bool);
     }
 
     @Override
     public String toSQLString(DBDatabase db) {
-        return bool1.toSQLString(db);
+        return onlyBool.toSQLString(db);
     }
 
     @Override
     public BooleanExpression copy() {
-        return new BooleanExpression(this.bool1);
+        return new BooleanExpression(this.onlyBool);
     }
 
     /**
@@ -70,6 +70,7 @@ public class BooleanExpression implements BooleanResult {
      * <li>Only object classes that are appropriate need to be handle by the
      * DBExpression subclass.<li>
      * <li>The implementation should be {@code static}</li>
+	 * </ul>
      *
      * @param bool
      * @return a DBExpression instance that is appropriate to the subclass and
@@ -223,6 +224,34 @@ public class BooleanExpression implements BooleanResult {
         });
     }
 
+	public static BooleanExpression falseExpression() {
+		return new BooleanExpression(){
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return " 1=0 ";
+			}
+
+			@Override
+			public boolean isAggregator() {
+				return false;
+			}
+		};
+	}
+	
+	public static BooleanExpression trueExpression() {
+		return new BooleanExpression(){
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return " 1=1 ";
+			}
+
+			@Override
+			public boolean isAggregator() {
+				return false;
+			}
+		};
+	}
+
     @Override
     public DBBoolean getQueryableDatatypeForExpressionValue() {
         return new DBBoolean();
@@ -230,8 +259,8 @@ public class BooleanExpression implements BooleanResult {
 
     @Override
     public boolean isAggregator() {
-        if (bool1 != null) {
-            return bool1.isAggregator();
+        if (onlyBool != null) {
+            return onlyBool.isAggregator();
         } else {
             return false;
         }
@@ -239,15 +268,15 @@ public class BooleanExpression implements BooleanResult {
 
     @Override
     public Set<DBRow> getTablesInvolved() {
-        return bool1 == null ? new HashSet<DBRow>() : bool1.getTablesInvolved();
+        return onlyBool == null ? new HashSet<DBRow>() : onlyBool.getTablesInvolved();
     }
 
     private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
 
-        private BooleanExpression bool;
+        private BooleanExpression onlyBool;
 
-        public DBUnaryBooleanArithmetic(BooleanExpression bool) {
-            this.bool = bool.copy();
+        DBUnaryBooleanArithmetic(BooleanExpression bool) {
+            this.onlyBool = bool.copy();
         }
 
         @Override
@@ -257,9 +286,8 @@ public class BooleanExpression implements BooleanResult {
 
         @Override
         public String toSQLString(DBDatabase db) {
-            String returnStr = "";
             String op = this.getEquationOperator(db);
-            returnStr = op + " " + bool.toSQLString(db);
+            String returnStr = op + " " + onlyBool.toSQLString(db);
             return returnStr;
         }
 
@@ -273,13 +301,13 @@ public class BooleanExpression implements BooleanResult {
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
-            newInstance.bool = bool.copy();
+            newInstance.onlyBool = onlyBool.copy();
             return newInstance;
         }
 
         @Override
         public Set<DBRow> getTablesInvolved() {
-            return bool == null ? new HashSet<DBRow>() : bool.getTablesInvolved();
+            return onlyBool == null ? new HashSet<DBRow>() : onlyBool.getTablesInvolved();
         }
 
         protected abstract String getEquationOperator(DBDatabase db);
@@ -289,7 +317,7 @@ public class BooleanExpression implements BooleanResult {
 
         private BooleanResult[] bools;
 
-        public DBNnaryBooleanArithmetic(BooleanResult... bools) {
+        DBNnaryBooleanArithmetic(BooleanResult... bools) {
             this.bools = bools;
         }
 
@@ -341,14 +369,14 @@ public class BooleanExpression implements BooleanResult {
 
     private static abstract class DBUnaryNumberFunction implements NumberResult {
 
-        protected BooleanExpression only;
+        protected BooleanExpression onlyBool;
 
-        public DBUnaryNumberFunction() {
-            this.only = null;
+        DBUnaryNumberFunction() {
+            this.onlyBool = null;
         }
 
-        public DBUnaryNumberFunction(BooleanExpression only) {
-            this.only = only;
+        DBUnaryNumberFunction(BooleanExpression only) {
+            this.onlyBool = only;
         }
 
         @Override
@@ -368,7 +396,7 @@ public class BooleanExpression implements BooleanResult {
 
         @Override
         public String toSQLString(DBDatabase db) {
-            return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
+            return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
         }
 
         @Override
@@ -381,18 +409,18 @@ public class BooleanExpression implements BooleanResult {
             } catch (IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
-            newInstance.only = (only == null ? null : only.copy());
+            newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
             return newInstance;
         }
 
         @Override
         public boolean isAggregator() {
-            return only.isAggregator();
+            return onlyBool.isAggregator();
         }
 
         @Override
         public Set<DBRow> getTablesInvolved() {
-            return only.getTablesInvolved();
+            return onlyBool.getTablesInvolved();
         }
     }
 }
