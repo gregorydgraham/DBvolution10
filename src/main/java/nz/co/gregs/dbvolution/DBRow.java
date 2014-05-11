@@ -588,6 +588,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * Creates a foreign key like relationship between columns on 2 different
 	 * DBRow objects.
+	 * 
+	 * <p>
+	 * It is recommended that you use an <a href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a> instead.
 	 *
 	 * <p>
 	 * This function relies on the QueryableDatatypes being part of the DBRows
@@ -614,6 +617,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * Creates a foreign key like relationship between columns on 2 different
 	 * DBRow objects.
+	 *
+	 * <p>
+	 * It is recommended that you use an <a href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a> instead.
 	 *
 	 * <p>
 	 * this function relies on the QueryableDatatypes being part of the DBRows
