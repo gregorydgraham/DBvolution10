@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;

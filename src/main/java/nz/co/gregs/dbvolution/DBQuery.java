@@ -250,9 +250,8 @@ public class DBQuery {
 	 * See also {@link DBQuery#getSQLForCount() getSQLForCount}
 	 *
 	 * @return a String of the SQL that will be used by this DBQuery.
-	 * @throws SQLException
 	 */
-	public String getSQLForQuery() throws SQLException {
+	public String getSQLForQuery() {
 		return getSQLForQuery(SELECT_QUERY);
 	}
 
@@ -300,7 +299,7 @@ public class DBQuery {
 		return sqlToReturn;
 	}
 
-	private String getSQLForQuery(int queryType) throws SQLException {
+	private String getSQLForQuery(int queryType) throws AccidentalBlankQueryException{
 
 		if (requiredQueryTables.isEmpty() && optionalQueryTables.isEmpty()) {
 			throw new AccidentalBlankQueryException();
@@ -661,16 +660,12 @@ public class DBQuery {
 	}
 
 	private boolean needsResults() {
-		try {
-			return results == null
-					|| results.isEmpty()
-					|| resultSQL == null
-					|| !resultsPageIndex.equals(options.getPageIndex())
-					|| !resultsRowLimit.equals(options.getRowLimit())
-					|| !resultSQL.equals(getSQLForQuery());
-		} catch (SQLException ex) {
-			return true;
-		}
+		return results == null
+				|| results.isEmpty()
+				|| resultSQL == null
+				|| !resultsPageIndex.equals(options.getPageIndex())
+				|| !resultsRowLimit.equals(options.getRowLimit())
+				|| !resultSQL.equals(getSQLForQuery());
 	}
 
 	/**
@@ -1188,10 +1183,12 @@ public class DBQuery {
 	 * @see DBRow#getReferencedTables()
 	 */
 	public Set<DBRow> getRelatedTables() throws UnableToInstantiateDBRowSubclassException {
-		HashSet<Class<? extends DBRow>> resultClasses = new HashSet<Class<? extends DBRow>>();
+		SortedSet<Class<? extends DBRow>> resultClasses;
+		resultClasses = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
+		
 		Set<DBRow> result = new HashSet<DBRow>();
 		for (DBRow table : allQueryTables) {
-			Set<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
+			SortedSet<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
 				try {
 					if (resultClasses.add(connectedTable)) {
@@ -1228,8 +1225,8 @@ public class DBQuery {
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<DBRow> getReferencedTables() {
-		HashSet<DBRow> result = new HashSet<DBRow>();
+	public SortedSet<DBRow> getReferencedTables() {
+		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRow.NameComparator());
 		for (DBRow table : allQueryTables) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getReferencedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
@@ -1445,7 +1442,7 @@ public class DBQuery {
 	 * @param leftHandSide
 	 * @param operatorWithRightHandSideValues
 	 */
-    @Deprecated
+	@Deprecated
 	public void addComparison(DBExpression leftHandSide, DBOperator operatorWithRightHandSideValues) {
 		comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
 		blankResults();
