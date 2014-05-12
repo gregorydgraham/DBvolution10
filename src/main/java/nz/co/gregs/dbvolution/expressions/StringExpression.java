@@ -759,7 +759,7 @@ public class StringExpression implements StringResult {
 	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
 	 * 
 	 * @param searchString
-	 * @return
+	 * @return an expression that will find the location of the searchString.
 	 */
 	public NumberExpression locationOf(String searchString) {
 		return new NumberExpression(new BinaryComplicatedNumberFunction(this, value(searchString)) {
@@ -837,7 +837,7 @@ public class StringExpression implements StringResult {
 		private StringResult first;
 		private StringResult second;
 
-		public DBBinaryStringArithmetic(StringResult first, StringResult second) {
+		DBBinaryStringArithmetic(StringResult first, StringResult second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -890,7 +890,7 @@ public class StringExpression implements StringResult {
 
 	private static abstract class DBNonaryStringFunction implements StringResult {
 
-		public DBNonaryStringFunction() {
+		DBNonaryStringFunction() {
 		}
 
 		@Override
@@ -942,11 +942,11 @@ public class StringExpression implements StringResult {
 
 		protected StringExpression only;
 
-		public DBUnaryStringFunction() {
+		DBUnaryStringFunction() {
 			this.only = null;
 		}
 
-		public DBUnaryStringFunction(StringExpression only) {
+		DBUnaryStringFunction(StringExpression only) {
 			this.only = only;
 		}
 
@@ -1003,11 +1003,11 @@ public class StringExpression implements StringResult {
 
 		protected StringExpression only;
 
-		public DBUnaryNumberFunction() {
+		DBUnaryNumberFunction() {
 			this.only = null;
 		}
 
-		public DBUnaryNumberFunction(StringExpression only) {
+		DBUnaryNumberFunction(StringExpression only) {
 			this.only = only;
 		}
 
@@ -1066,18 +1066,18 @@ public class StringExpression implements StringResult {
 		private DBExpression second;
 		private DBExpression third;
 
-		public DBTrinaryStringFunction(DBExpression first) {
+		DBTrinaryStringFunction(DBExpression first) {
 			this.first = first;
 			this.second = null;
 			this.third = null;
 		}
 
-		public DBTrinaryStringFunction(DBExpression first, DBExpression second) {
+		DBTrinaryStringFunction(DBExpression first, DBExpression second) {
 			this.first = first;
 			this.second = second;
 		}
 
-		public DBTrinaryStringFunction(DBExpression first, DBExpression second, DBExpression third) {
+		DBTrinaryStringFunction(DBExpression first, DBExpression second, DBExpression third) {
 			this.first = first;
 			this.second = second;
 			this.third = third;
@@ -1152,12 +1152,12 @@ public class StringExpression implements StringResult {
 		private StringResult first;
 		private StringResult second;
 
-		public DBBinaryStringFunction(StringResult first) {
+		DBBinaryStringFunction(StringResult first) {
 			this.first = first;
 			this.second = null;
 		}
 
-		public DBBinaryStringFunction(StringResult first, StringResult second) {
+		DBBinaryStringFunction(StringResult first, StringResult second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -1226,11 +1226,11 @@ public class StringExpression implements StringResult {
 		protected StringExpression first;
 		protected StringExpression second;
 
-		public BinaryComplicatedNumberFunction() {
+		BinaryComplicatedNumberFunction() {
 			this.first = null;
 		}
 
-		public BinaryComplicatedNumberFunction(StringExpression first, StringExpression second) {
+		BinaryComplicatedNumberFunction(StringExpression first, StringExpression second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -1281,25 +1281,25 @@ public class StringExpression implements StringResult {
 		private NumberResult startingPosition;
 		private NumberResult length;
 
-		public Substring(StringResult stringInput, Number startingIndex0Based) {
+		Substring(StringResult stringInput, Number startingIndex0Based) {
 			super(stringInput);
 			this.startingPosition = new DBNumber(startingIndex0Based);
 			this.length = null;
 		}
 
-		public Substring(StringResult stringInput, NumberResult startingIndex0Based) {
+		Substring(StringResult stringInput, NumberResult startingIndex0Based) {
 			super(stringInput);
 			this.startingPosition = startingIndex0Based.copy();
 			this.length = null;
 		}
 
-		public Substring(StringResult stringInput, Number startingIndex0Based, Number endIndex0Based) {
+		Substring(StringResult stringInput, Number startingIndex0Based, Number endIndex0Based) {
 			super(stringInput);
 			this.startingPosition = new DBNumber(startingIndex0Based);
 			this.length = new DBNumber(endIndex0Based);
 		}
 
-		public Substring(StringResult stringInput, NumberResult startingIndex0Based, NumberResult endIndex0Based) {
+		Substring(StringResult stringInput, NumberResult startingIndex0Based, NumberResult endIndex0Based) {
 			super(stringInput);
 			this.startingPosition = startingIndex0Based.copy();
 			this.length = endIndex0Based.copy();
@@ -1339,7 +1339,7 @@ public class StringExpression implements StringResult {
 		private StringResult first;
 		private StringResult second;
 
-		public DBBinaryBooleanArithmetic(StringResult first, StringResult second) {
+		DBBinaryBooleanArithmetic(StringResult first, StringResult second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -1394,11 +1394,11 @@ public class StringExpression implements StringResult {
 		protected StringExpression column;
 		protected StringResult[] values;
 
-		public DBNnaryBooleanFunction() {
+		DBNnaryBooleanFunction() {
 			this.values = null;
 		}
 
-		public DBNnaryBooleanFunction(StringExpression leftHandSide, StringResult[] rightHandSide) {
+		DBNnaryBooleanFunction(StringExpression leftHandSide, StringResult[] rightHandSide) {
 			this.values = new StringResult[rightHandSide.length];
 			this.column = leftHandSide;
 			System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
@@ -1481,7 +1481,7 @@ public class StringExpression implements StringResult {
 		private StringResult first;
 		private NumberResult second;
 
-		public DBBinaryStringNumberArithmetic(StringResult first, NumberResult second) {
+		DBBinaryStringNumberArithmetic(StringResult first, NumberResult second) {
 			this.first = first;
 			this.second = second;
 		}
