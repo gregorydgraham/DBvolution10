@@ -7,9 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -117,7 +119,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private transient Boolean hasBlobs;
 	private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
 	private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
-	private transient final Set<Class<? extends DBRow>> referencedTables = new HashSet<Class<? extends DBRow>>();
+	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
 	private String tableAlias;
 	private Boolean emptyRow = true;
 
@@ -959,7 +961,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Class<? extends DBRow>> getReferencedTables() {
+	public SortedSet<Class<? extends DBRow>> getReferencedTables() {
 		synchronized (referencedTables) {
 			if (referencedTables.isEmpty()) {
 				List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
@@ -968,7 +970,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				}
 			}
 		}
-		return new HashSet<Class<? extends DBRow>>(referencedTables);
+		final SortedSet<Class<? extends DBRow>> returnSet = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
+		returnSet.addAll(referencedTables);
+		return returnSet;
 	}
 
 	/**
@@ -986,8 +990,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a set of classes that have a {@code @DBForeignKey} reference to
 	 * or from this class
 	 */
-	public Set<Class<? extends DBRow>> getAllConnectedTables() {
-		final Set<Class<? extends DBRow>> relatedTables = new HashSet<Class<? extends DBRow>>();
+	public SortedSet<Class<? extends DBRow>> getAllConnectedTables() {
+		final SortedSet<Class<? extends DBRow>> relatedTables = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
 		relatedTables.addAll(getRelatedTables());
 		relatedTables.addAll(getReferencedTables());
 		return relatedTables;
@@ -1008,8 +1012,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a set of classes that have a {@code @DBForeignKey} reference to
 	 * this class
 	 */
-	public Set<Class<? extends DBRow>> getRelatedTables() {
-		Set<Class<? extends DBRow>> relatedTables = new HashSet<Class<? extends DBRow>>();
+	public SortedSet<Class<? extends DBRow>> getRelatedTables() {
+		SortedSet<Class<? extends DBRow>> relatedTables = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
 		Reflections reflections = new Reflections(this.getClass().getPackage().getName());
 
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
@@ -1320,6 +1324,40 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public void ignoreForeignKeyColumns(Collection<ColumnProvider> ignoreTheseFKColumns) {
 		for (ColumnProvider qdt : ignoreTheseFKColumns) {
 			this.ignoreForeignKey(qdt);
+		}
+	}
+	
+	protected static class ClassNameComparator implements Comparator<Class<? extends DBRow>> {
+
+		protected ClassNameComparator() {
+		}
+
+		@Override
+		public int compare(Class<? extends DBRow> first, Class<? extends DBRow> second) {
+			String firstCanonicalName = first.getCanonicalName();
+			String secondCanonicalName = second.getCanonicalName();
+			if (firstCanonicalName != null && secondCanonicalName != null) {
+				return firstCanonicalName.compareTo(secondCanonicalName);
+			} else {
+				return first.getSimpleName().compareTo(second.getSimpleName());
+			}
+		}
+	}
+	
+	protected static class NameComparator implements Comparator<DBRow> {
+
+		protected NameComparator() {
+		}
+
+		@Override
+		public int compare(DBRow first, DBRow second) {
+			String firstCanonicalName = first.getClass().getCanonicalName();
+			String secondCanonicalName = second.getClass().getCanonicalName();
+			if (firstCanonicalName != null && secondCanonicalName != null) {
+				return firstCanonicalName.compareTo(secondCanonicalName);
+			} else {
+				return first.getClass().getSimpleName().compareTo(second.getClass().getSimpleName());
+			}
 		}
 	}
 }
