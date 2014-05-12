@@ -1327,13 +1327,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 	
-	protected static class ClassNameComparator implements Comparator<Class<? extends DBRow>> {
+	public static class ClassNameComparator implements Comparator<Class<?>> {
 
-		protected ClassNameComparator() {
+		public ClassNameComparator() {
 		}
 
 		@Override
-		public int compare(Class<? extends DBRow> first, Class<? extends DBRow> second) {
+		public int compare(Class<?> first, Class<?> second) {
 			String firstCanonicalName = first.getCanonicalName();
 			String secondCanonicalName = second.getCanonicalName();
 			if (firstCanonicalName != null && secondCanonicalName != null) {
@@ -1344,9 +1344,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 	
-	protected static class NameComparator implements Comparator<DBRow> {
+	public static class NameComparator implements Comparator<DBRow> {
 
-		protected NameComparator() {
+		public NameComparator() {
 		}
 
 		@Override

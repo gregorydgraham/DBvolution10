@@ -1182,11 +1182,11 @@ public class DBQuery {
 	 * @see DBRow#getRelatedTables()
 	 * @see DBRow#getReferencedTables()
 	 */
-	public Set<DBRow> getRelatedTables() throws UnableToInstantiateDBRowSubclassException {
+	public SortedSet<DBRow> getRelatedTables() throws UnableToInstantiateDBRowSubclassException {
 		SortedSet<Class<? extends DBRow>> resultClasses;
 		resultClasses = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
 		
-		Set<DBRow> result = new HashSet<DBRow>();
+		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRow.NameComparator());
 		for (DBRow table : allQueryTables) {
 			SortedSet<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
