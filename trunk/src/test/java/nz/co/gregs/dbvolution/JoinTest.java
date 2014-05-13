@@ -20,8 +20,6 @@ import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -120,7 +118,7 @@ public class JoinTest extends AbstractTest {
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertThat(dbQuery.isUseANSISyntax(), is(true));
-        assertThat(testableSQLWithoutColumnAliases(expectedResult), is(testableSQLWithoutColumnAliases(generateSQLString)));
+        assertThat(testableSQLWithoutColumnAliases(generateSQLString), is(testableSQLWithoutColumnAliases(expectedResult)));
     }
 
     @Test

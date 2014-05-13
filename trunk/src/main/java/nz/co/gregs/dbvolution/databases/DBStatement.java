@@ -45,7 +45,7 @@ public class DBStatement implements Statement {
     public ResultSet executeQuery(String string) throws SQLException {
 		final String logSQL = "EXECUTING QUERY: "+string;
         database.printSQLIfRequested(logSQL);
-        database.logSQLIfRequested(logSQL);
+        log.info(logSQL);
         return realStatement.executeQuery(string);
     }
 
@@ -126,7 +126,7 @@ public class DBStatement implements Statement {
     public boolean execute(String string) throws SQLException {
 		final String logSQL = "EXECUTING: "+string;
         database.printSQLIfRequested(logSQL);
-        database.logSQLIfRequested(logSQL);
+        log.info(logSQL);
         return realStatement.execute(string);
     }
 

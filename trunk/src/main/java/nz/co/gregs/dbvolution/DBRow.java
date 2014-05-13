@@ -590,7 +590,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * Creates a foreign key like relationship between columns on 2 different
 	 * DBRow objects.
-	 * 
+	 *
 	 * <p>
 	 * It is recommended that you use an <a href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a> instead.
 	 *
@@ -1216,7 +1216,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				RowDefinition source = propertyWrapper.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 				final QueryableDatatype sourceFK = propertyWrapper.getQueryableDatatype();
 				final QueryableDatatype targetPK = target.getPrimaryKey().getQueryableDatatypeForExpressionValue();
-				
+
 				//METHOD 2
 				ColumnProvider column = source.column(sourceFK);
 				try {
@@ -1326,7 +1326,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			this.ignoreForeignKey(qdt);
 		}
 	}
-	
+
 	public static class ClassNameComparator implements Comparator<Class<?>> {
 
 		public ClassNameComparator() {
@@ -1343,7 +1343,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 		}
 	}
-	
+
 	public static class NameComparator implements Comparator<DBRow> {
 
 		public NameComparator() {

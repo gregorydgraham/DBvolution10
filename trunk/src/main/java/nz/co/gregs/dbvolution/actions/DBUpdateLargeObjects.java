@@ -27,6 +27,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Provides support for the abstract concept of updating rows with BLOB columns.
@@ -38,6 +40,9 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * @author Gregory Graham
  */
 public class DBUpdateLargeObjects extends DBUpdate {
+	
+	private static final Log log = LogFactory.getLog(DBUpdateLargeObjects.class);
+
 
 	protected DBUpdateLargeObjects(DBRow row) {
 		super(row);
@@ -65,7 +70,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 					+ row.getPrimaryKey().toSQLString(db)
 					+ defn.endSQLStatement();
 			db.printSQLIfRequested(sqlString);
-			db.logSQLIfRequested(sqlString);
+			log.info(sqlString);
 			PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 			prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
 			prep.execute();
