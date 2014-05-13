@@ -110,6 +110,7 @@ public class DBQuery {
 	private String rawSQLClause = "";
 	private final List<DBRow> extraExamples = new ArrayList<DBRow>();
 	private QueryGraph queryGraph;
+	private JFrame queryGraphFrame = null;
 	private ColumnProvider[] sortOrderColumns;
 
 	private DBQuery(DBDatabase database) {
@@ -1185,7 +1186,7 @@ public class DBQuery {
 	public SortedSet<DBRow> getRelatedTables() throws UnableToInstantiateDBRowSubclassException {
 		SortedSet<Class<? extends DBRow>> resultClasses;
 		resultClasses = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
-		
+
 		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRow.NameComparator());
 		for (DBRow table : allQueryTables) {
 			SortedSet<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
@@ -1669,12 +1670,12 @@ public class DBQuery {
 
 		});
 
-		JFrame frame = new JFrame("DBQuery Graph");
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setResizable(true);
-		frame.getContentPane().add(vv);
-		frame.pack();
-		frame.setVisible(true);
+		queryGraphFrame = new JFrame("DBQuery Graph");
+		queryGraphFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		queryGraphFrame.setResizable(true);
+		queryGraphFrame.getContentPane().add(vv);
+		queryGraphFrame.pack();
+		queryGraphFrame.setVisible(true);
 	}
 
 	private void initialiseQueryGraph() {
@@ -1685,6 +1686,13 @@ public class DBQuery {
 			queryGraph.clear();
 			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, expressions, options);
 			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, expressions, options);
+		}
+	}
+
+	public void closeQueryGraph() {
+		if (queryGraphFrame != null) {
+			queryGraphFrame.setVisible(false);
+			queryGraphFrame.dispose();
 		}
 	}
 }

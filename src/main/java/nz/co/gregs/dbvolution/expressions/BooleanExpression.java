@@ -204,7 +204,7 @@ public class BooleanExpression implements BooleanResult {
 		return new BooleanExpression() {
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return " 1=0 ";
+				return db.getDefinition().getFalseOperation();
 			}
 
 			@Override
@@ -218,7 +218,7 @@ public class BooleanExpression implements BooleanResult {
 		return new BooleanExpression() {
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return " 1=1 ";
+				return db.getDefinition().getTrueOperation();
 			}
 
 			@Override

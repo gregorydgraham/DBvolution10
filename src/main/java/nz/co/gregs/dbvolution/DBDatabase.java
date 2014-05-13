@@ -703,8 +703,10 @@ public abstract class DBDatabase {
 	/**
 	 * Enables the logging of all SQL before the SQL is executed.
 	 *
+	 * @deprecated because apparently I don't understand logging frameworks
 	 * @param b TRUE to log SQL before execution, FALSE otherwise.
 	 */
+	@Deprecated
 	public void setLogSQLBeforeExecuting(boolean b) {
 		logSQLBeforeExecuting = b;
 	}
@@ -712,8 +714,10 @@ public abstract class DBDatabase {
 	/**
 	 * Indicates whether SQL will be logged before it is executed.
 	 *
+	 * @deprecated because apparently I don't understand logging frameworks
 	 * @return TRUE if the SQL will be logged before execution, otherwise FALSE
 	 */
+	@Deprecated
 	public boolean isLogSQLBeforeExecuting() {
 		return logSQLBeforeExecuting;
 	}
@@ -722,12 +726,22 @@ public abstract class DBDatabase {
 	 * Called by internal methods that are about to execute SQL so the SQL can
 	 * be logged.
 	 *
+	 * @deprecated because apparently I don't understand logging frameworks
 	 * @param sqlString
 	 */
+	@Deprecated
 	public void logSQLIfRequested(String sqlString) {
 		logSQLIfRequested(sqlString, log);
 	}
 
+	/**
+	 * Called by internal methods that are about to execute SQL so the SQL can
+	 * be logged.
+	 *
+	 * @deprecated because apparently I don't understand logging frameworks
+	 * @param sqlString
+	 */
+	@Deprecated
 	void logSQLIfRequested(String sqlString, Log log) {
 		if (logSQLBeforeExecuting) {
 			log.info(sqlString);
@@ -911,7 +925,7 @@ public abstract class DBDatabase {
 		String dropStr = getDefinition().getDropDatabase(getDatabaseName());
 
 		printSQLIfRequested(dropStr);
-		logSQLIfRequested(dropStr);
+		log.info(dropStr);
 
 		this.doTransaction(new DBRawSQLTransaction(dropStr));
 	}
