@@ -68,7 +68,7 @@ public class RowDefinition implements Serializable {
      * </pre>
      *
      * @param qdt
-     * @return the PropertyWrapper associated with the Object suppled.
+     * @return the PropertyWrapper associated with the Object suppled or NULL.
      */
     public PropertyWrapper getPropertyWrapperOf(Object qdt) {
         List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
