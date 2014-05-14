@@ -587,12 +587,43 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Adds All foreign keys to the "ignore" list except those specified.
+	 *
+	 * All foreign keys of this instance will be ignored. This may cause an
+	 * {@link AccidentalCartesianJoinException} if no additional relationships
+	 * have been added.
+	 *
+	 * @param importantForeignKeys
+	 */
+	public void ignoreAllForeignKeysExcept(Object... importantForeignKeys) {
+		ArrayList<PropertyWrapperDefinition> importantFKs = new ArrayList<PropertyWrapperDefinition>();
+		for (Object object : importantForeignKeys) {
+			PropertyWrapper importantProp = getPropertyWrapperOf(object);
+			if (importantProp != null) {
+				if (importantProp.isColumn() && importantProp.isForeignKey()) {
+					importantFKs.add(importantProp.getDefinition());
+				}
+			}
+		}
+		List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
+		for (PropertyWrapper prop : props) {
+			final PropertyWrapperDefinition propDefn = prop.getDefinition();
+			if (!importantFKs.contains(propDefn)) {
+				getIgnoredForeignKeys().add(propDefn);
+			}
+		}
+		fkFields.clear();
+	}
+
+	/**
 	 *
 	 * Creates a foreign key like relationship between columns on 2 different
 	 * DBRow objects.
 	 *
 	 * <p>
-	 * It is recommended that you use an <a href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a> instead.
+	 * It is recommended that you use an <a
+	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
+	 * instead.
 	 *
 	 * <p>
 	 * This function relies on the QueryableDatatypes being part of the DBRows
@@ -621,7 +652,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * DBRow objects.
 	 *
 	 * <p>
-	 * It is recommended that you use an <a href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a> instead.
+	 * It is recommended that you use an <a
+	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
+	 * instead.
 	 *
 	 * <p>
 	 * this function relies on the QueryableDatatypes being part of the DBRows
@@ -1204,8 +1237,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param <R>
 	 * @param target
-	 * @return a list of {@link DBExpression DBExpressions} that are foreign keys to the
-	 * {@link DBRow target}
+	 * @return a list of {@link DBExpression DBExpressions} that are foreign
+	 * keys to the {@link DBRow target}
 	 */
 	public <R extends DBRow> List<DBExpression> getForeignKeyExpressionsTo(R target) {
 		List<DBExpression> fksToR = new ArrayList<DBExpression>();
@@ -1223,20 +1256,20 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					final Method isMethod = column.getClass().getMethod("is", targetPK.getClass());
 					if (isMethod != null) {
 						Object fkExpression = isMethod.invoke(column, targetPK);
-						if (DBExpression.class.isAssignableFrom(fkExpression.getClass())){
+						if (DBExpression.class.isAssignableFrom(fkExpression.getClass())) {
 							fksToR.add((DBExpression) fkExpression);
 						}
 					}
 				} catch (IllegalAccessException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target,  target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
 				} catch (IllegalArgumentException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target,  target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
 				} catch (NoSuchMethodException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target,  target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
 				} catch (SecurityException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target,  target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
 				} catch (InvocationTargetException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target,  target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
 				}
 
 				//METHOD 1
