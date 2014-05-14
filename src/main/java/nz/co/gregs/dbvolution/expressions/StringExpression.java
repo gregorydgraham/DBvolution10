@@ -82,6 +82,7 @@ public class StringExpression implements StringResult {
 	 * <li>Only object classes that are appropriate need to be handle by the
 	 * DBExpression subclass.<li>
 	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
 	 *
 	 * @param string
 	 * @return a DBExpression instance that is appropriate to the subclass and the
@@ -769,7 +770,7 @@ public class StringExpression implements StringResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression count() {
 		return new NumberExpression(new DBUnaryNumberFunction(this) {
 
