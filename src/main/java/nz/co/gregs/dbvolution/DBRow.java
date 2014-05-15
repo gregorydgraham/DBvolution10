@@ -532,6 +532,52 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Ignores the foreign keys of the property (field or method) given the
+	 * property's object reference.
+	 *
+	 * <p>
+	 * For example the following code snippet will ignore the foreign key on the
+	 * fkAddress field:
+	 * <pre>
+	 * Customer customer = ...;
+	 * customer.ignoreForeignKeys(customer.fkAddress, customer.fkManager);
+	 * </pre>
+	 *
+	 * <p>
+	 * Requires the field to be from this instance to work.
+	 *
+	 * @param qdts
+	 */
+	public void ignoreForeignKeys(Object... qdts) throws IncorrectRowProviderInstanceSuppliedException {
+		for (Object object : qdts) {
+			ignoreForeignKey(object);
+		}
+	}
+
+	/**
+	 * Ignores the foreign keys of the property (field or method) given the
+	 * property's object reference.
+	 *
+	 * <p>
+	 * For example the following code snippet will ignore the foreign key on the
+	 * fkAddress field:
+	 * <pre>
+	 * Customer customer = ...;
+	 * customer.ignoreForeignKeys(customer.fkAddress, customer.fkManager);
+	 * </pre>
+	 *
+	 * <p>
+	 * Requires the field to be from this instance to work.
+	 *
+	 * @param columns
+	 */
+	public void ignoreForeignKeys(ColumnProvider... columns) throws IncorrectRowProviderInstanceSuppliedException {
+		for (ColumnProvider col : columns) {
+			ignoreForeignKey(col);
+		}
+	}
+
+	/**
 	 * Ignores the foreign key of the column provided.
 	 * <p>
 	 * Similar to {@link #ignoreForeignKey(java.lang.Object) } but uses a
