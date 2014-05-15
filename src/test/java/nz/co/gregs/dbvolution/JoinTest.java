@@ -49,15 +49,7 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-                "SELECT __296612642.UIDCOMPANY DB_1165478727, \n"
-                + "__296612642.FKSTATISTIC2 DB_779023597, \n"
-                + "__77293264.UIDSTATISTIC DB_715138364, \n"
-                + "__77293264.STAT2ID DB1041270709\n"
-                + " FROM Company AS __296612642 \n"
-                + " INNER JOIN Statistic AS __77293264 ON( __296612642.FKSTATISTIC2 = __77293264.UIDSTATISTIC )\n"
-                + " WHERE 1=1 \n"
-                + " AND (__296612642.UIDCOMPANY = 234)\n"
-                + ";";
+                "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( __296612642.fkstatistic2 = __77293264.uidstatistic and (__296612642.uidcompany = 234) ) where 1=1 ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
@@ -90,8 +82,8 @@ public class JoinTest extends AbstractTest {
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
-        assertThat(testableSQLWithoutColumnAliases(expectedResult),
-                is(testableSQLWithoutColumnAliases(generateSQLString)));
+        assertThat(testableSQLWithoutColumnAliases(generateSQLString),
+                is(testableSQLWithoutColumnAliases(expectedResult)));
     }
 
     @Test
@@ -105,15 +97,7 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-                " SELECT __1641109531.UIDCOMPANY DB_1808204696, \n"
-                + "__1641109531.FKSTATISTIC2 DB36610818, \n"
-                + "__77293264.UIDSTATISTIC DB_715138364, \n"
-                + "__77293264.STAT2ID DB1041270709\n"
-                + " FROM  Company AS __1641109531 \n"
-                + " INNER JOIN Statistic AS __77293264  ON( __1641109531.FKSTATISTIC2 = __77293264.STAT2ID )\n"
-                + " WHERE  1=1 \n"
-                + " AND (__1641109531.UIDCOMPANY = 234)\n"
-                + ";";
+                "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( __1641109531.fkstatistic2 = __77293264.stat2id and (__1641109531.uidcompany = 234) ) where 1=1 ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);

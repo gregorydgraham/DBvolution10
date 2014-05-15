@@ -93,7 +93,7 @@ public class OuterJoinTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(mrq);
 		List<DBRow> tables = new ArrayList<DBRow>();
 		StringBuilder ansiJoinClause = new StringBuilder();
-		ansiJoinClause.append(dbQuery.getANSIJoinClause(carCo, tables));
+		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery,database), carCo, tables));
 		System.out.println("=============");
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");
@@ -102,7 +102,7 @@ public class OuterJoinTest extends AbstractTest {
 				is(testableSQL(expectedCarCoJoin)));
 
 		tables.add(carCo);
-		ansiJoinClause.append(dbQuery.getANSIJoinClause(mrq, tables));
+		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery,database), mrq, tables));
 		System.out.println("=============");
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");
@@ -112,7 +112,7 @@ public class OuterJoinTest extends AbstractTest {
 				is(testableSQL(expectedMarqueJoin)));
 
 		tables.add(mrq);
-		ansiJoinClause.append(dbQuery.getANSIJoinClause(link, tables));
+		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery,database), link, tables));
 		System.out.println("=============");
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");
@@ -122,7 +122,7 @@ public class OuterJoinTest extends AbstractTest {
 				is(testableSQL(expectedLinkJoin)));
 
 		tables.add(link);
-		ansiJoinClause.append(dbQuery.getANSIJoinClause(logo, tables));
+		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery,database), logo, tables));
 		System.out.println("=============");
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");
@@ -266,5 +266,80 @@ public class OuterJoinTest extends AbstractTest {
 		for (DBQueryRow queryrow : allRows) {
 			Assert.assertThat(queryrow.get(new LinkCarCompanyAndLogo()), is(nullValue()));
 		}
+	}
+	
+	
+	@Test
+	public void testSimpleCriteriaInOnClause() throws SQLException {
+		DBQuery dbquery = database.getDBQuery();
+		final CarCompany carCompany = new CarCompany();
+		carCompany.name.permittedRangeInclusive("ford", "TOYOTA");
+		dbquery.add(carCompany);
+		final Marque marque = new Marque();
+		marque.enabled.permittedValues(Boolean.TRUE);
+		dbquery.addOptional(marque);
+		String sqlForQuery = dbquery.getSQLForQuery();
+		System.out.println(sqlForQuery);
+		Assert.assertThat(sqlForQuery, containsString("ON( __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY AND (__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) ) \n WHERE"));
+		final String marqueCondition = "__1997432637.ENABLED = 1";
+		Assert.assertThat(sqlForQuery.indexOf(marqueCondition),is(sqlForQuery.lastIndexOf(marqueCondition)));
+		List<DBQueryRow> allRows = dbquery.getAllRows();
+		System.out.println(sqlForQuery);
+		database.print(allRows);
+		dbquery = database.getDBQuery();
+		dbquery.add(marque);
+		dbquery.addOptional(carCompany);
+		sqlForQuery = dbquery.getSQLForQuery();
+		System.out.println(sqlForQuery);
+		Assert.assertThat(sqlForQuery, containsString("ON( __1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND (__1997432637.ENABLED = 1) )"));
+		final String carCompanyCondition = "((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA'))";
+		Assert.assertThat(sqlForQuery.indexOf(carCompanyCondition),is(sqlForQuery.lastIndexOf(carCompanyCondition)));
+		
+		database.print(dbquery.getAllRows());
+
+	}
+	
+	@Test
+	public void testFullOuterJoinWithSimpleCriteria() throws SQLException{
+		DBQuery dbquery = database.getDBQuery();
+		
+		final CarCompany carCompany = new CarCompany();
+		final Marque marque = new Marque();
+		
+		carCompany.name.permittedRangeInclusive("ford", "TOYOTA");
+		marque.enabled.permittedValues(Boolean.TRUE);
+		
+		final String carCompanyCondition = "__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA'".toLowerCase();
+		final String marqueCondition = "__1997432637.ENABLED = 1".toLowerCase();
+		
+		dbquery.addOptional(marque);
+		dbquery.addOptional(carCompany);
+		
+		String sqlForQuery = dbquery.getSQLForQuery();
+		String testableSQL = testableSQL(sqlForQuery);
+		System.out.println(sqlForQuery);
+		Assert.assertThat(testableSQL.matches(".*on.*\\("+carCompanyCondition+"\\).*where.*"), is(true));
+		Assert.assertThat(testableSQL.indexOf(carCompanyCondition),is(testableSQL.lastIndexOf(carCompanyCondition)));
+		Assert.assertThat(testableSQL.matches(".*on\\(.*\\("+marqueCondition+"\\).*where.*"),is(true));
+		Assert.assertThat(testableSQL.indexOf(marqueCondition),is(testableSQL.lastIndexOf(marqueCondition)));
+}
+	
+	@Test
+	public void testExpressionsInLeftOuterOnClause(){
+		DBQuery query = database.getDBQuery();
+		CarCompany carCompany = new CarCompany();
+		Marque marque = new Marque();
+		
+		query.add(carCompany);
+		query.addCondition(carCompany.column(carCompany.name).is("BREAD"));
+		
+		query.addOptional(marque);
+		query.addCondition(marque.column(marque.auto_created).isLessThan("YEAH"));
+		
+		String sqlForQuery = query.getSQLForQuery();
+		System.out.println(sqlForQuery);
+		Assert.assertThat(sqlForQuery.indexOf("BREAD"),is(sqlForQuery.lastIndexOf("BREAD")));
+		Assert.assertThat(sqlForQuery.indexOf("YEAH"),is(sqlForQuery.lastIndexOf("YEAH")));
+
 	}
 }
