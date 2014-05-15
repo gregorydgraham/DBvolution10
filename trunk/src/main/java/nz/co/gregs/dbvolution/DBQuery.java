@@ -102,7 +102,7 @@ public class DBQuery {
 	private String resultSQL;
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
 	private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
-	private final List<BooleanExpression> expressions = new ArrayList<BooleanExpression>();
+	private final List<BooleanExpression> conditions = new ArrayList<BooleanExpression>();
 	private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
 	private final Map<Object, DBExpression> groupByColumns = new LinkedHashMap<Object, DBExpression>();
 	private final QueryOptions options = new QueryOptions();
@@ -256,7 +256,7 @@ public class DBQuery {
 		return getSQLForQuery(SELECT_QUERY);
 	}
 
-	String getANSIJoinClause(DBRow newTable, List<DBRow> previousTables) {
+	String getANSIJoinClause(DBDatabase database, QueryState queryState, DBRow newTable, List<DBRow> previousTables) {
 		List<String> joinClauses = new ArrayList<String>();
 		String lineSep = System.getProperty("line.separator");
 		DBDefinition defn = database.getDefinition();
@@ -273,6 +273,27 @@ public class DBQuery {
 				joinClauses.add(join);
 			}
 		}
+
+		joinClauses.addAll(newTable.getWhereClausesWithAliases(database));
+		if (previousTables.size() == 1) {
+			final DBRow firstTable = previousTables.get(0);
+			joinClauses.addAll(firstTable.getWhereClausesWithAliases(database));
+		}
+		if (previousTables.size() > 0) {
+			for (BooleanExpression expr : queryState.getRemainingExpressions()) {
+				Set<DBRow> tablesInvolved = new HashSet<DBRow>(expr.getTablesInvolved());
+				if (tablesInvolved.contains(newTable)) {
+					tablesInvolved.remove(newTable);
+				}
+				if (tablesInvolved.size() <= previousTables.size()) {
+					if (previousTables.containsAll(tablesInvolved)) {
+						joinClauses.add(expr.toSQLString(database));
+						queryState.consumeExpression(expr);
+					}
+				}
+			}
+		}
+
 		String sqlToReturn;
 		if (previousTables.isEmpty()) {
 			sqlToReturn = " " + newTable.getTableName() + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
@@ -300,7 +321,8 @@ public class DBQuery {
 		return sqlToReturn;
 	}
 
-	private String getSQLForQuery(int queryType) throws AccidentalBlankQueryException{
+	private String getSQLForQuery(int queryType) throws AccidentalBlankQueryException {
+		QueryState queryState = new QueryState(this, database);
 
 		if (requiredQueryTables.isEmpty() && optionalQueryTables.isEmpty()) {
 			throw new AccidentalBlankQueryException();
@@ -311,6 +333,7 @@ public class DBQuery {
 		}
 
 		initialiseQueryGraph();
+		queryState.setGraph(this.queryGraph);
 
 		DBDefinition defn = database.getDefinition();
 		StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
@@ -355,29 +378,40 @@ public class DBQuery {
 			if (!options.isUseANSISyntax()) {
 				fromClause.append(separator).append(tableName);
 			} else {
-				fromClause.append(getANSIJoinClause(tabRow, joinedTables));
+				fromClause.append(getANSIJoinClause(database, queryState, tabRow, joinedTables));
 			}
 			joinedTables.add(tabRow);
-			List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(database);
-			if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
-				for (String clause : tabRowCriteria) {
-					whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
-				}
-			}
 
 			if (!options.isUseANSISyntax()) {
+				List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(database);
+				if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
+					for (String clause : tabRowCriteria) {
+						whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+					}
+				}
 				getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep);
 			}
 
 			separator = ", " + lineSep;
 		}
 
+		if (joinedTables.size() == 1) {
+			// only one table so the criteria must go into the where clause.
+			List<String> tabRowCriteria = joinedTables.get(0).getWhereClausesWithAliases(database);
+			if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
+				for (String clause : tabRowCriteria) {
+					whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+				}
+			}
+		}
+
 		for (DBDataComparison comp : comparisons) {
 			whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
 		}
 
-		for (BooleanExpression expression : expressions) {
+		for (BooleanExpression expression : queryState.getRemainingExpressions()) {
 			whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(expression.toSQLString(database)).append(")");
+			queryState.consumeExpression(expression);
 		}
 
 		for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
@@ -476,9 +510,8 @@ public class DBQuery {
 	 *
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this query
-	 * @throws SQLException
 	 */
-	public String getSQLForCount() throws SQLException {
+	public String getSQLForCount() {
 		return getSQLForQuery(DBQuery.COUNT_QUERY);
 	}
 
@@ -822,7 +855,7 @@ public class DBQuery {
 		this.optionalQueryTables.clear();
 		this.allQueryTables.clear();
 		this.comparisons.clear();
-		this.expressions.clear();
+		this.conditions.clear();
 		this.extraExamples.clear();
 		blankResults();
 		return this;
@@ -891,7 +924,7 @@ public class DBQuery {
 		for (DBRow table : extraExamples) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
 		}
-		return willCreateBlankQuery && (comparisons.isEmpty()) && (expressions.isEmpty());
+		return willCreateBlankQuery && (comparisons.isEmpty()) && (conditions.isEmpty());
 	}
 
 	/**
@@ -948,7 +981,7 @@ public class DBQuery {
 	public DBQuery setSortOrder(ColumnProvider... sortColumns) {
 		blankResults();
 
-		sortOrderColumns = sortColumns;
+		sortOrderColumns = Arrays.copyOf(sortColumns, sortColumns.length);
 
 		sortOrder = new ArrayList<PropertyWrapper>();
 		PropertyWrapper prop;
@@ -1207,17 +1240,17 @@ public class DBQuery {
 	}
 
 	/**
-	 * Returns all the DBRow subclasses referenced by the DBrows within this
-	 * query with foreign keys
+	 * Returns all the DBRow subclasses referenced by the DBrows within this query
+	 * with foreign keys
 	 *
 	 * <p>
-	 * Similar to {@link #getAllConnectedTables() } but where this class
-	 * directly references the external DBRow subclass with an
-	 * {@code @DBForeignKey} annotation.
+	 * Similar to {@link #getAllConnectedTables() } but where this class directly
+	 * references the external DBRow subclass with an {@code @DBForeignKey}
+	 * annotation.
 	 *
 	 * <p>
-	 * That is to say: where A is A DBRow in this class, returns a List of B
-	 * such that A => B
+	 * That is to say: where A is A DBRow in this class, returns a List of B such
+	 * that A => B
 	 *
 	 * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
 	 * @see #getRelatedTables()
@@ -1253,11 +1286,11 @@ public class DBQuery {
 	 * classes within this query.
 	 *
 	 * <p>
-	 * That is to say: where A is a DBRow in this query, returns a List of B
-	 * such that B => A or A => B
+	 * That is to say: where A is a DBRow in this query, returns a List of B such
+	 * that B => A or A => B
 	 *
-	 * @return a list of classes that have a {@code @DBForeignKey} reference to
-	 * or from this class
+	 * @return a list of classes that have a {@code @DBForeignKey} reference to or
+	 * from this class
 	 * @see #getRelatedTables()
 	 * @see #getReferencedTables()
 	 * @see DBRow#getAllConnectedTables()
@@ -1304,8 +1337,8 @@ public class DBQuery {
 	}
 
 	/**
-	 * Search the classpath and add, as optional, any DBRow classes that
-	 * reference the DBRows within this DBQuery
+	 * Search the classpath and add, as optional, any DBRow classes that reference
+	 * the DBRows within this DBQuery
 	 *
 	 * <p>
 	 * This method automatically enlarges the query by finding all associated
@@ -1439,7 +1472,8 @@ public class DBQuery {
 	 * {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition}
 	 * instead.
 	 *
-	 * @deprecated Replaced by {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) } and {@link DBExpression expressions}
+	 * @deprecated Replaced by {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * } and {@link DBExpression expressions}
 	 * @param leftHandSide
 	 * @param operatorWithRightHandSideValues
 	 */
@@ -1483,7 +1517,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addCondition(BooleanExpression condition) {
-		expressions.add(condition);
+		conditions.add(condition);
 		blankResults();
 		return this;
 	}
@@ -1680,12 +1714,12 @@ public class DBQuery {
 
 	private void initialiseQueryGraph() {
 		if (queryGraph == null) {
-			queryGraph = new QueryGraph(database, requiredQueryTables, expressions, options);
-			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, expressions, options);
+			queryGraph = new QueryGraph(database, requiredQueryTables, conditions, options);
+			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, conditions, options);
 		} else {
 			queryGraph.clear();
-			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, expressions, options);
-			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, expressions, options);
+			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, conditions, options);
+			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, conditions, options);
 		}
 	}
 
@@ -1693,6 +1727,35 @@ public class DBQuery {
 		if (queryGraphFrame != null) {
 			queryGraphFrame.setVisible(false);
 			queryGraphFrame.dispose();
+		}
+	}
+
+	static class QueryState {
+		private final DBQuery query;
+		private final DBDatabase database;
+		private final DBDefinition defn;
+		private QueryGraph graph;
+		private final List<BooleanExpression> remainingConditions;
+		private final List<BooleanExpression> consumedConditions = new ArrayList<BooleanExpression>();
+
+		QueryState(DBQuery query, DBDatabase database) {
+			this.query = query;
+			this.database = database;
+			this.defn = database.getDefinition();
+			this.remainingConditions = new ArrayList<BooleanExpression>(query.conditions);
+		}
+
+		private Iterable<BooleanExpression> getRemainingExpressions() {
+			return new ArrayList<BooleanExpression>(remainingConditions);
+		}
+
+		private void consumeExpression(BooleanExpression expr) {
+			remainingConditions.remove(expr);
+			consumedConditions.add(expr);
+		}
+
+		private void setGraph(QueryGraph queryGraph) {
+			this.graph = queryGraph;
 		}
 	}
 }
