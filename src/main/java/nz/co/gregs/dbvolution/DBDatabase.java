@@ -198,28 +198,32 @@ public abstract class DBDatabase {
 
 	/**
 	 *
-	 * Inserts DBRows and Lists of DBRows into the correct tables automatically
+	 * Inserts DBRows into the correct tables automatically
 	 *
-	 * @param <T> a list of DBRows or a List of DBRows
-	 * @param objs
+	 * @param listOfRowsToInsert a list of DBRows
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException
 	 */
-	//@SafeVarargs
-	public final <T> DBActionList insert(T... objs) throws SQLException {
+	public final DBActionList insert(DBRow... listOfRowsToInsert) throws SQLException {
 		DBActionList changes = new DBActionList();
-		for (T obj : objs) {
-			if (obj instanceof List) {
-				List<?> list = (List<?>) obj;
-				if (list.size() > 0 && list.get(0) instanceof DBRow) {
-					@SuppressWarnings("unchecked")
-					List<DBRow> rowList = (List<DBRow>) list;
-					for (DBRow row : rowList) {
-						changes.addAll(this.getDBTable(row).insert(row));
-					}
-				}
-			} else if (obj instanceof DBRow) {
-				DBRow row = (DBRow) obj;
+		for (DBRow row : listOfRowsToInsert) {
+			changes.addAll(this.getDBTable(row).insert(row));
+		}
+		return changes;
+	}
+
+	/**
+	 *
+	 * Inserts DBRows and Lists of DBRows into the correct tables automatically
+	 *
+	 * @param listOfRowsToInsert a List of DBRows
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException
+	 */
+	public final DBActionList insert(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
+		DBActionList changes = new DBActionList();
+		if (listOfRowsToInsert.size() > 0) {
+			for (DBRow row : listOfRowsToInsert) {
 				changes.addAll(this.getDBTable(row).insert(row));
 			}
 		}
@@ -228,28 +232,32 @@ public abstract class DBDatabase {
 
 	/**
 	 *
-	 * Deletes DBRows and Lists of DBRows from the correct tables automatically
+	 * Deletes DBRows from the correct tables automatically
 	 *
-	 * @param <T> a list of DBRows or a List of DBRows
-	 * @param objs
+	 * @param rows a list of DBRows
 	 * @return a DBActionList of all the actions performed
 	 * @throws SQLException
 	 */
-	//@SafeVarargs
-	public final <T> DBActionList delete(T... objs) throws SQLException {
+	public final DBActionList delete(DBRow... rows) throws SQLException {
 		DBActionList changes = new DBActionList();
-		for (T obj : objs) {
-			if (obj instanceof List) {
-				List<?> list = (List<?>) obj;
-				if (list.size() > 0 && list.get(0) instanceof DBRow) {
-					@SuppressWarnings("unchecked")
-					List<DBRow> rowList = (List<DBRow>) list;
-					for (DBRow row : rowList) {
-						changes.addAll(this.getDBTable(row).delete(row));
-					}
-				}
-			} else if (obj instanceof DBRow) {
-				DBRow row = (DBRow) obj;
+		for (DBRow row : rows) {
+			changes.addAll(this.getDBTable(row).delete(row));
+		}
+		return changes;
+	}
+
+	/**
+	 *
+	 * Deletes Lists of DBRows from the correct tables automatically
+	 *
+	 * @param list a list of DBRows
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException
+	 */
+	public final DBActionList delete(Collection<? extends DBRow> list) throws SQLException {
+		DBActionList changes = new DBActionList();
+		if (list.size() > 0) {
+			for (DBRow row : list) {
 				changes.addAll(this.getDBTable(row).delete(row));
 			}
 		}
@@ -263,38 +271,33 @@ public abstract class DBDatabase {
 	 * Updated rows are marked as updated, and can be used as though they have
 	 * been freshly retrieved from the database.
 	 *
-	 * @param <T> a list of DBRows or a List of DBRows
-	 * @param objs
+	 * @param rows a list of DBRows
 	 * @return a DBActionList of the actions performed on the database
 	 * @throws SQLException
 	 */
-	//@SafeVarargs
-	public final <T> DBActionList update(T... objs) throws SQLException {
+	public final DBActionList update(DBRow... rows) throws SQLException {
 		DBActionList actions = new DBActionList();
-		for (T obj : objs) {
-			if (obj instanceof List) {
-				List<?> list = (List<?>) obj;
-				if (list.size() > 0 && list.get(0) instanceof DBRow) {
-					@SuppressWarnings("unchecked")
-					List<DBRow> rowList = (List<DBRow>) list;
-					for (DBRow row : rowList) {
-						actions.addAll(this.getDBTable(row).update(row));
-					}
-				}
-			} else if (obj instanceof Set) {
-				Set<?> list = (Set<?>) obj;
-				Iterator<?> iterator = list.iterator();
-				while (iterator.hasNext()) {
-					Object next = iterator.next();
-					if (next instanceof DBRow) {
-						@SuppressWarnings("unchecked")
-						DBRow row = (DBRow) next;
-						actions.addAll(this.getDBTable(row).update(row));
-					}
-				}
+		for (DBRow row : rows) {
+			actions.addAll(this.getDBTable(row).update(row));
+		}
+		return actions;
+	}
 
-			} else if (obj instanceof DBRow) {
-				DBRow row = (DBRow) obj;
+	/**
+	 *
+	 * Updates Lists of DBRows in the correct tables automatically.
+	 *
+	 * Updated rows are marked as updated, and can be used as though they have
+	 * been freshly retrieved from the database.
+	 *
+	 * @param listOfRowsToUpdate a List of DBRows
+	 * @return a DBActionList of the actions performed on the database
+	 * @throws SQLException
+	 */
+	public final DBActionList update(Collection<? extends DBRow> listOfRowsToUpdate) throws SQLException {
+		DBActionList actions = new DBActionList();
+		if (listOfRowsToUpdate.size() > 0) {
+			for (DBRow row : listOfRowsToUpdate) {
 				actions.addAll(this.getDBTable(row).update(row));
 			}
 		}
