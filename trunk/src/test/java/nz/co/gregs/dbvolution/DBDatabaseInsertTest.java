@@ -57,7 +57,8 @@ public class DBDatabaseInsertTest extends AbstractTest{
         myTableRows.add(newMarque1);
         myTableRows.add(newMarque2);
         CarCompany carCompany = new CarCompany("TATA", 569);
-        DBActionList changes = database.insert(myTableRows, carCompany);
+        DBActionList changes = database.insert(myTableRows);
+		changes.addAll(database.insert(carCompany));
         marquesTable.getAllRows();
         marquesTable.print();
         database.print(allCarCompanies.getAllRows());

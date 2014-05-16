@@ -280,7 +280,7 @@ public class OuterJoinTest extends AbstractTest {
 		dbquery.addOptional(marque);
 		String sqlForQuery = dbquery.getSQLForQuery();
 		System.out.println(sqlForQuery);
-		Assert.assertThat(sqlForQuery, containsString("ON( __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY AND (__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) ) \n WHERE"));
+		Assert.assertThat(sqlForQuery, containsString("ON( __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY AND (__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) ) "));
 		final String marqueCondition = "__1997432637.ENABLED = 1";
 		Assert.assertThat(sqlForQuery.indexOf(marqueCondition),is(sqlForQuery.lastIndexOf(marqueCondition)));
 		List<DBQueryRow> allRows = dbquery.getAllRows();

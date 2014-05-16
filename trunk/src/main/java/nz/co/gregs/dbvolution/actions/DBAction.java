@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.DBRow;
  * DBDatabase, no matter what has happened since the creation of the DBAction.
  *
  * <p>
- * Usually you should use the methods {@link DBDatabase#delete(java.lang.Object...)  }, {@link DBDatabase#update(java.lang.Object...) }, {@link DBDatabase#insert(java.lang.Object...)
+ * Usually you should use the methods {@link DBDatabase#delete(nz.co.gregs.dbvolution.DBRow...)  }, {@link DBDatabase#update(nz.co.gregs.dbvolution.DBRow...)  }, {@link DBDatabase#insert(nz.co.gregs.dbvolution.DBRow...)
  * } to automatically execute the DBActions, update any DBRows that need
  * updating, and return the performed DBActions as a DBActionList.
  *
@@ -68,8 +68,8 @@ public abstract class DBAction {
 	 * require to revert the change enacted by the action.
 	 *
 	 * <p>
-	 * Revert actions are tricky to implement correctly, so be sure to check that
-	 * the revert will produce the desired result.
+	 * Revert actions are tricky to implement correctly, so be sure to check
+	 * that the revert will produce the desired result.
 	 *
 	 * @return a list of all the actions required to revert this action in the
 	 * order they need to enacted.
@@ -80,8 +80,8 @@ public abstract class DBAction {
 	 * Returns a DBActionList of the actions required to perform this DBAction.
 	 *
 	 * <p>
-	 * Actions are allowed to create sub-actions so all actions are returned as a
-	 * DBActionList.
+	 * Actions are allowed to create sub-actions so all actions are returned as
+	 * a DBActionList.
 	 *
 	 * @return a DBActionList of this DBAction.
 	 */
@@ -111,15 +111,15 @@ public abstract class DBAction {
 	 * row for internal use.
 	 *
 	 * @param db
-	 * @return The complete list of all actions performed to complete this action
-	 * on the database
+	 * @return The complete list of all actions performed to complete this
+	 * action on the database
 	 * @throws SQLException
 	 */
 	protected abstract DBActionList execute(DBDatabase db) throws SQLException;
 
 	/**
 	 * Returns a copy of the row supplied during creation.
-	 * 
+	 *
 	 * @return the row
 	 */
 	protected DBRow getRow() {
