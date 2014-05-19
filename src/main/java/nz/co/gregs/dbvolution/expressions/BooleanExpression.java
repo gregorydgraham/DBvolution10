@@ -61,9 +61,10 @@ public class BooleanExpression implements BooleanResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -72,13 +73,30 @@ public class BooleanExpression implements BooleanResult {
 	 * </ul>
 	 *
 	 * @param bool
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanExpression value(Boolean bool) {
 		return new BooleanExpression(bool);
 	}
 
+	public BooleanExpression is(Boolean bool) {
+		return is(new BooleanExpression(bool));
+	}
+		
+	public BooleanExpression is(BooleanResult bool) {
+		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " = ";
+			}
+		});
+	}
+
+	public BooleanExpression xor(BooleanResult bool) {
+		return this.is(bool).not();
+	}
+	
 	/**
 	 * Collects the expressions together and requires them all to be true.
 	 *
@@ -413,4 +431,60 @@ public class BooleanExpression implements BooleanResult {
 			return onlyBool.getTablesInvolved();
 		}
 	}
+
+	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+
+		private BooleanResult first;
+		private BooleanResult second;
+
+		DBBinaryBooleanArithmetic(BooleanResult first, BooleanResult second) {
+			this.first = first;
+			this.second = second;
+		}
+
+		@Override
+		public DBBoolean getQueryableDatatypeForExpressionValue() {
+			return new DBBoolean();
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+		}
+
+		@Override
+		public DBBinaryBooleanArithmetic copy() {
+			DBBinaryBooleanArithmetic newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String getEquationOperator(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+	}
+
 }

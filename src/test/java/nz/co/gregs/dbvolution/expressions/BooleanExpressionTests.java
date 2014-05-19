@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -49,6 +50,18 @@ public class BooleanExpressionTests extends AbstractTest {
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
     }
+
+    @Test
+    public void testStringLikeIgnoreCase() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.name).isLikeIgnoreCase("Toy%"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+    }
     
     @Test
     public void testStringIs() throws SQLException {
@@ -58,6 +71,44 @@ public class BooleanExpressionTests extends AbstractTest {
         dbQuery.addCondition(marque.column(marque.name).is("TOYOTA"));
         
         List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+    }
+    
+    @Test
+    public void testStringIsIgnoreCase() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.name).isIgnoreCase("TOYOTA"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+		
+		dbQuery = database.getDBQuery(marque);
+        dbQuery.addCondition(marque.column(marque.name).isIgnoreCase("Toyota"));
+        
+        allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+    }
+    
+    @Test
+    public void testStringIsIgnoreCaseFord() throws SQLException {
+        CarCompany carco = new CarCompany();
+        DBQuery dbQuery = database.getDBQuery(carco);
+        
+        dbQuery.addCondition(carco.column(carco.name).is("FORD"));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(0));
+		
+		dbQuery.clearConditions();
+        dbQuery.addCondition(carco.column(carco.name).isIgnoreCase("FORD"));
+        
+        allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
     }
@@ -147,6 +198,41 @@ public class BooleanExpressionTests extends AbstractTest {
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(1));
+    }
+    
+    @Test
+    public void testBooleanIs() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).is(1));
+        dbQuery.addCondition(BooleanExpression.value(Boolean.TRUE).is(Boolean.TRUE));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(1));
+    }
+    
+    @Test
+    public void testBooleanIsnt() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).is(1));
+        dbQuery.addCondition(BooleanExpression.value(Boolean.TRUE).is(Boolean.FALSE));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(0));
+		
+        dbQuery = database.getDBQuery(marque);
+        
+        dbQuery.addCondition(marque.column(marque.uidMarque).is(1));
+        dbQuery.addCondition(BooleanExpression.value(Boolean.TRUE).is(Boolean.TRUE).not());
+        
+        allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(0));
     }
     
     @Test

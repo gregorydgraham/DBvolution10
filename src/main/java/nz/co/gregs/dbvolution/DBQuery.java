@@ -1523,6 +1523,18 @@ public class DBQuery {
 	}
 
 	/**
+	 * Remove all conditions from this query.
+	 *
+	 * @see #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) 
+	 * @return this DBQuery object
+	 */
+	public DBQuery clearConditions() {
+		conditions.clear();
+		blankResults();
+		return this;
+	}
+
+	/**
 	 * Set the query to return rows that match any conditions
 	 *
 	 * <p>

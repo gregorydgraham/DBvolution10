@@ -419,8 +419,10 @@ public abstract class DBDatabase {
 	 * @param rows
 	 */
 	public void print(List<?> rows) {
-		for (Object row : rows) {
-			System.out.println(row.toString());
+		if (rows != null) {
+			for (Object row : rows) {
+				System.out.println(row.toString());
+			}
 		}
 	}
 
