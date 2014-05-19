@@ -127,12 +127,44 @@ public class StringExpression implements StringResult {
 		});
 	}
 
+	public BooleanExpression isLikeIgnoreCase(String sqlPattern) {
+		return isLikeIgnoreCase(value(sqlPattern));
+	}
+
+	public BooleanExpression isLikeIgnoreCase(StringResult sqlPattern) {
+		return this.isLikeIgnoreCase(new StringExpression(sqlPattern));
+	}
+	
+	public BooleanExpression isLikeIgnoreCase(StringExpression sqlpattern) {
+		return this.lowercase().isLike(sqlpattern.lowercase());
+	}
+
+	public BooleanExpression isIgnoreCase(String equivalentString) {
+		return isIgnoreCase(value(equivalentString));
+	}
+
+	public BooleanExpression isIgnoreCase(NumberExpression numberResult) {
+		return isIgnoreCase(numberResult.stringResult().lowercase());
+	}
+
+	public BooleanExpression isIgnoreCase(Number number) {
+		return isIgnoreCase(NumberExpression.value(number).stringResult().lowercase());
+	}
+
+	public BooleanExpression isIgnoreCase(StringResult equivalentString) {
+		return isIgnoreCase(new StringExpression(equivalentString));
+	}
+
+	public BooleanExpression isIgnoreCase(StringExpression equivalentString) {
+		return this.lowercase().is(equivalentString.lowercase());
+	}
+	
 	public BooleanExpression is(String equivalentString) {
-		return is(value(equivalentString));
+		return this.is(value(equivalentString));
 	}
 
 	public BooleanExpression is(NumberExpression numberResult) {
-		return is(numberResult.stringResult());
+		return this.is(numberResult.stringResult());
 	}
 
 	public BooleanExpression is(Number number) {
@@ -140,6 +172,10 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression is(StringResult equivalentString) {
+		return is(new StringExpression(equivalentString));
+	}
+	
+	public BooleanExpression is(StringExpression equivalentString) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
