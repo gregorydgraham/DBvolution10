@@ -51,19 +51,19 @@ public class AdHocRelationshipTest extends AbstractTest {
         assertTrue("There should only be a row for TOYOTA", allRows.size() == 1);
     }
 
-    @Test
-    public void testAdHocRelationshipWithOperator() throws SQLException{
-        Marque marque = new Marque();
-        CarCompany carCompany = new CarCompany();
-
-        marque.addRelationship(marque.name, carCompany, carCompany.name, new DBLikeCaseInsensitiveOperator(null));
-        marque.ignoreAllForeignKeys();
-
-        DBQuery query = database.getDBQuery(carCompany, marque);
-        query.setBlankQueryAllowed(true);
-        List<DBQueryRow> allRows = query.getAllRows();
-        query.print();
-
-        assertTrue("There should only be rows for FORD and TOYOTA", allRows.size() == 2);
-    }
+//    @Test
+//    public void testAdHocRelationshipWithOperator() throws SQLException{
+//        Marque marque = new Marque();
+//        CarCompany carCompany = new CarCompany();
+//
+//        marque.addRelationship(marque.name, carCompany, carCompany.name, new DBLikeCaseInsensitiveOperator(null));
+//        marque.ignoreAllForeignKeys();
+//
+//        DBQuery query = database.getDBQuery(carCompany, marque);
+//        query.setBlankQueryAllowed(true);
+//        List<DBQueryRow> allRows = query.getAllRows();
+//        query.print();
+//
+//        assertTrue("There should only be rows for FORD and TOYOTA", allRows.size() == 2);
+//    }
 }

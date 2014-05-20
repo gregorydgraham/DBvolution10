@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution;
 
 import edu.uci.ics.jung.algorithms.layout.*;
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.*;
 import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
@@ -23,7 +24,6 @@ import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
-import nz.co.gregs.dbvolution.query.DBRelationship;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
@@ -321,16 +321,8 @@ public class DBQuery {
 		return sqlToReturn;
 	}
 
-	private String getSQLForQuery(int queryType) throws AccidentalBlankQueryException {
+	private String getSQLForQuery(int queryType) {
 		QueryState queryState = new QueryState(this, database);
-
-		if (requiredQueryTables.isEmpty() && optionalQueryTables.isEmpty()) {
-			throw new AccidentalBlankQueryException();
-		}
-
-		if (!options.isBlankQueryAllowed() && willCreateBlankQuery() && rawSQLClause.isEmpty()) {
-			throw new AccidentalBlankQueryException();
-		}
 
 		initialiseQueryGraph();
 		queryState.setGraph(this.queryGraph);
@@ -464,15 +456,11 @@ public class DBQuery {
 		} else if (queryType == COUNT_QUERY) {
 			sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClause + lineSep + defn.endSQLStatement();
 		}
-
-		if (!options.isCartesianJoinAllowed() && (requiredQueryTables.size() + optionalQueryTables.size()) > 1 && queryGraph.willCreateCartesianJoin()) {
-			throw new AccidentalCartesianJoinException(sqlString);
-		}
 		return sqlString;
 	}
 
 	private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep) {
-		for (DBRelationship rel : tabRow.getAdHocRelationships()) {
+		for (DBExpression rel : tabRow.getAdHocRelationships()) {
 			whereClause.append(defn.beginWhereClauseLine(options)).append("(").append(rel.toSQLString(database)).append(")");
 		}
 
@@ -526,7 +514,7 @@ public class DBQuery {
 	 * Uses the defined
 	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
 	 * DBRow and
-	 * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) added relationships}
+	 * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber)  added relationships}
 	 * to connect the tables. Foreign keys that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
 	 * are not used.
@@ -550,8 +538,20 @@ public class DBQuery {
 	 * @see BooleanExpression
 	 * @see DBDatabase
 	 */
-	public List<DBQueryRow> getAllRows() throws SQLException {
+	public List<DBQueryRow> getAllRows() throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		prepareForQuery();
+
+		if (requiredQueryTables.isEmpty() && optionalQueryTables.isEmpty()) {
+			throw new AccidentalBlankQueryException();
+		}
+
+		if (!options.isBlankQueryAllowed() && willCreateBlankQuery() && rawSQLClause.isEmpty()) {
+			throw new AccidentalBlankQueryException();
+		}
+
+		if (!options.isCartesianJoinAllowed() && (requiredQueryTables.size() + optionalQueryTables.size()) > 1 && queryGraph.willCreateCartesianJoin()) {
+			throw new AccidentalCartesianJoinException(resultSQL);
+		}
 
 		DBQueryRow queryRow;
 
@@ -1124,7 +1124,7 @@ public class DBQuery {
 	 * Uses the defined
 	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
 	 * DBRow and
-	 * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) added relationships}
+	 * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber)  added relationships}
 	 * to connect the tables. Foreign keys that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
 	 * are not used.
@@ -1679,7 +1679,7 @@ public class DBQuery {
 	 * at this time. The graph cannot be altered through the window but it can be
 	 * moved to help show the parts of the graph. You can manipulate the query
 	 * graph by
-	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)  adding relationships to the DBRow}
+	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber) adding relationships to the DBRow}
 	 * instances, or
 	 * {@link DBRow#ignoreForeignKey(java.lang.Object) ignoring inappropriate foreign keys}.
 	 *
@@ -1687,20 +1687,20 @@ public class DBQuery {
 	public void displayQueryGraph() {
 		initialiseQueryGraph();
 
-		edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBRelationship> jungGraph = queryGraph.getJungGraph();
+		Graph<QueryGraphNode, DBExpression> jungGraph = queryGraph.getJungGraph();
 
-		Layout<QueryGraphNode, DBRelationship> layout = new FRLayout<QueryGraphNode, DBRelationship>(jungGraph);
+		FRLayout<QueryGraphNode, DBExpression> layout = new FRLayout<QueryGraphNode, DBExpression>(jungGraph);
 		layout.setSize(new Dimension(550, 400));
 
-		VisualizationViewer<QueryGraphNode, DBRelationship> vv = new VisualizationViewer<QueryGraphNode, DBRelationship>(layout);
+		VisualizationViewer<QueryGraphNode, DBExpression> vv = new VisualizationViewer<QueryGraphNode, DBExpression>(layout);
 		vv.setPreferredSize(new Dimension(600, 480));
 
 		DefaultModalGraphMouse<QueryGraphNode, String> gm = new DefaultModalGraphMouse<QueryGraphNode, String>();
 		gm.setMode(ModalGraphMouse.Mode.PICKING);
 		vv.setGraphMouse(gm);
 
-		RenderContext<QueryGraphNode, DBRelationship> renderContext = vv.getRenderContext();
-		renderContext.setEdgeLabelTransformer(new ToStringLabeller<DBRelationship>());
+		RenderContext<QueryGraphNode, DBExpression> renderContext = vv.getRenderContext();
+		renderContext.setEdgeLabelTransformer(new ToStringLabeller<DBExpression>());
 		renderContext.setVertexLabelTransformer(new ToStringLabeller<QueryGraphNode>());
 		renderContext.setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.yellow, false));
 		renderContext.setVertexFillPaintTransformer(new Transformer<QueryGraphNode, Paint>() {
@@ -1726,12 +1726,12 @@ public class DBQuery {
 
 	private void initialiseQueryGraph() {
 		if (queryGraph == null) {
-			queryGraph = new QueryGraph(database, requiredQueryTables, conditions, options);
-			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, conditions, options);
+			queryGraph = new QueryGraph(database, requiredQueryTables, getConditions(), options);
+			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, getConditions(), options);
 		} else {
 			queryGraph.clear();
-			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, conditions, options);
-			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, conditions, options);
+			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, getConditions(), options);
+			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, getConditions(), options);
 		}
 	}
 
@@ -1740,6 +1740,13 @@ public class DBQuery {
 			queryGraphFrame.setVisible(false);
 			queryGraphFrame.dispose();
 		}
+	}
+
+	/**
+	 * @return the conditions
+	 */
+	protected List<BooleanExpression> getConditions() {
+		return conditions;
 	}
 
 	static class QueryState {
@@ -1754,7 +1761,7 @@ public class DBQuery {
 			this.query = query;
 			this.database = database;
 			this.defn = database.getDefinition();
-			this.remainingConditions = new ArrayList<BooleanExpression>(query.conditions);
+			this.remainingConditions = new ArrayList<BooleanExpression>(query.getConditions());
 		}
 
 		private Iterable<BooleanExpression> getRemainingExpressions() {

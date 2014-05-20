@@ -52,35 +52,6 @@ public class OuterJoinTest extends AbstractTest {
 		expectedString = "__78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY";
 		Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq, opts)), is(testableSQL(expectedString)));
 
-//        mrq.ignoreAllForeignKeys();
-		mrq.addRelationship(mrq.name, carCo, carCo.name, new DBEqualsIgnoreCaseOperator());
-		System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo, opts));
-		System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq, opts));
-
-		expectedString = "__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY" + lineSep + " and  lower(__1997432637.NAME) =  lower(__78874071.NAME)";
-		Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo, opts)), is(testableSQL(expectedString)));
-		expectedString = "lower(__78874071.NAME) =  lower(__1997432637.NAME)" + lineSep + " and __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY";
-		Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq, opts)), is(testableSQL(expectedString)));
-
-		Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo, opts)), is(testableSQL("__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY and lower(__1997432637.NAME) = lower(__78874071.NAME)")));
-		Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq, opts)), is(testableSQL("lower(__78874071.NAME) = lower(__1997432637.NAME) and __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY")));
-
-		mrq.ignoreAllForeignKeys();
-		System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo, opts));
-		System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq, opts));
-		expectedString = "lower(__1997432637.NAME) =  lower(__78874071.NAME)";
-		Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo, opts)), is(testableSQL(expectedString)));
-		expectedString = "lower(__78874071.NAME) =  lower(__1997432637.NAME)";
-		Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq, opts)), is(testableSQL(expectedString)));
-
-		mrq.addRelationship(mrq.name, carCo, carCo.name, new DBGreaterThanOperator());
-		System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo, opts));
-		System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq, opts));
-		expectedString = "lower(__1997432637.NAME) =  lower(__78874071.NAME)" + lineSep + " and __1997432637.NAME > __78874071.NAME";
-		Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo, opts)), is(testableSQL(expectedString)));
-		expectedString = "lower(__78874071.NAME) =  lower(__1997432637.NAME)" + lineSep + " and __78874071.NAME <= __1997432637.NAME";
-		Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq, opts)), is(testableSQL(expectedString)));
-
 	}
 
 	@Test

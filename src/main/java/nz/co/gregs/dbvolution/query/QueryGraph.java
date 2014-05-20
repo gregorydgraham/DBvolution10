@@ -28,6 +28,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
@@ -37,7 +38,7 @@ public class QueryGraph {
 
 	final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<Class<? extends DBRow>, QueryGraphNode>();
 	final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
-	edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBRelationship> jungGraph = new SparseMultigraph<QueryGraphNode, DBRelationship>();
+	edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> jungGraph = new SparseMultigraph<QueryGraphNode, DBExpression>();
 
 	public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, List<BooleanExpression> expressions, QueryOptions options) {
 		addAndConnectToRelevant(database, allQueryTables, expressions, options);
@@ -100,7 +101,7 @@ public class QueryGraph {
 					node1.connectTable(table2Class);
 					node2.connectTable(table1Class);
 					addNodeToDisplayGraph(node2);
-					addEdgeToDisplayGraph(table1, node1, table2, node2);
+					addEdgeToDisplayGraph(node1, node2, expr);
 				}
 			}
 		}
@@ -124,15 +125,15 @@ public class QueryGraph {
 	}
 
 	private void addEdgesToDisplayGraph(DBDatabase database, DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2, QueryOptions options) {
-		for (DBRelationship fk : table1.getRelationshipsFromThisInstance(database, table2, options)) {
+		for (DBExpression fk : table1.getRelationshipsFromThisInstance(database, table2, options)) {
 			if (!jungGraph.containsEdge(fk)) {
 				jungGraph.addEdge(fk, node1, node2);
 			}
 		}
 	}
 
-	private void addEdgeToDisplayGraph(DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2) {
-		DBRelationship fk = new DBRelationship(table1, table1.getPrimaryKey(), table2, table2.getPrimaryKey());
+	private void addEdgeToDisplayGraph(QueryGraphNode node1, QueryGraphNode node2, DBExpression fk) {
+//		DBRelationship fk = DBRelationship.get(table1, table1.getPrimaryKey(), table2, table2.getPrimaryKey());
 
 		if (!jungGraph.containsEdge(fk)) {
 			jungGraph.addEdge(fk, node1, node2);
@@ -217,12 +218,12 @@ public class QueryGraph {
 		return returnList;
 	}
 
-	public edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBRelationship> getJungGraph() {
+	public edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> getJungGraph() {
 		return jungGraph;
 	}
 
 	private void clearDisplayGraph() {
-		jungGraph = new SparseMultigraph<QueryGraphNode, DBRelationship>();
+		jungGraph = new SparseMultigraph<QueryGraphNode, DBExpression>();
 	}
 
 }
