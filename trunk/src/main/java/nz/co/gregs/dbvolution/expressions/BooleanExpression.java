@@ -48,7 +48,7 @@ public class BooleanExpression implements BooleanResult {
 	public BooleanExpression copy() {
 		return new BooleanExpression(this.onlyBool);
 	}
-
+	
 	/**
 	 * Create An Appropriate BooleanExpression Object For This Object
 	 *

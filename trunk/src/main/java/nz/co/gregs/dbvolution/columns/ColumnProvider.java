@@ -23,5 +23,5 @@ package nz.co.gregs.dbvolution.columns;
 public interface ColumnProvider {
     
     public AbstractColumn getColumn();
-    
+
 }

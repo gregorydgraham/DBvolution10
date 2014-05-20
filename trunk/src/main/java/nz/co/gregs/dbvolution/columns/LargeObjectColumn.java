@@ -24,29 +24,29 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class LargeObjectColumn extends LargeObjectExpression implements ColumnProvider {
 
-    private final AbstractColumn column;
+	private final AbstractColumn column;
 
-    public LargeObjectColumn(RowDefinition row, DBLargeObject field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	public LargeObjectColumn(RowDefinition row, DBLargeObject field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
-    }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return column.toSQLString(db);
+	}
 
-    @Override
-    public LargeObjectColumn copy() {
-        return (LargeObjectColumn) super.copy();
-    }
+	@Override
+	public LargeObjectColumn copy() {
+		return (LargeObjectColumn) super.copy();
+	}
 
-    @Override
-    public AbstractColumn getColumn() {
-        return column;
-    }
+	@Override
+	public AbstractColumn getColumn() {
+		return column;
+	}
 
-    @Override
-    public Set<DBRow> getTablesInvolved() {
-        return column.getTablesInvolved();
-    }
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		return column.getTablesInvolved();
+	}
 }

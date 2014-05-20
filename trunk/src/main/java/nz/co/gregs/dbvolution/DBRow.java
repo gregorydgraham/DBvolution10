@@ -19,10 +19,10 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.operators.DBOperator;
-import nz.co.gregs.dbvolution.query.DBRelationship;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.reflections.Reflections;
@@ -115,7 +115,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private boolean isDefined = false;
 	private final List<PropertyWrapperDefinition> ignoredForeignKeys = Collections.synchronizedList(new ArrayList<PropertyWrapperDefinition>());
 	protected List<PropertyWrapperDefinition> returnColumns = null;
-	private final List<DBRelationship> adHocRelationships = Collections.synchronizedList(new ArrayList<DBRelationship>());
+	private final List<BooleanExpression> adHocRelationships = Collections.synchronizedList(new ArrayList<BooleanExpression>());
 	private transient Boolean hasBlobs;
 	private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
 	private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
@@ -188,7 +188,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		} else {
 			newRow.returnColumns = null;
 		}
-		for (DBRelationship adhoc : originalRow.getAdHocRelationships()) {
+		for (BooleanExpression adhoc : originalRow.getAdHocRelationships()) {
 			newRow.getAdHocRelationships().add(adhoc);
 		}
 
@@ -687,11 +687,31 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param otherTable
 	 * @param otherTableField
 	 */
-	public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
-		DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField);
-		getAdHocRelationships().add(dbRelationship);
+//	public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
+//		DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField);
+//		getAdHocRelationships().add(dbRelationship);
+//	}
+
+	public void addRelationship(DBBoolean thisTableField, DBRow otherTable, DBBoolean otherTableField) {
+		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
 
+	public void addRelationship(DBDate thisTableField, DBRow otherTable, DBDate otherTableField) {
+		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
+	}
+
+	public void addRelationship(DBInteger thisTableField, DBRow otherTable, DBInteger otherTableField) {
+		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
+	}
+
+	public void addRelationship(DBNumber thisTableField, DBRow otherTable, DBNumber otherTableField) {
+		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
+	}
+
+	public void addRelationship(DBString thisTableField, DBRow otherTable, DBString otherTableField) {
+		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
+	}
+	
 	/**
 	 *
 	 * Creates a foreign key like relationship between columns on 2 different
@@ -716,23 +736,26 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * default DBEqualsOperator. Not all operators can be used for
 	 * relationships.
 	 *
+	 * @deprecated Use an expression instead.
 	 * @param thisTableField
 	 * @param otherTable
 	 * @param otherTableField
 	 * @param operator
 	 */
+	@Deprecated
 	public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField, DBOperator operator) {
-		DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField, operator);
-		getAdHocRelationships().add(dbRelationship);
+//		DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField, operator);
+//		getAdHocRelationships().add(dbRelationship);
 	}
 
 	/**
 	 * Remove all added relationships.
 	 *
-	 *
-	 * @see DBRow#addRelationship(QueryableDatatype, DBRow, QueryableDatatype)
-	 * @see DBRow#addRelationship(QueryableDatatype, DBRow, QueryableDatatype,
-	 * DBOperator)
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBBoolean, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBBoolean) 
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBDate, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBDate) 
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBInteger, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBInteger) 
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber) 
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBString, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBString) 
 	 */
 	public void clearRelationships() {
 		this.getAdHocRelationships().clear();
@@ -851,7 +874,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the adHocRelationships
 	 */
-	protected List<DBRelationship> getAdHocRelationships() {
+	protected List<BooleanExpression> getAdHocRelationships() {
 		return adHocRelationships;
 	}
 
@@ -889,50 +912,20 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				joinSeparator = defn.beginWhereClauseLine(options);
 			}
 		}
-		List<DBRelationship> adHocs = getAdHocRelationships();
-		for (DBRelationship adhoc : adHocs) {
-			DBRow firstTable = adhoc.getFirstTable();
-			DBRow secondTable = adhoc.getSecondTable();
-			DBRow leftTable = firstTable;
-			DBRow rightTable = secondTable;
-			PropertyWrapper leftColumn = adhoc.getFirstColumnPropertyWrapper();
-			PropertyWrapper rightColumn = adhoc.getSecondColumnPropertyWrapper();
-			DBOperator operator = adhoc.getOperation();
-
-			if (rightTable.getClass().equals(this.getClass())) {
-				leftTable = secondTable;
-				rightTable = firstTable;
-				leftColumn = adhoc.getSecondColumnPropertyWrapper();
-				rightColumn = adhoc.getFirstColumnPropertyWrapper();
-				operator = operator.getInverseOperator();
-			}
+		List<BooleanExpression> adHocs = getAdHocRelationships();
+		for (DBExpression adhoc : adHocs) {
 
 			rels.append(joinSeparator)
-					.append(DBRelationship.toSQLString(db, leftTable, leftColumn, operator, rightTable, rightColumn));
+					.append(adhoc.toSQLString(db));
 
 			joinSeparator = defn.beginWhereClauseLine(options);
 		}
 
 		adHocs = newTable.getAdHocRelationships();
-		for (DBRelationship adhoc : adHocs) {
-			DBRow firstTable = adhoc.getFirstTable();
-			DBRow secondTable = adhoc.getSecondTable();
-			DBRow leftTable = firstTable;
-			DBRow rightTable = secondTable;
-			PropertyWrapper leftColumn = adhoc.getFirstColumnPropertyWrapper();
-			PropertyWrapper rightColumn = adhoc.getSecondColumnPropertyWrapper();
-			DBOperator operator = adhoc.getOperation();
-
-			if (rightTable.getClass().equals(this.getClass())) {
-				leftTable = secondTable;
-				rightTable = firstTable;
-				leftColumn = adhoc.getSecondColumnPropertyWrapper();
-				rightColumn = adhoc.getFirstColumnPropertyWrapper();
-				operator = operator.getInverseOperator();
-			}
-
+		for (DBExpression adhoc : adHocs) {
+			
 			rels.append(joinSeparator)
-					.append(DBRelationship.toSQLString(db, leftTable, leftColumn, operator, rightTable, rightColumn));
+					.append(adhoc.toSQLString(db));
 
 			joinSeparator = defn.beginWhereClauseLine(options);
 		}
@@ -973,15 +966,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the foreign keys and ad-hoc relationships as an SQL String or a
 	 * null pointer
 	 */
-	public List<DBRelationship> getRelationshipsFromThisInstance(DBDatabase db, DBRow otherTable, QueryOptions options) {
-		List<DBRelationship> rels = new ArrayList<DBRelationship>();
+	public List<DBExpression> getRelationshipsFromThisInstance(DBDatabase db, DBRow otherTable, QueryOptions options) {
+		List<DBExpression> rels = new ArrayList<DBExpression>();
 
 		List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
 		for (PropertyWrapper fk : fks) {
 			Class<? extends DBRow> referencedClass = fk.referencedClass();
 
 			if (referencedClass.isAssignableFrom(otherTable.getClass())) {
-				rels.add(new DBRelationship(this, fk.getQueryableDatatype(), otherTable, otherTable.getPrimaryKey()));
+				rels.add(getRelationshipExpressionFor(this, fk, otherTable));
 			}
 		}
 
@@ -990,19 +983,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			Class<? extends DBRow> referencedClass = fk.referencedClass();
 
 			if (referencedClass.isAssignableFrom(this.getClass())) {
-				rels.add(new DBRelationship(otherTable, fk.getQueryableDatatype(), this, this.getPrimaryKey()));
+				rels.add(getRelationshipExpressionFor(otherTable, fk, this));
 			}
 		}
 
-		List<DBRelationship> adHocs = getAdHocRelationships();
+		List<BooleanExpression> adHocs = getAdHocRelationships();
 		rels.addAll(adHocs);
-		for (DBRelationship adhoc : adHocs) {
-			DBRow firstTable = adhoc.getFirstTable();
-			DBRow secondTable = adhoc.getSecondTable();
-			if (firstTable.getClass().equals(otherTable.getClass())
-					|| secondTable.getClass().equals(otherTable.getClass())) {
+		for (DBExpression adhoc : adHocs) {
 				rels.add(adhoc);
-			}
 		}
 
 		return rels;
@@ -1404,6 +1392,27 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		for (ColumnProvider qdt : ignoreTheseFKColumns) {
 			this.ignoreForeignKey(qdt);
 		}
+	}
+
+	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper fk, DBRow otherTable) {
+		BooleanExpression expr = BooleanExpression.falseExpression();
+		QueryableDatatype fkQDT = fk.getQueryableDatatype();
+		QueryableDatatype pkQDT = otherTable.getPrimaryKey();
+		if (fkQDT.getClass().isAssignableFrom(pkQDT.getClass())
+				|| pkQDT.getClass().isAssignableFrom(fkQDT.getClass())) {
+			if (DBBoolean.class.isAssignableFrom(fkQDT.getClass())) {
+				expr = fkTable.column((DBBoolean) fkQDT).is(otherTable.column((DBBoolean) pkQDT));
+			} else if (DBDate.class.isAssignableFrom(fkQDT.getClass())) {
+				expr = fkTable.column((DBDate) fkQDT).is(otherTable.column((DBDate) pkQDT));
+			} else if (DBInteger.class.isAssignableFrom(fkQDT.getClass())) {
+				expr = fkTable.column((DBInteger) fkQDT).is(otherTable.column((DBInteger) pkQDT));
+			} else if (DBNumber.class.isAssignableFrom(fkQDT.getClass())) {
+				expr = fkTable.column((DBNumber) fkQDT).is(otherTable.column((DBNumber) pkQDT));
+			} else if (DBString.class.isAssignableFrom(fkQDT.getClass())) {
+				expr = fkTable.column((DBString) fkQDT).is(otherTable.column((DBString) pkQDT));
+			}
+		}
+		return expr;
 	}
 
 	public static class ClassNameComparator implements Comparator<Class<?>> {
