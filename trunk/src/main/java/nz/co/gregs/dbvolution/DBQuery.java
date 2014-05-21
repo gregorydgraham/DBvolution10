@@ -449,7 +449,7 @@ public class DBQuery {
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
 				}
-				if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()){
+				if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()) {
 					whereClause = new StringBuilder("");
 				}
 				sqlString = selectClause.append(lineSep)
@@ -942,20 +942,29 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Implements support of the LIMIT and TOP operators of many databases. Also
-	 * sets the "page" length for retrieve rows by pages.
+	 * sets the "page" length for retrieving rows by pages.
 	 *
 	 * <p>
 	 * Only the specified number of rows will be returned from the database and
 	 * DBvolution.
+	 * 
+	 * <p>
+	 * Only positive limits are permitted: negative numbers will be converted to zero(0).  To remove the row limit use {@link #clearRowLimit() }.
 	 *
 	 * @param maximumNumberOfRowsReturned the require limit to the number of
 	 * rows returned
 	 * @return this DBQuery instance
+	 * @see #clearRowLimit() 
 	 */
 	public DBQuery setRowLimit(int maximumNumberOfRowsReturned) {
-		options.setRowLimit(maximumNumberOfRowsReturned);
+		int limit = maximumNumberOfRowsReturned;
+		if (maximumNumberOfRowsReturned < 0) {
+			limit = 0;
+		}
+		
+		options.setRowLimit(limit);
 		blankResults();
-
+		
 		return this;
 	}
 
@@ -967,6 +976,7 @@ public class DBQuery {
 	 * re-queried.
 	 *
 	 * @return this DBQuery instance
+	 * @see #setRowLimit(int) 
 	 */
 	public DBQuery clearRowLimit() {
 		options.setRowLimit(-1);

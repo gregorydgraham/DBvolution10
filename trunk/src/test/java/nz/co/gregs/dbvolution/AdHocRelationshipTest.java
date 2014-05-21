@@ -21,7 +21,6 @@ import static junit.framework.TestCase.assertTrue;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
 import org.junit.Test;
 
 /**
