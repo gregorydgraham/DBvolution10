@@ -966,8 +966,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the foreign keys and ad-hoc relationships as an SQL String or a
 	 * null pointer
 	 */
-	public List<DBExpression> getRelationshipsFromThisInstance(DBDatabase db, DBRow otherTable, QueryOptions options) {
-		List<DBExpression> rels = new ArrayList<DBExpression>();
+	public List<BooleanExpression> getRelationshipsAsBooleanExpressions(DBDatabase db, DBRow otherTable, QueryOptions options) {
+		List<BooleanExpression> rels = new ArrayList<BooleanExpression>();
 
 		List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
 		for (PropertyWrapper fk : fks) {
@@ -989,7 +989,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 		List<BooleanExpression> adHocs = getAdHocRelationships();
 		rels.addAll(adHocs);
-		for (DBExpression adhoc : adHocs) {
+		for (BooleanExpression adhoc : adHocs) {
 				rels.add(adhoc);
 		}
 

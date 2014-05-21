@@ -125,7 +125,7 @@ public class QueryGraph {
 	}
 
 	private void addEdgesToDisplayGraph(DBDatabase database, DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2, QueryOptions options) {
-		for (DBExpression fk : table1.getRelationshipsFromThisInstance(database, table2, options)) {
+		for (DBExpression fk : table1.getRelationshipsAsBooleanExpressions(database, table2, options)) {
 			if (!jungGraph.containsEdge(fk)) {
 				jungGraph.addEdge(fk, node1, node2);
 			}
