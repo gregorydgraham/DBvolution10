@@ -186,12 +186,13 @@ public class DBQuery {
 	 * This method adds an optional (OUTER) table to the query.
 	 *
 	 * <p>
-	 * The query will return an instance of this DBRow for each row found, though
-	 * it may be a null instance as there was no matching row in the database.
+	 * The query will return an instance of this DBRow for each row found,
+	 * though it may be a null instance as there was no matching row in the
+	 * database.
 	 *
 	 * <p>
-	 * Criteria (permitted and excluded values) specified in the supplied instance
-	 * will be added to the query.
+	 * Criteria (permitted and excluded values) specified in the supplied
+	 * instance will be added to the query.
 	 *
 	 * @param tables a list of DBRow objects that defines optional tables and
 	 * criteria
@@ -244,8 +245,9 @@ public class DBQuery {
 	 * DBvolution is really doing.
 	 *
 	 * <p>
-	 * Generates the SQL query for retrieving the objects but does not execute the
-	 * SQL. Use {@link #getAllRows() the get*Rows methods} to retrieve the rows.
+	 * Generates the SQL query for retrieving the objects but does not execute
+	 * the SQL. Use {@link #getAllRows() the get*Rows methods} to retrieve the
+	 * rows.
 	 *
 	 * <p>
 	 * See also {@link DBQuery#getSQLForCount() getSQLForCount}
@@ -322,139 +324,146 @@ public class DBQuery {
 	}
 
 	private String getSQLForQuery(int queryType) {
-		QueryState queryState = new QueryState(this, database);
+		String sqlString = "";
 
-		initialiseQueryGraph();
-		queryState.setGraph(this.queryGraph);
+		if (allQueryTables.size() > 0) {
+			QueryState queryState = new QueryState(this, database);
 
-		DBDefinition defn = database.getDefinition();
-		StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
-		int columnIndex = 1;
-		String groupByColumnIndex = defn.beginGroupByClause();
-		String groupByColumnIndexSeparator = "";
-		HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<PropertyWrapperDefinition, Integer>();
-		HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<DBExpression, Integer>();
-		StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
-		List<DBRow> joinedTables = new ArrayList<DBRow>();
-		StringBuilder whereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options));
-		StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
-		String lineSep = System.getProperty("line.separator");
-		DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
-		List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
-				? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
-				: queryGraph.toList(startQueryFromTable.getClass());
+			initialiseQueryGraph();
+			queryState.setGraph(this.queryGraph);
 
-		if (this.options.getRowLimit() > 0) {
-			selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
-		}
+			DBDefinition defn = database.getDefinition();
+			StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
+			int columnIndex = 1;
+			String groupByColumnIndex = defn.beginGroupByClause();
+			String groupByColumnIndexSeparator = "";
+			HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<PropertyWrapperDefinition, Integer>();
+			HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<DBExpression, Integer>();
+			StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
+			List<DBRow> joinedTables = new ArrayList<DBRow>();
+			final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
+			StringBuilder whereClause = new StringBuilder(initialWhereClause);
+			StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
+			String lineSep = System.getProperty("line.separator");
+			DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
+			List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
+					? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
+					: queryGraph.toList(startQueryFromTable.getClass());
 
-		String separator = "";
-		String colSep = defn.getStartingSelectSubClauseSeparator();
-		String groupByColSep = "";
-		String tableName;
-
-		for (DBRow tabRow : sortedQueryTables) {
-			tableName = tabRow.getTableName();
-
-			List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
-			for (PropertyWrapper propWrapper : tabProps) {
-				selectClause.append(colSep).append(propWrapper.getSelectableName(database)).append(" ").append(propWrapper.getColumnAlias(database));
-				colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-
-				// Now deal with the GROUP BY and ORDER BY clause requirements
-				groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
-				groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-				indexesOfSelectedColumns.put(propWrapper.getDefinition(), columnIndex);
-				columnIndex++;
+			if (this.options.getRowLimit() > 0) {
+				selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
 			}
-			if (!options.isUseANSISyntax()) {
-				fromClause.append(separator).append(tableName);
-			} else {
-				fromClause.append(getANSIJoinClause(database, queryState, tabRow, joinedTables));
-			}
-			joinedTables.add(tabRow);
 
-			if (!options.isUseANSISyntax()) {
-				List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(database);
+			String separator = "";
+			String colSep = defn.getStartingSelectSubClauseSeparator();
+			String groupByColSep = "";
+			String tableName;
+
+			for (DBRow tabRow : sortedQueryTables) {
+				tableName = tabRow.getTableName();
+
+				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
+				for (PropertyWrapper propWrapper : tabProps) {
+					selectClause.append(colSep).append(propWrapper.getSelectableName(database)).append(" ").append(propWrapper.getColumnAlias(database));
+					colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+
+					// Now deal with the GROUP BY and ORDER BY clause requirements
+					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
+					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
+					indexesOfSelectedColumns.put(propWrapper.getDefinition(), columnIndex);
+					columnIndex++;
+				}
+				if (!options.isUseANSISyntax()) {
+					fromClause.append(separator).append(tableName);
+				} else {
+					fromClause.append(getANSIJoinClause(database, queryState, tabRow, joinedTables));
+				}
+				joinedTables.add(tabRow);
+
+				if (!options.isUseANSISyntax()) {
+					List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(database);
+					if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
+						for (String clause : tabRowCriteria) {
+							whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+						}
+					}
+					getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep);
+				}
+
+				separator = ", " + lineSep;
+			}
+
+			if (joinedTables.size() == 1) {
+				// only one table so the criteria must go into the where clause.
+				List<String> tabRowCriteria = joinedTables.get(0).getWhereClausesWithAliases(database);
 				if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
 					for (String clause : tabRowCriteria) {
 						whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
 					}
 				}
-				getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep);
 			}
 
-			separator = ", " + lineSep;
-		}
+			for (DBDataComparison comp : comparisons) {
+				whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
+			}
 
-		if (joinedTables.size() == 1) {
-			// only one table so the criteria must go into the where clause.
-			List<String> tabRowCriteria = joinedTables.get(0).getWhereClausesWithAliases(database);
-			if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
-				for (String clause : tabRowCriteria) {
-					whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+			for (BooleanExpression expression : queryState.getRemainingExpressions()) {
+				whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(expression.toSQLString(database)).append(")");
+				queryState.consumeExpression(expression);
+			}
+
+			for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
+				final Object key = entry.getKey();
+				final DBExpression expression = entry.getValue();
+				selectClause.append(colSep).append(expression.toSQLString(database)).append(" ").append(defn.formatExpressionAlias(key));
+				colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+				if (!expression.isAggregator()) {
+					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
+					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
+				}
+				indexesOfSelectedExpressions.put(expression, columnIndex);
+				columnIndex++;
+			}
+
+			for (Map.Entry<Object, DBExpression> entry : groupByColumns.entrySet()) {
+				groupByClause.append(groupByColSep).append(entry.getValue().toSQLString(database));
+				groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+			}
+
+			for (DBRow extra : extraExamples) {
+				List<String> extraCriteria = extra.getWhereClausesWithAliases(database);
+				if (extraCriteria != null && !extraCriteria.isEmpty()) {
+					for (String clause : extraCriteria) {
+						whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+					}
 				}
 			}
-		}
 
-		for (DBDataComparison comp : comparisons) {
-			whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
-		}
+			boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
 
-		for (BooleanExpression expression : queryState.getRemainingExpressions()) {
-			whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append("(").append(expression.toSQLString(database)).append(")");
-			queryState.consumeExpression(expression);
-		}
-
-		for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
-			final Object key = entry.getKey();
-			final DBExpression expression = entry.getValue();
-			selectClause.append(colSep).append(expression.toSQLString(database)).append(" ").append(defn.formatExpressionAlias(key));
-			colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-			if (!expression.isAggregator()) {
-				groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
-				groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-			}
-			indexesOfSelectedExpressions.put(expression, columnIndex);
-			columnIndex++;
-		}
-
-		for (Map.Entry<Object, DBExpression> entry : groupByColumns.entrySet()) {
-			groupByClause.append(groupByColSep).append(entry.getValue().toSQLString(database));
-			groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-		}
-
-		for (DBRow extra : extraExamples) {
-			List<String> extraCriteria = extra.getWhereClausesWithAliases(database);
-			if (extraCriteria != null && !extraCriteria.isEmpty()) {
-				for (String clause : extraCriteria) {
-					whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+			if (queryType == SELECT_QUERY) {
+				// Clean up the formatting of the optional clauses
+				String rawSQLClauseFinal = (rawSQLClause.isEmpty() ? "" : rawSQLClause + lineSep);
+				String groupByClauseFinal = (groupByColumns.size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
+				String orderByClauseFinal = getOrderByClause(indexesOfSelectedColumns, indexesOfSelectedExpressions);
+				if (!orderByClauseFinal.trim().isEmpty()) {
+					orderByClauseFinal += lineSep;
 				}
+				if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()){
+					whereClause = new StringBuilder("");
+				}
+				sqlString = selectClause.append(lineSep)
+						.append(fromClause).append(lineSep)
+						.append(whereClause).append(lineSep)
+						.append(rawSQLClauseFinal)
+						.append(groupByClauseFinal)
+						.append(orderByClauseFinal)
+						.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(options) : "")
+						.append(defn.endSQLStatement())
+						.toString();
+			} else if (queryType == COUNT_QUERY) {
+				sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClause + lineSep + defn.endSQLStatement();
 			}
-		}
-
-		boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
-
-		String sqlString = "";
-		if (queryType == SELECT_QUERY) {
-			// Clean up the formatting of the optional clauses
-			String rawSQLClauseFinal = (rawSQLClause.isEmpty() ? "" : rawSQLClause + lineSep);
-			String groupByClauseFinal = (groupByColumns.size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
-			String orderByClauseFinal = getOrderByClause(indexesOfSelectedColumns, indexesOfSelectedExpressions);
-			if (!orderByClauseFinal.trim().isEmpty()) {
-				orderByClauseFinal += lineSep;
-			}
-			sqlString = selectClause.append(lineSep)
-					.append(fromClause).append(lineSep)
-					.append(whereClause).append(lineSep)
-					.append(rawSQLClauseFinal)
-					.append(groupByClauseFinal)
-					.append(orderByClauseFinal)
-					.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(options) : "")
-					.append(defn.endSQLStatement())
-					.toString();
-		} else if (queryType == COUNT_QUERY) {
-			sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClause + lineSep + defn.endSQLStatement();
 		}
 		return sqlString;
 	}
@@ -512,8 +521,8 @@ public class DBQuery {
 	 * outer join tables. All criteria specified on the DBRows will be applied.
 	 * <p>
 	 * Uses the defined
-	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
-	 * DBRow and
+	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on
+	 * the DBRow and
 	 * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber)  added relationships}
 	 * to connect the tables. Foreign keys that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
@@ -521,8 +530,8 @@ public class DBQuery {
 	 * <p>
 	 * Criteria such as
 	 * {@link DBNumber#permittedValues(java.lang.Number...)  permitted values}
-	 * defined on the fields of the DBRow examples are added as part of the WHERE
-	 * clause.
+	 * defined on the fields of the DBRow examples are added as part of the
+	 * WHERE clause.
 	 *
 	 * <p>
 	 * Similarly conditions added to the DBQuery using
@@ -637,8 +646,8 @@ public class DBQuery {
 	 * Expects there to be exactly one(1) object of the exemplar type.
 	 *
 	 * <p>
-	 * An UnexpectedNumberOfRowsException is thrown if there is zero or more than
-	 * one row.
+	 * An UnexpectedNumberOfRowsException is thrown if there is zero or more
+	 * than one row.
 	 *
 	 * @param <R> a subclass of DBRow
 	 * @param exemplar an instance of R
@@ -656,9 +665,9 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * A simple means of ensuring that your query has retrieved the correct
-	 * results. For instance if you are looking up 2 vehicles in the database and
-	 * 3 are returned, this method will throw an exception stopping the DBScript
-	 * or DBTransaction automatically.
+	 * results. For instance if you are looking up 2 vehicles in the database
+	 * and 3 are returned, this method will throw an exception stopping the
+	 * DBScript or DBTransaction automatically.
 	 *
 	 * <p>
 	 * Similar to
@@ -675,8 +684,8 @@ public class DBQuery {
 	 *
 	 * @param <R> a class that extends DBRow
 	 * @param exemplar The DBRow class that you would like returned.
-	 * @param expected The expected number of rows, an exception will be thrown if
-	 * this expectation is not met.
+	 * @param expected The expected number of rows, an exception will be thrown
+	 * if this expectation is not met.
 	 * @return a list of all the instances of the exemplar found by this query
 	 * @throws SQLException
 	 * @throws UnexpectedNumberOfRowsException
@@ -778,12 +787,12 @@ public class DBQuery {
 	 * Fast way to print the results.
 	 *
 	 * <p>
-	 * Retrieves the rows if required and then prints all of the rows but only the
-	 * fields that have non-null values.
+	 * Retrieves the rows if required and then prints all of the rows but only
+	 * the fields that have non-null values.
 	 *
 	 * <p>
-	 * Helps to trim a wide printout of columns down to only the data specified in
-	 * the rows.
+	 * Helps to trim a wide printout of columns down to only the data specified
+	 * in the rows.
 	 *
 	 * <p>
 	 * Example: myQuery.printAllDataColumns(System.err);
@@ -813,7 +822,8 @@ public class DBQuery {
 	 * Fast way to print the results.
 	 *
 	 * <p>
-	 * Retrieves and prints all the rows but only prints the primary key columns.
+	 * Retrieves and prints all the rows but only prints the primary key
+	 * columns.
 	 *
 	 * <p>
 	 * Example: myQuery.printAllPrimaryKeys(System.err);
@@ -905,16 +915,16 @@ public class DBQuery {
 	 * least one constraint has been placed on the query.
 	 *
 	 * <p>
-	 * This helps avoid the common mistake of accidentally retrieving all the rows
-	 * of the tables by forgetting to add criteria.
+	 * This helps avoid the common mistake of accidentally retrieving all the
+	 * rows of the tables by forgetting to add criteria.
 	 *
 	 * <p>
 	 * No attempt to compare the length of the query results with the length of
-	 * the table is made: if your criteria selects all the row of the tables this
-	 * method will still return FALSE.
+	 * the table is made: if your criteria selects all the row of the tables
+	 * this method will still return FALSE.
 	 *
-	 * @return TRUE if the DBQuery will retrieve all the rows of the tables, FALSE
-	 * otherwise
+	 * @return TRUE if the DBQuery will retrieve all the rows of the tables,
+	 * FALSE otherwise
 	 */
 	public boolean willCreateBlankQuery() {
 		boolean willCreateBlankQuery = true;
@@ -938,8 +948,8 @@ public class DBQuery {
 	 * Only the specified number of rows will be returned from the database and
 	 * DBvolution.
 	 *
-	 * @param maximumNumberOfRowsReturned the require limit to the number of rows
-	 * returned
+	 * @param maximumNumberOfRowsReturned the require limit to the number of
+	 * rows returned
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setRowLimit(int maximumNumberOfRowsReturned) {
@@ -953,7 +963,8 @@ public class DBQuery {
 	 * Clear the row limit on this DBQuery and return it to retrieving all rows.
 	 *
 	 * <p>
-	 * Also resets the retrieved results so that the database will be re-queried.
+	 * Also resets the retrieved results so that the database will be
+	 * re-queried.
 	 *
 	 * @return this DBQuery instance
 	 */
@@ -1085,8 +1096,8 @@ public class DBQuery {
 	 * Change the Default Setting of Disallowing Accidental Cartesian Joins
 	 *
 	 * <p>
-	 * A common mistake is to create a query without connecting all the tables in
-	 * the query and accident retrieve a huge number of rows.
+	 * A common mistake is to create a query without connecting all the tables
+	 * in the query and accident retrieve a huge number of rows.
 	 *
 	 * <p>
 	 * DBvolution detects this situation and, by default, throws a
@@ -1112,18 +1123,18 @@ public class DBQuery {
 	 * returning the rows found.
 	 *
 	 * <p>
-	 * Like {@link #getAllRows() getAllRows()} this method retrieves all the rows
-	 * for this DBQuery. However it checks the number of rows retrieved and throws
-	 * a {@link UnexpectedNumberOfRowsException} if the number of rows retrieved
-	 * differs from the expected number.
+	 * Like {@link #getAllRows() getAllRows()} this method retrieves all the
+	 * rows for this DBQuery. However it checks the number of rows retrieved and
+	 * throws a {@link UnexpectedNumberOfRowsException} if the number of rows
+	 * retrieved differs from the expected number.
 	 *
 	 * <p>
 	 * Adds all required DBRows as inner join tables and all optional DBRow as
 	 * outer join tables.
 	 * <p>
 	 * Uses the defined
-	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
-	 * DBRow and
+	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on
+	 * the DBRow and
 	 * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber)  added relationships}
 	 * to connect the tables. Foreign keys that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
@@ -1131,8 +1142,8 @@ public class DBQuery {
 	 * <p>
 	 * Criteria such as
 	 * {@link DBNumber#permittedValues(java.lang.Number...)  permitted values}
-	 * defined on the fields of the DBRow examples are added as part of the WHERE
-	 * clause.
+	 * defined on the fields of the DBRow examples are added as part of the
+	 * WHERE clause.
 	 *
 	 * <p>
 	 * Similarly conditions added to the DBQuery using
@@ -1181,9 +1192,9 @@ public class DBQuery {
 	 * You should probably use ANSI syntax.
 	 *
 	 * <p>
-	 * ANSI syntax has the foreign key and added relationships defined in the FROM
-	 * clause with the JOIN operator. Pre-ANSI syntax treated the foreign keys and
-	 * other relationships as part of the WHERE clause.
+	 * ANSI syntax has the foreign key and added relationships defined in the
+	 * FROM clause with the JOIN operator. Pre-ANSI syntax treated the foreign
+	 * keys and other relationships as part of the WHERE clause.
 	 *
 	 * <p>
 	 * ANSI syntax supports OUTER joins with a standard syntax, and DBvolution
@@ -1207,8 +1218,8 @@ public class DBQuery {
 	 * referenced by the external DBRow subclass.
 	 *
 	 * <p>
-	 * That is to say: where A is a DBRow in this query, returns a List of B such
-	 * that B => A
+	 * That is to say: where A is a DBRow in this query, returns a List of B
+	 * such that B => A
 	 *
 	 * @return a list of classes that have a {@code @DBForeignKey} reference to
 	 * this class
@@ -1240,17 +1251,17 @@ public class DBQuery {
 	}
 
 	/**
-	 * Returns all the DBRow subclasses referenced by the DBrows within this query
-	 * with foreign keys
+	 * Returns all the DBRow subclasses referenced by the DBrows within this
+	 * query with foreign keys
 	 *
 	 * <p>
-	 * Similar to {@link #getAllConnectedTables() } but where this class directly
-	 * references the external DBRow subclass with an {@code @DBForeignKey}
-	 * annotation.
+	 * Similar to {@link #getAllConnectedTables() } but where this class
+	 * directly references the external DBRow subclass with an
+	 * {@code @DBForeignKey} annotation.
 	 *
 	 * <p>
-	 * That is to say: where A is A DBRow in this class, returns a List of B such
-	 * that A => B
+	 * That is to say: where A is A DBRow in this class, returns a List of B
+	 * such that A => B
 	 *
 	 * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
 	 * @see #getRelatedTables()
@@ -1286,11 +1297,11 @@ public class DBQuery {
 	 * classes within this query.
 	 *
 	 * <p>
-	 * That is to say: where A is a DBRow in this query, returns a List of B such
-	 * that B => A or A => B
+	 * That is to say: where A is a DBRow in this query, returns a List of B
+	 * such that B => A or A => B
 	 *
-	 * @return a list of classes that have a {@code @DBForeignKey} reference to or
-	 * from this class
+	 * @return a list of classes that have a {@code @DBForeignKey} reference to
+	 * or from this class
 	 * @see #getRelatedTables()
 	 * @see #getReferencedTables()
 	 * @see DBRow#getAllConnectedTables()
@@ -1337,8 +1348,8 @@ public class DBQuery {
 	}
 
 	/**
-	 * Search the classpath and add, as optional, any DBRow classes that reference
-	 * the DBRows within this DBQuery
+	 * Search the classpath and add, as optional, any DBRow classes that
+	 * reference the DBRows within this DBQuery
 	 *
 	 * <p>
 	 * This method automatically enlarges the query by finding all associated
@@ -1417,8 +1428,8 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Slicing the results like this allows you to get a list of, for instance,
-	 * status table DBRows and then process the DBQueryRows that have each status
-	 * DBRow as a block.
+	 * status table DBRows and then process the DBQueryRows that have each
+	 * status DBRow as a block.
 	 *
 	 * @param instance the DBRow instance you are interested in.
 	 * @return A list of DBQueryRow instances that relate to the exemplar
@@ -1491,9 +1502,9 @@ public class DBQuery {
 	 * the Query
 	 *
 	 * <p>
-	 * The easiest way to get a BooleanExpression is the DBRow.column() method and
-	 * then apply the functions you require until you get a BooleanExpression
-	 * back.
+	 * The easiest way to get a BooleanExpression is the DBRow.column() method
+	 * and then apply the functions you require until you get a
+	 * BooleanExpression back.
 	 *
 	 * <p>
 	 * StringExpression, NumberExpression, DateExpression, and BooleanExpression
@@ -1525,7 +1536,7 @@ public class DBQuery {
 	/**
 	 * Remove all conditions from this query.
 	 *
-	 * @see #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) 
+	 * @see #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * @return this DBQuery object
 	 */
 	public DBQuery clearConditions() {
@@ -1538,8 +1549,9 @@ public class DBQuery {
 	 * Set the query to return rows that match any conditions
 	 *
 	 * <p>
-	 * This means that all permitted*, excluded*, and comparisons are optional for
-	 * any rows and rows will be returned if they match any of the conditions.
+	 * This means that all permitted*, excluded*, and comparisons are optional
+	 * for any rows and rows will be returned if they match any of the
+	 * conditions.
 	 *
 	 * <p>
 	 * The conditions will be connected by OR in the SQL.
@@ -1559,8 +1571,8 @@ public class DBQuery {
 	 * This is the default state
 	 *
 	 * <p>
-	 * This means that all permitted*, excluded*, and comparisons are required for
-	 * any rows and the conditions will be connected by AND.
+	 * This means that all permitted*, excluded*, and comparisons are required
+	 * for any rows and the conditions will be connected by AND.
 	 *
 	 * @return this DBQuery instance
 	 */
@@ -1575,8 +1587,8 @@ public class DBQuery {
 	 * as an optional table otherwise.
 	 *
 	 * <p>
-	 * Any DBRow example passed to this method that has criteria specified on it,
-	 * however vague, will become a required table on the query.
+	 * Any DBRow example passed to this method that has criteria specified on
+	 * it, however vague, will become a required table on the query.
 	 *
 	 * <p>
 	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase)
@@ -1674,11 +1686,11 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Internally DBvolution uses a graph to design the query that will be used.
-	 * This graph is helpful for visualizing the underlying query, more so than an
-	 * SQL query dump. So this method will display the query graph of this query
-	 * at this time. The graph cannot be altered through the window but it can be
-	 * moved to help show the parts of the graph. You can manipulate the query
-	 * graph by
+	 * This graph is helpful for visualizing the underlying query, more so than
+	 * an SQL query dump. So this method will display the query graph of this
+	 * query at this time. The graph cannot be altered through the window but it
+	 * can be moved to help show the parts of the graph. You can manipulate the
+	 * query graph by
 	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber) adding relationships to the DBRow}
 	 * instances, or
 	 * {@link DBRow#ignoreForeignKey(java.lang.Object) ignoring inappropriate foreign keys}.
@@ -1750,6 +1762,7 @@ public class DBQuery {
 	}
 
 	static class QueryState {
+
 		private final DBQuery query;
 		private final DBDatabase database;
 		private final DBDefinition defn;
