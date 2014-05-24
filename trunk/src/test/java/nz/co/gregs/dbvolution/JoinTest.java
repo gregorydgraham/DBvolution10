@@ -49,13 +49,13 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-                "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( __296612642.fkstatistic2 = __77293264.uidstatistic and (__296612642.uidcompany = 234) ) ;";
+                "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( (__296612642.uidcompany = 234) and __296612642.fkstatistic2 = __77293264.uidstatistic ) ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
         assertThat(dbQuery.isUseANSISyntax(), is(true));
-        assertThat(testableSQLWithoutColumnAliases(expectedResult),
-                is(testableSQLWithoutColumnAliases(generateSQLString)));
+        assertThat(testableSQLWithoutColumnAliases(generateSQLString),
+                is(testableSQLWithoutColumnAliases(expectedResult)));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-                "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( __1641109531.fkstatistic2 = __77293264.stat2id and (__1641109531.uidcompany = 234) ) ;";
+                "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( (__1641109531.uidcompany = 234) and __1641109531.fkstatistic2 = __77293264.uidstatistic ) ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
