@@ -270,10 +270,7 @@ public class DBQuery {
 			isLeftOuterJoin = true;
 		}
 		for (DBRow otherTable : previousTables) {
-			String join = otherTable.getRelationshipsAsSQL(this.database, newTable, options);
-			if (join != null && !join.isEmpty()) {
-				joinClauses.add(join);
-			}
+			queryState.remainingConditions.addAll(newTable.getRelationshipsAsBooleanExpressions(database, otherTable, options));
 		}
 
 		joinClauses.addAll(newTable.getWhereClausesWithAliases(database));

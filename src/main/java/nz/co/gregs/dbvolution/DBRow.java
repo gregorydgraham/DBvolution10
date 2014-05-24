@@ -1007,8 +1007,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * otherwise.
 	 */
 	public boolean willBeConnectedTo(DBDatabase database, DBRow otherTable, QueryOptions options) {
-		String join = this.getRelationshipsAsSQL(database, otherTable, options);
-		return join != null && !join.isEmpty();
+		List<BooleanExpression> relationshipsAsBooleanExpressions = this.getRelationshipsAsBooleanExpressions(database, otherTable, options);
+		relationshipsAsBooleanExpressions.addAll(otherTable.getRelationshipsAsBooleanExpressions(database, this, options));
+		return (!relationshipsAsBooleanExpressions.isEmpty());
 	}
 
 	/**
