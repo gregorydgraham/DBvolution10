@@ -30,13 +30,14 @@ public class QueryOptions {
     private boolean blankQueryAllowed = false;
     private boolean cartesianJoinAllowed = false;
     private boolean useANSISyntax = true;
+	private boolean matchAnyRelationship;
 
     /**
      * 
      * 
      * @return the matchAll
      */
-    public boolean isMatchAll() {
+    public boolean isMatchAllConditions() {
         return matchAll;
     }
 
@@ -48,7 +49,7 @@ public class QueryOptions {
      * Changes the DBQuery to using all ANDs to connect the criteria
      * 
      */
-    public void setMatchAll() {
+    public void setMatchAllConditions() {
         this.matchAll = true;
     }
     
@@ -56,7 +57,7 @@ public class QueryOptions {
      * Changes the DBQuery to using all ORs to connect the criteria
      *
      */
-    public void setMatchAny() {
+    public void setMatchAnyConditions() {
         this.matchAll = false;
     }
 
@@ -143,7 +144,20 @@ public class QueryOptions {
     public void setPageIndex(int pageIndex) {
         this.pageIndex = pageIndex;
     }
+
+	public void setMatchAnyRelationship() {
+		matchAnyRelationship = true;
+	}
+
+	public void setMatchAllRelationships() {
+		matchAnyRelationship = false;
+	}
     
-    
+	/**
+	 * @return the matchAnyRelationship
+	 */
+	public boolean isMatchAllRelationships() {
+		return !matchAnyRelationship;
+	}    
     
 }

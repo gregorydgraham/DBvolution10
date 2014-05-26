@@ -359,7 +359,7 @@ public class DBTableOLD<E extends DBRow> {
     public DBTableOLD<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
 
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
+        String whereClause = defn.beginConditionClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + " '" + escapeSingleQuotes(pkValue.toString()) + "'";
         String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -379,7 +379,7 @@ public class DBTableOLD<E extends DBRow> {
      */
     public DBTableOLD<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + pkValue + " ";
+        String whereClause = defn.beginConditionClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + pkValue + " ";
         String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -399,7 +399,7 @@ public class DBTableOLD<E extends DBRow> {
      */
     public DBTableOLD<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
-        String whereClause = defn.beginWhereClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
+        String whereClause = defn.beginConditionClauseLine(options) + defn.formatColumnName(getPrimaryKeyColumnName()) + defn.getEqualsComparator() + defn.getDateFormattedForQuery(pkValue) + " ";
         String selectStatement = this.getSQLSelectAndFromForQuery() + whereClause + getOrderByClause() + database.getDefinition().endSQLStatement();
         this.getRows(selectStatement);
         return this;
@@ -508,7 +508,7 @@ public class DBTableOLD<E extends DBRow> {
         List<String> tabRowCriteria = row.getWhereClausesWithoutAliases(database);
         if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
             for (String clause : tabRowCriteria) {
-                whereClause.append(lineSep).append(defn.beginWhereClauseLine(options)).append(clause);
+                whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
             }
         }
         return whereClause.toString();
@@ -863,7 +863,7 @@ public class DBTableOLD<E extends DBRow> {
      * The conditions will be connected by OR in the SQL.
      */
     public void setToMatchAnyCondition() {
-        this.options.setMatchAny();
+        this.options.setMatchAnyConditions();
     }
 
     /**
@@ -877,6 +877,6 @@ public class DBTableOLD<E extends DBRow> {
      * for any rows and the conditions will be connected by AND.
      */
     public void setToMatchAllConditions() {
-        this.options.setMatchAll();
+        this.options.setMatchAllConditions();
     }
 }

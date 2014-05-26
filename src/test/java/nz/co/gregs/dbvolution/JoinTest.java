@@ -49,7 +49,7 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-                "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( (__296612642.uidcompany = 234) and __296612642.fkstatistic2 = __77293264.uidstatistic ) ;";
+                "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( ((__296612642.uidcompany = 234)) and (__296612642.fkstatistic2 = __77293264.uidstatistic) ) ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
@@ -97,7 +97,7 @@ public class JoinTest extends AbstractTest {
         final String generateSQLString = dbQuery.getSQLForQuery().replaceAll(" +", " ");
 
         String expectedResult =
-                "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( (__1641109531.uidcompany = 234) and __1641109531.fkstatistic2 = __77293264.uidstatistic ) ;";
+                "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( ((__1641109531.uidcompany = 234)) and (__1641109531.fkstatistic2 = __77293264.uidstatistic) ) ;";
 
         System.out.println(expectedResult);
         System.out.println(generateSQLString);
