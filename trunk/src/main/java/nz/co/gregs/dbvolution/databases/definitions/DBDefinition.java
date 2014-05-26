@@ -112,7 +112,7 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the Where Clause
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -122,13 +122,40 @@ public abstract class DBDefinition {
 		return beginAndLine();
 	}
 
-	public String beginWhereClauseLine(QueryOptions options) {
-		if (options.isMatchAll()) {
+	/**
+	 *
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for conditions.
+	 *
+	 * usually, but not always " and "
+	 *
+	 * @param options
+	 * @return a string for the start of a where clause line
+	 */
+	public String beginConditionClauseLine(QueryOptions options) {
+		if (options.isMatchAllConditions()) {
 			return beginAndLine();
 		} else {
 			return beginOrLine();
 		}
 	}
+	
+	/**
+	 *
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for joins.
+	 *
+	 * usually, but not always " and "
+	 *
+	 * @param options
+	 * @return a string for the start of a where clause line
+	 */
+	public String beginJoinClauseLine(QueryOptions options) {
+		if (options.isMatchAllRelationships()) {
+			return beginAndLine();
+		} else {
+			return beginOrLine();
+		}
+	}
+
 
 	public boolean prefersIndexBasedGroupByClause() {
 		return false;
@@ -247,7 +274,7 @@ public abstract class DBDefinition {
 	}
 
 	public String getWhereClauseBeginningCondition(QueryOptions options) {
-		if (options.isMatchAll()) {
+		if (options.isMatchAllConditions()) {
 			return getTrueOperation();
 		} else {
 			return getFalseOperation();
@@ -332,7 +359,7 @@ public abstract class DBDefinition {
 	}
 
 	public String getSubsequentJoinOperationSeparator(QueryOptions options) {
-		return beginWhereClauseLine(options);
+		return beginConditionClauseLine(options);
 	}
 
 	public String beginInnerJoin() {
@@ -621,4 +648,5 @@ public abstract class DBDefinition {
 	public boolean supportsGeneratedKeys(QueryOptions options) {
 		return true;
 	}
+
 }

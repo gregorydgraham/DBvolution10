@@ -909,7 +909,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						.append(defn.getEqualsComparator())
 						.append(formattedReferencedColumn);
 
-				joinSeparator = defn.beginWhereClauseLine(options);
+				joinSeparator = defn.beginConditionClauseLine(options);
 			}
 		}
 		List<BooleanExpression> adHocs = getAdHocRelationships();
@@ -918,7 +918,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			rels.append(joinSeparator)
 					.append(adhoc.toSQLString(db));
 
-			joinSeparator = defn.beginWhereClauseLine(options);
+			joinSeparator = defn.beginConditionClauseLine(options);
 		}
 
 		adHocs = newTable.getAdHocRelationships();
@@ -927,7 +927,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			rels.append(joinSeparator)
 					.append(adhoc.toSQLString(db));
 
-			joinSeparator = defn.beginWhereClauseLine(options);
+			joinSeparator = defn.beginConditionClauseLine(options);
 		}
 
 		fks = newTable.getForeignKeyPropertyWrappers();
@@ -950,7 +950,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						.append(defn.getEqualsComparator())
 						.append(formattedForeignKey);
 
-				joinSeparator = defn.beginWhereClauseLine(options);
+				joinSeparator = defn.beginConditionClauseLine(options);
 			}
 		}
 		return rels.toString();

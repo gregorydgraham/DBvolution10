@@ -681,7 +681,7 @@ public class DBTable<E extends DBRow> {
 	 * The conditions will be connected by OR in the SQL.
 	 */
 	public void setToMatchAnyCondition() {
-		this.options.setMatchAny();
+		this.options.setMatchAnyConditions();
 	}
 
 	/**
@@ -695,13 +695,13 @@ public class DBTable<E extends DBRow> {
 	 * any rows and the conditions will be connected by AND.
 	 */
 	public void setToMatchAllConditions() {
-		options.setMatchAll();
+		options.setMatchAllConditions();
 	}
 
 	private void applyMatchAny() {
 		if (options.isMatchAny()) {
 			query.setToMatchAnyCondition();
-		} else if (options.isMatchAll()) {
+		} else if (options.isMatchAllConditions()) {
 			query.setToMatchAllConditions();
 		}
 	}

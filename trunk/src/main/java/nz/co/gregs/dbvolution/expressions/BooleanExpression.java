@@ -265,6 +265,15 @@ public class BooleanExpression implements BooleanResult {
 		return onlyBool == null ? new HashSet<DBRow>() : onlyBool.getTablesInvolved();
 	}
 
+	/**
+	 * Indicates if this expression is a relationship between 2, or more, tables.
+	 * 
+	 * @return the relationship
+	 */
+	public boolean isRelationship() {
+		return this.getTablesInvolved().size()>1;
+	}
+
 	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
 
 		private BooleanExpression onlyBool;

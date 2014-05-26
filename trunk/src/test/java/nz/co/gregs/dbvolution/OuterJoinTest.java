@@ -21,8 +21,6 @@ import java.util.List;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.query.QueryOptions;
-import nz.co.gregs.dbvolution.operators.DBEqualsIgnoreCaseOperator;
-import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -256,7 +254,7 @@ public class OuterJoinTest extends AbstractTest {
 		Assert.assertThat(sqlForQuery, 
 				anyOf(
 						containsString("ON( __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY AND (__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) ) "),
-						containsString("ON( (__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND __1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY )")));
+						containsString("ON( ((__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA'))) AND (__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY) )")));
 		final String marqueCondition = "__1997432637.ENABLED = 1";
 		Assert.assertThat(sqlForQuery.indexOf(marqueCondition),is(sqlForQuery.lastIndexOf(marqueCondition)));
 		List<DBQueryRow> allRows = dbquery.getAllRows();
@@ -270,7 +268,7 @@ public class OuterJoinTest extends AbstractTest {
 		Assert.assertThat(sqlForQuery, 
 				anyOf(
 						containsString("ON( __1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND (__1997432637.ENABLED = 1) )"),
-						containsString("ON( ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND (__1997432637.ENABLED = 1) AND __1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY )")
+						containsString("ON( (((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND (__1997432637.ENABLED = 1)) AND (__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY) )")
 				));
 		final String carCompanyCondition = "((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA'))";
 		Assert.assertThat(sqlForQuery.indexOf(carCompanyCondition),is(sqlForQuery.lastIndexOf(carCompanyCondition)));
