@@ -1808,7 +1808,7 @@ public class DBQuery {
 	private void initialiseQueryGraph() {
 		if (queryGraph == null) {
 			queryGraph = new QueryGraph(database, requiredQueryTables, getConditions(), options);
-			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, getConditions(), options);
+			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, getConditions(), options); 
 		} else {
 			queryGraph.clear();
 			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, getConditions(), options);
