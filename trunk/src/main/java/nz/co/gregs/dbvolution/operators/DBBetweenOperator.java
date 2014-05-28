@@ -44,7 +44,7 @@ public class DBBetweenOperator extends DBOperator{
 //        highValue.setDatabase(db);
         String upperSQLValue = secondValue.toSQLString(db);
         String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
-        return beginWhereLine + (invertOperator?"!(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
+        return beginWhereLine + (invertOperator? " not(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
     }
 
     @Override
