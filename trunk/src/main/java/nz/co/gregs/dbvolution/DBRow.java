@@ -341,6 +341,20 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
+	/**
+	 * Finds the Primary Key, if there is one, and returns the name of the field.
+	 *
+	 * @return the java field name of the primary key
+	 */
+	public String getPrimaryKeyFieldName() {
+		PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
+		if (primaryKeyPropertyWrapper == null) {
+			return null;
+		} else {
+			return primaryKeyPropertyWrapper.javaName();
+		}
+	}
+
 	protected PropertyWrapper getPrimaryKeyPropertyWrapper() {
 		return getWrapper().primaryKey();
 	}
