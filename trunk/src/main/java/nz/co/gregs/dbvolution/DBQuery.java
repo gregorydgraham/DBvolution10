@@ -464,16 +464,20 @@ public class DBQuery {
 
 			boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
 
+			// tidy up the raw SQL provided
+			String rawSQLClauseFinal = (rawSQLClause.isEmpty() ? "" : rawSQLClause + lineSep);
+			
+			// Strip the unnecessary where clause if possible
+			if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()) {
+				whereClause = new StringBuilder("");
+			}
+			
 			if (queryType == SELECT_QUERY) {
 				// Clean up the formatting of the optional clauses
-				String rawSQLClauseFinal = (rawSQLClause.isEmpty() ? "" : rawSQLClause + lineSep);
 				String groupByClauseFinal = (groupByColumns.size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
 				String orderByClauseFinal = getOrderByClause(indexesOfSelectedColumns, indexesOfSelectedExpressions);
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
-				}
-				if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()) {
-					whereClause = new StringBuilder("");
 				}
 				sqlString = selectClause.append(lineSep)
 						.append(fromClause).append(lineSep)
@@ -485,7 +489,7 @@ public class DBQuery {
 						.append(defn.endSQLStatement())
 						.toString();
 			} else if (queryType == COUNT_QUERY) {
-				sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClause + lineSep + defn.endSQLStatement();
+				sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClauseFinal + lineSep + defn.endSQLStatement();
 			}
 		}
 		return sqlString;
