@@ -168,9 +168,9 @@ public class BooleanExpression implements BooleanResult {
 	 * expression.
 	 */
 	public BooleanExpression negate() {
-		return new BooleanExpression(new DBUnaryBooleanArithmetic(this) {
+		return new BooleanExpression(new DBUnaryBinaryFunction(this) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getNegationFunctionName();
 			}
 		});
@@ -419,6 +419,63 @@ public class BooleanExpression implements BooleanResult {
 		@Override
 		public DBUnaryNumberFunction copy() {
 			DBUnaryNumberFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return onlyBool.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return onlyBool.getTablesInvolved();
+		}
+	}
+
+	private static abstract class DBUnaryBinaryFunction implements BooleanResult {
+
+		protected BooleanExpression onlyBool;
+
+		DBUnaryBinaryFunction() {
+			this.onlyBool = null;
+		}
+
+		DBUnaryBinaryFunction(BooleanExpression only) {
+			this.onlyBool = only;
+		}
+
+		@Override
+		public DBNumber getQueryableDatatypeForExpressionValue() {
+			return new DBNumber();
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return "" + getFunctionName(db) + "( ";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public DBUnaryBinaryFunction copy() {
+			DBUnaryBinaryFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

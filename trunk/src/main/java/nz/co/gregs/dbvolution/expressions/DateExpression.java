@@ -1173,6 +1173,6 @@ public class DateExpression implements DateResult {
         @Override
         public Set<DBRow> getTablesInvolved() {
             return only.getTablesInvolved();
-        }
+        }		
     }
 }
