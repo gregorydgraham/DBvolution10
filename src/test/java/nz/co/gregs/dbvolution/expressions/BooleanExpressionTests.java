@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -26,6 +27,7 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -328,4 +330,29 @@ public class BooleanExpressionTests extends AbstractTest {
         Assert.assertThat(allRows.size(), is(2));
     }
     
+	
+/*
+	query.addCondition(BooleanExpression.anyOf(
+		row.column(row.date1).is((Date)null),
+		row.column(row.date1).is(new Date())
+		).not());
+	*/
+	@Ignore
+	@Test
+    public void testIsAnyOfWithNulls() throws SQLException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+        List<Long> longs = new ArrayList<Long>();
+        longs.add(new Long(1));
+        longs.add(new Long(2));
+        
+        dbQuery.addCondition(BooleanExpression.anyOf(
+		marque.column(marque.creationDate).is((Date)null),
+		marque.column(marque.creationDate).is(new Date())
+		));
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(2));
+    }
 }
