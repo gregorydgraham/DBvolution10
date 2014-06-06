@@ -379,7 +379,9 @@ public class RowDefinitionClassWrapper {
 	 *
 	 * @param database active database
 	 * @param columnName
-	 * @return the PropertyWrapperDefinition for the getColumnName supplied.
+	 * @return the PropertyWrapperDefinition for the column name supplied.
+	 *         Null if no such column is found.
+	 * @throws AssertionError if called when in {@code identityOnly} mode.
 	 */
 	public PropertyWrapperDefinition getPropertyDefinitionByColumn(DBDatabase database, String columnName) {
 		if (identityOnly) {
@@ -431,6 +433,8 @@ public class RowDefinitionClassWrapper {
 	 *
 	 * @param propertyName
 	 * @return the PropertyWrapperDefinition for the named object property
+	 *         Null if no such property is found.
+	 * @throws AssertionError if called when in {@code identityOnly} mode.
 	 */
 	public PropertyWrapperDefinition getPropertyDefinitionByName(String propertyName) {
 		if (identityOnly) {

@@ -245,7 +245,8 @@ public class RowDefinitionInstanceWrapper {
      *
      * @param database
      * @param columnName
-     * @return the Java property associated with the column name supplied
+     * @return the Java property associated with the column name supplied.
+	 *         Null if no such column is found.
      */
     public PropertyWrapper getPropertyByColumn(DBDatabase database, String columnName) {
         PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByColumn(database, columnName);
@@ -258,7 +259,8 @@ public class RowDefinitionInstanceWrapper {
      * Only provides access to properties annotated with {@code DBColumn}.
      *
      * @param propertyName
-     * @return property of the wrapped {@link RowDefinition} associated with the java field name supplied
+     * @return property of the wrapped {@link RowDefinition} associated with the java field name supplied.
+	 *         Null if no such property is found.
      */
     public PropertyWrapper getPropertyByName(String propertyName) {
         PropertyWrapperDefinition classProperty = classWrapper.getPropertyDefinitionByName(propertyName);
