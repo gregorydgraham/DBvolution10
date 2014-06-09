@@ -103,6 +103,16 @@ public class NumberExpression implements NumberResult {
 			String getFunctionName(DBDatabase db) {
 				return "";
 			}
+
+			@Override
+			public boolean getIncludesNull() {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
 		});
 	}
 
@@ -127,6 +137,16 @@ public class NumberExpression implements NumberResult {
 				} else {
 					return " = ";
 				}
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				;
 			}
 		});
 	}
@@ -493,6 +513,16 @@ public class NumberExpression implements NumberResult {
 			protected String getEquationOperator(DBDatabase db) {
 				return " < ";
 			}
+
+			@Override
+			public boolean getIncludesNull() {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
 		});
 	}
 
@@ -505,6 +535,16 @@ public class NumberExpression implements NumberResult {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " <= ";
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		});
 	}
@@ -519,6 +559,16 @@ public class NumberExpression implements NumberResult {
 			protected String getEquationOperator(DBDatabase db) {
 				return " > ";
 			}
+
+			@Override
+			public boolean getIncludesNull() {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
 		});
 	}
 
@@ -531,6 +581,16 @@ public class NumberExpression implements NumberResult {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " >= ";
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		});
 	}
@@ -556,6 +616,16 @@ public class NumberExpression implements NumberResult {
 			@Override
 			protected String getFunctionName(DBDatabase db) {
 				return " IN ";
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		});
 	}

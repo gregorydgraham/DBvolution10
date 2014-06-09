@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -26,6 +27,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 public class BooleanExpression implements BooleanResult {
 
 	private final BooleanResult onlyBool;
+	private boolean includeNulls;
 
 	protected BooleanExpression() {
 		onlyBool = new DBBoolean();
@@ -48,7 +50,7 @@ public class BooleanExpression implements BooleanResult {
 	public BooleanExpression copy() {
 		return new BooleanExpression(this.onlyBool);
 	}
-	
+
 	/**
 	 * Create An Appropriate BooleanExpression Object For This Object
 	 *
@@ -83,7 +85,7 @@ public class BooleanExpression implements BooleanResult {
 	public BooleanExpression is(Boolean bool) {
 		return is(new BooleanExpression(bool));
 	}
-		
+
 	public BooleanExpression is(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
 			@Override
@@ -96,7 +98,7 @@ public class BooleanExpression implements BooleanResult {
 	public BooleanExpression xor(BooleanResult bool) {
 		return this.is(bool).not();
 	}
-	
+
 	/**
 	 * Collects the expressions together and requires them all to be true.
 	 *
@@ -266,12 +268,13 @@ public class BooleanExpression implements BooleanResult {
 	}
 
 	/**
-	 * Indicates if this expression is a relationship between 2, or more, tables.
-	 * 
+	 * Indicates if this expression is a relationship between 2, or more,
+	 * tables.
+	 *
 	 * @return the relationship
 	 */
 	public boolean isRelationship() {
-		return this.getTablesInvolved().size()>1;
+		return this.getTablesInvolved().size() > 1;
 	}
 
 	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
@@ -324,6 +327,7 @@ public class BooleanExpression implements BooleanResult {
 	private static abstract class DBNnaryBooleanArithmetic implements BooleanResult {
 
 		private BooleanResult[] bools;
+		private boolean includeNulls;
 
 		DBNnaryBooleanArithmetic(BooleanResult... bools) {
 			this.bools = bools;
@@ -381,6 +385,16 @@ public class BooleanExpression implements BooleanResult {
 				result = result || boex.isAggregator();
 			}
 			return result;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return this.includeNulls;
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			this.includeNulls = nullsAreIncluded;
 		}
 	}
 
@@ -444,6 +458,7 @@ public class BooleanExpression implements BooleanResult {
 	private static abstract class DBUnaryBinaryFunction implements BooleanResult {
 
 		protected BooleanExpression onlyBool;
+		private boolean includeNulls;
 
 		DBUnaryBinaryFunction() {
 			this.onlyBool = null;
@@ -496,6 +511,16 @@ public class BooleanExpression implements BooleanResult {
 		public Set<DBRow> getTablesInvolved() {
 			return onlyBool.getTablesInvolved();
 		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return this.includeNulls;
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			this.includeNulls = nullsAreIncluded;
+		}
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
@@ -515,7 +540,16 @@ public class BooleanExpression implements BooleanResult {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+			String sqlString = first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+			if (first.getIncludesNull()) {
+				final DBDefinition defn = db.getDefinition();
+				sqlString = second.toSQLString(db) + " IS " + defn.getNull() + defn.beginOrLine() + sqlString;
+			}
+			if (second.getIncludesNull()) {
+				final DBDefinition defn = db.getDefinition();
+				sqlString = first.toSQLString(db) + " IS " + defn.getNull() + defn.beginOrLine() + sqlString;
+			}
+			return "(" + sqlString + ")";
 		}
 
 		@Override
@@ -551,6 +585,26 @@ public class BooleanExpression implements BooleanResult {
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			;
+		}
+
 	}
 
+	@Override
+	public boolean getIncludesNull() {
+		return this.includeNulls;
+	}
+
+	@Override
+	public void setIncludesNull(boolean nullsAreIncluded) {
+		this.includeNulls = nullsAreIncluded;
+	}
 }

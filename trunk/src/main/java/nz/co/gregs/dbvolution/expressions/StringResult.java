@@ -35,5 +35,8 @@ public interface StringResult extends DBExpression{
     
     @Override
     public StringResult copy();
+
+	public boolean getIncludesNull();
+	public void setIncludesNull(boolean nullsAreIncluded);
     
 }
