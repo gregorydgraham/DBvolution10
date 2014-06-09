@@ -42,4 +42,6 @@ public interface BooleanResult extends DBExpression {
 	@Override
     public Set<DBRow> getTablesInvolved();
 
+	public boolean getIncludesNull();
+	public void setIncludesNull(boolean nullsAreIncluded);
 }

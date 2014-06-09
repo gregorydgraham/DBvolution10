@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 public class StringExpression implements StringResult {
 
 	private StringResult string1;
+	private boolean nullProtectionRequired;
 
 	protected StringExpression() {
 	}
@@ -74,9 +76,10 @@ public class StringExpression implements StringResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -85,22 +88,15 @@ public class StringExpression implements StringResult {
 	 * </ul>
 	 *
 	 * @param string
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static StringExpression value(String string) {
 		return new StringExpression(string);
 	}
 
 	public StringExpression ifDBNull(String alternative) {
-		return new StringExpression(
-				new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
-
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getIfNullFunctionName();
-					}
-				});
+		return this.ifDBNull(new StringExpression(alternative));
 	}
 
 	public StringExpression ifDBNull(StringResult alternative) {
@@ -111,6 +107,16 @@ public class StringExpression implements StringResult {
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
 					}
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public void setIncludesNull(boolean nullsAreIncluded) {
+						;
+					}
 				});
 	}
 
@@ -119,12 +125,26 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression isLike(StringResult sqlPattern) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, sqlPattern) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " LIKE ";
-			}
-		});
+		if (sqlPattern.getIncludesNull()) {
+			return new BooleanExpression(this.isNull());
+		} else {
+			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, sqlPattern) {
+				@Override
+				protected String getEquationOperator(DBDatabase db) {
+					return " LIKE ";
+				}
+
+				@Override
+				public boolean getIncludesNull() {
+					return false;
+				}
+
+				@Override
+				public void setIncludesNull(boolean nullsAreIncluded) {
+					;
+				}
+			});
+		}
 	}
 
 	public BooleanExpression isLikeIgnoreCase(String sqlPattern) {
@@ -134,7 +154,7 @@ public class StringExpression implements StringResult {
 	public BooleanExpression isLikeIgnoreCase(StringResult sqlPattern) {
 		return this.isLikeIgnoreCase(new StringExpression(sqlPattern));
 	}
-	
+
 	public BooleanExpression isLikeIgnoreCase(StringExpression sqlpattern) {
 		return this.lowercase().isLike(sqlpattern.lowercase());
 	}
@@ -158,7 +178,7 @@ public class StringExpression implements StringResult {
 	public BooleanExpression isIgnoreCase(StringExpression equivalentString) {
 		return this.lowercase().is(equivalentString.lowercase());
 	}
-	
+
 	public BooleanExpression is(String equivalentString) {
 		return this.is(value(equivalentString));
 	}
@@ -172,23 +192,33 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression is(StringResult equivalentString) {
-		return is(new StringExpression(equivalentString));
-	}
-	
-	public BooleanExpression is(StringExpression equivalentString) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " = ";
-			}
-		});
+		if (equivalentString.getIncludesNull()) {
+			return new BooleanExpression(this.isNull());
+		} else {
+			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				@Override
+				protected String getEquationOperator(DBDatabase db) {
+					return " = ";
+				}
+
+				@Override
+				public boolean getIncludesNull() {
+					return false;
+				}
+
+				@Override
+				public void setIncludesNull(boolean nullsAreIncluded) {
+					;
+				}
+			});
+		}
 	}
 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -215,8 +245,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -243,8 +273,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -271,8 +301,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -533,12 +563,26 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression isLessThan(StringResult equivalentString) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " < ";
-			}
-		});
+		if (equivalentString.getIncludesNull()) {
+			return new BooleanExpression(this.isNull());
+		} else {
+			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				@Override
+				protected String getEquationOperator(DBDatabase db) {
+					return " < ";
+				}
+
+				@Override
+				public boolean getIncludesNull() {
+					return false;
+				}
+
+				@Override
+				public void setIncludesNull(boolean nullsAreIncluded) {
+					;
+				}
+			});
+		}
 	}
 
 	public BooleanExpression isLessThanOrEqual(String equivalentString) {
@@ -546,12 +590,26 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression isLessThanOrEqual(StringResult equivalentString) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " <= ";
-			}
-		});
+		if (equivalentString.getIncludesNull()) {
+			return new BooleanExpression(this.isNull());
+		} else {
+			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				@Override
+				protected String getEquationOperator(DBDatabase db) {
+					return " <= ";
+				}
+
+				@Override
+				public boolean getIncludesNull() {
+					return false;
+				}
+
+				@Override
+				public void setIncludesNull(boolean nullsAreIncluded) {
+					;
+				}
+			});
+		}
 	}
 
 	public BooleanExpression isGreaterThan(String equivalentString) {
@@ -559,12 +617,26 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression isGreaterThan(StringResult equivalentString) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " > ";
-			}
-		});
+		if (equivalentString.getIncludesNull()) {
+			return new BooleanExpression(this.isNotNull());
+		} else {
+			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				@Override
+				protected String getEquationOperator(DBDatabase db) {
+					return " > ";
+				}
+
+				@Override
+				public boolean getIncludesNull() {
+					return false;
+				}
+
+				@Override
+				public void setIncludesNull(boolean nullsAreIncluded) {
+					;
+				}
+			});
+		}
 	}
 
 	public BooleanExpression isGreaterThanOrEqual(String equivalentString) {
@@ -572,12 +644,26 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression isGreaterThanOrEqual(StringResult equivalentString) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " >= ";
-			}
-		});
+		if (equivalentString.getIncludesNull()) {
+			return this.is(equivalentString).not();
+		} else {
+			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				@Override
+				protected String getEquationOperator(DBDatabase db) {
+					return " >= ";
+				}
+
+				@Override
+				public boolean getIncludesNull() {
+					return false;
+				}
+
+				@Override
+				public void setIncludesNull(boolean nullsAreIncluded) {
+					;
+				}
+			});
+		}
 	}
 
 	public BooleanExpression isIn(String... possibleValues) {
@@ -597,12 +683,18 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression isIn(StringResult... possibleValues) {
-		return new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
-			@Override
-			protected String getFunctionName(DBDatabase db) {
-				return " IN ";
-			}
-		});
+		final BooleanExpression isInExpression
+				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+					@Override
+					protected String getFunctionName(DBDatabase db) {
+						return " IN ";
+					}
+				});
+		if (isInExpression.getIncludesNull()) {
+			return BooleanExpression.anyOf(new BooleanExpression(this.isNull()), isInExpression);
+		} else {
+			return isInExpression;
+		}
 	}
 
 	public StringExpression append(StringResult string2) {
@@ -629,54 +721,83 @@ public class StringExpression implements StringResult {
 			protected String getEquationOperator(DBDatabase db) {
 				return db.getDefinition().getConcatOperator();
 			}
-		});
-	}
 
-	public StringExpression append(Number number1) {
-		return new StringExpression(new DBBinaryStringNumberArithmetic(this, new NumberExpression(number1)) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return db.getDefinition().getConcatOperator();
+			public boolean getIncludesNull() {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		});
 	}
 
+	public StringExpression append(Number number1) {
+		return this.append(NumberExpression.value(number1));
+//		return new StringExpression(new DBBinaryStringNumberArithmetic(this, new NumberExpression(number1)) {
+//			@Override
+//			protected String getEquationOperator(DBDatabase db) {
+//				return db.getDefinition().getConcatOperator();
+//			}
+//		});
+	}
+
 	public StringExpression replace(String findString, String replaceWith) {
-		return new StringExpression(
-				new DBTrinaryStringFunction(this, new StringExpression(findString), new StringExpression(replaceWith)) {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getReplaceFunctionName();
-					}
-				});
+		return this.replace(new StringExpression(findString), new StringExpression(replaceWith));
+//		return new StringExpression(
+//				new DBTrinaryStringFunction(this, new StringExpression(findString), new StringExpression(replaceWith)) {
+//					@Override
+//					String getFunctionName(DBDatabase db) {
+//						return db.getDefinition().getReplaceFunctionName();
+//					}
+//				});
 	}
 
 	public StringExpression replace(StringResult findString, String replaceWith) {
-		return new StringExpression(
-				new DBTrinaryStringFunction(this, findString, new StringExpression(replaceWith)) {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getReplaceFunctionName();
-					}
-				});
+		return this.replace(findString, StringExpression.value(replaceWith));
+//		return new StringExpression(
+//				new DBTrinaryStringFunction(this, findString, new StringExpression(replaceWith)) {
+//					@Override
+//					String getFunctionName(DBDatabase db) {
+//						return db.getDefinition().getReplaceFunctionName();
+//					}
+//				});
 	}
 
 	public StringExpression replace(String findString, StringResult replaceWith) {
+		return this.replace(StringExpression.value(findString), replaceWith);
+//		return new StringExpression(
+//				new DBTrinaryStringFunction(this, new StringExpression(findString), replaceWith) {
+//					@Override
+//					String getFunctionName(DBDatabase db) {
+//						return db.getDefinition().getReplaceFunctionName();
+//					}
+//				});
+	}
+
+	public StringExpression replace(StringResult findString, StringResult replaceWith) {
+		StringResult replaceValue = replaceWith;
+		if (replaceWith.getIncludesNull()) {
+			replaceValue = StringExpression.value("");
+		}
 		return new StringExpression(
-				new DBTrinaryStringFunction(this, new StringExpression(findString), replaceWith) {
+				new DBTrinaryStringFunction(this, findString, replaceValue) {
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getReplaceFunctionName();
 					}
-				});
-	}
 
-	public StringExpression replace(StringResult findString, StringResult replaceWith) {
-		return new StringExpression(
-				new DBTrinaryStringFunction(this, findString, replaceWith) {
 					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getReplaceFunctionName();
+					public boolean getIncludesNull() {
+						// handled before creation
+						return false;
+					}
+
+					@Override
+					public void setIncludesNull(boolean nullsAreIncluded) {
+						;
 					}
 				});
 	}
@@ -789,12 +910,13 @@ public class StringExpression implements StringResult {
 	}
 
 	/**
-	 * Returns the 1-based index of the first occurrence of searchString within the
-	 * StringExpression.
+	 * Returns the 1-based index of the first occurrence of searchString within
+	 * the StringExpression.
 	 *
 	 * <p>
-	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
-	 * 
+	 * The index is 1-based, and returns 0 when the searchString is not
+	 * found.</p>
+	 *
 	 * @param searchString
 	 * @return an expression that will find the location of the searchString.
 	 */
@@ -806,7 +928,7 @@ public class StringExpression implements StringResult {
 			}
 		});
 	}
-	
+
 	public NumberExpression count() {
 		return new NumberExpression(new DBUnaryNumberFunction(this) {
 
@@ -869,10 +991,63 @@ public class StringExpression implements StringResult {
 		return string1 == null ? false : string1.isAggregator();
 	}
 
+	private BooleanResult isNotNull() {
+		return new DBUnaryBooleanArithmetic() {
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return " IS NOT " + db.getDefinition().getNull();
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				super.setIncludesNull(nullsAreIncluded); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+		};
+	}
+
+	private BooleanResult isNull() {
+		return new DBUnaryBooleanArithmetic() {
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return " IS " + db.getDefinition().getNull();
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				super.setIncludesNull(nullsAreIncluded); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+		};
+	}
+
+	@Override
+	public boolean getIncludesNull() {
+		return nullProtectionRequired;
+	}
+
+	@Override
+	public void setIncludesNull(boolean nullsAreIncluded) {
+		this.nullProtectionRequired = nullsAreIncluded;
+	}
+
 	private static abstract class DBBinaryStringArithmetic implements StringResult {
 
 		private StringResult first;
 		private StringResult second;
+		private boolean includeNulls;
 
 		DBBinaryStringArithmetic(StringResult first, StringResult second) {
 			this.first = first;
@@ -923,6 +1098,15 @@ public class StringExpression implements StringResult {
 			return this.first.isAggregator() || second.isAggregator();
 		}
 
+		@Override
+		public boolean getIncludesNull() {
+			return this.includeNulls;
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			this.includeNulls = nullsAreIncluded;
+		}
 	}
 
 	private static abstract class DBNonaryStringFunction implements StringResult {
@@ -972,6 +1156,16 @@ public class StringExpression implements StringResult {
 		@Override
 		public boolean isAggregator() {
 			return false;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
 		}
 	}
 
@@ -1033,6 +1227,87 @@ public class StringExpression implements StringResult {
 		@Override
 		public boolean isAggregator() {
 			return only.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+		}
+	}
+
+	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
+
+		protected StringExpression only;
+
+		DBUnaryBooleanArithmetic() {
+			this.only = null;
+		}
+
+		DBUnaryBooleanArithmetic(StringExpression only) {
+			this.only = only;
+		}
+
+		@Override
+		public DBString getQueryableDatatypeForExpressionValue() {
+			return new DBString();
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return " (";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + getFunctionName(db) + this.afterValue(db);
+		}
+
+		@Override
+		public DBUnaryBooleanArithmetic copy() {
+			DBUnaryBooleanArithmetic newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.only = only.copy();
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (only != null) {
+				hashSet.addAll(only.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return only.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
 		}
 	}
 
@@ -1369,6 +1644,16 @@ public class StringExpression implements StringResult {
 		public DBString getQueryableDatatypeForExpressionValue() {
 			return new DBString();
 		}
+
+		@Override
+		public boolean getIncludesNull() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
@@ -1429,16 +1714,22 @@ public class StringExpression implements StringResult {
 	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
 
 		protected StringExpression column;
-		protected StringResult[] values;
+		protected List<StringResult> values = new ArrayList<StringResult>();
+		private boolean includesNulls = false;
 
 		DBNnaryBooleanFunction() {
 			this.values = null;
 		}
 
 		DBNnaryBooleanFunction(StringExpression leftHandSide, StringResult[] rightHandSide) {
-			this.values = new StringResult[rightHandSide.length];
 			this.column = leftHandSide;
-			System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
+			for (StringResult stringResult : rightHandSide) {
+				if (stringResult.getIncludesNull()) {
+					this.includesNulls = true;
+				} else {
+					values.add(stringResult);
+				}
+			}
 		}
 
 		@Override
@@ -1485,7 +1776,7 @@ public class StringExpression implements StringResult {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
-			newInstance.values = this.values;
+			Collections.copy(this.values,newInstance.values);
 			return newInstance;
 		}
 
@@ -1510,6 +1801,16 @@ public class StringExpression implements StringResult {
 				result = result || numer.isAggregator();
 			}
 			return result;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return includesNulls;
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			includesNulls = nullsAreIncluded;
 		}
 	}
 

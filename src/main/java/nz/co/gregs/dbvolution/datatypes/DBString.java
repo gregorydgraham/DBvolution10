@@ -486,4 +486,14 @@ public class DBString extends QueryableDatatype implements StringResult {
         setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
         negateOperator();
     }
+
+	@Override
+	public boolean getIncludesNull() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void setIncludesNull(boolean nullsAreIncluded) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }
