@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 public class BooleanExpression implements BooleanResult {
@@ -35,14 +36,14 @@ public class BooleanExpression implements BooleanResult {
 
 	public BooleanExpression(BooleanResult booleanResult) {
 		onlyBool = booleanResult;
-		if (booleanResult.getIncludesNull()){
+		if (booleanResult.getIncludesNull()) {
 			this.includeNulls = true;
 		}
 	}
 
 	public BooleanExpression(Boolean bool) {
 		onlyBool = new DBBoolean(bool);
-		if (bool==null){
+		if (bool == null) {
 			includeNulls = true;
 		}
 	}
@@ -212,6 +213,47 @@ public class BooleanExpression implements BooleanResult {
 		return this.negate();
 	}
 
+	public static BooleanExpression isNotNull(DBExpression possibleNullExpression) {
+		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
+
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " IS NOT " + db.getDefinition().getNull();
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				;
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+		});
+	}
+
+	public static BooleanExpression isNull(DBExpression possibleNullExpression) {
+		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
+
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " IS " + db.getDefinition().getNull();
+			}
+
+			@Override
+			public void setIncludesNull(boolean nullsAreIncluded) {
+				;
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+		});
+	}
+
 	public NumberExpression count() {
 		return new NumberExpression(new DBUnaryNumberFunction(this) {
 			@Override
@@ -282,12 +324,23 @@ public class BooleanExpression implements BooleanResult {
 	public boolean isRelationship() {
 		return this.getTablesInvolved().size() > 1;
 	}
+	
+	@Override
+	public boolean getIncludesNull() {
+		return includeNulls || onlyBool.getIncludesNull();
+	}
+
+	@Override
+	public void setIncludesNull(boolean nullsAreIncluded) {
+		this.includeNulls = nullsAreIncluded;
+	}
+
 
 	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
 
-		private BooleanExpression onlyBool;
+		private DBExpression onlyBool;
 
-		DBUnaryBooleanArithmetic(BooleanExpression bool) {
+		DBUnaryBooleanArithmetic(DBExpression bool) {
 			this.onlyBool = bool.copy();
 		}
 
@@ -299,7 +352,7 @@ public class BooleanExpression implements BooleanResult {
 		@Override
 		public String toSQLString(DBDatabase db) {
 			String op = this.getEquationOperator(db);
-			String returnStr = op + " " + onlyBool.toSQLString(db);
+			String returnStr = onlyBool.toSQLString(db) + " " + op;
 			return returnStr;
 		}
 
@@ -606,16 +659,5 @@ public class BooleanExpression implements BooleanResult {
 		public void setIncludesNull(boolean nullsAreIncluded) {
 			;
 		}
-
-	}
-
-	@Override
-	public boolean getIncludesNull() {
-		return includeNulls||onlyBool.getIncludesNull();
-	}
-
-	@Override
-	public void setIncludesNull(boolean nullsAreIncluded) {
-		this.includeNulls = nullsAreIncluded;
 	}
 }

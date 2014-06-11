@@ -370,7 +370,7 @@ public class BooleanExpressionTests extends AbstractTest {
     }
 	
 	@Test
-    public void testIsInWithNulls() throws SQLException, ParseException {
+    public void testIsStringInWithNulls() throws SQLException, ParseException {
         CarCompany carCo = new CarCompany();
         DBQuery dbQuery = database.getDBQuery(carCo);
 		        
@@ -397,5 +397,35 @@ public class BooleanExpressionTests extends AbstractTest {
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
         Assert.assertThat(allRows.size(), is(3));
+    }
+	
+	@Test
+    public void testIsNumberInWithNulls() throws SQLException, ParseException {
+        Marque marque = new Marque();
+        DBQuery dbQuery = database.getDBQuery(marque);
+		        
+        dbQuery.addCondition(
+				marque.column(marque.updateCount).isIn(null,0,1)
+		);
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(9));
+		
+		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", tedhiFormat.parse(firstDateStr).asDate(), 4, null);
+		database.insert(newMarque);
+		
+		dbQuery = database.getDBQuery(marque);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		
+		dbQuery.addCondition(
+				marque.column(marque.updateCount).isIn(null,0,1)
+		);
+		
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+        Assert.assertThat(allRows.size(), is(10));
     }
 }

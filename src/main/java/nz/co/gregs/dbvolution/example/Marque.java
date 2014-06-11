@@ -60,7 +60,7 @@ public class Marque extends DBRow {
     public Marque(){
     }
     
-    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, int updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
+    public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, Integer updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
         this.uidMarque.setValue(uidMarque);
         this.isUsedForTAFROs.setValue(isUsedForTAFROs);
         this.toyotaStatusClassID.setValue(statusClass);
