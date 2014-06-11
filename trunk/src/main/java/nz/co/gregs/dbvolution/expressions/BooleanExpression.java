@@ -221,10 +221,10 @@ public class BooleanExpression implements BooleanResult {
 				return " IS NOT " + db.getDefinition().getNull();
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				;
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				;
+//			}
 
 			@Override
 			public boolean getIncludesNull() {
@@ -241,10 +241,10 @@ public class BooleanExpression implements BooleanResult {
 				return " IS " + db.getDefinition().getNull();
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				;
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				;
+//			}
 
 			@Override
 			public boolean getIncludesNull() {
@@ -330,10 +330,10 @@ public class BooleanExpression implements BooleanResult {
 		return includeNulls || onlyBool.getIncludesNull();
 	}
 
-	@Override
-	public void setIncludesNull(boolean nullsAreIncluded) {
-		this.includeNulls = nullsAreIncluded;
-	}
+//	@Override
+//	public void setIncludesNull(boolean nullsAreIncluded) {
+//		this.includeNulls = nullsAreIncluded;
+//	}
 
 
 	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
@@ -451,10 +451,10 @@ public class BooleanExpression implements BooleanResult {
 			return this.includeNulls;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			this.includeNulls = nullsAreIncluded;
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			this.includeNulls = nullsAreIncluded;
+//		}
 	}
 
 	private static abstract class DBUnaryNumberFunction implements NumberResult {
@@ -581,10 +581,10 @@ public class BooleanExpression implements BooleanResult {
 			return this.includeNulls;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			this.includeNulls = nullsAreIncluded;
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			this.includeNulls = nullsAreIncluded;
+//		}
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
@@ -655,9 +655,9 @@ public class BooleanExpression implements BooleanResult {
 			return false;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			;
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			;
+//		}
 	}
 }

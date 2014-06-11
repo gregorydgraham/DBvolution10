@@ -43,5 +43,5 @@ public interface BooleanResult extends DBExpression {
     public Set<DBRow> getTablesInvolved();
 
 	public boolean getIncludesNull();
-	public void setIncludesNull(boolean nullsAreIncluded);
+//	public void setIncludesNull(boolean nullsAreIncluded);
 }

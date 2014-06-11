@@ -35,4 +35,6 @@ public interface DateResult extends DBExpression {
 
     @Override
     public DateResult copy();
+
+	public boolean getIncludesNull();
 }

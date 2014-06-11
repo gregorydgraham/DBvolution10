@@ -37,6 +37,6 @@ public interface StringResult extends DBExpression{
     public StringResult copy();
 
 	public boolean getIncludesNull();
-	public void setIncludesNull(boolean nullsAreIncluded);
+//	public void setIncludesNull(boolean nullsAreIncluded);
     
 }
