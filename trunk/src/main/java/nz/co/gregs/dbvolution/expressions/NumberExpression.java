@@ -76,10 +76,9 @@ public class NumberExpression implements NumberResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -88,8 +87,8 @@ public class NumberExpression implements NumberResult {
 	 * </ul>
 	 *
 	 * @param object
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static NumberExpression value(Number object) {
 		return new NumberExpression(object);
@@ -140,25 +139,19 @@ public class NumberExpression implements NumberResult {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
-				if (super.second == null) {
-					return " is ";
-				} else {
-					return " = ";
-				}
+				return " = ";
 			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-//			@Override
-//			public void setIncludesNull(boolean nullsAreIncluded) {
-//				;
-//			}
 		});
 	}
 
+	public BooleanExpression isNotNull() {
+		return BooleanExpression.isNotNull(this);
+	}
+
+	public BooleanExpression isNull() {
+		return BooleanExpression.isNull(this);
+	}
+	
 	public BooleanExpression isNot(Number number) {
 		return is(value(number)).not();
 	}
@@ -170,8 +163,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -198,8 +191,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -226,8 +219,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -254,8 +247,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -1529,10 +1522,14 @@ public class NumberExpression implements NumberResult {
 
 		private NumberExpression first;
 		private NumberResult second;
+		private boolean requiresNullProtection;
 
 		DBBinaryBooleanArithmetic(NumberExpression first, NumberResult second) {
 			this.first = first;
 			this.second = second;
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
 		}
 
 		@Override
@@ -1542,7 +1539,11 @@ public class NumberExpression implements NumberResult {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+			}
 		}
 
 		@Override
@@ -1577,6 +1578,11 @@ public class NumberExpression implements NumberResult {
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
 		}
 	}
 

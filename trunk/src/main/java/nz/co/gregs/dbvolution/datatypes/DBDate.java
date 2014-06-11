@@ -411,6 +411,6 @@ public class DBDate extends QueryableDatatype implements DateResult {
 
 	@Override
 	public boolean getIncludesNull() {
-		return false;
+		return dateValue()==null;
 	}
 }
