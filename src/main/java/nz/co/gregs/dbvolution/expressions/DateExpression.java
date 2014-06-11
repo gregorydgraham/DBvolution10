@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +46,7 @@ public class DateExpression implements DateResult {
 
 	public DateExpression(Date date) {
 		date1 = new DBDate(date);
-		if (date1 == null) {
+		if (date == null || date1.getIncludesNull()) {
 			needsNullProtection = true;
 		}
 	}
@@ -72,10 +73,9 @@ public class DateExpression implements DateResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -84,8 +84,8 @@ public class DateExpression implements DateResult {
 	 * </ul>
 	 *
 	 * @param date
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static DateExpression value(Date date) {
 		return new DateExpression(date);
@@ -186,24 +186,32 @@ public class DateExpression implements DateResult {
 	}
 
 	public BooleanExpression is(DateResult dateExpression) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+		BooleanExpression isExpr = new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " = ";
 			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
 		});
+		if (isExpr.getIncludesNull()) {
+			return BooleanExpression.isNull(this);
+		} else {
+			return isExpr;
+		}
 	}
 
+	public BooleanExpression isNotNull() {
+		return BooleanExpression.isNotNull(this);
+	}
+
+	public BooleanExpression isNull() {
+		return BooleanExpression.isNull(this);
+	}
+	
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -230,8 +238,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -258,8 +266,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -286,8 +294,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -859,10 +867,14 @@ public class DateExpression implements DateResult {
 
 		private DateExpression first;
 		private DateResult second;
+		private boolean requiresNullProtection = false;
 
 		DBBinaryBooleanArithmetic(DateExpression first, DateResult second) {
 			this.first = first;
 			this.second = second;
+			if (second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
 		}
 
 		@Override
@@ -907,6 +919,11 @@ public class DateExpression implements DateResult {
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
 		}
 	}
 
@@ -987,10 +1004,9 @@ public class DateExpression implements DateResult {
 
 		protected DateExpression column;
 		protected List<DateResult> values = new ArrayList<DateResult>();
-		private boolean nullProtectionRequired;
+		boolean nullProtectionRequired = false;
 
 		DBNnaryBooleanFunction() {
-			this.values = null;
 		}
 
 		DBNnaryBooleanFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
@@ -1001,8 +1017,9 @@ public class DateExpression implements DateResult {
 				} else {
 					if (dateResult.getIncludesNull()) {
 						this.nullProtectionRequired = true;
+					}else {
+						values.add(dateResult);
 					}
-					values.add(dateResult);
 				}
 			}
 		}
@@ -1051,7 +1068,7 @@ public class DateExpression implements DateResult {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
-			newInstance.values = this.values;
+			Collections.copy(this.values, newInstance.values);
 			return newInstance;
 		}
 
@@ -1080,7 +1097,7 @@ public class DateExpression implements DateResult {
 
 		@Override
 		public boolean getIncludesNull() {
-			return false;
+			return nullProtectionRequired;
 		}
 	}
 

@@ -228,7 +228,7 @@ public class StringExpression implements StringResult {
 			});
 		}
 	}
-
+	
 	/**
 	 * Performs searches based on a range.
 	 *
@@ -1006,48 +1006,12 @@ public class StringExpression implements StringResult {
 		return string1 == null ? false : string1.isAggregator();
 	}
 
-	private BooleanExpression isNotNull() {
+	public BooleanExpression isNotNull() {
 		return BooleanExpression.isNotNull(this);
-//		return new DBUnaryBooleanArithmetic() {
-//
-//			@Override
-//			String getFunctionName(DBDatabase db) {
-//				return " IS NOT " + db.getDefinition().getNull();
-//			}
-//
-//			@Override
-//			public void setIncludesNull(boolean nullsAreIncluded) {
-//				super.setIncludesNull(nullsAreIncluded); //To change body of generated methods, choose Tools | Templates.
-//			}
-//
-//			@Override
-//			public boolean getIncludesNull() {
-//				return false;
-//			}
-//
-//		};
 	}
 
-	private BooleanExpression isNull() {
+	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
-//		return new DBUnaryBooleanArithmetic(this) {
-//
-//			@Override
-//			String getFunctionName(DBDatabase db) {
-//				return " IS " + db.getDefinition().getNull();
-//			}
-//
-//			@Override
-//			public void setIncludesNull(boolean nullsAreIncluded) {
-//				super.setIncludesNull(nullsAreIncluded); //To change body of generated methods, choose Tools | Templates.
-//			}
-//
-//			@Override
-//			public boolean getIncludesNull() {
-//				return false;
-//			}
-//
-//		};
 	}
 
 	@Override
