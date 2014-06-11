@@ -36,22 +36,37 @@ public class StringExpression implements StringResult {
 
 	public StringExpression(StringResult stringVariable) {
 		string1 = stringVariable;
+		if (stringVariable==null||stringVariable.getIncludesNull()){
+			nullProtectionRequired = true;
+		}
 	}
 
 	public StringExpression(String stringVariable) {
 		string1 = new DBString(stringVariable);
+		if (stringVariable==null){
+			nullProtectionRequired = true;
+		}
 	}
 
 	public StringExpression(NumberExpression numberVariable) {
 		string1 = numberVariable.stringResult();
+		if (numberVariable==null||string1.getIncludesNull()){
+			nullProtectionRequired = true;
+		}
 	}
 
 	public StringExpression(Number numberVariable) {
 		string1 = NumberExpression.value(numberVariable).stringResult();
+		if (numberVariable==null||string1.getIncludesNull()){
+			nullProtectionRequired = true;
+		}
 	}
 
 	public StringExpression(DBString stringVariable) {
 		string1 = stringVariable.copy();
+		if (stringVariable==null||stringVariable.getIncludesNull()){
+			nullProtectionRequired = true;
+		}
 	}
 
 	@Override
@@ -724,7 +739,7 @@ public class StringExpression implements StringResult {
 
 			@Override
 			public boolean getIncludesNull() {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return false;
 			}
 
 			@Override
@@ -1013,7 +1028,7 @@ public class StringExpression implements StringResult {
 	}
 
 	private BooleanResult isNull() {
-		return new DBUnaryBooleanArithmetic() {
+		return new DBUnaryBooleanArithmetic(this) {
 
 			@Override
 			String getFunctionName(DBDatabase db) {
@@ -1160,7 +1175,7 @@ public class StringExpression implements StringResult {
 
 		@Override
 		public boolean getIncludesNull() {
-			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+			return false;
 		}
 
 		@Override
@@ -1231,7 +1246,7 @@ public class StringExpression implements StringResult {
 
 		@Override
 		public boolean getIncludesNull() {
-			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+			return false;
 		}
 
 		@Override
@@ -1302,7 +1317,7 @@ public class StringExpression implements StringResult {
 
 		@Override
 		public boolean getIncludesNull() {
-			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+			return false;
 		}
 
 		@Override
@@ -1369,6 +1384,11 @@ public class StringExpression implements StringResult {
 		@Override
 		public boolean isAggregator() {
 			return only.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
 		}
 	}
 
@@ -1586,6 +1606,11 @@ public class StringExpression implements StringResult {
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
 	}
 
 	private class Substring extends StringExpression implements StringResult {
@@ -1647,7 +1672,7 @@ public class StringExpression implements StringResult {
 
 		@Override
 		public boolean getIncludesNull() {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			return false;
 		}
 
 		@Override

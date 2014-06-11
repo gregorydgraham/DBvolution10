@@ -35,10 +35,16 @@ public class BooleanExpression implements BooleanResult {
 
 	public BooleanExpression(BooleanResult booleanResult) {
 		onlyBool = booleanResult;
+		if (booleanResult.getIncludesNull()){
+			this.includeNulls = true;
+		}
 	}
 
 	public BooleanExpression(Boolean bool) {
 		onlyBool = new DBBoolean(bool);
+		if (bool==null){
+			includeNulls = true;
+		}
 	}
 
 	@Override
@@ -453,6 +459,11 @@ public class BooleanExpression implements BooleanResult {
 		public Set<DBRow> getTablesInvolved() {
 			return onlyBool.getTablesInvolved();
 		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
 	}
 
 	private static abstract class DBUnaryBinaryFunction implements BooleanResult {
@@ -600,7 +611,7 @@ public class BooleanExpression implements BooleanResult {
 
 	@Override
 	public boolean getIncludesNull() {
-		return this.includeNulls;
+		return includeNulls||onlyBool.getIncludesNull();
 	}
 
 	@Override

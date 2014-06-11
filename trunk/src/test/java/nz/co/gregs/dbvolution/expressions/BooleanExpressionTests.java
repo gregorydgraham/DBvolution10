@@ -17,6 +17,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -337,22 +338,64 @@ public class BooleanExpressionTests extends AbstractTest {
 		row.column(row.date1).is(new Date())
 		).not());
 	*/
-	@Ignore
 	@Test
-    public void testIsAnyOfWithNulls() throws SQLException {
-        Marque marque = new Marque();
-        DBQuery dbQuery = database.getDBQuery(marque);
-        List<Long> longs = new ArrayList<Long>();
-        longs.add(new Long(1));
-        longs.add(new Long(2));
-        
-        dbQuery.addCondition(BooleanExpression.anyOf(
-		marque.column(marque.creationDate).is((Date)null),
-		marque.column(marque.creationDate).is(new Date())
-		));
+    public void testIsAnyOfWithNulls() throws SQLException, ParseException {
+        CarCompany carCo = new CarCompany();
+        DBQuery dbQuery = database.getDBQuery(carCo);
+		        
+        dbQuery.addCondition(
+				carCo.column(carCo.name).isIn(null, "TOYOTA", "Ford")
+		);
         
         List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
         Assert.assertThat(allRows.size(), is(2));
+		
+		CarCompany newCarCo = new CarCompany(null, 17);
+		database.insert(newCarCo);
+		
+		dbQuery = database.getDBQuery(carCo);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		
+        dbQuery.addCondition(BooleanExpression.anyOf(
+		carCo.column(carCo.name).is((String)null),
+		carCo.column(carCo.name).isIn("TOYOTA", "Ford")
+		));
+        
+        allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(3));
+    }
+	
+	@Test
+    public void testIsInWithNulls() throws SQLException, ParseException {
+        CarCompany carCo = new CarCompany();
+        DBQuery dbQuery = database.getDBQuery(carCo);
+		        
+        dbQuery.addCondition(
+				carCo.column(carCo.name).isIn(null, "TOYOTA", "Ford")
+		);
+        
+        List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+        Assert.assertThat(allRows.size(), is(2));
+		
+		CarCompany newCarCo = new CarCompany(null, 17);
+		database.insert(newCarCo);
+		
+		dbQuery = database.getDBQuery(carCo);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		
+		dbQuery.addCondition(
+				carCo.column(carCo.name).isIn(null, "TOYOTA", "Ford")
+		);
+		
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+        Assert.assertThat(allRows.size(), is(3));
     }
 }
