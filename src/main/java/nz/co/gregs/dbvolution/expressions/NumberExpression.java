@@ -30,16 +30,23 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 public class NumberExpression implements NumberResult {
 
 	private NumberResult innerNumberResult;
+	private boolean nullProtectionRequired;
 
 	protected NumberExpression() {
 	}
 
 	public NumberExpression(Number value) {
 		innerNumberResult = new DBNumber(value);
+		if (value==null||innerNumberResult.getIncludesNull()){
+			nullProtectionRequired = true;
+		}
 	}
 
 	public NumberExpression(NumberResult value) {
 		innerNumberResult = value;
+		if (value==null||innerNumberResult.getIncludesNull()){
+			nullProtectionRequired = true;
+		}
 	}
 
 	@Override
@@ -106,7 +113,7 @@ public class NumberExpression implements NumberResult {
 
 			@Override
 			public boolean getIncludesNull() {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return false;
 			}
 
 			@Override
@@ -516,7 +523,7 @@ public class NumberExpression implements NumberResult {
 
 			@Override
 			public boolean getIncludesNull() {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return false;
 			}
 
 			@Override
@@ -539,7 +546,7 @@ public class NumberExpression implements NumberResult {
 
 			@Override
 			public boolean getIncludesNull() {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return false;
 			}
 
 			@Override
@@ -562,7 +569,7 @@ public class NumberExpression implements NumberResult {
 
 			@Override
 			public boolean getIncludesNull() {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return false;
 			}
 
 			@Override
@@ -585,7 +592,7 @@ public class NumberExpression implements NumberResult {
 
 			@Override
 			public boolean getIncludesNull() {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return false;
 			}
 
 			@Override
@@ -620,7 +627,7 @@ public class NumberExpression implements NumberResult {
 
 			@Override
 			public boolean getIncludesNull() {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return false;
 			}
 
 			@Override
@@ -1189,6 +1196,10 @@ public class NumberExpression implements NumberResult {
 		this.innerNumberResult = innerNumberResult;
 	}
 
+	public boolean getIncludesNull() {
+		return nullProtectionRequired;
+	}
+
 	public static abstract class DBBinaryArithmetic implements NumberResult {
 
 		public NumberResult first;
@@ -1247,6 +1258,11 @@ public class NumberExpression implements NumberResult {
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
 	}
 
 	private static abstract class DBNonaryFunction implements NumberResult {
@@ -1297,6 +1313,10 @@ public class NumberExpression implements NumberResult {
 			return new HashSet<DBRow>();
 		}
 
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
 	}
 
 	private static abstract class DBUnaryFunction implements NumberResult {
@@ -1357,6 +1377,11 @@ public class NumberExpression implements NumberResult {
 		@Override
 		public boolean isAggregator() {
 			return only.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
 		}
 	}
 
@@ -1429,6 +1454,11 @@ public class NumberExpression implements NumberResult {
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
 		}
 	}
 

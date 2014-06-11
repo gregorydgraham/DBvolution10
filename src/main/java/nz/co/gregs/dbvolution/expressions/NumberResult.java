@@ -35,4 +35,6 @@ public interface NumberResult extends DBExpression{
     
     @Override
     public NumberResult copy();
+
+	public boolean getIncludesNull();
 }
