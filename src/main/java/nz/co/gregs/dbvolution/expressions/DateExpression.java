@@ -31,16 +31,23 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 public class DateExpression implements DateResult {
 
 	private DateResult date1;
+	private boolean needsNullProtection = false;
 
 	protected DateExpression() {
 	}
 
 	public DateExpression(DateResult dateVariable) {
 		date1 = dateVariable;
+		if (date1 == null || date1.getIncludesNull()) {
+			needsNullProtection = true;
+		}
 	}
 
 	public DateExpression(Date date) {
 		date1 = new DBDate(date);
+		if (date1 == null) {
+			needsNullProtection = true;
+		}
 	}
 
 	@Override
@@ -188,11 +195,6 @@ public class DateExpression implements DateResult {
 			@Override
 			public boolean getIncludesNull() {
 				return false;
-			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		});
 	}
@@ -556,11 +558,6 @@ public class DateExpression implements DateResult {
 			public boolean getIncludesNull() {
 				return false;
 			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
 		});
 	}
 
@@ -578,11 +575,6 @@ public class DateExpression implements DateResult {
 			@Override
 			public boolean getIncludesNull() {
 				return false;
-			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		});
 	}
@@ -602,11 +594,6 @@ public class DateExpression implements DateResult {
 			public boolean getIncludesNull() {
 				return false;
 			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
 		});
 	}
 
@@ -624,11 +611,6 @@ public class DateExpression implements DateResult {
 			@Override
 			public boolean getIncludesNull() {
 				return false;
-			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		});
 	}
@@ -650,22 +632,17 @@ public class DateExpression implements DateResult {
 	}
 
 	public BooleanExpression isIn(DateResult... possibleValues) {
-		return new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+		BooleanExpression isInExpr = new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
 			@Override
 			protected String getFunctionName(DBDatabase db) {
 				return " IN ";
 			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
 		});
+		if (isInExpr.getIncludesNull()) {
+			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isInExpr);
+		} else {
+			return isInExpr;
+		}
 	}
 
 	public DateExpression ifDBNull(Date alternative) {
@@ -674,6 +651,11 @@ public class DateExpression implements DateResult {
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
+					}
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
 					}
 				});
 	}
@@ -684,6 +666,11 @@ public class DateExpression implements DateResult {
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
+					}
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
 					}
 				});
 	}
@@ -713,6 +700,11 @@ public class DateExpression implements DateResult {
 			public boolean isAggregator() {
 				return true;
 			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
 		});
 	}
 
@@ -726,6 +718,11 @@ public class DateExpression implements DateResult {
 			@Override
 			public boolean isAggregator() {
 				return true;
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
 			}
 		});
 	}
@@ -743,6 +740,11 @@ public class DateExpression implements DateResult {
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		return date1 == null ? new HashSet<DBRow>() : date1.getTablesInvolved();
+	}
+
+	@Override
+	public boolean getIncludesNull() {
+		return needsNullProtection;
 	}
 
 	private static abstract class DBNonaryFunction implements DateResult {
@@ -790,6 +792,11 @@ public class DateExpression implements DateResult {
 
 		@Override
 		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
 			return false;
 		}
 	}
@@ -979,16 +986,25 @@ public class DateExpression implements DateResult {
 	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
 
 		protected DateExpression column;
-		protected DateResult[] values;
+		protected List<DateResult> values = new ArrayList<DateResult>();
+		private boolean nullProtectionRequired;
 
 		DBNnaryBooleanFunction() {
 			this.values = null;
 		}
 
 		DBNnaryBooleanFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
-			this.values = new DateResult[rightHandSide.length];
 			this.column = leftHandSide;
-			System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
+			for (DateResult dateResult : rightHandSide) {
+				if (dateResult == null) {
+					this.nullProtectionRequired = true;
+				} else {
+					if (dateResult.getIncludesNull()) {
+						this.nullProtectionRequired = true;
+					}
+					values.add(dateResult);
+				}
+			}
 		}
 
 		@Override
@@ -1060,6 +1076,11 @@ public class DateExpression implements DateResult {
 				result = result || dater.isAggregator();
 			}
 			return result;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
 		}
 	}
 

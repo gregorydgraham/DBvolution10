@@ -408,4 +408,9 @@ public class DBDate extends QueryableDatatype implements DateResult {
         setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
         negateOperator();
     }
+
+	@Override
+	public boolean getIncludesNull() {
+		return false;
+	}
 }

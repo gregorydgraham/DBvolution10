@@ -151,8 +151,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 		return false;
 	}
 
-	@Override
-	public void setIncludesNull(boolean nullsAreIncluded) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public void setIncludesNull(boolean nullsAreIncluded) {
+//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//	}
 }

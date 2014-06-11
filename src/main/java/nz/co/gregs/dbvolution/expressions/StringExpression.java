@@ -128,10 +128,10 @@ public class StringExpression implements StringResult {
 						return false;
 					}
 
-					@Override
-					public void setIncludesNull(boolean nullsAreIncluded) {
-						;
-					}
+//					@Override
+//					public void setIncludesNull(boolean nullsAreIncluded) {
+//						;
+//					}
 				});
 	}
 
@@ -154,10 +154,10 @@ public class StringExpression implements StringResult {
 					return false;
 				}
 
-				@Override
-				public void setIncludesNull(boolean nullsAreIncluded) {
-					;
-				}
+//				@Override
+//				public void setIncludesNull(boolean nullsAreIncluded) {
+//					;
+//				}
 			});
 		}
 	}
@@ -221,10 +221,10 @@ public class StringExpression implements StringResult {
 					return false;
 				}
 
-				@Override
-				public void setIncludesNull(boolean nullsAreIncluded) {
-					;
-				}
+//				@Override
+//				public void setIncludesNull(boolean nullsAreIncluded) {
+//					;
+//				}
 			});
 		}
 	}
@@ -592,10 +592,10 @@ public class StringExpression implements StringResult {
 					return false;
 				}
 
-				@Override
-				public void setIncludesNull(boolean nullsAreIncluded) {
-					;
-				}
+//				@Override
+//				public void setIncludesNull(boolean nullsAreIncluded) {
+//					;
+//				}
 			});
 		}
 	}
@@ -619,10 +619,10 @@ public class StringExpression implements StringResult {
 					return false;
 				}
 
-				@Override
-				public void setIncludesNull(boolean nullsAreIncluded) {
-					;
-				}
+//				@Override
+//				public void setIncludesNull(boolean nullsAreIncluded) {
+//					;
+//				}
 			});
 		}
 	}
@@ -646,10 +646,10 @@ public class StringExpression implements StringResult {
 					return false;
 				}
 
-				@Override
-				public void setIncludesNull(boolean nullsAreIncluded) {
-					;
-				}
+//				@Override
+//				public void setIncludesNull(boolean nullsAreIncluded) {
+//					;
+//				}
 			});
 		}
 	}
@@ -673,10 +673,10 @@ public class StringExpression implements StringResult {
 					return false;
 				}
 
-				@Override
-				public void setIncludesNull(boolean nullsAreIncluded) {
-					;
-				}
+//				@Override
+//				public void setIncludesNull(boolean nullsAreIncluded) {
+//					;
+//				}
 			});
 		}
 	}
@@ -742,10 +742,10 @@ public class StringExpression implements StringResult {
 				return false;
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
 		});
 	}
 
@@ -810,10 +810,10 @@ public class StringExpression implements StringResult {
 						return false;
 					}
 
-					@Override
-					public void setIncludesNull(boolean nullsAreIncluded) {
-						;
-					}
+//					@Override
+//					public void setIncludesNull(boolean nullsAreIncluded) {
+//						;
+//					}
 				});
 	}
 
@@ -1055,10 +1055,10 @@ public class StringExpression implements StringResult {
 		return nullProtectionRequired;
 	}
 
-	@Override
-	public void setIncludesNull(boolean nullsAreIncluded) {
-		this.nullProtectionRequired = nullsAreIncluded;
-	}
+//	@Override
+//	public void setIncludesNull(boolean nullsAreIncluded) {
+//		this.nullProtectionRequired = nullsAreIncluded;
+//	}
 
 	private static abstract class DBBinaryStringArithmetic implements StringResult {
 
@@ -1120,10 +1120,10 @@ public class StringExpression implements StringResult {
 			return this.includeNulls;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			this.includeNulls = nullsAreIncluded;
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			this.includeNulls = nullsAreIncluded;
+//		}
 	}
 
 	private static abstract class DBNonaryStringFunction implements StringResult {
@@ -1180,10 +1180,10 @@ public class StringExpression implements StringResult {
 			return false;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+//		}
 	}
 
 	private static abstract class DBUnaryStringFunction implements StringResult {
@@ -1251,10 +1251,10 @@ public class StringExpression implements StringResult {
 			return false;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+//		}
 	}
 
 //	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
@@ -1677,10 +1677,10 @@ public class StringExpression implements StringResult {
 			return false;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//		}
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
@@ -1835,10 +1835,10 @@ public class StringExpression implements StringResult {
 			return includesNulls;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			includesNulls = nullsAreIncluded;
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			includesNulls = nullsAreIncluded;
+//		}
 	}
 
 	private static abstract class DBBinaryStringNumberArithmetic implements StringResult {

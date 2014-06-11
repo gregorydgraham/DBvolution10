@@ -117,10 +117,10 @@ public class NumberExpression implements NumberResult {
 				return false;
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
 		});
 	}
 
@@ -152,10 +152,10 @@ public class NumberExpression implements NumberResult {
 				return false;
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				;
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				;
+//			}
 		});
 	}
 
@@ -527,10 +527,10 @@ public class NumberExpression implements NumberResult {
 				return false;
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
 		});
 	}
 
@@ -550,10 +550,10 @@ public class NumberExpression implements NumberResult {
 				return false;
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
 		});
 	}
 
@@ -573,10 +573,10 @@ public class NumberExpression implements NumberResult {
 				return false;
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
 		});
 	}
 
@@ -596,10 +596,10 @@ public class NumberExpression implements NumberResult {
 				return false;
 			}
 
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
 		});
 	}
 
@@ -1679,10 +1679,10 @@ public class NumberExpression implements NumberResult {
 			return nullProtectionRequired;
 		}
 
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			this.nullProtectionRequired = nullsAreIncluded;
-		}
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			this.nullProtectionRequired = nullsAreIncluded;
+//		}
 	}
 
 	private static abstract class DBUnaryStringFunction implements StringResult {
