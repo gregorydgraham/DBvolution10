@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,14 +38,14 @@ public class NumberExpression implements NumberResult {
 
 	public NumberExpression(Number value) {
 		innerNumberResult = new DBNumber(value);
-		if (value==null||innerNumberResult.getIncludesNull()){
+		if (value == null || innerNumberResult.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
 	public NumberExpression(NumberResult value) {
 		innerNumberResult = value;
-		if (value==null||innerNumberResult.getIncludesNull()){
+		if (value == null || innerNumberResult.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
@@ -619,22 +620,18 @@ public class NumberExpression implements NumberResult {
 	}
 
 	public BooleanExpression isIn(NumberResult... possibleValues) {
-		return new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
-			@Override
-			protected String getFunctionName(DBDatabase db) {
-				return " IN ";
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
-		});
+		BooleanExpression isinExpr
+				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+					@Override
+					protected String getFunctionName(DBDatabase db) {
+						return " IN ";
+					}
+				});
+		if (isinExpr.getIncludesNull()) {
+			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isinExpr);
+		} else {
+			return isinExpr;
+		}
 	}
 
 	public static NumberExpression getNextSequenceValue(String sequenceName) {
@@ -1586,16 +1583,24 @@ public class NumberExpression implements NumberResult {
 	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
 
 		protected NumberExpression column;
-		protected NumberResult[] values;
+		protected final List<NumberResult> values = new ArrayList<NumberResult>();
+		boolean nullProtectionRequired = false;
 
 		DBNnaryBooleanFunction() {
-			this.values = null;
 		}
 
 		DBNnaryBooleanFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
-			this.values = new NumberResult[rightHandSide.length];
 			this.column = leftHandSide;
-			System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
+			for (NumberResult numberResult : rightHandSide) {
+				if (numberResult == null) {
+					this.nullProtectionRequired = true;
+				} else {
+					if (numberResult.getIncludesNull()) {
+						this.nullProtectionRequired = true;
+					}
+					values.add(numberResult);
+				}
+			}
 		}
 
 		@Override
@@ -1642,7 +1647,7 @@ public class NumberExpression implements NumberResult {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
-			newInstance.values = this.values;
+			Collections.copy(this.values, newInstance.values);
 			return newInstance;
 		}
 
@@ -1667,6 +1672,16 @@ public class NumberExpression implements NumberResult {
 				result = result || numer.isAggregator();
 			}
 			return result;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return nullProtectionRequired;
+		}
+
+		@Override
+		public void setIncludesNull(boolean nullsAreIncluded) {
+			this.nullProtectionRequired = nullsAreIncluded;
 		}
 	}
 

@@ -1006,46 +1006,48 @@ public class StringExpression implements StringResult {
 		return string1 == null ? false : string1.isAggregator();
 	}
 
-	private BooleanResult isNotNull() {
-		return new DBUnaryBooleanArithmetic() {
-
-			@Override
-			String getFunctionName(DBDatabase db) {
-				return " IS NOT " + db.getDefinition().getNull();
-			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				super.setIncludesNull(nullsAreIncluded); //To change body of generated methods, choose Tools | Templates.
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-		};
+	private BooleanExpression isNotNull() {
+		return BooleanExpression.isNotNull(this);
+//		return new DBUnaryBooleanArithmetic() {
+//
+//			@Override
+//			String getFunctionName(DBDatabase db) {
+//				return " IS NOT " + db.getDefinition().getNull();
+//			}
+//
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				super.setIncludesNull(nullsAreIncluded); //To change body of generated methods, choose Tools | Templates.
+//			}
+//
+//			@Override
+//			public boolean getIncludesNull() {
+//				return false;
+//			}
+//
+//		};
 	}
 
-	private BooleanResult isNull() {
-		return new DBUnaryBooleanArithmetic(this) {
-
-			@Override
-			String getFunctionName(DBDatabase db) {
-				return " IS " + db.getDefinition().getNull();
-			}
-
-			@Override
-			public void setIncludesNull(boolean nullsAreIncluded) {
-				super.setIncludesNull(nullsAreIncluded); //To change body of generated methods, choose Tools | Templates.
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-		};
+	private BooleanExpression isNull() {
+		return BooleanExpression.isNull(this);
+//		return new DBUnaryBooleanArithmetic(this) {
+//
+//			@Override
+//			String getFunctionName(DBDatabase db) {
+//				return " IS " + db.getDefinition().getNull();
+//			}
+//
+//			@Override
+//			public void setIncludesNull(boolean nullsAreIncluded) {
+//				super.setIncludesNull(nullsAreIncluded); //To change body of generated methods, choose Tools | Templates.
+//			}
+//
+//			@Override
+//			public boolean getIncludesNull() {
+//				return false;
+//			}
+//
+//		};
 	}
 
 	@Override
@@ -1255,76 +1257,76 @@ public class StringExpression implements StringResult {
 		}
 	}
 
-	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
-
-		protected StringExpression only;
-
-		DBUnaryBooleanArithmetic() {
-			this.only = null;
-		}
-
-		DBUnaryBooleanArithmetic(StringExpression only) {
-			this.only = only;
-		}
-
-		@Override
-		public DBString getQueryableDatatypeForExpressionValue() {
-			return new DBString();
-		}
-
-		abstract String getFunctionName(DBDatabase db);
-
-		protected String beforeValue(DBDatabase db) {
-			return " (";
-		}
-
-		protected String afterValue(DBDatabase db) {
-			return ") ";
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + getFunctionName(db) + this.afterValue(db);
-		}
-
-		@Override
-		public DBUnaryBooleanArithmetic copy() {
-			DBUnaryBooleanArithmetic newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = only.copy();
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (only != null) {
-				hashSet.addAll(only.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public void setIncludesNull(boolean nullsAreIncluded) {
-			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
-		}
-	}
+//	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
+//
+//		protected StringExpression only;
+//
+//		DBUnaryBooleanArithmetic() {
+//			this.only = null;
+//		}
+//
+//		DBUnaryBooleanArithmetic(StringExpression only) {
+//			this.only = only;
+//		}
+//
+//		@Override
+//		public DBString getQueryableDatatypeForExpressionValue() {
+//			return new DBString();
+//		}
+//
+//		abstract String getFunctionName(DBDatabase db);
+//
+//		protected String beforeValue(DBDatabase db) {
+//			return " (";
+//		}
+//
+//		protected String afterValue(DBDatabase db) {
+//			return ") ";
+//		}
+//
+//		@Override
+//		public String toSQLString(DBDatabase db) {
+//			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + getFunctionName(db) + this.afterValue(db);
+//		}
+//
+//		@Override
+//		public DBUnaryBooleanArithmetic copy() {
+//			DBUnaryBooleanArithmetic newInstance;
+//			try {
+//				newInstance = getClass().newInstance();
+//			} catch (InstantiationException ex) {
+//				throw new RuntimeException(ex);
+//			} catch (IllegalAccessException ex) {
+//				throw new RuntimeException(ex);
+//			}
+//			newInstance.only = only.copy();
+//			return newInstance;
+//		}
+//
+//		@Override
+//		public Set<DBRow> getTablesInvolved() {
+//			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+//			if (only != null) {
+//				hashSet.addAll(only.getTablesInvolved());
+//			}
+//			return hashSet;
+//		}
+//
+//		@Override
+//		public boolean isAggregator() {
+//			return only.isAggregator();
+//		}
+//
+//		@Override
+//		public boolean getIncludesNull() {
+//			return false;
+//		}
+//
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
+//		}
+//	}
 
 	private static abstract class DBUnaryNumberFunction implements NumberResult {
 
