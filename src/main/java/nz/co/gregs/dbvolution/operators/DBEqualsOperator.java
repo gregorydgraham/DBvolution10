@@ -27,70 +27,76 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class DBEqualsOperator extends DBOperator {
 
-    public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1L;
 //    protected DBDefinition defn;
 
-    /**
-     *
-     */
-    public DBEqualsOperator() {
-        super();
-    }
+	/**
+	 *
+	 */
+	public DBEqualsOperator() {
+		super();
+	}
 
-    public DBEqualsOperator(DBExpression equalTo) {
-        this.firstValue = (equalTo == null ? equalTo : equalTo.copy());
-    }
+	public DBEqualsOperator(DBExpression equalTo) {
+		this.firstValue = (equalTo == null ? equalTo : equalTo.copy());
+	}
 
-    public DBEqualsOperator(Object equalTo) {
-        QueryableDatatype first = QueryableDatatype.getQueryableDatatypeForObject(equalTo);
-        this.firstValue = (first == null ? first : first.copy());
-    }
+	public DBEqualsOperator(Object equalTo) {
+		QueryableDatatype first = QueryableDatatype.getQueryableDatatypeForObject(equalTo);
+		this.firstValue = (first == null ? first : first.copy());
+	}
 
-    public String getInverse(DBDefinition defn) {
-        if (defn != null) {
-            return defn.getNotEqualsComparator();
-        }
-        return " <> ";
-    }
+	public String getInverse(DBDefinition defn) {
+		if (defn != null) {
+			return defn.getNotEqualsComparator();
+		}
+		return " <> ";
+	}
 
-    public String getOperator(DBDefinition defn) {
-        if (defn != null) {
-            return defn.getEqualsComparator();
-        }
-        return " = ";
-    }
+	public String getOperator(DBDefinition defn) {
+		if (defn != null) {
+			return defn.getEqualsComparator();
+		}
+		return " = ";
+	}
 
-    @Override
-    public String generateWhereLine(DBDatabase db, String columnName) {
-        DBDefinition defn = db.getDefinition();
-        String whereLine;
-        if ((firstValue instanceof QueryableDatatype) && ((QueryableDatatype)firstValue).isNull()) {
-            DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-            dbIsNullOperator.invertOperator(this.invertOperator);
-            whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
-        } else {
-            whereLine =  columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + firstValue.toSQLString(db);
-        }
-        return whereLine;
-    }
+	@Override
+	public String generateWhereLine(DBDatabase db, String columnName) {
+		DBDefinition defn = db.getDefinition();
+		String whereLine;
+		if ((firstValue instanceof QueryableDatatype) && ((QueryableDatatype) firstValue).isNull()) {
+			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
+			dbIsNullOperator.invertOperator(this.invertOperator);
+			whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
+		} else {
+			whereLine = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + firstValue.toSQLString(db);
+		}
+		if (this.includeNulls) {
+			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
+			dbIsNullOperator.invertOperator(this.invertOperator);
+			return "(" + dbIsNullOperator.generateWhereLine(db, columnName) + (this.invertOperator?defn.beginAndLine():defn.beginOrLine()) + whereLine + ")";
+		} else {
+			return whereLine;
+		}
+	}
 
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
-        String relationStr = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + otherColumnName;
-        return relationStr;
-    }
+	@Override
+	public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+		DBDefinition defn = database.getDefinition();
+		String relationStr = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + otherColumnName;
+		return relationStr;
+	}
 
-    @Override
-    public DBOperator getInverseOperator() {
-        return this;
-    }
+	@Override
+	public DBOperator getInverseOperator() {
+		return this;
+	}
 
-    @Override
-    public DBEqualsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBEqualsOperator op = new DBEqualsOperator(typeAdaptor.convert(firstValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	@Override
+	public DBEqualsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBEqualsOperator op = new DBEqualsOperator(typeAdaptor.convert(firstValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 }

@@ -51,7 +51,7 @@ public class DBTableGetTest extends AbstractTest {
         for (DBRow row : marquesTable.getAllRows()) {
             System.out.println(row);
         }
-        Assert.assertTrue("Incorrect number of marques retreived", marquesTable.getAllRows().size() == marqueRows.size());
+        Assert.assertThat(marquesTable.getAllRows().size() , is(marqueRows.size()));
     }
 
     @Test
@@ -99,6 +99,15 @@ public class DBTableGetTest extends AbstractTest {
         marquesTable.print();
         Assert.assertEquals(1, rowsByExample.size());
         Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
+    }
+
+    @Test
+    public void testIsLiterallyNotWithNull() throws SQLException {
+        Marque literalQuery = new Marque();
+        literalQuery.getIntIndividualAllocationsAllowed().excludedValues(null,"Y");
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
+        marquesTable.print();
+        Assert.assertThat(rowsByExample.size(), is(marqueRows.size()-3));
     }
 
     @Test
@@ -168,6 +177,26 @@ public class DBTableGetTest extends AbstractTest {
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();
         Assert.assertThat(rowsByExample.size(), is(2));
+    }
+
+    @Test
+    public void testIsInWithNull() throws SQLException {
+        Marque hummerQuery = new Marque();
+        hummerQuery.getUidMarque().blankQuery();
+        hummerQuery.individualAllocationsAllowed.permittedValues(null, "Y", "YES");
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
+        marquesTable.print();
+        Assert.assertThat(rowsByExample.size(), is(3));
+    }
+
+    @Test
+    public void testIsNotInWithNull() throws SQLException {
+        Marque hummerQuery = new Marque();
+        hummerQuery.getUidMarque().blankQuery();
+        hummerQuery.individualAllocationsAllowed.excludedValues(null, "Y", "YES");
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
+        marquesTable.print();
+        Assert.assertThat(rowsByExample.size(), is(marqueRows.size()-3));
     }
 
     @Test

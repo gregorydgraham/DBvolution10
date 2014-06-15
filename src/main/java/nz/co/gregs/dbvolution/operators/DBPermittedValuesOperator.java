@@ -22,36 +22,34 @@ import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDat
 
 public class DBPermittedValuesOperator extends DBMetaOperator {
 
-    public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unchecked")
-    public DBPermittedValuesOperator(Object... permitted) {
-        ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
-        if (permitted == null) {
-            operator = new DBIsNullOperator();
-        } else {
-            for (Object obj : permitted) {
-                if (obj instanceof Collection) {
-                    Collection<Object> myList = (Collection) obj;
-                    for (Object obj1 : myList) {
-                        qdts.add(getQueryableDatatypeForObject(obj1));
-                    }
-//                } else if (obj instanceof Set) {
-//                    Set<Object> myList = (Set) obj;
-//                    for (Object obj1 : myList) {
-//                        qdts.add(getQueryableDatatypeForObject(obj1));
-//                    }
-                } else {
-                    qdts.add(getQueryableDatatypeForObject(obj));
-                }
-            }
-            if (qdts.isEmpty()) {
-                operator = new DBIsNullOperator();
-            } else if (qdts.size() == 1) {
-                operator = new DBEqualsOperator(qdts.get(0));
-            } else {
-                operator = new DBInOperator(qdts);
-            }
-        }
-    }
+	@SuppressWarnings("unchecked")
+	public DBPermittedValuesOperator(Object... permitted) {
+		ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
+		if (permitted == null) {
+			operator = new DBIsNullOperator();
+		} else {
+			for (Object obj : permitted) {
+				if (obj == null) {
+					this.includeNulls = true;
+				} else if (obj instanceof Collection) {
+					Collection<Object> myList = (Collection) obj;
+					for (Object obj1 : myList) {
+						qdts.add(getQueryableDatatypeForObject(obj1));
+					}
+				} else {
+					qdts.add(getQueryableDatatypeForObject(obj));
+				}
+			}
+			if (qdts.isEmpty()) {
+				operator = new DBIsNullOperator();
+			} else if (qdts.size() == 1) {
+				operator = new DBEqualsOperator(qdts.get(0));
+			} else {
+				operator = new DBInOperator(qdts);
+			}
+		}
+		operator.includeNulls = this.includeNulls;
+	}
 }
