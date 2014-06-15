@@ -61,7 +61,6 @@ public class DBInOperator extends DBOperator {
     public String generateWhereLine(DBDatabase db, String columnName) {
         DBDefinition defn = db.getDefinition();
         StringBuilder whereClause = new StringBuilder();
-//        whereClause.append(defn.beginConditionClauseLine());
         if (listOfPossibleValues.isEmpty()) {
             // prevent any rows from returning as an empty list means no rows can match
             whereClause.append(defn.getFalseOperation());
@@ -70,13 +69,18 @@ public class DBInOperator extends DBOperator {
             whereClause.append(invertOperator ? getInverse() : getOperator() );
             String sep = "";
             for (QueryableDatatype qdt : listOfPossibleValues) {
-//                qdt.setDatabase(database);
                 whereClause.append(sep).append(" ").append(qdt.toSQLString(db)).append(" ");
                 sep = ",";
             }
             whereClause.append(")");
         }
-        return whereClause.toString();
+		if (this.includeNulls) {
+			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
+			dbIsNullOperator.invertOperator(this.invertOperator);
+			return "(" + dbIsNullOperator.generateWhereLine(db, columnName) + (this.invertOperator?defn.beginAndLine():defn.beginOrLine()) + whereClause.toString() + ")";
+		} else {
+			return whereClause.toString();
+		}
     }
 
     protected String getOperator() {
@@ -89,7 +93,6 @@ public class DBInOperator extends DBOperator {
 
     @Override
     public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        DBDefinition defn = database.getDefinition();
         return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
     }
 

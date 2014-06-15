@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.expressions;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -419,6 +418,37 @@ public class BooleanExpressionTests extends AbstractTest {
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testIsAnyOfWithNullsWorksWithNot() throws SQLException, ParseException {
+		CarCompany carCo = new CarCompany();
+		DBQuery dbQuery = database.getDBQuery(carCo);
+
+		dbQuery.addCondition(
+				carCo.column(carCo.name).isIn(null, "TOYOTA", "Ford").not()
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+
+		CarCompany newCarCo = new CarCompany(null, 17);
+		database.insert(newCarCo);
+
+		dbQuery = database.getDBQuery(carCo);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+
+		dbQuery.addCondition(BooleanExpression.anyOf(
+				carCo.column(carCo.name).is((String) null),
+				carCo.column(carCo.name).isIn("TOYOTA", "Ford")
+		).not());
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
 	}
 
 	@Test

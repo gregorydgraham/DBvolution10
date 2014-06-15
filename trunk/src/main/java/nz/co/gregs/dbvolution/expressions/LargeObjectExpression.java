@@ -62,4 +62,12 @@ public class LargeObjectExpression implements LargeObjectResult {
         return hashSet;
     }
 
+	public BooleanExpression isNotNull() {
+		return BooleanExpression.isNotNull(this);
+	}
+
+	public BooleanExpression isNull() {
+		return BooleanExpression.isNull(this);
+	}
+
 }
