@@ -27,6 +27,7 @@ import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.example.*;
+import nz.co.gregs.dbvolution.mysql.MySQLMXJDBInitialisationTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -54,13 +55,21 @@ public abstract class AbstractTest {
 
     @Parameters(name = "{0}")
     public static List<Object[]> data() throws IOException {
-        Object[][] data = new Object[][]{
-            //            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")}
-            //            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")}
-            //            {"MySQLDB" new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")}
-            //            {"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
-            {"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)}
-        };
+		String property = System.getProperty("testAllDatabases");
+		Object[][] data;
+		if (property==null || property.isEmpty()){
+			// Do basic testing
+        	data = new Object[][]{
+				{"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)}
+			};
+		}else{
+			data = new Object[][]{
+				            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")},
+				            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")},
+				            {"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")},
+				            {"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
+			};
+}
         return Arrays.asList(data);
     }
 
