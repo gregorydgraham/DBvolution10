@@ -649,4 +649,8 @@ public abstract class DBDefinition {
 		return true;
 	}
 
+	public String getTruncFunctionName() {
+		return "trunc";
+	}
+
 }
