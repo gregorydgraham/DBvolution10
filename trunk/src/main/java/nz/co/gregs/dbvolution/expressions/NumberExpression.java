@@ -943,8 +943,14 @@ public class NumberExpression implements NumberResult {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
-				return "trunc";
+				return db.getDefinition().getTruncFunctionName();
 			}
+
+			@Override
+			protected String afterValue(DBDatabase db) {
+				return ", 0) ";
+			}
+
 		});
 	}
 

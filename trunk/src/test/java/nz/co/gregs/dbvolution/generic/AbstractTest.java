@@ -55,22 +55,21 @@ public abstract class AbstractTest {
 
     @Parameters(name = "{0}")
     public static List<Object[]> data() throws IOException {
-		String property = System.getProperty("testAllDatabases");
-		Object[][] data;
-		if (property==null || property.isEmpty()){
+		List<Object[]> databases = new ArrayList<Object[]>();
+		boolean testAllDatabases = System.getProperty("testAllDatabases")!=null;
+		if(System.getProperty("testMySQL") != null || testAllDatabases) {
+			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()});
+		}			
+		if (databases.isEmpty() || testAllDatabases) {
 			// Do basic testing
-        	data = new Object[][]{
-				{"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)}
-			};
-		}else{
-			data = new Object[][]{
-				            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")},
-				            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")},
-				            {"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")},
-				            {"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
-			};
-}
-        return Arrays.asList(data);
+			databases.add(new Object[]{"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)});
+		}
+//				            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")},
+//				            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")},
+//				            {"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")},
+//				            {"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
+
+			return databases;
     }
 
     public AbstractTest(Object testIterationName, Object db) {
