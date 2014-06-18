@@ -57,7 +57,8 @@ public class MySQLDBDefinition extends DBDefinition {
     @Override
     public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         if (qdt instanceof DBString) {
-            return " VARCHAR(1000) CHARACTER SET latin1 COLLATE latin1_general_cs ";
+            return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
+//            return " VARCHAR(1000) CHARACTER SET latin1 COLLATE latin1_general_cs ";
         } else if (qdt instanceof DBDate) {
             return " DATETIME ";
         } else if (qdt instanceof DBByteArray) {
@@ -97,5 +98,10 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "truncate";
 	}
 
+	@Override
+	public String doStringEqualsTransform(String firstString, String secondString) {
+		return "("+firstString+" = binary "+secondString+")";
+//		return "(STRCMP("+firstString+", "+secondString+") = 0)";
+	}
 
 }

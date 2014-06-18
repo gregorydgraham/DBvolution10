@@ -211,6 +211,12 @@ public class StringExpression implements StringResult {
 			return new BooleanExpression(this.isNull());
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+
+				@Override
+				public String toSQLString(DBDatabase db) {
+					return db.getDefinition().doStringEqualsTransform(super.first.toSQLString(db), super.second.toSQLString(db));
+				}
+				
 				@Override
 				protected String getEquationOperator(DBDatabase db) {
 					return " = ";

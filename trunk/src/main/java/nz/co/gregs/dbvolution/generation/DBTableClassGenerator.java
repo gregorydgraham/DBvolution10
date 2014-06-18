@@ -321,7 +321,7 @@ public class DBTableClassGenerator {
                             } else if (fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
                                 dbTableField.isForeignKey = true;
                                 dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.columnName);
-                                dbTableField.referencesClass = fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName);
+                                dbTableField.referencesClass = toClassCase(fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName));
                             }
                             dbTableClass.getFields().add(dbTableField);
                         }
