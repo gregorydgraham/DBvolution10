@@ -62,7 +62,7 @@ public class GeneratedMarqueTest extends AbstractTest {
                 System.out.print("" + dbcl.getJavaSource());
                 boolean found = false;
                 for (String str : testClasses) {
-                    if (str.replaceAll("[ \n\r\t]*", " ").equals(dbcl.getJavaSource().replaceAll("[ \n\r\t]*", " "))) {
+                    if (str.replaceAll("[ \n\r\t]*", " ").toLowerCase().equals(dbcl.getJavaSource().replaceAll("[ \n\r\t]*", " ").toLowerCase())) {
                         found = true;
                     }
                 }
@@ -89,12 +89,20 @@ public class GeneratedMarqueTest extends AbstractTest {
         for (DBTableClass dbcl : generateSchema) {
             if (testClassNames.contains(dbcl.className)) {
                 classesTested++;
+                System.out.println("+++++"+dbcl.className+"+++++");
                 System.out.println(dbcl.getJavaSource());
                 boolean found = false;
                 for (String str : testGetSchemaWithRecognisorTestClasses) {
-                    if (str.replaceAll("[ \n\r\t]*", " ").equals(dbcl.getJavaSource().replaceAll("[ \n\r\t]*", " "))) {
+									if(str.contains(dbcl.className)){
+									final String lowercaseTestCase = str.replaceAll("[ \n\r\t]*", "").toLowerCase();
+									final String sourceLowerCase = dbcl.getJavaSource().replaceAll("[ \n\r\t]*", "").toLowerCase();
+									System.out.println("" + lowercaseTestCase);
+																		System.out.println("=================");
+									System.out.println("" + sourceLowerCase);
+
+                    if (lowercaseTestCase.equals(sourceLowerCase)) {
                         found = true;
-                    }
+                    }}
                 }
                 Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
             } else {

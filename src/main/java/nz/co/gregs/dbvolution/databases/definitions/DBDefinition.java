@@ -653,4 +653,8 @@ public abstract class DBDefinition {
 		return "trunc";
 	}
 
+	public String doStringEqualsTransform(String firstString, String secondString) {
+		return firstString+" = "+secondString;
+	}
+
 }

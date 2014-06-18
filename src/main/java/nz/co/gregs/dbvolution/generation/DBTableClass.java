@@ -29,7 +29,7 @@ public class DBTableClass {
 
     public long serialversionUIDBValue = 1L;
 
-    private final String unknownDatatype = new DBUnknownDatatype().getClass().getSimpleName();
+    private final String unknownDatatype = DBUnknownDatatype.class.getSimpleName();
     private String packageName;
     public String className;
     private String tableName;
