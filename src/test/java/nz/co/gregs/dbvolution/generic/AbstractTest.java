@@ -57,9 +57,12 @@ public abstract class AbstractTest {
     public static List<Object[]> data() throws IOException {
 		List<Object[]> databases = new ArrayList<Object[]>();
 		boolean testAllDatabases = System.getProperty("testAllDatabases")!=null;
-		if(System.getProperty("testMySQL") != null || testAllDatabases) {
+		if(System.getProperty("testMySQLMXJDB") != null || testAllDatabases) {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()});
-		}			
+		}
+		if(System.getProperty("testMySQL") != null || testAllDatabases) {
+			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")});
+		}
 		if (databases.isEmpty() || testAllDatabases) {
 			// Do basic testing
 			databases.add(new Object[]{"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)});
@@ -189,7 +192,7 @@ public abstract class AbstractTest {
         database.dropTableNoExceptions(myCarCompanyRow);
         try {
             database.preventDroppingOfDatabases(false);
-            database.dropDatabase();
+//            database.dropDatabase();
         } catch (UnsupportedOperationException unsupported) {
             ;
         }

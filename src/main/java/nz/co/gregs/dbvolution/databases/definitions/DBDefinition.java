@@ -497,7 +497,7 @@ public abstract class DBDefinition {
 		return " CURRENT_USER ";
 	}
 
-	public String getDropDatabase(String databaseName) {
+	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("DROP DATABASE is not supported by this DBDatabase implementation");
 	}
 

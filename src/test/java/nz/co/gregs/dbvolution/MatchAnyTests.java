@@ -106,8 +106,8 @@ public class MatchAnyTests extends AbstractTest {
 		System.out.println("testSimpleQueryJoinOfAnyRelationship:");
 		System.out.println(""+dbQuery.getSQLForQuery());
 		Assert.assertThat(
-				dbQuery.getSQLForQuery(), 
-				containsString("ON( __2076078474.FK_COMPANY_LOGO = _1159239592.LOGO_ID OR __2076078474.FK_PREV_COMPANY_LOGO = _1159239592.LOGO_ID )")
+				testableSQL(dbQuery.getSQLForQuery()), 
+				containsString(testableSQL("ON( __2076078474.FK_COMPANY_LOGO = _1159239592.LOGO_ID OR __2076078474.FK_PREV_COMPANY_LOGO = _1159239592.LOGO_ID )"))
 		);
 	}
 		

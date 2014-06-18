@@ -17,9 +17,6 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBQueryRow;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -41,33 +38,36 @@ public class DoubleJoinTest extends AbstractTest {
     
     @Test
     public void doubleJoinTest() throws SQLException {
-        database.setPrintSQLBeforeExecuting(true);
-        database.createTable(new DoubleJoinTest.DoubleLinkedWithSubclasses());
-        final DoubleLinkedWithSubclasses doubleLinked = new DoubleJoinTest.DoubleLinkedWithSubclasses();
-        doubleLinked.uidDoubleLink.setValue(1);
-        doubleLinked.manufacturer.setValue(1);
-        doubleLinked.marketer.setValue(4);
-        database.insert(doubleLinked);
-        final DoubleLinkedWithSubclasses doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithSubclasses();
-        final Manufacturer manufacturer = new DoubleJoinTest.Manufacturer();
-        final Marketer marketer = new DoubleJoinTest.Marketer();
-        DBQuery query = database.getDBQuery(doubleLinked1, manufacturer, marketer);
-        query.setBlankQueryAllowed(true);
-        System.out.println(query.getSQLForQuery());
-        List<DBQueryRow> allRows = query.getAllRows();
-        Assert.assertThat(allRows.size(), 
-                is(1));
-        Assert.assertThat(allRows.get(0).get(marketer).uidCarCompany.getValue().intValue(), 
-                is(doubleLinked.marketer.getValue().intValue()));
-        Assert.assertThat(allRows.get(0).get(manufacturer).uidCarCompany.getValue().intValue(), 
-                is(doubleLinked.manufacturer.getValue().intValue()));
-        
-        database.print(allRows);
-    }
+		database.setPrintSQLBeforeExecuting(true);
+		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithSubclasses());
+		database.createTable(new DoubleJoinTest.DoubleLinkedWithSubclasses());
+		final DoubleLinkedWithSubclasses doubleLinked = new DoubleJoinTest.DoubleLinkedWithSubclasses();
+		doubleLinked.uidDoubleLink.setValue(1);
+		doubleLinked.manufacturer.setValue(1);
+		doubleLinked.marketer.setValue(4);
+		database.insert(doubleLinked);
+		final DoubleLinkedWithSubclasses doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithSubclasses();
+		final Manufacturer manufacturer = new DoubleJoinTest.Manufacturer();
+		final Marketer marketer = new DoubleJoinTest.Marketer();
+		DBQuery query = database.getDBQuery(doubleLinked1, manufacturer, marketer);
+		query.setBlankQueryAllowed(true);
+		System.out.println(query.getSQLForQuery());
+		List<DBQueryRow> allRows = query.getAllRows();
+		Assert.assertThat(allRows.size(),
+				is(1));
+		Assert.assertThat(allRows.get(0).get(marketer).uidCarCompany.getValue().intValue(),
+				is(doubleLinked.marketer.getValue().intValue()));
+		Assert.assertThat(allRows.get(0).get(manufacturer).uidCarCompany.getValue().intValue(),
+				is(doubleLinked.manufacturer.getValue().intValue())
+		);
+
+		database.print(allRows);
+	}
 
     @Test
     public void doubleJoinWithSameClassTest() throws SQLException {
         database.setPrintSQLBeforeExecuting(true);
+        database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
         database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
         final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
         doubleLinked.uidDoubleLink.setValue(1);
@@ -93,6 +93,7 @@ public class DoubleJoinTest extends AbstractTest {
     @Test
     public void doubleJoinWithSameClassAndIDTest() throws SQLException {
         database.setPrintSQLBeforeExecuting(true);
+		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
         database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
         final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
         doubleLinked.uidDoubleLink.setValue(1);
@@ -115,7 +116,7 @@ public class DoubleJoinTest extends AbstractTest {
         database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
     }
 
-    @DBTableName("double_linked")
+    @DBTableName("double_linked_with_subclasses")
     public static class DoubleLinkedWithSubclasses extends DBRow {
 
         public static final long serialVersionUID = 1L;
