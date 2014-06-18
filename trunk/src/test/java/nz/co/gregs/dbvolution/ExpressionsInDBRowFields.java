@@ -137,7 +137,8 @@ public class ExpressionsInDBRowFields extends AbstractTest {
         database.print(allMarques);
 
         for (ExpressionRow row : allMarques) {
-            Assert.assertThat(row.uidAndName.stringValue(), is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
+            Assert.assertThat(row.uidAndName.stringValue(), 
+								is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
             final Date dateValue = row.creationDate.dateValue();
             if (dateValue != null) {
                 Assert.assertThat(row.uidNameAndYear.stringValue(), is(

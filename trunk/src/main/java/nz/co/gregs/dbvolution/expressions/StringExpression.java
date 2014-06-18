@@ -715,6 +715,11 @@ public class StringExpression implements StringResult {
 	public StringExpression append(StringResult string2) {
 		return new StringExpression(new DBBinaryStringArithmetic(this, string2) {
 			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
+			}
+			
+			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return db.getDefinition().getConcatOperator();
 			}
@@ -722,31 +727,39 @@ public class StringExpression implements StringResult {
 	}
 
 	public StringExpression append(String string2) {
-		return new StringExpression(new DBBinaryStringArithmetic(this, new StringExpression(string2)) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return db.getDefinition().getConcatOperator();
-			}
-		});
+		return this.append(StringExpression.value(string2));
+//		return new StringExpression(new DBBinaryStringArithmetic(this, new StringExpression(string2)) {
+//			@Override
+//			public String toSQLString(DBDatabase db) {
+//				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
+//			}
+//			
+//			@Override
+//			protected String getEquationOperator(DBDatabase db) {
+//				return db.getDefinition().getConcatOperator();
+//			}
+//		});
 	}
 
 	public StringExpression append(NumberResult number1) {
-		return new StringExpression(new DBBinaryStringNumberArithmetic(this, number1) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return db.getDefinition().getConcatOperator();
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
+		return this.append(new NumberExpression(number1).stringResult());
+//		return new StringExpression(new DBBinaryStringNumberArithmetic(this, number1) {
+//
 //			@Override
-//			public void setIncludesNull(boolean nullsAreIncluded) {
-//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			public String toSQLString(DBDatabase db) {
+//				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
 //			}
-		});
+//			
+//			@Override
+//			protected String getEquationOperator(DBDatabase db) {
+//				return db.getDefinition().getConcatOperator();
+//			}
+//
+//			@Override
+//			public boolean getIncludesNull() {
+//				return false;
+//			}
+//		});
 	}
 
 	public StringExpression append(Number number1) {

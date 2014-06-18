@@ -95,32 +95,38 @@ public class NumberExpression implements NumberResult {
 	}
 
 	public StringExpression stringResult() {
-		return new StringExpression(new DBUnaryStringFunction(this) {
+		return new StringExpression(new DBBinaryStringNumberFunction(StringExpression.value(""), this) {
 			@Override
-			protected String afterValue(DBDatabase db) {
-				return " ";
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
 			}
-
-			@Override
-			protected String beforeValue(DBDatabase db) {
-				return " ''||";
-			}
-
-			@Override
-			String getFunctionName(DBDatabase db) {
-				return "";
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
+		});
+//		return new StringExpression(new DBUnaryStringFunction(this) {
+//			@Override
+//			protected String afterValue(DBDatabase db) {
+//				return " ";
+//			}
+//
+//			@Override
+//			protected String beforeValue(DBDatabase db) {
+//				return " ''||";
+//			}
+//
+//			@Override
+//			String getFunctionName(DBDatabase db) {
+//				return "";
+//			}
+//
+//			@Override
+//			public boolean getIncludesNull() {
+//				return false;
+//			}
+//
 //			@Override
 //			public void setIncludesNull(boolean nullsAreIncluded) {
 //				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //			}
-		});
+//		});
 	}
 
 	public StringExpression append(String string) {
@@ -1433,6 +1439,63 @@ public class NumberExpression implements NumberResult {
 
 		protected String afterValue(DBDatabase db) {
 			return ") ";
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+	}
+
+
+	private static abstract class DBBinaryStringNumberFunction implements StringResult {
+
+		private DBExpression first;
+		private DBExpression second;
+
+		DBBinaryStringNumberFunction(StringResult first, NumberResult second) {
+			this.first = first;
+			this.second = second;
+		}
+
+		@Override
+		public DBNumber getQueryableDatatypeForExpressionValue() {
+			return new DBNumber();
+		}
+
+		@Override
+		abstract public String toSQLString(DBDatabase db) ;
+
+		@Override
+		public DBBinaryStringNumberFunction copy() {
+			DBBinaryStringNumberFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
 		}
 
 		@Override

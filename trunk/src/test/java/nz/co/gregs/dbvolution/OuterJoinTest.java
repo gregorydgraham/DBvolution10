@@ -251,10 +251,10 @@ public class OuterJoinTest extends AbstractTest {
 		dbquery.addOptional(marque);
 		String sqlForQuery = dbquery.getSQLForQuery();
 		System.out.println(sqlForQuery);
-		Assert.assertThat(sqlForQuery, 
+		Assert.assertThat(testableSQL(sqlForQuery), 
 				anyOf(
-						containsString("ON( __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY AND (__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) ) "),
-						containsString("ON( ((__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA'))) AND (__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY) )")));
+						containsString(testableSQL("ON( __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY AND (__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) ) ")),
+						containsString(testableSQL("ON( ((__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA'))) AND (__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY) )"))));
 		final String marqueCondition = "__1997432637.ENABLED = 1";
 		Assert.assertThat(sqlForQuery.indexOf(marqueCondition),is(sqlForQuery.lastIndexOf(marqueCondition)));
 		List<DBQueryRow> allRows = dbquery.getAllRows();
@@ -265,10 +265,10 @@ public class OuterJoinTest extends AbstractTest {
 		dbquery.addOptional(carCompany);
 		sqlForQuery = dbquery.getSQLForQuery();
 		System.out.println(sqlForQuery);
-		Assert.assertThat(sqlForQuery, 
+		Assert.assertThat(testableSQL(sqlForQuery), 
 				anyOf(
-						containsString("ON( __1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND (__1997432637.ENABLED = 1) )"),
-						containsString("ON( (((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND (__1997432637.ENABLED = 1)) AND (__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY) )")
+						containsString(testableSQL("ON( __1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND (__1997432637.ENABLED = 1) )")),
+						containsString(testableSQL("ON( (((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) AND (__1997432637.ENABLED = 1)) AND (__1997432637.FK_CARCOMPANY = __78874071.UID_CARCOMPANY) )"))
 				));
 		final String carCompanyCondition = "((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA'))";
 		Assert.assertThat(sqlForQuery.indexOf(carCompanyCondition),is(sqlForQuery.lastIndexOf(carCompanyCondition)));
