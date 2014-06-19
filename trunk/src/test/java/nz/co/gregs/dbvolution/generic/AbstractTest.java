@@ -61,7 +61,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()});
 		}
 		if(System.getProperty("testMySQL") != null || testAllDatabases) {
-			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")});
+			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv")});
 		}
 		if (databases.isEmpty() || testAllDatabases) {
 			// Do basic testing

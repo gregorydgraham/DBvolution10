@@ -395,7 +395,11 @@ public class DBTableClassGenerator {
             case Types.BOOLEAN:
             case Types.ROWID:
             case Types.SMALLINT:
-                value = DBInteger.class.getSimpleName();
+//                if (precision == 1) {
+//                    value = DBBoolean.class.getSimpleName();
+//                } else {
+                    value = DBInteger.class.getSimpleName();
+//                }
                 break;
             case Types.DECIMAL:
             case Types.DOUBLE:

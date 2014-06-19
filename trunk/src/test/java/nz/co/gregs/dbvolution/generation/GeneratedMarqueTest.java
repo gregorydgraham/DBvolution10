@@ -39,8 +39,6 @@ import static org.hamcrest.Matchers.*;
  */
 public class GeneratedMarqueTest extends AbstractTest {
 
-    nz.co.gregs.dbvolution.example.Marque myTableRow = new nz.co.gregs.dbvolution.example.Marque();
-
     public GeneratedMarqueTest(Object testIterationName, Object db) {
         super(testIterationName, db);
     }
@@ -54,15 +52,16 @@ public class GeneratedMarqueTest extends AbstractTest {
         testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CAR_COMPANY\") \npublic class CarCompany extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"UID_CARCOMPANY\")\n    @DBPrimaryKey\n    public DBInteger uidCarcompany = new DBInteger();\n\n}\n\n");
         testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"COMPANYLOGO\") \npublic class Companylogo extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"LOGO_ID\")\n    @DBPrimaryKey\n    public DBInteger logoId = new DBInteger();\n\n    @DBColumn(\"CAR_COMPANY_FK\")\n    public DBInteger carCompanyFk = new DBInteger();\n\n    @DBColumn(\"IMAGE_FILE\")\n    public DBByteArray imageFile = new DBByteArray();\n\n    @DBColumn(\"IMAGE_NAME\")\n    public DBString imageName = new DBString();\n\n}\n\n");
         testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"LT_CARCO_LOGO\") \npublic class LtCarcoLogo extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"FK_CAR_COMPANY\")\n    public DBInteger fkCarCompany = new DBInteger();\n\n    @DBColumn(\"FK_COMPANY_LOGO\")\n    public DBInteger fkCompanyLogo = new DBInteger();\n\n}\n\n");
-        testClasses.add("package nz.co.gregs.dbvolution.generation;\n" + "\n" + "import nz.co.gregs.dbvolution.*;\n" + "import nz.co.gregs.dbvolution.datatypes.*;\n" + "import nz.co.gregs.dbvolution.annotations.*;\n" + "\n" + "@DBTableName(\"MARQUE\") \n" + "public class Marque extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NUMERIC_CODE\")\n    public DBNumber numericCode = new DBNumber();\n\n    @DBColumn(\"UID_MARQUE\")\n    @DBPrimaryKey\n    public DBInteger uidMarque = new DBInteger();\n\n    @DBColumn(\"ISUSEDFORTAFROS\")\n    public DBString isusedfortafros = new DBString();\n\n    @DBColumn(\"FK_TOYSTATUSCLASS\")\n    public DBNumber fkToystatusclass = new DBNumber();\n\n    @DBColumn(\"INTINDALLOCALLOWED\")\n    public DBString intindallocallowed = new DBString();\n\n    @DBColumn(\"UPD_COUNT\")\n    public DBInteger updCount = new DBInteger();\n\n    @DBColumn(\"AUTO_CREATED\")\n    public DBString autoCreated = new DBString();\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"PRICINGCODEPREFIX\")\n    public DBString pricingcodeprefix = new DBString();\n\n    @DBColumn(\"RESERVATIONSALWD\")\n    public DBString reservationsalwd = new DBString();\n\n    @DBColumn(\"CREATION_DATE\")\n    public DBDate creationDate = new DBDate();\n\n    @DBColumn(\"ENABLED\")\n    public DBInteger enabled = new DBInteger();\n\n    @DBColumn(\"FK_CARCOMPANY\")\n    public DBInteger fkCarcompany = new DBInteger();\n\n}\n\n");
+        testClasses.add("package nz.co.gregs.dbvolution.generation;\n" + "\n" + "import nz.co.gregs.dbvolution.*;\n" + "import nz.co.gregs.dbvolution.datatypes.*;\n" + "import nz.co.gregs.dbvolution.annotations.*;\n" + "\n" + "@DBTableName(\"MARQUE\") \n" + "public class Marque extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NUMERIC_CODE\")\n    public DBNumber numericCode = new DBNumber();\n\n    @DBColumn(\"UID_MARQUE\")\n    @DBPrimaryKey\n    public DBInteger uidMarque = new DBInteger();\n\n    @DBColumn(\"ISUSEDFORTAFROS\")\n    public DBString isusedfortafros = new DBString();\n\n    @DBColumn(\"FK_TOYSTATUSCLASS\")\n    public DBNumber fkToystatusclass = new DBNumber();\n\n    @DBColumn(\"INTINDALLOCALLOWED\")\n    public DBString intindallocallowed = new DBString();\n\n    @DBColumn(\"UPD_COUNT\")\n    public DBInteger updCount = new DBInteger();\n\n    @DBColumn(\"AUTO_CREATED\")\n    public DBString autoCreated = new DBString();\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"PRICINGCODEPREFIX\")\n    public DBString pricingcodeprefix = new DBString();\n\n    @DBColumn(\"RESERVATIONSALWD\")\n    public DBString reservationsalwd = new DBString();\n\n    @DBColumn(\"CREATION_DATE\")\n    public DBDate creationDate = new DBDate();\n\n    @DBColumn(\"ENABLED\")\n    public DBBoolean enabled = new DBBoolean();\n\n    @DBColumn(\"FK_CARCOMPANY\")\n    public DBInteger fkCarcompany = new DBInteger();\n\n}\n\n");
         generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
         for (DBTableClass dbcl : generateSchema) {
             if (testClassNames.contains(dbcl.className)) {
-                classesTested++;
-                System.out.print("" + dbcl.getJavaSource());
+				classesTested++;
                 boolean found = false;
                 for (String str : testClasses) {
-                    if (str.replaceAll("[ \n\r\t]*", " ").toLowerCase().equals(dbcl.getJavaSource().replaceAll("[ \n\r\t]*", " ").toLowerCase())) {
+					final String testcaseLowercase =                str.toLowerCase().replaceAll("[ \n\r\t]+", " ");
+					final String sourceLowercase = dbcl.getJavaSource().toLowerCase().replaceAll("[ \n\r\t]+", " ");
+                    if (testcaseLowercase.equals(sourceLowercase)) {
                         found = true;
                     }
                 }
@@ -83,26 +82,21 @@ public class GeneratedMarqueTest extends AbstractTest {
         testGetSchemaWithRecognisorTestClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CAR_COMPANY\") \npublic class CarCompany extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"UID_CARCOMPANY\")\n    @DBPrimaryKey\n    public DBInteger uidCarcompany = new DBInteger();\n\n}\n\n");
         testGetSchemaWithRecognisorTestClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"COMPANYLOGO\") \npublic class Companylogo extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"LOGO_ID\")\n    @DBPrimaryKey\n    public DBInteger logoId = new DBInteger();\n\n    @DBColumn(\"CAR_COMPANY_FK\")\n    public DBInteger carCompanyFk = new DBInteger();\n\n    @DBColumn(\"IMAGE_FILE\")\n    public DBByteArray imageFile = new DBByteArray();\n\n    @DBColumn(\"IMAGE_NAME\")\n    public DBString imageName = new DBString();\n\n}\n\n");
         testGetSchemaWithRecognisorTestClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"LT_CARCO_LOGO\") \npublic class LtCarcoLogo extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"FK_CAR_COMPANY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger fkCarCompany = new DBInteger();\n\n    @DBColumn(\"FK_COMPANY_LOGO\")\n    @DBForeignKey(Companylogo.class)\n    public DBInteger fkCompanyLogo = new DBInteger();\n\n}\n\n");
-        testGetSchemaWithRecognisorTestClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"MARQUE\") \npublic class Marque extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NUMERIC_CODE\")\n    public DBNumber numericCode = new DBNumber();\n\n    @DBColumn(\"UID_MARQUE\")\n    @DBPrimaryKey\n    public DBInteger uidMarque = new DBInteger();\n\n    @DBColumn(\"ISUSEDFORTAFROS\")\n    public DBString isusedfortafros = new DBString();\n\n    @DBColumn(\"FK_TOYSTATUSCLASS\")\n    @DBForeignKey(Toystatusclass.class)\n    public DBNumber fkToystatusclass = new DBNumber();\n\n    @DBColumn(\"INTINDALLOCALLOWED\")\n    public DBString intindallocallowed = new DBString();\n\n    @DBColumn(\"UPD_COUNT\")\n    public DBInteger updCount = new DBInteger();\n\n    @DBColumn(\"AUTO_CREATED\")\n    public DBString autoCreated = new DBString();\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"PRICINGCODEPREFIX\")\n    public DBString pricingcodeprefix = new DBString();\n\n    @DBColumn(\"RESERVATIONSALWD\")\n    public DBString reservationsalwd = new DBString();\n\n    @DBColumn(\"CREATION_DATE\")\n    public DBDate creationDate = new DBDate();\n\n    @DBColumn(\"ENABLED\")\n    public DBInteger enabled = new DBInteger();\n\n    @DBColumn(\"FK_CARCOMPANY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger fkCarcompany = new DBInteger();\n\n}\n\n");
+        testGetSchemaWithRecognisorTestClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"MARQUE\") \npublic class Marque extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NUMERIC_CODE\")\n    public DBNumber numericCode = new DBNumber();\n\n    @DBColumn(\"UID_MARQUE\")\n    @DBPrimaryKey\n    public DBInteger uidMarque = new DBInteger();\n\n    @DBColumn(\"ISUSEDFORTAFROS\")\n    public DBString isusedfortafros = new DBString();\n\n    @DBColumn(\"FK_TOYSTATUSCLASS\")\n    @DBForeignKey(Toystatusclass.class)\n    public DBNumber fkToystatusclass = new DBNumber();\n\n    @DBColumn(\"INTINDALLOCALLOWED\")\n    public DBString intindallocallowed = new DBString();\n\n    @DBColumn(\"UPD_COUNT\")\n    public DBInteger updCount = new DBInteger();\n\n    @DBColumn(\"AUTO_CREATED\")\n    public DBString autoCreated = new DBString();\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"PRICINGCODEPREFIX\")\n    public DBString pricingcodeprefix = new DBString();\n\n    @DBColumn(\"RESERVATIONSALWD\")\n    public DBString reservationsalwd = new DBString();\n\n    @DBColumn(\"CREATION_DATE\")\n    public DBDate creationDate = new DBDate();\n\n    @DBColumn(\"ENABLED\")\n    public DBBoolean enabled = new DBBoolean();\n\n    @DBColumn(\"FK_CARCOMPANY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger fkCarcompany = new DBInteger();\n\n}\n\n");
 
         generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", 1L, new UIDBasedPKRecognisor(), new FKBasedFKRecognisor());
         for (DBTableClass dbcl : generateSchema) {
             if (testClassNames.contains(dbcl.className)) {
                 classesTested++;
-                System.out.println("+++++"+dbcl.className+"+++++");
-                System.out.println(dbcl.getJavaSource());
                 boolean found = false;
                 for (String str : testGetSchemaWithRecognisorTestClasses) {
-									if(str.contains(dbcl.className)){
-									final String lowercaseTestCase = str.replaceAll("[ \n\r\t]*", "").toLowerCase();
-									final String sourceLowerCase = dbcl.getJavaSource().replaceAll("[ \n\r\t]*", "").toLowerCase();
-									System.out.println("" + lowercaseTestCase);
-																		System.out.println("=================");
-									System.out.println("" + sourceLowerCase);
-
-                    if (lowercaseTestCase.equals(sourceLowerCase)) {
-                        found = true;
-                    }}
+					if (str.contains(dbcl.className)) {
+						final String testcaseLowercase = str.replaceAll("[ \n\r\t]*", "").toLowerCase();
+						final String sourceLowerCase = dbcl.getJavaSource().replaceAll("[ \n\r\t]*", "").toLowerCase();
+						if (testcaseLowercase.equals(sourceLowerCase)) {
+							found = true;
+						}
+					}
                 }
                 Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
             } else {
