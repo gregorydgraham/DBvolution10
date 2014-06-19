@@ -61,8 +61,6 @@ public class MySQLDBDefinition extends DBDefinition {
 //            return " VARCHAR(1000) CHARACTER SET latin1 COLLATE latin1_general_cs ";
         } else if (qdt instanceof DBDate) {
             return " DATETIME ";
-        } else if (qdt instanceof DBBoolean) {
-            return " BIT ";
         } else if (qdt instanceof DBByteArray) {
             return " LONGBLOB ";
         } else if (qdt instanceof DBLargeObject) {
