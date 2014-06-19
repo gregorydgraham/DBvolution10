@@ -27,7 +27,7 @@ import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.example.*;
-import nz.co.gregs.dbvolution.mysql.MySQLMXJDBInitialisationTest;
+import nz.co.gregs.dbvolution.mysql.MySQLMXJDBInitialisation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -58,7 +58,7 @@ public abstract class AbstractTest {
 		List<Object[]> databases = new ArrayList<Object[]>();
 		boolean testAllDatabases = System.getProperty("testAllDatabases")!=null;
 		if(System.getProperty("testMySQLMXJDB") != null || testAllDatabases) {
-			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()});
+			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
 		}
 		if(System.getProperty("testMySQL") != null || testAllDatabases) {
 			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv")});
@@ -70,7 +70,7 @@ public abstract class AbstractTest {
 //				            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")},
 //				            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")},
 //				            {"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")},
-//				            {"SQLMXJDB", MySQLMXJDBInitialisationTest.getMySQLDBInstance()}
+//				            {"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()}
 
 			return databases;
     }
