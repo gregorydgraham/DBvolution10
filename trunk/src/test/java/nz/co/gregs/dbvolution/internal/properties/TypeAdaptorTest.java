@@ -38,6 +38,9 @@ public class TypeAdaptorTest {
         this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
         this.db.setPrintSQLBeforeExecuting(false);
 
+		db.preventDroppingOfTables(false);
+		db.dropTableNoExceptions(new CustomerWithDBInteger());
+		db.preventDroppingOfTables(true);
         // create tables and add standard records
         db.createTable(new CustomerWithDBInteger());
 

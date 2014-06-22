@@ -29,17 +29,20 @@ import org.junit.*;
 
 public class DoubleJoinTest extends AbstractTest {
 
-    public DoubleJoinTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public DoubleJoinTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void fake() throws SQLException {}
-    
-    @Test
-    public void doubleJoinTest() throws SQLException {
+	@Test
+	public void fake() throws SQLException {
+	}
+
+	@Test
+	public void doubleJoinTest() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithSubclasses());
+		database.preventDroppingOfTables(true);
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithSubclasses());
 		final DoubleLinkedWithSubclasses doubleLinked = new DoubleJoinTest.DoubleLinkedWithSubclasses();
 		doubleLinked.uidDoubleLink.setValue(1);
@@ -64,99 +67,107 @@ public class DoubleJoinTest extends AbstractTest {
 		database.print(allRows);
 	}
 
-    @Test
-    public void doubleJoinWithSameClassTest() throws SQLException {
-        database.setPrintSQLBeforeExecuting(true);
-        database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
-        database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
-        final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
-        doubleLinked.uidDoubleLink.setValue(1);
-        doubleLinked.manufacturer.setValue(1);
-        doubleLinked.marketer.setValue(4);
-        database.insert(doubleLinked);
-        final DoubleLinkedWithClass doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithClass();
-        final CarCompany carco = new CarCompany();
-        DBQuery query = database.getDBQuery(doubleLinked1, carco);
-        query.setBlankQueryAllowed(true);
-        System.out.println(query.getSQLForQuery());
-        List<DBQueryRow> allRows = query.getAllRows();
-        
-        Assert.assertThat(
-                allRows.size(), 
-                is(0));
-        
-        database.print(allRows);
-        database.preventDroppingOfTables(false);
-        database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
-    }
-
-    @Test
-    public void doubleJoinWithSameClassAndIDTest() throws SQLException {
-        database.setPrintSQLBeforeExecuting(true);
+	@Test
+	public void doubleJoinWithSameClassTest() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
-        database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
-        final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
-        doubleLinked.uidDoubleLink.setValue(1);
-        doubleLinked.manufacturer.setValue(1);
-        doubleLinked.marketer.setValue(1);
-        database.insert(doubleLinked);
-        final DoubleLinkedWithClass doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithClass();
-        final CarCompany carco = new CarCompany();
-        DBQuery query = database.getDBQuery(doubleLinked1, carco);
-        query.setBlankQueryAllowed(true);
-        System.out.println(query.getSQLForQuery());
-        List<DBQueryRow> allRows = query.getAllRows();
-        
-        Assert.assertThat(
-                allRows.size(), 
-                is(1));
-        
-        database.print(allRows);
-        database.preventDroppingOfTables(false);
-        database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
-    }
+		database.preventDroppingOfTables(true);
+		database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
+		final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
+		doubleLinked.uidDoubleLink.setValue(1);
+		doubleLinked.manufacturer.setValue(1);
+		doubleLinked.marketer.setValue(4);
+		database.insert(doubleLinked);
+		final DoubleLinkedWithClass doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithClass();
+		final CarCompany carco = new CarCompany();
+		DBQuery query = database.getDBQuery(doubleLinked1, carco);
+		query.setBlankQueryAllowed(true);
+		System.out.println(query.getSQLForQuery());
+		List<DBQueryRow> allRows = query.getAllRows();
 
-    @DBTableName("double_linked_with_subclasses")
-    public static class DoubleLinkedWithSubclasses extends DBRow {
+		Assert.assertThat(
+				allRows.size(),
+				is(0));
 
-        public static final long serialVersionUID = 1L;
-        @DBPrimaryKey()
-        @DBColumn("uid_doublellink")
-        DBInteger uidDoubleLink = new DBInteger();
-        
-        @DBForeignKey(Manufacturer.class)
-        @DBColumn("fkmanufacturer")
-        DBInteger manufacturer = new DBInteger();
-        
-        @DBForeignKey(Marketer.class)
-        @DBColumn("fkmarketer")
-        DBInteger marketer = new DBInteger();
+		database.print(allRows);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
+		database.preventDroppingOfTables(true);
+	}
 
-    }
+	@Test
+	public void doubleJoinWithSameClassAndIDTest() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
+		database.preventDroppingOfTables(true);
+		database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
+		final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
+		doubleLinked.uidDoubleLink.setValue(1);
+		doubleLinked.manufacturer.setValue(1);
+		doubleLinked.marketer.setValue(1);
+		database.insert(doubleLinked);
+		final DoubleLinkedWithClass doubleLinked1 = new DoubleJoinTest.DoubleLinkedWithClass();
+		final CarCompany carco = new CarCompany();
+		DBQuery query = database.getDBQuery(doubleLinked1, carco);
+		query.setBlankQueryAllowed(true);
+		System.out.println(query.getSQLForQuery());
+		List<DBQueryRow> allRows = query.getAllRows();
 
-    @DBTableName("double_linked_carco")
-    public static class DoubleLinkedWithClass extends DBRow {
+		Assert.assertThat(
+				allRows.size(),
+				is(1));
 
-        public static final long serialVersionUID = 1L;
-        @DBPrimaryKey()
-        @DBColumn("uid_doublellink")
-        DBInteger uidDoubleLink = new DBInteger();
-        
-        @DBForeignKey(CarCompany.class)
-        @DBColumn("fkmanufacturer")
-        DBInteger manufacturer = new DBInteger();
-        
-        @DBForeignKey(CarCompany.class)
-        @DBColumn("fkmarketer")
-        DBInteger marketer = new DBInteger();
+		database.print(allRows);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
+		database.preventDroppingOfTables(true);
+	}
 
-    }
+	@DBTableName("double_linked_with_subclasses")
+	public static class DoubleLinkedWithSubclasses extends DBRow {
 
-    public static class Manufacturer extends CarCompany {
-        public static final long serialVersionUID = 1L;
-    }
-    
-    public static class Marketer extends CarCompany {
-        public static final long serialVersionUID = 1L;
-    }
+		public static final long serialVersionUID = 1L;
+		@DBPrimaryKey()
+		@DBColumn("uid_doublellink")
+		DBInteger uidDoubleLink = new DBInteger();
+
+		@DBForeignKey(Manufacturer.class)
+		@DBColumn("fkmanufacturer")
+		DBInteger manufacturer = new DBInteger();
+
+		@DBForeignKey(Marketer.class)
+		@DBColumn("fkmarketer")
+		DBInteger marketer = new DBInteger();
+
+	}
+
+	@DBTableName("double_linked_carco")
+	public static class DoubleLinkedWithClass extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+		@DBPrimaryKey()
+		@DBColumn("uid_doublellink")
+		DBInteger uidDoubleLink = new DBInteger();
+
+		@DBForeignKey(CarCompany.class)
+		@DBColumn("fkmanufacturer")
+		DBInteger manufacturer = new DBInteger();
+
+		@DBForeignKey(CarCompany.class)
+		@DBColumn("fkmarketer")
+		DBInteger marketer = new DBInteger();
+
+	}
+
+	public static class Manufacturer extends CarCompany {
+
+		public static final long serialVersionUID = 1L;
+	}
+
+	public static class Marketer extends CarCompany {
+
+		public static final long serialVersionUID = 1L;
+	}
 }

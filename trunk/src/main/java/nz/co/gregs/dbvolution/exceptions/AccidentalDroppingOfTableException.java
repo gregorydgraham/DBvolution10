@@ -24,6 +24,6 @@ public class AccidentalDroppingOfTableException extends DBRuntimeException {
     private static final long serialVersionUID = 1L;
 
     public AccidentalDroppingOfTableException() {
-        super("Accidental Dropping Of Table Detected: Dropping a table is virtually never the solution to your problem.  If, however, you really want to do this, enable dropping of tables with the DBDatabase.allowDroppingOfTables(bool) method.");
+        super("Accidental Dropping Of Table Detected: Dropping a table is virtually never the solution to your problem.  If, however, you really want to do this, enable dropping of tables with the DBDatabase.preventDroppingOfTables(bool) method.");
     }
 }
