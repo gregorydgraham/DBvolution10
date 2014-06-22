@@ -16,11 +16,12 @@
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
+import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,59 +30,101 @@ import org.junit.Test;
  *
  * @author Gregory Graham
  */
-public class DBDatabaseTest {
+public class DBDatabaseTest extends AbstractTest {
 
-    DBDatabase myDatabase = new H2DB("jdbc:h2:mem:dbvolutionTest", "", "");
+	public DBDatabaseTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Before
-    public void setUp() throws Exception {
-    }
+	@Before
+	@SuppressWarnings("empty-statement")
+	@Override
+	public void setUp() throws Exception {
+		setup(database);
+	}
 
-    @After
-    public void tearDown() throws Exception {
-    }
+	@After
+	@Override
+	public void tearDown() throws Exception {
+		tearDown(database);
+	}
 
-    @Test
-    public void testCreateTable() throws SQLException {
+	@Test
+	public void testCreateTable() throws SQLException {
 
-        try {
-            myDatabase.dropTable(new Marque());
-        } catch (Exception ex) {
-            System.out.println("SETUP: Marque table not dropped, probably doesn't exist");
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CreateTableTestClass());
+			database.preventDroppingOfTables(true);
+		} catch (AutoCommitActionDuringTransactionException ex) {
+			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+		}
 
-        }
-        myDatabase.createTable(new Marque());
-        System.out.println("Marque table created successfully");
+		final CreateTableTestClass createTableTestClass = new CreateTableTestClass();
+		database.createTable(createTableTestClass);
+		System.out.println("CreateTableTestClass table created successfully");
 
-    }
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CreateTableTestClass());
+			database.preventDroppingOfTables(true);
+		} catch (AutoCommitActionDuringTransactionException ex) {
+			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+		}
+	}
 
-    @Test
-    public void testDropTableException() throws SQLException {
-        try {
-            myDatabase.createTable(new Marque());
-        } catch (Exception ex) {
-            System.out.println("SETUP: Marque table not created, probably already exists");
-        }
-        try{
-        myDatabase.dropTable(new Marque());
-        myDatabase.preventDroppingOfTables(false);
-        myDatabase.dropTable(new Marque());
-        throw new DBRuntimeException("Drop Table Method failed to throw a AccidentalDroppingOfTableException exception.");
-        }catch(AccidentalDroppingOfTableException oops){
-            System.out.println("AccidentalDroppingOfTableException successfully thrown");
-        }
-    }
+	@Test
+	public void testDropTableException() throws SQLException {
+		try {
+			database.createTable(new DropTable2TestClass());
+		} catch (SQLException ex) {
+			System.out.println("SETUP: DropTable2TestClass table not created, probably already exists" + ex.getMessage());
+		} catch (AutoCommitActionDuringTransactionException ex) {
+			System.out.println("SETUP: DropTable2TestClass table not created, because you are in a transaction.");
+		}
+		try {
+			database.dropTable(new DropTable2TestClass());
+			database.preventDroppingOfTables(true);
+			database.dropTable(new DropTable2TestClass());
+			throw new DBRuntimeException("Drop Table Method failed to throw a AccidentalDroppingOfTableException exception.");
+		} catch (AccidentalDroppingOfTableException oops) {
+			System.out.println("AccidentalDroppingOfTableException successfully thrown");
+		}
+	}
 
-    @Test
-    public void testDropTable() throws SQLException {
-        try {
-            myDatabase.createTable(new Marque());
-        } catch (Exception ex) {
-            System.out.println("SETUP: Marque table not created, probably already exists");
-        }
-        myDatabase.preventDroppingOfTables(false);
-        myDatabase.dropTable(new Marque());
-        System.out.println("Marque table dropped successfully");
+	@Test
+	public void testDropTable() throws SQLException {
+		try {
+			database.createTable(new DropTableTestClass());
+		} catch (SQLException ex) {
+			System.out.println("SETUP: DropTableTestClass table not created, probably already exists" + ex.getMessage());
+		} catch (AutoCommitActionDuringTransactionException ex) {
+			System.out.println("SETUP: DropTableTestClass table not created, probably already exists" + ex.getMessage());
+		}
+		database.preventDroppingOfTables(false);
+		database.dropTable(new DropTableTestClass());
+		database.preventDroppingOfTables(true);
+		System.out.println("DropTableTestClass table dropped successfully");
+	}
 
-    }
+	public static class CreateTableTestClass extends DBRow {
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString name = new DBString();
+	}
+
+	public static class DropTableTestClass extends DBRow {
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString name = new DBString();
+	}
+
+	public static class DropTable2TestClass extends DBRow {
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString name = new DBString();
+	}
 }

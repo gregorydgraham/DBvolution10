@@ -33,7 +33,6 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.DBDataComparison;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
@@ -101,7 +100,6 @@ public class DBQuery {
 	private Integer resultsPageIndex = 0;
 	private String resultSQL;
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
-	private final List<DBDataComparison> comparisons = new ArrayList<DBDataComparison>();
 	private final List<BooleanExpression> conditions = new ArrayList<BooleanExpression>();
 	private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
 	private final Map<Object, DBExpression> groupByColumns = new LinkedHashMap<Object, DBExpression>();
@@ -424,10 +422,6 @@ public class DBQuery {
 						whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
 					}
 				}
-			}
-
-			for (DBDataComparison comp : comparisons) {
-				whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append("(").append(comp.getOperator().generateWhereLine(database, comp.getLeftHandSide().toSQLString(database))).append(")");
 			}
 
 			for (BooleanExpression expression : queryState.getRemainingExpressions()) {
@@ -890,7 +884,6 @@ public class DBQuery {
 		this.requiredQueryTables.clear();
 		this.optionalQueryTables.clear();
 		this.allQueryTables.clear();
-		this.comparisons.clear();
 		this.conditions.clear();
 		this.extraExamples.clear();
 		blankResults();
@@ -960,7 +953,7 @@ public class DBQuery {
 		for (DBRow table : extraExamples) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
 		}
-		return willCreateBlankQuery && (comparisons.isEmpty()) && (conditions.isEmpty());
+		return willCreateBlankQuery && (conditions.isEmpty());
 	}
 
 	/**
@@ -1509,25 +1502,6 @@ public class DBQuery {
 		} else {
 			return results;
 		}
-	}
-
-	/**
-	 * SOON TO BE REMOVED
-	 *
-	 * <p>
-	 * Please use
-	 * {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition}
-	 * instead.
-	 *
-	 * @deprecated Replaced by {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * } and {@link DBExpression expressions}
-	 * @param leftHandSide
-	 * @param operatorWithRightHandSideValues
-	 */
-	@Deprecated
-	public void addComparison(DBExpression leftHandSide, DBOperator operatorWithRightHandSideValues) {
-		comparisons.add(new DBDataComparison(leftHandSide, operatorWithRightHandSideValues));
-		blankResults();
 	}
 
 	/**

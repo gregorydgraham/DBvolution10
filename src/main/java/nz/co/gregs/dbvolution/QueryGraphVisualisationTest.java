@@ -32,20 +32,23 @@ public class QueryGraphVisualisationTest {
 	public DBDatabase database;
 
 	public static void main(String[] args) throws Exception {
-		H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
+		DBDatabase database;
+		database = new H2MemoryDB("dbvolutionTest", "", "", false);
+
 		QueryGraphVisualisationTest myObject = new QueryGraphVisualisationTest();
-		myObject.setup(h2MemoryDB);
+		myObject.setup(database);
 		final LinkCarCompanyAndLogoWithPreviousLink linkCarCompanyAndLogoWithPreviousLink = new LinkCarCompanyAndLogoWithPreviousLink();
 
-		DBQuery dbQuery = h2MemoryDB.getDBQuery(new CarCompany(), new Marque());
+		DBQuery dbQuery = database.getDBQuery(new CarCompany(), new Marque());
 		dbQuery.addOptional(new CompanyLogo(), linkCarCompanyAndLogoWithPreviousLink);
 		dbQuery.displayQueryGraph();
 
-		tearDown(h2MemoryDB);
+		tearDown(database);
 	}
 
 	public void setup(DBDatabase database) throws Exception {
 		database.setPrintSQLBeforeExecuting(false);
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new Marque());
 		database.createTable(new Marque());
 
@@ -62,14 +65,17 @@ public class QueryGraphVisualisationTest {
 		database.createTable(new LinkCarCompanyAndLogoWithPreviousLink());
 
 		database.setPrintSQLBeforeExecuting(true);
+		database.preventDroppingOfTables(true);
 	}
 
-	private static void tearDown(H2MemoryDB database) {
+	private static void tearDown(DBDatabase database) {
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogoWithPreviousLink());
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
 		database.dropTableNoExceptions(new CompanyLogo());
 		database.dropTableNoExceptions(new CarCompany());
 		database.dropTableNoExceptions(new Marque());
+		database.preventDroppingOfTables(true);
 	}
 
 }

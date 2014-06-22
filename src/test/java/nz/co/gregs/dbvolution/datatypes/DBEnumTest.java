@@ -33,210 +33,215 @@ import org.junit.Test;
 
 public class DBEnumTest extends AbstractTest {
 
-    public DBEnumTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public DBEnumTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void createRecordUsingEnum() {
-        IntegerTable row = new IntegerTable();
-        row.recordType.setValue(RecordType.MOVEMENT_CANCELLATION_REQUEST); // nested class imported
-        row.recordType.setValue(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST); // explicit reference to nested class
-        
-        String sqlFragment = row.recordType.toSQLString(database);
-        assertThat(sqlFragment, is("3"));
-        System.out.println(sqlFragment);
-    }
+	@Test
+	public void createRecordUsingEnum() {
+		IntegerTable row = new IntegerTable();
+		row.recordType.setValue(RecordType.MOVEMENT_CANCELLATION_REQUEST); // nested class imported
+		row.recordType.setValue(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST); // explicit reference to nested class
 
-    @Test
-    public void createRecordUsingLiteral() {
-        IntegerTable row = new IntegerTable();
-        row.recordType.setLiteralValue(
-        		IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getCode());
-        
-        String sqlFragment = row.recordType.toSQLString(database);
-        assertThat(sqlFragment, is("3"));
-        System.out.println(sqlFragment);
-    }
-    
-    @Test
-    public void filterRecordUsingEnum() {
-        IntegerTable rowExemplar = new IntegerTable();
-        rowExemplar.recordType.permittedValues(
-        		RecordType.MOVEMENT_REQUEST_RECORD,
-        		RecordType.SHIPPING_MANIFEST_RECORD);
-        
-        String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
-        System.out.println(sqlFragment);
-        assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
-    }
+		String sqlFragment = row.recordType.toSQLString(database);
+		assertThat(sqlFragment, is("3"));
+		System.out.println(sqlFragment);
+	}
 
-    @Test
-    public void filterRecordUsingLiteral() {
-        IntegerTable rowExemplar = new IntegerTable();
-        rowExemplar.recordType.permittedValues(
-        		RecordType.MOVEMENT_REQUEST_RECORD.getCode(),
-        		RecordType.SHIPPING_MANIFEST_RECORD.getCode());
-        
-        String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
-        System.out.println(sqlFragment);
-        assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
-    }
-    
-    @Test
-    public void processIntegerRecord() throws SQLException {
-        final IntegerTable integerTableExemplar = new IntegerTable();
-        database.createTable(integerTableExemplar);
-        try {
-	        database.insert(
-	                new IntegerTable(1, RecordType.MOVEMENT_REQUEST_RECORD),
-	                new IntegerTable(2, RecordType.SHIPPING_MANIFEST_RECORD),
-	                new IntegerTable(4, RecordType.MOVEMENT_REQUEST_RECORD));
-	
-	        integerTableExemplar.recordType.permittedValues(
-	                RecordType.MOVEMENT_CANCELLATION_REQUEST,
-	                RecordType.MOVEMENT_REQUEST_RECORD,
-	                RecordType.SHIPPING_MANIFEST_RECORD);
-	        List<IntegerTable> rows = database.get(integerTableExemplar);
-	        database.print(rows);
-	        
-	        for (IntegerTable row: rows) {
-	        	if (row.uid_202.getValue().intValue() == 1) {
-	        		assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
-	        	}
-	        	if (row.uid_202.getValue().intValue() == 2) {
-	        		assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
-	        	}
-	        }
-        }
-        finally {
-        	database.dropTable(integerTableExemplar);
-        }
-    }
+	@Test
+	public void createRecordUsingLiteral() {
+		IntegerTable row = new IntegerTable();
+		row.recordType.setLiteralValue(
+				IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getCode());
 
-    @Test
-    public void processStringRecord() throws SQLException {
-        final StringTable stringTableExemplar = new StringTable();
-        database.createTable(stringTableExemplar);
-        try {
-	        database.insert(
-	                new StringTable(1, StringEnumType.MOVEMENT_REQUEST_RECORD),
-	                new StringTable(2, StringEnumType.SHIPPING_MANIFEST_RECORD),
-	                new StringTable(4, StringEnumType.MOVEMENT_REQUEST_RECORD));
-	
-	        stringTableExemplar.recordType.permittedValues(
-	                StringEnumType.MOVEMENT_CANCELLATION_REQUEST,
-	                StringEnumType.MOVEMENT_REQUEST_RECORD,
-	                StringEnumType.SHIPPING_MANIFEST_RECORD);
-	        List<StringTable> rows = database.get(stringTableExemplar);
-	        database.print(rows);
-	        
-	        for (StringTable row: rows) {
-	        	if (row.uid_202.getValue().intValue() == 1) {
-	        		assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
-	        	}
-	        	if (row.uid_202.getValue().intValue() == 2) {
-	        		assertThat(row.recordType.enumValue(), is(StringEnumType.SHIPPING_MANIFEST_RECORD));
-	        	}
-	        }
-        }
-        finally {
-        	database.dropTable(stringTableExemplar);
-        }
-    }
-    
-    @Test
-    public void correctlyConvertsLongToIntegerEnum() {
-    	// warm up enum type
-    	IntegerTable row = new IntegerTable();
-    	row.recordType.setValue(IntegerTable.RecordType.SHIPPING_MANIFEST_RECORD);
+		String sqlFragment = row.recordType.toSQLString(database);
+		assertThat(sqlFragment, is("3"));
+		System.out.println(sqlFragment);
+	}
 
-    	// do test
-    	long code = IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.code;
-    	row.recordType.setLiteralValue(code);
-    	assertThat(row.recordType.enumValue(), is(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
-    }
-    
-    @Test
-    public void displayInJsp() {
-        /*
-         jsp: <%-- in a table --%>
-         <table>		
-         <c:forEach var="records" item="record">
-         <tr>
-         <td>${record.recordType.displayName}</td>
-         </tr>
-         </c:forEach>
-         </table>
+	@Test
+	public void filterRecordUsingEnum() {
+		IntegerTable rowExemplar = new IntegerTable();
+		rowExemplar.recordType.permittedValues(
+				RecordType.MOVEMENT_REQUEST_RECORD,
+				RecordType.SHIPPING_MANIFEST_RECORD);
+
+		String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
+		System.out.println(sqlFragment);
+		assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
+	}
+
+	@Test
+	public void filterRecordUsingLiteral() {
+		IntegerTable rowExemplar = new IntegerTable();
+		rowExemplar.recordType.permittedValues(
+				RecordType.MOVEMENT_REQUEST_RECORD.getCode(),
+				RecordType.SHIPPING_MANIFEST_RECORD.getCode());
+
+		String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
+		System.out.println(sqlFragment);
+		assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
+	}
+
+	@Test
+	public void processIntegerRecord() throws SQLException {
+		final IntegerTable integerTableExemplar = new IntegerTable();
+		database.createTable(integerTableExemplar);
+		try {
+			database.insert(
+					new IntegerTable(1, RecordType.MOVEMENT_REQUEST_RECORD),
+					new IntegerTable(2, RecordType.SHIPPING_MANIFEST_RECORD),
+					new IntegerTable(4, RecordType.MOVEMENT_REQUEST_RECORD));
+
+			integerTableExemplar.recordType.permittedValues(
+					RecordType.MOVEMENT_CANCELLATION_REQUEST,
+					RecordType.MOVEMENT_REQUEST_RECORD,
+					RecordType.SHIPPING_MANIFEST_RECORD);
+			List<IntegerTable> rows = database.get(integerTableExemplar);
+			database.print(rows);
+
+			for (IntegerTable row : rows) {
+				if (row.uid_202.getValue().intValue() == 1) {
+					assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
+				}
+				if (row.uid_202.getValue().intValue() == 2) {
+					assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
+				}
+			}
+		} finally {
+			database.preventDroppingOfTables(false);
+			database.dropTable(integerTableExemplar);
+			database.preventDroppingOfTables(true);
+		}
+	}
+
+	@Test
+	public void processStringRecord() throws SQLException {
+		final StringTable stringTableExemplar = new StringTable();
+		database.createTable(stringTableExemplar);
+		try {
+			database.insert(
+					new StringTable(1, StringEnumType.MOVEMENT_REQUEST_RECORD),
+					new StringTable(2, StringEnumType.SHIPPING_MANIFEST_RECORD),
+					new StringTable(4, StringEnumType.MOVEMENT_REQUEST_RECORD));
+
+			stringTableExemplar.recordType.permittedValues(
+					StringEnumType.MOVEMENT_CANCELLATION_REQUEST,
+					StringEnumType.MOVEMENT_REQUEST_RECORD,
+					StringEnumType.SHIPPING_MANIFEST_RECORD);
+			List<StringTable> rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			for (StringTable row : rows) {
+				if (row.uid_202.getValue().intValue() == 1) {
+					assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
+				}
+				if (row.uid_202.getValue().intValue() == 2) {
+					assertThat(row.recordType.enumValue(), is(StringEnumType.SHIPPING_MANIFEST_RECORD));
+				}
+			}
+		} finally {
+			database.preventDroppingOfTables(false);
+			database.dropTable(stringTableExemplar);
+			database.preventDroppingOfTables(false);
+
+		}
+	}
+
+	@Test
+	public void correctlyConvertsLongToIntegerEnum() {
+		// warm up enum type
+		IntegerTable row = new IntegerTable();
+		row.recordType.setValue(IntegerTable.RecordType.SHIPPING_MANIFEST_RECORD);
+
+		// do test
+		long code = IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.code;
+		row.recordType.setLiteralValue(code);
+		assertThat(row.recordType.enumValue(), is(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
+	}
+
+	@Test
+	public void displayInJsp() {
+		/*
+		 jsp: <%-- in a table --%>
+		 <table>		
+		 <c:forEach var="records" item="record">
+		 <tr>
+		 <td>${record.recordType.displayName}</td>
+		 </tr>
+		 </c:forEach>
+		 </table>
 		   
-         <%-- in a selection dropdown --%>
-         <form:select path="recordType">
-         <form:options items="${allRecordTypes}" itemLabel="displayName"/>
-         </form:select>
-         */
-    }
+		 <%-- in a selection dropdown --%>
+		 <form:select path="recordType">
+		 <form:options items="${allRecordTypes}" itemLabel="displayName"/>
+		 </form:select>
+		 */
+	}
 
-    public static class IntegerTable extends DBRow {
-        private static final long serialVersionUID = 1L;
+	public static class IntegerTable extends DBRow {
 
-        @DBColumn("uid_202")
-        @DBPrimaryKey
-        public DBInteger uid_202 = new DBInteger();
-        
-        @DBColumn("c_5")
-        public DBIntegerEnum<RecordType> recordType = new DBIntegerEnum<RecordType>();
-        
-        public IntegerTable() {
-        }
+		private static final long serialVersionUID = 1L;
 
-        public IntegerTable(Integer uid, RecordType recType) {
-            this.uid_202.setValue(uid);
-            this.recordType.setValue(recType);
-        }
+		@DBColumn("uid_202")
+		@DBPrimaryKey
+		public DBInteger uid_202 = new DBInteger();
 
-        /**
-         * Valid values for {@link #recordType}
-         */
-        // Nested class to make it obvious which table the enum is for
-        public static enum RecordType implements DBEnumValue<Integer> {
-            SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),
-            MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
-            MOVEMENT_CANCELLATION_REQUEST(3, "Movement Cancellation Request");
-            
-            private int code;
-            private String displayName;
+		@DBColumn("c_5")
+		public DBIntegerEnum<RecordType> recordType = new DBIntegerEnum<RecordType>();
 
-            private RecordType(int code, String displayName) {
-                this.code = code;
-                this.displayName = displayName;
-            }
+		public IntegerTable() {
+		}
 
-            @Override
-            public Integer getCode() {
-                return code;
-            }
+		public IntegerTable(Integer uid, RecordType recType) {
+			this.uid_202.setValue(uid);
+			this.recordType.setValue(recType);
+		}
 
-            public String getDisplayName() {
-                return displayName;
-            }
+		/**
+		 * Valid values for {@link #recordType}
+		 */
+		// Nested class to make it obvious which table the enum is for
+		public static enum RecordType implements DBEnumValue<Integer> {
 
-            public static RecordType valueOfCode(DBInteger code) {
-                return valueOfCode(code == null ? null : code.getValue().intValue());
-            }
+			SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),
+			MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
+			MOVEMENT_CANCELLATION_REQUEST(3, "Movement Cancellation Request");
 
-            public static RecordType valueOfCode(Integer code) {
-                if (code == null) {
-                    return null;
-                }
-                for (RecordType recordType : values()) {
-                    if (recordType.getCode().equals(code)) {
-                        return recordType;
-                    }
-                }
-                throw new IllegalArgumentException("Invalid " + RecordType.class.getSimpleName() + " code: " + code);
-            }
-        }
-    }
+			private int code;
+			private String displayName;
+
+			private RecordType(int code, String displayName) {
+				this.code = code;
+				this.displayName = displayName;
+			}
+
+			@Override
+			public Integer getCode() {
+				return code;
+			}
+
+			public String getDisplayName() {
+				return displayName;
+			}
+
+			public static RecordType valueOfCode(DBInteger code) {
+				return valueOfCode(code == null ? null : code.getValue().intValue());
+			}
+
+			public static RecordType valueOfCode(Integer code) {
+				if (code == null) {
+					return null;
+				}
+				for (RecordType recordType : values()) {
+					if (recordType.getCode().equals(code)) {
+						return recordType;
+					}
+				}
+				throw new IllegalArgumentException("Invalid " + RecordType.class.getSimpleName() + " code: " + code);
+			}
+		}
+	}
 
 //    public static class LongTable extends DBRow {
 //        private static final long serialVersionUID = 1L;
@@ -299,66 +304,66 @@ public class DBEnumTest extends AbstractTest {
 //            }
 //        }
 //    }
+	public static class StringTable extends DBRow {
 
-    public static class StringTable extends DBRow {
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-        @DBColumn("uid_203")
-        @DBPrimaryKey
-        public DBInteger uid_202 = new DBInteger();
-        
-        @DBColumn("c_5")
-        public DBStringEnum<StringEnumType> recordType = new DBStringEnum<StringEnumType>();
-        
-        public StringTable() {
-        }
+		@DBColumn("uid_203")
+		@DBPrimaryKey
+		public DBInteger uid_202 = new DBInteger();
 
-        public StringTable(Integer uid, StringEnumType recType) {
-            this.uid_202.setValue(uid);
-            this.recordType.setValue(recType);
-        }
+		@DBColumn("c_5")
+		public DBStringEnum<StringEnumType> recordType = new DBStringEnum<StringEnumType>();
 
-        /**
-         * Valid values for {@link #recordType}
-         */
-        // Nested class to make it obvious which table the enum is for
-        public static enum StringEnumType implements DBEnumValue<String> {
+		public StringTable() {
+		}
 
-            SHIPPING_MANIFEST_RECORD("MANRECORD", "Shipping Manifest Record"),
-            MOVEMENT_REQUEST_RECORD("MOVEREQ", "Movement Request Record"),
-            MOVEMENT_CANCELLATION_REQUEST("CANCREQ", "Movement Cancellation Request");
-            private final String literalValue;
-            private final String displayName;
+		public StringTable(Integer uid, StringEnumType recType) {
+			this.uid_202.setValue(uid);
+			this.recordType.setValue(recType);
+		}
 
-            private StringEnumType(String code, String displayName) {
-                this.literalValue = code;
-                this.displayName = displayName;
-            }
+		/**
+		 * Valid values for {@link #recordType}
+		 */
+		// Nested class to make it obvious which table the enum is for
+		public static enum StringEnumType implements DBEnumValue<String> {
 
-            @Override
-            public String getCode() {
-                return literalValue;
-            }
+			SHIPPING_MANIFEST_RECORD("MANRECORD", "Shipping Manifest Record"),
+			MOVEMENT_REQUEST_RECORD("MOVEREQ", "Movement Request Record"),
+			MOVEMENT_CANCELLATION_REQUEST("CANCREQ", "Movement Cancellation Request");
+			private final String literalValue;
+			private final String displayName;
 
-            public String getDisplayName() {
-                return displayName;
-            }
+			private StringEnumType(String code, String displayName) {
+				this.literalValue = code;
+				this.displayName = displayName;
+			}
 
-            public static StringEnumType valueOfCode(DBString code) {
-                return valueOfCode(code == null ? null : code.stringValue());
-            }
+			@Override
+			public String getCode() {
+				return literalValue;
+			}
 
-            public static StringEnumType valueOfCode(String code) {
-                if (code == null) {
-                    return null;
-                }
-                for (StringEnumType recordType : values()) {
-                    if (recordType.getCode().equals(code)) {
-                        return recordType;
-                    }
-                }
-                throw new IllegalArgumentException("Invalid " + StringEnumType.class.getSimpleName() + " code: " + code);
-            }
-        }
-    }
+			public String getDisplayName() {
+				return displayName;
+			}
+
+			public static StringEnumType valueOfCode(DBString code) {
+				return valueOfCode(code == null ? null : code.stringValue());
+			}
+
+			public static StringEnumType valueOfCode(String code) {
+				if (code == null) {
+					return null;
+				}
+				for (StringEnumType recordType : values()) {
+					if (recordType.getCode().equals(code)) {
+						return recordType;
+					}
+				}
+				throw new IllegalArgumentException("Invalid " + StringEnumType.class.getSimpleName() + " code: " + code);
+			}
+		}
+	}
 }
