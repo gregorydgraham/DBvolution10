@@ -209,7 +209,6 @@ public abstract class DBDatabase {
 			}
 		}
 		connectionsActive++;
-		System.out.println("Active Connections++: " + connectionsActive);
 		return connection;
 	}
 
@@ -1122,5 +1121,9 @@ public abstract class DBDatabase {
 
 	boolean supportsPaging(QueryOptions options) {
 		return definition.supportsPaging(options);
+	}
+
+	public synchronized void connectionClosed(Connection connection) {
+		connectionsActive--;
 	}
 }

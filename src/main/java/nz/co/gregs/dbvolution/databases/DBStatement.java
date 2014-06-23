@@ -61,8 +61,7 @@ public class DBStatement implements Statement {
 		try {
 			realStatement.close();
 			connection.close();
-			database.connectionsActive--;
-			System.out.println("Active Connections--: "+database.connectionsActive);
+			database.connectionClosed(connection);
 		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
