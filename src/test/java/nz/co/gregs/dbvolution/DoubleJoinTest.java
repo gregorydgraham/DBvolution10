@@ -65,6 +65,10 @@ public class DoubleJoinTest extends AbstractTest {
 		);
 
 		database.print(allRows);
+		
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithSubclasses());
+		database.preventDroppingOfTables(true);
 	}
 
 	@Test
