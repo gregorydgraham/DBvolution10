@@ -26,7 +26,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
- * Provides support for the abstract concept of deleting rows based on a defined row without a primary key.
+ * Provides support for the abstract concept of deleting rows based on a defined
+ * row without a primary key.
  *
  * <p>
  * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
@@ -55,12 +56,16 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 		DBRow row = getRow();
 		DBActionList actions = new DBActionList(new DBDeleteUsingAllColumns(row));
 		DBStatement statement = db.getDBStatement();
-		List<DBRow> rowsToBeDeleted = db.get(row);
-		for (DBRow deletingRow : rowsToBeDeleted) {
-			savedRows.add(DBRow.copyDBRow(deletingRow));
-		}
-		for (String str : getSQLStatements(db)) {
-			statement.execute(str);
+		try {
+			List<DBRow> rowsToBeDeleted = db.get(row);
+			for (DBRow deletingRow : rowsToBeDeleted) {
+				savedRows.add(DBRow.copyDBRow(deletingRow));
+			}
+			for (String str : getSQLStatements(db)) {
+				statement.execute(str);
+			}
+		} finally {
+			statement.close();
 		}
 		return actions;
 	}

@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.generic;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +54,7 @@ public abstract class AbstractTest {
 	public String secondDateStr = "2/April/2013";
 	
 	@Parameters(name = "{0}")
-	public static List<Object[]> data() throws IOException {
+	public static List<Object[]> data() throws IOException, SQLException {
 		List<Object[]> databases = new ArrayList<Object[]>();
 		boolean testAllDatabases = System.getProperty("testAllDatabases") != null;
 		if (System.getProperty("testMySQLMXJDB") != null || testAllDatabases) {
@@ -61,6 +62,9 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testMySQL") != null || testAllDatabases) {
 			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv")});
+		}
+		if (System.getProperty("testH2DB") != null || testAllDatabases) {
+			databases.add(new Object[]{"H2DB", new H2DB("jdbc:h2:~/dbvolutionTest", "", "")});
 		}
 		if (databases.isEmpty() || testAllDatabases) {
 			// Do basic testing

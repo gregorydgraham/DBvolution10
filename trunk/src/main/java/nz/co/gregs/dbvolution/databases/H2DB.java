@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 
@@ -23,9 +25,12 @@ import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
  * @author greg
  */
 public class H2DB extends DBDatabase {
+	protected final Connection storedConnection;
 
-    public H2DB(String jdbcURL, String username, String password) {
+    public H2DB(String jdbcURL, String username, String password) throws SQLException {
         super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
+		this.storedConnection = getConnection();
+		this.storedConnection.createStatement();
     }
 
     @Override

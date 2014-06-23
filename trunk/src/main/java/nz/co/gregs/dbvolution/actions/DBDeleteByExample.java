@@ -59,8 +59,12 @@ public class DBDeleteByExample extends DBDelete {
 			deleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
 		}
 		DBStatement statement = db.getDBStatement();
-		for (String str : getSQLStatements(db)) {
-			statement.execute(str);
+		try {
+			for (String str : getSQLStatements(db)) {
+				statement.execute(str);
+			}
+		} finally {
+			statement.close();
 		}
 		return actions;
 	}

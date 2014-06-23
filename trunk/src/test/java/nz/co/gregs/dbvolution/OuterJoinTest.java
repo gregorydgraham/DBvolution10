@@ -273,7 +273,7 @@ public class OuterJoinTest extends AbstractTest {
 		final String carCompanyCondition = "((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA'))";
 		Assert.assertThat(sqlForQuery.indexOf(carCompanyCondition),is(sqlForQuery.lastIndexOf(carCompanyCondition)));
 		
-		database.print(dbquery.getAllRows());
+//		database.print(dbquery.getAllRows());
 
 	}
 	

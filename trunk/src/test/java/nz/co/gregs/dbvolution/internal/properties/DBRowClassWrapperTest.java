@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -22,7 +23,7 @@ public class DBRowClassWrapperTest {
     private static DBDatabase database;
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws SQLException {
         database = new H2MemoryDB("dbvolutionTest", "", "", false);
     }
 
