@@ -15,13 +15,16 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class H2MemoryDB extends H2DB {
 
-    public H2MemoryDB(String jdbcURL, String username, String password) {
+    public H2MemoryDB(String jdbcURL, String username, String password) throws SQLException {
         super(jdbcURL, username, password);
     }
 
-    public H2MemoryDB(String databaseName, String username, String password, boolean dummy) {
+    public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
         super("jdbc:h2:mem:" + databaseName, username, password);
         setDatabaseName(databaseName);
     }

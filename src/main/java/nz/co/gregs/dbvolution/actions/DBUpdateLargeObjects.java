@@ -40,9 +40,8 @@ import org.apache.commons.logging.LogFactory;
  * @author Gregory Graham
  */
 public class DBUpdateLargeObjects extends DBUpdate {
-	
-	private static final Log log = LogFactory.getLog(DBUpdateLargeObjects.class);
 
+	private static final Log log = LogFactory.getLog(DBUpdateLargeObjects.class);
 
 	protected DBUpdateLargeObjects(DBRow row) {
 		super(row);
@@ -51,34 +50,39 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow row = getRow();
+		DBActionList actions = new DBActionList();
 		DBDefinition defn = db.getDefinition();
 		DBStatement statement = db.getDBStatement();
-		DBActionList actions = new DBActionList();
-		for (PropertyWrapper prop : getInterestingLargeObjects(row)) {
-			final String col = prop.columnName();
-			final DBLargeObject largeObject = (DBLargeObject) prop.getQueryableDatatype();
+		try {
+			actions = new DBActionList();
+			for (PropertyWrapper prop : getInterestingLargeObjects(row)) {
+				final String col = prop.columnName();
+				final DBLargeObject largeObject = (DBLargeObject) prop.getQueryableDatatype();
 
-			String sqlString = defn.beginUpdateLine()
-					+ defn.formatTableName(row)
-					+ defn.beginSetClause()
-					+ defn.formatColumnName(col)
-					+ defn.getEqualsComparator()
-					+ defn.getPreparedVariableSymbol()
-					+ defn.beginWhereClause()
-					+ defn.formatColumnName(row.getPrimaryKeyColumnName())
-					+ defn.getEqualsComparator()
-					+ row.getPrimaryKey().toSQLString(db)
-					+ defn.endSQLStatement();
-			db.printSQLIfRequested(sqlString);
-			log.info(sqlString);
-			PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-			prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
-			prep.execute();
+				String sqlString = defn.beginUpdateLine()
+						+ defn.formatTableName(row)
+						+ defn.beginSetClause()
+						+ defn.formatColumnName(col)
+						+ defn.getEqualsComparator()
+						+ defn.getPreparedVariableSymbol()
+						+ defn.beginWhereClause()
+						+ defn.formatColumnName(row.getPrimaryKeyColumnName())
+						+ defn.getEqualsComparator()
+						+ row.getPrimaryKey().toSQLString(db)
+						+ defn.endSQLStatement();
+				db.printSQLIfRequested(sqlString);
+				log.info(sqlString);
+				PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+				prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
+				prep.execute();
 
-			DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
-			actions.add(update);
+				DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
+				actions.add(update);
 
-			largeObject.setUnchanged();
+				largeObject.setUnchanged();
+			}
+		} finally {
+			statement.close();
 		}
 		return actions;
 	}

@@ -26,7 +26,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
- * Provides support for the abstract concept of updating rows with standard columns.
+ * Provides support for the abstract concept of updating rows with standard
+ * columns.
  *
  * <p>
  * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
@@ -43,10 +44,14 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow row = getRow();
-		DBStatement statement = db.getDBStatement();
 		DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(row));
-		for (String sql : getSQLStatements(db)) {
-			statement.execute(sql);
+		DBStatement statement = db.getDBStatement();
+		try {
+			for (String sql : getSQLStatements(db)) {
+				statement.execute(sql);
+			}
+		} finally {
+			statement.close();
 		}
 		return actions;
 	}
@@ -108,7 +113,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	}
 
 	@Override
-	protected DBActionList getActions(){
+	protected DBActionList getActions() {
 		return new DBActionList(new DBUpdateSimpleTypes(getRow()));
 	}
 }

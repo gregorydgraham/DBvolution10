@@ -109,7 +109,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.14.1</version>
+				<version>2.17</version>
 				<configuration>
 					<includes>
 						<include>**/*.java</include>
@@ -129,7 +129,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.14.1</version>
+						<version>2.17</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testAllDatabases>true</testAllDatabases>
@@ -151,10 +151,32 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.14.1</version>
+						<version>2.17</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testMySQLMXJDB>true</testMySQLMXJDB>
+							</systemPropertyVariables>
+							<includes>
+								<include>**/*.java</include>
+							</includes>
+							<threadCount>1</threadCount>
+							<forkCount>1</forkCount>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>H2DBTest</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<systemPropertyVariables>
+								<testH2DB>true</testH2DB>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
