@@ -46,7 +46,10 @@ public class DBDatabaseTest extends AbstractTest {
 	@After
 	@Override
 	public void tearDown() throws Exception {
-		tearDown(database);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(new DropTable2TestClass());
+		database.preventDroppingOfTables(true);
+		super.tearDown();
 	}
 
 	@Test
@@ -108,6 +111,7 @@ public class DBDatabaseTest extends AbstractTest {
 	}
 
 	public static class CreateTableTestClass extends DBRow {
+
 		public static final long serialVersionUID = 1L;
 
 		@DBColumn
@@ -115,6 +119,7 @@ public class DBDatabaseTest extends AbstractTest {
 	}
 
 	public static class DropTableTestClass extends DBRow {
+
 		public static final long serialVersionUID = 1L;
 
 		@DBColumn
@@ -122,6 +127,7 @@ public class DBDatabaseTest extends AbstractTest {
 	}
 
 	public static class DropTable2TestClass extends DBRow {
+
 		public static final long serialVersionUID = 1L;
 
 		@DBColumn

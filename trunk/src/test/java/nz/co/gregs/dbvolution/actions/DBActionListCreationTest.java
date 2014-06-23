@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBTable;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
@@ -103,11 +104,11 @@ public class DBActionListCreationTest extends AbstractTest {
 
     @Test
     public void insertAndRevertTest() throws SQLException {
-        Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
-        DBActionList insertActions = database.insert(marque);
-        Marque example = new Marque();
+        CarCompany tvr = new CarCompany("TVR", 33);
+        DBActionList insertActions = database.insert(tvr);
+        CarCompany example = new CarCompany();
         example.name.permittedValuesIgnoreCase("TVR");
-        List<Marque> foundTVR = database.get(example);
+        List<CarCompany> foundTVR = database.get(example);
         Assert.assertThat(foundTVR.size(), is(1));
         DBActionList revertActionList = insertActions.getRevertActionList();
         revertActionList.execute(database);

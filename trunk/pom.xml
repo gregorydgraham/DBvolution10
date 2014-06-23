@@ -134,6 +134,11 @@
 							<systemPropertyVariables>
 								<testAllDatabases>true</testAllDatabases>
 							</systemPropertyVariables>
+							<includes>
+								<include>**/*.java</include>
+							</includes>
+							<threadCount>1</threadCount>
+							<forkCount>1</forkCount>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -151,6 +156,11 @@
 							<systemPropertyVariables>
 								<testMySQLMXJDB>true</testMySQLMXJDB>
 							</systemPropertyVariables>
+							<includes>
+								<include>**/*.java</include>
+							</includes>
+							<threadCount>1</threadCount>
+							<forkCount>1</forkCount>
 						</configuration>
 					</plugin>
 				</plugins>
