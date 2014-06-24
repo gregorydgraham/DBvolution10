@@ -78,6 +78,8 @@ public abstract class DBDatabase {
 	private boolean preventAccidentalDroppingDatabase = true;
 	private boolean logSQLBeforeExecuting;
 	public int connectionsActive = 0;
+	private final Object getStatementSynchronizeObject = new Object();
+	private final Object getConnectionSynchronizeObject = new Object();
 
 	/**
 	 * Define a new DBDatabase.
@@ -166,49 +168,63 @@ public abstract class DBDatabase {
 	 * @return the DBStatement to be used: either a new one, or the current
 	 * transaction statement.
 	 */
-	public synchronized DBStatement getDBStatement() {
+	public DBStatement getDBStatement() {
 		Connection connection;
 		DBStatement statement;
-		if (isInATransaction) {
-			statement = this.transactionStatement;
-		} else {
-			connection = getConnection();
-			try {
-				statement = new DBStatement(this, connection);
-			} catch (SQLException noConnection) {
+		synchronized (getStatementSynchronizeObject) {
+			if (isInATransaction) {
+				statement = this.transactionStatement;
+			} else {
+				connection = getConnection();
 				try {
-					connection.close();
-				} catch (SQLException ex) {
-					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+					statement = new DBStatement(this, connection);
+				} catch (SQLException noConnection) {
+					try {
+						connectionClosed(connection);
+						connection.close();
+					} catch (SQLException ex) {
+						Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+					}
+					throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
 				}
-				throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
 			}
 		}
 		return statement;
 	}
 
-	protected synchronized Connection getConnection() throws RuntimeException {
+	/**
+	 * Retrieve the Connection used internally.
+	 *
+	 * <p>
+	 * However you will not need a Connection to use DBvolution. Your path lies
+	 * elsewhere.
+	 *
+	 * @return the Connection to be used.
+	 */
+	public Connection getConnection() throws RuntimeException {
 		Connection connection;
-		if (this.dataSource == null) {
-			try {
-				// load the driver
-				Class.forName(getDriverName());
-			} catch (ClassNotFoundException noDriver) {
-				throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
+		synchronized (getConnectionSynchronizeObject) {
+			if (this.dataSource == null) {
+				try {
+					// load the driver
+					Class.forName(getDriverName());
+				} catch (ClassNotFoundException noDriver) {
+					throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
+				}
+				try {
+					connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+				} catch (SQLException noConnection) {
+					throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+				}
+			} else {
+				try {
+					connection = dataSource.getConnection();
+				} catch (SQLException noConnection) {
+					throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource - " + dataSource.toString(), noConnection);
+				}
 			}
-			try {
-				connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
-			} catch (SQLException noConnection) {
-				throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
-			}
-		} else {
-			try {
-				connection = dataSource.getConnection();
-			} catch (SQLException noConnection) {
-				throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource - " + dataSource.toString(), noConnection);
-			}
+			connectionOpened(connection);
 		}
-		connectionsActive++;
 		return connection;
 	}
 
@@ -1123,7 +1139,15 @@ public abstract class DBDatabase {
 		return definition.supportsPaging(options);
 	}
 
-	public synchronized void connectionClosed(Connection connection) {
-		connectionsActive--;
+	public void connectionOpened(Connection connection) {
+		synchronized (getConnectionSynchronizeObject) {
+			connectionsActive++;
+		}
+	}
+
+	public void connectionClosed(Connection connection) {
+		synchronized (getConnectionSynchronizeObject) {
+			connectionsActive--;
+		}
 	}
 }
