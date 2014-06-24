@@ -587,57 +587,14 @@ public class DBQuery {
 
 		DBStatement dbStatement = database.getDBStatement();
 		try {
-			ResultSet resultSet = dbStatement.executeQuery(resultSQL);
+			ResultSet resultSet = getResultSetForSQL(dbStatement);
 			try {
 				while (resultSet.next()) {
 					queryRow = new DBQueryRow();
 
-					for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
-						String expressionAlias = database.getDefinition().formatExpressionAlias(entry.getKey());
-						QueryableDatatype expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
-						expressionQDT.setFromResultSet(resultSet, expressionAlias);
-						queryRow.addExpressionColumnValue(entry.getKey(), expressionQDT);
-					}
-					for (DBRow tableRow : allQueryTables) {
-						DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
-
-						List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
-						for (PropertyWrapper newProp : newProperties) {
-							QueryableDatatype qdt = newProp.getQueryableDatatype();
-
-							String resultSetColumnName = newProp.getColumnAlias(database);
-							qdt.setFromResultSet(resultSet, resultSetColumnName);
-							if (newInstance.isEmptyRow() && !qdt.isNull()) {
-								newInstance.setEmptyRow(false);
-							}
-
-							// ensure field set when using type adaptors
-							newProp.setQueryableDatatype(qdt);
-						}
-						newInstance.setDefined(); // Actually came from the database so it is a defined row.
-						Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
-						if (existingInstancesOfThisTableRow == null) {
-							existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
-							existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
-						}
-						if (newInstance.isEmptyRow()) {
-							queryRow.put(newInstance.getClass(), null);
-						} else {
-							DBRow existingInstance = newInstance;
-							final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
-							if (primaryKey != null) {
-								final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
-								if (qdt != null) {
-									existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
-									if (existingInstance == null) {
-										existingInstance = newInstance;
-										existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
-									}
-								}
-							}
-							queryRow.put(existingInstance.getClass(), existingInstance);
-						}
-					}
+					setExpressionColumns(resultSet, queryRow);
+					
+					setQueryRowFromResultSet(resultSet, queryRow);
 					results.add(queryRow);
 				}
 			} finally {
@@ -647,6 +604,79 @@ public class DBQuery {
 			dbStatement.close();
 		}
 		return results;
+	}
+
+	protected ResultSet getResultSetForSQL(DBStatement dbStatement) throws SQLException {
+		return dbStatement.executeQuery(resultSQL);
+	}
+
+	protected void setQueryRowFromResultSet(ResultSet resultSet, DBQueryRow queryRow) throws SQLException, UnableToInstantiateDBRowSubclassException {
+		for (DBRow tableRow : allQueryTables) {
+			DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
+			
+			setFieldsFromColumns(newInstance, resultSet);
+			
+			newInstance.setDefined(); // Actually came from the database so it is a defined row.
+			
+			Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
+			existingInstancesOfThisTableRow = setExistingInstancesForTable(existingInstancesOfThisTableRow, newInstance);
+			
+			if (newInstance.isEmptyRow()) {
+				queryRow.put(newInstance.getClass(), null);
+			} else {
+				DBRow existingInstance = getOrSetExistingInstanceForRow(newInstance, existingInstancesOfThisTableRow);
+				queryRow.put(existingInstance.getClass(), existingInstance);
+			}
+		}
+	}
+
+	protected DBRow getOrSetExistingInstanceForRow(DBRow newInstance, Map<String, DBRow> existingInstancesOfThisTableRow) {
+		DBRow existingInstance = newInstance;
+		final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
+		if (primaryKey != null) {
+			final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
+			if (qdt != null) {
+				existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
+				if (existingInstance == null) {
+					existingInstance = newInstance;
+					existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
+				}
+			}
+		}
+		return existingInstance;
+	}
+
+	protected Map<String, DBRow> setExistingInstancesForTable(Map<String, DBRow> existingInstancesOfThisTableRow, DBRow newInstance) {
+		if (existingInstancesOfThisTableRow == null) {
+			existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
+			existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
+		}
+		return existingInstancesOfThisTableRow;
+	}
+
+	protected void setFieldsFromColumns(DBRow newInstance, ResultSet resultSet) throws SQLException {
+		List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
+		for (PropertyWrapper newProp : newProperties) {
+			QueryableDatatype qdt = newProp.getQueryableDatatype();
+			
+			String resultSetColumnName = newProp.getColumnAlias(database);
+			qdt.setFromResultSet(resultSet, resultSetColumnName);
+			if (newInstance.isEmptyRow() && !qdt.isNull()) {
+				newInstance.setEmptyRow(false);
+			}
+			
+			// ensure field set when using type adaptors
+			newProp.setQueryableDatatype(qdt);
+		}
+	}
+
+	protected void setExpressionColumns(ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
+		for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
+			String expressionAlias = database.getDefinition().formatExpressionAlias(entry.getKey());
+			QueryableDatatype expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
+			expressionQDT.setFromResultSet(resultSet, expressionAlias);
+			queryRow.addExpressionColumnValue(entry.getKey(), expressionQDT);
+		}
 	}
 
 	private void prepareForQuery() throws SQLException {
