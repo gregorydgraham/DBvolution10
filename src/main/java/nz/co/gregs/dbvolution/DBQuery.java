@@ -292,7 +292,11 @@ public class DBQuery {
 						if (expr.isRelationship()) {
 							joinClauses.add(expr.toSQLString(database));
 						} else {
-							conditionClauses.add(expr.toSQLString(database));
+							if (defn.prefersConditionsInWHEREClause() && requiredQueryTables.containsAll(tablesInvolved)) {
+								queryState.addSQLConditions(conditionClauses);
+							} else {
+								conditionClauses.add(expr.toSQLString(database));
+							}
 						}
 						queryState.consumeExpression(expr);
 					}
@@ -317,11 +321,7 @@ public class DBQuery {
 				if (!joinClauses.isEmpty()) {
 					sqlToReturn += "(";
 				}
-				String separator = "";
-				for (String join : conditionClauses) {
-					sqlToReturn += separator + join;
-					separator = defn.beginConditionClauseLine(options);
-				}
+				sqlToReturn += mergeConditionsIntoSQLClause(conditionClauses, defn);
 			}
 			if (!joinClauses.isEmpty()) {
 				if (!conditionClauses.isEmpty()) {
@@ -340,6 +340,16 @@ public class DBQuery {
 				sqlToReturn += defn.getWhereClauseBeginningCondition(options);
 			}
 			sqlToReturn += defn.endOnClause();
+		}
+		return sqlToReturn;
+	}
+
+	private String mergeConditionsIntoSQLClause(List<String> conditionClauses, DBDefinition defn) {
+		String separator = "";
+		String sqlToReturn = "";
+		for (String cond : conditionClauses) {
+			sqlToReturn += separator + cond;
+			separator = defn.beginConditionClauseLine(options);
 		}
 		return sqlToReturn;
 	}
@@ -424,6 +434,21 @@ public class DBQuery {
 				}
 			}
 
+			//add conditions found during the ANSI Join creation
+			final String conditionsAsSQLClause = mergeConditionsIntoSQLClause(queryState.getSQLConditions(), defn);
+			if (!conditionsAsSQLClause.isEmpty()) {
+				whereClause.append(defn.beginConditionClauseLine(options)).append(conditionsAsSQLClause);
+			}
+
+			for (DBRow extra : extraExamples) {
+				List<String> extraCriteria = extra.getWhereClausesWithAliases(database);
+				if (extraCriteria != null && !extraCriteria.isEmpty()) {
+					for (String clause : extraCriteria) {
+						whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
+					}
+				}
+			}
+
 			for (BooleanExpression expression : queryState.getRemainingExpressions()) {
 				whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append("(").append(expression.toSQLString(database)).append(")");
 				queryState.consumeExpression(expression);
@@ -447,25 +472,16 @@ public class DBQuery {
 				groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 			}
 
-			for (DBRow extra : extraExamples) {
-				List<String> extraCriteria = extra.getWhereClausesWithAliases(database);
-				if (extraCriteria != null && !extraCriteria.isEmpty()) {
-					for (String clause : extraCriteria) {
-						whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
-					}
-				}
-			}
-
 			boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
 
 			// tidy up the raw SQL provided
 			String rawSQLClauseFinal = (rawSQLClause.isEmpty() ? "" : rawSQLClause + lineSep);
-			
+
 			// Strip the unnecessary where clause if possible
 			if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()) {
 				whereClause = new StringBuilder("");
 			}
-			
+
 			if (queryType == SELECT_QUERY) {
 				// Clean up the formatting of the optional clauses
 				String groupByClauseFinal = (groupByColumns.size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
@@ -593,7 +609,7 @@ public class DBQuery {
 					queryRow = new DBQueryRow();
 
 					setExpressionColumns(resultSet, queryRow);
-					
+
 					setQueryRowFromResultSet(resultSet, queryRow);
 					results.add(queryRow);
 				}
@@ -613,14 +629,14 @@ public class DBQuery {
 	protected void setQueryRowFromResultSet(ResultSet resultSet, DBQueryRow queryRow) throws SQLException, UnableToInstantiateDBRowSubclassException {
 		for (DBRow tableRow : allQueryTables) {
 			DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
-			
+
 			setFieldsFromColumns(newInstance, resultSet);
-			
+
 			newInstance.setDefined(); // Actually came from the database so it is a defined row.
-			
+
 			Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
 			existingInstancesOfThisTableRow = setExistingInstancesForTable(existingInstancesOfThisTableRow, newInstance);
-			
+
 			if (newInstance.isEmptyRow()) {
 				queryRow.put(newInstance.getClass(), null);
 			} else {
@@ -658,13 +674,13 @@ public class DBQuery {
 		List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
 		for (PropertyWrapper newProp : newProperties) {
 			QueryableDatatype qdt = newProp.getQueryableDatatype();
-			
+
 			String resultSetColumnName = newProp.getColumnAlias(database);
 			qdt.setFromResultSet(resultSet, resultSetColumnName);
 			if (newInstance.isEmptyRow() && !qdt.isNull()) {
 				newInstance.setEmptyRow(false);
 			}
-			
+
 			// ensure field set when using type adaptors
 			newProp.setQueryableDatatype(qdt);
 		}
@@ -1690,8 +1706,8 @@ public class DBQuery {
 	}
 
 	/**
-	 * Automatically adds the examples as required tables if they have criteria, or
-	 * as an optional tables otherwise.
+	 * Automatically adds the examples as required tables if they have criteria,
+	 * or as an optional tables otherwise.
 	 *
 	 * <p>
 	 * Any DBRow example passed to this method that has criteria specified on it,
@@ -1706,8 +1722,8 @@ public class DBQuery {
 	 * which some database don't handle. You may want to test that the query is
 	 * not blank after adding all your tables.
 	 *
-	 * @param examplesWithOrWithoutCriteria Example DBRow objects that should be added
-	 * to the query as a optional or required table as appropriate.
+	 * @param examplesWithOrWithoutCriteria Example DBRow objects that should be
+	 * added to the query as a optional or required table as appropriate.
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptionalIfNonspecific(DBRow... examplesWithOrWithoutCriteria) {
@@ -1844,7 +1860,7 @@ public class DBQuery {
 	private void initialiseQueryGraph() {
 		if (queryGraph == null) {
 			queryGraph = new QueryGraph(database, requiredQueryTables, getConditions(), options);
-			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, getConditions(), options); 
+			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, getConditions(), options);
 		} else {
 			queryGraph.clear();
 			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, getConditions(), options);
@@ -1874,6 +1890,7 @@ public class DBQuery {
 		private QueryGraph graph;
 		private final List<BooleanExpression> remainingConditions;
 		private final List<BooleanExpression> consumedConditions = new ArrayList<BooleanExpression>();
+		private final List<String> remainingSQLConditions = new ArrayList<String>();
 
 		QueryState(DBQuery query, DBDatabase database) {
 			this.query = query;
@@ -1893,6 +1910,14 @@ public class DBQuery {
 
 		private void setGraph(QueryGraph queryGraph) {
 			this.graph = queryGraph;
+		}
+
+		protected void addSQLConditions(List<String> conditionClauses) {
+			remainingSQLConditions.addAll(conditionClauses);
+		}
+
+		protected List<String> getSQLConditions() {
+			return remainingSQLConditions;
 		}
 	}
 }

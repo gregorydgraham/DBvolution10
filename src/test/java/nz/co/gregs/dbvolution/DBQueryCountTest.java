@@ -45,12 +45,12 @@ public class DBQueryCountTest extends AbstractTest{
 		dbQuery.add(carCompany);
 		final String generateSQLString = dbQuery.getSQLForCount();
 
-		String expectedResult = "select count(*) from marque as __1997432637 inner join car_company as __78874071 on( ((__78874071.name = 'toyota')) and (__1997432637.fk_carcompany = __78874071.uid_carcompany) ) ;";
+		String expectedResultUsingONClause = "select count(*) from marque as __1997432637 inner join car_company as __78874071 on( ((__78874071.name = 'toyota')) and (__1997432637.fk_carcompany = __78874071.uid_carcompany) ) ;";
+		String expectedResultUsingWHEREClause = "select count(*) from marque as __1997432637 inner join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
 
-		System.out.println(expectedResult);
-		System.out.println(generateSQLString);
 		Assert.assertThat(testableSQLWithoutColumnAliases(generateSQLString),
-				is(testableSQLWithoutColumnAliases(expectedResult)));
+				anyOf(is(testableSQLWithoutColumnAliases(expectedResultUsingONClause)),
+						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause))));
 		// make sure it works
 		Long count = dbQuery.count();
 		Assert.assertThat(count, is(2L));
