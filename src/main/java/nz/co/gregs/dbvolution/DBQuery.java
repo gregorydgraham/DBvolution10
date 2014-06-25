@@ -1690,6 +1690,34 @@ public class DBQuery {
 	}
 
 	/**
+	 * Automatically adds the examples as required tables if they have criteria, or
+	 * as an optional tables otherwise.
+	 *
+	 * <p>
+	 * Any DBRow example passed to this method that has criteria specified on it,
+	 * however vague, will become a required table on the query.
+	 *
+	 * <p>
+	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase)
+	 * } is TRUE, will be added as an optional table.
+	 *
+	 * <p>
+	 * Warning: not specifying a required table will result in a FULL OUTER join
+	 * which some database don't handle. You may want to test that the query is
+	 * not blank after adding all your tables.
+	 *
+	 * @param examplesWithOrWithoutCriteria Example DBRow objects that should be added
+	 * to the query as a optional or required table as appropriate.
+	 * @return this DBQuery instance
+	 */
+	public DBQuery addOptionalIfNonspecific(DBRow... examplesWithOrWithoutCriteria) {
+		for (DBRow dBRow : examplesWithOrWithoutCriteria) {
+			this.addOptionalIfNonspecific(dBRow);
+		}
+		return this;
+	}
+
+	/**
 	 * Used by DBReport to add columns to the SELECT clause
 	 *
 	 * @param identifyingObject
