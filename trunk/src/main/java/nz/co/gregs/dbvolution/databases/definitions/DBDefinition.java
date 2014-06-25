@@ -657,4 +657,8 @@ public abstract class DBDefinition {
 		return firstString+" = "+secondString;
 	}
 
+	public boolean prefersConditionsInWHEREClause() {
+		return true;
+	}
+
 }
