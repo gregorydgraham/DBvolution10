@@ -18,42 +18,46 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 public class PostgresDBDefinition extends DBDefinition {
 
-    private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    @Override
-    public String getDateFormattedForQuery(Date date) {
-        return "'" + DATETIME_FORMAT.format(date) + "'";
-    }
+	@Override
+	public String getDateFormattedForQuery(Date date) {
+		return "'" + DATETIME_FORMAT.format(date) + "'";
+	}
 
-    @Override
-    public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
-        if (qdt instanceof DBByteArray) {
-            return " BYTEA ";
-        } else if (qdt instanceof DBLargeObject) {
-            return " BYTEA ";
-        } else {
-            return qdt.getSQLDatatype();
-        }
-    }
+	@Override
+	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+		if (qdt instanceof DBByteArray) {
+			return " BYTEA ";
+		} else if (qdt instanceof DBLargeObject) {
+			return " BYTEA ";
+		} else {
+			return super.getSQLTypeOfDBDatatype(qdt);
+		}
+	}
 
-    @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-        return "";
-    }
+	@Override
+	public String doTruncTransform(String firstString, String secondString) {
+		return getTruncFunctionName()+"(("+firstString+")::numeric, "+secondString+")";
+	}
 
-//    @Override
-//    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
-//        if (rowLimit != null) {
-//            return " Limit  " + rowLimit + " ";
-//        }else
-//            return "";
-//    }
+	@Override
+	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+		return "";
+	}
+
+	@Override
+	public String convertBitsToInteger(String columnName) {
+		return columnName+"::integer";
+	}
 
 }

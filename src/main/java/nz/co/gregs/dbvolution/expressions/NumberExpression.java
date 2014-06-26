@@ -947,6 +947,13 @@ public class NumberExpression implements NumberResult {
 	 */
 	public NumberExpression trunc() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doTruncTransform(only.toSQLString(db), "0"); 
+			}
+			
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getTruncFunctionName();

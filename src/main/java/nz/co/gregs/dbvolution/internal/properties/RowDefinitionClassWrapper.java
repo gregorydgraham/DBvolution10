@@ -130,10 +130,13 @@ public class RowDefinitionClassWrapper {
 			}
 		} else {
 			// extract all column properties
+			int columnIndex = 0;	
 			JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
 			for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(clazz)) {
 				PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty, processIdentityOnly);
 				if (property.isColumn()) {
+					columnIndex++;
+					property.setColumnIndex(columnIndex);
 					properties.add(property);
 				}
 			}

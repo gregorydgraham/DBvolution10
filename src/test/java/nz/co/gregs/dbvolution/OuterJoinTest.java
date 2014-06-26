@@ -250,7 +250,7 @@ public class OuterJoinTest extends AbstractTest {
 		marque.enabled.permittedValues(Boolean.TRUE);
 		dbquery.addOptional(marque);
 		String sqlForQuery = dbquery.getSQLForQuery();
-		System.out.println(sqlForQuery);
+		System.out.println(testableSQL(sqlForQuery));
 		Assert.assertThat(testableSQL(sqlForQuery), 
 				anyOf(
 						containsString(testableSQL("ON( __78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY AND (__1997432637.ENABLED = 1) AND ((__78874071.NAME >= 'ford' and __78874071.NAME <= 'TOYOTA')) ) ")),

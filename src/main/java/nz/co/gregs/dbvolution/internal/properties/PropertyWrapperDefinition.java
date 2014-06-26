@@ -62,6 +62,7 @@ public class PropertyWrapperDefinition {
 	private final ForeignKeyHandler foreignKeyHandler;
 	private final EnumTypeHandler enumTypeHandler;
 	private boolean checkedForColumnExpression = false;
+	private Integer columnIndex = null;
 
 	PropertyWrapperDefinition(RowDefinitionClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
@@ -540,5 +541,16 @@ public class PropertyWrapperDefinition {
     boolean isForeignKeyTo(DBRow table) {
         return foreignKeyHandler.isForeignKeyTo(table.getClass());
     }
+
+	void setColumnIndex(int columnIndex) {
+		this.columnIndex = columnIndex;
+	}
+
+	/**
+	 * @return the columnIndex
+	 */
+	public Integer getColumnIndex() {
+		return columnIndex;
+	}
 
 }

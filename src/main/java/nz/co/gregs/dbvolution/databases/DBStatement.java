@@ -226,21 +226,33 @@ public class DBStatement implements Statement {
 
 	@Override
 	public int executeUpdate(String string, String[] strings) throws SQLException {
+		final String logSQL = "EXECUTING UPDATE: " + string;
+		database.printSQLIfRequested(logSQL);
+		log.info(logSQL);
 		return realStatement.executeUpdate(string, strings);
 	}
 
 	@Override
 	public boolean execute(String string, int i) throws SQLException {
+		final String logSQL = "EXECUTING: " + string;
+		database.printSQLIfRequested(logSQL);
+		log.info(logSQL);
 		return realStatement.execute(string, i);
 	}
 
 	@Override
 	public boolean execute(String string, int[] ints) throws SQLException {
+		final String logSQL = "EXECUTING: " + string;
+		database.printSQLIfRequested(logSQL);
+		log.info(logSQL);
 		return realStatement.execute(string, ints);
 	}
 
 	@Override
 	public boolean execute(String string, String[] strings) throws SQLException {
+		final String logSQL = "EXECUTING: " + string;
+		database.printSQLIfRequested(logSQL);
+		log.info(logSQL);
 		return realStatement.execute(string, strings);
 	}
 

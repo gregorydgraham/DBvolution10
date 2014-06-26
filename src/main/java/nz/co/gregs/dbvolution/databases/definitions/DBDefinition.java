@@ -653,12 +653,24 @@ public abstract class DBDefinition {
 		return "trunc";
 	}
 
+	public String doTruncTransform(String firstString, String secondString) {
+		return getTruncFunctionName()+"("+firstString+", "+secondString+")";
+	}
+
 	public String doStringEqualsTransform(String firstString, String secondString) {
 		return firstString+" = "+secondString;
 	}
 
 	public boolean prefersConditionsInWHEREClause() {
 		return true;
+	}
+
+	public String beginReturningClause(DBRow row) {
+		return "";
+	}
+
+	public String convertBitsToInteger(String columnName) {
+		return columnName;
 	}
 
 }
