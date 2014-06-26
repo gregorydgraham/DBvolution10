@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -30,9 +29,9 @@ import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class NumberExpressionTests extends AbstractTest {
+public class NumberExpressionTest extends AbstractTest {
 
-	public NumberExpressionTests(Object testIterationName, Object db) {
+	public NumberExpressionTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 

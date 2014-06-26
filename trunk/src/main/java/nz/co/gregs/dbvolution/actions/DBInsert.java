@@ -28,6 +28,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Provides support for the abstract concept of inserting rows.
@@ -36,9 +38,11 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBInsert extends DBAction {
 
+	private static final Log log = LogFactory.getLog(DBInsert.class);
+
 	private transient StringBuilder allColumns;
 	private transient StringBuilder allValues;
-	public List<Long> generatedKeys = new ArrayList<Long>();
+	private final List<Long> generatedKeys = new ArrayList<Long>();
 
 	protected <R extends DBRow> DBInsert(R row) {
 		super(row);
@@ -47,8 +51,8 @@ public class DBInsert extends DBAction {
 	/**
 	 * Saves the row to the database.
 	 *
-	 * Creates the appropriate actions to save the row permanently in the
-	 * database and executes them.
+	 * Creates the appropriate actions to save the row permanently in the database
+	 * and executes them.
 	 * <p>
 	 * Supports automatic retrieval of the new primary key in limited cases:
 	 * <ul>
@@ -85,6 +89,7 @@ public class DBInsert extends DBAction {
 				+ allColumns
 				+ defn.endInsertColumnList()
 				+ allValues
+				+ defn.beginReturningClause(row)
 				+ defn.endInsertLine());
 		return strs;
 	}
@@ -106,10 +111,16 @@ public class DBInsert extends DBAction {
 						try {
 							ResultSetMetaData metaData = generatedKeysResultSet.getMetaData();
 							while (generatedKeysResultSet.next()) {
-								for (int i = 1; i <= metaData.getColumnCount(); i++) {
-									this.getGeneratedKeys().add(generatedKeysResultSet.getLong(1));
-									System.out.println("GENERATED KEYS: " + generatedKeysResultSet.getLong(1));
-								}
+								Integer pkIndex = row.getPrimaryKeyIndex();
+//								for (int i = 1; i <= metaData.getColumnCount(); i++) {
+									try {
+										final long pkValue = generatedKeysResultSet.getLong(pkIndex);
+										this.getGeneratedPrimaryKeys().add(pkValue);
+										log.debug("GENERATED KEYS: " + pkValue);
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+//								}
 							}
 						} catch (SQLException ex) {
 							throw new RuntimeException(ex);
@@ -209,7 +220,7 @@ public class DBInsert extends DBAction {
 	 *
 	 * @return the generatedKeys
 	 */
-	public List<Long> getGeneratedKeys() {
+	public List<Long> getGeneratedPrimaryKeys() {
 		return generatedKeys;
 	}
 }

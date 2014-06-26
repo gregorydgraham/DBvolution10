@@ -40,7 +40,7 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(Parameterized.class)
 public abstract class AbstractTest {
-	
+
 	public DBDatabase database;
 	Marque myMarqueRow = new Marque();
 	CarCompany myCarCompanyRow = new CarCompany();
@@ -52,7 +52,7 @@ public abstract class AbstractTest {
 	public static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
 	public String firstDateStr = "23/March/2013";
 	public String secondDateStr = "2/April/2013";
-	
+
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException {
 		List<Object[]> databases = new ArrayList<Object[]>();
@@ -66,6 +66,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testH2DB") != null || testAllDatabases) {
 			databases.add(new Object[]{"H2DB", new H2DB("jdbc:h2:~/dbvolutionTest", "", "")});
 		}
+		if (System.getProperty("testPostgresSQL") != null || testAllDatabases) {
+			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
+		}
 		if (databases.isEmpty() || testAllDatabases) {
 			// Do basic testing
 			databases.add(new Object[]{"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)});
@@ -77,19 +80,21 @@ public abstract class AbstractTest {
 
 		return databases;
 	}
-	
+
 	public AbstractTest(Object testIterationName, Object db) {
 		if (db instanceof DBDatabase) {
 			this.database = (DBDatabase) db;
 			database.setPrintSQLBeforeExecuting(true);
 		}
 	}
-	
+
 	public String testableSQL(String str) {
 		if (str != null) {
 			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
 			if (database instanceof OracleDB) {
 				return trimStr.replaceAll("\"", "").replaceAll(" *; *$", "");
+			} else if (database instanceof PostgresDB) {
+				return trimStr.replaceAll("::[a-zA-Z]*", "");
 			} else {
 				return trimStr;
 			}
@@ -97,7 +102,7 @@ public abstract class AbstractTest {
 			return str;
 		}
 	}
-	
+
 	public String testableSQLWithoutColumnAliases(String str) {
 		if (str != null) {
 			String trimStr = str
@@ -116,22 +121,22 @@ public abstract class AbstractTest {
 			return str;
 		}
 	}
-	
+
 	@Before
 	@SuppressWarnings("empty-statement")
 	public void setUp() throws Exception {
 		setup(database);
 	}
-	
+
 	public void setup(DBDatabase database) throws Exception {
 		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new Marque());
 		database.createTable(myMarqueRow);
-		
+
 		database.dropTableNoExceptions(myCarCompanyRow);
 		database.createTable(myCarCompanyRow);
-		
+
 		marquesTable = DBTable.getInstance(database, myMarqueRow);
 		carCompanies = DBTable.getInstance(database, myCarCompanyRow);
 		carCompanies.insert(new CarCompany("TOYOTA", 1));
@@ -139,10 +144,10 @@ public abstract class AbstractTest {
 		carTableRows.add(new CarCompany("GENERAL MOTORS", 3));
 		carTableRows.add(new CarCompany("OTHER", 4));
 		carCompanies.insert(carTableRows);
-		
+
 		Date firstDate = tedhiFormat.parse(firstDateStr).asDate();
 		Date secondDate = tedhiFormat.parse(secondDateStr).asDate();
-		
+
 		marqueRows.add(new Marque(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, null));
 		marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", firstDate, 2, null));
 		marqueRows.add(new Marque(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", firstDate, 3, null));
@@ -165,28 +170,24 @@ public abstract class AbstractTest {
 		marqueRows.add(new Marque(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y", secondDate, 4, null));
 		marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, null));
 		marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
-		
+
 		marquesTable.insert(marqueRows);
-		
+
 		database.dropTableNoExceptions(new CompanyLogo());
 		database.createTable(new CompanyLogo());
-		
+
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
 		database.createTable(new LinkCarCompanyAndLogo());
-		
+
 		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(true);
 	}
 
-//    @Test
-//    public void fakeTest() {
-//        ;
-//    }
 	@After
 	public void tearDown() throws Exception {
 		tearDown(database);
 	}
-	
+
 	public void tearDown(DBDatabase database) throws Exception {
 		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);

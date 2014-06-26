@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanResult;
+import nz.co.gregs.dbvolution.operators.DBBooleanPermittedValuesOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 public class DBBoolean extends QueryableDatatype implements BooleanResult {
@@ -109,7 +110,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * @param permitted
 	 */
 	public void permittedValues(Boolean permitted) {
-		this.setOperator(new DBPermittedValuesOperator(permitted));
+		this.setOperator(new DBBooleanPermittedValuesOperator(permitted));
 	}
 
 	/**
