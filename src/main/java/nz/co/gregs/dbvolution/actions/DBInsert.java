@@ -105,21 +105,27 @@ public class DBInsert extends DBAction {
 			for (String sql : getSQLStatements(db)) {
 				if (defn.supportsGeneratedKeys(null)) {
 					try {
-						statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+						String primaryKeyColumnName = row.getPrimaryKeyColumnName();
+						Integer pkIndex = row.getPrimaryKeyIndex();
+						if (primaryKeyColumnName == null || primaryKeyColumnName.isEmpty()) {
+							statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+						} else {
+							statement.execute(sql, new String[]{primaryKeyColumnName});
+							pkIndex = 1;
+						}
 
 						ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
 						try {
 							ResultSetMetaData metaData = generatedKeysResultSet.getMetaData();
 							while (generatedKeysResultSet.next()) {
-								Integer pkIndex = row.getPrimaryKeyIndex();
 //								for (int i = 1; i <= metaData.getColumnCount(); i++) {
-									try {
-										final long pkValue = generatedKeysResultSet.getLong(pkIndex);
-										this.getGeneratedPrimaryKeys().add(pkValue);
-										log.debug("GENERATED KEYS: " + pkValue);
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
+								try {
+									final long pkValue = generatedKeysResultSet.getLong(pkIndex);
+									this.getGeneratedPrimaryKeys().add(pkValue);
+									log.info("GENERATED KEYS: " + pkValue);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 //								}
 							}
 						} catch (SQLException ex) {
