@@ -118,7 +118,7 @@ public class DBInsertTest extends AbstractTest {
 		private static final long serialVersionUID = 1L;
 
 		@DBPrimaryKey
-		@DBColumn
+		@DBColumn(value = "pkuid", comments = "thi is the pk")
 		@DBAutoIncrement
 		public DBString pk_uid = new DBString();
 
