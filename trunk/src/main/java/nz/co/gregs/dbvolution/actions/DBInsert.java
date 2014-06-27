@@ -43,9 +43,11 @@ public class DBInsert extends DBAction {
 	private transient StringBuilder allColumns;
 	private transient StringBuilder allValues;
 	private final List<Long> generatedKeys = new ArrayList<Long>();
+	private final DBRow originalRow;
 
 	protected <R extends DBRow> DBInsert(R row) {
 		super(row);
+		originalRow = row;
 	}
 
 	/**
@@ -116,16 +118,15 @@ public class DBInsert extends DBAction {
 
 						ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
 						try {
-							ResultSetMetaData metaData = generatedKeysResultSet.getMetaData();
 							while (generatedKeysResultSet.next()) {
-//								for (int i = 1; i <= metaData.getColumnCount(); i++) {
-								try {
+//								try {
 									final long pkValue = generatedKeysResultSet.getLong(pkIndex);
 									this.getGeneratedPrimaryKeys().add(pkValue);
 									log.info("GENERATED KEYS: " + pkValue);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
+									this.originalRow.getPrimaryKey().setValue(pkValue);
+//								} catch (SQLException e) {
+									// This probably means there were no keys to retrieve
+//									e.printStackTrace();
 //								}
 							}
 						} catch (SQLException ex) {

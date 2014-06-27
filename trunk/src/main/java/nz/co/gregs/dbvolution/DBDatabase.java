@@ -86,13 +86,12 @@ public abstract class DBDatabase {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
-	 * database.
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
 	 *
 	 * <p>
 	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details
-	 * from a DataSource.
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
@@ -116,16 +115,15 @@ public abstract class DBDatabase {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
-	 * database.
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
 	 *
 	 * <p>
 	 * Create a new DBDatabase by providing the connection details
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
-	 * @param driverName - The name of the JDBC class that is the Driver for
-	 * this database.
+	 * @param driverName - The name of the JDBC class that is the Driver for this
+	 * database.
 	 * @param jdbcURL - The JDBC URL to connect to the database.
 	 * @param username - The username to login to the database as.
 	 * @param password - The users password for the database.
@@ -463,8 +461,8 @@ public abstract class DBDatabase {
 	 * creates a query and fetches the rows automatically, based on the examples
 	 * given
 	 *
-	 * Will throw a {@link UnexpectedNumberOfRowsException} if the number of
-	 * rows found is different from the number expected. See {@link DBQuery#getAllRows(long)
+	 * Will throw a {@link UnexpectedNumberOfRowsException} if the number of rows
+	 * found is different from the number expected. See {@link DBQuery#getAllRows(long)
 	 * } for further details.
 	 *
 	 * @param expectedNumberOfRows
@@ -512,8 +510,8 @@ public abstract class DBDatabase {
 	 * Performs the transaction on this database.
 	 *
 	 * <p>
-	 * If there is an exception of any kind the transaction is rolled back and
-	 * no changes are made.
+	 * If there is an exception of any kind the transaction is rolled back and no
+	 * changes are made.
 	 *
 	 * <p>
 	 * Otherwise the transaction is committed and changes are made permanent
@@ -558,12 +556,12 @@ public abstract class DBDatabase {
 	 * Performs the transaction on this database without making changes.
 	 *
 	 * <p>
-	 * If there is an exception of any kind the transaction is rolled back and
-	 * no changes are made.
+	 * If there is an exception of any kind the transaction is rolled back and no
+	 * changes are made.
 	 *
 	 * <p>
-	 * If no exception occurs, the transaction is still rolled back and no
-	 * changes are made
+	 * If no exception occurs, the transaction is still rolled back and no changes
+	 * are made
 	 *
 	 * @param <V>
 	 * @param dbTransaction
@@ -634,8 +632,7 @@ public abstract class DBDatabase {
 	}
 
 	/**
-	 * Returns the name of the JDBC driver class used by this DBDatabase
-	 * instance.
+	 * Returns the name of the JDBC driver class used by this DBDatabase instance.
 	 *
 	 * @return the driverName
 	 */
@@ -722,8 +719,8 @@ public abstract class DBDatabase {
 	}
 
 	/**
-	 * Called by internal methods that are about to execute SQL so the SQL can
-	 * be printed.
+	 * Called by internal methods that are about to execute SQL so the SQL can be
+	 * printed.
 	 *
 	 * @param sqlString
 	 */
@@ -760,8 +757,8 @@ public abstract class DBDatabase {
 	}
 
 	/**
-	 * Called by internal methods that are about to execute SQL so the SQL can
-	 * be logged.
+	 * Called by internal methods that are about to execute SQL so the SQL can be
+	 * logged.
 	 *
 	 * @deprecated because apparently I don't understand logging frameworks
 	 * @param sqlString
@@ -772,8 +769,8 @@ public abstract class DBDatabase {
 	}
 
 	/**
-	 * Called by internal methods that are about to execute SQL so the SQL can
-	 * be logged.
+	 * Called by internal methods that are about to execute SQL so the SQL can be
+	 * logged.
 	 *
 	 * @deprecated because apparently I don't understand logging frameworks
 	 * @param sqlString
@@ -817,7 +814,7 @@ public abstract class DBDatabase {
 						.append(sep)
 						.append(definition.formatColumnName(colName))
 						.append(definition.getCreateTableColumnsNameAndTypeSeparator())
-						.append(definition.getSQLTypeOfDBDatatype(field));
+						.append(definition.getSQLTypeAndModifiersOfDBDatatype(field));
 				sep = nextSep + lineSeparator;
 
 				if (field.isPrimaryKey()) {
@@ -924,8 +921,8 @@ public abstract class DBDatabase {
 	 * database.
 	 *
 	 * <p>
-	 * While DBDefinition is important, unless you are implementing support for
-	 * a new database you probably don't need this.
+	 * While DBDefinition is important, unless you are implementing support for a
+	 * new database you probably don't need this.
 	 *
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
@@ -1003,8 +1000,8 @@ public abstract class DBDatabase {
 	 * generally DBvolution attempts to do that when handed several actions at
 	 * once.
 	 * <p>
-	 * However sometimes this is inappropriate and this method can help with
-	 * those times.
+	 * However sometimes this is inappropriate and this method can help with those
+	 * times.
 	 *
 	 * @return TRUE if this instance will try to batch SQL statements, FALSE
 	 * otherwise
@@ -1021,8 +1018,8 @@ public abstract class DBDatabase {
 	 * generally DBvolution attempts to do that when handed several actions at
 	 * once.
 	 * <p>
-	 * However sometimes this is inappropriate and this method can help with
-	 * those times.
+	 * However sometimes this is inappropriate and this method can help with those
+	 * times.
 	 *
 	 * @param batchSQLStatementsWhenPossible TRUE if this instance will try to
 	 * batch SQL statements, FALSE otherwise
@@ -1057,8 +1054,8 @@ public abstract class DBDatabase {
 	 * Indicates whether this database supports full outer joins.
 	 *
 	 * <p>
-	 * Some databases don't yet support queries where all the tables are
-	 * optional, that is FULL OUTER joins.
+	 * Some databases don't yet support queries where all the tables are optional,
+	 * that is FULL OUTER joins.
 	 *
 	 * <p>
 	 * This method indicates whether or not this instance can perform full outer
@@ -1081,15 +1078,15 @@ public abstract class DBDatabase {
 	 * Indicates whether this database supports full outer joins natively.
 	 *
 	 * <p>
-	 * Some databases don't yet support queries where all the tables are
-	 * optional, that is FULL OUTER joins.
+	 * Some databases don't yet support queries where all the tables are optional,
+	 * that is FULL OUTER joins.
 	 *
 	 * <p>
 	 * This method indicates whether or not this instance can perform full outer
 	 * joins.
 	 *
-	 * @return TRUE if the underlying database supports full outer joins
-	 * natively, FALSE otherwise.
+	 * @return TRUE if the underlying database supports full outer joins natively,
+	 * FALSE otherwise.
 	 */
 	protected boolean supportsFullOuterJoinNatively() {
 		return true;

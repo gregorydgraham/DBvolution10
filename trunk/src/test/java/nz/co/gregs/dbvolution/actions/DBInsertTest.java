@@ -17,7 +17,10 @@ package nz.co.gregs.dbvolution.actions;
 
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.*;
+import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Test;
@@ -40,7 +43,6 @@ public class DBInsertTest extends AbstractTest {
 	 */
 	@Test
 	public void testSave() throws Exception {
-		System.out.println("save");
 		DBRow row = new CarCompany("TATA", 123);
 		DBActionList result = DBInsert.save(database, row);
 		Assert.assertThat(result.size(), is(1));
@@ -52,5 +54,76 @@ public class DBInsertTest extends AbstractTest {
 				System.out.println("Primary Key Returned: " + generatedKeys.get(0));
 			}
 		}
+	}
+
+	@Test
+	public void testSaveWithDefaultValues() throws Exception {
+		TestDefaultValueRetrieval row = new TestDefaultValueRetrieval();
+		TestDefaultValueRetrieval row2 = new TestDefaultValueRetrieval();
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(row);
+		database.preventDroppingOfTables(true);
+
+		database.createTable(row);
+
+		row.name.setValue("First Row");
+		row2.name.setValue("Second Row");
+		database.insert(row);
+		Assert.assertThat(row.pk_uid.getValue(), is(1L));
+		database.insert(row2);
+		Assert.assertThat(row2.pk_uid.getValue(), is(2L));
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(row);
+		database.preventDroppingOfTables(true);
+	}
+
+	@Test(expected = AutoIncrementFieldClassAndDatatypeMismatch.class)
+	public void testSaveWithDefaultValuesAndIncorrectDatatype() throws Exception {
+		TestDefaultValueIncorrectDatatype row = new TestDefaultValueIncorrectDatatype();
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(row);
+		database.preventDroppingOfTables(true);
+
+		database.createTable(row);
+
+		try {
+			row.name.setValue("First Row");
+			database.insert(row);
+		} finally {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+			database.preventDroppingOfTables(true);
+		}
+	}
+
+	public static class TestDefaultValueRetrieval extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn
+		@DBAutoIncrement
+		public DBInteger pk_uid = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString();
+
+	}
+
+	public static class TestDefaultValueIncorrectDatatype extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn
+		@DBAutoIncrement
+		public DBString pk_uid = new DBString();
+
+		@DBColumn
+		public DBString name = new DBString();
+
 	}
 }

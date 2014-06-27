@@ -573,4 +573,8 @@ public class PropertyWrapper {
     public boolean isForeignKeyTo(DBRow table) {
         return propertyDefinition.isForeignKeyTo(table);
     }
+
+	public boolean isAutoIncrement() {
+		return propertyDefinition.isAutoIncrementColumn();
+	}
 }
