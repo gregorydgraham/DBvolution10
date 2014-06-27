@@ -29,5 +29,7 @@ public class DBTableField {
     String columnType;
     int precision;
     int javaSQLDatatype = 0;
+	String comments;
+	boolean isAutoIncrement;
     
 }

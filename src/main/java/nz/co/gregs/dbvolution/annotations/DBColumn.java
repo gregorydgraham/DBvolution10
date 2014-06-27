@@ -29,5 +29,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBColumn {
     String value() default "";
+    String comments() default "";
     
 }

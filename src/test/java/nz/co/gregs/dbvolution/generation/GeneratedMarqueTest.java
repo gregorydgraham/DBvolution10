@@ -24,7 +24,13 @@ import java.util.Arrays;
 import java.util.List;
 import javax.tools.*;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -47,14 +53,16 @@ public class GeneratedMarqueTest extends AbstractTest {
 	@Test
 	public void testGetSchema() throws SQLException {
 		if (database instanceof H2MemoryDB) {
+			database.createTable(new TestAutoIncrementDetection());
 			int classesTested = 0;
 			List<DBTableClass> generateSchema;
-			List<String> testClassNames = Arrays.asList(new String[]{"CarCompany", "Companylogo", "LtCarcoLogo", "Marque"});
+			List<String> testClassNames = Arrays.asList(new String[]{"CarCompany", "Companylogo", "LtCarcoLogo", "Marque", "TestAutoIncrementDetection"});
 			List<String> testClasses = new ArrayList<String>();
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CAR_COMPANY\") \npublic class CarCompany extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"UID_CARCOMPANY\")\n    @DBPrimaryKey\n    public DBInteger uidCarcompany = new DBInteger();\n\n}\n\n");
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"COMPANYLOGO\") \npublic class Companylogo extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"LOGO_ID\")\n    @DBPrimaryKey\n    public DBInteger logoId = new DBInteger();\n\n    @DBColumn(\"CAR_COMPANY_FK\")\n    public DBInteger carCompanyFk = new DBInteger();\n\n    @DBColumn(\"IMAGE_FILE\")\n    public DBByteArray imageFile = new DBByteArray();\n\n    @DBColumn(\"IMAGE_NAME\")\n    public DBString imageName = new DBString();\n\n}\n\n");
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"LT_CARCO_LOGO\") \npublic class LtCarcoLogo extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"FK_CAR_COMPANY\")\n    public DBInteger fkCarCompany = new DBInteger();\n\n    @DBColumn(\"FK_COMPANY_LOGO\")\n    public DBInteger fkCompanyLogo = new DBInteger();\n\n}\n\n");
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n" + "\n" + "import nz.co.gregs.dbvolution.*;\n" + "import nz.co.gregs.dbvolution.datatypes.*;\n" + "import nz.co.gregs.dbvolution.annotations.*;\n" + "\n" + "@DBTableName(\"MARQUE\") \n" + "public class Marque extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NUMERIC_CODE\")\n    public DBNumber numericCode = new DBNumber();\n\n    @DBColumn(\"UID_MARQUE\")\n    @DBPrimaryKey\n    public DBInteger uidMarque = new DBInteger();\n\n    @DBColumn(\"ISUSEDFORTAFROS\")\n    public DBString isusedfortafros = new DBString();\n\n    @DBColumn(\"FK_TOYSTATUSCLASS\")\n    public DBNumber fkToystatusclass = new DBNumber();\n\n    @DBColumn(\"INTINDALLOCALLOWED\")\n    public DBString intindallocallowed = new DBString();\n\n    @DBColumn(\"UPD_COUNT\")\n    public DBInteger updCount = new DBInteger();\n\n    @DBColumn(\"AUTO_CREATED\")\n    public DBString autoCreated = new DBString();\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"PRICINGCODEPREFIX\")\n    public DBString pricingcodeprefix = new DBString();\n\n    @DBColumn(\"RESERVATIONSALWD\")\n    public DBString reservationsalwd = new DBString();\n\n    @DBColumn(\"CREATION_DATE\")\n    public DBDate creationDate = new DBDate();\n\n    @DBColumn(\"ENABLED\")\n    public DBBoolean enabled = new DBBoolean();\n\n    @DBColumn(\"FK_CARCOMPANY\")\n    public DBInteger fkCarcompany = new DBInteger();\n\n}\n\n");
+			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"TEST_AUTO_INCREMENT_DETECTION\") \npublic class TestAutoIncrementDetection extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"PK_UID\")\n    @DBPrimaryKey\n    @DBAutoIncrement\n    public DBInteger pkUid = new DBInteger();\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n}\n\n");
 			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
 			for (DBTableClass dbcl : generateSchema) {
 				if (testClassNames.contains(dbcl.className)) {
@@ -72,7 +80,11 @@ public class GeneratedMarqueTest extends AbstractTest {
 					System.out.println("SKIPPED: " + dbcl.className);
 				}
 			}
-			Assert.assertThat(classesTested, is(4));
+			Assert.assertThat(classesTested, is(5));
+
+			database.preventDroppingOfTables(false);
+			database.dropTable(new TestAutoIncrementDetection());
+			database.preventDroppingOfTables(true);
 		}
 	}
 
@@ -234,6 +246,21 @@ public class GeneratedMarqueTest extends AbstractTest {
 		result = DBTableClassGenerator.toClassCase(test);
 		System.out.println(test + " => " + result + "(" + expected + ")");
 		Assert.assertEquals(result, expected);
+
+	}
+
+	@DBTableName("test_auto_increment_detection")
+	public static class TestAutoIncrementDetection extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn
+		@DBAutoIncrement
+		public DBInteger pk_uid = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString();
 
 	}
 }
