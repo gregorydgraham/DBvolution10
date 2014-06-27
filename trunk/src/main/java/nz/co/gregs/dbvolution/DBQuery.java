@@ -267,17 +267,27 @@ public class DBQuery {
 		} else if (optionalQueryTables.contains(newTable)) {
 			isLeftOuterJoin = true;
 		}
+
+		//Store the expressions from the new table in the QueryState
 		for (DBRow otherTable : previousTables) {
-			queryState.remainingConditions.addAll(newTable.getRelationshipsAsBooleanExpressions(database, otherTable, options));
+			queryState.remainingExpressions.addAll(newTable.getRelationshipsAsBooleanExpressions(database, otherTable, options));
 		}
 
 		// Add new table's conditions
-		conditionClauses.addAll(newTable.getWhereClausesWithAliases(database));
+		List<String> newTableConditions = newTable.getWhereClausesWithAliases(database);
+		if (requiredQueryTables.contains(newTable)) {
+			queryState.addRequiredConditions(newTableConditions);
+		} else {
+			conditionClauses.addAll(newTableConditions);
+		}
 
 		// Since the first table can not have a ON clause we need to add it's ON clause to the second table's.
 		if (previousTables.size() == 1) {
 			final DBRow firstTable = previousTables.get(0);
-			conditionClauses.addAll(firstTable.getWhereClausesWithAliases(database));
+			if (!requiredQueryTables.contains(firstTable)) {
+				List<String> firstTableConditions = firstTable.getWhereClausesWithAliases(database);
+				conditionClauses.addAll(firstTableConditions);
+			}
 		}
 
 		// Add all the expressions we can
@@ -292,8 +302,8 @@ public class DBQuery {
 						if (expr.isRelationship()) {
 							joinClauses.add(expr.toSQLString(database));
 						} else {
-							if (defn.prefersConditionsInWHEREClause() && requiredQueryTables.containsAll(tablesInvolved)) {
-								queryState.addSQLConditions(conditionClauses);
+							if (requiredQueryTables.containsAll(tablesInvolved)) {
+								queryState.addRequiredCondition(expr.toSQLString(database));
 							} else {
 								conditionClauses.add(expr.toSQLString(database));
 							}
@@ -435,7 +445,7 @@ public class DBQuery {
 			}
 
 			//add conditions found during the ANSI Join creation
-			final String conditionsAsSQLClause = mergeConditionsIntoSQLClause(queryState.getSQLConditions(), defn);
+			final String conditionsAsSQLClause = mergeConditionsIntoSQLClause(queryState.getRequiredConditions(), defn);
 			if (!conditionsAsSQLClause.isEmpty()) {
 				whereClause.append(defn.beginConditionClauseLine(options)).append(conditionsAsSQLClause);
 			}
@@ -1888,36 +1898,49 @@ public class DBQuery {
 		private final DBDatabase database;
 		private final DBDefinition defn;
 		private QueryGraph graph;
-		private final List<BooleanExpression> remainingConditions;
-		private final List<BooleanExpression> consumedConditions = new ArrayList<BooleanExpression>();
-		private final List<String> remainingSQLConditions = new ArrayList<String>();
+		private final List<BooleanExpression> remainingExpressions;
+		private final List<BooleanExpression> consumedExpressions = new ArrayList<BooleanExpression>();
+		private final List<String> requiredConditions = new ArrayList<String>();
+		private final List<String> optionalConditions = new ArrayList<String>();
 
 		QueryState(DBQuery query, DBDatabase database) {
 			this.query = query;
 			this.database = database;
 			this.defn = database.getDefinition();
-			this.remainingConditions = new ArrayList<BooleanExpression>(query.getConditions());
+			this.remainingExpressions = new ArrayList<BooleanExpression>(query.getConditions());
 		}
 
 		private Iterable<BooleanExpression> getRemainingExpressions() {
-			return new ArrayList<BooleanExpression>(remainingConditions);
+			return new ArrayList<BooleanExpression>(remainingExpressions);
 		}
 
 		private void consumeExpression(BooleanExpression expr) {
-			remainingConditions.remove(expr);
-			consumedConditions.add(expr);
+			remainingExpressions.remove(expr);
+			consumedExpressions.add(expr);
 		}
 
 		private void setGraph(QueryGraph queryGraph) {
 			this.graph = queryGraph;
 		}
 
-		protected void addSQLConditions(List<String> conditionClauses) {
-			remainingSQLConditions.addAll(conditionClauses);
+		protected void addRequiredCondition(String conditionClause) {
+			requiredConditions.add(conditionClause);
 		}
 
-		protected List<String> getSQLConditions() {
-			return remainingSQLConditions;
+		private void addRequiredConditions(List<String> conditionClauses) {
+			requiredConditions.addAll(conditionClauses);
+		}
+
+		protected List<String> getRequiredConditions() {
+			return requiredConditions;
+		}
+
+		protected void addOptionalConditions(List<String> conditionClauses) {
+			optionalConditions.addAll(conditionClauses);
+		}
+
+		protected List<String> getOptionalConditions() {
+			return optionalConditions;
 		}
 	}
 }

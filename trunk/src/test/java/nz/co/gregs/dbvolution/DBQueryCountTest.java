@@ -57,7 +57,7 @@ public class DBQueryCountTest extends AbstractTest{
 		Assert.assertThat(count, is(2L));
 		
 	}
-	@Ignore
+	
 	@Test
 	public void countOtherMarquesTests() throws SQLException{
 		DBQuery dbQuery = database.getDBQuery();
@@ -84,7 +84,7 @@ public class DBQueryCountTest extends AbstractTest{
 		Assert.assertThat(count, is(3L));
 		
 	}
-	@Ignore
+	
 	@Test
 	public void countSingleTableTests() throws SQLException{
 		DBQuery dbQuery = database.getDBQuery();
@@ -109,7 +109,6 @@ public class DBQueryCountTest extends AbstractTest{
 		
 	}
 	
-	@Ignore
 	@Test
 	public void countOuterJoinTests() throws SQLException{
 		DBQuery dbQuery = database.getDBQuery();
