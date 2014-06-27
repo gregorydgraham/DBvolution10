@@ -76,4 +76,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
     public boolean supportsPaging(QueryOptions options) {
         return false;
     }
+
+	@Override
+	public String getColumnAutoIncrementSuffix() {
+		return " IDENTITY ";
+	}
 }

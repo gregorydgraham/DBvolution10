@@ -17,7 +17,10 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -112,7 +115,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -124,7 +128,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -138,10 +143,11 @@ public abstract class DBDefinition {
 			return beginOrLine();
 		}
 	}
-	
+
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for joins.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * joins.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -155,7 +161,6 @@ public abstract class DBDefinition {
 			return beginOrLine();
 		}
 	}
-
 
 	public boolean prefersIndexBasedGroupByClause() {
 		return false;
@@ -405,8 +410,8 @@ public abstract class DBDefinition {
 	 *
 	 * for example MySQL/MariaDB use SELECT ... FROM ... WHERE ... LIMIT 10 ;
 	 *
-	 * Based on the example for MySQL/MariaDB this method should return " LIMIT
-	 * 10 "
+	 * Based on the example for MySQL/MariaDB this method should return " LIMIT 10
+	 * "
 	 *
 	 * If the database does not support row limiting this method should throw an
 	 * exception when rowLimit is not null
@@ -431,8 +436,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * The place holder for variables inserted into a prepared statement,
-	 * usually " ? "
+	 * The place holder for variables inserted into a prepared statement, usually
+	 * " ? "
 	 *
 	 * @return the place holder for variables as a string
 	 */
@@ -644,7 +649,7 @@ public abstract class DBDefinition {
 	public boolean supportsPaging(QueryOptions options) {
 		return true;
 	}
-        
+
 	public boolean supportsGeneratedKeys(QueryOptions options) {
 		return true;
 	}
@@ -654,11 +659,11 @@ public abstract class DBDefinition {
 	}
 
 	public String doTruncTransform(String firstString, String secondString) {
-		return getTruncFunctionName()+"("+firstString+", "+secondString+")";
+		return getTruncFunctionName() + "(" + firstString + ", " + secondString + ")";
 	}
 
 	public String doStringEqualsTransform(String firstString, String secondString) {
-		return firstString+" = "+secondString;
+		return firstString + " = " + secondString;
 	}
 
 	public boolean prefersConditionsInWHEREClause() {
@@ -671,6 +676,39 @@ public abstract class DBDefinition {
 
 	public String convertBitsToInteger(String columnName) {
 		return columnName;
+	}
+
+	public String getColumnAutoIncrementSuffix() {
+		return " GENERATED ALWAYS AS IDENTITY ";
+	}
+
+	public Object getSQLTypeAndModifiersOfDBDatatype(PropertyWrapper field) {
+		if (field.isAutoIncrement()) {
+			if (propertyWrapperConformsToAutoIncrementType(field)) {
+				if (hasSpecialAutoIncrementType()) {
+					return getSpecialAutoIncrementType();
+				} else {
+					return getSQLTypeOfDBDatatype(field) + getColumnAutoIncrementSuffix();
+				}
+			} else {
+				throw new AutoIncrementFieldClassAndDatatypeMismatch(field);
+			}
+		} else {
+			return getSQLTypeOfDBDatatype(field);
+		}
+	}
+
+	protected boolean hasSpecialAutoIncrementType() {
+		return false;
+	}
+
+	protected boolean propertyWrapperConformsToAutoIncrementType(PropertyWrapper field) {
+		final QueryableDatatype qdt = field.getQueryableDatatype();
+		return (qdt instanceof DBNumber) || (qdt instanceof DBInteger);
+	}
+
+	protected String getSpecialAutoIncrementType() {
+		return "";
 	}
 
 }

@@ -83,4 +83,9 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "(" + firstString + " = binary " + secondString + ")";
 	}
 
+	@Override
+	public String getColumnAutoIncrementSuffix() {
+		return " AUTO_INCREMENT ";
+	}
+
 }

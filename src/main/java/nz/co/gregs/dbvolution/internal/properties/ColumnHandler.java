@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -19,17 +20,19 @@ class ColumnHandler {
 	private final String columnName;
 	private final DBColumn columnAnnotation; // null if not present on property
 	private final DBPrimaryKey primaryKeyAnnotation; // null if not present on property
+	private final DBAutoIncrement autoIncrementAnnotation; // null if not present on property
     private DBExpression columnExpression; // null if not present on property
 	
 	ColumnHandler(JavaProperty adaptee) {
 		this.columnAnnotation = adaptee.getAnnotation(DBColumn.class);
 		this.primaryKeyAnnotation = adaptee.getAnnotation(DBPrimaryKey.class);
+		this.autoIncrementAnnotation = adaptee.getAnnotation(DBAutoIncrement.class);
 		
 		// pre-calculate column name
 		// (null if no annotation, default if annotation present but no name given)
 		if (columnAnnotation != null) {
 			String name = columnAnnotation.value();
-			this.columnName = (name == null || name.trim().equals("")) ? adaptee.name() : name;
+			this.columnName = (name == null || name.trim().isEmpty()) ? adaptee.name() : name;
 		} else {
 			this.columnName = null;
 		}
@@ -37,8 +40,12 @@ class ColumnHandler {
             QueryableDatatype qdt = (QueryableDatatype)adaptee;
             if (qdt.hasColumnExpression()){
                 this.columnExpression = qdt.getColumnExpression();
-            }else this.columnExpression = null;
-        }else this.columnExpression = null;
+            }else {
+							this.columnExpression = null;
+						}
+        }else {
+					this.columnExpression = null;
+		}
 	}
 
 	/**
@@ -88,4 +95,8 @@ class ColumnHandler {
     void setColumnExpression(DBExpression expression) {
         columnExpression = expression;
     }
+
+	boolean isAutoIncrement() {
+		return this.autoIncrementAnnotation != null;
+	}
 }

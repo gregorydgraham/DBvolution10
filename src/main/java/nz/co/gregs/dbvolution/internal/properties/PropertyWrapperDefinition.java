@@ -553,4 +553,8 @@ public class PropertyWrapperDefinition {
 		return columnIndex;
 	}
 
+	boolean isAutoIncrementColumn() {
+		return columnHandler.isAutoIncrement();
+	}
+
 }
