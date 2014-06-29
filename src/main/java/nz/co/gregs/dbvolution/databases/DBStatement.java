@@ -25,6 +25,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Encapsulates the JDBC Connection and Statement classes.
+ *
+ * <p>
+ * You should not need to create a DBStatement as they are managed by the
+ * DBDatabase internally.
+ *
+ * <p>
+ * DBStatement simplifies the JDBC interface by managing the connection and
+ * statement simultaneously. When the statement is closed so is the connection
+ * ensuring minimalist usage of the database.
+ *
+ * <p>
+ * Mostly this is a thin wrapper around DBDatabase, Connection, and Statement
+ * objects
  *
  * @author Gregory Graham
  */
@@ -32,10 +46,10 @@ public class DBStatement implements Statement {
 
 	static final private Log log = LogFactory.getLog(DBStatement.class);
 
-	protected final Statement realStatement;
+	protected Statement realStatement;
 	private boolean batchHasEntries;
 	private final DBDatabase database;
-	private final Connection connection;
+	protected final Connection connection;
 
 	public DBStatement(DBDatabase db, Connection connection) throws SQLException {
 		this.database = db;
@@ -56,6 +70,15 @@ public class DBStatement implements Statement {
 		return realStatement.executeUpdate(string);
 	}
 
+	/**
+	 * Closes the Statement and the Connection.
+	 *
+	 * <p>
+	 * Also informs the DBDatabase that there is one less connection to the
+	 * database.
+	 *
+	 * @throws SQLException
+	 */
 	@Override
 	public void close() throws SQLException {
 		try {
@@ -193,9 +216,6 @@ public class DBStatement implements Statement {
 
 	@Override
 	public int[] executeBatch() throws SQLException {
-//        if (getBatchHasEntries()) {
-//            setBatchHasEntries(false);
-//        }
 		return realStatement.executeBatch();
 	}
 
@@ -276,15 +296,6 @@ public class DBStatement implements Statement {
 		return realStatement.isPoolable();
 	}
 
-//    @Override
-//    public void closeOnCompletion() throws SQLException {
-//        realStatement.closeOnCompletion();
-//    }
-//
-//    @Override
-//    public boolean isCloseOnCompletion() throws SQLException {
-//        return realStatement.isCloseOnCompletion();
-//    }
 	@Override
 	public <T> T unwrap(Class<T> type) throws SQLException {
 		return realStatement.unwrap(type);
