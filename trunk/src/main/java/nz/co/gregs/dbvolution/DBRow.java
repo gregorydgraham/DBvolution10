@@ -256,7 +256,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
 	 * field, then the field index of that field is returned.
 	 *
-	 * @param <A>
 	 * @return the index of the primary key or null if there is no primary key.
 	 */
 	public Integer getPrimaryKeyIndex() {

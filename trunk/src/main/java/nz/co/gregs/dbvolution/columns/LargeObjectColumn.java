@@ -22,6 +22,26 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * Represents a database column storing a large object value.
+ *
+ * <p>
+ * This class adds the necessary methods to use a large object column like a large object
+ * expression.
+ *
+ * <p>
+ * Internally the class uses an AbsractColumn to store the column and overrides
+ * methods in {@link LargeObjectExpression} to insert the column into the expression.
+ *
+ * <p>
+ * Generally you get a LargeObjectColumn using
+ * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBLargeObject)  RowDefinition.column(DBlargeObject)}.
+ *
+ * @author Gregory Graham
+ * @see RowDefinition
+ * @see AbstractColumn
+ * @see LargeObjectExpression
+ */
 public class LargeObjectColumn extends LargeObjectExpression implements ColumnProvider {
 
 	private final AbstractColumn column;

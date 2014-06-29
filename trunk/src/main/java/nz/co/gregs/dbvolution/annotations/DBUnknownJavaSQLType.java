@@ -21,24 +21,29 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A Placeholder DBType Used During DBRow Generation To Capture Unknown Types.
- *
+ * A Placeholder Used During DBRow Generation To Capture Unknown Types.
+ * <p>
  * Occasionally DBvolution encounters an unusual or undocumented datatype that
  * isn't supported. This annotation helps capture the information required to
  * add support for the datatype.
- *
+ * <p>
  * Please report this annotation with the associated value, the database engine
- * used, and the actual datatype in the database if known and I will add support if possible.
+ * used, and the actual datatype in the database if known and I will add support
+ * if possible.
+ * 
+ * <p>
+ * &#64;DBUnknownJavaSQLType is generated automatically by DBTableClassGenerator.
  *
  * @author gregorygraham
+ * 
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBUnknownJavaSQLType {
 
-	/**
-	 *
-	 * @return the java.sql.Types constant that has not been recognised
-	 */
-	int value();
+    /**
+     *
+     * @return the java.sql.Types constant that has not been recognized
+     */
+    int value();
 }

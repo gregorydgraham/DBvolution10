@@ -23,6 +23,26 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * Represents a database column storing a date value.
+ *
+ * <p>
+ * This class adds the necessary methods to use a date column like a date
+ * expression.
+ *
+ * <p>
+ * Internally the class uses an AbsractColumn to store the column and overrides
+ * methods in DateExpression to insert the column into the expression.
+ *
+ * <p>
+ * Generally you get a DateColumn using
+ * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBDate) RowDefinition.column(DBDate)}.
+ *
+ * @author Gregory Graham
+ * @see RowDefinition
+ * @see AbstractColumn
+ * @see DateExpression
+ */
 public class DateColumn extends DateExpression implements ColumnProvider {
 
     private AbstractColumn column;

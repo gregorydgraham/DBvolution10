@@ -28,83 +28,110 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * Represents the connection between a table and a column in a portable way.
+ *
+ * <p>
+ * Used by
+ * {@link RowDefinition#column(java.lang.Boolean) RowDefinition.getColumn(*)} to
+ * produce an expression object that references a database table and column.
+ *
+ * <p>
+ * Also allows PropertyWrapper to be passed around without confusing the public
+ * interface.
+ *
+ * @author greg
+ */
 public class AbstractColumn implements DBExpression {
 
-    private final PropertyWrapper propertyWrapper;
-    protected final RowDefinition dbrow;
-    protected final Object field;
+	private final PropertyWrapper propertyWrapper;
+	protected final RowDefinition dbrow;
+	protected final Object field;
 
-    public AbstractColumn(RowDefinition row, Object field) throws IncorrectRowProviderInstanceSuppliedException {
-        this.dbrow = row;
-        this.field = field;
-        this.propertyWrapper = row.getPropertyWrapperOf(field);
-        if (propertyWrapper == null) {
-            throw IncorrectRowProviderInstanceSuppliedException.newMultiRowInstance(field);
-        }
-    }
+	/**
+	 * Creates an AbstractColumn representing a table and column.
+	 *
+	 * <p>
+	 * Stores the RowDefinition (generally a DBRow subclass) and a field of the
+	 * RowDefinition so that the original association can be rebuilt where the
+	 * expression is converted into SQL.
+	 *
+	 * @param row
+	 * @param field
+	 * @throws IncorrectRowProviderInstanceSuppliedException
+	 */
+	public AbstractColumn(RowDefinition row, Object field) throws IncorrectRowProviderInstanceSuppliedException {
+		this.dbrow = row;
+		this.field = field;
+		this.propertyWrapper = row.getPropertyWrapperOf(field);
+		if (propertyWrapper == null) {
+			throw IncorrectRowProviderInstanceSuppliedException.newMultiRowInstance(field);
+		}
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return db.getDefinition().formatTableAliasAndColumnName(this.dbrow, propertyWrapper.columnName());
-    }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return db.getDefinition().formatTableAliasAndColumnName(this.dbrow, propertyWrapper.columnName());
+	}
 
-    @Override
-    public AbstractColumn copy() {
-        try {
-            Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(dbrow.getClass(), field.getClass());
-            AbstractColumn newInstance = constructor.newInstance(dbrow, field);
-            return newInstance;
-        } catch (NoSuchMethodException ex) {
-            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-        } catch (SecurityException ex) {
-            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-        } catch (InstantiationException ex) {
-            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-        } catch (IllegalAccessException ex) {
-            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-        } catch (IllegalArgumentException ex) {
-            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-        } catch (InvocationTargetException ex) {
-            throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-        }
-    }
+	@Override
+	public AbstractColumn copy() {
+		try {
+			Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(dbrow.getClass(), field.getClass());
+			AbstractColumn newInstance = constructor.newInstance(dbrow, field);
+			return newInstance;
+		} catch (NoSuchMethodException ex) {
+			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
+		} catch (SecurityException ex) {
+			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
+		} catch (InstantiationException ex) {
+			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
+		} catch (IllegalAccessException ex) {
+			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
+		} catch (IllegalArgumentException ex) {
+			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
+		} catch (InvocationTargetException ex) {
+			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
+		}
+	}
 
-    /**
-     * @return the propertyWrapperOfQDT
-     */
-    public PropertyWrapper getPropertyWrapper() {
-        return propertyWrapper;
-    }
+	/**
+	 * @return the propertyWrapperOfQDT
+	 */
+	public PropertyWrapper getPropertyWrapper() {
+		return propertyWrapper;
+	}
 
-    /**
-     * Wrap this column in the equivalent DBValue subclass
-     *
-     * <p> Probably this should be implemented as:<br>
-     * public MyValue asValue(){return new MyValue(this);}
-     *
-     * @return this instance as a StringValue, NumberValue, DateValue, or
-     * LargeObjectValue as appropriate
-     */
-    public DBExpression asValue() {
-        return this;
-    }
+	/**
+	 * Wrap this column in the equivalent DBValue subclass.
+	 *
+	 * <p>
+	 * Probably this should be implemented as:<br>
+	 * public MyValue asValue(){return new MyValue(this);}
+	 *
+	 * @return this instance as a StringValue, NumberValue, DateValue, or
+	 * LargeObjectValue as appropriate
+	 */
+	public DBExpression asValue() {
+		return this;
+	}
 
-    @Override
-    public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-        return QueryableDatatype.getQueryableDatatypeForObject(field);
-    }
+	@Override
+	public QueryableDatatype getQueryableDatatypeForExpressionValue() {
+		return QueryableDatatype.getQueryableDatatypeForObject(field);
+	}
 
-    @Override
-    public boolean isAggregator() {
-        return false;
-    }
+	@Override
+	public boolean isAggregator() {
+		return false;
+	}
 
-    @Override
-    public Set<DBRow> getTablesInvolved() {
-        HashSet<DBRow> hashSet = new HashSet<DBRow>();
-        if (DBRow.class.isAssignableFrom(dbrow.getClass())) {
-            hashSet.add((DBRow)dbrow);
-        }
-        return hashSet;
-    }
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		HashSet<DBRow> hashSet = new HashSet<DBRow>();
+		if (DBRow.class.isAssignableFrom(dbrow.getClass())) {
+			hashSet.add((DBRow) dbrow);
+		}
+		return hashSet;
+	}
 }

@@ -22,6 +22,26 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * Represents a database column storing a string or character value.
+ *
+ * <p>
+ * This class adds the necessary methods to use a string column like a string
+ * expression.
+ *
+ * <p>
+ * Internally the class uses an AbsractColumn to store the column and overrides
+ * methods in StringExpression to insert the column into the expression.
+ *
+ * <p>
+ * Generally you get a StringColumn using
+ * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBString)  RowDefinition.column(DBString)}.
+ *
+ * @author Gregory Graham
+ * @see RowDefinition
+ * @see AbstractColumn
+ * @see StringExpression
+ */
 public class StringColumn extends StringExpression implements ColumnProvider {
 
     private AbstractColumn column;

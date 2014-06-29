@@ -22,6 +22,26 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * Represents a database column storing an integer value.
+ *
+ * <p>
+ * This class adds the necessary methods to use an integer column like an integer
+ * expression.
+ *
+ * <p>
+ * Internally the class uses an AbsractColumn to store the column and overrides
+ * methods in {@link NumberExpression} to insert the column into the expression.
+ *
+ * <p>
+ * Generally you get an IntegerColumn using
+ * {@link RowDefinition#column(java.lang.DBInteger) RowDefinition.column(DBinteger)}.
+ *
+ * @author Gregory Graham
+ * @see RowDefinition
+ * @see AbstractColumn
+ * @see NumberExpression
+ */
 public class IntegerColumn extends NumberExpression implements ColumnProvider {
 
     private AbstractColumn column;
