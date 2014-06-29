@@ -19,7 +19,10 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 
-
+/**
+ *
+ * @author greg
+ */
 public class DBTransactionStatement extends DBStatement {
 
     public DBTransactionStatement(DBDatabase database, DBStatement realStatement) throws SQLException {
@@ -27,6 +30,7 @@ public class DBTransactionStatement extends DBStatement {
     }
 
     @Override
+	@SuppressWarnings("empty-statement")
     public void close() throws SQLException {
         ;
         // does nothing to avoid accidental closing during a transaction

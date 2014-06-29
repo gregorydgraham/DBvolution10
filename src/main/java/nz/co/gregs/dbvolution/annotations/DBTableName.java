@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 
 /**
  * {@code DBTableName} indicates the name of the database table that this
- * {@code DBRow} implementation refers to.  <code>
+ * {@code DBRow} implementation refers to.  
+ * <code>
+ * <br>
  * &#64;DBTableName("my_table")
  * public class MyTable extends DBRow {
  * </code>

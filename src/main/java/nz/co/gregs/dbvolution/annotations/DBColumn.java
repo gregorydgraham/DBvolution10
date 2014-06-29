@@ -11,19 +11,24 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * Used to indicate that this field is associated with a database column and the name of that column
+ * Used to indicate that this field is associated with a database column and the name of that column.
+ * <code>
+ * <br>
+ * &#64;DBColumn("my_column")<br>
+ * public DBString myColumn = new DBString();<br>
+ * <br>
+ * </code>
+ * <p>DBColumn allows you to change the field name without affecting database functionality and is highly recommended.</p>
  * 
- * \@DBColumn("my_column")
- * public DBString myColumn = new DBString();
+ * <p>Using a QueryableDatatype is sufficient to indicate that the field is associated with a column, 
+ * however this causes the class API to be tightly bound to the database and subtracts from the benefits of DBvolution.</p>
  * 
- * DBColumn allows you to change the field name without affecting database functionality and is highly recommended.
- * 
- * Using a QueryableDatatype is sufficient to indicate that the field is associated with a column, 
- * however this causes the class API to be tightly bound to the database and subtracts from the benefits of DBvolution
- * 
- * DBColumn is generated automatically by DBTableClassGenerator.
+ * <p>DBColumn is generated automatically by DBTableClassGenerator.</p>
  *
  * @author Gregory Graham
+ * @see DBForeignKey
+ * @see DBPrimaryKey
+ * @see DBAutoIncrement
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

@@ -22,6 +22,26 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * Represents a database column storing a number value.
+ *
+ * <p>
+ * This class adds the necessary methods to use a number column like a number
+ * expression.
+ *
+ * <p>
+ * Internally the class uses an AbsractColumn to store the column and overrides
+ * methods in NumberExpression to insert the column into the expression.
+ *
+ * <p>
+ * Generally you get a NumberColummn using
+ * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBNumber)  RowDefinition.column(DBNumber)}.
+ *
+ * @author Gregory Graham
+ * @see RowDefinition
+ * @see AbstractColumn
+ * @see NumberExpression
+ */
 public class NumberColumn extends NumberExpression implements ColumnProvider {
 
     private AbstractColumn column;

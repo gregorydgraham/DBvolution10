@@ -17,6 +17,8 @@
 package nz.co.gregs.dbvolution.columns;
 
 /**
+ * Interface to indicate that this object can provide a column.
+ * 
  *
  * @author Gregory Graham
  */
