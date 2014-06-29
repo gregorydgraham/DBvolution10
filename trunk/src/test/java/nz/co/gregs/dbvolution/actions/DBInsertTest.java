@@ -73,6 +73,9 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(row.pk_uid.getValue(), is(1L));
 		database.insert(row2);
 		Assert.assertThat(row2.pk_uid.getValue(), is(2L));
+		final Long pkValue = row2.pk_uid.getValue();
+		TestDefaultValueRetrieval gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+		Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);

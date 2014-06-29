@@ -13,32 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 
 /**
+ * Extends DBStatement to add support for database transactions.
  *
- * @author greg
+ * <p>
+ * Use {@link DBScript} to easily create a transaction.
+ *
+ * <p>
+ * You should not need to create on of these as statements and transactions are
+ * managed by DBDatabase automatically.
+ *
+ * <p>
+ * Transactions are a collection of database actions that have a coherent
+ * collective nature. This implies that even though they are separate java
+ * statements that they should be handled collectively by the database.
+ *
+ * @author Gregory Graham
  */
 public class DBTransactionStatement extends DBStatement {
 
-    public DBTransactionStatement(DBDatabase database, DBStatement realStatement) throws SQLException {
-        super(database, realStatement.getConnection());
-    }
+	public DBTransactionStatement(DBDatabase database, DBStatement realStatement) throws SQLException {
+		super(database, realStatement.getConnection());
+	}
 
-    @Override
+	@Override
 	@SuppressWarnings("empty-statement")
-    public void close() throws SQLException {
-        ;
-        // does nothing to avoid accidental closing during a transaction
-    }
-    
-    public void transactionFinished() throws SQLException {
-        super.close();
-    }
+	public void close() throws SQLException {
+		realStatement.close();
+		realStatement = connection.createStatement();
+		;
+	}
 
-    
+	public void transactionFinished() throws SQLException {
+		super.close();
+	}
 }
