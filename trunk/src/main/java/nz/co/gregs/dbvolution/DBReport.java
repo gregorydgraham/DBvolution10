@@ -99,8 +99,8 @@ public class DBReport extends RowDefinition {
 	 * @param <A>
 	 * @param database
 	 * @param exampleReport
-	 * @return a list of DBReport instances representing the results of the
-	 * report query.
+	 * @return a list of DBReport instances representing the results of the report
+	 * query.
 	 * @throws SQLException
 	 */
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
@@ -125,8 +125,8 @@ public class DBReport extends RowDefinition {
 	 * @param database
 	 * @param exampleReport
 	 * @param rows
-	 * @return a list of DBReport instances representing the results of the
-	 * report query.
+	 * @return a list of DBReport instances representing the results of the report
+	 * query.
 	 * @throws SQLException
 	 */
 	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
@@ -147,9 +147,10 @@ public class DBReport extends RowDefinition {
 	 * DBvolution is really doing.
 	 *
 	 * <p>
-	 * Generates the SQL query for retrieving the objects but does not execute
-	 * the SQL. Use {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  the getAllRows method} to retrieve the
-	 * rows.
+	 * Generates the SQL query for retrieving the objects but does not execute the
+	 * SQL. Use
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  the getAllRows method}
+	 * to retrieve the rows.
 	 *
 	 * <p>
 	 * See also
@@ -191,9 +192,12 @@ public class DBReport extends RowDefinition {
 	 * Count the rows on the database without retrieving the rows.
 	 *
 	 * <p>
-	 * Creates a {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  count query} for the report and
-	 * conditions and retrieves the number of rows that would have been returned
-	 * had {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  getAllRows method} been called.
+	 * Creates a
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  count query}
+	 * for the report and conditions and retrieves the number of rows that would
+	 * have been returned had
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  getAllRows method}
+	 * been called.
 	 *
 	 * @param database the database to format the query for.
 	 * @param exampleReport the report required.
@@ -245,7 +249,10 @@ public class DBReport extends RowDefinition {
 	public DBReport setSortOrder(QueryableDatatype... columns) {
 		List<ColumnProvider> columnProviders = new ArrayList<ColumnProvider>();
 		for (QueryableDatatype qdt : columns) {
-			columnProviders.add(this.column(qdt));
+			final DBExpression expr = this.column(qdt);
+			if (expr instanceof ColumnProvider) {
+				columnProviders.add((ColumnProvider)expr);
+			}
 		}
 		sortColumns = columnProviders.toArray(new ColumnProvider[]{});
 		return this;

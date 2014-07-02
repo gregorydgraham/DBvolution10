@@ -277,7 +277,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testIgnoringColumnsOnTable() throws SQLException {
         Marque myMarqueRow = new Marque();
-        myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
+        myMarqueRow.setReturnFields(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getRowsByExample(myMarqueRow);
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);
@@ -299,7 +299,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testUnignoringColumnsOnTable() throws SQLException {
         Marque myMarqueRow = new Marque();
-        myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
+        myMarqueRow.setReturnFields(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
         List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getRowsByExample(myMarqueRow);
         for (Marque marq : rowsByExample) {
@@ -316,7 +316,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testIgnoringColumnsOnQuery() throws SQLException {
         Marque myMarqueRow = new Marque();
-        myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
+        myMarqueRow.setReturnFields(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         DBQuery dbQuery = database.getDBQuery(myMarqueRow, new CarCompany());
         dbQuery.setBlankQueryAllowed(true);
         List<Marque> rowsByExample = dbQuery.getAllInstancesOf(myMarqueRow);
@@ -341,7 +341,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testUnignoringColumnsOnQuery() throws SQLException {
         Marque myMarqueRow = new Marque();
-        myMarqueRow.returnFieldsLimitedTo(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
+        myMarqueRow.setReturnFields(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
         DBQuery dbQuery = database.getDBQuery(myMarqueRow, new CarCompany());
         dbQuery.setBlankQueryAllowed(true);

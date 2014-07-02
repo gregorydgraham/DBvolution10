@@ -154,8 +154,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param <R>
 	 * @param sourceRow
-	 * @return Returns a new DBRow example, of the same class as the supplied
-	 * row, with the same primary key as the source key
+	 * @return Returns a new DBRow example, of the same class as the supplied row,
+	 * with the same primary key as the source key
 	 */
 	public static <R extends DBRow> R getPrimaryKeyExample(R sourceRow) {
 		@SuppressWarnings("unchecked")
@@ -213,8 +213,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Remove all the settings on all the fields of this DBRow.
 	 *
 	 * <p>
-	 * Deprecated as it is inefficient and promotes unsafe programming
-	 * practices. Use {@code new DBRowSubclass()} instead.
+	 * Deprecated as it is inefficient and promotes unsafe programming practices.
+	 * Use {@code new DBRowSubclass()} instead.
 	 */
 	@Deprecated
 	public void clear() {
@@ -447,9 +447,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Probably not needed by the programmer, this is the convenience function
-	 * to find the table name specified by {@code @DBTableName} or the class
-	 * name
+	 * Probably not needed by the programmer, this is the convenience function to
+	 * find the table name specified by {@code @DBTableName} or the class name
 	 *
 	 * @return the name of the table in the database specified to correlate with
 	 * the specified type
@@ -615,8 +614,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Similar to {@link #ignoreForeignKey(java.lang.Object) } but uses a
 	 * ColumnProvider which is portable between instances of DBRow.
 	 * <p>
-	 * For example the following code snippet will ignore the foreign key
-	 * provided by a different instance of Customer:
+	 * For example the following code snippet will ignore the foreign key provided
+	 * by a different instance of Customer:
 	 * <pre>
 	 * Customer customer = ...;
 	 * IntegerColumn addressColumn = customer.column(customer.fkAddress);
@@ -636,11 +635,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Removes all foreign keys from the "ignore" list.
 	 *
 	 * @see DBRow#ignoreAllForeignKeys()
-	 * @see
-	 * DBRow#ignoreAllForeignKeysExceptFKsTo(nz.co.gregs.dbvolution.DBRow...)
+	 * @see DBRow#ignoreAllForeignKeysExceptFKsTo(nz.co.gregs.dbvolution.DBRow...)
 	 * @see DBRow#ignoreForeignKey(java.lang.Object)
-	 * @see
-	 * DBRow#ignoreForeignKey(nz.co.gregs.dbvolution.columns.ColumnProvider)
+	 * @see DBRow#ignoreForeignKey(nz.co.gregs.dbvolution.columns.ColumnProvider)
 	 *
 	 */
 	public void useAllForeignKeys() {
@@ -705,12 +702,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * <p>
 	 * This function relies on the QueryableDatatypes being part of the DBRows
-	 * that are also passed. So every call to this function should be similar
-	 * to:
+	 * that are also passed. So every call to this function should be similar to:
 	 *
 	 * <p>
-	 * myRow.addRelationship(myRow.someField, myOtherRow,
-	 * myOtherRow.otherField);
+	 * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField);
 	 *
 	 * <p>
 	 * Uses the default DBEqualsOperator.
@@ -723,7 +718,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 //		DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField);
 //		getAdHocRelationships().add(dbRelationship);
 //	}
-
 	public void addRelationship(DBBoolean thisTableField, DBRow otherTable, DBBoolean otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
@@ -743,7 +737,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public void addRelationship(DBString thisTableField, DBRow otherTable, DBString otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
-	
+
 	/**
 	 *
 	 * Creates a foreign key like relationship between columns on 2 different
@@ -756,8 +750,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * <p>
 	 * this function relies on the QueryableDatatypes being part of the DBRows
-	 * that are also passed. So every call to this function should be similar
-	 * to:
+	 * that are also passed. So every call to this function should be similar to:
 	 *
 	 * <p>
 	 * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField,
@@ -765,8 +758,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * <p>
 	 * Uses the supplied operator to establish the relationship rather than the
-	 * default DBEqualsOperator. Not all operators can be used for
-	 * relationships.
+	 * default DBEqualsOperator. Not all operators can be used for relationships.
 	 *
 	 * @deprecated Use an expression instead.
 	 * @param thisTableField
@@ -783,11 +775,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * Remove all added relationships.
 	 *
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBBoolean, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBBoolean) 
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBDate, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBDate) 
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBInteger, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBInteger) 
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber) 
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBString, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBString) 
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBBoolean,
+	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBBoolean)
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBDate,
+	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBDate)
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBInteger,
+	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBInteger)
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber,
+	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber)
+	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBString,
+	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBString)
 	 */
 	public void clearRelationships() {
 		this.getAdHocRelationships().clear();
@@ -816,32 +813,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
-//	protected boolean hasChangedLargeObjects() {
-//		if (hasLargeObjects()) {
-//			for (PropertyWrapper prop : blobColumns) {
-//				QueryableDatatype qdt = prop.getQueryableDatatype();
-//				if (qdt != null && qdt.hasChanged()) {
-//					return true;
-//				}
-//			}
-//		}
-//		return false;
-//	}
-//	public List<PropertyWrapper> getChangedLargeObjects() {
-//		List<PropertyWrapper> changed = new ArrayList<PropertyWrapper>();
-//		if (hasLargeObjects()) {
-//			for (PropertyWrapper prop : blobColumns) {
-//				QueryableDatatype qdt = prop.getQueryableDatatype();
-//				if (qdt instanceof DBLargeObject) {
-//					DBLargeObject large = (DBLargeObject) qdt;
-//					if (large.hasChanged()) {
-//						changed.add(prop);
-//					}
-//				}
-//			}
-//		}
-//		return changed;
-//	}
 	/**
 	 * Limits the returned columns by the specified properties (fields and/or
 	 * methods) given the properties object references.
@@ -850,21 +821,36 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * For example the following code snippet will include only the uid and name
 	 * columns based on the uid and name fields:
 	 * <pre>
-	 * Customer customer = ...;
-	 * customer.returnFieldsLimitedTo(customer.uid, customer.name);
-	 * </pre>
+ Customer customer = ...;
+ customer.setReturnFields(customer.uid, customer.name);
+ </pre>
 	 *
 	 * <p>
 	 * Requires the field to be from this instance to work.
 	 *
 	 * @param <T> A list or List of fields of this DBRow
-	 * @param properties a list of fields/methods from this object
+	 * @param fields a list of fields/methods from this object
 	 */
 	//@SafeVarargs
-	public final <T> void returnFieldsLimitedTo(T... properties) throws IncorrectRowProviderInstanceSuppliedException {
+	public final <T> void setReturnFields(T... fields) throws IncorrectRowProviderInstanceSuppliedException {
 		returnColumns = new ArrayList<PropertyWrapperDefinition>();
 		PropertyWrapper propWrapper;
-		for (T property : properties) {
+		for (T property : fields) {
+			propWrapper = getPropertyWrapperOf(property);
+			if (propWrapper == null) {
+				throw new IncorrectRowProviderInstanceSuppliedException(this, property);
+			}
+			returnColumns.add(propWrapper.getDefinition());
+		}
+	}
+
+
+	public final <T> void addReturnFields(T... fields) throws IncorrectRowProviderInstanceSuppliedException {
+		if (returnColumns == null) {
+			returnColumns = new ArrayList<PropertyWrapperDefinition>();
+		}
+		PropertyWrapper propWrapper;
+		for (T property : fields) {
 			propWrapper = getPropertyWrapperOf(property);
 			if (propWrapper == null) {
 				throw new IncorrectRowProviderInstanceSuppliedException(this, property);
@@ -877,15 +863,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Removes all builtin columns from the return list.
 	 *
 	 * <p>
-	 * Used by DBReport to avoid returning fields that haven't been specified
-	 * with an expression.
+	 * Used by DBReport to avoid returning fields that haven't been specified with
+	 * an expression.
 	 *
 	 * <p>
 	 * Probably not useful in general use.
 	 *
 	 */
-	public final void removeAllFieldsFromResults() {
-		returnFieldsLimitedTo(new Object[]{});
+	protected final void removeAllFieldsFromResults() {
+		setReturnFields(new Object[]{});
 	}
 
 	/**
@@ -893,7 +879,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * <p>
 	 * Clears the limits on returned fields set by
-	 * {@code DBRow.returnFieldsLimitedTo(T...)}
+	 * {@code DBRow.setReturnFields(T...)}
 	 *
 	 *
 	 */
@@ -955,7 +941,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 		adHocs = newTable.getAdHocRelationships();
 		for (DBExpression adhoc : adHocs) {
-			
+
 			rels.append(joinSeparator)
 					.append(adhoc.toSQLString(db));
 
@@ -1022,7 +1008,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		List<BooleanExpression> adHocs = getAdHocRelationships();
 		rels.addAll(adHocs);
 		for (BooleanExpression adhoc : adHocs) {
-				rels.add(adhoc);
+			rels.add(adhoc);
 		}
 
 		return rels;
@@ -1045,17 +1031,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Returns all the DBRow subclasses referenced by this class with foreign
-	 * keys
+	 * Returns all the DBRow subclasses referenced by this class with foreign keys
 	 *
 	 * <p>
-	 * Similar to {@link #getAllConnectedTables() } but where this class
-	 * directly references the external DBRow subclass with an
-	 * {@code @DBForeignKey} annotation.
+	 * Similar to {@link #getAllConnectedTables() } but where this class directly
+	 * references the external DBRow subclass with an {@code @DBForeignKey}
+	 * annotation.
 	 *
 	 * <p>
-	 * That is to say: where A is this class, returns a List of B such that A =>
-	 * B
+	 * That is to say: where A is this class, returns a List of B such that A => B
 	 *
 	 * @return A set of DBRow subclasses referenced with {@code @DBForeignKey}
 	 *
@@ -1080,15 +1064,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * <p>
 	 * Uses {@link #getReferencedTables() } and {@link #getRelatedTables() } to
-	 * produce a complete list of tables connected by a foreign key to this
-	 * DBRow class.
+	 * produce a complete list of tables connected by a foreign key to this DBRow
+	 * class.
 	 *
 	 * <p>
-	 * That is to say: where A is this class, returns a List of B such that B =>
-	 * A or A => B
+	 * That is to say: where A is this class, returns a List of B such that B => A
+	 * or A => B
 	 *
-	 * @return a set of classes that have a {@code @DBForeignKey} reference to
-	 * or from this class
+	 * @return a set of classes that have a {@code @DBForeignKey} reference to or
+	 * from this class
 	 */
 	public SortedSet<Class<? extends DBRow>> getAllConnectedTables() {
 		final SortedSet<Class<? extends DBRow>> relatedTables = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
@@ -1106,8 +1090,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * referenced by the external DBRow subclass.
 	 *
 	 * <p>
-	 * That is to say: where A is this class, returns a List of B such that B =>
-	 * A
+	 * That is to say: where A is this class, returns a List of B such that B => A
 	 *
 	 * @return a set of classes that have a {@code @DBForeignKey} reference to
 	 * this class
@@ -1134,8 +1117,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Ignores the Foreign Keys to all tables except those to the supplied
-	 * DBRows
+	 * Ignores the Foreign Keys to all tables except those to the supplied DBRows
 	 *
 	 * @param goodTables
 	 */
@@ -1162,8 +1144,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Returns all fields that represent BLOB columns such DBLargeObject,
 	 * DBByteArray, or DBJavaObject.
 	 *
-	 * @return a list of {@link QueryableDatatype} that are large objects in
-	 * this object.
+	 * @return a list of {@link QueryableDatatype} that are large objects in this
+	 * object.
 	 */
 	public List<QueryableDatatype> getLargeObjects() {
 		// Initialise the blob columns list if necessary
@@ -1177,8 +1159,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Finds all instances of {@code example} that share a {@link DBQueryRow}
-	 * with this instance.
+	 * Finds all instances of {@code example} that share a {@link DBQueryRow} with
+	 * this instance.
 	 *
 	 * @param <R>
 	 * @param query
@@ -1215,9 +1197,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * every column, this method returns TRUE.
 	 *
 	 * <p>
-	 * An empty row is probably the result an optional table not having a
-	 * matching row for the query. In database parlance this row is a null row
-	 * of an OUTER JOIN and this table did not have any matching rows.
+	 * An empty row is probably the result an optional table not having a matching
+	 * row for the query. In database parlance this row is a null row of an OUTER
+	 * JOIN and this table did not have any matching rows.
 	 *
 	 * <p>
 	 * Only used internally as DBQuery results produce NULLs for non-existent
@@ -1296,16 +1278,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Provides DBExpressions representing the FK relationship between this
-	 * DBRow and the target specified.
+	 * Provides DBExpressions representing the FK relationship between this DBRow
+	 * and the target specified.
 	 *
 	 * <p>
 	 * Values of the primary key and foreign keys are not compared.
 	 *
 	 * @param <R>
 	 * @param target
-	 * @return a list of {@link DBExpression DBExpressions} that are foreign
-	 * keys to the {@link DBRow target}
+	 * @return a list of {@link DBExpression DBExpressions} that are foreign keys
+	 * to the {@link DBRow target}
 	 */
 	public <R extends DBRow> List<DBExpression> getForeignKeyExpressionsTo(R target) {
 		List<DBExpression> fksToR = new ArrayList<DBExpression>();
@@ -1317,8 +1299,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				final QueryableDatatype sourceFK = propertyWrapper.getQueryableDatatype();
 				final QueryableDatatype targetPK = target.getPrimaryKey().getQueryableDatatypeForExpressionValue();
 
-				//METHOD 2
-				ColumnProvider column = source.column(sourceFK);
+				DBExpression column = source.column(sourceFK);
 				try {
 					final Method isMethod = column.getClass().getMethod("is", targetPK.getClass());
 					if (isMethod != null) {
@@ -1338,30 +1319,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				} catch (InvocationTargetException ex) {
 					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
 				}
-
-				//METHOD 1
-//				final Class<? extends QueryableDatatype> sourceClass = sourceFK.getClass();
-//				final Class<? extends QueryableDatatype> targetClass = targetPK.getClass();
-//				Class<? extends QueryableDatatype> superClass = null;
-//				if (sourceClass.isAssignableFrom(targetClass)) {
-//					superClass = sourceClass;
-//				}
-//				if (targetClass.isAssignableFrom(sourceClass)) {
-//					superClass = targetClass;
-//				}
-//				if (superClass != null) {
-//					DBExpression fkExpression = null;
-//					if (DBDate.class.isAssignableFrom(superClass)) {
-//						fkExpression = source.column((DBDate) sourceFK).is((DateResult) targetPK);
-//					} else if (DBNumber.class.isAssignableFrom(superClass)) {
-//						fkExpression = source.column((DBNumber) sourceFK).is((NumberResult) targetPK);
-//					} else if (DBString.class.isAssignableFrom(superClass)) {
-//						fkExpression = source.column((DBString) sourceFK).is((StringResult) targetPK);
-//					}
-//					if (fkExpression!=null){
-//						fksToR.add(fkExpression);
-//					}
-//				}
 			}
 		}
 		return fksToR;
@@ -1405,8 +1362,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Similar to {@link #ignoreForeignKeyProperties(java.util.Collection) } but
 	 * uses a ColumnProvider which is portable between instances of DBRow.
 	 * <p>
-	 * For example the following code snippet will ignore the foreign key
-	 * provided by a different instance of Customer:
+	 * For example the following code snippet will ignore the foreign key provided
+	 * by a different instance of Customer:
 	 * <pre>
 	 *
 	 * Customer customer = new Customer();
@@ -1447,17 +1404,38 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 		return expr;
 	}
+
+	/**
+	 * Returns the unique values for the column in the database.
+	 *
+	 * <p>
+	 * Creates a query that finds the distinct values that are used in the
+	 * field/column supplied.
+	 *
+	 * <p>
+	 * Some tables use repeated values instead of foreign keys or do not use all
+	 * of the possible values of a foreign key. This method makes it easy to find
+	 * the distinct or unique values that are used.
+	 * 
+	 * @param <A>
+	 * @param database - the database to connect to.
+	 * @param fieldOfThisInstance - the field/column that you need data from.
+	 * @return a list of distinct values used in the column.
+	 * @throws SQLException
+	 */
 	
-	public List<DBDate> getDistinctValuesForColumn(DBDatabase database, DBDate field) throws SQLException{
-		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(field);
-		List<DBDate> results = new ArrayList<DBDate>();
-		this.returnFieldsLimitedTo(field);
-		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, this.column(field));
+	@SuppressWarnings("unchecked")
+	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException {
+		List<A> results = new ArrayList<A>();
+		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
+		QueryableDatatype thisQDT = fieldProp.getDefinition().getQueryableDatatype(this);
+		this.setReturnFields(fieldOfThisInstance);
+		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, this.column(thisQDT));
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		for (DBQueryRow dBQueryRow : allRows) {
 			DBRow get = dBQueryRow.get(this);
-			results.add(get==null?null:(DBDate)fieldProp.getDefinition().getQueryableDatatype(get));
+			results.add(get == null ? null : (A) fieldProp.getDefinition().rawJavaValue(get));
 		}
 		return results;
 	}
