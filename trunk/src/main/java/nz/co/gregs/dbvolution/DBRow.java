@@ -1447,6 +1447,20 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 		return expr;
 	}
+	
+	public List<DBDate> getDistinctValuesForColumn(DBDatabase database, DBDate field) throws SQLException{
+		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(field);
+		List<DBDate> results = new ArrayList<DBDate>();
+		this.returnFieldsLimitedTo(field);
+		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, this.column(field));
+		dbQuery.setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		for (DBQueryRow dBQueryRow : allRows) {
+			DBRow get = dBQueryRow.get(this);
+			results.add(get==null?null:(DBDate)fieldProp.getDefinition().getQueryableDatatype(get));
+		}
+		return results;
+	}
 
 	public static class ClassNameComparator implements Comparator<Class<?>> {
 
