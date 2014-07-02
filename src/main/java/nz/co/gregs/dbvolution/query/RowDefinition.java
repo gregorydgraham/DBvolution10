@@ -136,8 +136,8 @@ public class RowDefinition implements Serializable {
      * @param fieldOfThisInstance
      * @return A ColumnProvider representing the supplied field
      */
-    public ColumnProvider column(QueryableDatatype fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
-        ColumnProvider col = null;
+    public DBExpression column(QueryableDatatype fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
+        DBExpression col = null;
         if (DBBoolean.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
             col = this.column((DBBoolean) fieldOfThisInstance);
         } else if (DBDate.class.isAssignableFrom(fieldOfThisInstance.getClass())) {

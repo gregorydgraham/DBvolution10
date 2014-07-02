@@ -12,6 +12,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.exceptions.FailedToSetPropertyValueOnRowDefinition;
 
 /**
  * Low-level internal abstraction layer over java fields and bean-properties.
@@ -279,9 +280,7 @@ interface JavaProperty {
 				// usually thrown when 'target' isn't of the same type as 'field' is declared on,
 				// so this is probably a bug
 				String class1 = (target == null) ? "null" : target.getClass().getName();
-				throw new DBRuntimeException("Internal error reading field "+
-						qualifiedName()+" on object of type "+class1+" (this is probably a DBvolution bug): "+
-						e.getLocalizedMessage(), e);
+				throw new FailedToSetPropertyValueOnRowDefinition(qualifiedName(), class1, e);
 			} catch (IllegalAccessException e) {
 				// caused by a Java security manager or an attempt to access a non-visible field
 				// without first making it visible

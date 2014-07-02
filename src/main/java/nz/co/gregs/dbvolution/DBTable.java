@@ -24,14 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -709,5 +708,42 @@ public class DBTable<E extends DBRow> {
 	public DBTable<E> setRawSQL(String rawQuery) throws SQLException {
 		query.setRawSQL(rawQuery);
 		return this;
+	}
+
+	/**
+	 * Returns the unique values for the column in the database.
+	 *
+	 * <p>
+	 * Creates a query that finds the distinct values that are used in the
+	 * field/column supplied.
+	 *
+	 * <p>
+	 * Some tables use repeated values instead of foreign keys or do not use all
+	 * of the possible values of a foreign key. This method makes it easy to find
+	 * the distinct or unique values that are used.
+	 * 
+	 * @param <A>
+	 * @param row - the table to search.
+	 * @param fieldOfProvidedRow - the field/column that you need data for.
+	 * @return a list of distinct values used in the column.
+	 * @throws SQLException
+	 */
+	
+	@SuppressWarnings("unchecked")
+	public <A> List<A> getDistinctValuesOfColumn(E row, A fieldOfProvidedRow) throws AccidentalBlankQueryException, SQLException {
+		ArrayList<A> returnList = new ArrayList<A>();
+		final PropertyWrapper fieldProp = row.getPropertyWrapperOf(fieldOfProvidedRow);
+		final PropertyWrapperDefinition fieldDefn = fieldProp.getDefinition();
+		QueryableDatatype thisQDT = fieldDefn.getQueryableDatatype(row);
+		row.setReturnFields(thisQDT);
+		DBQuery distinctQuery = database.getDBQuery(row);
+		distinctQuery.setBlankQueryAllowed(true);
+		distinctQuery.addGroupByColumn(row, row.column(thisQDT));
+		List<DBQueryRow> allRows = distinctQuery.getAllRows();
+		for (DBQueryRow dBQueryRow : allRows) {
+			E found = dBQueryRow.get(row);
+			returnList.add(found == null ? (A)null : (A) fieldDefn.rawJavaValue(found));
+		}
+		return returnList;
 	}
 }

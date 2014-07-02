@@ -1773,7 +1773,7 @@ public class DBQuery {
 	 * @param expressionToAdd
 	 * @return this DBQuery instance
 	 */
-	public DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
+	protected DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
 		dbReportGroupByColumns.put(identifyingObject, expressionToAdd);
 		return this;
 	}
@@ -1902,7 +1902,78 @@ public class DBQuery {
 		return conditions;
 	}
 
-	static class QueryState {
+	/**
+	 * Returns the unique values for the column in the database.
+	 *
+	 * <p>
+	 * Creates a query that finds the distinct values that are used in the
+	 * field/column supplied.
+	 *
+	 * <p>
+	 * Some tables use repeated values instead of foreign keys or do not use all
+	 * of the possible values of a foreign key. This method makes it easy to find
+	 * the distinct or unique values that are used.
+	 * 
+	 * @param fieldsOfProvidedRows - the field/column that you need data for.
+	 * @return a list of DBQQueryRows with distinct combinations of values used in the columns.
+	 * @throws SQLException
+	 */
+	
+	@SuppressWarnings("unchecked")
+	public List<DBQueryRow> getDistinctCombinationsOfColumnValues(Object... fieldsOfProvidedRows) throws AccidentalBlankQueryException, SQLException {
+		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		
+		DBQuery distinctQuery = database.getDBQuery();
+		for (DBRow row : requiredQueryTables) {
+			final DBRow copyDBRow = DBRow.copyDBRow(row);
+			copyDBRow.removeAllFieldsFromResults();
+			distinctQuery.add(copyDBRow);
+		}
+		for (DBRow row : optionalQueryTables) {
+			final DBRow copyDBRow = DBRow.copyDBRow(row);
+			copyDBRow.removeAllFieldsFromResults();
+			distinctQuery.add(copyDBRow);
+		}
+		
+		for (Object fieldOfProvidedRow : fieldsOfProvidedRows) {
+			PropertyWrapper fieldProp = null;
+			for (DBRow row : allQueryTables) {
+				fieldProp = row.getPropertyWrapperOf(fieldOfProvidedRow);
+				if (fieldProp != null) {
+					break;
+				}
+			}
+			if (fieldProp == null) {
+				throw new nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException();
+			} else {
+				final PropertyWrapperDefinition fieldDefn = fieldProp.getDefinition();
+				DBRow fieldRow = null;
+				Object thisQDT = null;
+				for (DBRow row : distinctQuery.allQueryTables) {
+					try{
+						thisQDT = fieldDefn.rawJavaValue(row);
+					}catch(FailedToSetPropertyValueOnRowDefinition ex){
+						;// not worried about it
+					}
+					if (thisQDT != null) {
+						fieldRow = row;
+						break;
+					}
+				}
+				if (thisQDT != null && fieldRow != null) {
+					fieldRow.addReturnFields(thisQDT);
+					distinctQuery.setBlankQueryAllowed(true);
+					distinctQuery.addGroupByColumn(fieldRow, fieldRow.column(fieldDefn.getQueryableDatatype(fieldRow)));
+					returnList = distinctQuery.getAllRows();
+				}else{
+					throw new DBRuntimeException("Unable To Find Columns Specified");
+				}
+			}
+		}
+		return returnList;
+	}
+
+	protected static class QueryState {
 
 		private final DBQuery query;
 		private final DBDatabase database;
