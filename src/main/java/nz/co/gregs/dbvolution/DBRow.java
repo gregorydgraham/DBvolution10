@@ -277,7 +277,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Example objects and blank rows from an optional table are "undefined".
 	 *
 	 * @param newValue TRUE if this row exists within the database.
+	 * @deprecated 
 	 */
+	@Deprecated
 	protected void setDefined(boolean newValue) {
 		isDefined = newValue;
 	}
@@ -1442,15 +1444,18 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	/**
 	 * Checks if the fields of the object have been changed
+	 * 
+	 * <p>
+	 * Checks if any of the columns has a Permitted/Excluded method set.
 	 *
-	 * @return
+	 * @return true if the row has a condition set.
 	 */
 	public boolean hasConditionsSet() {
 		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
 		for (PropertyWrapper prop : props) {
 			if (prop.isColumn()) {
 				QueryableDatatype qdt = prop.getQueryableDatatype();
-				if (qdt.hasChanged()) {
+				if (qdt.getOperator()!=null) {
 					return true;
 				}
 			}

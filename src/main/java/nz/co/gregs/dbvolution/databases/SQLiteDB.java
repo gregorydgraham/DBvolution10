@@ -31,4 +31,14 @@ public class SQLiteDB extends DBDatabase {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
 	}
 
+	@Override
+	protected boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
+
+	@Override
+	public boolean supportsFullOuterJoin() {
+		return false;
+	}
+
 }

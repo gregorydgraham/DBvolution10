@@ -59,23 +59,39 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				final String col = prop.columnName();
 				final DBLargeObject largeObject = (DBLargeObject) prop.getQueryableDatatype();
 
-				String sqlString = defn.beginUpdateLine()
-						+ defn.formatTableName(row)
-						+ defn.beginSetClause()
-						+ defn.formatColumnName(col)
-						+ defn.getEqualsComparator()
-						+ defn.getPreparedVariableSymbol()
-						+ defn.beginWhereClause()
-						+ defn.formatColumnName(row.getPrimaryKeyColumnName())
-						+ defn.getEqualsComparator()
-						+ row.getPrimaryKey().toSQLString(db)
-						+ defn.endSQLStatement();
-				db.printSQLIfRequested(sqlString);
-				log.info(sqlString);
-				PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-				prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
-				prep.execute();
-
+				if (defn.prefersLargeObjectsAsText()) {
+					String sqlString = defn.beginUpdateLine()
+							+ defn.formatTableName(row)
+							+ defn.beginSetClause()
+							+ defn.formatColumnName(col)
+							+ defn.getEqualsComparator()
+							+ "'"+largeObject.stringValue()+"'"
+							+ defn.beginWhereClause()
+							+ defn.formatColumnName(row.getPrimaryKeyColumnName())
+							+ defn.getEqualsComparator()
+							+ row.getPrimaryKey().toSQLString(db)
+							+ defn.endSQLStatement();
+//					db.printSQLIfRequested(sqlString);
+					log.info(sqlString);
+					statement.execute(sqlString);
+				} else {
+					String sqlString = defn.beginUpdateLine()
+							+ defn.formatTableName(row)
+							+ defn.beginSetClause()
+							+ defn.formatColumnName(col)
+							+ defn.getEqualsComparator()
+							+ defn.getPreparedVariableSymbol()
+							+ defn.beginWhereClause()
+							+ defn.formatColumnName(row.getPrimaryKeyColumnName())
+							+ defn.getEqualsComparator()
+							+ row.getPrimaryKey().toSQLString(db)
+							+ defn.endSQLStatement();
+//					db.printSQLIfRequested(sqlString);
+					log.info(sqlString);
+					PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+					prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
+					prep.execute();
+				}
 				DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
 				actions.add(update);
 

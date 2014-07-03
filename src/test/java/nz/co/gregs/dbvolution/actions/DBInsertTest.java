@@ -58,28 +58,30 @@ public class DBInsertTest extends AbstractTest {
 
 	@Test
 	public void testSaveWithDefaultValues() throws Exception {
-		TestDefaultValueRetrieval row = new TestDefaultValueRetrieval();
-		TestDefaultValueRetrieval row2 = new TestDefaultValueRetrieval();
+		if (database.getDefinition().supportsGeneratedKeys(null)) {
+			TestDefaultValueRetrieval row = new TestDefaultValueRetrieval();
+			TestDefaultValueRetrieval row2 = new TestDefaultValueRetrieval();
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(row);
-		database.preventDroppingOfTables(true);
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+			database.preventDroppingOfTables(true);
 
-		database.createTable(row);
+			database.createTable(row);
 
-		row.name.setValue("First Row");
-		row2.name.setValue("Second Row");
-		database.insert(row);
-		Assert.assertThat(row.pk_uid.getValue(), is(1L));
-		database.insert(row2);
-		Assert.assertThat(row2.pk_uid.getValue(), is(2L));
-		final Long pkValue = row2.pk_uid.getValue();
-		TestDefaultValueRetrieval gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-		Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+			row.name.setValue("First Row");
+			row2.name.setValue("Second Row");
+			database.insert(row);
+			Assert.assertThat(row.pk_uid.getValue(), is(1L));
+			database.insert(row2);
+			Assert.assertThat(row2.pk_uid.getValue(), is(2L));
+			final Long pkValue = row2.pk_uid.getValue();
+			TestDefaultValueRetrieval gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+			Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(row);
-		database.preventDroppingOfTables(true);
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+			database.preventDroppingOfTables(true);
+		}
 	}
 
 	@Test(expected = AutoIncrementFieldClassAndDatatypeMismatch.class)

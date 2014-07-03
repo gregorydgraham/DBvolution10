@@ -711,4 +711,21 @@ public abstract class DBDefinition {
 		return "";
 	}
 
+	public boolean prefersTrailingPrimaryKeyDefinition() {
+		return true;
+	}
+
+	public boolean prefersLargeObjectsAsText() {
+		return false;
+	}
+
+	public String doSubstringTransform(String originalString, String start, String length) {
+		return " SUBSTRING("
+				+ originalString
+				+ " FROM "
+				+ start
+				+ (length.trim().isEmpty() ? "" : " FOR " + length)
+				+ ") ";
+	}
+
 }

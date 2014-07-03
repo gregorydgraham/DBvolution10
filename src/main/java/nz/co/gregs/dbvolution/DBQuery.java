@@ -389,10 +389,10 @@ public class DBQuery {
 			StringBuilder whereClause = new StringBuilder(initialWhereClause);
 			StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
 			String lineSep = System.getProperty("line.separator");
-			DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
+//			DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
 			List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
-					? queryGraph.toListIncludingCartesian(startQueryFromTable.getClass())
-					: queryGraph.toList(startQueryFromTable.getClass());
+					? queryGraph.toListIncludingCartesian()
+					: queryGraph.toList();
 
 			if (this.options.getRowLimit() > 0) {
 				selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
