@@ -142,8 +142,8 @@ public class QueryGraph {
 
 	public boolean willCreateCartesianJoin() { //willCreateCartesianJoin
 		Set<DBRow> returnTables = new HashSet<DBRow>();
-		Class<? extends DBRow> startFrom = nodes.keySet().iterator().next();
-		returnTables.addAll(toList(startFrom));
+		//Class<? extends DBRow> startFrom = nodes.keySet().iterator().next();
+		returnTables.addAll(toList());
 
 		for (DBRow row : rows.values()) {
 			if (!returnTables.contains(row)) {
@@ -153,9 +153,40 @@ public class QueryGraph {
 		}
 		return false;
 	}
+	
+	private Class<? extends DBRow> getStartTable(){
+		List<QueryGraphNode> innerNodes = new ArrayList<QueryGraphNode>();
+		List<QueryGraphNode> outerNodes = new ArrayList<QueryGraphNode>();
+		
+		for (QueryGraphNode node : nodes.values()) {
+			if (node.isRequiredNode()){
+				innerNodes.add(node);
+			}else{
+				outerNodes.add(node);
+			}
+		}
+		
+		List<QueryGraphNode> nodesToCheck = innerNodes;
+		if (innerNodes.isEmpty()){
+			nodesToCheck = outerNodes;
+		}
+		
+		for (QueryGraphNode queryGraphNode : nodesToCheck) {
+			final Class<? extends DBRow> tableClass = queryGraphNode.getTable();
+			final DBRow table = rows.get(tableClass);
+			if(table.hasConditionsSet()){
+				return tableClass;
+			}
+		}
+		return nodesToCheck.get(0).getTable();
+	}
+	
+	public List<DBRow> toList() {
+		return toList(getStartTable());
+	}
 
 	@SuppressWarnings("unchecked")
-	public List<DBRow> toList(Class<? extends DBRow> startFrom) {
+	private List<DBRow> toList(Class<? extends DBRow> startFrom) {
 		LinkedHashSet<Class<? extends DBRow>> sortedInnerTables = new LinkedHashSet<Class<? extends DBRow>>();
 		LinkedHashSet<Class<? extends DBRow>> sortedAllTables = new LinkedHashSet<Class<? extends DBRow>>();
 		List<Class<? extends DBRow>> addedInnerTables = new ArrayList<Class<? extends DBRow>>();
@@ -198,10 +229,10 @@ public class QueryGraph {
 		return returnTables;
 	}
 
-	public List<DBRow> toListIncludingCartesian(Class<? extends DBRow> startFrom) {
+	public List<DBRow> toListIncludingCartesian() {
 		Set<DBRow> returnTables = new HashSet<DBRow>();
 
-		returnTables.addAll(toList(startFrom));
+		returnTables.addAll(toList());
 		boolean changed = true;
 
 		while (changed) {

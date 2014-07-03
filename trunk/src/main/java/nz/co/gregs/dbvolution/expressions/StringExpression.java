@@ -1642,12 +1642,17 @@ public class StringExpression implements StringResult {
 		}
 
 		public String doSubstringTransform(DBDatabase db, StringResult enclosedValue, NumberResult startingPosition, NumberResult substringLength) {
-			return " SUBSTRING("
-					+ enclosedValue.toSQLString(db)
-					+ " FROM "
-					+ (startingPosition.toSQLString(db) + " + 1")
-					+ (substringLength != null ? " for " + (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
-					+ ") ";
+			return db.getDefinition().doSubstringTransform(
+					enclosedValue.toSQLString(db), 
+					(startingPosition.toSQLString(db) + " + 1"),
+					(substringLength != null ? (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
+					);
+//			return " SUBSTRING("
+//					+ enclosedValue.toSQLString(db)
+//					+ " FROM "
+//					+ (startingPosition.toSQLString(db) + " + 1")
+//					+ (substringLength != null ? " for " + (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
+//					+ ") ";
 		}
 
 		@Override

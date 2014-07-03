@@ -47,12 +47,15 @@ public class DBQueryTest extends AbstractTest {
 		final String generateSQLString = dbQuery.getSQLForQuery();//.replaceAll(" +", " ");
 
 		String expectedResultUsingONClause = "select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany from marque as __1997432637 inner join car_company as __78874071 on( ((__78874071.name = 'toyota')) and (__1997432637.fk_carcompany = __78874071.uid_carcompany) ) ;";
-		String expectedResultUsingWHEREClause = "select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany from marque as __1997432637 inner join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
-		System.out.println(expectedResultUsingONClause);
-		System.out.println(generateSQLString);
+		String expectedResultUsingWHEREClause   = "select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany from marque as __1997432637 inner join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
+		String expectedResultUsingWHEREClause2 = "select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany from car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
+//		System.out.println(expectedResultUsingONClause);
+//		System.out.println(generateSQLString);
 		Assert.assertThat(testableSQLWithoutColumnAliases(generateSQLString),
 				anyOf(is(testableSQLWithoutColumnAliases(expectedResultUsingONClause)),
-						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause))));
+						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause)),
+						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause2))
+				));
 		// make sure it works
 		dbQuery.getAllRows();
 	}

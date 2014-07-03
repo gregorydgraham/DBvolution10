@@ -824,16 +824,18 @@ public abstract class DBDatabase {
 		}
 
 		// primary keys
-		String pkStart = lineSeparator + definition.getCreateTablePrimaryKeyClauseStart();
-		String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
-		String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
-		String pkSep = pkStart;
-		for (PropertyWrapper field : pkFields) {
-			sqlScript.append(pkSep).append(definition.formatColumnName(field.columnName()));
-			pkSep = pkMiddle;
-		}
-		if (!pkSep.equalsIgnoreCase(pkStart)) {
-			sqlScript.append(pkEnd);
+		if (definition.prefersTrailingPrimaryKeyDefinition()) {
+			String pkStart = lineSeparator + definition.getCreateTablePrimaryKeyClauseStart();
+			String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
+			String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
+			String pkSep = pkStart;
+			for (PropertyWrapper field : pkFields) {
+				sqlScript.append(pkSep).append(definition.formatColumnName(field.columnName()));
+				pkSep = pkMiddle;
+			}
+			if (!pkSep.equalsIgnoreCase(pkStart)) {
+				sqlScript.append(pkEnd);
+			}
 		}
 
 		//finish

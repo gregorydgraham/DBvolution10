@@ -57,8 +57,9 @@ public abstract class AbstractTest {
 	public static List<Object[]> data() throws IOException, SQLException {
 		List<Object[]> databases = new ArrayList<Object[]>();
 		boolean testAllDatabases = System.getProperty("testAllDatabases") != null;
-		if (System.getProperty("testSQLite") != null || testAllDatabases) {
-			databases.add(new Object[]{"SQLite", new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv")});
+		if (System.getProperty("testSQLite") != null ) {
+			final SQLiteDB sqLiteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
+			databases.add(new Object[]{"SQLiteDB", sqLiteDB});
 		}
 		if (System.getProperty("testMySQLMXJDB") != null || testAllDatabases) {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});

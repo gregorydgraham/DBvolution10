@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -35,6 +36,16 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 
 	public QueryGraphDepthFirstTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
+	}
+
+	@Override
+	public void tearDown(DBDatabase database) throws Exception {
+		;
+	}
+
+	@Override
+	public void setup(DBDatabase database) throws Exception {
+		;
 	}
 
 	/**
@@ -57,49 +68,152 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
 		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
 
-		List<DBRow> result = graph.toList(TableA.class);
+		List<DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {
 			System.out.println("" + dBRow.getClass().getSimpleName());
 		}
+		System.out.println("===================");
 
 		Assert.assertThat(result.get(0).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
 		Assert.assertThat(result.get(1).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
 		Assert.assertThat(result.get(2).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
 		Assert.assertThat(result.get(3).getClass(), isOneOf(TableD.class, TableE.class));
 		Assert.assertThat(result.get(4).getClass(), isOneOf(TableD.class, TableE.class));
+	}
 
-		result = graph.toList(TableC.class);
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testAllOptional() {
+		System.out.println("toList");
+
+		List<DBRow> requiredTables = new ArrayList<DBRow>();
+
+		List<DBRow> optionalTables = new ArrayList<DBRow>();
+		optionalTables.add(new TableA());
+		optionalTables.add(new TableB());
+		optionalTables.add(new TableC());
+		optionalTables.add(new TableD());
+		optionalTables.add(new TableE());
+
+		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+
+		List<DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {
 			System.out.println("" + dBRow.getClass().getSimpleName());
 		}
+		System.out.println("===================");
 
-		Assert.assertThat(result.get(0).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(1).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(2).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(3).getClass(), isOneOf(TableD.class, TableE.class));
-		Assert.assertThat(result.get(4).getClass(), isOneOf(TableD.class, TableE.class));
+		Assert.assertThat(result.size(), is(5));
+		Assert.assertThat(result.get(0).getClass(), isOneOf(TableA.class, TableB.class, TableC.class, TableD.class, TableE.class));
+	}
 
-		result = graph.toList(TableD.class);
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testAllOptionalFirstDoesNotStartTheList() {
+		System.out.println("toList");
+
+		List<DBRow> requiredTables = new ArrayList<DBRow>();
+
+		List<DBRow> optionalTables = new ArrayList<DBRow>();
+		optionalTables.add(new TableA());
+		optionalTables.add(new TableB());
+		optionalTables.add(new TableC());
+		requiredTables.add(new TableD());
+		requiredTables.add(new TableE());
+
+		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+
+		List<? extends DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {
 			System.out.println("" + dBRow.getClass().getSimpleName());
 		}
+		System.out.println("===================");
 
 		Assert.assertThat(result.get(0).getClass(), isOneOf(TableD.class, TableE.class));
-		Assert.assertThat(result.get(1).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
+		Assert.assertThat(result.get(1).getClass(), isOneOf(TableD.class, TableE.class));
 		Assert.assertThat(result.get(2).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
 		Assert.assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(4).getClass(), isOneOf(TableD.class, TableE.class));
+		Assert.assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
+	}
 
-		result = graph.toList(TableE.class);
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testAllRequiredTableWithConditionsDoesStartTheList() {
+		System.out.println("toList");
+
+		List<DBRow> requiredTables = new ArrayList<DBRow>();
+
+		List<DBRow> optionalTables = new ArrayList<DBRow>();
+		final TableA tableA = new TableA();
+		final TableB tableB = new TableB();
+		final TableC tableC = new TableC();
+		final TableD tableD = new TableD();
+		final TableE tableE = new TableE();
+		tableD.uidD.permittedValues(4);
+		tableE.uidE.permittedValues(5);
+		
+		Assert.assertThat(tableE.hasConditionsSet(), is(true));
+
+		optionalTables.add(tableA);
+		optionalTables.add(tableB);
+		requiredTables.add(tableC);
+		requiredTables.add(tableD);
+		requiredTables.add(tableE);
+
+		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+
+		List<DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {
 			System.out.println("" + dBRow.getClass().getSimpleName());
 		}
+		System.out.println("===================");
 
 		Assert.assertThat(result.get(0).getClass(), isOneOf(TableD.class, TableE.class));
-		Assert.assertThat(result.get(1).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(2).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class, TableC.class));
-		Assert.assertThat(result.get(4).getClass(), isOneOf(TableD.class, TableE.class));
+		Assert.assertThat(result.get(1).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		Assert.assertThat(result.get(2).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		Assert.assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class));
+		Assert.assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testAllOptionalTableWithConditionsDoesNotStartTheList() {
+		System.out.println("toList");
+
+		List<DBRow> requiredTables = new ArrayList<DBRow>();
+
+		List<DBRow> optionalTables = new ArrayList<DBRow>();
+		final TableA tableA = new TableA();
+		final TableB tableB = new TableB();
+		final TableC tableC = new TableC();
+		final TableD tableD = new TableD();
+		final TableE tableE = new TableE();
+		tableA.uidA.permittedValues(4);
+		tableB.uidB.permittedValues(5);
+
+		optionalTables.add(tableA);
+		optionalTables.add(tableB);
+		requiredTables.add(tableC);
+		requiredTables.add(tableD);
+		requiredTables.add(tableE);
+
+		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+
+		List<DBRow> result = graph.toList();
+		for (DBRow dBRow : result) {
+			System.out.println("" + dBRow.getClass().getSimpleName());
+		}
+		System.out.println("===================");
+
+		Assert.assertThat(result.get(0).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		Assert.assertThat(result.get(1).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		Assert.assertThat(result.get(2).getClass(), isOneOf(TableC.class, TableD.class, TableE.class));
+		Assert.assertThat(result.get(3).getClass(), isOneOf(TableA.class, TableB.class));
+		Assert.assertThat(result.get(4).getClass(), isOneOf(TableA.class, TableB.class));
 	}
 
 	public static class TableA extends DBRow {
