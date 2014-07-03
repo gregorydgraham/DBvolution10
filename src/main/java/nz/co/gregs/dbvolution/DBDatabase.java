@@ -1028,7 +1028,7 @@ public abstract class DBDatabase {
 		batchIfPossible = batchSQLStatementsWhenPossible;
 	}
 
-	void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
+	private void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
 		if (isInATransaction) {
 			throw new AutoCommitActionDuringTransactionException(message);
 		}
