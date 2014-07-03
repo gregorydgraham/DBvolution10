@@ -1440,6 +1440,24 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return results;
 	}
 
+	/**
+	 * Checks if the fields of the object have been changed
+	 *
+	 * @return
+	 */
+	public boolean hasConditionsSet() {
+		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
+		for (PropertyWrapper prop : props) {
+			if (prop.isColumn()) {
+				QueryableDatatype qdt = prop.getQueryableDatatype();
+				if (qdt.hasChanged()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public static class ClassNameComparator implements Comparator<Class<?>> {
 
 		public ClassNameComparator() {

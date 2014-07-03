@@ -26,14 +26,14 @@ import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
  */
 public class PostgresDB extends DBDatabase {
     
-    private final String POSTGRES_DRIVER_NAME ="org.postgresql.Driver";
+    private static final String POSTGRES_DRIVER_NAME ="org.postgresql.Driver";
 
     public PostgresDB(DataSource ds) {
         super(new PostgresDBDefinition(), ds);
     }
 
     public PostgresDB(String jdbcURL, String username, String password) {
-        super(new PostgresDBDefinition(), "org.postgresql.Driver", jdbcURL, username, password);
+        super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
     }
     
     public PostgresDB(String hostname, String port, String databaseName, String username, String password) {
@@ -42,7 +42,8 @@ public class PostgresDB extends DBDatabase {
     
     public PostgresDB(String hostname, String port, String databaseName, String username, String password, String urlExtras) {
         super(new PostgresDBDefinition(), 
-                "org.postgresql.Driver", "jdbc:postgresql://"+hostname+":"+port+"/"+databaseName+(urlExtras==null||urlExtras.isEmpty()?"":"?"+urlExtras), 
+                POSTGRES_DRIVER_NAME, 
+				"jdbc:postgresql://"+hostname+":"+port+"/"+databaseName+(urlExtras==null||urlExtras.isEmpty()?"":"?"+urlExtras), 
                 username, password);
     }
     

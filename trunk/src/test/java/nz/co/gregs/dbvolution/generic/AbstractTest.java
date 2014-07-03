@@ -57,6 +57,9 @@ public abstract class AbstractTest {
 	public static List<Object[]> data() throws IOException, SQLException {
 		List<Object[]> databases = new ArrayList<Object[]>();
 		boolean testAllDatabases = System.getProperty("testAllDatabases") != null;
+		if (System.getProperty("testSQLite") != null || testAllDatabases) {
+			databases.add(new Object[]{"SQLite", new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv")});
+		}
 		if (System.getProperty("testMySQLMXJDB") != null || testAllDatabases) {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
 		}
@@ -197,7 +200,7 @@ public abstract class AbstractTest {
 		database.dropTableNoExceptions(myCarCompanyRow);
 		try {
 			database.preventDroppingOfDatabases(false);
-//            database.dropDatabase();
+            database.dropDatabase();
 		} catch (UnsupportedOperationException unsupported) {
 			;
 		}

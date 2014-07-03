@@ -145,6 +145,28 @@
 			</build>
 		</profile>
 		<profile>
+			<id>SQLiteTest</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<systemPropertyVariables>
+								<testSQLite>true</testSQLite>
+							</systemPropertyVariables>
+							<includes>
+								<include>**/*.java</include>
+							</includes>
+							<threadCount>1</threadCount>
+							<forkCount>1</forkCount>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>MySQLMXJDBTest</id>
 			<build>
 				<plugins>
@@ -321,6 +343,12 @@
 			<artifactId>jung-graph-impl</artifactId>
 			<version>2.0.1</version>
 		</dependency>
+	 <dependency>
+	  <groupId>org.xerial</groupId>
+	  <artifactId>sqlite-jdbc</artifactId>
+	  <version>3.6.10</version>
+	  <scope>test</scope>
+	 </dependency>
 	</dependencies>
 	<distributionManagement>
 		<repository>
