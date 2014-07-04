@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,6 +40,14 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 public class DBString extends QueryableDatatype implements StringResult {
 
     private static final long serialVersionUID = 1L;
+
+	public static List<String> toStringList(List<DBString> dbStrings) {
+		ArrayList<String> strings = new ArrayList<String>();
+		for (DBString dBString : dbStrings) {
+			strings.add(dBString.stringValue());
+		}
+		return strings;
+	}
 
     public DBString() {
         super();
