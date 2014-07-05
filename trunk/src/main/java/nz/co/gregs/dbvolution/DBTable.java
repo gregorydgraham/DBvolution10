@@ -26,9 +26,8 @@ import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
-import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -68,11 +67,13 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
 public class DBTable<E extends DBRow> {
 
 	private E exemplar = null;
+	private E original = null;
 	private final DBDatabase database;
 	private DBQuery query = null;
 	private final QueryOptions options = new QueryOptions();
 
 	protected DBTable(DBDatabase database, E exampleRow) {
+		this.original = exampleRow;
 		exemplar = DBRow.copyDBRow(exampleRow);
 		this.database = database;
 		this.query = database.getDBQuery(exemplar);
@@ -723,25 +724,28 @@ public class DBTable<E extends DBRow> {
 	 * the distinct or unique values that are used.
 	 * 
 	 * @param <A>
-	 * @param row - the table to search.
-	 * @param fieldOfProvidedRow - the field/column that you need data for.
+	 * @param fieldOfProvidedRow - the field/column that you need data for. Must be from the exemplar
 	 * @return a list of distinct values used in the column.
 	 * @throws SQLException
 	 */
 	
 	@SuppressWarnings("unchecked")
-	public <A> List<A> getDistinctValuesOfColumn(E row, A fieldOfProvidedRow) throws AccidentalBlankQueryException, SQLException {
+	public <A> List<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws AccidentalBlankQueryException, SQLException {
 		ArrayList<A> returnList = new ArrayList<A>();
-		final PropertyWrapper fieldProp = row.getPropertyWrapperOf(fieldOfProvidedRow);
+		final PropertyWrapper fieldProp = original.getPropertyWrapperOf(fieldOfProvidedRow);
 		final PropertyWrapperDefinition fieldDefn = fieldProp.getDefinition();
-		QueryableDatatype thisQDT = fieldDefn.getQueryableDatatype(row);
-		row.setReturnFields(thisQDT);
-		DBQuery distinctQuery = database.getDBQuery(row);
+		QueryableDatatype thisQDT = fieldDefn.getQueryableDatatype(exemplar);
+		exemplar.setReturnFields(thisQDT);
+		DBQuery distinctQuery = database.getDBQuery(exemplar);
 		distinctQuery.setBlankQueryAllowed(true);
-		distinctQuery.addGroupByColumn(row, row.column(thisQDT));
+		final DBExpression column = exemplar.column(thisQDT);
+		if (column instanceof ColumnProvider) {
+			distinctQuery.setSortOrder((ColumnProvider)column);
+		}
+		distinctQuery.addGroupByColumn(exemplar, column);
 		List<DBQueryRow> allRows = distinctQuery.getAllRows();
 		for (DBQueryRow dBQueryRow : allRows) {
-			E found = dBQueryRow.get(row);
+			E found = dBQueryRow.get(exemplar);
 			returnList.add(found == null ? (A)null : (A) fieldDefn.rawJavaValue(found));
 		}
 		return returnList;

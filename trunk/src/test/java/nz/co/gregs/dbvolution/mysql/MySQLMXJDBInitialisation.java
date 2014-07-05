@@ -38,4 +38,7 @@ public class MySQLMXJDBInitialisation {
         MySQLDB database = new MySQLMXJDB("localhost", port, databaseName, databaseDir.toString(), "dbvtest", "testpass");
         return database;
     }
+
+	private MySQLMXJDBInitialisation() {
+	}
 }

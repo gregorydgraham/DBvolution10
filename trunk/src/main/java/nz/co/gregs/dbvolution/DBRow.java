@@ -1436,14 +1436,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a list of distinct values used in the column.
 	 * @throws SQLException
 	 */
+	
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException {
 		List<A> results = new ArrayList<A>();
 		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
 		QueryableDatatype thisQDT = fieldProp.getDefinition().getQueryableDatatype(this);
 		this.setReturnFields(fieldOfThisInstance);
-		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, this.column(thisQDT));
 		final DBExpression column = this.column(thisQDT);
+		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, column);
 		if (column instanceof ColumnProvider) {
 			dbQuery.setSortOrder((ColumnProvider)column);
 		}
