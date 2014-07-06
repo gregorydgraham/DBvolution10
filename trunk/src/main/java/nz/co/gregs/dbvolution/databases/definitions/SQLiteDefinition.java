@@ -29,11 +29,12 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  */
 public class SQLiteDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss.SSS");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
-		return " STRFTIME('%s', '" + DATETIME_FORMAT.format(date) + "') ";
+		//%Y-%m-%d %H:%M:%S.%s
+		return " STRFTIME('%Y-%m-%d %H:%M:%S.%s', '" + DATETIME_FORMAT.format(date) + "') ";
 	}
 
 	@Override
@@ -95,4 +96,20 @@ public class SQLiteDefinition extends DBDefinition {
 	public String getCurrentDateFunctionName() {
 		return " date('now') " ;
 	}
+
+	@Override
+	public String getStringLengthFunctionName() {
+		return "LENGTH";
+	}
+
+	@Override
+	public String getTruncFunctionName() {
+		// TRUNC is defined in SQLiteDB as a user defined function.
+		return "TRUNC";
+	}
+	
+	public String getPositionFunction(String originalString, String stringToFind) {
+		return "LOCATION_OF(" +originalString  + ", " + stringToFind + ")";
+	}
+
 }

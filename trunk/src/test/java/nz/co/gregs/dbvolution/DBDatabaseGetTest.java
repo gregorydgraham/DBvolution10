@@ -154,11 +154,13 @@ public class DBDatabaseGetTest extends AbstractTest {
     @Test
     public void testDateIsBetween() throws SQLException, ParseException {
         
+        Date beforeAllTheDates = tedhiFormat.parse("July 2010").asDate();
         Date afterAllTheDates = tedhiFormat.parse("July 2013").asDate();
         DateRange coversFirstDate = tedhiRangeFormat.parse("March 2013");
         
         Marque oldQuery = new Marque();
-        oldQuery.getCreationDate().permittedRange(new Date(0L), afterAllTheDates);
+//        oldQuery.getCreationDate().permittedRange(new Date(0L), afterAllTheDates);
+        oldQuery.getCreationDate().permittedRange(beforeAllTheDates, afterAllTheDates);
         List<Marque> gotMarques = database.get(oldQuery);
         Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
         
@@ -225,7 +227,7 @@ public class DBDatabaseGetTest extends AbstractTest {
             Assert.assertThat(marq.numericCode.isNull(), is(true));
             Assert.assertThat(marq.pricingCodePrefix.isNull(), is(true));
             Assert.assertThat(marq.reservationsAllowed.isNull(), is(true));
-            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(true));
+            Assert.assertThat(marq.statusClassID.isNull(), is(true));
             
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
@@ -243,7 +245,7 @@ public class DBDatabaseGetTest extends AbstractTest {
             Assert.assertThat(marq.auto_created.isNull(), is(false));
             Assert.assertThat(marq.isUsedForTAFROs.isNull(), is(false));
             Assert.assertThat(marq.reservationsAllowed.isNull(), is(false));
-            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(false));
+            Assert.assertThat(marq.statusClassID.isNull(), is(false));
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
         }
@@ -267,7 +269,7 @@ public class DBDatabaseGetTest extends AbstractTest {
             Assert.assertThat(marq.numericCode.isNull(), is(true));
             Assert.assertThat(marq.pricingCodePrefix.isNull(), is(true));
             Assert.assertThat(marq.reservationsAllowed.isNull(), is(true));
-            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(true));
+            Assert.assertThat(marq.statusClassID.isNull(), is(true));
             
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
@@ -289,7 +291,7 @@ public class DBDatabaseGetTest extends AbstractTest {
             Assert.assertThat(marq.auto_created.isNull(), is(false));
             Assert.assertThat(marq.isUsedForTAFROs.isNull(), is(false));
             Assert.assertThat(marq.reservationsAllowed.isNull(), is(false));
-            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(false));
+            Assert.assertThat(marq.statusClassID.isNull(), is(false));
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
         }
