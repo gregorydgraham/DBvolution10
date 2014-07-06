@@ -33,7 +33,7 @@ public class Marque extends DBRow {
     @DBColumn("isusedfortafros")
     public DBString isUsedForTAFROs = new DBString();
     @DBColumn("fk_toystatusclass")
-    public DBNumber toyotaStatusClassID = new DBNumber();
+    public DBNumber statusClassID = new DBNumber();
     @DBColumn("intindallocallowed")
     public DBString individualAllocationsAllowed = new DBString();
     @DBColumn("upd_count")
@@ -63,7 +63,7 @@ public class Marque extends DBRow {
     public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, Integer updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
         this.uidMarque.setValue(uidMarque);
         this.isUsedForTAFROs.setValue(isUsedForTAFROs);
-        this.toyotaStatusClassID.setValue(statusClass);
+        this.statusClassID.setValue(statusClass);
         this.individualAllocationsAllowed.setValue(intIndividualAllocationsAllowed);
         this.updateCount.setValue(updateCount);
         this.auto_created.setValue(autoCreated);
@@ -118,17 +118,17 @@ public class Marque extends DBRow {
     }
 
     /**
-     * @return the toyotaStatusClassID
+     * @return the statusClassID
      */
     public DBNumber getToyotaStatusClassID() {
-        return toyotaStatusClassID;
+        return statusClassID;
     }
 
     /**
-     * @param toyotaStatusClassID the toyotaStatusClassID to set
+     * @param toyotaStatusClassID the statusClassID to set
      */
     public void setToyotaStatusClassID(DBNumber toyotaStatusClassID) {
-        this.toyotaStatusClassID = toyotaStatusClassID;
+        this.statusClassID = toyotaStatusClassID;
     }
 
     /**

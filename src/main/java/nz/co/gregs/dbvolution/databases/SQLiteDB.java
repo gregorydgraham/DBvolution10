@@ -15,9 +15,14 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
+import org.sqlite.Function;
+import org.sqlite.SQLiteConfig;
 
 public class SQLiteDB extends DBDatabase {
 
@@ -41,4 +46,41 @@ public class SQLiteDB extends DBDatabase {
 		return false;
 	}
 
+	@Override
+	protected Connection getConnectionFromDriverManager() throws SQLException {
+		SQLiteConfig config = new SQLiteConfig();
+		config.enableCaseSensitiveLike(true); 
+		Connection connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+		config.apply(connection);
+		Function.create(connection, "TRUNC", new Trunc());
+		Function.create(connection, "LOCATION_OF", new LocationOf());
+		return connection;
+	}
+	
+	public static class Trunc extends Function{
+		@Override
+		protected void xFunc() throws SQLException {
+			Double original = value_double(0);
+			result(original.longValue());
+		}	
+	}
+	
+	public static class LocationOf extends Function{
+		@Override
+		protected void xFunc() throws SQLException {
+			String original = value_text(0);
+			String find = value_text(1);
+			result(original.indexOf(find)+1);
+		}	
+	}
+	
+	public static class StandardDeviation extends Function{
+		@Override
+		protected void xFunc() throws SQLException {
+			String original = value_text(0);
+			
+			String find = value_text(1);
+			result(original.indexOf(find)+1);
+		}	
+	}
 }

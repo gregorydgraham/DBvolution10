@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -156,8 +158,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	}
 
 	/**
-	 * The current {@link #getValue()  literal value} of this DBNumber as a
-	 * Number
+	 * The current {@link #getValue()  literal value} of this DBNumber as a Number
 	 *
 	 * @return the number as the original number class
 	 */
@@ -172,8 +173,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	}
 
 	/**
-	 * The current {@link #getValue()  literal value} of this DBNumber as a
-	 * Double
+	 * The current {@link #getValue()  literal value} of this DBNumber as a Double
 	 *
 	 * @return the number as a Double
 	 */
@@ -236,9 +236,17 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		if (resultSet == null || fullColumnName == null) {
 			this.setToNull();
 		} else {
-			BigDecimal dbValue;
+			Number dbValue;
 			try {
 				dbValue = resultSet.getBigDecimal(fullColumnName);
+			} catch (SQLException ex) {
+				try {
+					dbValue = resultSet.getLong(fullColumnName);
+				} catch (SQLException ex2) {
+					dbValue = null;
+				}
+			}
+			try {
 				if (resultSet.wasNull()) {
 					dbValue = null;
 				}
@@ -272,8 +280,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted
 	 */
@@ -283,8 +290,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted
 	 */
@@ -294,8 +300,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted
 	 */
@@ -342,8 +347,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -366,8 +371,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>

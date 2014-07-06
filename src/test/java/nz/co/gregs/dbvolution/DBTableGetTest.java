@@ -289,7 +289,7 @@ public class DBTableGetTest extends AbstractTest {
             Assert.assertThat(marq.numericCode.isNull(), is(true));
             Assert.assertThat(marq.pricingCodePrefix.isNull(), is(true));
             Assert.assertThat(marq.reservationsAllowed.isNull(), is(true));
-            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(true));
+            Assert.assertThat(marq.statusClassID.isNull(), is(true));
 
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
@@ -307,7 +307,7 @@ public class DBTableGetTest extends AbstractTest {
             Assert.assertThat(marq.auto_created.isNull(), is(false));
             Assert.assertThat(marq.isUsedForTAFROs.isNull(), is(false));
             Assert.assertThat(marq.reservationsAllowed.isNull(), is(false));
-            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(false));
+            Assert.assertThat(marq.statusClassID.isNull(), is(false));
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
         }
@@ -330,7 +330,7 @@ public class DBTableGetTest extends AbstractTest {
             Assert.assertThat(marq.numericCode.isNull(), is(true));
             Assert.assertThat(marq.pricingCodePrefix.isNull(), is(true));
             Assert.assertThat(marq.reservationsAllowed.isNull(), is(true));
-            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(true));
+            Assert.assertThat(marq.statusClassID.isNull(), is(true));
 
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
@@ -351,7 +351,7 @@ public class DBTableGetTest extends AbstractTest {
             Assert.assertThat(marq.auto_created.isNull(), is(false));
             Assert.assertThat(marq.isUsedForTAFROs.isNull(), is(false));
             Assert.assertThat(marq.reservationsAllowed.isNull(), is(false));
-            Assert.assertThat(marq.toyotaStatusClassID.isNull(), is(false));
+            Assert.assertThat(marq.statusClassID.isNull(), is(false));
             Assert.assertThat(marq.name.isNull(), is(false));
             Assert.assertThat(marq.uidMarque.isNull(), is(false));
         }

@@ -207,7 +207,7 @@ public class DBReportTests extends AbstractTest {
 		public DBDate marqueCreated = new DBDate(marque.column(marque.creationDate));
 		
 		{
-			marque.toyotaStatusClassID.permittedValues(1246974);
+			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Long) null);
 		}
 	}
@@ -226,7 +226,7 @@ public class DBReportTests extends AbstractTest {
 		public DBNumber stddev = new DBNumber(marque.column(marque.name).length().standardDeviation());
 		
 		{
-			marque.toyotaStatusClassID.permittedValues(1246974);
+			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Integer) null);
 		}
 	}
@@ -241,7 +241,7 @@ public class DBReportTests extends AbstractTest {
 		public DBNumber countAll = new DBNumber(NumberExpression.countAll());
 		
 		{
-			marque.toyotaStatusClassID.permittedValues(1246974);
+			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Integer) null);
 		}
 	}
@@ -262,7 +262,7 @@ public class DBReportTests extends AbstractTest {
 		public DBNumber sum = new DBNumber(marque.column(marque.uidMarque).sum());
 		
 		{
-			marque.toyotaStatusClassID.permittedValues(1246974);
+			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Integer) null);
 		}
 	}

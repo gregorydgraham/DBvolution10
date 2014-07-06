@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
@@ -210,7 +209,7 @@ public abstract class DBDatabase {
 					throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
 				}
 				try {
-					connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+					connection = getConnectionFromDriverManager();
 				} catch (SQLException noConnection) {
 					throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
 				}
@@ -1148,5 +1147,9 @@ public abstract class DBDatabase {
 		synchronized (getConnectionSynchronizeObject) {
 			connectionsActive--;
 		}
+	}
+
+	protected Connection getConnectionFromDriverManager() throws SQLException {
+		return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
 	}
 }
