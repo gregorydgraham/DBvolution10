@@ -27,7 +27,6 @@ import static org.hamcrest.Matchers.*;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.hamcrest.core.IsNull;
 
 /**
  *
@@ -159,14 +158,17 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				= database
 						.getDBQuery(carCo, marque)
 						.setBlankQueryAllowed(true)
-						.getDistinctCombinationsOfColumnValues(carCo.name, marque.individualAllocationsAllowed);
+						.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);
 		database.print(distinctCombinationsOfColumnValues);
 		Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(3));
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(marque), nullValue());
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque), notNullValue());
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque).individualAllocationsAllowed.stringValue(), is(""));
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque), notNullValue());
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque).individualAllocationsAllowed.stringValue(), is("Y"));
+		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque), notNullValue());
+		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque).individualAllocationsAllowed.stringValue(), is(""));		
+		Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(carCo).name.stringValue(), is("OTHER"));
+		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(carCo).name.stringValue(), is("OTHER"));
+		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(carCo).name.stringValue(), is("OTHER"));
 	}
 
 }
