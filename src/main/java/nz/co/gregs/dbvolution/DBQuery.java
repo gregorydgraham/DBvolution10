@@ -1101,6 +1101,76 @@ public class DBQuery {
 	}
 
 	/**
+	 * Adds the properties (field and/or method) to the end of the sort order.
+	 *
+	 * <p>
+	 * For example the following code snippet will add the name column at the
+	 * end of the sort order after district:
+	 * <pre>
+	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.district));
+	 * query.addToSortOrder(customer.column(customer.name));
+	 * </pre>
+	 *
+	 * <p>
+	 * Note that the above example is equivalent to:
+	 * <pre>
+	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.district), customer.column(customer.name));
+	 * </pre>
+	 *
+	 * @param sortColumns a list of columns to sort the query by.
+	 * @return this DBQuery instance
+	 */
+	public DBQuery addToSortOrder(ColumnProvider... sortColumns) {
+		if (sortColumns != null) {
+			blankResults();
+			List<ColumnProvider> sortOrderColumnsList = new LinkedList<ColumnProvider>();
+			if (sortOrderColumns != null) {
+				sortOrderColumnsList.addAll(Arrays.asList(sortOrderColumns));
+			}
+			for (ColumnProvider col : sortColumns) {
+				sortOrderColumnsList.add(col);
+			}
+
+			return setSortOrder(sortOrderColumnsList.toArray(new ColumnProvider[]{}));
+		}
+		return this;
+	}
+
+
+	/**
+	 * Adds the properties (field and/or method) to the end of the sort order.
+	 *
+	 * <p>
+	 * For example the following code snippet will add the name column at the
+	 * end of the sort order after district:
+	 * <pre>
+	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.district));
+	 * query.addToSortOrder(customer.column(customer.name));
+	 * </pre>
+	 *
+	 * <p>
+	 * Note that the above example is equivalent to:
+	 * <pre>
+	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.district), customer.column(customer.name));
+	 * </pre>
+	 *
+	 * @param sortColumns a list of columns to sort the query by.
+	 * @return this DBQuery instance
+	 */
+	public DBQuery addToSortOrder(DBExpression... sortColumns) {
+		for (DBExpression dBExpression : sortColumns) {
+			if (dBExpression instanceof ColumnProvider) {
+				this.addToSortOrder((ColumnProvider) dBExpression);
+			}
+		}
+		return this;
+	}
+
+	/**
 	 * Remove all sorting that has been set on this DBQuery
 	 *
 	 * @return this DBQuery instance
@@ -1911,18 +1981,18 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Some tables use repeated values instead of foreign keys or do not use all
-	 * of the possible values of a foreign key. This method makes it easy to find
-	 * the distinct or unique values that are used.
-	 * 
+	 * of the possible values of a foreign key. This method makes it easy to
+	 * find the distinct or unique values that are used.
+	 *
 	 * @param fieldsOfProvidedRows - the field/column that you need data for.
-	 * @return a list of DBQQueryRows with distinct combinations of values used in the columns.
+	 * @return a list of DBQQueryRows with distinct combinations of values used
+	 * in the columns.
 	 * @throws SQLException
 	 */
-	
 	@SuppressWarnings("unchecked")
 	public List<DBQueryRow> getDistinctCombinationsOfColumnValues(Object... fieldsOfProvidedRows) throws AccidentalBlankQueryException, SQLException {
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
-		
+
 		DBQuery distinctQuery = database.getDBQuery();
 		for (DBRow row : requiredQueryTables) {
 			final DBRow copyDBRow = DBRow.copyDBRow(row);
@@ -1934,7 +2004,7 @@ public class DBQuery {
 			copyDBRow.removeAllFieldsFromResults();
 			distinctQuery.add(copyDBRow);
 		}
-		
+
 		for (Object fieldOfProvidedRow : fieldsOfProvidedRows) {
 			PropertyWrapper fieldProp = null;
 			for (DBRow row : allQueryTables) {
@@ -1950,9 +2020,9 @@ public class DBQuery {
 				DBRow fieldRow = null;
 				Object thisQDT = null;
 				for (DBRow row : distinctQuery.allQueryTables) {
-					try{
+					try {
 						thisQDT = fieldDefn.rawJavaValue(row);
-					}catch(FailedToSetPropertyValueOnRowDefinition ex){
+					} catch (FailedToSetPropertyValueOnRowDefinition ex) {
 						;// not worried about it
 					}
 					if (thisQDT != null) {
@@ -1963,9 +2033,11 @@ public class DBQuery {
 				if (thisQDT != null && fieldRow != null) {
 					fieldRow.addReturnFields(thisQDT);
 					distinctQuery.setBlankQueryAllowed(true);
-					distinctQuery.addGroupByColumn(fieldRow, fieldRow.column(fieldDefn.getQueryableDatatype(fieldRow)));
+					final DBExpression column = fieldRow.column(fieldDefn.getQueryableDatatype(fieldRow));
+					distinctQuery.addToSortOrder(column);
+					distinctQuery.addGroupByColumn(fieldRow, column);
 					returnList = distinctQuery.getAllRows();
-				}else{
+				} else {
 					throw new DBRuntimeException("Unable To Find Columns Specified");
 				}
 			}
