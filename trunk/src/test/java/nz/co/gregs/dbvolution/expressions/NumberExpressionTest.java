@@ -156,12 +156,46 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque)
-						.arccos()
-						.is(0)
+				.isBetween(-1, 1)
+		);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.arccos()
+				.is(0)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
+	public void testGreatestOf() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				NumberExpression.greatestOf(marq.column(marq.uidMarque), NumberExpression.value(900000))
+				.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(20));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
+	public void testLeastOf() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				NumberExpression.leastOf(marq.column(marq.uidMarque), NumberExpression.value(900000))
+				.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
 	}
@@ -248,7 +282,7 @@ public class NumberExpressionTest extends AbstractTest {
 					is(2));
 		}
 	}
-	
+
 	@Test
 	public void testLocationOfAsDBRowField() throws SQLException {
 		ExtendedCarCompany carCo = new ExtendedCarCompany();
@@ -259,23 +293,22 @@ public class NumberExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(4));
 		for (ExtendedCarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
-			System.out.println("LOCATION OF 'ORD': "+carCompany.locationOfORD.getValue().intValue()+" == "+carCompany.name.stringValue().indexOf("ord"));
+			System.out.println("LOCATION OF 'ORD': " + carCompany.locationOfORD.getValue().intValue() + " == " + carCompany.name.stringValue().indexOf("ord"));
 			Assert.assertThat(carCompany.locationOfORD.getValue().intValue(),
-					is(Matchers.isOneOf(0,carCompany.name.stringValue().indexOf("ord")+1)));
+					is(Matchers.isOneOf(0, carCompany.name.stringValue().indexOf("ord") + 1)));
 		}
 	}
-	
-	public static class ExtendedCarCompany extends CarCompany{
+
+	public static class ExtendedCarCompany extends CarCompany {
 
 		public static final long serialVersionUID = 1L;
-		
+
 		@DBColumn
 		DBNumber locationOfORD = new DBNumber(this.column(this.name).locationOf("ord"));
 
 		public ExtendedCarCompany() {
 			super();
 		}
-		
-		
+
 	}
 }
