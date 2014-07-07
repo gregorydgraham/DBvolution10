@@ -1080,6 +1080,10 @@ public class DBQuery {
 	 * query.setSortOrder(customer.column(customer.name));
 	 * </pre>
 	 *
+	 * <p>
+	 * Where possible DBvolution sorts NULL values as the least significant value, for example "NULL,
+	 * 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
+	 *
 	 * @param sortColumns a list of columns to sort the query by.
 	 * @return this DBQuery instance
 	 */
@@ -1137,7 +1141,6 @@ public class DBQuery {
 		}
 		return this;
 	}
-
 
 	/**
 	 * Adds the properties (field and/or method) to the end of the sort order.

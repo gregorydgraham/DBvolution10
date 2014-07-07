@@ -32,9 +32,9 @@ import org.junit.Test;
  *
  * @author Gregory Graham
  */
-public class BooleanExpressionTests extends AbstractTest {
+public class BooleanExpressionTest extends AbstractTest {
 
-	public BooleanExpressionTests(Object testIterationName, Object db) {
+	public BooleanExpressionTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 

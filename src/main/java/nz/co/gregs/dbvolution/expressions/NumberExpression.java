@@ -76,9 +76,10 @@ public class NumberExpression implements NumberResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -87,8 +88,8 @@ public class NumberExpression implements NumberResult {
 	 * </ul>
 	 *
 	 * @param object
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static NumberExpression value(Number object) {
 		return new NumberExpression(object);
@@ -157,7 +158,7 @@ public class NumberExpression implements NumberResult {
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
 	}
-	
+
 	public BooleanExpression isNot(Number number) {
 		return is(value(number)).not();
 	}
@@ -169,8 +170,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -197,8 +198,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -225,8 +226,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -253,8 +254,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -633,6 +634,120 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues
+	 * @return the least/smallest value from the list.
+	 */
+	public static NumberExpression leastOf(Number... possibleValues) {
+		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		for (Number num : possibleValues) {
+			possVals.add(value(num));
+		}
+		return leastOf(possVals.toArray(new NumberExpression[]{}));
+	}
+
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues
+	 * @return the least/smallest value from the list.
+	 */
+	public static NumberExpression leastOf(Collection<? extends Number> possibleValues) {
+		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		for (Number num : possibleValues) {
+			possVals.add(value(num));
+		}
+		return leastOf(possVals.toArray(new NumberExpression[]{}));
+	}
+
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues
+	 * @return the least/smallest value from the list.
+	 */
+	public static NumberExpression leastOf(NumberResult... possibleValues) {
+		NumberExpression leastExpr
+				= new NumberExpression(new DBNnaryNumberFunction(possibleValues) {
+					@Override
+					protected String getFunctionName(DBDatabase db) {
+						return " LEAST ";
+					}
+				});
+		return leastExpr;
+	}
+
+	/**
+	 * Returns the greatest/largest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #max() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues
+	 * @return the greatest/largest value from the list.
+	 */
+	public static NumberExpression greatestOf(Number... possibleValues) {
+		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		for (Number num : possibleValues) {
+			possVals.add(value(num));
+		}
+		return greatestOf(possVals.toArray(new NumberExpression[]{}));
+	}
+
+	/**
+	 * Returns the greatest/largest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #max() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues
+	 * @return the greatest/largest value from the list.
+	 */
+	public static NumberExpression greatestOf(Collection<? extends Number> possibleValues) {
+		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		for (Number num : possibleValues) {
+			possVals.add(value(num));
+		}
+		return greatestOf(possVals.toArray(new NumberExpression[]{}));
+	}
+
+	/**
+	 * Returns the greatest/largest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #max() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues
+	 * @return the greatest/largest value from the list.
+	 */
+	public static NumberExpression greatestOf(NumberResult... possibleValues) {
+		NumberExpression greatestExpr
+				= new NumberExpression(new DBNnaryNumberFunction(possibleValues) {
+					@Override
+					protected String getFunctionName(DBDatabase db) {
+						return " GREATEST ";
+					}
+				});
+		return greatestExpr;
+	}
+
 	public static NumberExpression getNextSequenceValue(String sequenceName) {
 		return getNextSequenceValue(null, sequenceName);
 	}
@@ -950,10 +1065,9 @@ public class NumberExpression implements NumberResult {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doTruncTransform(only.toSQLString(db), "0"); 
+				return db.getDefinition().doTruncTransform(only.toSQLString(db), "0");
 			}
-			
-			
+
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getTruncFunctionName();
@@ -1111,6 +1225,17 @@ public class NumberExpression implements NumberResult {
 		});
 	}
 
+	/**
+	 * Returns the greatest/largest value from the column.
+	 *
+	 * <p>
+	 * Similar to
+	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)}
+	 * but this aggregates the column or expression provided, rather than
+	 * scanning a list.
+	 *
+	 * @return the greatest/largest value from the column.
+	 */
 	public NumberExpression max() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -1125,6 +1250,16 @@ public class NumberExpression implements NumberResult {
 		});
 	}
 
+	/**
+	 * Returns the least/smallest value from the column.
+	 *
+	 * <p>
+	 * Similar to {@link #leastOf(nz.co.gregs.dbvolution.expressions.NumberResult...)
+	 * } but this aggregates the column or expression provided, rather than
+	 * scanning a list.
+	 *
+	 * @return the least/smallest value from the column.
+	 */
 	public NumberExpression min() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -1139,6 +1274,11 @@ public class NumberExpression implements NumberResult {
 		});
 	}
 
+	/**
+	 * Returns the sum of all the values from the column.
+	 *
+	 * @return the sum of all the values from the column.
+	 */
 	public NumberExpression sum() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -1153,6 +1293,11 @@ public class NumberExpression implements NumberResult {
 		});
 	}
 
+	/**
+	 * Returns the count of all the values from the column.
+	 *
+	 * @return the count of all the values from the column.
+	 */
 	public static NumberExpression countAll() {
 		return new NumberExpression(new DBNonaryFunction() {
 			@Override
@@ -1471,7 +1616,6 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
-
 	private static abstract class DBBinaryStringNumberFunction implements StringResult {
 
 		private DBExpression first;
@@ -1488,7 +1632,7 @@ public class NumberExpression implements NumberResult {
 		}
 
 		@Override
-		abstract public String toSQLString(DBDatabase db) ;
+		abstract public String toSQLString(DBDatabase db);
 
 		@Override
 		public DBBinaryStringNumberFunction copy() {
@@ -1721,6 +1865,109 @@ public class NumberExpression implements NumberResult {
 		@Override
 		public DBNnaryBooleanFunction copy() {
 			DBNnaryBooleanFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.column = this.column.copy();
+			Collections.copy(this.values, newInstance.values);
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (column != null) {
+				hashSet.addAll(column.getTablesInvolved());
+			}
+			for (NumberResult second : values) {
+				if (second != null) {
+					hashSet.addAll(second.getTablesInvolved());
+				}
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			boolean result = column.isAggregator();
+			for (NumberResult numer : values) {
+				result = result || numer.isAggregator();
+			}
+			return result;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return nullProtectionRequired;
+		}
+
+//		@Override
+//		public void setIncludesNull(boolean nullsAreIncluded) {
+//			this.nullProtectionRequired = nullsAreIncluded;
+//		}
+	}
+
+	private static abstract class DBNnaryNumberFunction implements NumberResult {
+
+		protected NumberExpression column;
+		protected final List<NumberResult> values = new ArrayList<NumberResult>();
+		boolean nullProtectionRequired = false;
+
+		DBNnaryNumberFunction() {
+		}
+
+		DBNnaryNumberFunction(NumberResult[] rightHandSide) {
+			for (NumberResult numberResult : rightHandSide) {
+				if (numberResult == null) {
+					this.nullProtectionRequired = true;
+				} else {
+					if (numberResult.getIncludesNull()) {
+						this.nullProtectionRequired = true;
+					}
+					values.add(numberResult);
+				}
+			}
+		}
+
+		@Override
+		public DBNumber getQueryableDatatypeForExpressionValue() {
+			return new DBNumber();
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return "( ";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			StringBuilder builder = new StringBuilder();
+			builder
+					.append(this.getFunctionName(db))
+					.append(this.beforeValue(db));
+			String separator = "";
+			for (NumberResult val : values) {
+				if (val != null) {
+					builder.append(separator).append(val.toSQLString(db));
+				}
+				separator = ", ";
+			}
+			builder.append(this.afterValue(db));
+			return builder.toString();
+		}
+
+		@Override
+		public DBNnaryNumberFunction copy() {
+			DBNnaryNumberFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
