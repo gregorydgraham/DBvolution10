@@ -1606,13 +1606,13 @@ public class StringExpression implements StringResult {
 		Substring(StringResult stringInput, Number startingIndex0Based) {
 			super(stringInput);
 			this.startingPosition = new DBNumber(startingIndex0Based);
-			this.length = null;
+			this.length = new StringExpression(stringInput).length();
 		}
 
 		Substring(StringResult stringInput, NumberResult startingIndex0Based) {
 			super(stringInput);
 			this.startingPosition = startingIndex0Based.copy();
-			this.length = null;
+			this.length = new StringExpression(stringInput).length();
 		}
 
 		Substring(StringResult stringInput, Number startingIndex0Based, Number endIndex0Based) {

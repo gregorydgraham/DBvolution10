@@ -19,11 +19,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 public class PostgresDBDefinition extends DBDefinition {
@@ -46,6 +43,16 @@ public class PostgresDBDefinition extends DBDefinition {
 		}
 	}
 
+	@Override
+	public Object getOrderByDirectionClause(Boolean sortOrder) {
+		if (sortOrder == null) {
+			return "";
+		} else if (sortOrder) {
+			return " ASC NULLS FIRST ";
+		} else {
+			return " DESC NULLS LAST ";
+		}
+	}
 	@Override
 	public String doTruncTransform(String firstString, String secondString) {
 		return getTruncFunctionName() + "((" + firstString + ")::numeric, " + secondString + ")";
@@ -75,6 +82,4 @@ public class PostgresDBDefinition extends DBDefinition {
 	protected String getSpecialAutoIncrementType() {
 		return " SERIAL ";
 	}
-
-
 }
