@@ -94,7 +94,7 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String getCurrentDateFunctionName() {
-		return " date('now') " ;
+		return " date('now') ";
 	}
 
 	@Override
@@ -107,9 +107,19 @@ public class SQLiteDefinition extends DBDefinition {
 		// TRUNC is defined in SQLiteDB as a user defined function.
 		return "TRUNC";
 	}
-	
+
+	@Override
 	public String getPositionFunction(String originalString, String stringToFind) {
-		return "LOCATION_OF(" +originalString  + ", " + stringToFind + ")";
+		return "LOCATION_OF(" + originalString + ", " + stringToFind + ")";
 	}
 
+	@Override
+	public String getCurrentUserFunctionName() {
+		return "CURRENT_USER()";
+	}
+
+	@Override
+	public String getStandardDeviationFunctionName() {
+		return "STDEV";
+	}
 }

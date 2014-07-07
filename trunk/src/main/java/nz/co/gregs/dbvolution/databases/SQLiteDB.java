@@ -18,6 +18,8 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
@@ -49,38 +51,75 @@ public class SQLiteDB extends DBDatabase {
 	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		SQLiteConfig config = new SQLiteConfig();
-		config.enableCaseSensitiveLike(true); 
+		config.enableCaseSensitiveLike(true);
 		Connection connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
 		config.apply(connection);
 		Function.create(connection, "TRUNC", new Trunc());
 		Function.create(connection, "LOCATION_OF", new LocationOf());
+		Function.create(connection, "CURRENT_USER", new CurrentUser(getUsername()));
+		Function.create(connection, "STDEV", new StandardDeviation());
 		return connection;
 	}
-	
-	public static class Trunc extends Function{
+
+	public static class Trunc extends Function {
+
 		@Override
 		protected void xFunc() throws SQLException {
 			Double original = value_double(0);
 			result(original.longValue());
-		}	
+		}
 	}
-	
-	public static class LocationOf extends Function{
+
+	public static class LocationOf extends Function {
+
 		@Override
 		protected void xFunc() throws SQLException {
 			String original = value_text(0);
 			String find = value_text(1);
-			result(original.indexOf(find)+1);
-		}	
+			result(original.indexOf(find) + 1);
+		}
 	}
-	
-	public static class StandardDeviation extends Function{
+	public static class CurrentUser extends Function {
+
+		private final String currentUser;
+		public CurrentUser(String currentUser) {
+			this.currentUser = currentUser;
+		}
+
 		@Override
 		protected void xFunc() throws SQLException {
-			String original = value_text(0);
-			
-			String find = value_text(1);
-			result(original.indexOf(find)+1);
-		}	
+			result(currentUser);
+		}
+	}
+
+//	Function.create(conn, "mySum", new Function.Aggregate() {
+	public static class StandardDeviation extends Function.Aggregate {
+
+		private final List<Long> longs = new ArrayList<Long>();
+
+		@Override
+		protected void xStep() throws SQLException {
+			Long longValue = value_long(0);
+				longs.add(longValue);
+		}
+
+		@Override
+		protected void xFinal() throws SQLException {
+			double sum = 0.0;
+			for (Long long1 : longs) {
+				sum += long1;
+			}
+			Double mean = sum / longs.size();
+			List<Double> squaredDistances = new ArrayList<Double>();
+			for (Long long1 : longs) {
+				final double dist = mean-long1;
+				squaredDistances.add(dist*dist);
+			}
+			for (Double dist : squaredDistances) {
+				sum += dist;
+			}
+			double variance = sum/squaredDistances.size();
+			result(Math.sqrt(variance));
+		}
 	}
 }
