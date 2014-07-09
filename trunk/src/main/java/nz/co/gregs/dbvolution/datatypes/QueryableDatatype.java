@@ -482,11 +482,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	/**
 	 *
+	 * @param database
 	 * @param resultSet
 	 * @param resultSetColumnName
 	 * @throws SQLException
 	 */
-	public void setFromResultSet(ResultSet resultSet, String resultSetColumnName) throws SQLException {
+	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		blankQuery();
 		if (resultSet == null || resultSetColumnName == null) {
 			this.setToNull();

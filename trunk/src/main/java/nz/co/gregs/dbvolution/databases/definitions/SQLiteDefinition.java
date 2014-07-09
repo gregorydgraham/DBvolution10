@@ -77,7 +77,12 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean prefersLargeObjectsAsText() {
+	public boolean prefersLargeObjectsReadAsBase64CharacterStream() {
+		return true;
+	}
+
+	@Override
+	public boolean prefersLargeObjectsSetAsBase64String() {
 		return true;
 	}
 

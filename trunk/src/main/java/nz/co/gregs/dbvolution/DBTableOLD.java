@@ -297,7 +297,7 @@ public class DBTableOLD<E extends DBRow> {
             case Types.LONGVARBINARY:
             case Types.BLOB:
             case Types.OTHER:
-                qdt.setFromResultSet(resultSet, dbColumnName);
+                qdt.setFromResultSet(database, resultSet, dbColumnName);
 
                 // ensure field set when using type adaptors
                 field.setQueryableDatatype(qdt);

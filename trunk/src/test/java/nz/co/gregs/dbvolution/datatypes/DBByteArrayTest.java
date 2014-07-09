@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,9 +32,9 @@ import static org.hamcrest.Matchers.*;
  *
  * @author gregorygraham
  */
-public class ByteArrayTest extends AbstractTest {
+public class DBByteArrayTest extends AbstractTest {
 
-    public ByteArrayTest(Object testIterationName, Object db) {
+    public DBByteArrayTest(Object testIterationName, Object db) {
         super(testIterationName, db);
     }
 
