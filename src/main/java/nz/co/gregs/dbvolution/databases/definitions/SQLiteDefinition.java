@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -29,12 +30,14 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  */
 public class SQLiteDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		//%Y-%m-%d %H:%M:%S.%s
-		return " STRFTIME('%Y-%m-%d %H:%M:%S.%s', '" + DATETIME_FORMAT.format(date) + "') ";
+//		return " STRFTIME('%Y-%m-%d %H:%M:%S', '" + DATETIME_FORMAT.format(date) + "') ";
+//		return " '" + DATETIME_FORMAT.format(date) + "' ";
+		return " DATETIME('" + DATETIME_FORMAT.format(date) + "') ";
 	}
 
 	@Override
@@ -71,6 +74,8 @@ public class SQLiteDefinition extends DBDefinition {
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBLargeObject) {
 			return " TEXT ";
+		} else if (qdt instanceof DBDate) {
+			return " DATETIME ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -99,7 +104,7 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String getCurrentDateFunctionName() {
-		return " date('now') ";
+		return " DATETIME('now') ";
 	}
 
 	@Override
@@ -126,5 +131,54 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String getStandardDeviationFunctionName() {
 		return "STDEV";
+	}
+
+	@Override
+	public String getMonthFunction(String dateExpression) {
+		return " (CAST(strftime('%m', "+dateExpression+") as INTEGER))";
+	}
+
+	@Override
+	public String getYearFunction(String dateExpression) {
+		return " (CAST(strftime('%Y', "+dateExpression+") as INTEGER))";
+	}
+
+	@Override
+	public String getDayFunction(String dateExpression) {
+		return " (CAST(strftime('%d', "+dateExpression+") as INTEGER))";
+	}
+
+	@Override
+	public String getHourFunction(String dateExpression) {
+		return " (CAST(strftime('%H', "+dateExpression+") as INTEGER))";
+	}
+
+	@Override
+	public String getMinuteFunction(String dateExpression) {
+		return " (CAST(strftime('%M', "+dateExpression+") as INTEGER))";
+	}
+
+	@Override
+	public String getSecondFunction(String dateExpression) {
+		return " (CAST(strftime('%S', "+dateExpression+") as INTEGER))";
+	}
+
+	@Override
+	public String getGreatestOfFunctionName() {
+		return " MAX "; //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String getLeastOfFunctionName() {
+		return " MIN "; //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public boolean prefersDatesReadAsStrings() {
+		return true;
+	}
+
+	@Override
+	public DateFormat getDateGetStringFormat() {
+		return DATETIME_FORMAT;
 	}
 }

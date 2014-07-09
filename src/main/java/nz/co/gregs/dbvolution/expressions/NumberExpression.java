@@ -685,7 +685,7 @@ public class NumberExpression implements NumberResult {
 				= new NumberExpression(new DBNnaryNumberFunction(possibleValues) {
 					@Override
 					protected String getFunctionName(DBDatabase db) {
-						return " LEAST ";
+						return db.getDefinition().getLeastOfFunctionName();
 					}
 				});
 		return leastExpr;
@@ -742,7 +742,7 @@ public class NumberExpression implements NumberResult {
 				= new NumberExpression(new DBNnaryNumberFunction(possibleValues) {
 					@Override
 					protected String getFunctionName(DBDatabase db) {
-						return " GREATEST ";
+						return db.getDefinition().getGreatestOfFunctionName();
 					}
 				});
 		return greatestExpr;
