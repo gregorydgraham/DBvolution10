@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
@@ -95,7 +96,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
     }
 
     @Override
-    public void setFromResultSet(ResultSet resultSet, String fullColumnName) {
+    public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
         blankQuery();
         if (resultSet == null || fullColumnName == null) {
             this.setToNull();

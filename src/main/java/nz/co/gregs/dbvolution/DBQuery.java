@@ -36,7 +36,9 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
@@ -693,7 +695,9 @@ public class DBQuery {
 			QueryableDatatype qdt = newProp.getQueryableDatatype();
 
 			String resultSetColumnName = newProp.getColumnAlias(database);
-			qdt.setFromResultSet(resultSet, resultSetColumnName);
+			
+			qdt.setFromResultSet(database, resultSet, resultSetColumnName);
+			
 			if (newInstance.isEmptyRow() && !qdt.isNull()) {
 				newInstance.setEmptyRow(false);
 			}
@@ -707,7 +711,7 @@ public class DBQuery {
 		for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
 			String expressionAlias = database.getDefinition().formatExpressionAlias(entry.getKey());
 			QueryableDatatype expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
-			expressionQDT.setFromResultSet(resultSet, expressionAlias);
+			expressionQDT.setFromResultSet(database, resultSet, expressionAlias);
 			queryRow.addExpressionColumnValue(entry.getKey(), expressionQDT);
 		}
 	}

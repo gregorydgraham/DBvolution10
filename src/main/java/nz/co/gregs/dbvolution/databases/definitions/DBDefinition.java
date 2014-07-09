@@ -715,7 +715,15 @@ public abstract class DBDefinition {
 		return true;
 	}
 
-	public boolean prefersLargeObjectsAsText() {
+	public boolean prefersLargeObjectsReadAsBase64CharacterStream() {
+		return false;
+	}
+
+	public boolean prefersLargeObjectsReadAsBytes() {
+		return false;
+	}
+
+	public boolean prefersLargeObjectsReadAsCLOB() {
 		return false;
 	}
 
@@ -726,6 +734,14 @@ public abstract class DBDefinition {
 				+ start
 				+ (length.trim().isEmpty() ? "" : " FOR " + length)
 				+ ") ";
+	}
+
+	public boolean prefersLargeObjectsSetAsCharacterStream() {
+		return false;
+	}
+
+	public boolean prefersLargeObjectsSetAsBase64String() {
+		return false;
 	}
 
 }
