@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -742,6 +744,22 @@ public abstract class DBDefinition {
 
 	public boolean prefersLargeObjectsSetAsBase64String() {
 		return false;
+	}
+
+	public String getGreatestOfFunctionName() {
+		return " GREATEST ";
+	}
+
+	public String getLeastOfFunctionName() {
+		return " LEAST ";
+	}
+
+	public boolean prefersDatesReadAsStrings() {
+		return false;
+	}
+
+	public DateFormat getDateGetStringFormat() {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	}
 
 }

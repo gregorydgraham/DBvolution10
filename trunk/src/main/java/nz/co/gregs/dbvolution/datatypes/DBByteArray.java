@@ -164,7 +164,6 @@ public class DBByteArray extends DBLargeObject {
 	}
 	
 	private void setFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
-//		InputStream inputStream;
 		Reader inputReader = resultSet.getCharacterStream(fullColumnName);
 		if (resultSet.wasNull() || inputReader==null) {
 			this.setToNull();
