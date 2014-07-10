@@ -20,8 +20,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -44,6 +46,7 @@ public class SQLiteDefinition extends DBDefinition {
 	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
 		return "";
 	}
+
 
 	@Override
 	public boolean supportsGeneratedKeys(QueryOptions options) {
@@ -78,6 +81,13 @@ public class SQLiteDefinition extends DBDefinition {
 			return " DATETIME ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
+		}
+	}
+
+	@Override
+	public void sanityCheckDBTableField(DBTableField dbTableField) {
+		if (dbTableField.isPrimaryKey && dbTableField.columnType.equals(DBInteger.class)) {
+			dbTableField.isAutoIncrement = true;
 		}
 	}
 
@@ -135,32 +145,32 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String getMonthFunction(String dateExpression) {
-		return " (CAST(strftime('%m', "+dateExpression+") as INTEGER))";
+		return " (CAST(strftime('%m', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
 	public String getYearFunction(String dateExpression) {
-		return " (CAST(strftime('%Y', "+dateExpression+") as INTEGER))";
+		return " (CAST(strftime('%Y', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
 	public String getDayFunction(String dateExpression) {
-		return " (CAST(strftime('%d', "+dateExpression+") as INTEGER))";
+		return " (CAST(strftime('%d', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
 	public String getHourFunction(String dateExpression) {
-		return " (CAST(strftime('%H', "+dateExpression+") as INTEGER))";
+		return " (CAST(strftime('%H', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
 	public String getMinuteFunction(String dateExpression) {
-		return " (CAST(strftime('%M', "+dateExpression+") as INTEGER))";
+		return " (CAST(strftime('%M', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
 	public String getSecondFunction(String dateExpression) {
-		return " (CAST(strftime('%S', "+dateExpression+") as INTEGER))";
+		return " (CAST(strftime('%S', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
@@ -173,6 +183,7 @@ public class SQLiteDefinition extends DBDefinition {
 		return " MIN "; //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
 	public boolean prefersDatesReadAsStrings() {
 		return true;
 	}
@@ -180,5 +191,14 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public DateFormat getDateGetStringFormat() {
 		return DATETIME_FORMAT;
+	}
+	@Override
+	public boolean supportsRetrievingLastInsertedRowViaSQL() {
+		return true;
+	}
+
+	@Override
+	public String getRetrieveLastInsertedRowSQL() {
+		return "select last_insert_rowid();";
 	}
 }

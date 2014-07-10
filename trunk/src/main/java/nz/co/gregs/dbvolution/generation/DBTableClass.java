@@ -29,7 +29,7 @@ public class DBTableClass {
 
 	public long serialversionUIDBValue = 1L;
 
-	private final String unknownDatatype = DBUnknownDatatype.class.getSimpleName();
+	private final Class<DBUnknownDatatype> unknownDatatype = DBUnknownDatatype.class;
 	private String packageName;
 	public String className;
 	private String tableName;
@@ -97,7 +97,7 @@ public class DBTableClass {
 				javaSrc.append("    @").append(unknownJavaSQLTypeAnnotation).append("(").append(field.javaSQLDatatype).append(")");
 				javaSrc.append(lineSeparator);
 			}
-			javaSrc.append("    public ").append(field.columnType).append(" ").append(field.fieldName).append(" = new ").append(field.columnType).append("();");
+			javaSrc.append("    public ").append(field.columnType.getSimpleName()).append(" ").append(field.fieldName).append(" = new ").append(field.columnType.getSimpleName()).append("();");
 			javaSrc.append(conceptBreak);
 		}
 		javaSrc.append("}");

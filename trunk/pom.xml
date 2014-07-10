@@ -273,7 +273,7 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.31</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>		
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -290,18 +290,19 @@
 			<groupId>net.sourceforge.tedhi</groupId>
 			<artifactId>tedhi</artifactId>
 			<version>0.8</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-mxj</artifactId>
 			<version>5.0.12</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901.jdbc4</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.reflections</groupId>

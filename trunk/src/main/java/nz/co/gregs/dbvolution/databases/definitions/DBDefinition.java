@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
+import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -117,8 +118,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -130,8 +131,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -148,8 +149,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * joins.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for joins.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -412,8 +413,8 @@ public abstract class DBDefinition {
 	 *
 	 * for example MySQL/MariaDB use SELECT ... FROM ... WHERE ... LIMIT 10 ;
 	 *
-	 * Based on the example for MySQL/MariaDB this method should return " LIMIT 10
-	 * "
+	 * Based on the example for MySQL/MariaDB this method should return " LIMIT
+	 * 10 "
 	 *
 	 * If the database does not support row limiting this method should throw an
 	 * exception when rowLimit is not null
@@ -438,8 +439,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * The place holder for variables inserted into a prepared statement, usually
-	 * " ? "
+	 * The place holder for variables inserted into a prepared statement,
+	 * usually " ? "
 	 *
 	 * @return the place holder for variables as a string
 	 */
@@ -652,6 +653,25 @@ public abstract class DBDefinition {
 		return true;
 	}
 
+	/**
+	 * Indicates that this database supports the JDBC generated keys API.
+	 *
+	 * <p>
+	 * Generated keys are the preferred method for retrieving auto-increment
+	 * primary keys.
+	 *
+	 * <p>
+	 * Alternatively the DBDefinition can overload {@link #supportsRetrievingLastInsertedRowViaSQL()
+	 * } and {@link #getRetrieveLastInsertedRowSQL() }
+	 *
+	 * <p>
+	 * If both {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions)
+	 * } and {@link #supportsRetrievingLastInsertedRowViaSQL() } return false
+	 * DBvolution will not retrieve auto-incremented primary keys.
+	 *
+	 * @param options
+	 * @return
+	 */
 	public boolean supportsGeneratedKeys(QueryOptions options) {
 		return true;
 	}
@@ -760,6 +780,45 @@ public abstract class DBDefinition {
 
 	public DateFormat getDateGetStringFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	}
+
+	/**
+	 * Provides an opportunity to tweak the generated DBTableField before
+	 * creating the Java classes
+	 *
+	 * @param dbTableField the current field being processed by
+	 * DBTableClassGenerator
+	 */
+	@SuppressWarnings("empty-statement")
+	public void sanityCheckDBTableField(DBTableField dbTableField) {
+		;
+	}
+
+	/**
+	 * Indicates whether this DBDefinition supports retrieving the primary key
+	 * of the last inserted row using SQL.
+	 *
+	 * <p>
+	 * Preferably the database should support {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions) generated keys} but if it doesn't
+	 * this and {@link #getRetrieveLastInsertedRowSQL() } allow the DBDefinition
+	 * to provide raw SQL for retrieving the last created primary key.
+	 *
+	 * <p>
+	 * If both {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions)
+	 * } and {@link #supportsRetrievingLastInsertedRowViaSQL() } return false
+	 * DBvolution will not retrieve auto-incremented primary keys.
+	 *
+	 * <p>
+	 * Originally provided for the SQLite-JDBC driver.
+	 *
+	 * @return
+	 */
+	public boolean supportsRetrievingLastInsertedRowViaSQL() {
+		return false;
+	}
+
+	public String getRetrieveLastInsertedRowSQL() {
+		return "";
 	}
 
 }

@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -25,7 +24,10 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
@@ -53,8 +55,8 @@ public class DBInsert extends DBAction {
 	/**
 	 * Saves the row to the database.
 	 *
-	 * Creates the appropriate actions to save the row permanently in the database
-	 * and executes them.
+	 * Creates the appropriate actions to save the row permanently in the
+	 * database and executes them.
 	 * <p>
 	 * Supports automatic retrieval of the new primary key in limited cases:
 	 * <ul>
@@ -119,15 +121,10 @@ public class DBInsert extends DBAction {
 						ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
 						try {
 							while (generatedKeysResultSet.next()) {
-//								try {
-									final long pkValue = generatedKeysResultSet.getLong(pkIndex);
-									this.getGeneratedPrimaryKeys().add(pkValue);
-									log.info("GENERATED KEYS: " + pkValue);
-									this.originalRow.getPrimaryKey().setValue(pkValue);
-//								} catch (SQLException e) {
-									// This probably means there were no keys to retrieve
-//									e.printStackTrace();
-//								}
+								final long pkValue = generatedKeysResultSet.getLong(pkIndex);
+								this.getGeneratedPrimaryKeys().add(pkValue);
+								log.info("GENERATED KEYS: " + pkValue);
+								this.originalRow.getPrimaryKey().setValue(pkValue);
 							}
 						} catch (SQLException ex) {
 							throw new RuntimeException(ex);
@@ -145,6 +142,21 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql);
+						if(defn.supportsRetrievingLastInsertedRowViaSQL()){
+							String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
+							ResultSet rs = statement.executeQuery(retrieveSQL);
+							QueryableDatatype primaryKey = this.originalRow.getPrimaryKey();
+							if (primaryKey instanceof DBInteger){
+								DBInteger inPK = (DBInteger)primaryKey;
+								inPK.setValue(rs.getLong(1));
+							}else if (primaryKey instanceof DBNumber){
+								DBNumber inPK = (DBNumber)primaryKey;
+								inPK.setValue(rs.getBigDecimal(1));
+							}else if (primaryKey instanceof DBString){
+								DBString inPK = (DBString)primaryKey;
+								inPK.setValue(rs.getString(1));
+							}
+						}
 					} catch (SQLException ex) {
 						throw new RuntimeException(ex);
 					}
