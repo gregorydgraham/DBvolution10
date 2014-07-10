@@ -20,16 +20,17 @@ package nz.co.gregs.dbvolution.generation;
  * @author Gregory Graham
  */
 public class DBTableField {
-    String fieldName;
-    String columnName;
-    boolean isPrimaryKey = false;
-    boolean isForeignKey = false;
-    String referencesClass;
-    String referencesField;
-    String columnType;
-    int precision;
-    int javaSQLDatatype = 0;
-	String comments;
-	boolean isAutoIncrement;
+    public String fieldName;
+    public String columnName;
+    public boolean isPrimaryKey = false;
+    public boolean isForeignKey = false;
+    public String referencesClass;
+    public String referencesField;
+    public Class<? extends Object> columnType;
+    public int precision;
+    public int javaSQLDatatype = 0;
+	public String comments;
+	public boolean isAutoIncrement;
+	public int sqlDataTypeInt;
     
 }

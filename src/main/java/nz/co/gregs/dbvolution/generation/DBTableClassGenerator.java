@@ -245,8 +245,8 @@ public class DBTableClassGenerator {
 	 * @param database
 	 * @param packageName
 	 * @param dbObjectTypes
-	 * @return a List of DBTableClass instances representing the tables and views
-	 * found on the database
+	 * @return a List of DBTableClass instances representing the tables and
+	 * views found on the database
 	 * @throws SQLException
 	 */
 	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
@@ -318,17 +318,26 @@ public class DBTableClassGenerator {
 							dbTableField.fieldName = toFieldCase(dbTableField.columnName);
 							dbTableField.precision = columns.getInt("COLUMN_SIZE");
 							dbTableField.comments = columns.getString("REMARKS");
-							final String isAutoIncr = columns.getString("IS_AUTOINCREMENT");
+							String isAutoIncr = null;
+							try {
+								isAutoIncr = columns.getString("IS_AUTOINCREMENT");
+							} catch (SQLException sqlex) {
+								;// SQLite-JDBC throws an exception when retrieving IS_AUTOINCREMENT
+							}
 							dbTableField.isAutoIncrement = isAutoIncr != null && isAutoIncr.equals("YES");
 							try {
-								dbTableField.columnType = getQueryableDatatypeNameOfSQLType(columns.getInt("DATA_TYPE"), dbTableField.precision);
+								dbTableField.sqlDataTypeInt = columns.getInt("DATA_TYPE");
+								dbTableField.columnType = getQueryableDatatypeNameOfSQLType(dbTableField.sqlDataTypeInt, dbTableField.precision);
 							} catch (UnknownJavaSQLTypeException ex) {
-								dbTableField.columnType = DBUnknownDatatype.class.getSimpleName();
+								dbTableField.columnType = DBUnknownDatatype.class;
 								dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
 							}
 							if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
 								dbTableField.isPrimaryKey = true;
 							}
+							
+							database.getDefinition().sanityCheckDBTableField(dbTableField);
+							
 							String[] pkData = fkNames.get(dbTableField.columnName);
 							if (pkData != null && pkData.length == 2) {
 								dbTableField.isForeignKey = true;
@@ -394,14 +403,14 @@ public class DBTableClassGenerator {
 	 * @return a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 */
-	private static String getQueryableDatatypeNameOfSQLType(int columnType, int precision) throws UnknownJavaSQLTypeException {
-		String value = "";
+	private static Class<? extends Object> getQueryableDatatypeNameOfSQLType(int columnType, int precision) throws UnknownJavaSQLTypeException {
+		Class<? extends Object> value = QueryableDatatype.class;
 		switch (columnType) {
 			case Types.BIT:
 				if (precision == 1) {
-					value = DBBoolean.class.getSimpleName();
+					value = DBBoolean.class;
 				} else {
-					value = DBByteArray.class.getSimpleName();
+					value = DBByteArray.class;
 				}
 				break;
 			case Types.TINYINT:
@@ -412,9 +421,9 @@ public class DBTableClassGenerator {
 			case Types.ROWID:
 			case Types.SMALLINT:
 				if (precision == 1) {
-					value = DBBoolean.class.getSimpleName();
+					value = DBBoolean.class;
 				} else {
-					value = DBInteger.class.getSimpleName();
+					value = DBInteger.class;
 				}
 				break;
 			case Types.DECIMAL:
@@ -422,7 +431,7 @@ public class DBTableClassGenerator {
 			case Types.FLOAT:
 			case Types.NUMERIC:
 			case Types.REAL:
-				value = DBNumber.class.getSimpleName();
+				value = DBNumber.class;
 				break;
 			case Types.VARCHAR:
 			case Types.CHAR:
@@ -432,23 +441,23 @@ public class DBTableClassGenerator {
 			case Types.NCLOB:
 			case Types.LONGNVARCHAR:
 			case Types.LONGVARCHAR:
-				value = DBString.class.getSimpleName();
+				value = DBString.class;
 				break;
 			case Types.DATE:
 			case Types.TIME:
 			case Types.TIMESTAMP:
-				value = DBDate.class.getSimpleName();
+				value = DBDate.class;
 				break;
 			case Types.OTHER:
 			case Types.JAVA_OBJECT:
-				value = DBJavaObject.class.getSimpleName();
+				value = DBJavaObject.class;
 				break;
 			case Types.VARBINARY:
 			case Types.LONGVARBINARY:
 			case Types.BLOB:
 			case Types.ARRAY:
 			case Types.SQLXML:
-				value = DBByteArray.class.getSimpleName();
+				value = DBByteArray.class;
 				break;
 			default:
 				throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: " + columnType, columnType);
@@ -473,7 +482,7 @@ public class DBTableClassGenerator {
 //            System.out.println("Splitting: " + s);
 			String[] parts = s.split("_");
 			for (String part : parts) {
-				classCaseString = classCaseString + toProperCase(part);
+				classCaseString += toProperCase(part);
 			}
 		}
 		return classCaseString;

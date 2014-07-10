@@ -60,7 +60,8 @@ public class DBByteArray extends DBLargeObject {
 
 	/**
 	 *
-	 * @return the standard SQL datatype that corresponds to this QDT as a String
+	 * @return the standard SQL datatype that corresponds to this QDT as a
+	 * String
 	 */
 	@Override
 	public String getSQLDatatype() {
@@ -104,13 +105,13 @@ public class DBByteArray extends DBLargeObject {
 				try {
 					setFromCharacterReader(resultSet, fullColumnName);
 				} catch (IOException ex) {
-					throw new DBRuntimeException("Unable To Set Value: "+ex.getMessage(), ex);
+					throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
 				}
 			} else if (defn.prefersLargeObjectsReadAsBytes()) {
 				setFromGetBytes(resultSet, fullColumnName);
 			} else if (defn.prefersLargeObjectsReadAsCLOB()) {
 				setFromCLOB(resultSet, fullColumnName);
-			} else{
+			} else {
 				setFromBinaryStream(resultSet, fullColumnName);
 			}
 		}
@@ -132,14 +133,14 @@ public class DBByteArray extends DBLargeObject {
 		} else {
 			InputStream input = new BufferedInputStream(inputStream);
 			List<byte[]> byteArrays = new ArrayList<byte[]>();
-			
+
 			int totalBytesRead = 0;
 			try {
 				byte[] resultSetBytes;
 				resultSetBytes = new byte[100000];
 				int bytesRead = input.read(resultSetBytes);
 				while (bytesRead > 0) {
-					totalBytesRead = totalBytesRead + bytesRead;
+					totalBytesRead += bytesRead;
 					byteArrays.add(resultSetBytes);
 					resultSetBytes = new byte[100000];
 					bytesRead = input.read(resultSetBytes);
@@ -159,52 +160,58 @@ public class DBByteArray extends DBLargeObject {
 
 	private void setFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = resultSet.getBytes(fullColumnName);
-		System.out.println("DB Value: "+resultSet.getString(fullColumnName));
 		this.setValue(bytes);
 	}
-	
+
 	private void setFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
-		Reader inputReader = resultSet.getCharacterStream(fullColumnName);
-		if (resultSet.wasNull() || inputReader==null) {
-			this.setToNull();
-		}else{
-			BufferedReader input = new BufferedReader(inputReader);
-			List<byte[]> byteArrays = new ArrayList<byte[]>();
-			
-			int totalBytesRead = 0;
-			try {
-				char[] resultSetBytes;
-				resultSetBytes = new char[100000];
-				int bytesRead = input.read(resultSetBytes);
-				while (bytesRead > 0) {
-					totalBytesRead = totalBytesRead + bytesRead;
-					byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+		Reader inputReader = null;
+		try {
+			inputReader = resultSet.getCharacterStream(fullColumnName);
+		} catch (NullPointerException nullEx) {
+			;// NullPointerException is thrown by a SQLite-JDBC bug sometimes.
+		}
+		if (inputReader != null) {
+			if (resultSet.wasNull() || inputReader == null) {
+				this.setToNull();
+			} else {
+				BufferedReader input = new BufferedReader(inputReader);
+				List<byte[]> byteArrays = new ArrayList<byte[]>();
+
+				int totalBytesRead = 0;
+				try {
+					char[] resultSetBytes;
 					resultSetBytes = new char[100000];
-					bytesRead = input.read(resultSetBytes);
+					int bytesRead = input.read(resultSetBytes);
+					while (bytesRead > 0) {
+						totalBytesRead += bytesRead;
+						byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+						resultSetBytes = new char[100000];
+						bytesRead = input.read(resultSetBytes);
+					}
+				} catch (IOException ex) {
+					Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			} catch (IOException ex) {
-				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+				byte[] bytes = new byte[totalBytesRead];
+				int bytesAdded = 0;
+				for (byte[] someBytes : byteArrays) {
+					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+					bytesAdded += someBytes.length;
+				}
+				byte[] decodeBuffer = new BASE64Decoder().decodeBuffer(new String(bytes));
+				this.setValue(decodeBuffer);
 			}
-			byte[] bytes = new byte[totalBytesRead];
-			int bytesAdded = 0;
-			for (byte[] someBytes : byteArrays) {
-				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-				bytesAdded += someBytes.length;
-			}
-			byte[] decodeBuffer = new BASE64Decoder().decodeBuffer(new String(bytes));
-			this.setValue(decodeBuffer);
 		}
 	}
 
 	private void setFromCLOB(ResultSet resultSet, String fullColumnName) throws SQLException {
 //		InputStream inputStream;
 		Clob clob = resultSet.getClob(fullColumnName);
-		if (resultSet.wasNull() || clob==null) {
+		if (resultSet.wasNull() || clob == null) {
 			this.setToNull();
-		}else{
+		} else {
 			BufferedReader input = new BufferedReader(clob.getCharacterStream());
 			List<byte[]> byteArrays = new ArrayList<byte[]>();
-			
+
 			int totalBytesRead = 0;
 			try {
 				char[] resultSetBytes;
@@ -256,7 +263,7 @@ public class DBByteArray extends DBLargeObject {
 				//input.read() returns -1, 0, or more :
 				int bytesRead = input.read(bytes, totalBytesRead, bytesRemaining);
 				if (bytesRead > 0) {
-					totalBytesRead = totalBytesRead + bytesRead;
+					totalBytesRead += bytesRead;
 				}
 			}
 			/*
