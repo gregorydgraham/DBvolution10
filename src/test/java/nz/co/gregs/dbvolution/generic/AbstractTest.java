@@ -57,7 +57,7 @@ public abstract class AbstractTest {
 	public static List<Object[]> data() throws IOException, SQLException {
 		List<Object[]> databases = new ArrayList<Object[]>();
 		boolean testAllDatabases = System.getProperty("testAllDatabases") != null;
-		if (System.getProperty("testSQLite") != null ) {
+		if (System.getProperty("testSQLite") != null  || testAllDatabases) {
 			final SQLiteDB sqLiteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
 			databases.add(new Object[]{"SQLiteDB", sqLiteDB});
 		}
