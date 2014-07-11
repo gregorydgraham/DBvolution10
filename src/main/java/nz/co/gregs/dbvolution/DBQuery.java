@@ -36,9 +36,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
@@ -439,16 +437,6 @@ public class DBQuery {
 				separator = ", " + lineSep;
 			}
 
-			if (joinedTables.size() == 1) {
-				// only one table so the criteria must go into the where clause.
-				List<String> tabRowCriteria = joinedTables.get(0).getWhereClausesWithAliases(database);
-				if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
-					for (String clause : tabRowCriteria) {
-						whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
-					}
-				}
-			}
-
 			//add conditions found during the ANSI Join creation
 			final String conditionsAsSQLClause = mergeConditionsIntoSQLClause(queryState.getRequiredConditions(), defn);
 			if (!conditionsAsSQLClause.isEmpty()) {
@@ -682,11 +670,12 @@ public class DBQuery {
 	}
 
 	protected Map<String, DBRow> setExistingInstancesForTable(Map<String, DBRow> existingInstancesOfThisTableRow, DBRow newInstance) {
-		if (existingInstancesOfThisTableRow == null) {
-			existingInstancesOfThisTableRow = new HashMap<String, DBRow>();
-			existingInstances.put(newInstance.getClass(), existingInstancesOfThisTableRow);
+		Map<String, DBRow> hashMap = existingInstancesOfThisTableRow;
+		if (hashMap == null) {
+			hashMap = new HashMap<String, DBRow>();
 		}
-		return existingInstancesOfThisTableRow;
+		existingInstances.put(newInstance.getClass(), hashMap);
+		return hashMap;
 	}
 
 	protected void setFieldsFromColumns(DBRow newInstance, ResultSet resultSet) throws SQLException {
@@ -695,9 +684,9 @@ public class DBQuery {
 			QueryableDatatype qdt = newProp.getQueryableDatatype();
 
 			String resultSetColumnName = newProp.getColumnAlias(database);
-			
+
 			qdt.setFromResultSet(database, resultSet, resultSetColumnName);
-			
+
 			if (newInstance.isEmptyRow() && !qdt.isNull()) {
 				newInstance.setEmptyRow(false);
 			}
@@ -1085,8 +1074,8 @@ public class DBQuery {
 	 * </pre>
 	 *
 	 * <p>
-	 * Where possible DBvolution sorts NULL values as the least significant value, for example "NULL,
-	 * 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
+	 * Where possible DBvolution sorts NULL values as the least significant
+	 * value, for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
 	 *
 	 * @param sortColumns a list of columns to sort the query by.
 	 * @return this DBQuery instance
@@ -1137,9 +1126,7 @@ public class DBQuery {
 			if (sortOrderColumns != null) {
 				sortOrderColumnsList.addAll(Arrays.asList(sortOrderColumns));
 			}
-			for (ColumnProvider col : sortColumns) {
-				sortOrderColumnsList.add(col);
-			}
+			sortOrderColumnsList.addAll(Arrays.asList(sortColumns));
 
 			return setSortOrder(sortOrderColumnsList.toArray(new ColumnProvider[]{}));
 		}
