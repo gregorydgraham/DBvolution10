@@ -633,7 +633,7 @@ public class DBQuery {
 		for (DBRow tableRow : allQueryTables) {
 			DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
-			setFieldsFromColumns(newInstance, resultSet);
+			setFieldsFromColumns(tableRow, newInstance, resultSet);
 
 			newInstance.setDefined(); // Actually came from the database so it is a defined row.
 
@@ -678,17 +678,22 @@ public class DBQuery {
 		return hashMap;
 	}
 
-	protected void setFieldsFromColumns(DBRow newInstance, ResultSet resultSet) throws SQLException {
+	protected void setFieldsFromColumns(DBRow oldInstance, DBRow newInstance, ResultSet resultSet) throws SQLException {
+		List<PropertyWrapper> selectedProperties = oldInstance.getSelectedProperties();
 		List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
 		for (PropertyWrapper newProp : newProperties) {
 			QueryableDatatype qdt = newProp.getQueryableDatatype();
+			for (PropertyWrapper propertyWrapper : selectedProperties) {
+				if (propertyWrapper.getDefinition().equals(newProp.getDefinition())) {
 
-			String resultSetColumnName = newProp.getColumnAlias(database);
+					String resultSetColumnName = newProp.getColumnAlias(database);
 
-			qdt.setFromResultSet(database, resultSet, resultSetColumnName);
+					qdt.setFromResultSet(database, resultSet, resultSetColumnName);
 
-			if (newInstance.isEmptyRow() && !qdt.isNull()) {
-				newInstance.setEmptyRow(false);
+					if (newInstance.isEmptyRow() && !qdt.isNull()) {
+						newInstance.setEmptyRow(false);
+					}
+				}
 			}
 
 			// ensure field set when using type adaptors
