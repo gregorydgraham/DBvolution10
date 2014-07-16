@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
-import java.util.List;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 
 /**
@@ -79,7 +78,7 @@ public abstract class DBScript {
 	 */
 	public final DBActionList implement(DBDatabase db) throws Exception {
 		DBTransaction<DBActionList> trans = getDBTransaction();
-		DBActionList revertScript = db.doTransaction(trans, true);
+		DBActionList revertScript = db.doTransaction(trans);
 		return revertScript;
 	}
 
@@ -101,7 +100,7 @@ public abstract class DBScript {
 	 */
 	public final DBActionList test(DBDatabase db) throws Exception {
 		DBTransaction<DBActionList> trans = getDBTransaction();
-		DBActionList revertScript = db.doTransaction(trans, false);
+		DBActionList revertScript = db.doReadOnlyTransaction(trans);
 		return revertScript;
 	}
 
@@ -114,23 +113,4 @@ public abstract class DBScript {
 			}
 		};
 	}
-
-	/**
-	 * Convenience method to print out the List<String> as an SQL script.
-	 *
-	 * @param statementList
-	 */
-	@Deprecated
-	public static void printStatementList(List<String> statementList) {
-		System.out.println("--BEGIN SCRIPT--");
-		System.out.println("begin;");
-		System.out.println("");
-		for (String sql : statementList) {
-			System.out.println("" + sql);
-		}
-		System.out.println("");
-		System.out.println("rollback;");
-		System.out.println("--END SCRIPT--");
-	}
-
 }
