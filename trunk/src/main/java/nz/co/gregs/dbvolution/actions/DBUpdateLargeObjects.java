@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,14 +31,13 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sun.misc.BASE64Encoder;
 
 /**
  * Provides support for the abstract concept of updating rows with BLOB columns.
@@ -163,7 +161,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 			bytesAdded += someBytes.length;
 		}
-		String b64encoded = new BASE64Encoder().encode(bytes);
+		String b64encoded = Base64.encodeBase64String(bytes);
 		System.out.println("BYTES TO WRITE: "+Arrays.toString(bytes));
 		prep.setString(1, b64encoded);
 		prep.execute();

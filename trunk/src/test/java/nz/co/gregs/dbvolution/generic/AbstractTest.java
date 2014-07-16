@@ -73,6 +73,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testPostgresSQL") != null || testAllDatabases) {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
 		}
+		if (System.getProperty("testOracle") != null) {
+			databases.add(new Object[]{"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")});
+		}
 		if (databases.isEmpty() || testAllDatabases) {
 			// Do basic testing
 			databases.add(new Object[]{"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)});

@@ -64,7 +64,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 marques.print();
                 return marques;
             }
-        });
+        }, true);
         List<Marque> added = marquesTable.getRowsByExample(new Marque());
         System.out.println("original.toList().size(): " + original.size());
         System.out.println("added.toList().size(): " + added.size());
@@ -98,7 +98,7 @@ public class DBTableTransactionTest extends AbstractTest {
                 return marques;
             }
 
-        });
+        }, true);
         }catch (Exception e){
             e.printStackTrace();
         }
