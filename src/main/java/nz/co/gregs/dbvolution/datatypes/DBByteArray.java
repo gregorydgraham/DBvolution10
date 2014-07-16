@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import sun.misc.BASE64Decoder;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  *
@@ -97,7 +97,6 @@ public class DBByteArray extends DBLargeObject {
 	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		blankQuery();
 		DBDefinition defn = database.getDefinition();
-		InputStream inputStream = null;
 		if (resultSet == null || fullColumnName == null) {
 			this.setToNull();
 		} else {
@@ -197,7 +196,7 @@ public class DBByteArray extends DBLargeObject {
 					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 					bytesAdded += someBytes.length;
 				}
-				byte[] decodeBuffer = new BASE64Decoder().decodeBuffer(new String(bytes));
+				byte[] decodeBuffer = Base64.decodeBase64(bytes);
 				this.setValue(decodeBuffer);
 			}
 		}

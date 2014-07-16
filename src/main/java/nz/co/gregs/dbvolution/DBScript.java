@@ -79,7 +79,7 @@ public abstract class DBScript {
 	 */
 	public final DBActionList implement(DBDatabase db) throws Exception {
 		DBTransaction<DBActionList> trans = getDBTransaction();
-		DBActionList revertScript = db.doTransaction(trans);
+		DBActionList revertScript = db.doTransaction(trans, true);
 		return revertScript;
 	}
 
@@ -101,7 +101,7 @@ public abstract class DBScript {
 	 */
 	public final DBActionList test(DBDatabase db) throws Exception {
 		DBTransaction<DBActionList> trans = getDBTransaction();
-		DBActionList revertScript = db.doReadOnlyTransaction(trans);
+		DBActionList revertScript = db.doTransaction(trans, false);
 		return revertScript;
 	}
 

@@ -58,7 +58,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Gregory Graham
  */
-public abstract class DBDatabase {
+public abstract class DBDatabase implements Cloneable{
 
 	private static final Log log = LogFactory.getLog(DBDatabase.class);
 
@@ -70,27 +70,55 @@ public abstract class DBDatabase {
 	private boolean printSQLBeforeExecuting;
 	private boolean isInATransaction = false;
 	private DBTransactionStatement transactionStatement;
-	private final DBDefinition definition;
+	private DBDefinition definition;
 	private String databaseName;
 	private boolean batchIfPossible = true;
 	private boolean preventAccidentalDroppingOfTables = true;
 	private boolean preventAccidentalDroppingDatabase = true;
 	private boolean logSQLBeforeExecuting;
-	public int connectionsActive = 0;
-	private final Object getStatementSynchronizeObject = new Object();
-	private final Object getConnectionSynchronizeObject = new Object();
+	private int connectionsActive = 0;
+	private Object getStatementSynchronizeObject = new Object();
+	private Object getConnectionSynchronizeObject = new Object();
+
+	@Override
+	protected DBDatabase clone() throws CloneNotSupportedException {
+		Object clone = super.clone();
+		DBDatabase newInstance = (DBDatabase)clone;
+//		DBDatabase newInstance = this.getClass().newInstance();
+//
+//		newInstance.dataSource = this.dataSource;
+//		newInstance.printSQLBeforeExecuting = this.printSQLBeforeExecuting;
+//		newInstance.isInATransaction = this.isInATransaction;
+//		newInstance.transactionStatement = this.transactionStatement;
+//		newInstance.definition = this.definition;
+//		newInstance.databaseName = this.databaseName;
+//		newInstance.batchIfPossible = this.batchIfPossible;
+//		newInstance.preventAccidentalDroppingOfTables = this.preventAccidentalDroppingOfTables;
+//		newInstance.preventAccidentalDroppingDatabase = this.preventAccidentalDroppingDatabase;
+//		newInstance.logSQLBeforeExecuting = this.logSQLBeforeExecuting;
+//		newInstance.connectionsActive = this.connectionsActive;
+//		newInstance.getStatementSynchronizeObject = this.getStatementSynchronizeObject;
+//		newInstance.getConnectionSynchronizeObject = this.getConnectionSynchronizeObject;
+//
+		return newInstance;
+	}
+	
+	public DBDatabase(){
+		
+	}
 
 	/**
 	 * Define a new DBDatabase.
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
+	 * database.
 	 *
 	 * <p>
 	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
+	 * syntax of the database in the DBDefinition and the connection details
+	 * from a DataSource.
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
@@ -114,15 +142,16 @@ public abstract class DBDatabase {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
+	 * database.
 	 *
 	 * <p>
 	 * Create a new DBDatabase by providing the connection details
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
-	 * @param driverName - The name of the JDBC class that is the Driver for this
-	 * database.
+	 * @param driverName - The name of the JDBC class that is the Driver for
+	 * this database.
 	 * @param jdbcURL - The JDBC URL to connect to the database.
 	 * @param username - The username to login to the database as.
 	 * @param password - The users password for the database.
@@ -460,8 +489,8 @@ public abstract class DBDatabase {
 	 * creates a query and fetches the rows automatically, based on the examples
 	 * given
 	 *
-	 * Will throw a {@link UnexpectedNumberOfRowsException} if the number of rows
-	 * found is different from the number expected. See {@link DBQuery#getAllRows(long)
+	 * Will throw a {@link UnexpectedNumberOfRowsException} if the number of
+	 * rows found is different from the number expected. See {@link DBQuery#getAllRows(long)
 	 * } for further details.
 	 *
 	 * @param expectedNumberOfRows
@@ -497,11 +526,15 @@ public abstract class DBDatabase {
 	 * @see
 	 * DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 */
-	synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
+	public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
+		DBDatabase clone;
+		synchronized (this) {
+			clone = this.clone();
+		}
 		if (commit) {
-			return doTransaction(dbTransaction);
+			return clone.doTransaction(dbTransaction);
 		} else {
-			return doReadOnlyTransaction(dbTransaction);
+			return clone.doReadOnlyTransaction(dbTransaction);
 		}
 	}
 
@@ -509,8 +542,8 @@ public abstract class DBDatabase {
 	 * Performs the transaction on this database.
 	 *
 	 * <p>
-	 * If there is an exception of any kind the transaction is rolled back and no
-	 * changes are made.
+	 * If there is an exception of any kind the transaction is rolled back and
+	 * no changes are made.
 	 *
 	 * <p>
 	 * Otherwise the transaction is committed and changes are made permanent
@@ -522,7 +555,7 @@ public abstract class DBDatabase {
 	 * @throws Exception
 	 * @see DBTransaction
 	 */
-	synchronized public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+	synchronized private <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
 		V returnValues = null;
 		Connection connection;
 		this.transactionStatement = getDBTransactionStatement();
@@ -555,12 +588,12 @@ public abstract class DBDatabase {
 	 * Performs the transaction on this database without making changes.
 	 *
 	 * <p>
-	 * If there is an exception of any kind the transaction is rolled back and no
-	 * changes are made.
+	 * If there is an exception of any kind the transaction is rolled back and
+	 * no changes are made.
 	 *
 	 * <p>
-	 * If no exception occurs, the transaction is still rolled back and no changes
-	 * are made
+	 * If no exception occurs, the transaction is still rolled back and no
+	 * changes are made
 	 *
 	 * @param <V>
 	 * @param dbTransaction
@@ -569,7 +602,7 @@ public abstract class DBDatabase {
 	 * @throws Exception
 	 * @see DBTransaction
 	 */
-	synchronized public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+	synchronized private <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
 		Connection connection;
 		V returnValues = null;
 		boolean wasAutoCommit = true;
@@ -631,7 +664,8 @@ public abstract class DBDatabase {
 	}
 
 	/**
-	 * Returns the name of the JDBC driver class used by this DBDatabase instance.
+	 * Returns the name of the JDBC driver class used by this DBDatabase
+	 * instance.
 	 *
 	 * @return the driverName
 	 */
@@ -718,8 +752,8 @@ public abstract class DBDatabase {
 	}
 
 	/**
-	 * Called by internal methods that are about to execute SQL so the SQL can be
-	 * printed.
+	 * Called by internal methods that are about to execute SQL so the SQL can
+	 * be printed.
 	 *
 	 * @param sqlString
 	 */
@@ -730,54 +764,6 @@ public abstract class DBDatabase {
 	void printSQLIfRequested(String sqlString, PrintStream out) {
 		if (printSQLBeforeExecuting) {
 			out.println(sqlString);
-		}
-	}
-
-	/**
-	 * Enables the logging of all SQL before the SQL is executed.
-	 *
-	 * @deprecated because apparently I don't understand logging frameworks
-	 * @param b TRUE to log SQL before execution, FALSE otherwise.
-	 */
-	@Deprecated
-	public void setLogSQLBeforeExecuting(boolean b) {
-		logSQLBeforeExecuting = b;
-	}
-
-	/**
-	 * Indicates whether SQL will be logged before it is executed.
-	 *
-	 * @deprecated because apparently I don't understand logging frameworks
-	 * @return TRUE if the SQL will be logged before execution, otherwise FALSE
-	 */
-	@Deprecated
-	public boolean isLogSQLBeforeExecuting() {
-		return logSQLBeforeExecuting;
-	}
-
-	/**
-	 * Called by internal methods that are about to execute SQL so the SQL can be
-	 * logged.
-	 *
-	 * @deprecated because apparently I don't understand logging frameworks
-	 * @param sqlString
-	 */
-	@Deprecated
-	public void logSQLIfRequested(String sqlString) {
-		logSQLIfRequested(sqlString, log);
-	}
-
-	/**
-	 * Called by internal methods that are about to execute SQL so the SQL can be
-	 * logged.
-	 *
-	 * @deprecated because apparently I don't understand logging frameworks
-	 * @param sqlString
-	 */
-	@Deprecated
-	void logSQLIfRequested(String sqlString, Log log) {
-		if (logSQLBeforeExecuting) {
-			log.info(sqlString);
 		}
 	}
 
@@ -922,8 +908,8 @@ public abstract class DBDatabase {
 	 * database.
 	 *
 	 * <p>
-	 * While DBDefinition is important, unless you are implementing support for a
-	 * new database you probably don't need this.
+	 * While DBDefinition is important, unless you are implementing support for
+	 * a new database you probably don't need this.
 	 *
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
@@ -1001,8 +987,8 @@ public abstract class DBDatabase {
 	 * generally DBvolution attempts to do that when handed several actions at
 	 * once.
 	 * <p>
-	 * However sometimes this is inappropriate and this method can help with those
-	 * times.
+	 * However sometimes this is inappropriate and this method can help with
+	 * those times.
 	 *
 	 * @return TRUE if this instance will try to batch SQL statements, FALSE
 	 * otherwise
@@ -1019,8 +1005,8 @@ public abstract class DBDatabase {
 	 * generally DBvolution attempts to do that when handed several actions at
 	 * once.
 	 * <p>
-	 * However sometimes this is inappropriate and this method can help with those
-	 * times.
+	 * However sometimes this is inappropriate and this method can help with
+	 * those times.
 	 *
 	 * @param batchSQLStatementsWhenPossible TRUE if this instance will try to
 	 * batch SQL statements, FALSE otherwise
@@ -1055,8 +1041,8 @@ public abstract class DBDatabase {
 	 * Indicates whether this database supports full outer joins.
 	 *
 	 * <p>
-	 * Some databases don't yet support queries where all the tables are optional,
-	 * that is FULL OUTER joins.
+	 * Some databases don't yet support queries where all the tables are
+	 * optional, that is FULL OUTER joins.
 	 *
 	 * <p>
 	 * This method indicates whether or not this instance can perform full outer
@@ -1079,15 +1065,15 @@ public abstract class DBDatabase {
 	 * Indicates whether this database supports full outer joins natively.
 	 *
 	 * <p>
-	 * Some databases don't yet support queries where all the tables are optional,
-	 * that is FULL OUTER joins.
+	 * Some databases don't yet support queries where all the tables are
+	 * optional, that is FULL OUTER joins.
 	 *
 	 * <p>
 	 * This method indicates whether or not this instance can perform full outer
 	 * joins.
 	 *
-	 * @return TRUE if the underlying database supports full outer joins natively,
-	 * FALSE otherwise.
+	 * @return TRUE if the underlying database supports full outer joins
+	 * natively, FALSE otherwise.
 	 */
 	protected boolean supportsFullOuterJoinNatively() {
 		return true;
@@ -1137,18 +1123,45 @@ public abstract class DBDatabase {
 		return definition.supportsPaging(options);
 	}
 
+	/**
+	 * Indicates to the DBSDatabase that the provided connection has been
+	 * opened.
+	 *
+	 * <p>
+	 * This is used internally for reference counting.
+	 *
+	 * @param connection
+	 */
 	public void connectionOpened(Connection connection) {
 		synchronized (getConnectionSynchronizeObject) {
 			connectionsActive++;
 		}
 	}
 
+	/**
+	 * Indicates to the DBDatabase that the provided connection has been closed.
+	 *
+	 * <p>
+	 * This is used internally for reference counting.
+	 *
+	 * @param connection
+	 */
 	public void connectionClosed(Connection connection) {
 		synchronized (getConnectionSynchronizeObject) {
 			connectionsActive--;
 		}
 	}
 
+	/**
+	 * Provided to allow DBDatabase sub-classes to tweak their connections
+	 * before use.
+	 *
+	 * <p>
+	 * Used by {@link SQLiteDB} in particular.
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
 	}
