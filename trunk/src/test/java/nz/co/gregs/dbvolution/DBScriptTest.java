@@ -18,8 +18,9 @@ package nz.co.gregs.dbvolution;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -27,8 +28,6 @@ import org.junit.*;
 import org.junit.Assert;
 import static org.hamcrest.Matchers.*;
 
-import net.sourceforge.velai.TaskExecutor;
-import net.sourceforge.velai.utils.ParallelTaskGroup;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -94,16 +93,19 @@ public class DBScriptTest extends AbstractTest {
 		database.createTable(scriptTestTable);
 		List<ScriptTestTable> origRows = table.setBlankQueryAllowed(true).getAllRows();
 
-		ParallelTaskGroup<DBActionList> taskGroup;
-		taskGroup = new ParallelTaskGroup<DBActionList>();
-		taskGroup.add(new CallableTestScript(database));
-		taskGroup.add(new CallableTestScript(database));
-		taskGroup.add(new CallableTestScript(database));
-		taskGroup.add(new CallableTestScript(database));
-		taskGroup.add(new CallableTestScript(database));
-		taskGroup.add(new CallableTestScript(database));
-		taskGroup.add(new CallableTestScript(database));
-		TaskExecutor.execute(taskGroup);
+//		ParallelTaskGroup<DBActionList> taskGroup;
+//		taskGroup = new ParallelTaskGroup<DBActionList>();
+				ExecutorService threadpool = Executors.newFixedThreadPool(1000);
+		ArrayList<Callable<DBActionList>> taskGroup = new ArrayList<Callable<DBActionList>>();
+		taskGroup.add(new CallableTestScript<DBActionList>(database));
+		taskGroup.add(new CallableTestScript<DBActionList>(database));
+		taskGroup.add(new CallableTestScript<DBActionList>(database));
+		taskGroup.add(new CallableTestScript<DBActionList>(database));
+		taskGroup.add(new CallableTestScript<DBActionList>(database));
+		taskGroup.add(new CallableTestScript<DBActionList>(database));
+		taskGroup.add(new CallableTestScript<DBActionList>(database));
+//		TaskExecutor.execute(taskGroup);
+		threadpool.invokeAll(taskGroup);
 
 		List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(origRows.size()));
@@ -122,16 +124,16 @@ public class DBScriptTest extends AbstractTest {
 		database.createTable(scriptTestTable);
 		List<ScriptTestTable> origRows = table.setBlankQueryAllowed(true).getAllRows();
 
-		ParallelTaskGroup<DBActionList> taskGroup;
-		taskGroup = new ParallelTaskGroup<DBActionList>();
-		taskGroup.add(new CallableImplementScript(database));
-		taskGroup.add(new CallableImplementScript(database));
-		taskGroup.add(new CallableImplementScript(database));
-		taskGroup.add(new CallableImplementScript(database));
-		taskGroup.add(new CallableImplementScript(database));
-		taskGroup.add(new CallableImplementScript(database));
-		taskGroup.add(new CallableImplementScript(database));
-		TaskExecutor.execute(taskGroup);
+		ExecutorService threadpool = Executors.newFixedThreadPool(1000);
+		ArrayList<Callable<DBActionList>> taskGroup = new ArrayList<Callable<DBActionList>>();
+		taskGroup.add(new CallableImplementScript<DBActionList>(database));
+		taskGroup.add(new CallableImplementScript<DBActionList>(database));
+		taskGroup.add(new CallableImplementScript<DBActionList>(database));
+		taskGroup.add(new CallableImplementScript<DBActionList>(database));
+		taskGroup.add(new CallableImplementScript<DBActionList>(database));
+		taskGroup.add(new CallableImplementScript<DBActionList>(database));
+		taskGroup.add(new CallableImplementScript<DBActionList>(database));
+		threadpool.invokeAll(taskGroup);
 
 		List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(origRows.size()));
@@ -204,7 +206,7 @@ public class DBScriptTest extends AbstractTest {
 		}
 	}
 
-	public class CallableTestScript implements Callable<DBActionList> {
+	public class CallableTestScript<A> implements Callable<DBActionList> {
 
 		private final DBScript script;
 		private final DBDatabase database;
@@ -221,7 +223,7 @@ public class DBScriptTest extends AbstractTest {
 
 	}
 
-	public class CallableImplementScript implements Callable<DBActionList> {
+	public class CallableImplementScript<A> implements Callable<DBActionList> {
 
 		private final DBScript script;
 		private final DBDatabase database;
