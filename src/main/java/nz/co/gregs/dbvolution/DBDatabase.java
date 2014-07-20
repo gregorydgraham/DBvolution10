@@ -75,7 +75,6 @@ public abstract class DBDatabase implements Cloneable {
 	private boolean batchIfPossible = true;
 	private boolean preventAccidentalDroppingOfTables = true;
 	private boolean preventAccidentalDroppingDatabase = true;
-//	private boolean logSQLBeforeExecuting;
 	private int connectionsActive = 0;
 	private final Object getStatementSynchronizeObject = new Object();
 	private final Object getConnectionSynchronizeObject = new Object();

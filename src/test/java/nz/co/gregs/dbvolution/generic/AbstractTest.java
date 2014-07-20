@@ -55,11 +55,15 @@ public abstract class AbstractTest {
 
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException {
-		List<Object[]> databases = new ArrayList<Object[]>();
 		boolean testAllDatabases = System.getProperty("testAllDatabases") != null;
-		if (System.getProperty("testSQLite") != null  || testAllDatabases) {
-			final SQLiteDB sqLiteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
-			databases.add(new Object[]{"SQLiteDB", sqLiteDB});
+		
+		List<Object[]> databases = new ArrayList<Object[]>();
+		final SQLiteDB sqliteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
+		final H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
+		
+		
+		if (System.getProperty("testSQLite") != null || testAllDatabases) {
+			databases.add(new Object[]{"SQLiteDB", sqliteDB});
 		}
 		if (System.getProperty("testMySQLMXJDB") != null || testAllDatabases) {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
@@ -78,7 +82,7 @@ public abstract class AbstractTest {
 		}
 		if (databases.isEmpty() || testAllDatabases) {
 			// Do basic testing
-			databases.add(new Object[]{"H2MemoryDB", new H2MemoryDB("dbvolutionTest", "", "", false)});
+			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
 //				            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")},
 //				            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")},
@@ -204,7 +208,7 @@ public abstract class AbstractTest {
 		database.dropTableNoExceptions(myCarCompanyRow);
 		try {
 			database.preventDroppingOfDatabases(false);
-            database.dropDatabase();
+			database.dropDatabase();
 		} catch (UnsupportedOperationException unsupported) {
 			;
 		}
