@@ -640,8 +640,13 @@ public class DBTableOLD<E extends DBRow> {
         }
     }
 
-    //@SafeVarargs
-    public final DBActionList insert(E... newRows) throws SQLException {
+	/**
+	 *
+	 * @param newRows
+	 * @return
+	 * @throws SQLException
+	 */
+	    public final DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : newRows) {
             actions.addAll(DBInsert.save(database, row));
@@ -649,16 +654,27 @@ public class DBTableOLD<E extends DBRow> {
         return actions;
     }
 
-    public DBActionList insert(List<E> newRows) throws SQLException {
+	/**
+	 *
+	 * @param newRows
+	 * @return
+	 * @throws SQLException
+	 */
+	public DBActionList insert(List<E> newRows) throws SQLException {
         DBActionList changes = new DBActionList();
         for (DBRow row : newRows) {
             changes.addAll(DBInsert.save(database, row));
         }
         return changes;
     }
-
-    //@SafeVarargs
-    public final DBActionList delete(E... oldRows) throws SQLException {
+	
+	/**
+	 *
+	 * @param oldRows
+	 * @return
+	 * @throws SQLException
+	 */
+	public final DBActionList delete(E... oldRows) throws SQLException {
         DBActionList actions = new DBActionList();
         for (E row : oldRows) {
             actions.addAll(DBDelete.delete(database, row));
@@ -681,11 +697,23 @@ public class DBTableOLD<E extends DBRow> {
         return actions;
     }
 
-    public DBActionList update(E oldRow) throws SQLException {
+	/**
+	 *
+	 * @param oldRow
+	 * @return
+	 * @throws SQLException
+	 */
+	public DBActionList update(E oldRow) throws SQLException {
         return DBUpdate.update(database, oldRow);
     }
 
-    public DBActionList update(List<E> oldRows) throws SQLException {
+	/**
+	 *
+	 * @param oldRows
+	 * @return
+	 * @throws SQLException
+	 */
+	public DBActionList update(List<E> oldRows) throws SQLException {
         DBActionList changes = new DBActionList();
         for (E row : oldRows) {
             if (row.hasChangedSimpleTypes()) {
@@ -725,7 +753,12 @@ public class DBTableOLD<E extends DBRow> {
         return new java.util.ArrayList<E>(listOfRows);
     }
 
-    public List<Long> getPrimaryKeysAsLong() throws SQLException {
+	/**
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<Long> getPrimaryKeysAsLong() throws SQLException {
         if (resultSet == null) {
             getRowsByExample(template);
         }
@@ -740,7 +773,12 @@ public class DBTableOLD<E extends DBRow> {
         return primaryKeys;
     }
 
-    public List<String> getPrimaryKeysAsString() throws SQLException {
+	/**
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<String> getPrimaryKeysAsString() throws SQLException {
         if (resultSet == null) {
             getRowsByExample(template);
         }
@@ -776,13 +814,22 @@ public class DBTableOLD<E extends DBRow> {
         }
     }
 
-    public DBTableOLD<E> setRowLimit(int i) {
+	/**
+	 *
+	 * @param i
+	 * @return
+	 */
+	public DBTableOLD<E> setRowLimit(int i) {
         resultSet = null;
         rowLimit = new Long(i);
         return this;
     }
 
-    public DBTableOLD<E> clearRowLimit() {
+	/**
+	 *
+	 * @return
+	 */
+	public DBTableOLD<E> clearRowLimit() {
         resultSet = null;
         rowLimit = null;
         return this;
@@ -821,7 +868,11 @@ public class DBTableOLD<E extends DBRow> {
         return this;
     }
 
-    public DBTableOLD<E> clearSortOrder() {
+	/**
+	 *
+	 * @return
+	 */
+	public DBTableOLD<E> clearSortOrder() {
         resultSet = null;
         sortOrder = null;
         return this;
@@ -846,7 +897,12 @@ public class DBTableOLD<E extends DBRow> {
         return "";
     }
 
-    public DBTableOLD<E> setBlankQueryAllowed(boolean allow) {
+	/**
+	 *
+	 * @param allow
+	 * @return
+	 */
+	public DBTableOLD<E> setBlankQueryAllowed(boolean allow) {
         this.blankQueryAllowed = allow;
         return this;
     }

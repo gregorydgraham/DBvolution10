@@ -37,6 +37,13 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 
 	private final List<DBRow> savedRows = new ArrayList<DBRow>();
 
+	/**
+	 * Creates a DBDeleteByPrimaryKey action for the supplied example DBRow on the supplied
+	 * database.
+	 *
+	 * @param <R>
+	 * @param row
+	 */
 	protected <R extends DBRow> DBDeleteByPrimaryKey(R row) {
 		super(row);
 	}
@@ -103,6 +110,19 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 		return new DBActionList(new DBDeleteByPrimaryKey(getRow()));
 	}
 
+	/**
+	 * Returns the list of actions required to delete rows with the primary key of the supplied example on the
+	 * database supplied.
+	 *
+	 * <p>
+	 * While it is unlikely that more than one action is required to delete, all
+	 * actions return a list to allow for complex actions.
+	 *
+	 * @param db
+	 * @param row
+	 * @return the list of actions required to delete all the rows.
+	 * @throws SQLException
+	 */
 	@Override
 	protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {
 		return new DBActionList(new DBDeleteByPrimaryKey(db, row));

@@ -45,7 +45,13 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 public class LargeObjectColumn extends LargeObjectExpression implements ColumnProvider {
 
 	private final AbstractColumn column;
-
+	
+	/**
+	 * Create a LargeObjectColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
 	public LargeObjectColumn(RowDefinition row, DBLargeObject field) {
 		this.column = new AbstractColumn(row, field);
 	}

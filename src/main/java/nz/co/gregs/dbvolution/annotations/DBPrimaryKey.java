@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * DBPrimaryKey indicates that the field is the primary key for the table.
  * <code>
  * <br>
- * <span style=""font-weight:bold">&#64;DBPrimaryKey</span><br>
+ * <span style="font-weight:bold">&#64;DBPrimaryKey</span><br>
  * &#64;DBColumn("my_table_id")<br>
  * public DBInteger myPrimaryKey = new DBInteger();<br>
  * <br>

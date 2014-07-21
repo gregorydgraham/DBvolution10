@@ -47,6 +47,12 @@ public class DBInsert extends DBAction {
 	private final List<Long> generatedKeys = new ArrayList<Long>();
 	private final DBRow originalRow;
 
+	/**
+	 * Creates a DBInsert action for the row. 
+	 *
+	 * @param <R>
+	 * @param row
+	 */
 	protected <R extends DBRow> DBInsert(R row) {
 		super(row);
 		originalRow = row;

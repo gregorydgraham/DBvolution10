@@ -49,10 +49,22 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
     private NumberColumn() {
     }
 
+	/**
+	 * Create a NumberColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
     public NumberColumn(RowDefinition row, Number field) {
         this.column = new AbstractColumn(row, field);
     }
 
+	/**
+	 * Create a NumberColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
     public NumberColumn(RowDefinition row, DBNumber field) {
         this.column = new AbstractColumn(row, field);
     }

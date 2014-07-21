@@ -50,10 +50,22 @@ public class StringColumn extends StringExpression implements ColumnProvider {
         
     }
 
+	/**
+	 * Create a StringColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
     public StringColumn(RowDefinition row, String field) {
         this.column = new AbstractColumn(row, field);
     }
 
+	/**
+	 * Create a StringColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
     public StringColumn(RowDefinition row, DBString field) {
         this.column = new AbstractColumn(row, field);
     }

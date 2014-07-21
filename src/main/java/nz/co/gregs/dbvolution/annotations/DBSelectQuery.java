@@ -38,6 +38,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBSelectQuery {
-    String value() default "";
+
+	/**
+	 * The raw SELECT clause.
+	 *
+	 * @return  the Select SQL.
+	 */
+	String value() default "";
     
 }

@@ -52,6 +52,11 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 	private static final Log log = LogFactory.getLog(DBUpdateLargeObjects.class);
 
+	/**
+	 * Creates a DBUpdateLargeObjects action for the supplied row.
+	 *
+	 * @param row
+	 */
 	protected DBUpdateLargeObjects(DBRow row) {
 		super(row);
 	}
@@ -194,6 +199,12 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		return strs;
 	}
 
+	/**
+	 * Finds all the DBLargeObject fields that this action will need to update.
+	 *
+	 * @param row
+	 * @return a list of the interesting DBLargeObjects.
+	 */
 	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
 		return getChangedLargeObjects(row);
 	}
@@ -208,7 +219,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		return new DBActionList(new DBUpdateLargeObjects(getRow()));
 	}
 
-	protected List<PropertyWrapper> getChangedLargeObjects(DBRow row) {
+	private List<PropertyWrapper> getChangedLargeObjects(DBRow row) {
 		List<PropertyWrapper> changed = new ArrayList<PropertyWrapper>();
 		if (row.hasLargeObjects()) {
 			for (QueryableDatatype qdt : row.getLargeObjects()) {

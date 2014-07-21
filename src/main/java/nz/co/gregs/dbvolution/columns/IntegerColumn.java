@@ -49,14 +49,33 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
     private IntegerColumn() {
     }
 
+
+	/**
+	 * Create a IntegerColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
     public IntegerColumn(RowDefinition row, Long field) {
         this.column = new AbstractColumn(row, field);
     }
 
+	/**
+	 * Create a IntegerColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
     public IntegerColumn(RowDefinition row, Integer field) {
         this.column = new AbstractColumn(row, field);
     }
 
+	/**
+	 * Create a IntegerColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
     public IntegerColumn(RowDefinition row, DBInteger field) {
         this.column = new AbstractColumn(row, field);
     }

@@ -29,8 +29,14 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class QueryGraphVisualisationTest {
 
-	public DBDatabase database;
+	private DBDatabase database;
 
+	/**
+	 * The QueryGraph can not be tested automatically so this class and method allows it to be tested easily.
+	 *
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		DBDatabase database;
 		database = new H2MemoryDB("dbvolutionTest", "", "", false);
@@ -46,7 +52,7 @@ public class QueryGraphVisualisationTest {
 		tearDown(database);
 	}
 
-	public void setup(DBDatabase database) throws Exception {
+	private void setup(DBDatabase database) throws Exception {
 		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new Marque());

@@ -23,7 +23,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
- * Provides support for the abstract concept of updating rows to the previous value of the updated columns.
+ * Provides support for the abstract concept of updating rows to the previous
+ * value of the updated columns.
  *
  * <p>
  * Used to provide revert actions for updates.
@@ -32,45 +33,59 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 
-    DBUpdateToPreviousValues(DBRow row) {
-        super(row);
-    }
+	DBUpdateToPreviousValues(DBRow row) {
+		super(row);
+	}
 
-    @Override
-    protected String getSetClause(DBDatabase db, DBRow row) {
-        DBDefinition defn = db.getDefinition();
-        StringBuilder sql = new StringBuilder();
-        List<PropertyWrapper> fields = row.getPropertyWrappers();
+	/**
+	 * Creates the required SET clause of the UPDATE statement.
+	 *
+	 * @param db
+	 * @param row
+	 * @return The SET clause of the UPDATE statement.
+	 */
+	@Override
+	protected String getSetClause(DBDatabase db, DBRow row) {
+		DBDefinition defn = db.getDefinition();
+		StringBuilder sql = new StringBuilder();
+		List<PropertyWrapper> fields = row.getPropertyWrappers();
 
-        String separator = defn.getStartingSetSubClauseSeparator();
-        for (PropertyWrapper field : fields) {
-            if (field.isColumn()) {
-                final QueryableDatatype qdt = field.getQueryableDatatype();
-                if (qdt.hasChanged()) {
-                    String previousSQLValue = qdt.getPreviousSQLValue(db);
-                    if (previousSQLValue == null) {
-                        previousSQLValue = defn.getNull();
-                    }
+		String separator = defn.getStartingSetSubClauseSeparator();
+		for (PropertyWrapper field : fields) {
+			if (field.isColumn()) {
+				final QueryableDatatype qdt = field.getQueryableDatatype();
+				if (qdt.hasChanged()) {
+					String previousSQLValue = qdt.getPreviousSQLValue(db);
+					if (previousSQLValue == null) {
+						previousSQLValue = defn.getNull();
+					}
 
-                    String columnName = field.columnName();
-                    sql.append(separator)
-                            .append(defn.formatColumnName(columnName))
-                            .append(defn.getEqualsComparator())
-                            .append(previousSQLValue);
-                    separator = defn.getSubsequentSetSubClauseSeparator();
-                }
-            }
-        }
-        return sql.toString();
-    }
+					String columnName = field.columnName();
+					sql.append(separator)
+							.append(defn.formatColumnName(columnName))
+							.append(defn.getEqualsComparator())
+							.append(previousSQLValue);
+					separator = defn.getSubsequentSetSubClauseSeparator();
+				}
+			}
+		}
+		return sql.toString();
+	}
 
-    @Override
-    protected String getWhereClause(DBDatabase db, DBRow row) {
-        DBDefinition defn = db.getDefinition();
-        QueryableDatatype primaryKey = row.getPrimaryKey();
-        String pkCurrentValue = primaryKey.toSQLString(db);
-        return defn.formatColumnName(row.getPrimaryKeyColumnName())
-                + defn.getEqualsComparator()
-                + pkCurrentValue;
-    }
+	/**
+	 * Creates the WHERE clause of the UPDATE statement.
+	 *
+	 * @param db
+	 * @param row
+	 * @return The WHERE clause of the UPDATE statement.
+	 */
+	@Override
+	protected String getWhereClause(DBDatabase db, DBRow row) {
+		DBDefinition defn = db.getDefinition();
+		QueryableDatatype primaryKey = row.getPrimaryKey();
+		String pkCurrentValue = primaryKey.toSQLString(db);
+		return defn.formatColumnName(row.getPrimaryKeyColumnName())
+				+ defn.getEqualsComparator()
+				+ pkCurrentValue;
+	}
 }

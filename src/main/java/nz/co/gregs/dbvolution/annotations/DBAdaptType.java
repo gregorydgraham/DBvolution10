@@ -77,6 +77,11 @@ public @interface DBAdaptType {
 			return null;
 		}
 
+		/**
+		 * This doesn't matter.
+		 *
+		 * @param newLiteralValue
+		 */
 		@Override
 		public void setValue(Object newLiteralValue) {
 		}

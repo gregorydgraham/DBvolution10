@@ -45,8 +45,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 public class AbstractColumn implements DBExpression {
 
 	private final PropertyWrapper propertyWrapper;
-	protected final RowDefinition dbrow;
-	protected final Object field;
+	private final RowDefinition dbrow;
+	private final Object field;
 
 	/**
 	 * Creates an AbstractColumn representing a table and column.
@@ -71,14 +71,14 @@ public class AbstractColumn implements DBExpression {
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		return db.getDefinition().formatTableAliasAndColumnName(this.dbrow, propertyWrapper.columnName());
+		return db.getDefinition().formatTableAliasAndColumnName(this.getDBRow(), propertyWrapper.columnName());
 	}
 
 	@Override
 	public AbstractColumn copy() {
 		try {
-			Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(dbrow.getClass(), field.getClass());
-			AbstractColumn newInstance = constructor.newInstance(dbrow, field);
+			Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(getDBRow().getClass(), getField().getClass());
+			AbstractColumn newInstance = constructor.newInstance(getDBRow(), getField());
 			return newInstance;
 		} catch (NoSuchMethodException ex) {
 			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
@@ -118,7 +118,7 @@ public class AbstractColumn implements DBExpression {
 
 	@Override
 	public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-		return QueryableDatatype.getQueryableDatatypeForObject(field);
+		return QueryableDatatype.getQueryableDatatypeForObject(getField());
 	}
 
 	@Override
@@ -129,9 +129,23 @@ public class AbstractColumn implements DBExpression {
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		HashSet<DBRow> hashSet = new HashSet<DBRow>();
-		if (DBRow.class.isAssignableFrom(dbrow.getClass())) {
-			hashSet.add((DBRow) dbrow);
+		if (DBRow.class.isAssignableFrom(getDBRow().getClass())) {
+			hashSet.add((DBRow) getDBRow());
 		}
 		return hashSet;
+	}
+
+	/**
+	 * @return the dbrow
+	 */
+	protected RowDefinition getDBRow() {
+		return dbrow;
+	}
+
+	/**
+	 * @return the field
+	 */
+	protected Object getField() {
+		return field;
 	}
 }

@@ -39,6 +39,13 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 
 	private List<DBRow> savedRows = new ArrayList<DBRow>();
 
+	/**
+	 * Creates a DBDeleteUsingAllColumns action for the supplied example DBRow on the supplied
+	 * database.
+	 *
+	 * @param <R>
+	 * @param row
+	 */
 	protected <R extends DBRow> DBDeleteUsingAllColumns(R row) {
 		super(row);
 	}
@@ -107,6 +114,19 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 		return new DBActionList(new DBDeleteUsingAllColumns(getRow()));
 	}
 
+	/**
+	 * Returns the list of actions required to delete rows matching all the
+	 * columns of the example supplied on the database supplied.
+	 *
+	 * <p>
+	 * While it is unlikely that more than one action is required to delete, all
+	 * actions return a list to allow for complex actions.
+	 *
+	 * @param db
+	 * @param row
+	 * @return the list of actions required to delete all the rows.
+	 * @throws SQLException
+	 */
 	@Override
 	protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {
 		return new DBActionList(new DBDeleteUsingAllColumns(db, row));

@@ -72,6 +72,12 @@ public class DBTable<E extends DBRow> {
 	private DBQuery query = null;
 	private final QueryOptions options = new QueryOptions();
 
+	/**
+	 * Default constructor for DBTable, used by DBDatabase to create instances.
+	 *
+	 * @param database the database this DBTable instance is applicable too.
+	 * @param exampleRow The row that this table is applicable too.
+	 */
 	protected DBTable(DBDatabase database, E exampleRow) {
 		this.original = exampleRow;
 		exemplar = DBRow.copyDBRow(exampleRow);
@@ -516,6 +522,18 @@ public class DBTable<E extends DBRow> {
 		return changes;
 	}
 
+	/**
+	 * Retrieves the rows for this table and returns the primary keys of the rows
+	 * as Longs.
+	 *
+	 * <p>
+	 * Requires the primary key field to be a DBNumber of DBInteger
+	 *
+	 * @return a List of primary keys as Longs.
+	 * @throws SQLException
+	 * @see #getPrimaryKeysAsString()
+	 * @see #getAllRows()
+	 */
 	public List<Long> getPrimaryKeysAsLong() throws SQLException {
 		List<E> allRows = getAllRows();
 		List<Long> longPKs = new ArrayList<Long>();
@@ -529,6 +547,15 @@ public class DBTable<E extends DBRow> {
 		return longPKs;
 	}
 
+	/**
+	 * Retrieves the rows for this table and returns the primary keys of the rows
+	 * as Strings.
+	 *
+	 * @return a List of primary keys as Longs.
+	 * @throws SQLException
+	 * @see #getPrimaryKeysAsString()
+	 * @see #getAllRows()
+	 */
 	public List<String> getPrimaryKeysAsString() throws SQLException {
 		List<E> allRows = getAllRows();
 		List<String> stringPKs = new ArrayList<String>();
@@ -590,6 +617,14 @@ public class DBTable<E extends DBRow> {
 		return this;
 	}
 
+	/**
+	 * Removes the limit set with {@link #setRowLimit(int) }.
+	 *
+	 * <p>
+	 * Al the rows will be returned from the database and DBvolution.
+	 *
+	 * @return this DBTable instance
+	 */
 	public DBTable<E> clearRowLimit() {
 		this.options.setRowLimit(-1);
 		return this;
@@ -619,6 +654,12 @@ public class DBTable<E extends DBRow> {
 		return this;
 	}
 
+	/**
+	 * Removes the sort order add with {@link #setSortOrder(nz.co.gregs.dbvolution.columns.ColumnProvider...)
+	 * }.
+	 *
+	 * @return this DBTable instance
+	 */
 	public DBTable<E> clearSortOrder() {
 		if (this.options.getSortColumns().length > 0) {
 			this.options.setSortColumns(new ColumnProvider[]{});
@@ -706,6 +747,27 @@ public class DBTable<E extends DBRow> {
 		}
 	}
 
+	/**
+	 * Adds the specified raw SQL to the DBTable query.
+	 *
+	 * <p>
+	 * This method is for adding conditions that can not be created using the
+	 * Expressions framework or the preferred/excluded methods of
+	 * {@link QueryableDatatype}.
+	 *
+	 * <p>
+	 * The raw SQL will be added as a condition to the where clause. It should and
+	 * SQL excerpt that starts with AND (or if you are using Match Any Condition).
+	 *
+	 * <p>
+	 * For instance {@code marque.name.permittedValues('peugeot','hummer')} could
+	 * be implemented, rather more awkwardly, as
+	 * {@code  table.setRawSQL("and lower(name) in ('peugeot','hummer')")}.
+	 *
+	 * @param rawQuery
+	 * @return
+	 * @throws SQLException
+	 */
 	public DBTable<E> setRawSQL(String rawQuery) throws SQLException {
 		query.setRawSQL(rawQuery);
 		return this;
@@ -722,13 +784,13 @@ public class DBTable<E extends DBRow> {
 	 * Some tables use repeated values instead of foreign keys or do not use all
 	 * of the possible values of a foreign key. This method makes it easy to find
 	 * the distinct or unique values that are used.
-	 * 
+	 *
 	 * @param <A>
-	 * @param fieldOfProvidedRow - the field/column that you need data for. Must be from the exemplar
+	 * @param fieldOfProvidedRow - the field/column that you need data for. Must
+	 * be from the exemplar
 	 * @return a list of distinct values used in the column.
 	 * @throws SQLException
 	 */
-	
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws AccidentalBlankQueryException, SQLException {
 		ArrayList<A> returnList = new ArrayList<A>();
@@ -740,13 +802,13 @@ public class DBTable<E extends DBRow> {
 		distinctQuery.setBlankQueryAllowed(true);
 		final DBExpression column = exemplar.column(thisQDT);
 		if (column instanceof ColumnProvider) {
-			distinctQuery.setSortOrder((ColumnProvider)column);
+			distinctQuery.setSortOrder((ColumnProvider) column);
 		}
 		distinctQuery.addGroupByColumn(exemplar, column);
 		List<DBQueryRow> allRows = distinctQuery.getAllRows();
 		for (DBQueryRow dBQueryRow : allRows) {
 			E found = dBQueryRow.get(exemplar);
-			returnList.add(found == null ? (A)null : (A) fieldDefn.rawJavaValue(found));
+			returnList.add(found == null ? (A) null : (A) fieldDefn.rawJavaValue(found));
 		}
 		return returnList;
 	}

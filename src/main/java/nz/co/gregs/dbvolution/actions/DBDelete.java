@@ -27,6 +27,12 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public abstract class DBDelete extends DBAction {
 
+	/**
+	 * Creates a DBDelete action for the supplied row.
+	 *
+	 * @param <R>
+	 * @param row
+	 */
 	protected <R extends DBRow> DBDelete(R row) {
 		super(row);
 	}
@@ -155,5 +161,18 @@ public abstract class DBDelete extends DBAction {
 		return actions;
 	}
 
+	/**
+	 * Returns the list of actions required to delete the row supplied on the
+	 * database supplied.
+	 *
+	 * <p>
+	 * While it is unlikely that more than one action is required to delete, all
+	 * actions return a list to allow for complex actions.
+	 *
+	 * @param db
+	 * @param row
+	 * @return
+	 * @throws SQLException
+	 */
 	protected abstract DBActionList getActions(DBDatabase db, DBRow row) throws SQLException;
 }

@@ -46,10 +46,22 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 
 	private final AbstractColumn column;
 
+	/**
+	 * Create a BooleanColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
 	public BooleanColumn(RowDefinition row, Boolean field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
+	/**
+	 * Create a BooleanColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
 	public BooleanColumn(RowDefinition row, DBBoolean field) {
 		this.column = new AbstractColumn(row, field);
 	}

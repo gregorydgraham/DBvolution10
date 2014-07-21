@@ -114,7 +114,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	private boolean isDefined = false;
 	private final List<PropertyWrapperDefinition> ignoredForeignKeys = Collections.synchronizedList(new ArrayList<PropertyWrapperDefinition>());
-	protected List<PropertyWrapperDefinition> returnColumns = null;
+	private List<PropertyWrapperDefinition> returnColumns = null;
 	private final List<BooleanExpression> adHocRelationships = Collections.synchronizedList(new ArrayList<BooleanExpression>());
 	private transient Boolean hasBlobs;
 	private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
@@ -180,13 +180,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		for (PropertyWrapperDefinition defn : originalRow.getIgnoredForeignKeys()) {
 			newRow.getIgnoredForeignKeys().add(defn);
 		}
-		if (originalRow.returnColumns != null) {
-			newRow.returnColumns = new ArrayList<PropertyWrapperDefinition>();
-			for (PropertyWrapperDefinition defn : originalRow.returnColumns) {
-				newRow.returnColumns.add(defn);
+		if (originalRow.getReturnColumns() != null) {
+			newRow.setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
+			for (PropertyWrapperDefinition defn : originalRow.getReturnColumns()) {
+				newRow.getReturnColumns().add(defn);
 			}
 		} else {
-			newRow.returnColumns = null;
+			newRow.setReturnColumns(null);
 		}
 		for (BooleanExpression adhoc : originalRow.getAdHocRelationships()) {
 			newRow.getAdHocRelationships().add(adhoc);
@@ -331,7 +331,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return false;
 	}
 
-	public boolean setSimpleTypesToUnchanged() {
+	/**
+	 * Sets all simple types to unchanged.
+	 * 
+	 * <p>
+	 * Clears the changed flag on all the simple types.  {@link DBLargeObject} objects are not affected.
+	 * 
+	 * <p>
+	 * After this method is called {@link #hasChangedSimpleTypes() } will return false.
+	 *
+	 */
+	public void setSimpleTypesToUnchanged() {
 		List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
 		for (PropertyWrapper prop : propertyWrappers) {
 			final QueryableDatatype qdt = prop.getQueryableDatatype();
@@ -344,7 +354,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				}
 			}
 		}
-		return false;
 	}
 
 	/**
@@ -376,6 +385,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
+	/**
+	 * Returns the PropertyWrapper for the DBRow's primary key.
+	 *
+	 * @return the PropertyWrapper for the primary key.
+	 */
 	protected PropertyWrapper getPrimaryKeyPropertyWrapper() {
 		return getWrapper().primaryKey();
 	}
@@ -506,7 +520,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			if (prop.isColumn()) {
 				if (prop.hasColumnExpression()) {
 					columnNames.add(prop.getColumnExpression().toSQLString(db));
-				} else if (returnColumns == null || returnColumns.contains(prop.getDefinition())) {
+				} else if (getReturnColumns() == null || getReturnColumns().contains(prop.getDefinition())) {
 					String dbColumnName = prop.columnName();
 					if (dbColumnName != null) {
 						columnNames.add(defn.formatTableAliasAndColumnNameForSelectClause(this, dbColumnName));
@@ -697,7 +711,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 *
 	 * Creates a foreign key like relationship between columns on 2 different
 	 * DBRow objects.
 	 *
@@ -722,26 +735,122 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param otherTable
 	 * @param otherTableField
 	 */
-//	public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField) {
-//		DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField);
-//		getAdHocRelationships().add(dbRelationship);
-//	}
 	public void addRelationship(DBBoolean thisTableField, DBRow otherTable, DBBoolean otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
 
+	/**
+	 * Creates a foreign key like relationship between columns on 2 different
+	 * DBRow objects.
+	 *
+	 * <p>
+	 * It is recommended that you use an <a
+	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
+	 * instead.
+	 *
+	 * <p>
+	 * This function relies on the QueryableDatatypes being part of the DBRows
+	 * that are also passed. So every call to this function should be similar
+	 * to:
+	 *
+	 * <p>
+	 * myRow.addRelationship(myRow.someField, myOtherRow,
+	 * myOtherRow.otherField);
+	 *
+	 * <p>
+	 * Uses the default DBEqualsOperator.
+	 *
+	 * @param thisTableField
+	 * @param otherTable
+	 * @param otherTableField
+	 */
 	public void addRelationship(DBDate thisTableField, DBRow otherTable, DBDate otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
 
+	/**
+	 * Creates a foreign key like relationship between columns on 2 different
+	 * DBRow objects.
+	 *
+	 * <p>
+	 * It is recommended that you use an <a
+	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
+	 * instead.
+	 *
+	 * <p>
+	 * This function relies on the QueryableDatatypes being part of the DBRows
+	 * that are also passed. So every call to this function should be similar
+	 * to:
+	 *
+	 * <p>
+	 * myRow.addRelationship(myRow.someField, myOtherRow,
+	 * myOtherRow.otherField);
+	 *
+	 * <p>
+	 * Uses the default DBEqualsOperator.
+	 *
+	 * @param thisTableField
+	 * @param otherTable
+	 * @param otherTableField
+	 */
 	public void addRelationship(DBInteger thisTableField, DBRow otherTable, DBInteger otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
 
+	/**
+	 * Creates a foreign key like relationship between columns on 2 different
+	 * DBRow objects.
+	 *
+	 * <p>
+	 * It is recommended that you use an <a
+	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
+	 * instead.
+	 *
+	 * <p>
+	 * This function relies on the QueryableDatatypes being part of the DBRows
+	 * that are also passed. So every call to this function should be similar
+	 * to:
+	 *
+	 * <p>
+	 * myRow.addRelationship(myRow.someField, myOtherRow,
+	 * myOtherRow.otherField);
+	 *
+	 * <p>
+	 * Uses the default DBEqualsOperator.
+	 *
+	 * @param thisTableField
+	 * @param otherTable
+	 * @param otherTableField
+	 */
 	public void addRelationship(DBNumber thisTableField, DBRow otherTable, DBNumber otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
 
+	/**
+	 * Creates a foreign key like relationship between columns on 2 different
+	 * DBRow objects.
+	 *
+	 * <p>
+	 * It is recommended that you use an <a
+	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
+	 * instead.
+	 *
+	 * <p>
+	 * This function relies on the QueryableDatatypes being part of the DBRows
+	 * that are also passed. So every call to this function should be similar
+	 * to:
+	 *
+	 * <p>
+	 * myRow.addRelationship(myRow.someField, myOtherRow,
+	 * myOtherRow.otherField);
+	 *
+	 * <p>
+	 * Uses the default DBEqualsOperator.
+	 *
+	 * @param thisTableField
+	 * @param otherTable
+	 * @param otherTableField
+	 */
 	public void addRelationship(DBString thisTableField, DBRow otherTable, DBString otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
@@ -843,20 +952,39 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	//@SafeVarargs
 	public final <T> void setReturnFields(T... fields) throws IncorrectRowProviderInstanceSuppliedException {
-		returnColumns = new ArrayList<PropertyWrapperDefinition>();
+		setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
 		PropertyWrapper propWrapper;
 		for (T property : fields) {
 			propWrapper = getPropertyWrapperOf(property);
 			if (propWrapper == null) {
 				throw new IncorrectRowProviderInstanceSuppliedException(this, property);
 			}
-			returnColumns.add(propWrapper.getDefinition());
+			getReturnColumns().add(propWrapper.getDefinition());
 		}
 	}
 
+	/**
+	 * Extends the returned columns to include the specified properties (fields and/or
+	 * methods) given the properties object references.
+	 *
+	 * <p>
+	 * For example the following code snippet will include only the uid, name, and address
+	 * columns based on the uid and name fields:
+	 * <pre>
+	 * Customer customer = ...;
+	 * customer.setReturnFields(customer.uid, customer.name);
+	 * customer.addReturnFields(customer.address);
+	 * </pre>
+	 *
+	 * <p>
+	 * Requires the field to be from this instance to work.
+	 *
+	 * @param <T> A list or List of fields of this DBRow
+	 * @param fields a list of fields/methods from this object
+	 */
 	public final <T> void addReturnFields(T... fields) throws IncorrectRowProviderInstanceSuppliedException {
-		if (returnColumns == null) {
-			returnColumns = new ArrayList<PropertyWrapperDefinition>();
+		if (getReturnColumns() == null) {
+			setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
 		}
 		PropertyWrapper propWrapper;
 		for (T property : fields) {
@@ -864,7 +992,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			if (propWrapper == null) {
 				throw new IncorrectRowProviderInstanceSuppliedException(this, property);
 			}
-			returnColumns.add(propWrapper.getDefinition());
+			getReturnColumns().add(propWrapper.getDefinition());
 		}
 	}
 
@@ -893,7 +1021,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public void returnAllFields() {
-		returnColumns = null;
+		setReturnColumns(null);
 	}
 
 	/**
@@ -1194,14 +1322,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return instances;
 	}
 
-	protected void setTableAlias(String alias) {
-		tableAlias = alias;
-	}
-
-	protected String getTableAlias() {
-		return tableAlias == null ? getTableName() : tableAlias;
-	}
-
 	/**
 	 * Indicates whether this instance has any values set from the database.
 	 *
@@ -1241,11 +1361,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	List<PropertyWrapper> getSelectedProperties() {
-		if (returnColumns == null) {
+		if (getReturnColumns() == null) {
 			return getPropertyWrappers();
 		} else {
 			ArrayList<PropertyWrapper> selected = new ArrayList<PropertyWrapper>();
-			for (PropertyWrapperDefinition proDef : returnColumns) {
+			for (PropertyWrapperDefinition proDef : getReturnColumns()) {
 				for (PropertyWrapper pro : getPropertyWrappers()) {
 					if (pro.getDefinition().equals(proDef)) {
 						selected.add(pro);
@@ -1478,7 +1598,25 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return false;
 	}
 
-	public static class ClassNameComparator implements Comparator<Class<?>> {
+	/**
+	 * @return the returnColumns
+	 */
+	protected List<PropertyWrapperDefinition> getReturnColumns() {
+		return returnColumns;
+	}
+
+	/**
+	 * @param returnColumns the returnColumns to set
+	 */
+	protected void setReturnColumns(List<PropertyWrapperDefinition> returnColumns) {
+		this.returnColumns = returnColumns;
+	}
+
+	/**
+	 * Default sorting for DBRow in the various collections in DBRow and DBQuery.
+	 *
+	 */
+	private static class ClassNameComparator implements Comparator<Class<?>> {
 
 		public ClassNameComparator() {
 		}
@@ -1491,23 +1629,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				return firstCanonicalName.compareTo(secondCanonicalName);
 			} else {
 				return first.getSimpleName().compareTo(second.getSimpleName());
-			}
-		}
-	}
-
-	public static class NameComparator implements Comparator<DBRow> {
-
-		public NameComparator() {
-		}
-
-		@Override
-		public int compare(DBRow first, DBRow second) {
-			String firstCanonicalName = first.getClass().getCanonicalName();
-			String secondCanonicalName = second.getClass().getCanonicalName();
-			if (firstCanonicalName != null && secondCanonicalName != null) {
-				return firstCanonicalName.compareTo(secondCanonicalName);
-			} else {
-				return first.getClass().getSimpleName().compareTo(second.getClass().getSimpleName());
 			}
 		}
 	}

@@ -33,7 +33,12 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBColumn {
-    String value() default "";
-    String comments() default "";
+
+	/**
+	 * The raw column name as stored in the database.
+	 *
+	 * @return the raw column name from the database
+	 */
+	String value() default "";
     
 }

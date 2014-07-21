@@ -45,45 +45,58 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class DateColumn extends DateExpression implements ColumnProvider {
 
-    private AbstractColumn column;
+	private AbstractColumn column;
 
-    private DateColumn() {
-    }
+	private DateColumn() {
+	}
 
-    public DateColumn(RowDefinition row, Date field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	/**
+	 * Create a DateColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
+	public DateColumn(RowDefinition row, Date field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    public DateColumn(RowDefinition row, DBDate field) {
-        this.column = new AbstractColumn(row, field);
-    }
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
-    }
+	/**
+	 * Create a DateColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
+	public DateColumn(RowDefinition row, DBDate field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    @Override
-    public synchronized DateColumn copy() {
-        try {
-            DateColumn newInstance = this.getClass().newInstance();
-            newInstance.column = this.column;
-            return newInstance;
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return column.toSQLString(db);
+	}
 
-    }
+	@Override
+	public synchronized DateColumn copy() {
+		try {
+			DateColumn newInstance = this.getClass().newInstance();
+			newInstance.column = this.column;
+			return newInstance;
+		} catch (InstantiationException ex) {
+			throw new RuntimeException(ex);
+		} catch (IllegalAccessException ex) {
+			throw new RuntimeException(ex);
+		}
 
-    @Override
-    public AbstractColumn getColumn() {
-        return column;
-    }
+	}
 
-    @Override
-    public Set<DBRow> getTablesInvolved() {
-        return column.getTablesInvolved();
-    }
+	@Override
+	public AbstractColumn getColumn() {
+		return column;
+	}
+
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		return column.getTablesInvolved();
+	}
 }
