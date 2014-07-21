@@ -95,7 +95,7 @@ public class DBScriptTest extends AbstractTest {
 
 //		ParallelTaskGroup<DBActionList> taskGroup;
 //		taskGroup = new ParallelTaskGroup<DBActionList>();
-				ExecutorService threadpool = Executors.newFixedThreadPool(1000);
+		ExecutorService threadpool = Executors.newFixedThreadPool(10);
 		ArrayList<Callable<DBActionList>> taskGroup = new ArrayList<Callable<DBActionList>>();
 		taskGroup.add(new CallableTestScript<DBActionList>(database));
 		taskGroup.add(new CallableTestScript<DBActionList>(database));
@@ -124,7 +124,7 @@ public class DBScriptTest extends AbstractTest {
 		database.createTable(scriptTestTable);
 		List<ScriptTestTable> origRows = table.setBlankQueryAllowed(true).getAllRows();
 
-		ExecutorService threadpool = Executors.newFixedThreadPool(1000);
+		ExecutorService threadpool = Executors.newFixedThreadPool(10);
 		ArrayList<Callable<DBActionList>> taskGroup = new ArrayList<Callable<DBActionList>>();
 		taskGroup.add(new CallableImplementScript<DBActionList>(database));
 		taskGroup.add(new CallableImplementScript<DBActionList>(database));
@@ -173,7 +173,7 @@ public class DBScriptTest extends AbstractTest {
 		public DBActionList script(DBDatabase db) throws Exception {
 			DBActionList actions = new DBActionList();
 			ArrayList<ScriptTestTable> myTableRows = new ArrayList<ScriptTestTable>();
-			
+
 			ScriptTestTable myTableRow = new ScriptTestTable();
 			myTableRows.add(myTableRow);
 			DBTable<ScriptTestTable> table = DBTable.getInstance(db, myTableRow);

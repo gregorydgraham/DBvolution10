@@ -81,7 +81,7 @@ public class DBReport extends RowDefinition {
 
 	private static final long serialVersionUID = 1L;
 
-	protected ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	private ColumnProvider[] sortColumns = new ColumnProvider[]{};
 
 	/**
 	 * Gets all the report rows of the supplied DBReport using only conditions
@@ -226,7 +226,7 @@ public class DBReport extends RowDefinition {
 	 */
 	public DBReport setSortOrder(ColumnProvider... columns) {
 		sortColumns = new ColumnProvider[columns.length];
-		System.arraycopy(columns, 0, sortColumns, 0, columns.length);
+		System.arraycopy(columns, 0, getSortColumns(), 0, columns.length);
 		return this;
 	}
 
@@ -262,7 +262,7 @@ public class DBReport extends RowDefinition {
 		DBQuery query = database.getDBQuery();
 		addTablesAndExpressions(query, exampleReport);
 		query.addExtraExamples(rows);
-		query.setSortOrder(exampleReport.sortColumns);
+		query.setSortOrder(exampleReport.getSortColumns());
 		return query;
 	}
 
@@ -329,5 +329,14 @@ public class DBReport extends RowDefinition {
 		} catch (IllegalAccessException ex) {
 			throw new UnableToInstantiateDBReportSubclassException(exampleReport, ex);
 		}
+	}
+
+	/**
+	 * Returns the list of sort columns
+	 * 
+	 * @return the sortColumns
+	 */
+	protected ColumnProvider[] getSortColumns() {
+		return sortColumns;
 	}
 }

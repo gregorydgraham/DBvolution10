@@ -670,7 +670,7 @@ public abstract class DBDefinition {
 	 * DBvolution will not retrieve auto-incremented primary keys.
 	 *
 	 * @param options
-	 * @return
+	 * @return TRUE if this database supports the generated keys API, FLASE otherwise.
 	 */
 	public boolean supportsGeneratedKeys(QueryOptions options) {
 		return true;
@@ -804,6 +804,9 @@ public abstract class DBDefinition {
 	 * to provide raw SQL for retrieving the last created primary key.
 	 *
 	 * <p>
+	 * The database should support either generated keys or last inserted row SQL.
+	 * 
+	 * <p>
 	 * If both {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions)
 	 * } and {@link #supportsRetrievingLastInsertedRowViaSQL() } return false
 	 * DBvolution will not retrieve auto-incremented primary keys.
@@ -811,7 +814,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Originally provided for the SQLite-JDBC driver.
 	 *
-	 * @return
+	 * @return TRUE if the database supports retrieving the last generated key using a SQL script, FALSE otherwise.
 	 */
 	public boolean supportsRetrievingLastInsertedRowViaSQL() {
 		return false;

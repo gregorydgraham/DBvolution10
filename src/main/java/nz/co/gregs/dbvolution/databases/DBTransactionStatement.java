@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBScript;
 
 /**
  * Extends DBStatement to add support for database transactions.

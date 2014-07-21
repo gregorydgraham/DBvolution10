@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * <p>
  * Generally you get an IntegerColumn using
- * {@link RowDefinition#column(java.lang.DBInteger) RowDefinition.column(DBinteger)}.
+ * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBInteger) RowDefinition.column(DBinteger)}.
  *
  * @author Gregory Graham
  * @see RowDefinition
