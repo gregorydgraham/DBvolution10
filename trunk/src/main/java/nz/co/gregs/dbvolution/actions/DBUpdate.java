@@ -28,6 +28,12 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException
  */
 public abstract class DBUpdate extends DBAction {
 
+	/**
+	 * Creates a DBUpdate action for the row supplied.
+	 *
+	 * @param <R>
+	 * @param row
+	 */
 	public <R extends DBRow> DBUpdate(R row) {
 		super(row);
 	}

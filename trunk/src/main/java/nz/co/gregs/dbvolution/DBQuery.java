@@ -1449,9 +1449,9 @@ public class DBQuery {
 	 */
 	public SortedSet<DBRow> getRelatedTables() throws UnableToInstantiateDBRowSubclassException {
 		SortedSet<Class<? extends DBRow>> resultClasses;
-		resultClasses = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
+		resultClasses = new TreeSet<Class<? extends DBRow>>(new DBRowClassNameComparator());
 
-		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRow.NameComparator());
+		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRowNameComparator());
 		for (DBRow table : allQueryTables) {
 			SortedSet<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
@@ -1491,7 +1491,7 @@ public class DBQuery {
 	 */
 	@SuppressWarnings("unchecked")
 	public SortedSet<DBRow> getReferencedTables() {
-		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRow.NameComparator());
+		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRowNameComparator());
 		for (DBRow table : allQueryTables) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getReferencedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
@@ -2013,21 +2013,10 @@ public class DBQuery {
 		vv.setGraphMouse(gm);
 
 		RenderContext<QueryGraphNode, DBExpression> renderContext = vv.getRenderContext();
-		renderContext.setEdgeLabelTransformer(new ToStringLabeller<DBExpression>());
+		renderContext.setEdgeLabelTransformer(new QueryGraphEdgeLabelTransformer());
 		renderContext.setVertexLabelTransformer(new ToStringLabeller<QueryGraphNode>());
-		renderContext.setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.yellow, false));
-		renderContext.setVertexFillPaintTransformer(new Transformer<QueryGraphNode, Paint>() {
-
-			@Override
-			public Paint transform(QueryGraphNode i) {
-				if (i.isRequiredNode()) {
-					return Color.RED;
-				} else {
-					return Color.ORANGE;
-				}
-			}
-
-		});
+		renderContext.setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.BLUE, false));
+		renderContext.setVertexFillPaintTransformer(new QueryGraphVertexFillPaintTransformer());
 
 		queryGraphFrame = new JFrame("DBQuery Graph");
 		queryGraphFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -2218,6 +2207,66 @@ public class DBQuery {
 		 */
 		protected List<String> getOptionalConditions() {
 			return optionalConditions;
+		}
+	}	
+	
+	private static class DBRowClassNameComparator implements Comparator<Class<?>> {
+
+		public DBRowClassNameComparator() {
+		}
+
+		@Override
+		public int compare(Class<?> first, Class<?> second) {
+			String firstCanonicalName = first.getCanonicalName();
+			String secondCanonicalName = second.getCanonicalName();
+			if (firstCanonicalName != null && secondCanonicalName != null) {
+				return firstCanonicalName.compareTo(secondCanonicalName);
+			} else {
+				return first.getSimpleName().compareTo(second.getSimpleName());
+			}
+		}
+	}
+
+	private static class DBRowNameComparator implements Comparator<DBRow> {
+
+		public DBRowNameComparator() {
+		}
+
+		@Override
+		public int compare(DBRow first, DBRow second) {
+			String firstCanonicalName = first.getClass().getCanonicalName();
+			String secondCanonicalName = second.getClass().getCanonicalName();
+			if (firstCanonicalName != null && secondCanonicalName != null) {
+				return firstCanonicalName.compareTo(secondCanonicalName);
+			} else {
+				return first.getClass().getSimpleName().compareTo(second.getClass().getSimpleName());
+			}
+		}
+	}
+
+	private class QueryGraphEdgeLabelTransformer extends ToStringLabeller<DBExpression> {
+
+		public QueryGraphEdgeLabelTransformer() {
+		}
+
+		@Override
+		public String transform(DBExpression v) {
+			return v.toSQLString(database).replaceAll("[^ ]*\\.", "");
+		}
+	}
+
+	private static class QueryGraphVertexFillPaintTransformer implements Transformer<QueryGraphNode, Paint> {
+
+		public QueryGraphVertexFillPaintTransformer() {
+		}
+
+		@Override
+		public Paint transform(QueryGraphNode i) {
+			if (i.isRequiredNode()) {
+				return Color.RED;
+			} else {
+				return Color.ORANGE;
+			}
 		}
 	}
 }

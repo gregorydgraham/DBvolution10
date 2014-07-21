@@ -36,7 +36,11 @@ public interface StringResult extends DBExpression{
     @Override
     public StringResult copy();
 
+	/**
+	 * Returns TRUE if this expression requires support for possible NULL database values.
+	 *
+	 * @return TRUE if the expression should check for NULLs, FALSE otherwise. 
+	 */
 	public boolean getIncludesNull();
-//	public void setIncludesNull(boolean nullsAreIncluded);
     
 }

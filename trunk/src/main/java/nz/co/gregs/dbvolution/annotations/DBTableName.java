@@ -35,5 +35,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBTableName {
 
+	/**
+	 * The raw table name as stored in the database.
+	 *
+	 * @return the table name.
+	 */
 	String value();
 }

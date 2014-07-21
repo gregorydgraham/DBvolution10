@@ -37,6 +37,13 @@ public class DBDeleteByExample extends DBDelete {
 
 	private List<DBRow> savedRows = new ArrayList<DBRow>();
 
+	/**
+	 * Creates a DBDeleteByExample action for the supplied example DBRow on the supplied
+	 * database.
+	 *
+	 * @param <R>
+	 * @param row
+	 */
 	protected <R extends DBRow> DBDeleteByExample(R row) {
 		super(row);
 	}
@@ -102,6 +109,19 @@ public class DBDeleteByExample extends DBDelete {
 		return new DBActionList(new DBDeleteByExample(getRow()));
 	}
 
+	/**
+	 * Returns the list of actions required to delete rows matching the example supplied on the
+	 * database supplied.
+	 *
+	 * <p>
+	 * While it is unlikely that more than one action is required to delete, all
+	 * actions return a list to allow for complex actions.
+	 *
+	 * @param db
+	 * @param row
+	 * @return the list of actions required to delete all the rows.
+	 * @throws SQLException
+	 */
 	@Override
 	protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {
 		return new DBActionList(new DBDeleteByExample(db, row));

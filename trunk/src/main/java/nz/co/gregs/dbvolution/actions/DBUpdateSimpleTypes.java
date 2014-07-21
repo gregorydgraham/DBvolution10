@@ -73,6 +73,13 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 		return sqls;
 	}
 
+	/**
+	 * Creates the required SET clause of the UPDATE statement.
+	 *
+	 * @param db
+	 * @param row
+	 * @return The SET clause of the UPDATE statement.
+	 */
 	protected String getSetClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
 		StringBuilder sql = new StringBuilder();
@@ -103,6 +110,13 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 		return dbActionList;
 	}
 
+	/**
+	 * Creates the WHERE clause of the UPDATE statement.
+	 *
+	 * @param db
+	 * @param row
+	 * @return The WHERE clause of the UPDATE statement.
+	 */
 	protected String getWhereClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
 		QueryableDatatype primaryKey = row.getPrimaryKey();

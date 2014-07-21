@@ -28,10 +28,21 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 
+	/**
+	 * Creates a DBInsertLargeObjects action for the row.
+	 *
+	 * @param row
+	 */
 	public DBInsertLargeObjects(DBRow row) {
 		super(row);
 	}
 
+	/**
+	 * Finds all the DBLargeObject fields that this action will need to update.
+	 *
+	 * @param row
+	 * @return a list of the interesting DBLargeObjects.
+	 */
 	@Override
 	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
 		ArrayList<PropertyWrapper> returnList = new ArrayList<PropertyWrapper>();
@@ -42,7 +53,7 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	}
 
 	@Override
-	protected DBActionList getActions(){//DBRow row) {
+	protected DBActionList getActions(){
 		return new DBActionList(new DBInsertLargeObjects(getRow()));
 	}
 

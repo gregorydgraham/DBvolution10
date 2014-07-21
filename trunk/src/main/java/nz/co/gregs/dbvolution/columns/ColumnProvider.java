@@ -24,6 +24,11 @@ package nz.co.gregs.dbvolution.columns;
  */
 public interface ColumnProvider {
     
-    public AbstractColumn getColumn();
+	/**
+	 * Returns the AbstractColumn from this ColumnProvider.
+	 *
+	 * @return the column that this provider supplies.
+	 */
+	public AbstractColumn getColumn();
 
 }
