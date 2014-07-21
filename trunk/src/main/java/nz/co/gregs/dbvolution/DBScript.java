@@ -104,6 +104,11 @@ public abstract class DBScript {
 		return revertScript;
 	}
 
+	/**
+	 * Creates and returns a DBtransaction for this DBScript
+	 *
+	 * @return
+	 */
 	public final DBTransaction<DBActionList> getDBTransaction() {
 		return new DBTransaction<DBActionList>() {
 			@Override

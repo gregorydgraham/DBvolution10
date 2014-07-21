@@ -87,10 +87,6 @@ public abstract class DBDatabase implements Cloneable {
 		return newInstance;
 	}
 
-	protected DBDatabase() {
-
-	}
-
 	/**
 	 * Define a new DBDatabase.
 	 *
@@ -1151,7 +1147,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Used by {@link SQLiteDB} in particular.
 	 *
-	 * @return
+	 * @return The connection configured ready to use.
 	 * @throws SQLException
 	 */
 	protected Connection getConnectionFromDriverManager() throws SQLException {
