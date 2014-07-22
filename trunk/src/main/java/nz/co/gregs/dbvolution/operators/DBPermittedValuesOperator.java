@@ -27,24 +27,28 @@ public class DBPermittedValuesOperator extends DBMetaOperator {
 	@SuppressWarnings("unchecked")
 	public DBPermittedValuesOperator(Object... permitted) {
 		ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
+		int objectCount = 0;
 		if (permitted == null) {
 			operator = new DBIsNullOperator();
 		} else {
 			for (Object obj : permitted) {
 				if (obj == null) {
 					this.includeNulls = true;
+					objectCount++;
 				} else if (obj instanceof Collection) {
 					Collection<Object> myList = (Collection) obj;
 					for (Object obj1 : myList) {
 						qdts.add(getQueryableDatatypeForObject(obj1));
+						objectCount++;
 					}
 				} else {
 					qdts.add(getQueryableDatatypeForObject(obj));
+					objectCount++;
 				}
 			}
-			if (qdts.isEmpty()) {
+			if (objectCount == 0||qdts.isEmpty()) {
 				operator = new DBIsNullOperator();
-			} else if (qdts.size() == 1) {
+			} else if (objectCount == 1) {
 				operator = new DBEqualsOperator(qdts.get(0));
 			} else {
 				operator = new DBInOperator(qdts);

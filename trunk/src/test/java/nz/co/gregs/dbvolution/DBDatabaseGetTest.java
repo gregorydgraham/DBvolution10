@@ -148,6 +148,7 @@ public class DBDatabaseGetTest extends AbstractTest {
         permittedMarques.add("HUMMER");
         hummerQuery.getName().excludedValues(permittedMarques);
         List<Marque> gotMarques = database.get(hummerQuery);
+		database.print(gotMarques);
         Assert.assertThat(gotMarques.size(), is(allMarques.size() - 2));
     }
     

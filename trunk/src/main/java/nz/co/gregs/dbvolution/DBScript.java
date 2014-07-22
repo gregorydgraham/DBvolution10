@@ -105,9 +105,9 @@ public abstract class DBScript {
 	}
 
 	/**
-	 * Creates and returns a DBtransaction for this DBScript
+	 * Creates and returns a DBtransaction for this DBScript.
 	 *
-	 * @return
+	 * @return the transaction required to run the script.
 	 */
 	public final DBTransaction<DBActionList> getDBTransaction() {
 		return new DBTransaction<DBActionList>() {

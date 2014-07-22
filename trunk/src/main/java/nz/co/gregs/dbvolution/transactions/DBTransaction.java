@@ -22,7 +22,16 @@ import nz.co.gregs.dbvolution.DBDatabase;
  * @author gregorygraham
  * @param <V>
  */
-public interface DBTransaction<V>{
-    
-    V doTransaction(DBDatabase dbDatabase) throws Exception;
+public interface DBTransaction<V> {
+
+	/**
+	 * Perform the transaction on the database, returning TRUE if the
+	 * transaction succeeded, or FALSE if it did not.
+	 *
+	 * @param dbDatabase
+	 * @return TRUE if the transaction completed without errors, FALSE
+	 * otherwise.
+	 * @throws Exception
+	 */
+	V doTransaction(DBDatabase dbDatabase) throws Exception;
 }

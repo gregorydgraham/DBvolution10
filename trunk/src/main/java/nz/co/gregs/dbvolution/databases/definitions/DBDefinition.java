@@ -36,22 +36,63 @@ public abstract class DBDefinition {
 
 	public abstract String getDateFormattedForQuery(Date date);
 
+	/**
+	 * Formats the raw column name to the required convention of the database.
+	 *
+	 * <p>
+	 * The default implementation does not change the column name.
+	 *
+	 * @param columnName
+	 * @return
+	 */
 	public String formatColumnName(String columnName) {
 		return columnName;
 	}
 
+	/**
+	 * Returns the standard beginning of a string value in the database.
+	 *
+	 * <p>
+	 * The default method returns "'", that is a single quote.
+	 *
+	 * @return the formatting required at the beginning of a string value.
+	 */
 	public String beginStringValue() {
 		return "'";
 	}
 
+	/**
+	 * Returns the standard ending of a string value in the database.
+	 *
+	 * <p>
+	 * The default method returns "'", that is a single quote.
+	 *
+	 * @return the formatting required at the end of a string value.
+	 */
 	public String endStringValue() {
 		return "'";
 	}
 
+	/**
+	 * Returns the standard beginning of a number value in the database.
+	 *
+	 * <p>
+	 * The default method returns "", that is an empty string.
+	 *
+	 * @return the formatting required at the beginning of a number value.
+	 */
 	public String beginNumberValue() {
 		return "";
 	}
 
+	/**
+	 * Returns the standard end of a number value in the database.
+	 *
+	 * <p>
+	 * The default method returns "", that is an empty string.
+	 *
+	 * @return the formatting required at the end of a number value.
+	 */
 	public String endNumberValue() {
 		return "";
 	}
@@ -94,6 +135,7 @@ public abstract class DBDefinition {
 	 * @param columnName
 	 * @return a string of the column alias for the select clause
 	 */
+	@Deprecated
 	public String formatColumnNameForResultSet(DBRow table, String columnName) {
 		final String actualName = formatTableAndColumnName(table, columnName);
 		return formatForColumnAlias(actualName);
@@ -670,7 +712,8 @@ public abstract class DBDefinition {
 	 * DBvolution will not retrieve auto-incremented primary keys.
 	 *
 	 * @param options
-	 * @return TRUE if this database supports the generated keys API, FLASE otherwise.
+	 * @return TRUE if this database supports the generated keys API, FLASE
+	 * otherwise.
 	 */
 	public boolean supportsGeneratedKeys(QueryOptions options) {
 		return true;
@@ -799,13 +842,16 @@ public abstract class DBDefinition {
 	 * of the last inserted row using SQL.
 	 *
 	 * <p>
-	 * Preferably the database should support {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions) generated keys} but if it doesn't
-	 * this and {@link #getRetrieveLastInsertedRowSQL() } allow the DBDefinition
-	 * to provide raw SQL for retrieving the last created primary key.
+	 * Preferably the database should support
+	 * {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions) generated keys}
+	 * but if it doesn't this and {@link #getRetrieveLastInsertedRowSQL() }
+	 * allow the DBDefinition to provide raw SQL for retrieving the last created
+	 * primary key.
 	 *
 	 * <p>
-	 * The database should support either generated keys or last inserted row SQL.
-	 * 
+	 * The database should support either generated keys or last inserted row
+	 * SQL.
+	 *
 	 * <p>
 	 * If both {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions)
 	 * } and {@link #supportsRetrievingLastInsertedRowViaSQL() } return false
@@ -814,7 +860,8 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Originally provided for the SQLite-JDBC driver.
 	 *
-	 * @return TRUE if the database supports retrieving the last generated key using a SQL script, FALSE otherwise.
+	 * @return TRUE if the database supports retrieving the last generated key
+	 * using a SQL script, FALSE otherwise.
 	 */
 	public boolean supportsRetrievingLastInsertedRowViaSQL() {
 		return false;
@@ -822,6 +869,10 @@ public abstract class DBDefinition {
 
 	public String getRetrieveLastInsertedRowSQL() {
 		return "";
+	}
+
+	public Object getEmptyString() {
+		return beginStringValue()+endStringValue();
 	}
 
 }
