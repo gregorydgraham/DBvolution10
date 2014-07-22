@@ -19,14 +19,31 @@ import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 
+/**
+ * Performs transactions for arbitrary SQL strings.
+ * 
+ * @author gregory.graham
+ */
 public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 
     private final String sql;
 
-    public DBRawSQLTransaction(String rawSQL) {
+	/**
+	 * Create a DBRawSQLTransaction object for the SQL provided.
+	 * 
+	 * @param rawSQL
+	 */
+	public DBRawSQLTransaction(String rawSQL) {
         this.sql = rawSQL;
     }
 
+	/**
+	 * Perform the SQL on the database within a transaction.
+	 * 
+	 * @param dbDatabase
+	 * @return TRUE if the transaction succeeded, FALSE otherwise.
+	 * @throws Exception 
+	 */
     @Override
     public Boolean doTransaction(DBDatabase dbDatabase) throws Exception {
         DBStatement dbStatement = dbDatabase.getDBStatement();

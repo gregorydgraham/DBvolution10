@@ -104,10 +104,10 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testIsLiterallyNotWithNull() throws SQLException {
         Marque literalQuery = new Marque();
-        literalQuery.getIntIndividualAllocationsAllowed().excludedValues(null,"Y");
+        literalQuery.getIntIndividualAllocationsAllowed().excludedValues(null,"YES");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
-        marquesTable.print();
-        Assert.assertThat(rowsByExample.size(), is(marqueRows.size()-3));
+        database.print(rowsByExample);
+        Assert.assertThat(rowsByExample.size(), is(1));
     }
 
     @Test
@@ -186,17 +186,18 @@ public class DBTableGetTest extends AbstractTest {
         hummerQuery.individualAllocationsAllowed.permittedValues(null, "Y", "YES");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();
-        Assert.assertThat(rowsByExample.size(), is(3));
+        Assert.assertThat(rowsByExample.size(), is(22));
     }
 
     @Test
     public void testIsNotInWithNull() throws SQLException {
         Marque hummerQuery = new Marque();
         hummerQuery.getUidMarque().blankQuery();
-        hummerQuery.individualAllocationsAllowed.excludedValues(null, "Y", "YES");
+        hummerQuery.individualAllocationsAllowed.excludedValues(null, "YES");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();
-        Assert.assertThat(rowsByExample.size(), is(marqueRows.size()-3));
+		database.print(rowsByExample);
+        Assert.assertThat(rowsByExample.size(), is(1));
     }
 
     @Test

@@ -20,6 +20,7 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.query.QueryOptions;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class OracleDBDefinition extends DBDefinition {
 
@@ -44,10 +45,26 @@ public class OracleDBDefinition extends DBDefinition {
 
     @Override
     public String formatColumnName(String columnName) {
-        return "\"" + columnName + "\"";
+        return "" + columnName + "";
     }
 
-    @Override
+//	@Override
+//	public String formatForColumnAlias(final String actualName) {
+//		String formattedName = actualName.replaceAll("\\.", "__");
+//		return ("DB" + formattedName.hashCode()).replaceAll("-", "O");
+//	}
+
+	@Override
+	public Object getTableAlias(RowDefinition tabRow) {
+		return ("O" + tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "O");
+	}
+
+	@Override
+	public String beginTableAlias() {
+		return " ";
+	}
+	
+	@Override
     public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
         if (qdt instanceof DBBoolean) {
             return " NUMBER(1)";

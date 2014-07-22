@@ -19,23 +19,27 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
-
 public class OracleDB extends DBDatabase {
 
-    public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
-        super(definition, driverName, jdbcURL, username, password);
-    }
-    
-    public OracleDB(String driverName, String jdbcURL, String username, String password) {
-        super(new OracleDBDefinition(), driverName, jdbcURL, username, password);
-    }
-    
-    public OracleDB(String jdbcURL, String username, String password) {
-        super(new OracleDBDefinition(), "oracle.jdbc.OracleDriver", jdbcURL, username, password);
-    }
-    
-    public OracleDB(String host, int port, String serviceName, String username, String password) {
-        super(new OracleDBDefinition(), "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@//"+host+":"+port+"/"+serviceName, username, password);
-    }
-    
+	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+		super(definition, driverName, jdbcURL, username, password);
+	}
+
+	public OracleDB(String driverName, String jdbcURL, String username, String password) {
+		super(new OracleDBDefinition(), driverName, jdbcURL, username, password);
+	}
+
+	public OracleDB(String jdbcURL, String username, String password) {
+		super(new OracleDBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
+	}
+
+	public OracleDB(String host, int port, String serviceName, String username, String password) {
+		super(new OracleDBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
+	}
+
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
 }
