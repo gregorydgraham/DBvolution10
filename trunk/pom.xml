@@ -133,6 +133,12 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testAllDatabases>true</testAllDatabases>
+								<testSQLite>true</testSQLite>
+								<testMySQLMXJDB>true</testMySQLMXJDB>
+								<testH2DB>true</testH2DB>
+								<testH2MemoryDB>true</testH2MemoryDB>
+								<testMySQL>true</testMySQL>
+								<testPostgresSQL>true</testPostgresSQL>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>

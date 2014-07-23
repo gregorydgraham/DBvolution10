@@ -61,8 +61,8 @@ public class DBInsert extends DBAction {
 	/**
 	 * Saves the row to the database.
 	 *
-	 * Creates the appropriate actions to save the row permanently in the
-	 * database and executes them.
+	 * Creates the appropriate actions to save the row permanently in the database
+	 * and executes them.
 	 * <p>
 	 * Supports automatic retrieval of the new primary key in limited cases:
 	 * <ul>
@@ -117,25 +117,29 @@ public class DBInsert extends DBAction {
 					try {
 						String primaryKeyColumnName = row.getPrimaryKeyColumnName();
 						Integer pkIndex = row.getPrimaryKeyIndex();
-						if (primaryKeyColumnName == null || primaryKeyColumnName.isEmpty()) {
-							statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+						if (pkIndex == null || primaryKeyColumnName == null) {
+							statement.execute(sql);
 						} else {
-							statement.execute(sql, new String[]{primaryKeyColumnName});
-							pkIndex = 1;
-						}
-
-						ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
-						try {
-							while (generatedKeysResultSet.next()) {
-								final long pkValue = generatedKeysResultSet.getLong(pkIndex);
-								this.getGeneratedPrimaryKeys().add(pkValue);
-								log.info("GENERATED KEYS: " + pkValue);
-								this.originalRow.getPrimaryKey().setValue(pkValue);
+							if (primaryKeyColumnName == null || primaryKeyColumnName.isEmpty()) {
+								statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+							} else {
+								statement.execute(sql, new String[]{primaryKeyColumnName});
+								pkIndex = 1;
 							}
-						} catch (SQLException ex) {
-							throw new RuntimeException(ex);
-						} finally {
-							generatedKeysResultSet.close();
+
+							ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+							try {
+								while (generatedKeysResultSet.next()) {
+									final long pkValue = generatedKeysResultSet.getLong(pkIndex);
+									this.getGeneratedPrimaryKeys().add(pkValue);
+									log.info("GENERATED KEYS: " + pkValue);
+									this.originalRow.getPrimaryKey().setValue(pkValue);
+								}
+							} catch (SQLException ex) {
+								throw new RuntimeException(ex);
+							} finally {
+								generatedKeysResultSet.close();
+							}
 						}
 					} catch (SQLException sqlex) {
 						try {

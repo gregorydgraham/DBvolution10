@@ -62,25 +62,25 @@ public abstract class AbstractTest {
 		final H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
 		
 		
-		if (System.getProperty("testSQLite") != null || testAllDatabases) {
+		if (System.getProperty("testSQLite") != null) {
 			databases.add(new Object[]{"SQLiteDB", sqliteDB});
 		}
-		if (System.getProperty("testMySQLMXJDB") != null || testAllDatabases) {
+		if (System.getProperty("testMySQLMXJDB") != null) {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
 		}
-		if (System.getProperty("testMySQL") != null || testAllDatabases) {
+		if (System.getProperty("testMySQL") != null) {
 			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv")});
 		}
-		if (System.getProperty("testH2DB") != null || testAllDatabases) {
+		if (System.getProperty("testH2DB") != null) {
 			databases.add(new Object[]{"H2DB", new H2DB("jdbc:h2:~/dbvolutionTest", "", "")});
 		}
-		if (System.getProperty("testPostgresSQL") != null || testAllDatabases) {
+		if (System.getProperty("testPostgresSQL") != null) {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
 		}
 		if (System.getProperty("testOracle") != null) {
 			databases.add(new Object[]{"OracleDB", new OracleDB("localhost", 1521, "XE", "dbv", "dbv")});
 		}
-		if (databases.isEmpty() || testAllDatabases) {
+		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
