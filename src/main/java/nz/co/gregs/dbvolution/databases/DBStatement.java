@@ -46,15 +46,15 @@ public class DBStatement implements Statement {
 
 	static final private Log log = LogFactory.getLog(DBStatement.class);
 
-	protected Statement realStatement;
+	private Statement internalStatement;
 	private boolean batchHasEntries;
 	private final DBDatabase database;
-	protected final Connection connection;
+	private final Connection connection;
 
 	public DBStatement(DBDatabase db, Connection connection) throws SQLException {
 		this.database = db;
 		this.connection = connection;
-		this.realStatement = connection.createStatement();
+		this.internalStatement = connection.createStatement();
 	}
 
 	@Override
@@ -62,12 +62,12 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING QUERY: " + string;
 		database.printSQLIfRequested(logSQL);
 		log.info(logSQL);
-		return realStatement.executeQuery(string);
+		return getInternalStatement().executeQuery(string);
 	}
 
 	@Override
 	public int executeUpdate(String string) throws SQLException {
-		return realStatement.executeUpdate(string);
+		return getInternalStatement().executeUpdate(string);
 	}
 
 	/**
@@ -82,9 +82,9 @@ public class DBStatement implements Statement {
 	@Override
 	public void close() throws SQLException {
 		try {
-			realStatement.close();
-			connection.close();
-			database.connectionClosed(connection);
+			getInternalStatement().close();
+			getConnection().close();
+			database.connectionClosed(getConnection());
 		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
@@ -96,57 +96,57 @@ public class DBStatement implements Statement {
 
 	@Override
 	public int getMaxFieldSize() throws SQLException {
-		return realStatement.getMaxFieldSize();
+		return getInternalStatement().getMaxFieldSize();
 	}
 
 	@Override
 	public void setMaxFieldSize(int i) throws SQLException {
-		realStatement.setMaxFieldSize(i);
+		getInternalStatement().setMaxFieldSize(i);
 	}
 
 	@Override
 	public int getMaxRows() throws SQLException {
-		return realStatement.getMaxRows();
+		return getInternalStatement().getMaxRows();
 	}
 
 	@Override
 	public void setMaxRows(int i) throws SQLException {
-		realStatement.setMaxRows(i);
+		getInternalStatement().setMaxRows(i);
 	}
 
 	@Override
 	public void setEscapeProcessing(boolean bln) throws SQLException {
-		realStatement.setEscapeProcessing(bln);
+		getInternalStatement().setEscapeProcessing(bln);
 	}
 
 	@Override
 	public int getQueryTimeout() throws SQLException {
-		return realStatement.getQueryTimeout();
+		return getInternalStatement().getQueryTimeout();
 	}
 
 	@Override
 	public void setQueryTimeout(int i) throws SQLException {
-		realStatement.setQueryTimeout(i);
+		getInternalStatement().setQueryTimeout(i);
 	}
 
 	@Override
 	public void cancel() throws SQLException {
-		realStatement.cancel();
+		getInternalStatement().cancel();
 	}
 
 	@Override
 	public SQLWarning getWarnings() throws SQLException {
-		return realStatement.getWarnings();
+		return getInternalStatement().getWarnings();
 	}
 
 	@Override
 	public void clearWarnings() throws SQLException {
-		realStatement.clearWarnings();
+		getInternalStatement().clearWarnings();
 	}
 
 	@Override
 	public void setCursorName(String string) throws SQLException {
-		realStatement.setCursorName(string);
+		getInternalStatement().setCursorName(string);
 	}
 
 	@Override
@@ -154,69 +154,69 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
 		log.info(logSQL);
-		return realStatement.execute(string);
+		return getInternalStatement().execute(string);
 	}
 
 	@Override
 	public ResultSet getResultSet() throws SQLException {
-		return realStatement.getResultSet();
+		return getInternalStatement().getResultSet();
 	}
 
 	@Override
 	public int getUpdateCount() throws SQLException {
-		return realStatement.getUpdateCount();
+		return getInternalStatement().getUpdateCount();
 	}
 
 	@Override
 	public boolean getMoreResults() throws SQLException {
-		return realStatement.getMoreResults();
+		return getInternalStatement().getMoreResults();
 	}
 
 	@Override
 	public void setFetchDirection(int i) throws SQLException {
-		realStatement.setFetchDirection(i);
+		getInternalStatement().setFetchDirection(i);
 	}
 
 	@Override
 	public int getFetchDirection() throws SQLException {
-		return realStatement.getFetchDirection();
+		return getInternalStatement().getFetchDirection();
 	}
 
 	@Override
 	public void setFetchSize(int i) throws SQLException {
-		realStatement.setFetchSize(i);
+		getInternalStatement().setFetchSize(i);
 	}
 
 	@Override
 	public int getFetchSize() throws SQLException {
-		return realStatement.getFetchSize();
+		return getInternalStatement().getFetchSize();
 	}
 
 	@Override
 	public int getResultSetConcurrency() throws SQLException {
-		return realStatement.getResultSetConcurrency();
+		return getInternalStatement().getResultSetConcurrency();
 	}
 
 	@Override
 	public int getResultSetType() throws SQLException {
-		return realStatement.getResultSetType();
+		return getInternalStatement().getResultSetType();
 	}
 
 	@Override
 	public void addBatch(String string) throws SQLException {
-		realStatement.addBatch(string);
+		getInternalStatement().addBatch(string);
 		setBatchHasEntries(true);
 	}
 
 	@Override
 	public void clearBatch() throws SQLException {
-		realStatement.clearBatch();
+		getInternalStatement().clearBatch();
 		setBatchHasEntries(false);
 	}
 
 	@Override
 	public int[] executeBatch() throws SQLException {
-		return realStatement.executeBatch();
+		return getInternalStatement().executeBatch();
 	}
 
 	@Override
@@ -226,22 +226,22 @@ public class DBStatement implements Statement {
 
 	@Override
 	public boolean getMoreResults(int i) throws SQLException {
-		return realStatement.getMoreResults();
+		return getInternalStatement().getMoreResults();
 	}
 
 	@Override
 	public ResultSet getGeneratedKeys() throws SQLException {
-		return realStatement.getGeneratedKeys();
+		return getInternalStatement().getGeneratedKeys();
 	}
 
 	@Override
 	public int executeUpdate(String string, int i) throws SQLException {
-		return realStatement.executeUpdate(string, i);
+		return getInternalStatement().executeUpdate(string, i);
 	}
 
 	@Override
 	public int executeUpdate(String string, int[] ints) throws SQLException {
-		return realStatement.executeUpdate(string, ints);
+		return getInternalStatement().executeUpdate(string, ints);
 	}
 
 	@Override
@@ -249,7 +249,7 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING UPDATE: " + string;
 		database.printSQLIfRequested(logSQL);
 		log.info(logSQL);
-		return realStatement.executeUpdate(string, strings);
+		return getInternalStatement().executeUpdate(string, strings);
 	}
 
 	@Override
@@ -257,7 +257,7 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
 		log.info(logSQL);
-		return realStatement.execute(string, i);
+		return getInternalStatement().execute(string, i);
 	}
 
 	@Override
@@ -265,7 +265,7 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
 		log.info(logSQL);
-		return realStatement.execute(string, ints);
+		return getInternalStatement().execute(string, ints);
 	}
 
 	@Override
@@ -273,37 +273,37 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
 		log.info(logSQL);
-		return realStatement.execute(string, strings);
+		return getInternalStatement().execute(string, strings);
 	}
 
 	@Override
 	public int getResultSetHoldability() throws SQLException {
-		return realStatement.getResultSetHoldability();
+		return getInternalStatement().getResultSetHoldability();
 	}
 
 	@Override
 	public boolean isClosed() throws SQLException {
-		return realStatement.isClosed();
+		return getInternalStatement().isClosed();
 	}
 
 	@Override
 	public void setPoolable(boolean bln) throws SQLException {
-		realStatement.setPoolable(bln);
+		getInternalStatement().setPoolable(bln);
 	}
 
 	@Override
 	public boolean isPoolable() throws SQLException {
-		return realStatement.isPoolable();
+		return getInternalStatement().isPoolable();
 	}
 
 	@Override
 	public <T> T unwrap(Class<T> type) throws SQLException {
-		return realStatement.unwrap(type);
+		return getInternalStatement().unwrap(type);
 	}
 
 	@Override
 	public boolean isWrapperFor(Class<?> type) throws SQLException {
-		return realStatement.isWrapperFor(type);
+		return getInternalStatement().isWrapperFor(type);
 	}
 
 	public void setBatchHasEntries(boolean b) {
@@ -320,5 +320,19 @@ public class DBStatement implements Statement {
 
 	public boolean isCloseOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * @return the internalStatement
+	 */
+	protected Statement getInternalStatement() {
+		return internalStatement;
+	}
+
+	/**
+	 * @param realStatement the internalStatement to set
+	 */
+	protected void setInternalStatement(Statement realStatement) {
+		this.internalStatement = realStatement;
 	}
 }

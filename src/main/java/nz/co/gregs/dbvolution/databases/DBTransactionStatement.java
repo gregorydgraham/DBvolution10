@@ -45,8 +45,8 @@ public class DBTransactionStatement extends DBStatement {
 	@Override
 	@SuppressWarnings("empty-statement")
 	public void close() throws SQLException {
-		realStatement.close();
-		realStatement = connection.createStatement();
+		getInternalStatement().close();
+		setInternalStatement(getConnection().createStatement());
 		;
 	}
 
