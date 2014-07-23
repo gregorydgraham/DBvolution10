@@ -48,7 +48,7 @@ public class DBInsert extends DBAction {
 	private final DBRow originalRow;
 
 	/**
-	 * Creates a DBInsert action for the row. 
+	 * Creates a DBInsert action for the row.
 	 *
 	 * @param <R>
 	 * @param row
@@ -148,19 +148,23 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql);
-						if(defn.supportsRetrievingLastInsertedRowViaSQL()){
+						if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
 							String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 							ResultSet rs = statement.executeQuery(retrieveSQL);
-							QueryableDatatype primaryKey = this.originalRow.getPrimaryKey();
-							if (primaryKey instanceof DBInteger){
-								DBInteger inPK = (DBInteger)primaryKey;
-								inPK.setValue(rs.getLong(1));
-							}else if (primaryKey instanceof DBNumber){
-								DBNumber inPK = (DBNumber)primaryKey;
-								inPK.setValue(rs.getBigDecimal(1));
-							}else if (primaryKey instanceof DBString){
-								DBString inPK = (DBString)primaryKey;
-								inPK.setValue(rs.getString(1));
+							try {
+								QueryableDatatype primaryKey = this.originalRow.getPrimaryKey();
+								if (primaryKey instanceof DBInteger) {
+									DBInteger inPK = (DBInteger) primaryKey;
+									inPK.setValue(rs.getLong(1));
+								} else if (primaryKey instanceof DBNumber) {
+									DBNumber inPK = (DBNumber) primaryKey;
+									inPK.setValue(rs.getBigDecimal(1));
+								} else if (primaryKey instanceof DBString) {
+									DBString inPK = (DBString) primaryKey;
+									inPK.setValue(rs.getString(1));
+								}
+							} finally {
+								rs.close();
 							}
 						}
 					} catch (SQLException ex) {
