@@ -117,8 +117,7 @@ public class DBByteArray extends DBLargeObject {
 
 		setUnchanged();
 
-		setDefined(
-				true);
+		setDefined(true);
 	}
 
 	private void setFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
