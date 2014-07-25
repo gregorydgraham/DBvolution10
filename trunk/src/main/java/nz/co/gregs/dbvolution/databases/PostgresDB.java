@@ -46,5 +46,10 @@ public class PostgresDB extends DBDatabase {
 				"jdbc:postgresql://"+hostname+":"+port+"/"+databaseName+(urlExtras==null||urlExtras.isEmpty()?"":"?"+urlExtras), 
                 username, password);
     }
+
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
     
 }

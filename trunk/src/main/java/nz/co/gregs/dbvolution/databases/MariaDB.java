@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Gregory Graham.
+ * Copyright 2014 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,36 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
 /**
  *
- * @author Gregory Graham
+ * @author gregory.graham
  */
-public class MySQLDB extends DBDatabase {
+public class MariaDB extends DBDatabase{
 
-    public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
+    public final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
     protected String databaseName;
 
-    public MySQLDB(String jdbcURL, String username, String password) {
-        super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);
+    public MariaDB(String jdbcURL, String username, String password) {
+        super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
     }
 
-    public MySQLDB(String server, long port, String databaseName, String username, String password) {
-        super(new MySQLDBDefinition(),
-                MYSQLDRIVERNAME,
-                "jdbc:mysql://" + server + ":" + port + "/" + databaseName,
+    public MariaDB(String server, long port, String databaseName, String username, String password) {
+        super(new MariaDBDefinition(),
+                MARIADBDRIVERNAME,
+                "jdbc:mariadb://" + server + ":" + port + "/" + databaseName,
                 username,
                 password);
         this.setDatabaseName(databaseName);
-    }
-
-    @Override
-    public String getDatabaseName() {
-        return databaseName; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

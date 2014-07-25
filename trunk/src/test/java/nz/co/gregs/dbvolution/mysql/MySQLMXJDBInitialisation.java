@@ -26,18 +26,19 @@ import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
  */
 public class MySQLMXJDBInitialisation {
 
-    public synchronized static MySQLDB getMySQLDBInstance() throws IOException {
+	public synchronized static MySQLDB getMySQLDBInstance() throws IOException, ClassNotFoundException {
 
-        int port = Integer.parseInt(System.getProperty("c-mxj_test_port", "3336"));
-        
-        File ourAppDir = new File(System.getProperty("java.io.tmpdir"));
-        File databaseDir = new File(ourAppDir, "test-mxj" + port);
-        String databaseName = "dbvolutiontest";
+		int port = Integer.parseInt(System.getProperty("c-mxj_test_port", "3336"));
 
+		File ourAppDir = new File(System.getProperty("java.io.tmpdir"));
+		File databaseDir = new File(ourAppDir, "test-mxj" + port);
+		String databaseName = "dbvolutiontest";
 
-        MySQLDB database = new MySQLMXJDB("localhost", port, databaseName, databaseDir.toString(), "dbvtest", "testpass");
-        return database;
-    }
+		Class.forName("com.mysql.jdbc.Driver");
+
+		MySQLDB database = new MySQLMXJDB("localhost", port, databaseName, databaseDir.toString(), "dbvtest", "testpass");
+		return database;
+	}
 
 	private MySQLMXJDBInitialisation() {
 	}

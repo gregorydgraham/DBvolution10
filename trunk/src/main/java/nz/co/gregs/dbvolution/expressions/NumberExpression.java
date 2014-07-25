@@ -921,6 +921,16 @@ public class NumberExpression implements NumberResult {
 
 	public NumberExpression degrees() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsDegreesFunction()) {
+					return super.toSQLString(db);
+				} else {
+					return db.getDefinition().doDegreesTransform(this.only.toSQLString(db));
+				}
+			}
+
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "degrees";
@@ -930,6 +940,15 @@ public class NumberExpression implements NumberResult {
 
 	public NumberExpression radians() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			@Override
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsRadiansFunction()) {
+					return super.toSQLString(db);
+				} else {
+					return db.getDefinition().doRadiansTransform(this.only.toSQLString(db));
+				}
+			}
+
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "radians";

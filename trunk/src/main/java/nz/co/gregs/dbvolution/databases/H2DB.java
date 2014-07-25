@@ -37,6 +37,11 @@ public class H2DB extends DBDatabase {
     public boolean supportsFullOuterJoinNatively() {
         return false;
     }
+
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
     
     
 }

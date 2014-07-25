@@ -15,8 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.sql.Connection;
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.DBDatabase;
 
 public class H2MemoryDB extends H2DB {
 
@@ -28,4 +28,9 @@ public class H2MemoryDB extends H2DB {
         super("jdbc:h2:mem:" + databaseName, username, password);
         setDatabaseName(databaseName);
     }
+
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
 }

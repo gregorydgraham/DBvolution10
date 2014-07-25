@@ -255,7 +255,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testRawQuery() throws SQLException {
         String rawQuery = "and lower(name) in ('peugeot','hummer')  ";
-        if (database instanceof OracleDB) {
+        if ((database instanceof OracleDB)) {
             rawQuery = "and lower(\"name\") in ('peugeot','hummer')  ";
         }
         List<Marque> rowsByRawSQL = marquesTable.setRawSQL(rawQuery).getAllRows();
@@ -300,6 +300,12 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testUnignoringColumnsOnTable() throws SQLException {
         Marque myMarqueRow = new Marque();
+		myMarqueRow.auto_created.excludedValues((String)null);
+		myMarqueRow.isUsedForTAFROs.excludedValues((String)null);
+		myMarqueRow.reservationsAllowed.excludedValues((String)null);
+		myMarqueRow.statusClassID.excludedValues((Number)null);
+		myMarqueRow.name.excludedValues((String)null);
+		myMarqueRow.uidMarque.excludedValues((Integer)null);
         myMarqueRow.setReturnFields(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
         List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getRowsByExample(myMarqueRow);
@@ -342,10 +348,15 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testUnignoringColumnsOnQuery() throws SQLException {
         Marque myMarqueRow = new Marque();
+		myMarqueRow.auto_created.excludedValues((String)null);
+		myMarqueRow.isUsedForTAFROs.excludedValues((String)null);
+		myMarqueRow.reservationsAllowed.excludedValues((String)null);
+		myMarqueRow.statusClassID.excludedValues((Integer)null);
+		myMarqueRow.name.excludedValues((String)null);
+		myMarqueRow.uidMarque.excludedValues((Integer)null);
         myMarqueRow.setReturnFields(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
         myMarqueRow.returnAllFields();
         DBQuery dbQuery = database.getDBQuery(myMarqueRow, new CarCompany());
-        dbQuery.setBlankQueryAllowed(true);
         List<Marque> rowsByExample = dbQuery.getAllInstancesOf(myMarqueRow);
         for (Marque marq : rowsByExample) {
             System.out.println("" + marq);

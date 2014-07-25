@@ -37,8 +37,9 @@ public class UpdateTest extends AbstractTest {
         Marque insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
         insertedRow.individualAllocationsAllowed.setValue("Y");
         String sqlForUpdate = marquesTable.update(insertedRow).get(0).getSQLStatements(database).get(0);
-        Assert.assertThat(sqlForUpdate.toLowerCase(),
-                is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;".toLowerCase()));
+		final String testableQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;");
+        Assert.assertThat(testableSQL(sqlForUpdate),
+                is(testableQueryString));
 //        marquesTable.update(insertedRow);
         insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
         Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
@@ -54,8 +55,9 @@ public class UpdateTest extends AbstractTest {
         System.out.println(peugeot);
         peugeot.individualAllocationsAllowed.setValue("Y");
         String sqlForUpdate = marquesTable.update(peugeot).get(0).getSQLStatements(database).get(0);
-        Assert.assertThat(sqlForUpdate.toLowerCase(),
-                is("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;".toLowerCase()));
+		final String updateQueryStr = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;");
+        Assert.assertThat(testableSQL(sqlForUpdate),
+                is(updateQueryStr));
         marquesTable.update(peugeot);
         Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
         Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));

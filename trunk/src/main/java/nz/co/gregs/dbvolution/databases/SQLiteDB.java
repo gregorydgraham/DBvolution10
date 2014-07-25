@@ -61,6 +61,11 @@ public class SQLiteDB extends DBDatabase {
 		return connection;
 	}
 
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
 	public static class Trunc extends Function {
 
 		@Override
