@@ -384,12 +384,12 @@
 			<version>1.6</version>
 			<type>jar</type>
 		</dependency>
-	 <dependency>
+<!--	 <dependency>
 	  <groupId>com.oracle</groupId>
 	  <artifactId>ojdbc6</artifactId>
 	  <version>11.2.1.0.1.0</version>
 	  <scope>test</scope>
-	 </dependency>
+	 </dependency>-->
 	</dependencies>
 	<distributionManagement>
 		<repository>
