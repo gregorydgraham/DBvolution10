@@ -59,11 +59,6 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-		return "";
-	}
-
-	@Override
 	public String convertBitsToInteger(String columnName) {
 		return columnName + "::integer";
 	}

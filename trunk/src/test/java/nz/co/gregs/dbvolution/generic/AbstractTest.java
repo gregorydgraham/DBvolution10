@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -76,6 +77,9 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
+		}
+		if (System.getProperty("testNuo") != null) {
+			databases.add(new Object[]{"NuoDB", new NuoDB(Arrays.asList(new String[]{"localhost"}), "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracle") != null) {
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("localhost", 1521, "XE", "dbv", "dbv")});

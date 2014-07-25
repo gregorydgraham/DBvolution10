@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 
 public class H2DBDefinition extends DBDefinition {
 
@@ -42,11 +41,5 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String formatColumnName(String columnName) {
 		return columnName.toUpperCase();
-	}
-
-	@Override
-	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-//		return " TOP " + rowLimit + " ";
-            return "";
 	}
 }

@@ -687,6 +687,15 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
+	 * Sets the name of the JDBC driver class used by this DBDatabase instance.
+	 *
+	 * @param driver
+	 */
+	protected void setDriverName(String driver) {
+		driverName = driver;
+	}
+
+	/**
 	 * Returns the JDBC URL used by this instance, if one has been specified.
 	 *
 	 * @return the jdbcURL
@@ -876,8 +885,11 @@ public abstract class DBDatabase implements Cloneable {
 			throw new AccidentalDroppingOfTableException();
 		}
 		StringBuilder sqlScript = new StringBuilder();
+		final String dropTableStart = definition.getDropTableStart();
+		final String formatTableName = definition.formatTableName(tableRow);
+		final Object endSQLStatement = definition.endSQLStatement();
 
-		sqlScript.append(definition.getDropTableStart()).append(definition.formatTableName(tableRow)).append(definition.endSQLStatement());
+		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
 		String sqlString = sqlScript.toString();
 		final DBStatement dbStatement = getDBStatement();
 		try {
@@ -950,7 +962,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param defn the DBDefinition to be used by this DBDatabase instance.
 	 */
 	protected void setDefinition(DBDefinition defn) {
-		if (definition != null) {
+		if (definition == null) {
 			definition = defn;
 		}
 	}
