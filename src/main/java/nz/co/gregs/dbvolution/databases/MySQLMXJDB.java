@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.DBDatabase;
+
 
 public class MySQLMXJDB extends MySQLDB {
 
@@ -31,4 +33,9 @@ public class MySQLMXJDB extends MySQLDB {
                 password);
                 this.databaseName = databaseName;
     }    
+
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
 }

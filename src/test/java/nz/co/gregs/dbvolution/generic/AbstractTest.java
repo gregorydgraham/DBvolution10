@@ -54,7 +54,7 @@ public abstract class AbstractTest {
 	public String secondDateStr = "2/April/2013";
 
 	@Parameters(name = "{0}")
-	public static List<Object[]> data() throws IOException, SQLException {
+	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException {
 		boolean testAllDatabases = System.getProperty("testAllDatabases") != null;
 		
 		List<Object[]> databases = new ArrayList<Object[]>();
@@ -78,13 +78,13 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
 		}
 		if (System.getProperty("testOracle") != null) {
-			databases.add(new Object[]{"OracleDB", new OracleDB("localhost", 1521, "XE", "dbv", "dbv")});
+			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("localhost", 1521, "XE", "dbv", "dbv")});
 		}
 		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
-//				            {"OracleDB", new OracleDB("localhost", 1521, "xe", "dbvolution", "oracle")},
+//				            {"Oracle11DB", new Oracle11DB("localhost", 1521, "xe", "dbvolution", "oracle")},
 //				            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")},
 //				            {"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")},
 //				            {"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()}
@@ -103,7 +103,7 @@ public abstract class AbstractTest {
 		if (str != null) {
 			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
 			if (database instanceof OracleDB) {
-				return trimStr.replaceAll("\"", "").replaceAll(" *; *$", "");
+				return trimStr.replaceAll(" oo", " __").replaceAll("\"", "").replaceAll(" *; *$", "");
 			} else if (database instanceof PostgresDB) {
 				return trimStr.replaceAll("::[a-zA-Z]*", "");
 			} else {
@@ -123,6 +123,7 @@ public abstract class AbstractTest {
 					.toLowerCase();
 			if (database instanceof OracleDB) {
 				return trimStr
+						.replaceAll(" oo", " __")
 						.replaceAll("\"", "")
 						.replaceAll(" *; *$", "");
 			} else {

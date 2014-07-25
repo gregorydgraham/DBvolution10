@@ -1,0 +1,54 @@
+/*
+ * Copyright 2013 Gregory Graham.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package nz.co.gregs.dbvolution.databases;
+
+import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.Oracle11DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+
+
+/**
+ * Implements support for version 11 and prior of the Oracle database.
+ *
+ * @author gregory.graham
+ * @see OracleDB
+ * @see Oracle12DB
+ * @see Oracle11DBDefinition
+ */
+public class Oracle11DB extends OracleDB {
+
+	public Oracle11DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+		super(definition, driverName, jdbcURL, username, password);
+	}
+
+	public Oracle11DB(String driverName, String jdbcURL, String username, String password) {
+		super(new Oracle11DBDefinition(), driverName, jdbcURL, username, password);
+	}
+
+	public Oracle11DB(String jdbcURL, String username, String password) {
+		super(new Oracle11DBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
+	}
+
+	public Oracle11DB(String host, int port, String serviceName, String username, String password) {
+		super(new Oracle11DBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
+	}
+
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+}

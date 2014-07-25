@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Gregory Graham.
+ * Copyright 2014 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package nz.co.gregs.dbvolution.databases;
 
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
-public class OracleDB extends DBDatabase {
+/**
+ * Super class for connecting the different versions of the Oracle DB.
+ * 
+ * <p>
+ * You should probably use {@link Oracle11DB} or {@link Oracle12DB} instead.
+ * 
+ * @author gregory.graham
+ * @see Oracle11DB
+ * @see Oracle12DB
+ */
+public abstract class OracleDB extends DBDatabase{
+
+	public OracleDB(DBDefinition definition, DataSource ds) {
+		super(definition, ds);
+	}
 
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
-	public OracleDB(String driverName, String jdbcURL, String username, String password) {
-		super(new OracleDBDefinition(), driverName, jdbcURL, username, password);
-	}
-
-	public OracleDB(String jdbcURL, String username, String password) {
-		super(new OracleDBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
-	}
-
-	public OracleDB(String host, int port, String serviceName, String username, String password) {
-		super(new OracleDBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
-	}
-
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone(); 
 	}
-
+	
 }

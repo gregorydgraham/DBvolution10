@@ -52,13 +52,17 @@ public class JoinTest extends AbstractTest {
 				= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( ((__296612642.uidcompany = 234)) and (__296612642.fkstatistic2 = __77293264.uidstatistic) ) ;";
 		String expectedResult2
 				= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( __296612642.fkstatistic2 = __77293264.uidstatistic ) where 1=1 and (__296612642.uidcompany = 234) ;";
+		String expectedResult3
+				= "select oo296612642.uidcompany, oo296612642.fkstatistic2, oo77293264.uidstatistic, oo77293264.stat2id from company as oo296612642 inner join statistic as oo77293264 on( oo296612642.fkstatistic2 = oo77293264.uidstatistic ) where 1=1 and (oo296612642.uidcompany = 234) ;";
 		System.out.println(expectedResult1);
 		System.out.println(generateSQLString);
 		assertThat(dbQuery.isUseANSISyntax(), is(true));
 		assertThat(testableSQLWithoutColumnAliases(generateSQLString),
 				anyOf(
 						is(testableSQLWithoutColumnAliases(expectedResult1)),
-						is(testableSQLWithoutColumnAliases(expectedResult2)))
+						is(testableSQLWithoutColumnAliases(expectedResult2)),
+						is(testableSQLWithoutColumnAliases(expectedResult3))
+				)
 		);
 	}
 

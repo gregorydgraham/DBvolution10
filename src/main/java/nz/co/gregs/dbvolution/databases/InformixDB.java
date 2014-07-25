@@ -32,4 +32,9 @@ public class InformixDB extends DBDatabase {
         // Informix causes problems when using batched statements :(
         setBatchSQLStatementsWhenPossible(false);
     }
+
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
 }

@@ -100,6 +100,31 @@ public abstract class DBDatabase implements Cloneable {
 	 * syntax of the database in the DBDefinition and the connection details
 	 * from a DataSource.
 	 *
+	 * @see DBDefinition
+	 * @see OracleDB
+	 * @see MySQLDB
+	 * @see MSSQLServerDB
+	 * @see H2DB
+	 * @see H2MemoryDB
+	 * @see InformixDB
+	 * @see PostgresDB
+	 */
+	protected DBDatabase() {
+	}
+
+	/**
+	 * Define a new DBDatabase.
+	 *
+	 * <p>
+	 * Most programmers should not call this constructor directly. Check the
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
+	 * database.
+	 *
+	 * <p>
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details
+	 * from a DataSource.
+	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
 	 * @param ds - a DataSource for the required database.
@@ -817,6 +842,12 @@ public abstract class DBDatabase implements Cloneable {
 		final DBStatement dbStatement = getDBStatement();
 		try {
 			dbStatement.execute(sqlString);
+			if (definition.usesTriggerBasedIdentities() && pkFields.size() == 1) {
+				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
+				for (String sql : triggerBasedIdentitySQL) {
+					dbStatement.execute(sql);
+				}
+			}
 		} finally {
 			dbStatement.close();
 		}
@@ -903,6 +934,25 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public DBDefinition getDefinition() {
 		return definition;
+	}
+
+	/**
+	 * Sets the DBdefinition used by this DBDatabase
+	 *
+	 * <p>
+	 * Every DBDatabase has a DBDefinition that defines the syntax used in that
+	 * database.
+	 *
+	 * <p>
+	 * While DBDefinition is important, unless you are implementing support for
+	 * a new database you probably don't need this.
+	 *
+	 * @param defn the DBDefinition to be used by this DBDatabase instance.
+	 */
+	protected void setDefinition(DBDefinition defn) {
+		if (definition != null) {
+			definition = defn;
+		}
 	}
 
 	/**
@@ -1152,5 +1202,26 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+	}
+
+	/**
+	 * @param jdbcURL the jdbcURL to set
+	 */
+	protected void setJdbcURL(String jdbcURL) {
+		this.jdbcURL = jdbcURL;
+	}
+
+	/**
+	 * @param username the username to set
+	 */
+	protected void setUsername(String username) {
+		this.username = username;
+	}
+
+	/**
+	 * @param password the password to set
+	 */
+	protected void setPassword(String password) {
+		this.password = password;
 	}
 }
