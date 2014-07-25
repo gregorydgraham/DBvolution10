@@ -47,7 +47,8 @@ public class MariaClusterDB extends DBDatabase{
 				sep = ",";
 			}
 		}
-		this.setDefinition(new MariaDBDefinition());
+		setDriverName(MARIADBDRIVERNAME);
+		setDefinition(new MariaDBDefinition());
 		setJdbcURL("jdbc:mariadb://"+hosts+"/"+databaseName);
 		setUsername(username); 
 		setPassword(password);

@@ -67,11 +67,6 @@ public class MariaDBDefinition extends DBDefinition {
 		}
 	}
 
-	@Override
-	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-		return "";
-	}
-
 //	@Override
 //	public String getDropDatabase(String databaseName) {
 //		return "DROP DATABASE IF EXISTS " + databaseName + ";";

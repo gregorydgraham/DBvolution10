@@ -371,22 +371,23 @@ public abstract class DBDefinition {
 
 	/**
 	 * Provides an opportunity for the definition to insert a row limiting
-	 * statement before the query
-	 *
+	 * statement before the query.
+	 * <p>
 	 * for example H2DB uses SELECT TOP 10 ... FROM ... WHERE ... ;
-	 *
+	 * <p>
 	 * Based on the example for H2DB this method should return " TOP 10 "
-	 *
+	 * <p>
 	 * If the database does not support row limiting this method should throw an
 	 * exception when rowLimit is not null
-	 *
-	 * If the database does not limit rows during the select clause this method
-	 * should return ""
+	 * <p>
+	 * The default implementation returns "".
 	 *
 	 * @param options
 	 * @return a string for the row limit sub-clause or ""
 	 */
-	abstract public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options);
+	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+		return "";
+	}
 
 	public String beginOrderByClause() {
 		return " ORDER BY ";
@@ -885,7 +886,6 @@ public abstract class DBDefinition {
 		return beginStringValue() + endStringValue();
 	}
 
-
 	/**
 	 * Indicates whether the database supports the standard DEGREES function.
 	 *
@@ -948,6 +948,14 @@ public abstract class DBDefinition {
 	 */
 	public String doDegreesTransform(String radiansSQL) {
 		return " " + radiansSQL + " * 57.2957795 ";
+	}
+
+	public String getExpFunctionName() {
+		return "EXP";
+	}
+
+	public boolean supportsExpFunction() {
+		return true;
 	}
 
 }

@@ -42,11 +42,6 @@ public class SQLiteDefinition extends DBDefinition {
 		return " DATETIME('" + DATETIME_FORMAT.format(date) + "') ";
 	}
 
-	@Override
-	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-		return "";
-	}
-
 
 	@Override
 	public boolean supportsGeneratedKeys(QueryOptions options) {
