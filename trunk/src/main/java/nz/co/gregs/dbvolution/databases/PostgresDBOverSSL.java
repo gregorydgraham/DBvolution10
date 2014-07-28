@@ -16,14 +16,37 @@
 
 package nz.co.gregs.dbvolution.databases;
 
-
+/**
+ * Extends the PostgreSQL database connection by adding SSL.
+ *
+ * @author gregorygraham
+ */
 public class PostgresDBOverSSL extends PostgresDB {
 
-    public PostgresDBOverSSL(String hostname, String port, String databaseName, String username, String password, String urlExtras) {
+	/**
+	 * Creates a DBDatabase for a PostgreSQL database over SSL.
+	 *
+	 * @param hostname
+	 * @param port
+	 * @param databaseName
+	 * @param username
+	 * @param password
+	 * @param urlExtras
+	 */
+	public PostgresDBOverSSL(String hostname, String port, String databaseName, String username, String password, String urlExtras) {
         super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"+(urlExtras==null||urlExtras.isEmpty()?"":"&"+urlExtras));
     }
 
-    public PostgresDBOverSSL(String hostname, String port, String databaseName, String username, String password) {
+	/**
+	 * Creates a DBDatabase for a PostgreSQL database over SSL.
+	 *
+	 * @param hostname
+	 * @param port
+	 * @param databaseName
+	 * @param username
+	 * @param password
+	 */
+	public PostgresDBOverSSL(String hostname, String port, String databaseName, String username, String password) {
         this(hostname, port, databaseName, username, password, "");
     }
     

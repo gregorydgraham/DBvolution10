@@ -20,14 +20,27 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 
 /**
+ * A version of DBDatabase tweaked for Informix 7 and higher.
  *
  * @author Gregory Graham
  */
 public class InformixDB extends DBDatabase {
 
-    public final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
+    private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
 
-    public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
+	/**
+	 * Creates  a DBDatabase configured for Informix with the given JDBC URL, username, and password.
+	 * 
+	 * <p>
+	 * Remember to include the Informix JDBC drive in your classpath.
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
         super(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
         // Informix causes problems when using batched statements :(
         setBatchSQLStatementsWhenPossible(false);

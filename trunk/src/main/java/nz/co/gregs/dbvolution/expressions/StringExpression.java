@@ -36,35 +36,35 @@ public class StringExpression implements StringResult {
 
 	public StringExpression(StringResult stringVariable) {
 		string1 = stringVariable;
-		if (stringVariable==null||stringVariable.getIncludesNull()){
+		if (stringVariable == null || stringVariable.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
 	public StringExpression(String stringVariable) {
 		string1 = new DBString(stringVariable);
-		if (stringVariable==null){
+		if (stringVariable == null) {
 			nullProtectionRequired = true;
 		}
 	}
 
 	public StringExpression(NumberExpression numberVariable) {
 		string1 = numberVariable.stringResult();
-		if (numberVariable==null||string1.getIncludesNull()){
+		if (numberVariable == null || string1.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
 	public StringExpression(Number numberVariable) {
 		string1 = NumberExpression.value(numberVariable).stringResult();
-		if (numberVariable==null||string1.getIncludesNull()){
+		if (numberVariable == null || string1.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
 	public StringExpression(DBString stringVariable) {
 		string1 = stringVariable.copy();
-		if (stringVariable==null||stringVariable.getIncludesNull()){
+		if (stringVariable == null || stringVariable.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
@@ -91,10 +91,9 @@ public class StringExpression implements StringResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -103,8 +102,8 @@ public class StringExpression implements StringResult {
 	 * </ul>
 	 *
 	 * @param string
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static StringExpression value(String string) {
 		return new StringExpression(string);
@@ -216,7 +215,7 @@ public class StringExpression implements StringResult {
 				public String toSQLString(DBDatabase db) {
 					return db.getDefinition().doStringEqualsTransform(super.first.toSQLString(db), super.second.toSQLString(db));
 				}
-				
+
 				@Override
 				protected String getEquationOperator(DBDatabase db) {
 					return " = ";
@@ -234,12 +233,12 @@ public class StringExpression implements StringResult {
 			});
 		}
 	}
-	
+
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -266,8 +265,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -294,8 +293,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -322,8 +321,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -724,7 +723,7 @@ public class StringExpression implements StringResult {
 			public String toSQLString(DBDatabase db) {
 				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
 			}
-			
+
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return db.getDefinition().getConcatOperator();
@@ -855,6 +854,15 @@ public class StringExpression implements StringResult {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
 					@Override
+					public String toSQLString(DBDatabase db) {
+						if (!db.getDefinition().supportsLeftTrimFunction()) {
+							return db.getDefinition().doLeftTrimFunction(this.only.toSQLString(db));
+						} else {
+							return super.toSQLString(db);
+						}
+					}
+
+					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getLeftTrimFunctionName();
 					}
@@ -948,8 +956,7 @@ public class StringExpression implements StringResult {
 	 * the StringExpression.
 	 *
 	 * <p>
-	 * The index is 1-based, and returns 0 when the searchString is not
-	 * found.</p>
+	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
 	 *
 	 * @param searchString
 	 * @return an expression that will find the location of the searchString.
@@ -1042,7 +1049,6 @@ public class StringExpression implements StringResult {
 //	public void setIncludesNull(boolean nullsAreIncluded) {
 //		this.nullProtectionRequired = nullsAreIncluded;
 //	}
-
 	private static abstract class DBBinaryStringArithmetic implements StringResult {
 
 		private StringResult first;
@@ -1310,7 +1316,6 @@ public class StringExpression implements StringResult {
 //			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
 //		}
 //	}
-
 	private static abstract class DBUnaryNumberFunction implements NumberResult {
 
 		protected StringExpression only;
@@ -1643,10 +1648,10 @@ public class StringExpression implements StringResult {
 
 		public String doSubstringTransform(DBDatabase db, StringResult enclosedValue, NumberResult startingPosition, NumberResult substringLength) {
 			return db.getDefinition().doSubstringTransform(
-					enclosedValue.toSQLString(db), 
+					enclosedValue.toSQLString(db),
 					(startingPosition.toSQLString(db) + " + 1"),
 					(substringLength != null ? (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
-					);
+			);
 //			return " SUBSTRING("
 //					+ enclosedValue.toSQLString(db)
 //					+ " FROM "
@@ -1791,7 +1796,7 @@ public class StringExpression implements StringResult {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
-			Collections.copy(this.values,newInstance.values);
+			Collections.copy(this.values, newInstance.values);
 			return newInstance;
 		}
 

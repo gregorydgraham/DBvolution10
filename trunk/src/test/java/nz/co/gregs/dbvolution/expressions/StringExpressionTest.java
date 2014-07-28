@@ -78,6 +78,7 @@ public class StringExpressionTest extends AbstractTest {
 				marq.column(marq.name).leftTrim().is("HUMMER")
 		);
 		got = dbQuery.getAllInstancesOf(marq);
+		database.print(got);
 		Assert.assertThat(got.size(), is(1));
 
 		dbQuery = database.getDBQuery(marq);

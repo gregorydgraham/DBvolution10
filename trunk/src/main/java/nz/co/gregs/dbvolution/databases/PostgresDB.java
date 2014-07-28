@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 
 
 /**
+ * A DBDatabase tweaked for PostgreSQL.
  *
  * @author Gregory Graham
  */
@@ -28,19 +29,53 @@ public class PostgresDB extends DBDatabase {
     
     private static final String POSTGRES_DRIVER_NAME ="org.postgresql.Driver";
 
-    public PostgresDB(DataSource ds) {
+	/**
+	 * Creates a PostgreSQL connection for the DataSource.
+	 *
+	 * @param ds
+	 */
+	public PostgresDB(DataSource ds) {
         super(new PostgresDBDefinition(), ds);
     }
 
-    public PostgresDB(String jdbcURL, String username, String password) {
+	/**
+	 * Creates a PostgreSQL connection for the JDBC URL, username, and password.
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 */
+	public PostgresDB(String jdbcURL, String username, String password) {
         super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
     }
     
-    public PostgresDB(String hostname, String port, String databaseName, String username, String password) {
+	/**
+	 * Creates a PostgreSQL connection to the server on the port supplied, using the username and password supplied.
+	 *
+	 * @param hostname
+	 * @param port
+	 * @param databaseName
+	 * @param username
+	 * @param password
+	 */
+	public PostgresDB(String hostname, String port, String databaseName, String username, String password) {
         this(hostname, port, databaseName, username, password, null);
     }
     
-    public PostgresDB(String hostname, String port, String databaseName, String username, String password, String urlExtras) {
+	/**
+	 * Creates a PostgreSQL connection to the server on the port supplied, using the username and password supplied.
+	 * 
+	 * <p>
+	 * Extra parameters to be added to the JDBC URL can be included in the urlExtras parameter.
+	 *
+	 * @param hostname
+	 * @param port
+	 * @param databaseName
+	 * @param username
+	 * @param password
+	 * @param urlExtras
+	 */
+	public PostgresDB(String hostname, String port, String databaseName, String username, String password, String urlExtras) {
         super(new PostgresDBDefinition(), 
                 POSTGRES_DRIVER_NAME, 
 				"jdbc:postgresql://"+hostname+":"+port+"/"+databaseName+(urlExtras==null||urlExtras.isEmpty()?"":"?"+urlExtras), 

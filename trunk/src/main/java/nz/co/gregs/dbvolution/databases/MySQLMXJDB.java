@@ -17,22 +17,43 @@ package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 
-
+/**
+ * DBDatabase tweaked for the MySQL MXJ Database.
+ *
+ * @author gregorygraham
+ */
 public class MySQLMXJDB extends MySQLDB {
 
-    public MySQLMXJDB(String jdbcURL, String username, String password) {
-        super(jdbcURL, username, password);
-    }
+	/**
+	 * Creates a DBDatabase tweaked for MySQL MXJ.
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 */
+	public MySQLMXJDB(String jdbcURL, String username, String password) {
+		super(jdbcURL, username, password);
+	}
 
-    public MySQLMXJDB(String server, long port, String databaseName,String databaseDir, String username, String password) {
-        super("jdbc:mysql:mxj://"+server+":" + port + "/" + databaseName
-                + "?" + "server.basedir=" + databaseDir
-                + "&" + "createDatabaseIfNotExist=true"
-                + "&" + "server.initialize-user=true", 
-                username, 
-                password);
-                this.databaseName = databaseName;
-    }    
+	/**
+	 * Creates a DBDatabase tweaked for MySQL MXJ.
+	 *
+	 * @param server the server to connect to.
+	 * @param port the port that the database is listening to.
+	 * @param databaseName the name of the database within the server.
+	 * @param databaseDir where to set the data files on the server.
+	 * @param username the user to login as.
+	 * @param password the password required to login successfully.
+	 */
+	public MySQLMXJDB(String server, long port, String databaseName, String databaseDir, String username, String password) {
+		super("jdbc:mysql:mxj://" + server + ":" + port + "/" + databaseName
+				+ "?" + "server.basedir=" + databaseDir
+				+ "&" + "createDatabaseIfNotExist=true"
+				+ "&" + "server.initialize-user=true",
+				username,
+				password);
+		setDatabaseName(databaseName);
+	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {

@@ -13,38 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
 /**
+ * DBDatabase tweaked for a MariaDB Database.
  *
  * @author gregory.graham
  */
-public class MariaDB extends DBDatabase{
+public class MariaDB extends DBDatabase {
 
-    public final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
-    protected String databaseName;
+	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 
-    public MariaDB(String jdbcURL, String username, String password) {
-        super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
-    }
+	/**
+	 * Create a MariaDB instance of DBDatabase for the database with the supplied
+	 * JDBC URL, using the username and password to login.
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 */
+	public MariaDB(String jdbcURL, String username, String password) {
+		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
+	}
 
-    public MariaDB(String server, long port, String databaseName, String username, String password) {
-        super(new MariaDBDefinition(),
-                MARIADBDRIVERNAME,
-                "jdbc:mariadb://" + server + ":" + port + "/" + databaseName,
-                username,
-                password);
-        this.setDatabaseName(databaseName);
-    }
+	/**
+	 * Create a MariaDB instance of DBDatabase for the database on the supplied
+	 * server and port, using the username and password to login.
+	 *
+	 * @param server
+	 * @param port
+	 * @param databaseName
+	 * @param username
+	 * @param password
+	 */
+	public MariaDB(String server, long port, String databaseName, String username, String password) {
+		super(new MariaDBDefinition(),
+				MARIADBDRIVERNAME,
+				"jdbc:mariadb://" + server + ":" + port + "/" + databaseName,
+				username,
+				password);
+		this.setDatabaseName(databaseName);
+	}
 
-    @Override
-    public boolean supportsFullOuterJoinNatively() {
-        return false;
-    }
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
