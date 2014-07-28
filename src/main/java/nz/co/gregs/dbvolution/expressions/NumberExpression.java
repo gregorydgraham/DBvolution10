@@ -76,10 +76,9 @@ public class NumberExpression implements NumberResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -88,8 +87,8 @@ public class NumberExpression implements NumberResult {
 	 * </ul>
 	 *
 	 * @param object
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static NumberExpression value(Number object) {
 		return new NumberExpression(object);
@@ -170,8 +169,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -198,8 +197,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -226,8 +225,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -254,8 +253,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -794,12 +793,7 @@ public class NumberExpression implements NumberResult {
 
 	public NumberExpression bracket() {
 		return new NumberExpression(
-				new DBUnaryFunction(this) {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return "";
-					}
-				});
+				new BracketUnaryFunction(this));
 	}
 
 	public NumberExpression exp() {
@@ -808,7 +802,7 @@ public class NumberExpression implements NumberResult {
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (!db.getDefinition().supportsExpFunction() && (this.only instanceof NumberExpression)) {
-					return (new NumberExpression(2.718281828)).power((NumberExpression)this.only).toSQLString(db);
+					return (new NumberExpression(2.718281828)).power((NumberExpression) this.only).toSQLString(db);
 				} else {
 					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
 				}
@@ -1111,22 +1105,12 @@ public class NumberExpression implements NumberResult {
 	}
 
 	public NumberExpression minus(NumberExpression equation) {
-		return new NumberExpression(new DBBinaryArithmetic(this, equation) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " - ";
-			}
-		});
+		return new NumberExpression(new MinusBinaryArithmetic(this, equation));
 	}
 
 	public NumberExpression minus(Number num) {
 		final NumberExpression minusThisExpression = new NumberExpression(num);
-		final DBBinaryArithmetic minusExpression = new DBBinaryArithmetic(this, minusThisExpression) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " - ";
-			}
-		};
+		final DBBinaryArithmetic minusExpression = new MinusBinaryArithmetic(this, minusThisExpression);
 		return new NumberExpression(minusExpression);
 	}
 
@@ -1176,12 +1160,7 @@ public class NumberExpression implements NumberResult {
 	}
 
 	public NumberExpression dividedBy(Number num) {
-		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(num)) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " / ";
-			}
-		});
+		return new NumberExpression(new DivisionBinaryArithmetic(this, new NumberExpression(num)));
 	}
 
 	public NumberExpression mod(NumberResult number) {
@@ -1228,6 +1207,21 @@ public class NumberExpression implements NumberResult {
 
 	public NumberExpression standardDeviation() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsStandardDeviationFunction()) {
+					return super.toSQLString(db);
+				} else {
+					if (this.only instanceof NumberExpression) {
+						NumberExpression numb = (NumberExpression) this.only;
+						return new NumberExpression(numb).max().minus(new NumberExpression(numb).min()).bracket().dividedBy(6).toSQLString(db);
+					} else {
+						return null;
+					}
+				}
+			}
+
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getStandardDeviationFunctionName();
@@ -1259,24 +1253,14 @@ public class NumberExpression implements NumberResult {
 	 *
 	 * <p>
 	 * Similar to
-	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)}
-	 * but this aggregates the column or expression provided, rather than
-	 * scanning a list.
+	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)} but
+	 * this aggregates the column or expression provided, rather than scanning a
+	 * list.
 	 *
 	 * @return the greatest/largest value from the column.
 	 */
 	public NumberExpression max() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getMaxFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+		return new NumberExpression(new MaxUnaryFunction(this));
 	}
 
 	/**
@@ -1290,17 +1274,7 @@ public class NumberExpression implements NumberResult {
 	 * @return the least/smallest value from the column.
 	 */
 	public NumberExpression min() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getMinFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+		return new NumberExpression(new MinUnaryFunction(this));
 	}
 
 	/**
@@ -1508,6 +1482,10 @@ public class NumberExpression implements NumberResult {
 
 		DBUnaryFunction() {
 			this.only = null;
+		}
+
+		DBUnaryFunction(NumberExpression only) {
+			this.only = only;
 		}
 
 		DBUnaryFunction(DBExpression only) {
@@ -2101,6 +2079,76 @@ public class NumberExpression implements NumberResult {
 		@Override
 		public boolean isAggregator() {
 			return only.isAggregator();
+		}
+	}
+
+	private static class MaxUnaryFunction extends DBUnaryFunction {
+
+		public MaxUnaryFunction(DBExpression only) {
+			super(only);
+		}
+
+		@Override
+		String getFunctionName(DBDatabase db) {
+			return db.getDefinition().getMaxFunctionName();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+	}
+
+	private static class MinUnaryFunction extends DBUnaryFunction {
+
+		public MinUnaryFunction(DBExpression only) {
+			super(only);
+		}
+
+		@Override
+		String getFunctionName(DBDatabase db) {
+			return db.getDefinition().getMinFunctionName();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+	}
+
+	private static class MinusBinaryArithmetic extends DBBinaryArithmetic {
+
+		public MinusBinaryArithmetic(NumberResult first, NumberResult second) {
+			super(first, second);
+		}
+
+		@Override
+		protected String getEquationOperator(DBDatabase db) {
+			return " - ";
+		}
+	}
+
+	private static class BracketUnaryFunction extends DBUnaryFunction {
+
+		public BracketUnaryFunction(DBExpression only) {
+			super(only);
+		}
+
+		@Override
+		String getFunctionName(DBDatabase db) {
+			return "";
+		}
+	}
+
+	private static class DivisionBinaryArithmetic extends DBBinaryArithmetic {
+
+		public DivisionBinaryArithmetic(NumberResult first, NumberResult second) {
+			super(first, second);
+		}
+
+		@Override
+		protected String getEquationOperator(DBDatabase db) {
+			return " / ";
 		}
 	}
 }

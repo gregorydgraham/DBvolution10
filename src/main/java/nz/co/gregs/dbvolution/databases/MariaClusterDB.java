@@ -19,23 +19,66 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
-public class MariaClusterDB extends DBDatabase{
+/**
+ * DBDatabase tweaked for a Maria Cluster Database.
+ *
+ * <p>
+ * You should probably be using {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)
+ *
+ * @author gregorygraham
+ */
+public class MariaClusterDB extends DBDatabase {
 
-    public final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
+	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 
+	/**
+	 * Creates a DBDatabase instance for a MariaDB cluster hosted at the JDBC URL
+	 * supplied, logging in with the username and password supplied.
+	 *
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 */
 	public MariaClusterDB(String jdbcURL, String username, String password) {
-        super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
-    }
+		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
+	}
 
-    public MariaClusterDB(String server, long port, String databaseName, String username, String password) {
-        super(new MariaDBDefinition(),
-                MARIADBDRIVERNAME,
-                "jdbc:mariadb://" + server + ":" + port + "/" + databaseName,
-                username,
-                password);
-        this.setDatabaseName(databaseName);
-    }
+	/**
+	 * Creates a DBDatabase instance for a MariaDB cluster hosted at the server
+	 * and port supplied, logging in with the username and password supplied.
+	 *
+	 * <p>
+	 * You should probably be using {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)
+	 *
+	 * @param server
+	 * @param port
+	 * @param databaseName
+	 * @param username
+	 * @param password
+	 */
+	public MariaClusterDB(String server, long port, String databaseName, String username, String password) {
+		super(new MariaDBDefinition(),
+				MARIADBDRIVERNAME,
+				"jdbc:mariadb://" + server + ":" + port + "/" + databaseName,
+				username,
+				password);
+		this.setDatabaseName(databaseName);
+	}
 
+	/**
+	 * Creates a DBDatabase for a MariaDB cluster.
+	 *
+	 * <p>
+	 * Supply multiple servers with each server's port defined in the equivalent
+	 * entry in ports.
+	 *
+	 * @param servers
+	 * @param ports
+	 * @param databaseName
+	 * @param username
+	 * @param password
+	 */
 	public MariaClusterDB(List<String> servers, List<Long> ports, String databaseName, String username, String password) {
 		String hosts = "";
 		String sep = "";
@@ -49,16 +92,16 @@ public class MariaClusterDB extends DBDatabase{
 		}
 		setDriverName(MARIADBDRIVERNAME);
 		setDefinition(new MariaDBDefinition());
-		setJdbcURL("jdbc:mariadb://"+hosts+"/"+databaseName);
-		setUsername(username); 
+		setJdbcURL("jdbc:mariadb://" + hosts + "/" + databaseName);
+		setUsername(username);
 		setPassword(password);
-		setDatabaseName(databaseName);		
+		setDatabaseName(databaseName);
 	}
-	
-    @Override
-    public boolean supportsFullOuterJoinNatively() {
-        return false;
-    }
+
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {

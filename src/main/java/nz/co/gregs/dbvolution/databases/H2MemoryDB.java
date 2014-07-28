@@ -18,13 +18,39 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 
+/**
+ * Stores all the required functionality to use an H2 database in memory.
+ *
+ * @author Gregory Graham
+ */
 public class H2MemoryDB extends H2DB {
 
-    public H2MemoryDB(String jdbcURL, String username, String password) throws SQLException {
+
+	/**
+	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC URL, user and password.
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 * @throws SQLException
+	 */
+	public H2MemoryDB(String jdbcURL, String username, String password) throws SQLException {
         super(jdbcURL, username, password);
     }
 
-    public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
+	/**
+	 * Creates a DBDatabase instance for an H2 Memory database with the given database name, user and password.
+	 * 
+	 * <p>
+	 * The dummy parameter is ignored and only used to differentiate between the to 2 constructors.
+	 *
+	 * @param databaseName
+	 * @param username
+	 * @param password
+	 * @param dummy
+	 * @throws SQLException
+	 */
+	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
         super("jdbc:h2:mem:" + databaseName, username, password);
         setDatabaseName(databaseName);
     }

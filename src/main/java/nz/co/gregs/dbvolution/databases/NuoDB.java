@@ -20,34 +20,60 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 
 /**
+ * DBDatabase tweaked to work best with NuoDB.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class NuoDB extends DBDatabase {
 
+	private static final int NUODB_DEFAULT_PORT = 48004;
+	private static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
+	private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
+	
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
+	 * on the default port for NuoDB.
+	 *
+	 * @param brokers
+	 * @param databaseName
+	 * @param schema
+	 * @param username
+	 * @param password
+	 */
 	public NuoDB(List<String> brokers, String databaseName, String schema, String username, String password) {
 		String hosts = "";
 		String sep = "";
 
 		for (String server : brokers) {
-			int port = 48004;
+			int port = NUODB_DEFAULT_PORT;
 			hosts += sep + server + ":" + port;
 			sep = ",";
 		}
 
-		setDriverName("com.nuodb.jdbc.Driver");
+		setDriverName(NUODB_DRIVER);
 		setDefinition(new NuoDBDefinition());
-		setJdbcURL("jdbc:com.nuodb://" + hosts + "/" + databaseName+"?schema="+schema);
+		setJdbcURL(NUODB_URL_PREFIX + hosts + "/" + databaseName + "?schema=" + schema);
 		setUsername(username);
 		setPassword(password);
 		setDatabaseName(databaseName);
 	}
 
+	/**
+	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
+	 * using the ports supplied for each broker.
+	 *
+	 * @param brokers a list of the NuoDB brokers to use.
+	 * @param ports a list of the port for each broker provided.
+	 * @param databaseName the database required from the brokers.
+	 * @param schema the schema on the database to be used.
+	 * @param username the user to login as.
+	 * @param password the user's password.
+	 */
 	public NuoDB(List<String> brokers, List<Long> ports, String databaseName, String schema, String username, String password) {
 		String hosts = "";
 		String sep = "";
@@ -59,9 +85,9 @@ public class NuoDB extends DBDatabase {
 				sep = ",";
 			}
 		}
-		setDriverName("com.nuodb.jdbc.Driver");
+		setDriverName(NUODB_DRIVER);
 		setDefinition(new NuoDBDefinition());
-		setJdbcURL("jdbc:com.nuodb://" + hosts + "/" + databaseName+"?schema="+schema);
+		setJdbcURL(NUODB_URL_PREFIX + hosts + "/" + databaseName + "?schema=" + schema);
 		setUsername(username);
 		setPassword(password);
 		setDatabaseName(databaseName);

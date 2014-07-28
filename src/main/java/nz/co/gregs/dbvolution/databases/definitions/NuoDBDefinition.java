@@ -69,5 +69,27 @@ public class NuoDBDefinition extends DBDefinition{
 	public String getCurrentUserFunctionName() {
 		return "USER()";
 	}
+
+	@Override
+	public boolean supportsStandardDeviationFunction() {
+		return false;
+	}
+
+//	@Override
+//	public String getEmptyString() {
+//		return "\"\"";
+//	}
+	
+	@Override
+	public boolean supportsLeftTrimFunction() {
+		return false;
+	}
+	
+	@Override
+	public String doLeftTrimFunction(String toSQLString) {
+		return "TRIM( LEADING ' ' FROM "+toSQLString+")";
+	}
+
+
 	
 }

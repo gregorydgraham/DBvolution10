@@ -19,36 +19,49 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 
 /**
+ * A DBDatabase tweaked for MySQL databases
  *
  * @author Gregory Graham
  */
 public class MySQLDB extends DBDatabase {
 
-    public final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
-    protected String databaseName;
+	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 
-    public MySQLDB(String jdbcURL, String username, String password) {
-        super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);
-    }
+	/**
+	 * Creates DBDatabase suitable for use with MySQL attached to the supplied
+	 * JDBC URL, username, and password.
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 */
+	public MySQLDB(String jdbcURL, String username, String password) {
+		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);
+	}
 
-    public MySQLDB(String server, long port, String databaseName, String username, String password) {
-        super(new MySQLDBDefinition(),
-                MYSQLDRIVERNAME,
-                "jdbc:mysql://" + server + ":" + port + "/" + databaseName,
-                username,
-                password);
-        this.setDatabaseName(databaseName);
-    }
+	/**
+	 * Creates DBDatabase suitable for use with MySQL attached to the supplied
+	 * JDBC URL, username, and password.
+	 *
+	 * @param server the server to connect to.
+	 * @param port the port to connect on.
+	 * @param databaseName the database that is required on the server.
+	 * @param username the user to login as.
+	 * @param password the password required to login successfully.
+	 */
+	public MySQLDB(String server, long port, String databaseName, String username, String password) {
+		super(new MySQLDBDefinition(),
+				MYSQLDRIVERNAME,
+				"jdbc:mysql://" + server + ":" + port + "/" + databaseName,
+				username,
+				password);
+		this.setDatabaseName(databaseName);
+	}
 
-    @Override
-    public String getDatabaseName() {
-        return databaseName; //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean supportsFullOuterJoinNatively() {
-        return false;
-    }
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {

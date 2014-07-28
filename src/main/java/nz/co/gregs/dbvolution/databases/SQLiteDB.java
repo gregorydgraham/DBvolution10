@@ -26,14 +26,33 @@ import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import org.sqlite.Function;
 import org.sqlite.SQLiteConfig;
 
+/**
+ * Creates a DBDatabase for an SQLite database.
+ *
+ * @author gregorygraham
+ */
 public class SQLiteDB extends DBDatabase {
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 
+	/**
+	 * Creates a DBDatabase tweaked for a SQLite database on the DataSource
+	 * provided.
+	 *
+	 * @param ds
+	 */
 	public SQLiteDB(DataSource ds) {
 		super(new SQLiteDefinition(), ds);
 	}
 
+	/**
+	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
+	 * provided.
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 */
 	public SQLiteDB(String jdbcURL, String username, String password) {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
 	}
@@ -66,7 +85,7 @@ public class SQLiteDB extends DBDatabase {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public static class Trunc extends Function {
+	private static class Trunc extends Function {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -75,7 +94,7 @@ public class SQLiteDB extends DBDatabase {
 		}
 	}
 
-	public static class LocationOf extends Function {
+	private static class LocationOf extends Function {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -84,9 +103,11 @@ public class SQLiteDB extends DBDatabase {
 			result(original.indexOf(find) + 1);
 		}
 	}
-	public static class CurrentUser extends Function {
+
+	private static class CurrentUser extends Function {
 
 		private final String currentUser;
+
 		public CurrentUser(String currentUser) {
 			this.currentUser = currentUser;
 		}
@@ -98,16 +119,26 @@ public class SQLiteDB extends DBDatabase {
 	}
 
 //	Function.create(conn, "mySum", new Function.Aggregate() {
-	public static class StandardDeviation extends Function.Aggregate {
+	private static class StandardDeviation extends Function.Aggregate {
 
 		private final List<Long> longs = new ArrayList<Long>();
 
+		/**
+		 * Performed for each row during the aggregation process
+		 *
+		 * @throws SQLException
+		 */
 		@Override
 		protected void xStep() throws SQLException {
 			Long longValue = value_long(0);
-				longs.add(longValue);
+			longs.add(longValue);
 		}
 
+		/**
+		 * Produces the final result from the aggregation process.
+		 * 
+		 * @throws SQLException 
+		 */
 		@Override
 		protected void xFinal() throws SQLException {
 			double sum = 0.0;
@@ -117,13 +148,13 @@ public class SQLiteDB extends DBDatabase {
 			Double mean = sum / longs.size();
 			List<Double> squaredDistances = new ArrayList<Double>();
 			for (Long long1 : longs) {
-				final double dist = mean-long1;
-				squaredDistances.add(dist*dist);
+				final double dist = mean - long1;
+				squaredDistances.add(dist * dist);
 			}
 			for (Double dist : squaredDistances) {
 				sum += dist;
 			}
-			double variance = sum/squaredDistances.size();
+			double variance = sum / squaredDistances.size();
 			result(Math.sqrt(variance));
 		}
 

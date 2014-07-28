@@ -21,13 +21,26 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 
 /**
+ * Stores all the required functionality to use an H2 database.
  *
- * @author greg
+ * @author Gregory Graham
  */
 public class H2DB extends DBDatabase {
+	/** 
+	 * Used to hold the database open
+	 * 
+	 */
 	protected final Connection storedConnection;
 
-    public H2DB(String jdbcURL, String username, String password) throws SQLException {
+	/**
+	 * Creates a DBDatabase for a H2 database.
+	 * 
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 * @throws SQLException
+	 */
+	public H2DB(String jdbcURL, String username, String password) throws SQLException {
         super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
 		this.storedConnection = getConnection();
 		this.storedConnection.createStatement();

@@ -32,10 +32,18 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  */
 public abstract class OracleDB extends DBDatabase{
 
-	public OracleDB(DBDefinition definition, DataSource ds) {
-		super(definition, ds);
-	}
-
+	/**
+	 * Creates a DBDatabase instance for the definition and data source.
+	 * 
+	 * <p>
+	 * You should probably be using {@link Oracle11DB#Oracle11DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)  } or {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String) 
+	 *
+	 * @param definition
+	 * @param driverName
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 */
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		super(definition, driverName, jdbcURL, username, password);
 	}

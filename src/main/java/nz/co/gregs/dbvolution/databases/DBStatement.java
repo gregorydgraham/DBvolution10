@@ -51,6 +51,13 @@ public class DBStatement implements Statement {
 	private final DBDatabase database;
 	private final Connection connection;
 
+	/**
+	 * Creates a statement object for the given DBDatabase and Connection.
+	 *
+	 * @param db
+	 * @param connection
+	 * @throws SQLException
+	 */
 	public DBStatement(DBDatabase db, Connection connection) throws SQLException {
 		this.database = db;
 		this.connection = connection;
@@ -305,19 +312,35 @@ public class DBStatement implements Statement {
 	public boolean isWrapperFor(Class<?> type) throws SQLException {
 		return getInternalStatement().isWrapperFor(type);
 	}
-
-	public void setBatchHasEntries(boolean b) {
+	
+	private void setBatchHasEntries(boolean b) {
 		batchHasEntries = b;
 	}
 
+	/**
+	 * Indicates that a batch has been added.
+	 * 
+	 * @return
+	 */
 	public boolean getBatchHasEntries() {
 		return batchHasEntries;
 	}
 
+	/**
+	 * Unsupported.
+	 *
+	 * @throws SQLException
+	 */
 	public void closeOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Unsupported.
+	 *
+	 * @return
+	 * @throws SQLException
+	 */
 	public boolean isCloseOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

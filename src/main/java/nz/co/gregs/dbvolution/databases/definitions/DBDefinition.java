@@ -882,7 +882,7 @@ public abstract class DBDefinition {
 		return "";
 	}
 
-	public Object getEmptyString() {
+	public String getEmptyString() {
 		return beginStringValue() + endStringValue();
 	}
 
@@ -956,6 +956,18 @@ public abstract class DBDefinition {
 
 	public boolean supportsExpFunction() {
 		return true;
+	}
+
+	public boolean supportsStandardDeviationFunction() {
+		return true;
+	}
+
+	public boolean supportsLeftTrimFunction() {
+		return true;
+	}
+
+	public String doLeftTrimFunction(String toSQLString) {
+		return "LTRIM("+toSQLString+")";
 	}
 
 }
