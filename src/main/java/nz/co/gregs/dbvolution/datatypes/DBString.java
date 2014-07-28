@@ -103,7 +103,6 @@ public class DBString extends QueryableDatatype implements StringResult {
 			String unsafeValue = literalValue.toString();
 			return defn.beginStringValue() + defn.safeString(unsafeValue) + defn.endStringValue();
 		}
-//    }
 	}
 
 	@Override

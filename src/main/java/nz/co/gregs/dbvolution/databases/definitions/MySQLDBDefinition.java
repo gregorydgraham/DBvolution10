@@ -19,14 +19,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 
 public class MySQLDBDefinition extends DBDefinition {
 
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss");
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public String getDateFormattedForQuery(Date date) {
 
 		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s') ";

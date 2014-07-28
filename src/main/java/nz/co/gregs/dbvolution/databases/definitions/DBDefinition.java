@@ -37,6 +37,18 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public abstract class DBDefinition {
 
+	/**
+	 * Tranforms the Date instance into a SQL snippet that can be used as a date
+	 * in a query.
+	 *
+	 * <p>
+	 * For instance the date might be transformed into a string like "
+	 * DATETIME('2013-03-23 00:00:00') "
+	 *
+	 * @param date
+	 * @return the date formatted as a string that the database will correctly
+	 * interpret as a date.
+	 */
 	public abstract String getDateFormattedForQuery(Date date);
 
 	/**
@@ -102,10 +114,12 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * Formats the table and column name pair correctly for this database
+	 * Formats the table and column name pair correctly for this database.
 	 *
-	 * This should be used for column names in the select query
-	 *
+	 * <p>
+	 * This should only be used for column names in the select query when aliases
+	 * are not being used. Which is probably never.
+	 * <p>
 	 * e.g table, column => TABLE.COLUMN
 	 *
 	 * @param table
@@ -116,55 +130,101 @@ public abstract class DBDefinition {
 		return formatTableName(table) + "." + formatColumnName(columnName);
 	}
 
+	/**
+	 *
+	 * Formats the table alias and column name pair correctly for this database.
+	 * <p>
+	 * This should be used for column names in the select query.
+	 * <p>
+	 * e.g table, column => TABLEALIAS.COLUMN
+	 *
+	 * @param table
+	 * @param columnName
+	 * @return a string of the table and column name for the select clause
+	 */
 	public String formatTableAliasAndColumnName(RowDefinition table, String columnName) {
 		return getTableAlias(table) + "." + formatColumnName(columnName);
 	}
 
+	/**
+	 *
+	 * Formats the table and column name pair correctly for this database
+	 *
+	 * This should be used for column names in the select clause, that is to say
+	 * between SELECT and FROM
+	 *
+	 * e.g table, column => TABLEALIAS.COLUMN COLUMNALIAS
+	 *
+	 * @param table
+	 * @param columnName
+	 * @return a string of the table and column name for the select clause
+	 */
 	public String formatTableAliasAndColumnNameForSelectClause(DBRow table, String columnName) {
 		final String tableAliasAndColumn = formatTableAliasAndColumnName(table, columnName);
-		return tableAliasAndColumn + " " + formatForColumnAlias(tableAliasAndColumn);//formatColumnNameForDBQueryResultSet(table, columnName);
+		return tableAliasAndColumn + " " + formatForColumnAlias(tableAliasAndColumn);
 	}
 
+	/**
+	 * Formats the table name correctly for this database.
+	 *
+	 * <p>
+	 * Used wherever a table alias is inappropriate, for instance UPDATE
+	 * statements.
+	 *
+	 * @param table
+	 * @return a string of the table name formatted for this database definition
+	 */
 	public String formatTableName(DBRow table) {
 		return table.getTableName();
 	}
 
 	/**
+	 * Provides the column name as named in the SELECT clause and ResultSet.
 	 *
-	 * Specifies the column alias used within the JDBC ResultSet to identify the
-	 * column.
+	 * <p>
+	 * This is the column alias that matches the result to the query. It must be
+	 * consistent, unique, and deterministic.
 	 *
 	 * @param table
 	 * @param columnName
-	 * @return a string of the column alias for the select clause
+	 * @return
 	 */
-	@Deprecated
-	public String formatColumnNameForResultSet(DBRow table, String columnName) {
-		final String actualName = formatTableAndColumnName(table, columnName);
-		return formatForColumnAlias(actualName);
-	}
-
 	public String formatColumnNameForDBQueryResultSet(RowDefinition table, String columnName) {
 		final String actualName = formatTableAliasAndColumnName(table, columnName);
 		return formatForColumnAlias(actualName);
 	}
 
+	/**
+	 * Apply standard formatting of the column alias to avoid issues with the
+	 * database's column naming issues.
+	 *
+	 * @param actualName
+	 * @return
+	 */
 	public String formatForColumnAlias(final String actualName) {
 		String formattedName = actualName.replaceAll("\\.", "__");
 		return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
 	}
 
-//    public String formatTableAndColumnNameForSelectClause(DBRow table, String columnName) {
-//        return formatTableAndColumnName(table, columnName) + " " + formatColumnNameForResultSet(table, columnName);
-//    }
+	/**
+	 * Apply necessary transformations on the string to avoid it being used for an
+	 * SQL injection attack.
+	 *
+	 * <p>
+	 * The default method changes every single quote (') into 2 single quotes
+	 * ('').
+	 *
+	 * @param toString
+	 * @return
+	 */
 	public String safeString(String toString) {
 		return toString.replaceAll("'", "''");
 	}
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause
-	 * for conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -176,8 +236,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause
-	 * for conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -194,8 +254,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause
-	 * for joins.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * joins.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -210,14 +270,30 @@ public abstract class DBDefinition {
 		}
 	}
 
+	/**
+	 * Indicates that the database does not accept named GROUP BY columns and the
+	 * query generator should create the GROUP BY clause using indexes instead.
+	 *
+	 * @return TRUE if the database needs indexes for the group by columns, FALSE otherwise.
+	 */
 	public boolean prefersIndexBasedGroupByClause() {
 		return false;
 	}
 
+	/**
+	 * Returns the start of an AND line for this database.
+	 *
+	 * @return " AND " or the equivalent for this database.
+	 */
 	public String beginAndLine() {
 		return " AND ";
 	}
 
+	/**
+	 * Returns the start of an OR line for this database.
+	 *
+	 * @return " OR " or the equivalent for this database.
+	 */
 	public String beginOrLine() {
 		return " OR ";
 	}
@@ -459,8 +535,8 @@ public abstract class DBDefinition {
 	 *
 	 * for example MySQL/MariaDB use SELECT ... FROM ... WHERE ... LIMIT 10 ;
 	 *
-	 * Based on the example for MySQL/MariaDB this method should return " LIMIT
-	 * 10 "
+	 * Based on the example for MySQL/MariaDB this method should return " LIMIT 10
+	 * "
 	 *
 	 * If the database does not support row limiting this method should throw an
 	 * exception when rowLimit is not null
@@ -485,8 +561,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * The place holder for variables inserted into a prepared statement,
-	 * usually " ? "
+	 * The place holder for variables inserted into a prepared statement, usually
+	 * " ? "
 	 *
 	 * @return the place holder for variables as a string
 	 */
@@ -774,13 +850,13 @@ public abstract class DBDefinition {
 			return getSQLTypeOfDBDatatype(field);
 		}
 	}
-	
+
 	public String getPrimaryKeySequenceName(String table, String column) {
-		return table+"_"+column+"dsq";
+		return table + "_" + column + "dsq";
 	}
 
 	public String getPrimaryKeyTriggerName(String table, String column) {
-		return table+"_"+column+"dtg";
+		return table + "_" + column + "dtg";
 	}
 
 	protected boolean hasSpecialAutoIncrementType() {
@@ -846,8 +922,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides an opportunity to tweak the generated DBTableField before
-	 * creating the Java classes
+	 * Provides an opportunity to tweak the generated DBTableField before creating
+	 * the Java classes
 	 *
 	 * @param dbTableField the current field being processed by
 	 * DBTableClassGenerator
@@ -858,8 +934,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether this DBDefinition supports retrieving the primary key
-	 * of the last inserted row using SQL.
+	 * Indicates whether this DBDefinition supports retrieving the primary key of
+	 * the last inserted row using SQL.
 	 *
 	 * <p>
 	 * Preferably the database should support
@@ -869,8 +945,7 @@ public abstract class DBDefinition {
 	 * primary key.
 	 *
 	 * <p>
-	 * The database should support either generated keys or last inserted row
-	 * SQL.
+	 * The database should support either generated keys or last inserted row SQL.
 	 *
 	 * <p>
 	 * If both {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions)
@@ -902,9 +977,9 @@ public abstract class DBDefinition {
 	 * The default implementation returns TRUE.
 	 *
 	 * <p>
-	 * If the database does not support the standard function then the
-	 * definition may override {@link #doDegreesTransform(java.lang.String) } to
-	 * implement the required functionality.
+	 * If the database does not support the standard function then the definition
+	 * may override {@link #doDegreesTransform(java.lang.String) } to implement
+	 * the required functionality.
 	 *
 	 * @return TRUE if the database supports the standard DEGREES function,
 	 * otherwise FALSE.
@@ -920,9 +995,9 @@ public abstract class DBDefinition {
 	 * The default implementation returns TRUE.
 	 *
 	 * <p>
-	 * If the database does not support the standard function then the
-	 * definition may override {@link #doRadiansTransform(java.lang.String) } to
-	 * implement the required functionality.
+	 * If the database does not support the standard function then the definition
+	 * may override {@link #doRadiansTransform(java.lang.String) } to implement
+	 * the required functionality.
 	 *
 	 * @return TRUE if the database supports the standard RADIANS function,
 	 * otherwise FALSE.
@@ -935,8 +1010,8 @@ public abstract class DBDefinition {
 	 * Implements the degrees to radians transformation using simple maths.
 	 *
 	 * <p>
-	 * If the database does not support the standard RADIANS function this
-	 * method provides another method of providing the function.
+	 * If the database does not support the standard RADIANS function this method
+	 * provides another method of providing the function.
 	 *
 	 * @param degreesSQL
 	 * @return
@@ -949,8 +1024,8 @@ public abstract class DBDefinition {
 	 * Implements the radians to degrees transformation using simple maths.
 	 *
 	 * <p>
-	 * If the database does not support the standard DEGREES function this
-	 * method provides another method of providing the function.
+	 * If the database does not support the standard DEGREES function this method
+	 * provides another method of providing the function.
 	 *
 	 * @param radiansSQL
 	 * @return
@@ -976,7 +1051,7 @@ public abstract class DBDefinition {
 	}
 
 	public String doLeftTrimFunction(String toSQLString) {
-		return "LTRIM("+toSQLString+")";
+		return "LTRIM(" + toSQLString + ")";
 	}
 
 }

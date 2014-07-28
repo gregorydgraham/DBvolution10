@@ -50,12 +50,7 @@ public class Oracle11DBDefinition extends DBDefinition {
 	public String formatColumnName(String columnName) {
 		return "" + columnName + "";
 	}
-
-//	@Override
-//	public String formatForColumnAlias(final String actualName) {
-//		String formattedName = actualName.replaceAll("\\.", "__");
-//		return ("DB" + formattedName.hashCode()).replaceAll("-", "O");
-//	}
+	
 	@Override
 	public Object getTableAlias(RowDefinition tabRow) {
 		return ("O" + tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "O");

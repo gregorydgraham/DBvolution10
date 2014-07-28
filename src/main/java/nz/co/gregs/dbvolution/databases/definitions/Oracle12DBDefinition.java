@@ -52,12 +52,6 @@ public class Oracle12DBDefinition extends DBDefinition {
         return ("DBV" + columnName.hashCode() + "").replaceAll("[^0-9]", "o");}
     }
 
-//	@Override
-//	public String formatForColumnAlias(final String actualName) {
-//		String formattedName = actualName.replaceAll("\\.", "__");
-//		return ("DB" + formattedName.hashCode()).replaceAll("-", "O");
-//	}
-
 	@Override
 	public Object getTableAlias(RowDefinition tabRow) {
 		return ("O" + tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "O");
