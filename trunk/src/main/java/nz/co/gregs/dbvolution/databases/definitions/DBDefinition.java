@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -754,7 +755,7 @@ public abstract class DBDefinition {
 		return false;
 	}
 
-	public List<String> getTriggerBasedIdentitySQL(String table, String column) {
+	public List<String> getTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {
 		return new ArrayList<String>();
 	}
 
@@ -772,6 +773,14 @@ public abstract class DBDefinition {
 		} else {
 			return getSQLTypeOfDBDatatype(field);
 		}
+	}
+	
+	public String getPrimaryKeySequenceName(String table, String column) {
+		return table+"_"+column+"dsq";
+	}
+
+	public String getPrimaryKeyTriggerName(String table, String column) {
+		return table+"_"+column+"dtg";
 	}
 
 	protected boolean hasSpecialAutoIncrementType() {
