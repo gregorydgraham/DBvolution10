@@ -29,9 +29,9 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DBReportTests extends AbstractTest {
+public class DBReportTest extends AbstractTest {
 	
-	public DBReportTests(Object testIterationName, Object db) {
+	public DBReportTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 	
