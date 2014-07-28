@@ -852,7 +852,7 @@ public abstract class DBDatabase implements Cloneable {
 		try {
 			dbStatement.execute(sqlString);
 			if (definition.usesTriggerBasedIdentities() && pkFields.size() == 1) {
-				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
+				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
 					dbStatement.execute(sql);
 				}
@@ -926,6 +926,7 @@ public abstract class DBDatabase implements Cloneable {
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		try {
 			this.dropTable(tableRow);
+			this.dropAnyAssociatedDatabaseObjects(tableRow);
 		} catch (SQLException exp) {
 			;
 		}
@@ -1235,5 +1236,18 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	protected void setPassword(String password) {
 		this.password = password;
+	}
+
+	/**
+	 * Called after DROP TABLE to allow the DBDatabase to clean up any extra
+	 * objects created with the table.
+	 *
+	 * @param <TR>
+	 * @param tableRow
+	 * @throws java.sql.SQLException
+	 */
+	@SuppressWarnings("empty-statement")
+	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException{
+		;
 	}
 }

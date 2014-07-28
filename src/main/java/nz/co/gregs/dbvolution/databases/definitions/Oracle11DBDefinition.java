@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -26,36 +27,35 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class Oracle11DBDefinition extends DBDefinition {
 
-    String dateFormatStr = "yyyy-M-d HH:mm:ss Z";
-    String oracleDateFormatStr = "YYYY-MM-DD HH24:MI:SS TZHTZM";//*/"YYYY-M-DD HH24:mi:SS TZR";
-    SimpleDateFormat javaToStringFormatter = new SimpleDateFormat(dateFormatStr);
+	String dateFormatStr = "yyyy-M-d HH:mm:ss Z";
+	String oracleDateFormatStr = "YYYY-MM-DD HH24:MI:SS TZHTZM";//*/"YYYY-M-DD HH24:mi:SS TZR";
+	SimpleDateFormat javaToStringFormatter = new SimpleDateFormat(dateFormatStr);
 
-    @Override
-    public String getDateFormattedForQuery(Date date) {
-        if (date == null) {
-            return getNull();
-        }
+	@Override
+	public String getDateFormattedForQuery(Date date) {
+		if (date == null) {
+			return getNull();
+		}
 //        yyyy-MM-dd hh:mm:ss[.nnnnnnnnn]
-        return " TO_TIMESTAMP_TZ('" + javaToStringFormatter.format(date) + "','" + oracleDateFormatStr + "') ";
-        //return "'"+strToDateFormat.format(date)+"'";
-    }
+		return " TO_TIMESTAMP_TZ('" + javaToStringFormatter.format(date) + "','" + oracleDateFormatStr + "') ";
+		//return "'"+strToDateFormat.format(date)+"'";
+	}
 
-    @Override
-    public String formatTableName(DBRow table) {
-        return table.getTableName();
-    }
+	@Override
+	public String formatTableName(DBRow table) {
+		return table.getTableName();
+	}
 
-    @Override
-    public String formatColumnName(String columnName) {
-        return "" + columnName + "";
-    }
+	@Override
+	public String formatColumnName(String columnName) {
+		return "" + columnName + "";
+	}
 
 //	@Override
 //	public String formatForColumnAlias(final String actualName) {
 //		String formattedName = actualName.replaceAll("\\.", "__");
 //		return ("DB" + formattedName.hashCode()).replaceAll("-", "O");
 //	}
-
 	@Override
 	public Object getTableAlias(RowDefinition tabRow) {
 		return ("O" + tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "O");
@@ -65,46 +65,45 @@ public class Oracle11DBDefinition extends DBDefinition {
 	public String beginTableAlias() {
 		return " ";
 	}
-	
+
 	@Override
-    public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
-        if (qdt instanceof DBBoolean) {
-            return " NUMBER(1)";
-        } else if (qdt instanceof DBString) {
-            return " VARCHAR2(1000) ";
-        } else if (qdt instanceof DBDate) {
-            return " TIMESTAMP ";
+	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+		if (qdt instanceof DBBoolean) {
+			return " NUMBER(1)";
+		} else if (qdt instanceof DBString) {
+			return " VARCHAR2(1000) ";
+		} else if (qdt instanceof DBDate) {
+			return " TIMESTAMP ";
 //        } else if (qdt instanceof DBLargeObject) {
 //            return " LONGBLOB ";
-        } else {
-            return qdt.getSQLDatatype();
-        }
-    }
+		} else {
+			return qdt.getSQLDatatype();
+		}
+	}
 
 //    @Override
 //    public boolean prefersIndexBasedGroupByClause() {
 //        return true;
 //    }
+	@Override
+	public Object endSQLStatement() {
+		return "";
+	}
 
-    @Override
-    public Object endSQLStatement() {
-        return "";
-    }
+	@Override
+	public String endInsertLine() {
+		return "";
+	}
 
-    @Override
-    public String endInsertLine() {
-        return "";
-    }
+	@Override
+	public String endDeleteLine() {
+		return "";
+	}
 
-    @Override
-    public String endDeleteLine() {
-        return "";
-    }
-
-    @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-        return "/*+ FIRST_ROWS(" + options.getRowLimit() + ") */";
-    }
+	@Override
+	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+		return "/*+ FIRST_ROWS(" + options.getRowLimit() + ") */";
+	}
 
 	@Override
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
@@ -115,7 +114,6 @@ public class Oracle11DBDefinition extends DBDefinition {
 //    public Object getLimitRowsSubClauseAfterWhereClause(Long rowLimit) {
 //        return "";
 //    }
-
 //    @Override
 //    public String getCurrentDateFunctionName() {
 //        return "SYSDATE";
@@ -130,26 +128,25 @@ public class Oracle11DBDefinition extends DBDefinition {
 //    public String getCurrentTimeFunction() {
 //        return "SYSDATE";
 //    }
+	@Override
+	public String getCurrentUserFunctionName() {
+		return "USER";
+	}
 
-    @Override
-    public String getCurrentUserFunctionName() {
-        return "USER";
-    }
+	@Override
+	public String getPositionFunction(String originalString, String stringToFind) {
+		return "INSTR(" + originalString + "," + stringToFind + ")";
+	}
 
-    @Override
-    public String getPositionFunction(String originalString, String stringToFind) {
-        return "INSTR(" + originalString + "," + stringToFind + ")";
-    }
+	@Override
+	public String getIfNullFunctionName() {
+		return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
+	}
 
-    @Override
-    public String getIfNullFunctionName() {
-        return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean supportsPaging(QueryOptions options) {
-        return false;
-    }
+	@Override
+	public boolean supportsPaging(QueryOptions options) {
+		return false;
+	}
 
 	@Override
 	public String getColumnAutoIncrementSuffix() {
@@ -160,9 +157,9 @@ public class Oracle11DBDefinition extends DBDefinition {
 	public boolean usesTriggerBasedIdentities() {
 		return true;
 	}
-	
+
 	@Override
-	public List<String> getTriggerBasedIdentitySQL(String table, String column){
+	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
 //		    CREATE SEQUENCE dept_seq;
 //
 //Create a trigger to populate the ID column if it's not specified in the insert.
@@ -176,24 +173,26 @@ public class Oracle11DBDefinition extends DBDefinition {
 //      INTO   :new.id
 //      FROM   dual;
 //    END;
-		
+
 		List<String> result = new ArrayList<String>();
-		String sequenceName = table+"_"+column+"_dbv_seq";
-		result.add("CREATE SEQUENCE "+sequenceName);
-		
-		result.add("CREATE OR REPLACE TRIGGER "+table+"_"+column+"_dbv_trg \n" +
-"    BEFORE INSERT ON "+table+" \n" +
-"    FOR EACH ROW\n" +
-"    WHEN (new."+column+" IS NULL)\n" +
-"    BEGIN\n" +
-"      SELECT "+sequenceName+".NEXTVAL\n" +
-"      INTO   :new."+column+"\n" +
-"      FROM   dual;\n" +
-"    END");
-		
+		String sequenceName = getPrimaryKeySequenceName(table, column);
+		result.add("CREATE SEQUENCE " + sequenceName);
+
+		String triggerName = getPrimaryKeyTriggerName(table, column);
+		result.add("CREATE OR REPLACE TRIGGER "+DB.getUsername()+"." + triggerName + " \n"
+				+ "    BEFORE INSERT ON "+DB.getUsername()+"." + table + " \n"
+				+ "    FOR EACH ROW\n"
+				+ "    WHEN (new." + column + " IS NULL)\n"
+				+ "    BEGIN\n"
+				+ "      SELECT " + sequenceName + ".NEXTVAL\n"
+				+ "      INTO   :new." + column + "\n"
+				+ "      FROM   dual;\n"
+//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
+				+ "    END;\n");
+
 		return result;
 	}
-	
+
 	@Override
 	public String getStringLengthFunctionName() {
 		return "LENGTH";

@@ -15,7 +15,9 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
@@ -76,6 +78,29 @@ public class Oracle11DB extends OracleDB {
 	 */
 	public Oracle11DB(String host, int port, String serviceName, String username, String password) {
 		super(new Oracle11DBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
+	}
+
+	@Override
+	@SuppressWarnings("empty-statement")
+	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException{
+
+		if (tableRow.getPrimaryKey() != null) {
+			DBDefinition definition = getDefinition();
+			final DBStatement dbStatement = getDBStatement();
+			final String formattedTableName = definition.formatTableName(tableRow);
+			final String formattedColumnName = definition.formatColumnName(tableRow.getPrimaryKeyColumnName());
+			try {
+				dbStatement.execute("DROP SEQUENCE " +definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
+			} finally {
+				dbStatement.close();
+			}
+			final DBStatement dbStatement2 = getDBStatement();
+			try {
+				dbStatement2.execute("DROP TRIGGER " +definition.getPrimaryKeyTriggerName(formattedTableName, formattedColumnName));
+			} finally {
+				dbStatement2.close();
+			}
+		}
 	}
 
 	@Override
