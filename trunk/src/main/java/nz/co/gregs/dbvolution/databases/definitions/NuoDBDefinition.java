@@ -85,9 +85,15 @@ public class NuoDBDefinition extends DBDefinition{
 		return false;
 	}
 	
+	/**
+	 * God-awful hack to get past a bug in NuoDB LTRIM.
+	 * 
+	 * @param toSQLString
+	 * @return 
+	 */
 	@Override
 	public String doLeftTrimFunction(String toSQLString) {
-		return "TRIM( LEADING ' ' FROM "+toSQLString+")";
+		return " (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
 	}
 
 
