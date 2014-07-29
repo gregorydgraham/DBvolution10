@@ -317,7 +317,7 @@ public class DBQuery {
 
 		String sqlToReturn;
 		if (previousTables.isEmpty()) {
-			sqlToReturn = " " + newTable.getTableName() + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
+			sqlToReturn = " " + defn.formatTableName(newTable) + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
 		} else {
 			if (isFullOuterJoin) {
 				sqlToReturn = lineSep + defn.beginFullOuterJoin();
@@ -326,7 +326,7 @@ public class DBQuery {
 			} else {
 				sqlToReturn = lineSep + defn.beginInnerJoin();
 			}
-			sqlToReturn += newTable.getTableName() + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
+			sqlToReturn += defn.formatTableName(newTable) + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
 			sqlToReturn += defn.beginOnClause();
 			if (!conditionClauses.isEmpty()) {
 				if (!joinClauses.isEmpty()) {
@@ -2078,7 +2078,7 @@ public class DBQuery {
 	 * the columns.
 	 * @throws SQLException
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "empty-statement"})
 	public List<DBQueryRow> getDistinctCombinationsOfColumnValues(Object... fieldsOfProvidedRows) throws AccidentalBlankQueryException, SQLException {
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
 
@@ -2212,7 +2212,7 @@ public class DBQuery {
 	
 	private static class DBRowClassNameComparator implements Comparator<Class<?>> {
 
-		public DBRowClassNameComparator() {
+		DBRowClassNameComparator() {
 		}
 
 		@Override
@@ -2229,7 +2229,7 @@ public class DBQuery {
 
 	private static class DBRowNameComparator implements Comparator<DBRow> {
 
-		public DBRowNameComparator() {
+		DBRowNameComparator() {
 		}
 
 		@Override
@@ -2246,7 +2246,7 @@ public class DBQuery {
 
 	private class QueryGraphEdgeLabelTransformer extends ToStringLabeller<DBExpression> {
 
-		public QueryGraphEdgeLabelTransformer() {
+		QueryGraphEdgeLabelTransformer() {
 		}
 
 		@Override
@@ -2257,7 +2257,7 @@ public class DBQuery {
 
 	private static class QueryGraphVertexFillPaintTransformer implements Transformer<QueryGraphNode, Paint> {
 
-		public QueryGraphVertexFillPaintTransformer() {
+		QueryGraphVertexFillPaintTransformer() {
 		}
 
 		@Override

@@ -117,8 +117,8 @@ public abstract class DBDefinition {
 	 * Formats the table and column name pair correctly for this database.
 	 *
 	 * <p>
-	 * This should only be used for column names in the select query when aliases
-	 * are not being used. Which is probably never.
+	 * This should only be used for column names in the select query when
+	 * aliases are not being used. Which is probably never.
 	 * <p>
 	 * e.g table, column => TABLE.COLUMN
 	 *
@@ -207,8 +207,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Apply necessary transformations on the string to avoid it being used for an
-	 * SQL injection attack.
+	 * Apply necessary transformations on the string to avoid it being used for
+	 * an SQL injection attack.
 	 *
 	 * <p>
 	 * The default method changes every single quote (') into 2 single quotes
@@ -223,8 +223,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -236,8 +236,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -254,8 +254,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * joins.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for joins.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -271,10 +271,12 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database does not accept named GROUP BY columns and the
-	 * query generator should create the GROUP BY clause using indexes instead.
+	 * Indicates that the database does not accept named GROUP BY columns and
+	 * the query generator should create the GROUP BY clause using indexes
+	 * instead.
 	 *
-	 * @return TRUE if the database needs indexes for the group by columns, FALSE otherwise.
+	 * @return TRUE if the database needs indexes for the group by columns,
+	 * FALSE otherwise.
 	 */
 	public boolean prefersIndexBasedGroupByClause() {
 		return false;
@@ -298,110 +300,304 @@ public abstract class DBDefinition {
 		return " OR ";
 	}
 
+	/**
+	 * Provides the start of the DROP TABLE expression for this database.
+	 *
+	 * @return "DROP TABLE " or equivalent for the database.
+	 */
 	public String getDropTableStart() {
 		return "DROP TABLE ";
 	}
 
+	/**
+	 * Returns the start of the PRIMARY KEY clause of the CREATE TABLE
+	 * statement.
+	 *
+	 * <p>
+	 * This is the clause within the column definition clause after the columns
+	 * themselves, i.e. CREATE TABLE tab (col integer<b>, PRIMARY KEY(col)</b>)
+	 *
+	 * @return ", PRIMARY KEY (" or the equivalent for this database.
+	 */
 	public String getCreateTablePrimaryKeyClauseStart() {
 		return ",PRIMARY KEY (";
 	}
 
+	/**
+	 * Returns the separator between the columns in the PRIMARY KEY clause of
+	 * the CREATE TABLE statement.
+	 *
+	 * <p>
+	 * This is the clause within the column definition clause after the columns
+	 * themselves, i.e. CREATE TABLE tab (col integer<b>, PRIMARY KEY(col)</b>)
+	 *
+	 * @return ", " or the equivalent for this database.
+	 */
 	public String getCreateTablePrimaryKeyClauseMiddle() {
 		return ", ";
 	}
 
+	/**
+	 * Returns the conclusion of the PRIMARY KEY clause of the CREATE TABLE
+	 * statement.
+	 *
+	 * <p>
+	 * This is the clause within the column definition clause after the columns
+	 * themselves, i.e. CREATE TABLE tab (col integer<b>, PRIMARY KEY(col)</b>)
+	 *
+	 * @return ")" or the equivalent for this database.
+	 */
 	public String getCreateTablePrimaryKeyClauseEnd() {
 		return ")";
 	}
 
+	/**
+	 * Returns the start of the CREATE TABLE statement.
+	 *
+	 * @return "CREATE TABLE " or the equivalent for this database.
+	 */
 	public String getCreateTableStart() {
 		return "CREATE TABLE ";
 	}
 
+	/**
+	 * Returns the start of the column list within the CREATE TABLE statement.
+	 *
+	 * <p>
+	 * This is the clause within the CREATE TABLE that defines the columns
+	 * themselves, i.e. CREATE TABLE tab <b>(col integer, PRIMARY KEY(col))</b>
+	 *
+	 * @return "(" or the equivalent for this database.
+	 */
 	public String getCreateTableColumnsStart() {
 		return "(";
 	}
 
+	/**
+	 * Returns the separator between column definitions in the column list of
+	 * the CREATE TABLE statement.
+	 *
+	 * <p>
+	 * This is the clause within the CREATE TABLE that defines the columns
+	 * themselves, i.e. CREATE TABLE tab <b>(col integer, PRIMARY KEY(col))</b>
+	 *
+	 * @return ", " or the equivalent for this database.
+	 */
 	public String getCreateTableColumnsSeparator() {
 		return ", ";
 	}
 
+	/**
+	 * Returns the separator between the column name and the column datatype
+	 * within the column definitions in the column list of the CREATE TABLE
+	 * statement.
+	 *
+	 * <p>
+	 * This is the clause within the CREATE TABLE that defines the columns
+	 * themselves, i.e. CREATE TABLE tab <b>(col integer, PRIMARY KEY(col))</b>
+	 *
+	 * @return " " or the equivalent for this database.
+	 */
 	public String getCreateTableColumnsNameAndTypeSeparator() {
 		return " ";
 	}
 
+	/**
+	 * Returns the end of the column list within the CREATE TABLE statement.
+	 *
+	 * <p>
+	 * This is the clause within the CREATE TABLE that defines the columns
+	 * themselves, i.e. CREATE TABLE tab <b>(col integer, PRIMARY KEY(col))</b>
+	 *
+	 * @return ")" or the equivalent for this database.
+	 */
 	public Object getCreateTableColumnsEnd() {
 		return ")";
 	}
 
-	public String toLowerCase(String string) {
-		return " lower(" + string + ")";
+	/**
+	 * Wraps the SQL snippet provided in the LOWER operator of the database.
+	 *
+	 * @param sql
+	 * @return " lower("+string+")"
+	 */
+	public String toLowerCase(String sql) {
+		return " lower(" + sql + ")";
 	}
 
+	/**
+	 * Returns the beginning of an INSERT statement for this database.
+	 *
+	 * @return "INSERT INTO " or equivalent.
+	 */
 	public String beginInsertLine() {
 		return "INSERT INTO ";
 	}
 
+	/**
+	 * Returns the end of an INSERT statement for this database.
+	 *
+	 * @return ";" or equivalent.
+	 */
 	public String endInsertLine() {
 		return ";";
 	}
 
+	/**
+	 * Returns the beginning of the column list of an INSERT statement for this
+	 * database.
+	 *
+	 * @return "(" or equivalent.
+	 */
 	public String beginInsertColumnList() {
 		return "(";
 	}
 
+	/**
+	 * Returns the end of the column list of an INSERT statement for this
+	 * database.
+	 *
+	 * @return ") " or equivalent.
+	 */
 	public String endInsertColumnList() {
 		return ") ";
 	}
 
+	/**
+	 * Returns the beginning of a DELETE statement for this database.
+	 *
+	 * @return "DELETE FROM " or equivalent.
+	 */
 	public String beginDeleteLine() {
 		return "DELETE FROM ";
 	}
 
+	/**
+	 * Returns the end of a DELETE statement for this database.
+	 *
+	 * @return ";" or equivalent.
+	 */
 	public String endDeleteLine() {
 		return ";";
 	}
 
+	/**
+	 * The EQUALS operator for this database.
+	 *
+	 * @return " = " or equivalent
+	 */
 	public String getEqualsComparator() {
 		return " = ";
 	}
 
+	/**
+	 * The NOT EQUALS operator for this database.
+	 *
+	 * @return " <> " or equivalent
+	 */
 	public String getNotEqualsComparator() {
 		return " <> ";
 	}
 
+	/**
+	 * Returns the beginning of a WHERE clause for this database.
+	 *
+	 * @return " WHERE " or equivalent.
+	 */
 	public String beginWhereClause() {
 		return " WHERE ";
 	}
 
+	/**
+	 * Returns the beginning of an UPDATE statement for this database.
+	 *
+	 * @return "UPDATE " or equivalent.
+	 */
 	public String beginUpdateLine() {
 		return "UPDATE ";
 	}
 
+	/**
+	 * Returns the beginning of a SET clause of an UPDATE statement for this
+	 * database.
+	 *
+	 * @return " SET " or equivalent.
+	 */
 	public String beginSetClause() {
 		return " SET ";
 	}
 
+	/**
+	 * Returns the initial separator of a SET sub-clause of an UPDATE statement
+	 * for this database.
+	 *
+	 * @return "" or equivalent.
+	 */
 	public String getStartingSetSubClauseSeparator() {
 		return "";
 	}
 
+	/**
+	 * Returns the subsequent separator of a SET sub-clause of an UPDATE
+	 * statement for this database.
+	 *
+	 * @return "," or equivalent.
+	 */
 	public String getSubsequentSetSubClauseSeparator() {
 		return ",";
 	}
 
+	/**
+	 * Returns the initial separator of a ORDER BY sub-clause of a SELECT
+	 * statement for this database.
+	 *
+	 * @return "" or equivalent.
+	 */
 	public String getStartingOrderByClauseSeparator() {
 		return "";
 	}
 
+	/**
+	 * Returns the subsequent separator of a ORDER BY sub-clause of a SELECT
+	 * statement for this database.
+	 *
+	 * @return "," or equivalent.
+	 */
 	public String getSubsequentOrderByClauseSeparator() {
 		return ",";
 	}
 
+	/**
+	 * Returns the initial clause of a WHERE clause of a SELECT statement for
+	 * this database.
+	 *
+	 * <p>
+	 * DBvolution inserts a constant operation to every WHERE clause to simplify
+	 * the production of the query. This method returns a condition that always
+	 * evaluates to true.
+	 *
+	 * @return a SQL snippet representing a TRUE operation.
+	 * @see #getTrueOperation()
+	 */
 	public String getWhereClauseBeginningCondition() {
 		return getTrueOperation();
 	}
 
+	/**
+	 * Returns the initial clause of a WHERE clause of a SELECT statement for
+	 * this database.
+	 *
+	 * <p>
+	 * DBvolution inserts a constant operation to every WHERE clause to simplify
+	 * the production of the query. This method checks the options parameter and
+	 * returns a TRUE operation or a FALSE operation depending on the query
+	 * requirements.
+	 *
+	 * @param options
+	 * @return the required initial condition.
+	 * @see #getTrueOperation()
+	 * @see #getFalseOperation()
+	 */
 	public String getWhereClauseBeginningCondition(QueryOptions options) {
 		if (options.isMatchAllConditions()) {
 			return getTrueOperation();
@@ -410,38 +606,86 @@ public abstract class DBDefinition {
 		}
 	}
 
+	/**
+	 * An SQL snippet that always evaluates to FALSE for this database.
+	 *
+	 * @return " 1=0 " or equivalent
+	 */
 	public String getFalseOperation() {
 		return " 1=0 ";
 	}
 
+	/**
+	 * An SQL snippet that always evaluates to TRUE for this database.
+	 *
+	 * @return " 1=1 " or equivalent
+	 */
 	public String getTrueOperation() {
 		return " 1=1 ";
 	}
 
+	/**
+	 * An SQL snippet that represents NULL for this database.
+	 *
+	 * @return " NULL " or equivalent
+	 */
 	public String getNull() {
 		return " NULL ";
 	}
 
+	/**
+	 * Returns the beginning of a SELECT statement for this database.
+	 *
+	 * @return "SELECT " or equivalent.
+	 */
 	public String beginSelectStatement() {
 		return " SELECT ";
 	}
 
+	/**
+	 * Returns the beginning of the FROM clause of a SELECT statement for this
+	 * database.
+	 *
+	 * @return "FROM " or equivalent.
+	 */
 	public String beginFromClause() {
 		return " FROM ";
 	}
 
+	/**
+	 * Returns the default ending of an SQL statement for this database.
+	 *
+	 * @return ";" or equivalent.
+	 */
 	public Object endSQLStatement() {
 		return ";";
 	}
 
+	/**
+	 * Returns the initial separator of the column list sub-clause of a SELECT
+	 * statement for this database.
+	 *
+	 * @return "" or equivalent.
+	 */
 	public String getStartingSelectSubClauseSeparator() {
 		return "";
 	}
 
+	/**
+	 * Returns the subsequent separator of the column list sub-clause of a SELECT
+	 * statement for this database.
+	 *
+	 * @return "," or equivalent.
+	 */
 	public String getSubsequentSelectSubClauseSeparator() {
-		return ", ";
+		return ",";
 	}
 
+	/**
+	 * The COUNT(*) clause for this database.
+	 *
+	 * @return "COUNT(*)" or equivalent.
+	 */
 	public String countStarClause() {
 		return " COUNT(*) ";
 	}
@@ -535,8 +779,8 @@ public abstract class DBDefinition {
 	 *
 	 * for example MySQL/MariaDB use SELECT ... FROM ... WHERE ... LIMIT 10 ;
 	 *
-	 * Based on the example for MySQL/MariaDB this method should return " LIMIT 10
-	 * "
+	 * Based on the example for MySQL/MariaDB this method should return " LIMIT
+	 * 10 "
 	 *
 	 * If the database does not support row limiting this method should throw an
 	 * exception when rowLimit is not null
@@ -561,8 +805,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * The place holder for variables inserted into a prepared statement, usually
-	 * " ? "
+	 * The place holder for variables inserted into a prepared statement,
+	 * usually " ? "
 	 *
 	 * @return the place holder for variables as a string
 	 */
@@ -606,7 +850,7 @@ public abstract class DBDefinition {
 		return " ";
 	}
 
-	public Object getTableAlias(RowDefinition tabRow) {
+	public String getTableAlias(RowDefinition tabRow) {
 		return ("_" + tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
 	}
 
@@ -922,8 +1166,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides an opportunity to tweak the generated DBTableField before creating
-	 * the Java classes
+	 * Provides an opportunity to tweak the generated DBTableField before
+	 * creating the Java classes
 	 *
 	 * @param dbTableField the current field being processed by
 	 * DBTableClassGenerator
@@ -934,8 +1178,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether this DBDefinition supports retrieving the primary key of
-	 * the last inserted row using SQL.
+	 * Indicates whether this DBDefinition supports retrieving the primary key
+	 * of the last inserted row using SQL.
 	 *
 	 * <p>
 	 * Preferably the database should support
@@ -945,7 +1189,8 @@ public abstract class DBDefinition {
 	 * primary key.
 	 *
 	 * <p>
-	 * The database should support either generated keys or last inserted row SQL.
+	 * The database should support either generated keys or last inserted row
+	 * SQL.
 	 *
 	 * <p>
 	 * If both {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions)
@@ -977,9 +1222,9 @@ public abstract class DBDefinition {
 	 * The default implementation returns TRUE.
 	 *
 	 * <p>
-	 * If the database does not support the standard function then the definition
-	 * may override {@link #doDegreesTransform(java.lang.String) } to implement
-	 * the required functionality.
+	 * If the database does not support the standard function then the
+	 * definition may override {@link #doDegreesTransform(java.lang.String) } to
+	 * implement the required functionality.
 	 *
 	 * @return TRUE if the database supports the standard DEGREES function,
 	 * otherwise FALSE.
@@ -995,9 +1240,9 @@ public abstract class DBDefinition {
 	 * The default implementation returns TRUE.
 	 *
 	 * <p>
-	 * If the database does not support the standard function then the definition
-	 * may override {@link #doRadiansTransform(java.lang.String) } to implement
-	 * the required functionality.
+	 * If the database does not support the standard function then the
+	 * definition may override {@link #doRadiansTransform(java.lang.String) } to
+	 * implement the required functionality.
 	 *
 	 * @return TRUE if the database supports the standard RADIANS function,
 	 * otherwise FALSE.
@@ -1010,8 +1255,8 @@ public abstract class DBDefinition {
 	 * Implements the degrees to radians transformation using simple maths.
 	 *
 	 * <p>
-	 * If the database does not support the standard RADIANS function this method
-	 * provides another method of providing the function.
+	 * If the database does not support the standard RADIANS function this
+	 * method provides another method of providing the function.
 	 *
 	 * @param degreesSQL
 	 * @return
@@ -1024,8 +1269,8 @@ public abstract class DBDefinition {
 	 * Implements the radians to degrees transformation using simple maths.
 	 *
 	 * <p>
-	 * If the database does not support the standard DEGREES function this method
-	 * provides another method of providing the function.
+	 * If the database does not support the standard DEGREES function this
+	 * method provides another method of providing the function.
 	 *
 	 * @param radiansSQL
 	 * @return
