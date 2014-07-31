@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.databases;
 
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
- * 
+ *
  * <p>
  * You should probably use {@link Oracle11DB} or {@link Oracle12DB} instead.
- * 
+ *
  * @author gregory.graham
  * @see Oracle11DB
  * @see Oracle12DB
  */
-public abstract class OracleDB extends DBDatabase{
+public abstract class OracleDB extends DBDatabase {
 
 	/**
 	 * Creates a DBDatabase instance for the definition and data source.
-	 * 
+	 *
 	 * <p>
-	 * You should probably be using {@link Oracle11DB#Oracle11DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)  } or {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String) 
+	 * You should probably be using {@link Oracle11DB#Oracle11DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
+	 * } or {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
 	 *
 	 * @param definition
 	 * @param driverName
@@ -48,9 +49,19 @@ public abstract class OracleDB extends DBDatabase{
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
+	/**
+	 * Creates a DBDatabase instance.
+	 *
+	 * @param dbDefinition an oracle database definition instance
+	 * @param dataSource a data source to an Oracle database
+	 */
+	public OracleDB(DBDefinition dbDefinition, DataSource dataSource) {
+		super(dbDefinition, dataSource);
+	}
+
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); 
+		return super.clone();
 	}
-	
+
 }

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 
 /**
@@ -24,6 +25,16 @@ import nz.co.gregs.dbvolution.DBDatabase;
  */
 public class MySQLMXJDB extends MySQLDB {
 
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds
+	 */
+	public MySQLMXJDB(DataSource ds) {
+        super(ds);
+    }
+	
 	/**
 	 * Creates a DBDatabase tweaked for MySQL MXJ.
 	 *

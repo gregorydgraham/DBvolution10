@@ -23,12 +23,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import javax.sql.DataSource;
 import net.sourceforge.tedhi.FlexibleDateFormat;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.mysql.MySQLMXJDBInitialisation;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -74,6 +76,13 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testH2DB") != null) {
 			databases.add(new Object[]{"H2DB", new H2DB("jdbc:h2:~/dbvolutionTest", "", "")});
+		}
+		if (System.getProperty("testH2DataSourceDB") != null) {
+			JdbcDataSource h2DataSource = new JdbcDataSource();
+			h2DataSource.setUser("");
+			h2DataSource.setPassword("");
+			h2DataSource.setURL("jdbc:h2:~/dbvolutionTest");
+			databases.add(new Object[]{"H2DatSourceDB", new H2DB("jdbc:h2:~/dbvolutionTest", "", "")});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});

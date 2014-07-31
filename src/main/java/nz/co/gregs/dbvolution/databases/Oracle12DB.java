@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
@@ -29,6 +30,8 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
  */
 public class Oracle12DB extends OracleDB {
 
+	private static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
+	
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *
@@ -38,8 +41,17 @@ public class Oracle12DB extends OracleDB {
 	 * @param username
 	 * @param password
 	 */
-	public Oracle12DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
-		super(definition, driverName, jdbcURL, username, password);
+//	public Oracle12DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+//		super(definition, driverName, jdbcURL, username, password);
+//	}
+
+	/**
+	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
+	 *
+	 * @param dataSource a datasource to an Oracle database
+	 */
+	public Oracle12DB(DataSource dataSource) {
+		super(new Oracle12DBDefinition(), dataSource);
 	}
 
 	/**
@@ -62,7 +74,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param password
 	 */
 	public Oracle12DB(String jdbcURL, String username, String password) {
-		super(new Oracle12DBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
+		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, jdbcURL, username, password);
 	}
 
 	/**
@@ -75,7 +87,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param password
 	 */
 	public Oracle12DB(String host, int port, String serviceName, String username, String password) {
-		super(new Oracle12DBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
+		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}
 
 	@Override

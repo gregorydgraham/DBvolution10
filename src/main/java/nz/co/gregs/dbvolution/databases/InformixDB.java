@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 
 /**
@@ -32,7 +33,7 @@ public class InformixDB extends DBDatabase {
 	 * Creates  a DBDatabase configured for Informix with the given JDBC URL, username, and password.
 	 * 
 	 * <p>
-	 * Remember to include the Informix JDBC drive in your classpath.
+	 * Remember to include the Informix JDBC driver in your classpath.
 	 *
 	 * @param jdbcURL
 	 * @param username
@@ -42,6 +43,21 @@ public class InformixDB extends DBDatabase {
 	 */
 	public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
         super(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
+        // Informix causes problems when using batched statements :(
+        setBatchSQLStatementsWhenPossible(false);
+    }
+	/**
+	 * Creates  a DBDatabase configured for Informix for the given data source.
+	 * 
+	 * <p>
+	 * Remember to include the Informix JDBC driver in your classpath.
+	 *
+	 * @param dataSource
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public InformixDB(DataSource dataSource) throws ClassNotFoundException, SQLException {
+        super(new InformixDBDefinition(), dataSource);
         // Informix causes problems when using batched statements :(
         setBatchSQLStatementsWhenPossible(false);
     }

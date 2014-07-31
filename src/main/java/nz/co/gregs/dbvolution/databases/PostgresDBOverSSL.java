@@ -16,6 +16,9 @@
 
 package nz.co.gregs.dbvolution.databases;
 
+import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.DBDatabase;
+
 /**
  * Extends the PostgreSQL database connection by adding SSL.
  *
@@ -23,6 +26,16 @@ package nz.co.gregs.dbvolution.databases;
  */
 public class PostgresDBOverSSL extends PostgresDB {
 
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds
+	 */
+	public PostgresDBOverSSL(DataSource ds) {
+        super(ds);
+    }
+	
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
@@ -49,5 +62,10 @@ public class PostgresDBOverSSL extends PostgresDB {
 	public PostgresDBOverSSL(String hostname, String port, String databaseName, String username, String password) {
         this(hostname, port, databaseName, username, password, "");
     }
+
+	@Override
+	public DBDatabase clone() throws CloneNotSupportedException {
+		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
     
 }
