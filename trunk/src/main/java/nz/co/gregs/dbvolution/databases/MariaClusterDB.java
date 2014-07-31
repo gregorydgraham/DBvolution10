@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.util.List;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
@@ -31,6 +32,15 @@ public class MariaClusterDB extends DBDatabase {
 
 	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds
+	 */
+	public MariaClusterDB(DataSource ds) {
+        super(new MariaDBDefinition(), ds);
+    }
+	
 	/**
 	 * Creates a DBDatabase instance for a MariaDB cluster hosted at the JDBC URL
 	 * supplied, logging in with the username and password supplied.

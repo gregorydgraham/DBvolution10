@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.util.List;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 
@@ -35,6 +36,16 @@ public class NuoDB extends DBDatabase {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds
+	 */
+	public NuoDB(DataSource ds) {
+        super(new NuoDBDefinition(), ds);
+    }
+	
 	/**
 	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
 	 * on the default port for NuoDB.

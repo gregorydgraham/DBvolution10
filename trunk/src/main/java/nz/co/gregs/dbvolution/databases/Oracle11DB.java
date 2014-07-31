@@ -15,7 +15,9 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11DBDefinition;
@@ -30,6 +32,15 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * @see Oracle11DBDefinition
  */
 public class Oracle11DB extends OracleDB {
+
+	/**
+	 * Creates a DBDatabase instance tweaked for Oracle 11 and above.
+	 *
+	 * @param dataSource a datasource to an Oracle database
+	 */
+	public Oracle11DB(DataSource dataSource) {
+		super(new Oracle11DBDefinition(), dataSource);
+	}
 
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11.
@@ -82,7 +93,7 @@ public class Oracle11DB extends OracleDB {
 
 	@Override
 	@SuppressWarnings("empty-statement")
-	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException{
+	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
 
 		if (tableRow.getPrimaryKey() != null) {
 			DBDefinition definition = getDefinition();
@@ -90,13 +101,13 @@ public class Oracle11DB extends OracleDB {
 			final String formattedTableName = definition.formatTableName(tableRow);
 			final String formattedColumnName = definition.formatColumnName(tableRow.getPrimaryKeyColumnName());
 			try {
-				dbStatement.execute("DROP SEQUENCE " +definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
+				dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
 			} finally {
 				dbStatement.close();
 			}
 			final DBStatement dbStatement2 = getDBStatement();
 			try {
-				dbStatement2.execute("DROP TRIGGER " +definition.getPrimaryKeyTriggerName(formattedTableName, formattedColumnName));
+				dbStatement2.execute("DROP TRIGGER " + definition.getPrimaryKeyTriggerName(formattedTableName, formattedColumnName));
 			} finally {
 				dbStatement2.close();
 			}
@@ -107,5 +118,12 @@ public class Oracle11DB extends OracleDB {
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	@Override
+	protected Connection getConnectionFromDriverManager() throws SQLException {
+		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
+	}
+	
+	
 
 }

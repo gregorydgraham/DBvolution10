@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 
 /**
@@ -36,6 +37,15 @@ public class H2MemoryDB extends H2DB {
 	 */
 	public H2MemoryDB(String jdbcURL, String username, String password) throws SQLException {
         super(jdbcURL, username, password);
+    }
+	/**
+	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC URL, user and password.
+	 *
+	 * @param dataSource
+	 * @throws SQLException
+	 */
+	public H2MemoryDB(DataSource dataSource) throws SQLException {
+        super(dataSource);
     }
 
 	/**

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
@@ -27,6 +28,16 @@ public class MariaDB extends DBDatabase {
 
 	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the data source.
+	 *
+	 * @param ds
+	 */
+	public MariaDB(DataSource ds) {
+        super(new MariaDBDefinition(), ds);
+    }
+	
 	/**
 	 * Create a MariaDB instance of DBDatabase for the database with the supplied
 	 * JDBC URL, using the username and password to login.

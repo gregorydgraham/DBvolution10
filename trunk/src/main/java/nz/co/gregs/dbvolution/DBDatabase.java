@@ -92,7 +92,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
+	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
 	 * database.
 	 *
 	 * <p>
@@ -107,7 +107,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see H2DB
 	 * @see H2MemoryDB
 	 * @see InformixDB
-	 * @see PostgresDB
+	 * @see MariaDB
+	 * @see MariaClusterDB
+	 * @see NuoDB
 	 */
 	protected DBDatabase() {
 	}
@@ -136,6 +138,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see H2MemoryDB
 	 * @see InformixDB
 	 * @see PostgresDB
+	 * @see MariaDB
+	 * @see MariaClusterDB
+	 * @see NuoDB
 	 */
 	public DBDatabase(DBDefinition definition, DataSource ds) {
 		this.definition = definition;
