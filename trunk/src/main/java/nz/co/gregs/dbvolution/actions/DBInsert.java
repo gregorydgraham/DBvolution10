@@ -156,15 +156,22 @@ public class DBInsert extends DBAction {
 							String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 							ResultSet rs = statement.executeQuery(retrieveSQL);
 							try {
-								QueryableDatatype primaryKey = this.originalRow.getPrimaryKey();
-								if (primaryKey instanceof DBInteger) {
-									DBInteger inPK = (DBInteger) primaryKey;
+								QueryableDatatype originalPK = this.originalRow.getPrimaryKey();
+								QueryableDatatype rowPK = row.getPrimaryKey();
+								if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
+									DBInteger inPK = (DBInteger) originalPK;
+									DBInteger inRowPK = (DBInteger) rowPK;
 									inPK.setValue(rs.getLong(1));
-								} else if (primaryKey instanceof DBNumber) {
-									DBNumber inPK = (DBNumber) primaryKey;
+									inRowPK.setValue(rs.getLong(1));
+								} else if ((originalPK instanceof DBNumber) && (rowPK instanceof DBInteger)) {
+									DBNumber inPK = (DBNumber) originalPK;
 									inPK.setValue(rs.getBigDecimal(1));
-								} else if (primaryKey instanceof DBString) {
-									DBString inPK = (DBString) primaryKey;
+									inPK = (DBNumber) rowPK;
+									inPK.setValue(rs.getBigDecimal(1));
+								} else if ((originalPK instanceof DBString) && (rowPK instanceof DBString)) {
+									DBString inPK = (DBString) originalPK;
+									inPK.setValue(rs.getString(1));
+									inPK = (DBString) rowPK;
 									inPK.setValue(rs.getString(1));
 								}
 							} finally {
@@ -172,6 +179,7 @@ public class DBInsert extends DBAction {
 							}
 						}
 					} catch (SQLException ex) {
+						ex.printStackTrace();
 						throw new RuntimeException(ex);
 					}
 				}
@@ -179,7 +187,7 @@ public class DBInsert extends DBAction {
 		} finally {
 			statement.close();
 		}
-		DBInsertLargeObjects blobSave = new DBInsertLargeObjects(row);
+		DBInsertLargeObjects blobSave = new DBInsertLargeObjects(this.originalRow);
 		actions.addAll(blobSave.execute(db));
 		row.setDefined();
 		return actions;
