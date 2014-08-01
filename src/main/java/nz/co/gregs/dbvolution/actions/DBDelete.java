@@ -171,7 +171,7 @@ public abstract class DBDelete extends DBAction {
 	 *
 	 * @param db
 	 * @param row
-	 * @return
+	 * @return a DBActionList of the actions required to implement the change.
 	 * @throws SQLException
 	 */
 	protected abstract DBActionList getActions(DBDatabase db, DBRow row) throws SQLException;

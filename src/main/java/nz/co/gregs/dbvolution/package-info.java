@@ -1,5 +1,5 @@
 /**
- * <h2>DBvolution: Always Java, Never SQL.<h2>
+ * <h2>DBvolution: Always Java, Never SQL.</h2>
  * <p>
  * DBvolution removes Object/Relational Impedance by using classes to represent
  * and store the information on each table, and using special datatypes to make
@@ -15,22 +15,23 @@
  * the database so you can start from scratch or migrate easily. There are
  * examples to start from in {@link nz.co.gregs.dbvolution.example}.
  * <p>
- * Using your {@link DBRow DBRow subclasses} you can create simple queries using
- * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) DBTable} or
- * complex ones using
- * {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBQuery}.
+ * Using your {@link nz.co.gregs.dbvolution.DBRow DBRow subclasses} you can
+ * create simple queries using
+ * {@link nz.co.gregs.dbvolution.DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) DBTable}
+ * or complex ones using
+ * {@link nz.co.gregs.dbvolution.DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBQuery}.
  * <p>
- * You can create transactions easily using {@link DBScript} testing the
+ * You can create transactions easily using {@link  nz.co.gregs.dbvolution.DBScript} testing the
  * transaction with
- * {@link DBScript#test(nz.co.gregs.dbvolution.DBDatabase) test} or committing
- * the changes with
- * {@link DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) implement}.
+ * {@link nz.co.gregs.dbvolution.DBScript#test(nz.co.gregs.dbvolution.DBDatabase) test}
+ * or committing the changes with
+ * {@link nz.co.gregs.dbvolution.DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) implement}.
  * <p>
  * DBvolution automatically protects you from common SQL mistakes like Cartesian
  * Joins or Blank Queries, makes outer joins trivial, helps you collect semantic
  * knowledge, and makes your application completely portable across databases.
  * <p>
- * I've been writing SQL for 20 years and DBV is easier, I hope you like it.
+ * I've been writing SQL for 20 years and DBV is better, I hope you like it.
  * <p>
  * <b>Gregory Graham<b>
  */

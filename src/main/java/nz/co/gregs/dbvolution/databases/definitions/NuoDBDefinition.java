@@ -88,10 +88,15 @@ public class NuoDBDefinition extends DBDefinition{
 	/**
 	 * God-awful hack to get past a bug in NuoDB LTRIM.
 	 * 
+	 * <p>
+	 * To be removed as soon as NuoDB fixes the bug.
+	 * 
 	 * @param toSQLString
-	 * @return 
+	 * @return a hack masquerading as SQL.
+	 * @deprecated 
 	 */
 	@Override
+	@Deprecated
 	public String doLeftTrimFunction(String toSQLString) {
 		return " (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
 	}

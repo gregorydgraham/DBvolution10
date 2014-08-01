@@ -37,7 +37,8 @@ public abstract class OracleDB extends DBDatabase {
 	 *
 	 * <p>
 	 * You should probably be using {@link Oracle11DB#Oracle11DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
-	 * } or {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
+	 * } or
+	 * {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)}
 	 *
 	 * @param definition
 	 * @param driverName
