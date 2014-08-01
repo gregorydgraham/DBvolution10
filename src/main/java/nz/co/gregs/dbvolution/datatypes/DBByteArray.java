@@ -52,7 +52,7 @@ import org.apache.commons.codec.binary.Base64;
 public class DBByteArray extends DBLargeObject {
 
 	public static final long serialVersionUID = 1;
-	InputStream byteStream = null;
+	private InputStream byteStream = null;
 
 	public DBByteArray() {
 		super();
@@ -68,17 +68,6 @@ public class DBByteArray extends DBLargeObject {
 		return "BLOB";
 	}
 
-	@Override
-	public void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof byte[]) {
-			setValue((byte[]) newLiteralValue);
-		} else if (newLiteralValue instanceof DBByteArray) {
-			setValue(((DBByteArray) newLiteralValue).getValue());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Byte[]: Use only byte arrays with this class");
-		}
-	}
-
 	public void setValue(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
 		byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
@@ -91,6 +80,25 @@ public class DBByteArray extends DBLargeObject {
 
 	public void setValue(File fileToRead) throws IOException {
 		setValue(setFromFileSystem(fileToRead));
+	}
+
+	public void setValue(String string) {
+		setValue(string.getBytes());
+	}
+
+	@Override
+	public void setValue(Object newLiteralValue) {
+		if (newLiteralValue instanceof byte[]) {
+			setValue((byte[]) newLiteralValue);
+		} else if (newLiteralValue instanceof DBByteArray) {
+			final DBByteArray valBytes = (DBByteArray) newLiteralValue;
+			setValue(valBytes.getValue());
+		} else if (newLiteralValue instanceof String) {
+			final String valBytes = (String) newLiteralValue;
+			setValue(valBytes.getBytes());
+		} else {
+			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Byte[]: Use only byte arrays with this class");
+		}
 	}
 
 	@Override
@@ -318,6 +326,16 @@ public class DBByteArray extends DBLargeObject {
 
 	public byte[] getBytes() {
 		return (byte[]) this.literalValue;
+	}
+
+	@Override
+	public String stringValue() {
+		byte[] value = this.getValue();
+		if (this.isNull()){
+			return super.stringValue();
+		}else{
+			return new String(value);
+		}
 	}
 
 	@Override

@@ -711,14 +711,32 @@ public abstract class DBDefinition {
 		return "";
 	}
 
+	/**
+	 * Returns the beginning of the ORDER BY clause of a SELECT statement for this
+	 * database.
+	 *
+	 * @return " ORDER BY " or equivalent.
+	 */
 	public String beginOrderByClause() {
 		return " ORDER BY ";
 	}
 
+	/**
+	 * Returns the end of the ORDER BY clause of a SELECT statement for this
+	 * database.
+	 *
+	 * @return " " or equivalent.
+	 */
 	public String endOrderByClause() {
 		return " ";
 	}
 
+	/**
+	 * Returns the appropriate ascending or descending keyword for this database given the sort order.
+	 *
+	 * @param sortOrder
+	 * @return " ASC " for TRUE, " DESC " for false or equivalent
+	 */
 	public Object getOrderByDirectionClause(Boolean sortOrder) {
 		if (sortOrder == null) {
 			return "";
