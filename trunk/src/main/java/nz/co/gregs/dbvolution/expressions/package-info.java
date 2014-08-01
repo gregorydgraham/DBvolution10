@@ -1,33 +1,13 @@
 /**
  * DBvolution: Always Java, Never SQL.
  * <p>
- * DBvolution removes Object/Relational Impedance by using classes to represent
- * and store the information on each table, and using special datatypes to make
- * setting query conditions trivial and intuitive.
+ * DBExpressions like {@link nz.co.gregs.dbvolution.expressions.StringExpression}, {@link nz.co.gregs.dbvolution.expressions.NumberExpression}, and {@link nz.co.gregs.dbvolution.expressions.DateExpression} allow the construction of complicated query criteria and conditions.
  * <p>
- * To use DBV, first create a connection to your database using the DBDatabase
- * subclasses in {@link nz.co.gregs.dbvolution.databases}.
+ * The primary mechanism for creating expressions is chaining, so create an expression from a DBRow field/column or a variable using the standard constructor like {@link nz.co.gregs.dbvolution.expressions.StringExpression#StringExpression(java.lang.String) } and then use the IDE's code completion to extend the chain and your expression.
  * <p>
- * With the the DBDatabase you can create to DBRow classes required from the
- * database schema using
- * {@link nz.co.gregs.dbvolution.generation.DBTableClassGenerator} or you can
- * write you own. There are examples to start from in
- * {@link nz.co.gregs.dbvolution.example}.
+ * Add the expression to your query using {@link nz.co.gregs.dbvolution.DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) }.
  * <p>
- * Using your {@link DBRow DBRow subclasses} you can create simple queries using
- * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) DBTable} or
- * complex ones using
- * {@link DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBQuery}.
- * <p>
- * You can create transactions easily using {@link DBScript} testing the
- * transaction with
- * {@link DBScript#test(nz.co.gregs.dbvolution.DBDatabase) test} or committing
- * the changes with
- * {@link DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) implement}.
- * <p>
- * DBvolution automatically protects you from common SQL mistakes like Cartesian
- * Joins or Blank Queries, makes outer joins trivial, helps you collect semantic
- * knowledge, and makes your application completely portable across databases.
+ * You can also add expressions to {@link nz.co.gregs.dbvolution.datatypes QueryableDatatypes} within a {@link nz.co.gregs.dbvolution.DBReport} to generate derived values from database columns.
  * <p>
  * I've been writing SQL for 20 years and DBV is easier, I hope you like it.
  * <p>

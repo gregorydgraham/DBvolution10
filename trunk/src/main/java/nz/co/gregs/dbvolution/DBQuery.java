@@ -706,7 +706,7 @@ public class DBQuery {
 	 *
 	 * @param existingInstancesOfThisTableRow
 	 * @param newInstance
-	 * @return
+	 * @return a list of existing rows.
 	 */
 	protected Map<String, DBRow> setExistingInstancesForTable(Map<String, DBRow> existingInstancesOfThisTableRow, DBRow newInstance) {
 		Map<String, DBRow> hashMap = existingInstancesOfThisTableRow;
@@ -1623,7 +1623,7 @@ public class DBQuery {
 	 * This method adds all the connected tables as if they were only connected to
 	 * the core tables and had no other relationships.
 	 *
-	 * @return
+	 * @return this DBQuery instance
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
@@ -2185,7 +2185,7 @@ public class DBQuery {
 		/**
 		 * Returns all the current conditions that pertain to required tables.
 		 *
-		 * @return
+		 * @return a list of SQL snippets representing required conditions.
 		 */
 		protected List<String> getRequiredConditions() {
 			return requiredConditions;
@@ -2203,7 +2203,7 @@ public class DBQuery {
 		/**
 		 * Returns all the current conditions that pertain to options tables.
 		 *
-		 * @return
+		 * @return a list of SQL snippets representing conditions on optional tables.
 		 */
 		protected List<String> getOptionalConditions() {
 			return optionalConditions;

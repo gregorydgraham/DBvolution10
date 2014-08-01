@@ -58,7 +58,7 @@ public abstract class DBDefinition {
 	 * The default implementation does not change the column name.
 	 *
 	 * @param columnName
-	 * @return
+	 * @return the column name formatted for the database.
 	 */
 	public String formatColumnName(String columnName) {
 		return columnName;
@@ -187,7 +187,8 @@ public abstract class DBDefinition {
 	 *
 	 * @param table
 	 * @param columnName
-	 * @return
+	 * @return the table alias and the column name formatted correctly for this
+	 * database.
 	 */
 	public String formatColumnNameForDBQueryResultSet(RowDefinition table, String columnName) {
 		final String actualName = formatTableAliasAndColumnName(table, columnName);
@@ -199,7 +200,7 @@ public abstract class DBDefinition {
 	 * database's column naming issues.
 	 *
 	 * @param actualName
-	 * @return
+	 * @return the column alias formatted for this database.
 	 */
 	public String formatForColumnAlias(final String actualName) {
 		String formattedName = actualName.replaceAll("\\.", "__");
@@ -215,7 +216,7 @@ public abstract class DBDefinition {
 	 * ('').
 	 *
 	 * @param toString
-	 * @return
+	 * @return the string value safely escaped for use in an SQL query.
 	 */
 	public String safeString(String toString) {
 		return toString.replaceAll("'", "''");
@@ -672,8 +673,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the subsequent separator of the column list sub-clause of a SELECT
-	 * statement for this database.
+	 * Returns the subsequent separator of the column list sub-clause of a
+	 * SELECT statement for this database.
 	 *
 	 * @return "," or equivalent.
 	 */
@@ -1259,10 +1260,10 @@ public abstract class DBDefinition {
 	 * method provides another method of providing the function.
 	 *
 	 * @param degreesSQL
-	 * @return
+	 * @return the degrees expression transformed into a radians expression
 	 */
 	public String doRadiansTransform(String degreesSQL) {
-		return " " + degreesSQL + " * 0.0174532925 ";
+		return " (" + degreesSQL + ") * 0.0174532925 ";
 	}
 
 	/**
@@ -1273,7 +1274,7 @@ public abstract class DBDefinition {
 	 * method provides another method of providing the function.
 	 *
 	 * @param radiansSQL
-	 * @return
+	 * @return the radians expression transformed into a degrees expression
 	 */
 	public String doDegreesTransform(String radiansSQL) {
 		return " " + radiansSQL + " * 57.2957795 ";

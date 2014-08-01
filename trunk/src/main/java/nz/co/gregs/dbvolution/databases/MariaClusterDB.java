@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
  *
  * <p>
  * You should probably be using {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)
+ * }
  *
  * @author gregorygraham
  */
@@ -38,12 +39,12 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param ds
 	 */
 	public MariaClusterDB(DataSource ds) {
-        super(new MariaDBDefinition(), ds);
-    }
-	
+		super(new MariaDBDefinition(), ds);
+	}
+
 	/**
-	 * Creates a DBDatabase instance for a MariaDB cluster hosted at the JDBC URL
-	 * supplied, logging in with the username and password supplied.
+	 * Creates a DBDatabase instance for a MariaDB cluster hosted at the JDBC
+	 * URL supplied, logging in with the username and password supplied.
 	 *
 	 *
 	 * @param jdbcURL
@@ -59,7 +60,8 @@ public class MariaClusterDB extends DBDatabase {
 	 * and port supplied, logging in with the username and password supplied.
 	 *
 	 * <p>
-	 * You should probably be using {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)
+	 * You should probably be using
+	 * {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)}
 	 *
 	 * @param server
 	 * @param port

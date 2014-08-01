@@ -1357,17 +1357,17 @@ public class NumberExpression implements NumberResult {
 		return nullProtectionRequired;
 	}
 
-	public static abstract class DBBinaryArithmetic implements NumberResult {
+	private static abstract class DBBinaryArithmetic implements NumberResult {
 
 		public NumberResult first;
 		public NumberResult second;
 
-		public DBBinaryArithmetic() {
+		DBBinaryArithmetic() {
 			this.first = null;
 			this.second = null;
 		}
 
-		public DBBinaryArithmetic(NumberResult first, NumberResult second) {
+		DBBinaryArithmetic(NumberResult first, NumberResult second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -2101,7 +2101,7 @@ public class NumberExpression implements NumberResult {
 
 	private static class MinUnaryFunction extends DBUnaryFunction {
 
-		public MinUnaryFunction(DBExpression only) {
+		MinUnaryFunction(DBExpression only) {
 			super(only);
 		}
 
@@ -2118,7 +2118,7 @@ public class NumberExpression implements NumberResult {
 
 	private static class MinusBinaryArithmetic extends DBBinaryArithmetic {
 
-		public MinusBinaryArithmetic(NumberResult first, NumberResult second) {
+		MinusBinaryArithmetic(NumberResult first, NumberResult second) {
 			super(first, second);
 		}
 
@@ -2130,7 +2130,7 @@ public class NumberExpression implements NumberResult {
 
 	private static class BracketUnaryFunction extends DBUnaryFunction {
 
-		public BracketUnaryFunction(DBExpression only) {
+		BracketUnaryFunction(DBExpression only) {
 			super(only);
 		}
 
@@ -2142,7 +2142,7 @@ public class NumberExpression implements NumberResult {
 
 	private static class DivisionBinaryArithmetic extends DBBinaryArithmetic {
 
-		public DivisionBinaryArithmetic(NumberResult first, NumberResult second) {
+		DivisionBinaryArithmetic(NumberResult first, NumberResult second) {
 			super(first, second);
 		}
 

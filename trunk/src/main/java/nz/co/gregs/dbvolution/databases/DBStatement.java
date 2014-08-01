@@ -312,15 +312,15 @@ public class DBStatement implements Statement {
 	public boolean isWrapperFor(Class<?> type) throws SQLException {
 		return getInternalStatement().isWrapperFor(type);
 	}
-	
+
 	private void setBatchHasEntries(boolean b) {
 		batchHasEntries = b;
 	}
 
 	/**
 	 * Indicates that a batch has been added.
-	 * 
-	 * @return
+	 *
+	 * @return TRUE if the batch has un-executed entries, otherwise FALSE.
 	 */
 	public boolean getBatchHasEntries() {
 		return batchHasEntries;
@@ -338,7 +338,7 @@ public class DBStatement implements Statement {
 	/**
 	 * Unsupported.
 	 *
-	 * @return
+	 * @return unsupported
 	 * @throws SQLException
 	 */
 	public boolean isCloseOnCompletion() throws SQLException {

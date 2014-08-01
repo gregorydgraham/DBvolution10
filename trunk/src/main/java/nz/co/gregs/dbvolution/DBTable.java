@@ -33,12 +33,6 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
- * <p>
- * DBvolution is available on <a
- * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
- * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
- *
- * <p>
  * DBTable provides features for making simple queries on the database.
  *
  * <p>
@@ -765,7 +759,7 @@ public class DBTable<E extends DBRow> {
 	 * {@code  table.setRawSQL("and lower(name) in ('peugeot','hummer')")}.
 	 *
 	 * @param rawQuery
-	 * @return
+	 * @return this DBtable instance.
 	 * @throws SQLException
 	 */
 	public DBTable<E> setRawSQL(String rawQuery) throws SQLException {

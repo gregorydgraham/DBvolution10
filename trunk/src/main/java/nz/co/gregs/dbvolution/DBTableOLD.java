@@ -643,7 +643,7 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @param newRows
-	 * @return
+	 * @return a DBActionList of all the changes required.
 	 * @throws SQLException
 	 */
 	    public final DBActionList insert(E... newRows) throws SQLException {
@@ -657,7 +657,7 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @param newRows
-	 * @return
+	 * @return a DBActionList of all the changes required.
 	 * @throws SQLException
 	 */
 	public DBActionList insert(List<E> newRows) throws SQLException {
@@ -671,7 +671,7 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @param oldRows
-	 * @return
+	 * @return a DBActionList of all the changes required.
 	 * @throws SQLException
 	 */
 	public final DBActionList delete(E... oldRows) throws SQLException {
@@ -700,7 +700,7 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @param oldRow
-	 * @return
+	 * @return a DBActionList of all the changes required.
 	 * @throws SQLException
 	 */
 	public DBActionList update(E oldRow) throws SQLException {
@@ -710,7 +710,7 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @param oldRows
-	 * @return
+	 * @return a DBActionList of all the changes required
 	 * @throws SQLException
 	 */
 	public DBActionList update(List<E> oldRows) throws SQLException {
@@ -755,7 +755,7 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @return
+	 * @return a list of all the primary keys.
 	 * @throws SQLException
 	 */
 	public List<Long> getPrimaryKeysAsLong() throws SQLException {
@@ -775,7 +775,7 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @return
+	 * @return a list of all the primary keys
 	 * @throws SQLException
 	 */
 	public List<String> getPrimaryKeysAsString() throws SQLException {
@@ -817,7 +817,7 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @param i
-	 * @return
+	 * @return this DBTableOLD instance.
 	 */
 	public DBTableOLD<E> setRowLimit(int i) {
         resultSet = null;
@@ -827,7 +827,7 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @return
+	 * @return this DBTableOLD instance.
 	 */
 	public DBTableOLD<E> clearRowLimit() {
         resultSet = null;
@@ -870,7 +870,7 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @return
+	 * @return this DBTableOLD instance
 	 */
 	public DBTableOLD<E> clearSortOrder() {
         resultSet = null;
@@ -900,7 +900,7 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @param allow
-	 * @return
+	 * @return this DBTableOLD instance.
 	 */
 	public DBTableOLD<E> setBlankQueryAllowed(boolean allow) {
         this.blankQueryAllowed = allow;
