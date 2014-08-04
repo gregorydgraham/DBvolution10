@@ -79,6 +79,8 @@ public abstract class DBDatabase implements Cloneable {
 	private final Object getStatementSynchronizeObject = new Object();
 	private final Object getConnectionSynchronizeObject = new Object();
 	private Connection transactionConnection;
+	private static final transient Map<Class<? extends DBDatabase>, List<Connection>> busyConnections = new HashMap<Class<? extends DBDatabase>, List<Connection>>();
+	private static final transient HashMap<Class<? extends DBDatabase>, List<Connection>> freeConnections = new HashMap<Class<? extends DBDatabase>, List<Connection>>();
 
 	@Override
 	protected DBDatabase clone() throws CloneNotSupportedException {
@@ -97,8 +99,8 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * <p>
 	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details
-	 * from a DataSource.
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
 	 *
 	 * @see DBDefinition
 	 * @see OracleDB
@@ -119,13 +121,12 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
-	 * database.
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
 	 *
 	 * <p>
 	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details
-	 * from a DataSource.
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
@@ -152,16 +153,15 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
-	 * database.
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
 	 *
 	 * <p>
 	 * Create a new DBDatabase by providing the connection details
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
-	 * @param driverName - The name of the JDBC class that is the Driver for
-	 * this database.
+	 * @param driverName - The name of the JDBC class that is the Driver for this
+	 * database.
 	 * @param jdbcURL - The JDBC URL to connect to the database.
 	 * @param username - The username to login to the database as.
 	 * @param password - The users password for the database.
@@ -205,23 +205,22 @@ public abstract class DBDatabase implements Cloneable {
 	 * transaction statement.
 	 */
 	public DBStatement getDBStatement() {
-		Connection connection;
+		Connection connection = null;
 		DBStatement statement;
 		synchronized (getStatementSynchronizeObject) {
 			if (isInATransaction) {
 				statement = this.transactionStatement;
 			} else {
-				connection = getConnection();
 				try {
-					statement = new DBStatement(this, connection);
-				} catch (SQLException noConnection) {
-					try {
-						connectionClosed(connection);
-						connection.close();
-					} catch (SQLException ex) {
-						Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+					connection = getConnection();
+					while (connection.isClosed()) {
+						discardConnection(connection);
+						connection = getConnection();
 					}
-					throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+					statement = new DBStatement(this, connection);
+				} catch (SQLException cantCreateStatement) {
+					discardConnection(connection);
+					throw new RuntimeException("Unable to create a Statement: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), cantCreateStatement);
 				}
 			}
 		}
@@ -240,32 +239,58 @@ public abstract class DBDatabase implements Cloneable {
 	public Connection getConnection() throws RuntimeException {
 		if (isInATransaction) {
 			return this.transactionConnection;
-		} else {
-			Connection connection;
-			synchronized (getConnectionSynchronizeObject) {
-				if (this.dataSource == null) {
-					try {
-						// load the driver
-						Class.forName(getDriverName());
-					} catch (ClassNotFoundException noDriver) {
-						throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
-					}
-					try {
-						connection = getConnectionFromDriverManager();
-					} catch (SQLException noConnection) {
-						throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
-					}
-				} else {
-					try {
-						connection = dataSource.getConnection();
-					} catch (SQLException noConnection) {
-						throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource - " + dataSource.toString(), noConnection);
+		}
+		Connection conn = null;
+		while (conn == null) {
+			if (supportsPooledConnections()) {
+				synchronized (freeConnections) {
+					if (freeConnections.isEmpty() || getConnectionList(freeConnections, this.getClass()).isEmpty()) {
+						conn = getRawConnection();
+					} else {
+						conn = getConnectionList(freeConnections, this.getClass()).get(0);
 					}
 				}
-				connectionOpened(connection);
+			} else {
+				conn = getRawConnection();
 			}
-			return connection;
+			try {
+				if (conn.isClosed()) {
+					discardConnection(conn);
+					conn = null;
+				}
+			} catch (SQLException ex) {
+				Logger.getLogger(DBDatabase.class.getName()).log(Level.FINEST, null, ex);
+			}
 		}
+		usedConnection(conn);
+		return conn;
+	}
+
+	private Connection getRawConnection() throws RuntimeException {
+		Connection connection;
+		synchronized (getConnectionSynchronizeObject) {
+			if (this.dataSource == null) {
+				try {
+					// load the driver
+					Class.forName(getDriverName());
+				} catch (ClassNotFoundException noDriver) {
+					throw new RuntimeException("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + getDriverName(), noDriver);
+				}
+				try {
+					connection = getConnectionFromDriverManager();
+				} catch (SQLException noConnection) {
+					throw new RuntimeException("Connection Not Established: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + getJdbcURL() + " USERNAME=" + getUsername(), noConnection);
+				}
+			} else {
+				try {
+					connection = dataSource.getConnection();
+				} catch (SQLException noConnection) {
+					throw new RuntimeException("Connection Not Established using the DataSource: please check the datasource - " + dataSource.toString(), noConnection);
+				}
+			}
+			connectionOpened(connection);
+		}
+		return connection;
 	}
 
 	/**
@@ -503,8 +528,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * creates a query and fetches the rows automatically, based on the examples
 	 * given
 	 *
-	 * Will throw a {@link UnexpectedNumberOfRowsException} if the number of
-	 * rows found is different from the number expected. See {@link DBQuery#getAllRows(long)
+	 * Will throw a {@link UnexpectedNumberOfRowsException} if the number of rows
+	 * found is different from the number expected. See {@link DBQuery#getAllRows(long)
 	 * } for further details.
 	 *
 	 * @param expectedNumberOfRows
@@ -541,19 +566,49 @@ public abstract class DBDatabase implements Cloneable {
 	 * DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 */
 	public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
-		if (commit) {
-			return doTransaction(dbTransaction);
-		} else {
-			return doReadOnlyTransaction(dbTransaction);
+		DBDatabase db;
+		synchronized (this) {
+			db = this.clone();
 		}
+		V returnValues = null;
+		db.transactionStatement = db.getDBTransactionStatement();
+		try {
+			db.isInATransaction = true;
+			db.transactionConnection = db.transactionStatement.getConnection();
+			boolean wasAutoCommit = db.transactionConnection.getAutoCommit();
+			db.transactionConnection.setAutoCommit(false);
+			try {
+				returnValues = dbTransaction.doTransaction(db);
+				if (commit) {
+					db.transactionConnection.commit();
+					log.info("Transaction Successful: Commit Performed");
+				} else {
+					db.transactionConnection.rollback();
+					log.info("Transaction Successful: ROLLBACK Performed");
+				}
+			} catch (Exception ex) {
+				db.transactionConnection.rollback();
+				log.warn("Exception Occurred: ROLLBACK Performed! " + ex.getMessage(), ex);
+				throw ex;
+			} finally {
+				db.transactionConnection.setAutoCommit(wasAutoCommit);
+				discardConnection(db.transactionConnection);
+			}
+		} finally {
+			db.transactionStatement.transactionFinished();
+			db.isInATransaction = false;
+			db.transactionConnection = null;
+			db.transactionStatement = null;
+		}
+		return returnValues;
 	}
 
 	/**
 	 * Performs the transaction on this database.
 	 *
 	 * <p>
-	 * If there is an exception of any kind the transaction is rolled back and
-	 * no changes are made.
+	 * If there is an exception of any kind the transaction is rolled back and no
+	 * changes are made.
 	 *
 	 * <p>
 	 * Otherwise the transaction is committed and changes are made permanent
@@ -566,48 +621,19 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see DBTransaction
 	 */
 	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
-		DBDatabase db;
-		synchronized (this) {
-			db = this.clone();
-		}
-		V returnValues = null;
-		db.transactionStatement = db.getDBTransactionStatement();
-		try {
-			db.isInATransaction = true;
-			db.transactionConnection = db.transactionStatement.getConnection();
-			db.transactionConnection.setAutoCommit(false);
-			try {
-				returnValues = dbTransaction.doTransaction(db);
-				db.transactionConnection.commit();
-				log.info("Transaction Successful: Commit Performed");
-				db.transactionConnection.setAutoCommit(true);
-			} catch (Exception ex) {
-				db.transactionConnection.rollback();
-				log.warn("Exception Occurred: ROLLBACK Performed! " + ex.getMessage(), ex);
-				throw ex;
-			} finally {
-				db.transactionConnection.setAutoCommit(true);
-				db.transactionConnection.close();
-			}
-		} finally {
-			db.transactionStatement.transactionFinished();
-			db.isInATransaction = false;
-			db.transactionConnection = null;
-			db.transactionStatement = null;
-		}
-		return returnValues;
+		return doTransaction(dbTransaction, true);
 	}
 
 	/**
 	 * Performs the transaction on this database without making changes.
 	 *
 	 * <p>
-	 * If there is an exception of any kind the transaction is rolled back and
-	 * no changes are made.
+	 * If there is an exception of any kind the transaction is rolled back and no
+	 * changes are made.
 	 *
 	 * <p>
-	 * If no exception occurs, the transaction is still rolled back and no
-	 * changes are made
+	 * If no exception occurs, the transaction is still rolled back and no changes
+	 * are made
 	 *
 	 * @param <V>
 	 * @param dbTransaction
@@ -617,42 +643,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see DBTransaction
 	 */
 	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
-		DBDatabase db;
-		synchronized (this) {
-			db = this.clone();
-		}
-		V returnValues = null;
-		boolean wasAutoCommit = true;
-
-		db.transactionStatement = getDBTransactionStatement();
-		try {
-			db.isInATransaction = true;
-
-			db.transactionConnection = db.transactionStatement.getConnection();
-			wasAutoCommit = db.transactionConnection.getAutoCommit();
-
-			db.transactionConnection.setAutoCommit(false);
-			try {
-				returnValues = dbTransaction.doTransaction(db);
-				db.transactionConnection.rollback();
-				log.info("Transaction Successful: ROLLBACK Performed");
-			} catch (Exception ex) {
-				db.transactionConnection.rollback();
-				log.warn("Exception Occurred: ROLLBACK Performed! " + ex.getMessage(), ex);
-				throw ex;
-			} finally {
-				db.transactionConnection.setAutoCommit(wasAutoCommit);
-				if (!db.transactionConnection.isClosed()) {
-					db.transactionConnection.close();
-				}
-			}
-		} finally {
-			db.transactionStatement.transactionFinished();
-			db.isInATransaction = false;
-			db.transactionConnection = null;
-			db.transactionStatement = null;
-		}
-		return returnValues;
+		return doTransaction(dbTransaction, false);
 	}
 
 	/**
@@ -682,8 +673,7 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Returns the name of the JDBC driver class used by this DBDatabase
-	 * instance.
+	 * Returns the name of the JDBC driver class used by this DBDatabase instance.
 	 *
 	 * @return the driverName
 	 */
@@ -779,8 +769,8 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Called by internal methods that are about to execute SQL so the SQL can
-	 * be printed.
+	 * Called by internal methods that are about to execute SQL so the SQL can be
+	 * printed.
 	 *
 	 * @param sqlString
 	 */
@@ -945,8 +935,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * database.
 	 *
 	 * <p>
-	 * While DBDefinition is important, unless you are implementing support for
-	 * a new database you probably don't need this.
+	 * While DBDefinition is important, unless you are implementing support for a
+	 * new database you probably don't need this.
 	 *
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
@@ -962,8 +952,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * database.
 	 *
 	 * <p>
-	 * While DBDefinition is important, unless you are implementing support for
-	 * a new database you probably don't need this.
+	 * While DBDefinition is important, unless you are implementing support for a
+	 * new database you probably don't need this.
 	 *
 	 * @param defn the DBDefinition to be used by this DBDatabase instance.
 	 */
@@ -1043,8 +1033,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * generally DBvolution attempts to do that when handed several actions at
 	 * once.
 	 * <p>
-	 * However sometimes this is inappropriate and this method can help with
-	 * those times.
+	 * However sometimes this is inappropriate and this method can help with those
+	 * times.
 	 *
 	 * @return TRUE if this instance will try to batch SQL statements, FALSE
 	 * otherwise
@@ -1061,8 +1051,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * generally DBvolution attempts to do that when handed several actions at
 	 * once.
 	 * <p>
-	 * However sometimes this is inappropriate and this method can help with
-	 * those times.
+	 * However sometimes this is inappropriate and this method can help with those
+	 * times.
 	 *
 	 * @param batchSQLStatementsWhenPossible TRUE if this instance will try to
 	 * batch SQL statements, FALSE otherwise
@@ -1097,8 +1087,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * Indicates whether this database supports full outer joins.
 	 *
 	 * <p>
-	 * Some databases don't yet support queries where all the tables are
-	 * optional, that is FULL OUTER joins.
+	 * Some databases don't yet support queries where all the tables are optional,
+	 * that is FULL OUTER joins.
 	 *
 	 * <p>
 	 * This method indicates whether or not this instance can perform full outer
@@ -1121,15 +1111,15 @@ public abstract class DBDatabase implements Cloneable {
 	 * Indicates whether this database supports full outer joins natively.
 	 *
 	 * <p>
-	 * Some databases don't yet support queries where all the tables are
-	 * optional, that is FULL OUTER joins.
+	 * Some databases don't yet support queries where all the tables are optional,
+	 * that is FULL OUTER joins.
 	 *
 	 * <p>
 	 * This method indicates whether or not this instance can perform full outer
 	 * joins.
 	 *
-	 * @return TRUE if the underlying database supports full outer joins
-	 * natively, FALSE otherwise.
+	 * @return TRUE if the underlying database supports full outer joins natively,
+	 * FALSE otherwise.
 	 */
 	protected boolean supportsFullOuterJoinNatively() {
 		return true;
@@ -1180,8 +1170,7 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Indicates to the DBSDatabase that the provided connection has been
-	 * opened.
+	 * Indicates to the DBSDatabase that the provided connection has been opened.
 	 *
 	 * <p>
 	 * This is used internally for reference counting.
@@ -1209,8 +1198,8 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Provided to allow DBDatabase sub-classes to tweak their connections
-	 * before use.
+	 * Provided to allow DBDatabase sub-classes to tweak their connections before
+	 * use.
 	 *
 	 * <p>
 	 * Used by {@link SQLiteDB} in particular.
@@ -1252,7 +1241,61 @@ public abstract class DBDatabase implements Cloneable {
 	 * @throws java.sql.SQLException
 	 */
 	@SuppressWarnings("empty-statement")
-	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException{
+	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
 		;
+	}
+
+	/**
+	 * Used by DBStatement to release the connection back into the connection pool.
+	 *
+	 * @param connection
+	 * @throws SQLException
+	 */
+	public synchronized void unusedConnection(Connection connection) throws SQLException {
+		if (supportsPooledConnections()) {
+			getConnectionList(busyConnections, this.getClass()).remove(connection);
+			getConnectionList(freeConnections, this.getClass()).add(connection);
+		} else {
+			discardConnection(connection);
+		}
+	}
+
+	/**
+	 * Used to indicate that the DBDatabase class supports Connection Pooling.
+	 * 
+	 * <p>
+	 * The default implementation returns TRUE, and so will probably every implementation.
+	 *
+	 * @return TRUE if the DBDatabase supports connection pooling, FALSE otherwise.
+	 */
+	protected boolean supportsPooledConnections() {
+		return true;
+	}
+
+	private synchronized void usedConnection(Connection connection) {
+		if (supportsPooledConnections()) {
+			getConnectionList(freeConnections, this.getClass()).remove(connection);
+			getConnectionList(busyConnections, this.getClass()).add(connection);
+		}
+	}
+
+	private synchronized void discardConnection(Connection connection) {
+		getConnectionList(busyConnections, this.getClass()).remove(connection);
+		getConnectionList(freeConnections, this.getClass()).remove(connection);
+		try {
+			connection.close();
+		} catch (SQLException ex) {
+			Logger.getLogger(DBDatabase.class.getName()).log(Level.FINEST, null, ex);
+		}
+		connectionClosed(connection);
+	}
+
+	private synchronized List<Connection> getConnectionList(Map<Class<? extends DBDatabase>, List<Connection>> connectionMap, Class<? extends DBDatabase> clazz) {
+		List<Connection> connList = connectionMap.get(clazz);
+		if (connList == null) {
+			connList = new ArrayList<Connection>();
+			connectionMap.put(clazz, connList);
+		}
+		return connList;
 	}
 }
