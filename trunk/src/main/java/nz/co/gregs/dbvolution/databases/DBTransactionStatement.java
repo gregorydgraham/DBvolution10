@@ -78,6 +78,7 @@ public class DBTransactionStatement extends DBStatement {
 	 * @throws SQLException
 	 */
 	public void transactionFinished() throws SQLException {
+//		getInternalStatement().close();
 		super.close();
 	}
 }

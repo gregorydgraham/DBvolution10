@@ -61,6 +61,7 @@ public class DBStatement implements Statement {
 	public DBStatement(DBDatabase db, Connection connection) throws SQLException {
 		this.database = db;
 		this.connection = connection;
+		//db.usedConnection(connection);
 		this.internalStatement = connection.createStatement();
 	}
 
@@ -89,9 +90,8 @@ public class DBStatement implements Statement {
 	@Override
 	public void close() throws SQLException {
 		try {
+			database.unusedConnection(getConnection());
 			getInternalStatement().close();
-			getConnection().close();
-			database.connectionClosed(getConnection());
 		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
