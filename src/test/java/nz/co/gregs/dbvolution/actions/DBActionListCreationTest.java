@@ -32,262 +32,273 @@ import static org.hamcrest.Matchers.*;
 
 public class DBActionListCreationTest extends AbstractTest {
 
-    public DBActionListCreationTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public DBActionListCreationTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void simpleActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
-        Marque marqueExample = new Marque();
-        marqueExample.getUidMarque().permittedValues(1);
-        Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
+	@Test
+	public void simpleActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
+		Marque marqueExample = new Marque();
+		marqueExample.getUidMarque().permittedValues(1);
+		Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
 
-        toyota.uidMarque.setValue(99999);
-        DBActionList updateList = marquesTable.update(toyota);
-        Assert.assertThat(updateList.size(), is(1));
+		toyota.uidMarque.setValue(99999);
+		DBActionList updateList = marquesTable.update(toyota);
+		Assert.assertThat(updateList.size(), is(1));
 
-        final DBAction firstAction = updateList.get(0);
-        final DBActionList revertList = firstAction.getRevertDBActionList();
-        Assert.assertThat(firstAction, instanceOf(DBUpdateSimpleTypes.class));
-        Assert.assertThat(revertList.size(), is(1));
-        Assert.assertThat(revertList.get(0), instanceOf(DBUpdateToPreviousValues.class));
-        List<String> revertStrings = revertList.get(0).getSQLStatements(database);
-        Assert.assertThat(revertStrings.size(), is(1));
-        Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
-                is(this.testableSQLWithoutColumnAliases("UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;")));
-        System.out.println("REVERT:");
-        for (String revert : revertStrings) {
-            System.out.println(revert);
-        }
-    }
+		final DBAction firstAction = updateList.get(0);
+		final DBActionList revertList = firstAction.getRevertDBActionList();
+		Assert.assertThat(firstAction, instanceOf(DBUpdateSimpleTypes.class));
+		Assert.assertThat(revertList.size(), is(1));
+		Assert.assertThat(revertList.get(0), instanceOf(DBUpdateToPreviousValues.class));
+		List<String> revertStrings = revertList.get(0).getSQLStatements(database);
+		Assert.assertThat(revertStrings.size(), is(1));
+		final String standardUpdateSQL = "UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
+		final String oracleUpdateSQL = "UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
+		Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
+				anyOf(
+						is(this.testableSQLWithoutColumnAliases(standardUpdateSQL)),
+						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL))
+				));
+		System.out.println("REVERT:");
+		for (String revert : revertStrings) {
+			System.out.println(revert);
+		}
+	}
 
-    @Test
-    public void multiActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
-        Marque marqueExample = new Marque();
-        final Long toyotaUID = 1L;
-        marqueExample.getUidMarque().permittedValues(toyotaUID);
+	@Test
+	public void multiActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
+		Marque marqueExample = new Marque();
+		final Long toyotaUID = 1L;
+		marqueExample.getUidMarque().permittedValues(toyotaUID);
 
-        Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
-        toyota.uidMarque.setValue(999999);
+		Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
+		toyota.uidMarque.setValue(999999);
 
-        marqueExample = new Marque();
-        marqueExample.name.permittedValuesIgnoreCase("ford");
-        Marque ford = marquesTable.getOnlyRowByExample(marqueExample);
-        final Long fordOriginalUpdateCount = ford.updateCount.getValue();
-        ford.updateCount.setValue(fordOriginalUpdateCount + 10);
+		marqueExample = new Marque();
+		marqueExample.name.permittedValuesIgnoreCase("ford");
+		Marque ford = marquesTable.getOnlyRowByExample(marqueExample);
+		final Long fordOriginalUpdateCount = ford.updateCount.getValue();
+		ford.updateCount.setValue(fordOriginalUpdateCount + 10);
 
-        DBActionList updates = database.update(toyota, ford);
-        Assert.assertThat(updates.size(), is(2));
-        Assert.assertThat(updates.get(0), instanceOf(DBUpdateSimpleTypes.class));
-        Assert.assertThat(updates.get(1), instanceOf(DBUpdateSimpleTypes.class));
+		DBActionList updates = database.update(toyota, ford);
+		Assert.assertThat(updates.size(), is(2));
+		Assert.assertThat(updates.get(0), instanceOf(DBUpdateSimpleTypes.class));
+		Assert.assertThat(updates.get(1), instanceOf(DBUpdateSimpleTypes.class));
 
-        DBActionList reverts = updates.getRevertActionList();
-        Assert.assertThat(reverts.size(), is(2));
-        System.out.println("REVERTS: ");
-        for (String revert : reverts.getSQL(database)) {
-            System.out.println(revert);
-        }
+		DBActionList reverts = updates.getRevertActionList();
+		Assert.assertThat(reverts.size(), is(2));
+		System.out.println("REVERTS: ");
+		for (String revert : reverts.getSQL(database)) {
+			System.out.println(revert);
+		}
 
-        reverts.execute(database);
-        marqueExample = new Marque();
-        marqueExample.getUidMarque().permittedValues(toyotaUID);
+		reverts.execute(database);
+		marqueExample = new Marque();
+		marqueExample.getUidMarque().permittedValues(toyotaUID);
 
-        toyota = marquesTable.getOnlyRowByExample(marqueExample);
+		toyota = marquesTable.getOnlyRowByExample(marqueExample);
 
-        marqueExample = new Marque();
-        marqueExample.name.permittedValuesIgnoreCase("ford");
-        ford = marquesTable.getOnlyRowByExample(marqueExample);
+		marqueExample = new Marque();
+		marqueExample.name.permittedValuesIgnoreCase("ford");
+		ford = marquesTable.getOnlyRowByExample(marqueExample);
 
-        Assert.assertThat(toyota.uidMarque.getValue(), is(toyotaUID));
-        Assert.assertThat(ford.updateCount.getValue(), is(fordOriginalUpdateCount));
-    }
+		Assert.assertThat(toyota.uidMarque.getValue(), is(toyotaUID));
+		Assert.assertThat(ford.updateCount.getValue(), is(fordOriginalUpdateCount));
+	}
 
-    @Test
-    public void insertAndRevertTest() throws SQLException {
-        CarCompany tvr = new CarCompany("TVR", 33);
-        DBActionList insertActions = database.insert(tvr);
-        CarCompany example = new CarCompany();
-        example.name.permittedValuesIgnoreCase("TVR");
-        List<CarCompany> foundTVR = database.get(example);
-        Assert.assertThat(foundTVR.size(), is(1));
-        DBActionList revertActionList = insertActions.getRevertActionList();
-        revertActionList.execute(database);
-        foundTVR = database.get(example);
-        Assert.assertThat(foundTVR.size(), is(0));
+	@Test
+	public void insertAndRevertTest() throws SQLException {
+		CarCompany tvr = new CarCompany("TVR", 33);
+		DBActionList insertActions = database.insert(tvr);
+		CarCompany example = new CarCompany();
+		example.name.permittedValuesIgnoreCase("TVR");
+		List<CarCompany> foundTVR = database.get(example);
+		Assert.assertThat(foundTVR.size(), is(1));
+		DBActionList revertActionList = insertActions.getRevertActionList();
+		revertActionList.execute(database);
+		foundTVR = database.get(example);
+		Assert.assertThat(foundTVR.size(), is(0));
 
-    }
-    
-    @Test
-    public void insertLargeObjectAndRevertTest() throws SQLException, FileNotFoundException, IOException {
-        CompanyLogo logo = new CompanyLogo();
-        logo.carCompany.setValue(2);
-        logo.imageFilename.setValue("some logo file.jpg");
-        logo.logoID.setValue(798);
-        logo.imageBytes.setFromFileSystem("found_toyota_logo.jpg");
-        DBActionList insertActions = database.insert(logo);
-        CompanyLogo example = new CompanyLogo();
-        example.logoID.permittedValues(798);
-        List<CompanyLogo> foundLogo = database.get(example);
-        Assert.assertThat(foundLogo.size(), is(1));
-        DBActionList revertActionList = insertActions.getRevertActionList();
-        revertActionList.execute(database);
-        foundLogo = database.get(example);
-        Assert.assertThat(foundLogo.size(), is(0));
+	}
 
-    }
+	@Test
+	public void insertLargeObjectAndRevertTest() throws SQLException, FileNotFoundException, IOException {
+		CompanyLogo logo = new CompanyLogo();
+		logo.carCompany.setValue(2);
+		logo.imageFilename.setValue("some logo file.jpg");
+		logo.logoID.setValue(798);
+		logo.imageBytes.setFromFileSystem("found_toyota_logo.jpg");
+		DBActionList insertActions = database.insert(logo);
+		CompanyLogo example = new CompanyLogo();
+		example.logoID.permittedValues(798);
+		List<CompanyLogo> foundLogo = database.get(example);
+		Assert.assertThat(foundLogo.size(), is(1));
+		DBActionList revertActionList = insertActions.getRevertActionList();
+		revertActionList.execute(database);
+		foundLogo = database.get(example);
+		Assert.assertThat(foundLogo.size(), is(0));
 
-    @Test
-    public void deleteAndRevertTest() throws SQLException {
-        database.setPrintSQLBeforeExecuting(true);
-        Marque example = new Marque();
-        example.name.permittedValuesIgnoreCase("toyota");
-        List<Marque> foundToyota = database.get(example);
-        Assert.assertThat(foundToyota.size(), is(1));
+	}
 
-        DBActionList deleteActions = database.delete(example);
-        Assert.assertThat(deleteActions.size(), is(1));
-        Assert.assertThat(deleteActions.get(0), instanceOf(DBDeleteByExample.class));
+	@Test
+	public void deleteAndRevertTest() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque example = new Marque();
+		example.name.permittedValuesIgnoreCase("toyota");
+		List<Marque> foundToyota = database.get(example);
+		Assert.assertThat(foundToyota.size(), is(1));
 
-        foundToyota = database.get(example);
-        Assert.assertThat(foundToyota.size(), is(0));
+		DBActionList deleteActions = database.delete(example);
+		Assert.assertThat(deleteActions.size(), is(1));
+		Assert.assertThat(deleteActions.get(0), instanceOf(DBDeleteByExample.class));
 
-        DBActionList revertActionList = deleteActions.getRevertActionList();
-        Assert.assertThat(revertActionList.size(), is(1));
-        Assert.assertThat(revertActionList.get(0), instanceOf(DBInsert.class));
+		foundToyota = database.get(example);
+		Assert.assertThat(foundToyota.size(), is(0));
 
-        revertActionList.execute(database);
-        foundToyota = database.get(example);
-        Assert.assertThat(foundToyota.size(), is(1));
-    }
+		DBActionList revertActionList = deleteActions.getRevertActionList();
+		Assert.assertThat(revertActionList.size(), is(1));
+		Assert.assertThat(revertActionList.get(0), instanceOf(DBInsert.class));
 
-    @Test
-    public void lotsOfDifferentActionsTest() throws SQLException, UnexpectedNumberOfRowsException {
-        Marque example = new Marque();
-        final int toyotaUID = 1;
-        example.getUidMarque().permittedValues(toyotaUID);
+		revertActionList.execute(database);
+		foundToyota = database.get(example);
+		Assert.assertThat(foundToyota.size(), is(1));
+	}
 
-        Marque toyota = marquesTable.getOnlyRowByExample(example);
-        toyota.uidMarque.setValue(999999);
+	@Test
+	public void lotsOfDifferentActionsTest() throws SQLException, UnexpectedNumberOfRowsException {
+		Marque example = new Marque();
+		final int toyotaUID = 1;
+		example.getUidMarque().permittedValues(toyotaUID);
 
-        example = new Marque();
-        example.name.permittedValuesIgnoreCase("ford");
-        Marque ford = marquesTable.getOnlyRowByExample(example);
-        final Integer fordOriginalUpdateCount = ford.updateCount.getValue().intValue();
-        ford.updateCount.setValue(fordOriginalUpdateCount + 10);
+		Marque toyota = marquesTable.getOnlyRowByExample(example);
+		toyota.uidMarque.setValue(999999);
 
-        DBActionList dataChanges = database.update(toyota, ford);
+		example = new Marque();
+		example.name.permittedValuesIgnoreCase("ford");
+		Marque ford = marquesTable.getOnlyRowByExample(example);
+		final Integer fordOriginalUpdateCount = ford.updateCount.getValue().intValue();
+		ford.updateCount.setValue(fordOriginalUpdateCount + 10);
 
-        Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
-        dataChanges.addAll(database.insert(marque));
+		DBActionList dataChanges = database.update(toyota, ford);
 
-        example = new Marque();
-        example.name.permittedValuesIgnoreCase("honda");
-        List<Marque> foundToyota = database.get(example);
-        Assert.assertThat(foundToyota.size(), is(1));
+		Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
+		dataChanges.addAll(database.insert(marque));
 
-        dataChanges.addAll(database.delete(example));
-        
-        System.out.println("Data Changes: ");
-        for(String sql : dataChanges.getSQL(database)){
-            System.out.println(sql);
-        }
+		example = new Marque();
+		example.name.permittedValuesIgnoreCase("honda");
+		List<Marque> foundToyota = database.get(example);
+		Assert.assertThat(foundToyota.size(), is(1));
 
-        final DBActionList revertActionList = dataChanges.getRevertActionList();
-        System.out.println("Revert Actions: ");
-        for(String sql : revertActionList.getSQL(database)){
-            System.out.println(sql);
-        }
+		dataChanges.addAll(database.delete(example));
 
-        revertActionList.execute(database);
+		System.out.println("Data Changes: ");
+		for (String sql : dataChanges.getSQL(database)) {
+			System.out.println(sql);
+		}
 
-        example = new Marque();
-        example.name.permittedValuesIgnoreCase("toyota");
-        toyota = database.getDBTable(example).getOnlyRowByExample(example);
-        Assert.assertThat(toyota.uidMarque.getValue().intValue(), is(toyotaUID));
-        
-        example = new Marque();
-        example.name.permittedValuesIgnoreCase("ford");
-        ford = database.getDBTable(example).getOnlyRowByExample(example);
-        Assert.assertThat(ford.updateCount.getValue().intValue(), is(fordOriginalUpdateCount));
-        
-        example = new Marque();
-        example.name.permittedValuesIgnoreCase("tvr");
-        DBTable<Marque> rowsByExample = database.getDBTable(example);
-        Assert.assertThat(rowsByExample.getAllRows().size(), is(0));
-        
-        example = new Marque();
-        example.name.permittedValuesIgnoreCase("honda");
-        rowsByExample = database.getDBTable(example);
-        Assert.assertThat(rowsByExample.getAllRows().size(), is(1));
-    }
+		final DBActionList revertActionList = dataChanges.getRevertActionList();
+		System.out.println("Revert Actions: ");
+		for (String sql : revertActionList.getSQL(database)) {
+			System.out.println(sql);
+		}
 
-    @Test
-    public void simpleDeferredActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
-        Marque marqueExample = new Marque();
-        marqueExample.getUidMarque().permittedValues(1);
-        Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
+		revertActionList.execute(database);
 
-        toyota.uidMarque.setValue(99999);
-        DBActionList updateList = DBUpdate.getUpdates(toyota);
-        Assert.assertThat(updateList.size(), is(1));
+		example = new Marque();
+		example.name.permittedValuesIgnoreCase("toyota");
+		toyota = database.getDBTable(example).getOnlyRowByExample(example);
+		Assert.assertThat(toyota.uidMarque.getValue().intValue(), is(toyotaUID));
 
-        final DBAction firstAction = updateList.get(0);
-        final DBActionList revertList = firstAction.getRevertDBActionList();
-        Assert.assertThat(firstAction, instanceOf(DBUpdateSimpleTypes.class));
-        Assert.assertThat(revertList.size(), is(1));
-        Assert.assertThat(revertList.get(0), instanceOf(DBUpdateToPreviousValues.class));
-        List<String> revertStrings = revertList.get(0).getSQLStatements(database);
-        Assert.assertThat(revertStrings.size(), is(1));
-        Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
-                is(this.testableSQLWithoutColumnAliases("UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;")));
-        System.out.println("REVERT:");
-        for (String revert : revertStrings) {
-            System.out.println(revert);
-        }
-    }
+		example = new Marque();
+		example.name.permittedValuesIgnoreCase("ford");
+		ford = database.getDBTable(example).getOnlyRowByExample(example);
+		Assert.assertThat(ford.updateCount.getValue().intValue(), is(fordOriginalUpdateCount));
 
+		example = new Marque();
+		example.name.permittedValuesIgnoreCase("tvr");
+		DBTable<Marque> rowsByExample = database.getDBTable(example);
+		Assert.assertThat(rowsByExample.getAllRows().size(), is(0));
 
-    @Test
-    public void revertListIsReversedTest() throws SQLException, UnexpectedNumberOfRowsException, FileNotFoundException, IOException {
-        Marque example = new Marque();
-        DBActionList dataChanges = new DBActionList();
+		example = new Marque();
+		example.name.permittedValuesIgnoreCase("honda");
+		rowsByExample = database.getDBTable(example);
+		Assert.assertThat(rowsByExample.getAllRows().size(), is(1));
+	}
 
-        Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
-        dataChanges.addAll(database.insert(marque));
+	@Test
+	public void simpleDeferredActionCreation() throws SQLException, UnexpectedNumberOfRowsException {
+		Marque marqueExample = new Marque();
+		marqueExample.getUidMarque().permittedValues(1);
+		Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
 
-        example.name.permittedValuesIgnoreCase("TVR");
-        List<Marque> foundTVR = database.get(example);
-        Assert.assertThat(foundTVR.size(), is(1));
-        Marque tvr = foundTVR.get(0);
-        tvr.name.setValue("TVR ROCKS!!!");
+		toyota.uidMarque.setValue(99999);
+		DBActionList updateList = DBUpdate.getUpdates(toyota);
+		Assert.assertThat(updateList.size(), is(1));
 
-        dataChanges.addAll(database.update(tvr));
-        
-        dataChanges.addAll(database.delete(tvr));
-        
-        CompanyLogo logo = new CompanyLogo();
-        logo.carCompany.setValue(2);
-        logo.imageFilename.setValue("some logo file.jpg");
-        logo.logoID.setValue(798);
-        logo.imageBytes.setFromFileSystem("found_toyota_logo.jpg");
-        dataChanges.addAll(database.insert(logo));
-        
-        System.out.println("Data Changes: ");
-        for(String sql : dataChanges.getSQL(database)){
-            System.out.println(sql);
-        }
+		final DBAction firstAction = updateList.get(0);
+		final DBActionList revertList = firstAction.getRevertDBActionList();
+		Assert.assertThat(firstAction, instanceOf(DBUpdateSimpleTypes.class));
+		Assert.assertThat(revertList.size(), is(1));
+		Assert.assertThat(revertList.get(0), instanceOf(DBUpdateToPreviousValues.class));
+		List<String> revertStrings = revertList.get(0).getSQLStatements(database);
+		Assert.assertThat(revertStrings.size(), is(1));
+		final String standardSQL = "UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
+		final String oracleSQL = "update __1081299805 set uid_marque = 1 where uid_marque = 99999";
+		Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
+				anyOf(
+						is(this.testableSQLWithoutColumnAliases(standardSQL)),
+						is(this.testableSQLWithoutColumnAliases(oracleSQL))  
+				)
+		);
 
-        final DBActionList revertActionList = dataChanges.getRevertActionList();
-        System.out.println("Revert Actions: ");
-        for(String sql : revertActionList.getSQL(database)){
-            System.out.println(sql);
-        }
-        
-        Assert.assertThat(revertActionList.get(0), instanceOf(DBDelete.class));
-        Assert.assertThat(revertActionList.get(1), instanceOf(DBInsert.class));
-        Assert.assertThat(revertActionList.get(2), instanceOf(DBUpdate.class));
-        Assert.assertThat(revertActionList.get(3), instanceOf(DBDelete.class));
+		System.out.println("REVERT:");
+		for (String revert : revertStrings) {
+			System.out.println(revert);
+		}
+	}
 
-        revertActionList.execute(database);
-    }
+	@Test
+	public void revertListIsReversedTest() throws SQLException, UnexpectedNumberOfRowsException, FileNotFoundException, IOException {
+		Marque example = new Marque();
+		DBActionList dataChanges = new DBActionList();
+
+		Marque marque = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null);
+		dataChanges.addAll(database.insert(marque));
+
+		example.name.permittedValuesIgnoreCase("TVR");
+		List<Marque> foundTVR = database.get(example);
+		Assert.assertThat(foundTVR.size(), is(1));
+		Marque tvr = foundTVR.get(0);
+		tvr.name.setValue("TVR ROCKS!!!");
+
+		dataChanges.addAll(database.update(tvr));
+
+		dataChanges.addAll(database.delete(tvr));
+
+		CompanyLogo logo = new CompanyLogo();
+		logo.carCompany.setValue(2);
+		logo.imageFilename.setValue("some logo file.jpg");
+		logo.logoID.setValue(798);
+		logo.imageBytes.setFromFileSystem("found_toyota_logo.jpg");
+		dataChanges.addAll(database.insert(logo));
+
+		System.out.println("Data Changes: ");
+		for (String sql : dataChanges.getSQL(database)) {
+			System.out.println(sql);
+		}
+
+		final DBActionList revertActionList = dataChanges.getRevertActionList();
+		System.out.println("Revert Actions: ");
+		for (String sql : revertActionList.getSQL(database)) {
+			System.out.println(sql);
+		}
+
+		Assert.assertThat(revertActionList.get(0), instanceOf(DBDelete.class));
+		Assert.assertThat(revertActionList.get(1), instanceOf(DBInsert.class));
+		Assert.assertThat(revertActionList.get(2), instanceOf(DBUpdate.class));
+		Assert.assertThat(revertActionList.get(3), instanceOf(DBDelete.class));
+
+		revertActionList.execute(database);
+	}
 }

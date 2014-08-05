@@ -79,14 +79,52 @@ public abstract class DBDatabase implements Cloneable {
 	private final Object getStatementSynchronizeObject = new Object();
 	private final Object getConnectionSynchronizeObject = new Object();
 	private Connection transactionConnection;
-	private static final transient Map<Class<? extends DBDatabase>, List<Connection>> busyConnections = new HashMap<Class<? extends DBDatabase>, List<Connection>>();
-	private static final transient HashMap<Class<? extends DBDatabase>, List<Connection>> freeConnections = new HashMap<Class<? extends DBDatabase>, List<Connection>>();
+	private static final transient Map<DBDatabase, List<Connection>> busyConnections = new HashMap<DBDatabase, List<Connection>>();
+	private static final transient HashMap<DBDatabase, List<Connection>> freeConnections = new HashMap<DBDatabase, List<Connection>>();
 
 	@Override
 	protected DBDatabase clone() throws CloneNotSupportedException {
 		Object clone = super.clone();
 		DBDatabase newInstance = (DBDatabase) clone;
 		return newInstance;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 29 * hash + (this.driverName != null ? this.driverName.hashCode() : 0);
+		hash = 29 * hash + (this.jdbcURL != null ? this.jdbcURL.hashCode() : 0);
+		hash = 29 * hash + (this.username != null ? this.username.hashCode() : 0);
+		hash = 29 * hash + (this.password != null ? this.password.hashCode() : 0);
+		hash = 29 * hash + (this.dataSource != null ? this.dataSource.hashCode() : 0);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final DBDatabase other = (DBDatabase) obj;
+		if ((this.driverName == null) ? (other.driverName != null) : !this.driverName.equals(other.driverName)) {
+			return false;
+		}
+		if ((this.jdbcURL == null) ? (other.jdbcURL != null) : !this.jdbcURL.equals(other.jdbcURL)) {
+			return false;
+		}
+		if ((this.username == null) ? (other.username != null) : !this.username.equals(other.username)) {
+			return false;
+		}
+		if ((this.password == null) ? (other.password != null) : !this.password.equals(other.password)) {
+			return false;
+		}
+		if (this.dataSource != other.dataSource && (this.dataSource == null || !this.dataSource.equals(other.dataSource))) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -244,10 +282,10 @@ public abstract class DBDatabase implements Cloneable {
 		while (conn == null) {
 			if (supportsPooledConnections()) {
 				synchronized (freeConnections) {
-					if (freeConnections.isEmpty() || getConnectionList(freeConnections, this.getClass()).isEmpty()) {
+					if (freeConnections.isEmpty() || getConnectionList(freeConnections).isEmpty()) {
 						conn = getRawConnection();
 					} else {
-						conn = getConnectionList(freeConnections, this.getClass()).get(0);
+						conn = getConnectionList(freeConnections).get(0);
 					}
 				}
 			} else {
@@ -1253,8 +1291,8 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public synchronized void unusedConnection(Connection connection) throws SQLException {
 		if (supportsPooledConnections()) {
-			getConnectionList(busyConnections, this.getClass()).remove(connection);
-			getConnectionList(freeConnections, this.getClass()).add(connection);
+			getConnectionList(busyConnections).remove(connection);
+			getConnectionList(freeConnections).add(connection);
 		} else {
 			discardConnection(connection);
 		}
@@ -1274,14 +1312,14 @@ public abstract class DBDatabase implements Cloneable {
 
 	private synchronized void usedConnection(Connection connection) {
 		if (supportsPooledConnections()) {
-			getConnectionList(freeConnections, this.getClass()).remove(connection);
-			getConnectionList(busyConnections, this.getClass()).add(connection);
+			getConnectionList(freeConnections).remove(connection);
+			getConnectionList(busyConnections).add(connection);
 		}
 	}
 
 	private synchronized void discardConnection(Connection connection) {
-		getConnectionList(busyConnections, this.getClass()).remove(connection);
-		getConnectionList(freeConnections, this.getClass()).remove(connection);
+		getConnectionList(busyConnections).remove(connection);
+		getConnectionList(freeConnections).remove(connection);
 		try {
 			connection.close();
 		} catch (SQLException ex) {
@@ -1290,11 +1328,11 @@ public abstract class DBDatabase implements Cloneable {
 		connectionClosed(connection);
 	}
 
-	private synchronized List<Connection> getConnectionList(Map<Class<? extends DBDatabase>, List<Connection>> connectionMap, Class<? extends DBDatabase> clazz) {
-		List<Connection> connList = connectionMap.get(clazz);
+	private synchronized List<Connection> getConnectionList(Map<DBDatabase, List<Connection>> connectionMap) {
+		List<Connection> connList = connectionMap.get(this);
 		if (connList == null) {
 			connList = new ArrayList<Connection>();
-			connectionMap.put(clazz, connList);
+			connectionMap.put(this, connList);
 		}
 		return connList;
 	}
