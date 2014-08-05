@@ -60,7 +60,7 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	private static String formatNameForOracle(final String sqlObjectName) {
-		return ("O"+sqlObjectName.hashCode()).replaceAll("-", "O");
+		return ("O"+sqlObjectName.hashCode()).replaceAll("[_-]", "O");
 	}
 	
 	@Override
