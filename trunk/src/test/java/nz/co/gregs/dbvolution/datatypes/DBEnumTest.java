@@ -25,8 +25,8 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerTable.RecordType;
-import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringTable.StringEnumType;
+import nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerEnumTable.RecordType;
+import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringEnumTable.StringEnumType;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -39,9 +39,9 @@ public class DBEnumTest extends AbstractTest {
 
 	@Test
 	public void createRecordUsingEnum() {
-		IntegerTable row = new IntegerTable();
+		IntegerEnumTable row = new IntegerEnumTable();
 		row.recordType.setValue(RecordType.MOVEMENT_CANCELLATION_REQUEST); // nested class imported
-		row.recordType.setValue(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST); // explicit reference to nested class
+		row.recordType.setValue(IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST); // explicit reference to nested class
 
 		String sqlFragment = row.recordType.toSQLString(database);
 		assertThat(sqlFragment, is("3"));
@@ -50,9 +50,9 @@ public class DBEnumTest extends AbstractTest {
 
 	@Test
 	public void createRecordUsingLiteral() {
-		IntegerTable row = new IntegerTable();
+		IntegerEnumTable row = new IntegerEnumTable();
 		row.recordType.setLiteralValue(
-				IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getCode());
+				IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getCode());
 
 		String sqlFragment = row.recordType.toSQLString(database);
 		assertThat(sqlFragment, is("3"));
@@ -61,7 +61,7 @@ public class DBEnumTest extends AbstractTest {
 
 	@Test
 	public void filterRecordUsingEnum() {
-		IntegerTable rowExemplar = new IntegerTable();
+		IntegerEnumTable rowExemplar = new IntegerEnumTable();
 		rowExemplar.recordType.permittedValues(
 				RecordType.MOVEMENT_REQUEST_RECORD,
 				RecordType.SHIPPING_MANIFEST_RECORD);
@@ -73,7 +73,7 @@ public class DBEnumTest extends AbstractTest {
 
 	@Test
 	public void filterRecordUsingLiteral() {
-		IntegerTable rowExemplar = new IntegerTable();
+		IntegerEnumTable rowExemplar = new IntegerEnumTable();
 		rowExemplar.recordType.permittedValues(
 				RecordType.MOVEMENT_REQUEST_RECORD.getCode(),
 				RecordType.SHIPPING_MANIFEST_RECORD.getCode());
@@ -85,22 +85,25 @@ public class DBEnumTest extends AbstractTest {
 
 	@Test
 	public void processIntegerRecord() throws SQLException {
-		final IntegerTable integerTableExemplar = new IntegerTable();
+		final IntegerEnumTable integerTableExemplar = new IntegerEnumTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(integerTableExemplar);
+		database.preventDroppingOfTables(true);
 		database.createTable(integerTableExemplar);
 		try {
 			database.insert(
-					new IntegerTable(1, RecordType.MOVEMENT_REQUEST_RECORD),
-					new IntegerTable(2, RecordType.SHIPPING_MANIFEST_RECORD),
-					new IntegerTable(4, RecordType.MOVEMENT_REQUEST_RECORD));
+					new IntegerEnumTable(1, RecordType.MOVEMENT_REQUEST_RECORD),
+					new IntegerEnumTable(2, RecordType.SHIPPING_MANIFEST_RECORD),
+					new IntegerEnumTable(4, RecordType.MOVEMENT_REQUEST_RECORD));
 
 			integerTableExemplar.recordType.permittedValues(
 					RecordType.MOVEMENT_CANCELLATION_REQUEST,
 					RecordType.MOVEMENT_REQUEST_RECORD,
 					RecordType.SHIPPING_MANIFEST_RECORD);
-			List<IntegerTable> rows = database.get(integerTableExemplar);
+			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
 			database.print(rows);
 
-			for (IntegerTable row : rows) {
+			for (IntegerEnumTable row : rows) {
 				if (row.uid_202.getValue().intValue() == 1) {
 					assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
 				}
@@ -110,29 +113,32 @@ public class DBEnumTest extends AbstractTest {
 			}
 		} finally {
 			database.preventDroppingOfTables(false);
-			database.dropTable(integerTableExemplar);
+			database.dropTableNoExceptions(integerTableExemplar);
 			database.preventDroppingOfTables(true);
 		}
 	}
 
 	@Test
 	public void processStringRecord() throws SQLException {
-		final StringTable stringTableExemplar = new StringTable();
+		final StringEnumTable stringTableExemplar = new StringEnumTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(stringTableExemplar);
+		database.preventDroppingOfTables(true);
 		database.createTable(stringTableExemplar);
 		try {
 			database.insert(
-					new StringTable(1, StringEnumType.MOVEMENT_REQUEST_RECORD),
-					new StringTable(2, StringEnumType.SHIPPING_MANIFEST_RECORD),
-					new StringTable(4, StringEnumType.MOVEMENT_REQUEST_RECORD));
+					new StringEnumTable(1, StringEnumType.MOVEMENT_REQUEST_RECORD),
+					new StringEnumTable(2, StringEnumType.SHIPPING_MANIFEST_RECORD),
+					new StringEnumTable(4, StringEnumType.MOVEMENT_REQUEST_RECORD));
 
 			stringTableExemplar.recordType.permittedValues(
 					StringEnumType.MOVEMENT_CANCELLATION_REQUEST,
 					StringEnumType.MOVEMENT_REQUEST_RECORD,
 					StringEnumType.SHIPPING_MANIFEST_RECORD);
-			List<StringTable> rows = database.get(stringTableExemplar);
+			List<StringEnumTable> rows = database.get(stringTableExemplar);
 			database.print(rows);
 
-			for (StringTable row : rows) {
+			for (StringEnumTable row : rows) {
 				if (row.uid_202.getValue().intValue() == 1) {
 					assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
 				}
@@ -142,8 +148,8 @@ public class DBEnumTest extends AbstractTest {
 			}
 		} finally {
 			database.preventDroppingOfTables(false);
-			database.dropTable(stringTableExemplar);
-			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(stringTableExemplar);
+			database.preventDroppingOfTables(true);
 
 		}
 	}
@@ -151,13 +157,13 @@ public class DBEnumTest extends AbstractTest {
 	@Test
 	public void correctlyConvertsLongToIntegerEnum() {
 		// warm up enum type
-		IntegerTable row = new IntegerTable();
-		row.recordType.setValue(IntegerTable.RecordType.SHIPPING_MANIFEST_RECORD);
+		IntegerEnumTable row = new IntegerEnumTable();
+		row.recordType.setValue(IntegerEnumTable.RecordType.SHIPPING_MANIFEST_RECORD);
 
 		// do test
-		long code = IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.code;
+		long code = IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.code;
 		row.recordType.setLiteralValue(code);
-		assertThat(row.recordType.enumValue(), is(IntegerTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
+		assertThat(row.recordType.enumValue(), is(IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
 	}
 
 	@Test
@@ -179,7 +185,7 @@ public class DBEnumTest extends AbstractTest {
 		 */
 	}
 
-	public static class IntegerTable extends DBRow {
+	public static class IntegerEnumTable extends DBRow {
 
 		private static final long serialVersionUID = 1L;
 
@@ -190,10 +196,10 @@ public class DBEnumTest extends AbstractTest {
 		@DBColumn("c_5")
 		public DBIntegerEnum<RecordType> recordType = new DBIntegerEnum<RecordType>();
 
-		public IntegerTable() {
+		public IntegerEnumTable() {
 		}
 
-		public IntegerTable(Integer uid, RecordType recType) {
+		public IntegerEnumTable(Integer uid, RecordType recType) {
 			this.uid_202.setValue(uid);
 			this.recordType.setValue(recType);
 		}
@@ -304,7 +310,7 @@ public class DBEnumTest extends AbstractTest {
 //            }
 //        }
 //    }
-	public static class StringTable extends DBRow {
+	public static class StringEnumTable extends DBRow {
 
 		private static final long serialVersionUID = 1L;
 
@@ -315,10 +321,10 @@ public class DBEnumTest extends AbstractTest {
 		@DBColumn("c_5")
 		public DBStringEnum<StringEnumType> recordType = new DBStringEnum<StringEnumType>();
 
-		public StringTable() {
+		public StringEnumTable() {
 		}
 
-		public StringTable(Integer uid, StringEnumType recType) {
+		public StringEnumTable(Integer uid, StringEnumType recType) {
 			this.uid_202.setValue(uid);
 			this.recordType.setValue(recType);
 		}

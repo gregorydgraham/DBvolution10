@@ -48,12 +48,12 @@ public class DBQueryCountTest extends AbstractTest{
 		String expectedResultUsingONClause = "select count(*) from marque as __1997432637 inner join car_company as __78874071 on( ((__78874071.name = 'toyota')) and (__1997432637.fk_carcompany = __78874071.uid_carcompany) ) ;";
 		String expectedResultUsingWHEREClause   = "select count(*) from marque as __1997432637 inner join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
 		String expectedResultUsingWHEREClause2 = "select count(*) from car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) where 1=1 and (__78874071.name = 'toyota') ;";
-		String expectedResultUsingWHEREClause3 = "select count(*) from car_company as oo78874071 inner join marque as oo1997432637 on( oo1997432637.fk_carcompany = oo78874071.uid_carcompany ) where 1=1 and (oo78874071.name = 'toyota') ;";
+		String expectedResultUsingWHEREClauseFromOracle = "select count(*) from car_company as OO78874071 inner join marque as OO1997432637 on( OO1997432637.fk_carcompany = OO78874071.uid_carcompany ) where 1=1 and (OO78874071.name = 'toyota')";
 		Assert.assertThat(testableSQLWithoutColumnAliases(generateSQLString),
 				anyOf(is(testableSQLWithoutColumnAliases(expectedResultUsingONClause)),
 						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause)),
 						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause2)),
-						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClause3))
+						is(testableSQLWithoutColumnAliases(expectedResultUsingWHEREClauseFromOracle))
 				));
 		// make sure it works
 		Long count = dbQuery.count();

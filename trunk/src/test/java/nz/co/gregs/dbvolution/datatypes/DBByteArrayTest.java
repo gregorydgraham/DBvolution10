@@ -115,6 +115,9 @@ public class DBByteArrayTest extends AbstractTest {
 	public void retrieveStringWithByteArrayAndAutoIncrement() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
 		ByteArrayWithAutoIncrement testRow = new ByteArrayWithAutoIncrement();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(testRow);
+		database.preventDroppingOfTables(true);
 		database.createTable(testRow);
 
 		testRow.carCompany.setValue(1);
