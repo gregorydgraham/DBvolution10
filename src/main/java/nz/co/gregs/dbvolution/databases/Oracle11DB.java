@@ -92,7 +92,6 @@ public class Oracle11DB extends OracleDB {
 	}
 
 	@Override
-	@SuppressWarnings("empty-statement")
 	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
 
 		if (tableRow.getPrimaryKey() != null) {

@@ -256,7 +256,7 @@ public class DBTableGetTest extends AbstractTest {
     public void testRawQuery() throws SQLException {
         String rawQuery = "and lower(name) in ('peugeot','hummer')  ";
         if ((database instanceof OracleDB)) {
-            rawQuery = "and lower(\"name\") in ('peugeot','hummer')  ";
+            rawQuery = "and lower(\"DB1520814014\") in ('peugeot','hummer')  ";
         }
         List<Marque> rowsByRawSQL = marquesTable.setRawSQL(rawQuery).getAllRows();
         database.print(rowsByRawSQL);

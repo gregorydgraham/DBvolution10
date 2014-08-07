@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
@@ -25,7 +24,6 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
-
 
 public class OracleDBDefinition extends DBDefinition {
 
@@ -60,22 +58,27 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	private static String formatNameForOracle(final String sqlObjectName) {
-		return ("O"+sqlObjectName.hashCode()).replaceAll("[_-]", "O");
+		if (sqlObjectName.length() < 30) {
+			return sqlObjectName.replaceAll("^[_-]", "O").replaceAll("-", "_");
+		} else {
+			return ("O" + sqlObjectName.hashCode()).replaceAll("^[_-]", "O").replaceAll("-", "_");
+		}
+	}
+
+	@Override
+	public String getTableAlias(RowDefinition tabRow) {
+		return "\""+super.getTableAlias(tabRow)+"\"";
 	}
 	
 	@Override
-	public String getTableAlias(RowDefinition tabRow) {
-		return formatNameForOracle(super.getTableAlias(tabRow));
+	public String formatForColumnAlias(final String actualName) {
+		String formattedName = actualName.replaceAll("\\.", "__");
+		return ("DB" + formattedName.hashCode()).replaceAll("-", "_")+"";
 	}
 
 	@Override
 	public String beginTableAlias() {
 		return " ";
-	}
-
-	@Override
-	public String formatColumnName(String columnName) {
-		return "" + columnName + "";
 	}
 
 	@Override
@@ -116,7 +119,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		return "";
 	}
-	
+
 	@Override
 	public String getCurrentUserFunctionName() {
 		return "USER";
@@ -130,11 +133,6 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String getIfNullFunctionName() {
 		return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public boolean supportsPaging(QueryOptions options) {
-		return false;
 	}
 
 	@Override
@@ -166,5 +164,5 @@ public class OracleDBDefinition extends DBDefinition {
 	public boolean supportsDegreesFunction() {
 		return false;
 	}
-	
+
 }

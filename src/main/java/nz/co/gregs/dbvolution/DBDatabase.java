@@ -927,6 +927,7 @@ public abstract class DBDatabase implements Cloneable {
 		final DBStatement dbStatement = getDBStatement();
 		try {
 			dbStatement.execute(sqlString);
+			dropAnyAssociatedDatabaseObjects(tableRow);
 		} finally {
 			dbStatement.close();
 		}
@@ -959,7 +960,7 @@ public abstract class DBDatabase implements Cloneable {
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		try {
 			this.dropTable(tableRow);
-			this.dropAnyAssociatedDatabaseObjects(tableRow);
+//			this.dropAnyAssociatedDatabaseObjects(tableRow);
 		} catch (SQLException exp) {
 			;
 		}

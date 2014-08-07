@@ -62,6 +62,11 @@ public class QueryOptions {
     }
 
     /**
+	 * Returns the current row limit.
+	 * 
+	 * <p>
+	 * The value will be -1 if no row limit is set.
+	 * 
      * @return the rowLimit
      */
     public int getRowLimit() {
