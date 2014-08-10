@@ -884,7 +884,7 @@ public abstract class DBDatabase implements Cloneable {
 		final DBStatement dbStatement = getDBStatement();
 		try {
 			dbStatement.execute(sqlString);
-			if (definition.usesTriggerBasedIdentities() && pkFields.size() == 1) {
+			if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
 				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
 					dbStatement.execute(sql);
@@ -1205,7 +1205,7 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	boolean supportsPaging(QueryOptions options) {
-		return definition.supportsPaging(options);
+		return definition.supportsPagingNatively(options);
 	}
 
 	/**

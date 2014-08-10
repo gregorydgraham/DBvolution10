@@ -46,7 +46,7 @@ public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 			dbIsNullOperator.invertOperator(this.invertOperator);
 			whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
 		} else {
-			whereLine = defn.convertBitsToInteger(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.convertBitsToInteger(firstValue.toSQLString(db));
+			whereLine = defn.doBitsToIntegerTransform(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.doBitsToIntegerTransform(firstValue.toSQLString(db));
 		}
 		if (this.includeNulls) {
 			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();

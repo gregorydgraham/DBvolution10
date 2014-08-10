@@ -126,7 +126,7 @@ public class DateExpression implements DateResult {
 				new UnaryComplicatedNumberFunction(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().getYearFunction(this.only.toSQLString(db));
+						return db.getDefinition().doYearTransform(this.only.toSQLString(db));
 					}
 				});
 	}
@@ -136,17 +136,26 @@ public class DateExpression implements DateResult {
 				new UnaryComplicatedNumberFunction(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().getMonthFunction(this.only.toSQLString(db));
+						return db.getDefinition().doMonthTransform(this.only.toSQLString(db));
 					}
 				});
 	}
 
+	/**
+	 * Returns the day part of the date.
+	 *
+	 * <p>
+	 * Day in this sense is the number of the day within the month: that is the 23
+	 * part of Monday 25th of August 2014
+	 *
+	 * @return a NumberExpression that will provide the day of this date.
+	 */
 	public NumberExpression day() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().getDayFunction(this.only.toSQLString(db));
+						return db.getDefinition().doDayTransform(this.only.toSQLString(db));
 					}
 				});
 	}
@@ -156,7 +165,7 @@ public class DateExpression implements DateResult {
 				new UnaryComplicatedNumberFunction(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().getHourFunction(this.only.toSQLString(db));
+						return db.getDefinition().doHourTransform(this.only.toSQLString(db));
 					}
 				});
 	}
@@ -166,7 +175,7 @@ public class DateExpression implements DateResult {
 				new UnaryComplicatedNumberFunction(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().getMinuteFunction(this.only.toSQLString(db));
+						return db.getDefinition().doMinuteTransform(this.only.toSQLString(db));
 					}
 				});
 	}
@@ -176,7 +185,7 @@ public class DateExpression implements DateResult {
 				new UnaryComplicatedNumberFunction(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().getSecondFunction(this.only.toSQLString(db));
+						return db.getDefinition().doSecondTransform(this.only.toSQLString(db));
 					}
 				});
 	}
@@ -206,7 +215,7 @@ public class DateExpression implements DateResult {
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
 	}
-	
+
 	/**
 	 * Performs searches based on a range.
 	 *
@@ -1017,7 +1026,7 @@ public class DateExpression implements DateResult {
 				} else {
 					if (dateResult.getIncludesNull()) {
 						this.nullProtectionRequired = true;
-					}else {
+					} else {
 						values.add(dateResult);
 					}
 				}

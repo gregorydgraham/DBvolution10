@@ -21,7 +21,6 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 
 public class PostgresDBDefinition extends DBDefinition {
 
@@ -59,7 +58,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String convertBitsToInteger(String columnName) {
+	public String doBitsToIntegerTransform(String columnName) {
 		return columnName + "::integer";
 	}
 
