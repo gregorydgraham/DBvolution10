@@ -65,7 +65,7 @@ public class InformixDBDefinition extends DBDefinition {
         if (rowLimit < 1) {
             return "";
         } else {
-            if (supportsPaging(options)) {
+            if (supportsPagingNatively(options)) {
                 long offset = pageNumber * rowLimit;
                 if (offset > 0L) {
                     return " SKIP " + offset + " FIRST " + rowLimit + " ";
@@ -89,22 +89,22 @@ public class InformixDBDefinition extends DBDefinition {
     }
 
     @Override
-    public String getDayFunction(String dateExpression) {
+    public String doDayTransform(String dateExpression) {
         return "DAY(" + dateExpression + ")";
     }
 
     @Override
-    public String getMonthFunction(String dateExpression) {
+    public String doMonthTransform(String dateExpression) {
         return "MONTH(" + dateExpression + ")";
     }
 
     @Override
-    public String getYearFunction(String dateExpression) {
+    public String doYearTransform(String dateExpression) {
         return "YEAR(" + dateExpression + ")";
     }
 
     @Override
-    public boolean supportsPaging(QueryOptions options) {
+    public boolean supportsPagingNatively(QueryOptions options) {
         return false;
     }
 

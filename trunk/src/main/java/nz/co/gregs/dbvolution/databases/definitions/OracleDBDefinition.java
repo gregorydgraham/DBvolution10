@@ -126,18 +126,13 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getPositionFunction(String originalString, String stringToFind) {
+	public String doPositionInStringTransform(String originalString, String stringToFind) {
 		return "INSTR(" + originalString + "," + stringToFind + ")";
 	}
 
 	@Override
 	public String getIfNullFunctionName() {
 		return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String getColumnAutoIncrementSuffix() {
-		return "";
 	}
 
 	@Override

@@ -810,7 +810,7 @@ public class NumberExpression implements NumberResult {
 
 			@Override
 			String getFunctionName(DBDatabase db) {
-				return "exp";
+				return db.getDefinition().getExpFunctionName();
 			}
 		});
 	}
@@ -1353,6 +1353,7 @@ public class NumberExpression implements NumberResult {
 		this.innerNumberResult = innerNumberResult;
 	}
 
+	@Override
 	public boolean getIncludesNull() {
 		return nullProtectionRequired;
 	}

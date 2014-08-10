@@ -124,7 +124,7 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getPositionFunction(String originalString, String stringToFind) {
+	public String doPositionInStringTransform(String originalString, String stringToFind) {
 		return "LOCATION_OF(" + originalString + ", " + stringToFind + ")";
 	}
 
@@ -139,32 +139,32 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getMonthFunction(String dateExpression) {
+	public String doMonthTransform(String dateExpression) {
 		return " (CAST(strftime('%m', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
-	public String getYearFunction(String dateExpression) {
+	public String doYearTransform(String dateExpression) {
 		return " (CAST(strftime('%Y', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
-	public String getDayFunction(String dateExpression) {
+	public String doDayTransform(String dateExpression) {
 		return " (CAST(strftime('%d', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
-	public String getHourFunction(String dateExpression) {
+	public String doHourTransform(String dateExpression) {
 		return " (CAST(strftime('%H', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
-	public String getMinuteFunction(String dateExpression) {
+	public String doMinuteTransform(String dateExpression) {
 		return " (CAST(strftime('%M', " + dateExpression + ") as INTEGER))";
 	}
 
 	@Override
-	public String getSecondFunction(String dateExpression) {
+	public String doSecondTransform(String dateExpression) {
 		return " (CAST(strftime('%S', " + dateExpression + ") as INTEGER))";
 	}
 

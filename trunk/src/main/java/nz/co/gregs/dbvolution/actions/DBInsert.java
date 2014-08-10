@@ -99,7 +99,6 @@ public class DBInsert extends DBAction {
 				+ allColumns
 				+ defn.endInsertColumnList()
 				+ allValues
-				+ defn.beginReturningClause(row)
 				+ defn.endInsertLine());
 		return strs;
 	}

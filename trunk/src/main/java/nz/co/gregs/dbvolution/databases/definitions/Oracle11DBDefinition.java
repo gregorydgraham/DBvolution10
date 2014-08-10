@@ -33,7 +33,7 @@ public class Oracle11DBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public boolean supportsPaging(QueryOptions options) {
+	public boolean supportsPagingNatively(QueryOptions options) {
 		return false;
 	}
 
@@ -43,7 +43,7 @@ public class Oracle11DBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public boolean usesTriggerBasedIdentities() {
+	public boolean prefersTriggerBasedIdentities() {
 		return true;
 	}
 

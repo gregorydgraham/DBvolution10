@@ -609,8 +609,8 @@ public class DBQuery {
 			ResultSet resultSet = getResultSetForSQL(dbStatement);
 			try {
 				while (resultSet.next()
-						&& ((database.getDefinition().supportsPaging(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
-						|| (!database.getDefinition().supportsPaging(options) && results.size() < options.getRowLimit()) // paging not supported and required so truncate it
+						&& ((database.getDefinition().supportsPagingNatively(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
+						|| (!database.getDefinition().supportsPagingNatively(options) && results.size() < options.getRowLimit()) // paging not supported and required so truncate it
 						)) {
 					queryRow = new DBQueryRow();
 

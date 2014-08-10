@@ -29,83 +29,83 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ExpressionColumnTests extends AbstractTest {
-
-    public ExpressionColumnTests(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
-
-    @Test
-    public void selectDateExpressionWithDBQuery() throws Exception {
-        final CarCompany carCompany = new CarCompany();
-        final Marque marque = new Marque();
-        marque.name.permittedValuesIgnoreCase("TOYOTA");
-        DBQuery query = database.getDBQuery(marque, carCompany);
-
-        final Date dateKey = new Date();
-        query.addExpressionColumn(dateKey, DateExpression.currentDate());
-
-        final String sqlForQuery = query.getSQLForQuery();
-        Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
-
-        for (DBQueryRow row : query.getAllRows()) {
-            QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(dateKey);
-            System.out.println(expressionColumnValue.toSQLString(database));
-            if (expressionColumnValue instanceof DBDate) {
-                DBDate currentDate = (DBDate) expressionColumnValue;
-                System.out.println("" + currentDate.dateValue());
-            } else {
-                throw new RuntimeException("CurrentDate Expression Failed To Create DBDate Instance");
-            }
-        }
-    }
-
-    @Test
-    public void selectStringExpressionWithDBQuery() throws Exception {
-        final CarCompany carCompany = new CarCompany();
-        final Marque marque = new Marque();
-        marque.name.permittedValuesIgnoreCase("TOYOTA");
-        DBQuery query = database.getDBQuery(marque, carCompany);
-
-        final String shortMarqueName = "Short marque name";
-        query.addExpressionColumn(shortMarqueName, marque.column(marque.name).substring(0, 3));
-
-        final String sqlForQuery = query.getSQLForQuery();
-        Assert.assertThat(sqlForQuery, containsString("SUBSTR"));
-
-        for (DBQueryRow row : query.getAllRows()) {
-            QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(shortMarqueName);
-            System.out.println(expressionColumnValue.toSQLString(database));
-            if (expressionColumnValue instanceof DBString) {
-                DBString shortName = (DBString) expressionColumnValue;
-                System.out.println("" + shortName.stringValue());
-                Assert.assertThat(shortName.toString(), is("TOYOTA".substring(0, 3)));
-            } else {
-                throw new RuntimeException("String Expression Failed To Create DBString Instance");
-            }
-        }
-    }
-
-    @Test
-    public void selectNumberExpressionWithDBQuery() throws Exception {
-        final CarCompany carCompany = new CarCompany();
-        final Marque marque = new Marque();
-        marque.name.permittedValuesIgnoreCase("TOYOTA");
-        DBQuery query = database.getDBQuery(marque, carCompany);
-
-        final String strangeEquation = "strange equation";
-        query.addExpressionColumn(strangeEquation, marque.column(marque.uidMarque).times(5).dividedBy(3).plus(2));
-
-        for (DBQueryRow row : query.getAllRows()) {
-            Long uid = row.get(new Marque()).uidMarque.getValue();
-            QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
-            System.out.println(expressionColumnValue.toSQLString(database));
-            if (expressionColumnValue instanceof DBNumber) {
-                DBNumber eqValue = (DBNumber) expressionColumnValue;
-                System.out.println("" + eqValue.numberValue());
-                Assert.assertThat(eqValue.longValue(), is(uid * 5 / 3 + 2));
-            } else {
-                throw new RuntimeException("String Expression Failed To Create DBString Instance");
-            }
-        }
-    }
+	
+	public ExpressionColumnTests(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
+	
+	@Test
+	public void selectDateExpressionWithDBQuery() throws Exception {
+		final CarCompany carCompany = new CarCompany();
+		final Marque marque = new Marque();
+		marque.name.permittedValuesIgnoreCase("TOYOTA");
+		DBQuery query = database.getDBQuery(marque, carCompany);
+		
+		final Date dateKey = new Date();
+		query.addExpressionColumn(dateKey, DateExpression.currentDate());
+		
+		final String sqlForQuery = query.getSQLForQuery();
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+		
+		for (DBQueryRow row : query.getAllRows()) {
+			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(dateKey);
+			System.out.println(expressionColumnValue.toSQLString(database));
+			if (expressionColumnValue instanceof DBDate) {
+				DBDate currentDate = (DBDate) expressionColumnValue;
+				System.out.println("" + currentDate.dateValue());
+			} else {
+				throw new RuntimeException("CurrentDate Expression Failed To Create DBDate Instance");
+			}
+		}
+	}
+	
+	@Test
+	public void selectStringExpressionWithDBQuery() throws Exception {
+		final CarCompany carCompany = new CarCompany();
+		final Marque marque = new Marque();
+		marque.name.permittedValuesIgnoreCase("TOYOTA");
+		DBQuery query = database.getDBQuery(marque, carCompany);
+		
+		final String shortMarqueName = "Short marque name";
+		query.addExpressionColumn(shortMarqueName, marque.column(marque.name).substring(0, 3));
+		
+		final String sqlForQuery = query.getSQLForQuery();
+		Assert.assertThat(sqlForQuery, containsString("SUBSTR"));
+		
+		for (DBQueryRow row : query.getAllRows()) {
+			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(shortMarqueName);
+			System.out.println(expressionColumnValue.toSQLString(database));
+			if (expressionColumnValue instanceof DBString) {
+				DBString shortName = (DBString) expressionColumnValue;
+				System.out.println("" + shortName.stringValue());
+				Assert.assertThat(shortName.toString(), is("TOYOTA".substring(0, 3)));
+			} else {
+				throw new RuntimeException("String Expression Failed To Create DBString Instance");
+			}
+		}
+	}
+	
+	@Test
+	public void selectNumberExpressionWithDBQuery() throws Exception {
+		final CarCompany carCompany = new CarCompany();
+		final Marque marque = new Marque();
+		marque.name.permittedValuesIgnoreCase("TOYOTA");
+		DBQuery query = database.getDBQuery(marque, carCompany);
+		
+		final String strangeEquation = "strange equation";
+		query.addExpressionColumn(strangeEquation, marque.column(marque.uidMarque).times(5).dividedBy(3).plus(2));
+		
+		for (DBQueryRow row : query.getAllRows()) {
+			Long uid = row.get(new Marque()).uidMarque.getValue();
+			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
+			System.out.println(expressionColumnValue.toSQLString(database));
+			if (expressionColumnValue instanceof DBNumber) {
+				DBNumber eqValue = (DBNumber) expressionColumnValue;
+				System.out.println("" + eqValue.numberValue());
+				Assert.assertThat(eqValue.longValue(), is(uid * 5 / 3 + 2));
+			} else {
+				throw new RuntimeException("String Expression Failed To Create DBString Instance");
+			}
+		}
+	}
 }

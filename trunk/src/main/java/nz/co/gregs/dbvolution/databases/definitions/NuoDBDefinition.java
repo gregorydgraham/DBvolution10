@@ -74,16 +74,6 @@ public class NuoDBDefinition extends DBDefinition{
 	public boolean supportsStandardDeviationFunction() {
 		return false;
 	}
-
-//	@Override
-//	public String getEmptyString() {
-//		return "\"\"";
-//	}
-	
-	@Override
-	public boolean supportsLeftTrimFunction() {
-		return false;
-	}
 	
 	/**
 	 * God-awful hack to get past a bug in NuoDB LTRIM.
@@ -97,7 +87,7 @@ public class NuoDBDefinition extends DBDefinition{
 	 */
 	@Override
 	@Deprecated
-	public String doLeftTrimFunction(String toSQLString) {
+	public String doLeftTrimTransform(String toSQLString) {
 		return " (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
 	}
 

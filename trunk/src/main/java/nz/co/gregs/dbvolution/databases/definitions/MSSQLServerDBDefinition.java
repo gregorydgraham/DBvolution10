@@ -73,7 +73,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
     }
 
     @Override
-    public boolean supportsPaging(QueryOptions options) {
+    public boolean supportsPagingNatively(QueryOptions options) {
         return false;
     }
 

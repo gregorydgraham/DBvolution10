@@ -726,88 +726,33 @@ public class StringExpression implements StringResult {
 
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
-				return db.getDefinition().getConcatOperator();
+				return "";
 			}
 		});
 	}
 
 	public StringExpression append(String string2) {
 		return this.append(StringExpression.value(string2));
-//		return new StringExpression(new DBBinaryStringArithmetic(this, new StringExpression(string2)) {
-//			@Override
-//			public String toSQLString(DBDatabase db) {
-//				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
-//			}
-//			
-//			@Override
-//			protected String getEquationOperator(DBDatabase db) {
-//				return db.getDefinition().getConcatOperator();
-//			}
-//		});
 	}
 
 	public StringExpression append(NumberResult number1) {
 		return this.append(new NumberExpression(number1).stringResult());
-//		return new StringExpression(new DBBinaryStringNumberArithmetic(this, number1) {
-//
-//			@Override
-//			public String toSQLString(DBDatabase db) {
-//				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
-//			}
-//			
-//			@Override
-//			protected String getEquationOperator(DBDatabase db) {
-//				return db.getDefinition().getConcatOperator();
-//			}
-//
-//			@Override
-//			public boolean getIncludesNull() {
-//				return false;
-//			}
-//		});
 	}
 
 	public StringExpression append(Number number1) {
 		return this.append(NumberExpression.value(number1));
-//		return new StringExpression(new DBBinaryStringNumberArithmetic(this, new NumberExpression(number1)) {
-//			@Override
-//			protected String getEquationOperator(DBDatabase db) {
-//				return db.getDefinition().getConcatOperator();
-//			}
-//		});
 	}
 
 	public StringExpression replace(String findString, String replaceWith) {
 		return this.replace(new StringExpression(findString), new StringExpression(replaceWith));
-//		return new StringExpression(
-//				new DBTrinaryStringFunction(this, new StringExpression(findString), new StringExpression(replaceWith)) {
-//					@Override
-//					String getFunctionName(DBDatabase db) {
-//						return db.getDefinition().getReplaceFunctionName();
-//					}
-//				});
 	}
 
 	public StringExpression replace(StringResult findString, String replaceWith) {
 		return this.replace(findString, StringExpression.value(replaceWith));
-//		return new StringExpression(
-//				new DBTrinaryStringFunction(this, findString, new StringExpression(replaceWith)) {
-//					@Override
-//					String getFunctionName(DBDatabase db) {
-//						return db.getDefinition().getReplaceFunctionName();
-//					}
-//				});
 	}
 
 	public StringExpression replace(String findString, StringResult replaceWith) {
 		return this.replace(StringExpression.value(findString), replaceWith);
-//		return new StringExpression(
-//				new DBTrinaryStringFunction(this, new StringExpression(findString), replaceWith) {
-//					@Override
-//					String getFunctionName(DBDatabase db) {
-//						return db.getDefinition().getReplaceFunctionName();
-//					}
-//				});
 	}
 
 	public StringExpression replace(StringResult findString, StringResult replaceWith) {
@@ -827,11 +772,6 @@ public class StringExpression implements StringResult {
 						// handled before creation
 						return false;
 					}
-
-//					@Override
-//					public void setIncludesNull(boolean nullsAreIncluded) {
-//						;
-//					}
 				});
 	}
 
@@ -855,16 +795,12 @@ public class StringExpression implements StringResult {
 				new DBUnaryStringFunction(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
-						if (!db.getDefinition().supportsLeftTrimFunction()) {
-							return db.getDefinition().doLeftTrimFunction(this.only.toSQLString(db));
-						} else {
-							return super.toSQLString(db);
-						}
+						return db.getDefinition().doLeftTrimTransform(this.only.toSQLString(db));
 					}
 
 					@Override
 					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getLeftTrimFunctionName();
+						return "";
 					}
 				});
 	}
@@ -965,7 +901,7 @@ public class StringExpression implements StringResult {
 		return new NumberExpression(new BinaryComplicatedNumberFunction(this, value(searchString)) {
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().getPositionFunction(this.first.toSQLString(db), this.second.toSQLString(db));
+				return db.getDefinition().doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
 			}
 		});
 	}
