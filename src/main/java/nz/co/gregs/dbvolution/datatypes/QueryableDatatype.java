@@ -124,9 +124,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype) o).getClass());
 			qdt.setLiteralValue(((QueryableDatatype) o).literalValue);
 		} else {
-			if (o instanceof DBExpression) {
+			/*if (o instanceof DBExpression) {
 				qdt = new DBDataGenerator();
-			} else if (o instanceof Integer) {
+			} else*/ if (o instanceof Integer) {
 				qdt = new DBInteger();
 			} else if (o instanceof Number) {
 				qdt = new DBNumber();
@@ -345,6 +345,15 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		}
 	}
 
+	/**
+	 * Set the value of this QDT to the value provided.
+	 *
+	 * <p>
+	 * Subclass writers should ensure that the method handles nulls correctly and
+	 * throws an exception if an inappropriate value is supplied.
+	 *
+	 * @param newLiteralValue
+	 */
 	public abstract void setValue(Object newLiteralValue);
 
 	/**
@@ -361,9 +370,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		} else {
 			setChanged(newLiteralValue);
 			this.literalValue = newLiteralValue;
-			if (newLiteralValue instanceof DBExpression) {
+			/*if (newLiteralValue instanceof DBExpression) {
 				this.setOperator(new DBEqualsOperator(new DBDataGenerator((DBExpression) newLiteralValue)));
-			} else if (newLiteralValue instanceof Date) {
+			} else*/ if (newLiteralValue instanceof Date) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
 			} else if (newLiteralValue instanceof Timestamp) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Timestamp) newLiteralValue)));
@@ -481,6 +490,19 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	}
 
 	/**
+	 * Used internally to set the QDT to the value returned from the database.
+	 *
+	 * <p>
+	 * If you create a new QDT you should override this method. The default
+	 * implementation in {@link QueryableDatatype} processes the ResultSet column
+	 * as a String. You should follow the basic pattern but change
+	 * {@link ResultSet#getString(java.lang.String) ResultSet.getString(String)}
+	 * to the required ResultSet method and add any required post-processing.
+	 *
+	 * <p>
+	 * Note that most of the method is dedicated to detecting NULL values. This is
+	 * very important as are the calls to {@link #setUnchanged() } and {@link #setDefined(boolean)
+	 * }.
 	 *
 	 * @param database
 	 * @param resultSet

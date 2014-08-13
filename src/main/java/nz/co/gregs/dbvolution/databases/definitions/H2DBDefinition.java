@@ -18,12 +18,23 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.H2DB;
 
+/**
+ * Defines the features of the H2 database that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is automatically included in {@link H2DB} instances, and
+ * you should not need to use it directly.
+ *
+ * @author Gregory Graham
+ */
 public class H2DBDefinition extends DBDefinition {
 
-	String dateFormatStr = "yyyy-M-d hh:mm:ss";
-	String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
-	SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
+	private final String dateFormatStr = "yyyy-M-d hh:mm:ss";
+	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
+	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {

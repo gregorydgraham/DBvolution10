@@ -18,10 +18,22 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.PostgresDB;
+import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
+/**
+ * Defines the features of the PostgreSQL database that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is automatically included in {@link PostgresDB} and {@link PostgresDBOverSSL} instances, and
+ * you should not need to use it directly.
+ *
+ * @author Gregory Graham
+ */
 public class PostgresDBDefinition extends DBDefinition {
 
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

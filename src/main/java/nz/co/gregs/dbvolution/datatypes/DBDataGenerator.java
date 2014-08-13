@@ -33,15 +33,24 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  *
  * @author Gregory Graham
  */
+@Deprecated
 public class DBDataGenerator extends QueryableDatatype {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    public DBDataGenerator(DBExpression dataGenerator) {
+	/**
+	 *
+	 * @param dataGenerator
+	 */
+	public DBDataGenerator(DBExpression dataGenerator) {
         super(dataGenerator);
     }
 
-    public DBDataGenerator() {
+	/**
+	 * Default constructor.
+	 *
+	 */
+	public DBDataGenerator() {
     }
 
     @Override
@@ -73,7 +82,11 @@ public class DBDataGenerator extends QueryableDatatype {
         }
     }
 
-    public void setValue(DBExpression newLiteralValue) {
+	/**
+	 *
+	 * @param newLiteralValue
+	 */
+	public void setValue(DBExpression newLiteralValue) {
         setLiteralValue(newLiteralValue);
     }
 

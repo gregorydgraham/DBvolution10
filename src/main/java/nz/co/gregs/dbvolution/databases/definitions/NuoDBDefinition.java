@@ -19,11 +19,18 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.NuoDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
+ * Defines the features of the NuoDB database that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is automatically included in {@link NuoDB} instances, and
+ * you should not need to use it directly.
  *
  * @author gregory.graham
  */

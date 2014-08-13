@@ -18,8 +18,19 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.Oracle11DB;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
+/**
+ * Defines the features of the Oracle 11 database that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is automatically included in {@link Oracle11DB} instances, and
+ * you should not need to use it directly.
+ *
+ * @author Gregory Graham
+ */
 public class Oracle11DBDefinition extends OracleDBDefinition {
 
 	@Override

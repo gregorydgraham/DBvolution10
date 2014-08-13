@@ -45,43 +45,87 @@ import org.apache.commons.codec.binary.Base64;
 /**
  *
  * Implements the abstractions necessary to handle arbitrary byte streams and
- * files stored in the database
+ * files stored in the database.
+ *
+ * <p>
+ * Use DBByteArray for files, streams, and exceptionally long text. Store Java
+ * instances/objects as {@link DBJavaObject} for greater convenience.
+ *
+ * <p>
+ * Generally DBBoolean is declared inside your DBRow sub-class as:
+ * {@code @DBColumn public DBByteArray myBoolColumn = new DBByteArray();}
+ *
+ * <p>
+ * DBByteArray is the standard type of {@link DBLargeObject BLOB columns}.
  *
  * @author Gregory Graham
  */
 public class DBByteArray extends DBLargeObject {
 
-	public static final long serialVersionUID = 1;
+	private static final long serialVersionUID = 1;
 	private InputStream byteStream = null;
 
+	/**
+	 * The Default constructor for a DBByteArray.
+	 *
+	 */
 	public DBByteArray() {
 		super();
 	}
 
 	/**
 	 *
-	 * @return the standard SQL datatype that corresponds to this QDT as a
-	 * String
+	 * @return the standard SQL datatype that corresponds to this QDT as a String
 	 */
 	@Override
 	public String getSQLDatatype() {
 		return "BLOB";
 	}
 
+	/**
+	 * Sets the value of this DBByteArray to the byte array supplied.
+	 *
+	 * @param byteArray
+	 */
 	public void setValue(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
 		byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
 	}
 
+	/**
+	 * Sets the value of this DBByteArray to the InputStream supplied.
+	 *
+	 * <p>
+	 * The input stream will not be read until the containing DBRow is
+	 * saved/inserted.
+	 *
+	 * @param inputViaStream
+	 */
 	public void setValue(InputStream inputViaStream) {
 		super.setLiteralValue(inputViaStream);
 		byteStream = new BufferedInputStream(inputViaStream);
 	}
 
+	/**
+	 * Sets the value of this DBByteArray to the file supplied.
+	 *
+	 * <p>
+	 * Unlike {@link #setValue(java.io.InputStream) setting an InputStream}, the
+	 * file is read immediately and stored internally. If you would prefer to
+	 * delay the reading of the file, wrap the file in a {@link FileInputStream}.
+	 *
+	 * @param fileToRead
+	 * @throws IOException
+	 */
 	public void setValue(File fileToRead) throws IOException {
 		setValue(setFromFileSystem(fileToRead));
 	}
 
+	/**
+	 * Set the value of the DBByteArray to the String provided.
+	 *
+	 * @param string
+	 */
 	public void setValue(String string) {
 		setValue(string.getBytes());
 	}
@@ -177,7 +221,7 @@ public class DBByteArray extends DBLargeObject {
 			;// NullPointerException is thrown by a SQLite-JDBC bug sometimes.
 		}
 		if (inputReader != null) {
-			if (resultSet.wasNull() || inputReader == null) {
+			if (resultSet.wasNull()) {
 				this.setToNull();
 			} else {
 				BufferedReader input = new BufferedReader(inputReader);
@@ -247,18 +291,48 @@ public class DBByteArray extends DBLargeObject {
 		throw new UnsupportedOperationException("Binary datatypes like " + this.getClass().getSimpleName() + " do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
 	}
 
+	/**
+	 * Tries to set the DBDyteArray to the contents of the supplied file.
+	 *
+	 * <p>
+	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
+	 *
+	 * @param originalFile
+	 * @return the byte[] of the contents of the file.
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public byte[] setFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile);
 		return setFromFileSystem(file);
 	}
 
+	/**
+	 * Tries to set the DBDyteArray to the contents of the supplied file.
+	 * 
+	 * <p>
+	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
+	 *
+	 * @param originalFile
+	 * @return the byte[] of the contents of the file.
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public byte[] setFromFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile.stringValue());
 		return setFromFileSystem(file);
 	}
 
+	/**
+	 * Tries to set the DBDyteArray to the contents of the supplied file.
+	 *
+	 * @param originalFile
+	 * @return the byte[] of the contents of the file.
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
-		System.out.println("FILE: " + originalFile.getAbsolutePath());
+//		System.out.println("FILE: " + originalFile.getAbsolutePath());
 		byte[] bytes = new byte[(int) originalFile.length()];
 		InputStream input = null;
 		try {
@@ -286,18 +360,48 @@ public class DBByteArray extends DBLargeObject {
 		return bytes;
 	}
 
+	/**
+	 * Tries to write the contents of this DBByteArray to the file supplied.
+	 *
+	 * <p>
+	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
+	 *
+	 * @param originalFile
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public void writeToFileSystem(String originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile);
 		writeToFileSystem(file);
 	}
 
+	/**
+	 * Tries to write the contents of this DBByteArray to the file supplied.
+	 *
+	 * <p>
+	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
+	 *
+	 * @param originalFile
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public void writeToFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
 		writeToFileSystem(originalFile.toString());
 	}
 
+	/**
+	 * Tries to write the contents of this DBByteArray to the file supplied.
+	 *
+	 * <p>
+	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
+	 *
+	 * @param originalFile
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
 	public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
 		if (literalValue != null && originalFile != null) {
-			System.out.println("FILE: " + originalFile.getAbsolutePath());
+//			System.out.println("FILE: " + originalFile.getAbsolutePath());
 			if (!originalFile.exists()) {
 				originalFile.createNewFile();
 			}
@@ -316,6 +420,11 @@ public class DBByteArray extends DBLargeObject {
 		}
 	}
 
+	/**
+	 * Returns the internal InputStream.
+	 *
+	 * @return an InputStream to read the bytes.
+	 */
 	@Override
 	public InputStream getInputStream() {
 		if (byteStream == null) {
@@ -324,6 +433,11 @@ public class DBByteArray extends DBLargeObject {
 		return byteStream;
 	}
 
+	/**
+	 * Returns the byte[] used internally to store the value of this DBByteArray.
+	 *
+	 * @return the byte[] value of this DBByteArray.
+	 */
 	public byte[] getBytes() {
 		return (byte[]) this.literalValue;
 	}
@@ -331,9 +445,9 @@ public class DBByteArray extends DBLargeObject {
 	@Override
 	public String stringValue() {
 		byte[] value = this.getValue();
-		if (this.isNull()){
+		if (this.isNull()) {
 			return super.stringValue();
-		}else{
+		} else {
 			return new String(value);
 		}
 	}
