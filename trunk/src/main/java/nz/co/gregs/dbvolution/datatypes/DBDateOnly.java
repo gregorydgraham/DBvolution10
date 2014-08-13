@@ -17,41 +17,104 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DateResult;
 
-
+/**
+ * Encapsulates date values that only include year, month, and day values.
+ *
+ * <p>
+ * Use this when the actual date value only stores a partial date without any
+ * time value. The instance will behave as a {@link DBDate} but time information will be
+ * ignore/discarded.
+ *
+ * @author Gregory Graham
+ */
 public class DBDateOnly extends DBDate {
-    
-    public static final long serialVersionUID = 1L;
 
-    public DBDateOnly() {
-    }
+	private static final long serialVersionUID = 1L;
 
-    public DBDateOnly(Date date) {
-        super(date);
-    }
+	/**
+	 * The default constructor for DBDateOnly.
+	 *
+	 * <p>
+	 * Creates an unset undefined DBDateOnly object.
+	 *
+	 */
+	public DBDateOnly() {
+	}
 
-    public DBDateOnly(Timestamp timestamp) {
-        super(timestamp);
-    }
-    
-    public DBDateOnly(DateResult dateExpression){
-        super(dateExpression);
-    }
+	/**
+	 * Creates a DBDateOnly with the value provided.
+	 *
+	 * <p>
+	 * The resulting DBDate will be set as having the value provided but will not
+	 * be defined in the database.
+	 * 
+	 * <p>
+	 * Any time information in the date will be ignored.
+	 *
+	 * @param date
+	 */
+	public DBDateOnly(Date date) {
+		super(date);
+	}
 
-    @Override
-    public String getSQLDatatype() {
-        return "DATE";
-    }
-    
-    @Override
-    @SuppressWarnings("deprecation")
-    public Date dateValue(){
-        Date dateValue = super.dateValue();
-        dateValue.setHours(0);
-        dateValue.setMinutes(0);
-        dateValue.setSeconds(0);
-        return dateValue;
-    }
+	/**
+	 * Creates a DBDateOnly with the value provided.
+	 *
+	 * <p>
+	 * The resulting DBDate will be set as having the value provided but will not
+	 * be defined in the database.
+	 *
+	 * <p>
+	 * Only date information in the timestamp will be retained.
+	 *
+	 * @param timestamp
+	 */
+	public DBDateOnly(Timestamp timestamp) {
+		super(timestamp);
+	}
+
+	/**
+	 * Creates a column expression with a date result from the expression
+	 * provided.
+	 *
+	 * <p>
+	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
+	 * data from the database prior to retrieval.
+	 *
+	 * @param dateExpression
+	 */
+	public DBDateOnly(DateResult dateExpression) {
+		super(dateExpression);
+	}
+
+	@Override
+	public String getSQLDatatype() {
+		return "DATE";
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public Date dateValue() {
+		Date dateValue = super.dateValue();
+		dateValue.setHours(0);
+		dateValue.setMinutes(0);
+		dateValue.setSeconds(0);
+		return dateValue;
+	}
+	
+	@Override
+	@SuppressWarnings("deprecation")
+	public String formatValueForSQLStatement(DBDatabase db) {
+		final Date dateValue = dateValue();
+		dateValue.setHours(0);
+		dateValue.setMinutes(0);
+		dateValue.setSeconds(0);
+		return db.getDefinition().getDateFormattedForQuery(dateValue);
+	}
+
+
 
 }

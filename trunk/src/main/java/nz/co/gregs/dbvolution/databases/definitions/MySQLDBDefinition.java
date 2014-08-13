@@ -18,8 +18,19 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 
+/**
+ * Defines the features of the MySQL database that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is automatically included in {@link MySQLDB} instances, and
+ * you should not need to use it directly.
+ *
+ * @author Gregory Graham
+ */
 public class MySQLDBDefinition extends DBDefinition {
 
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss");

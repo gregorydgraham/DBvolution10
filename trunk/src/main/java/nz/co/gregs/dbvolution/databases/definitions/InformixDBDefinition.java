@@ -18,19 +18,25 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.InformixDB;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
+/**
+ * Defines the features of the Informix database that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is automatically included in {@link InformixDB} instances, and
+ * you should not need to use it directly.
+ *
+ * @author Gregory Graham
+ */
 public class InformixDBDefinition extends DBDefinition {
 
-    private final SimpleDateFormat dateFormat;
     private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
-    public String informixDateFormat = "%Y-%m-%d %H:%M:%S";
-
-    public InformixDBDefinition() {
-
-        this.dateFormat = new SimpleDateFormat(DATE_FORMAT);
-    }
+    private final String informixDateFormat = "%Y-%m-%d %H:%M:%S";
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 
     @Override
     public boolean prefersIndexBasedGroupByClause() {

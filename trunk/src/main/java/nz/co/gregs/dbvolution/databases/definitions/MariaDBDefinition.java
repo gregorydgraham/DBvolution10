@@ -19,14 +19,21 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.MariaClusterDB;
+import nz.co.gregs.dbvolution.databases.MariaDB;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
+ * Defines the features of the MariaDB database that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is automatically included in {@link MariaDB} and {@link MariaClusterDB} instances, and
+ * you should not need to use it directly.
  *
  * @author gregory.graham
  */

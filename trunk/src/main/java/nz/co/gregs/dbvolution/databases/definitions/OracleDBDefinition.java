@@ -25,6 +25,17 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * Defines the features of all Oracle databases that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is sub-classed by {@link Oracle11DBDefinition} and
+ * {@link  Oracle12DBDefinition} to provide the full set of features required to
+ * use an Oracle database.
+ *
+ * @author Gregory Graham
+ */
 public class OracleDBDefinition extends DBDefinition {
 
 	String dateFormatStr = "yyyy-M-d HH:mm:ss Z";
@@ -67,13 +78,13 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String getTableAlias(RowDefinition tabRow) {
-		return "\""+super.getTableAlias(tabRow)+"\"";
+		return "\"" + super.getTableAlias(tabRow) + "\"";
 	}
-	
+
 	@Override
 	public String formatForColumnAlias(final String actualName) {
 		String formattedName = actualName.replaceAll("\\.", "__");
-		return ("DB" + formattedName.hashCode()).replaceAll("-", "_")+"";
+		return ("DB" + formattedName.hashCode()).replaceAll("-", "_") + "";
 	}
 
 	@Override

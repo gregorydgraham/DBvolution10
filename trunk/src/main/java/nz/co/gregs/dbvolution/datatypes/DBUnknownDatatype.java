@@ -29,8 +29,17 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public class DBUnknownDatatype extends QueryableDatatype {
 
-    public static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
+	/**
+	 * The default constructor for a DBUnknownDatatype.
+	 * 
+	 * <p>
+	 * Literally does nothing.
+	 */
+	public DBUnknownDatatype() {
+        super();
+    }
     @Override
     public String getSQLDatatype() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -39,10 +48,6 @@ public class DBUnknownDatatype extends QueryableDatatype {
     @Override
     public String formatValueForSQLStatement(DBDatabase db) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public DBUnknownDatatype() {
-        super();
     }
 
     @Override

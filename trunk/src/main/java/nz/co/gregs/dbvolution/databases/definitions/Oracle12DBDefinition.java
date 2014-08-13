@@ -15,8 +15,19 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import nz.co.gregs.dbvolution.databases.Oracle12DB;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
+/**
+ * Defines the features of the Oracle 12 database that differ from the standard
+ * database.
+ *
+ * <p>
+ * This DBDefinition is automatically included in {@link Oracle12DB} instances, and
+ * you should not need to use it directly.
+ *
+ * @author Gregory Graham
+ */
 public class Oracle12DBDefinition extends OracleDBDefinition {
 
 	@Override

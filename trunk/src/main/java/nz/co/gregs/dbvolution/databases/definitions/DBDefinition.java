@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 public abstract class DBDefinition {
 
 	/**
-	 * Tranforms the Date instance into a SQL snippet that can be used as a date
+	 * Transforms the Date instance into a SQL snippet that can be used as a date
 	 * in a query.
 	 *
 	 * <p>
