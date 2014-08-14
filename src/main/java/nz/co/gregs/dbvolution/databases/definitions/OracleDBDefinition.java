@@ -180,4 +180,8 @@ public class OracleDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	@Override
+	public String doModulusTransform(String firstNumber, String secondNumber) {
+		return " MOD(("+firstNumber +"), ("+secondNumber+"))";
+	}
 }

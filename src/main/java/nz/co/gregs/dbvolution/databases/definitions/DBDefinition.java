@@ -1922,4 +1922,18 @@ public abstract class DBDefinition {
 	public boolean supportsStandardDeviationFunction() {
 		return true;
 	}
+
+
+	/**
+	 * Indicates whether the database supports the modulus function.
+	 *
+	 * @return the default implementation returns TRUE.
+	 */
+	public boolean supportsModulusFunction() {
+		return true;
+	}
+
+	public String doModulusTransform(String firstNumber, String secondNumber) {
+		return firstNumber +" % "+secondNumber;
+	}
 }
