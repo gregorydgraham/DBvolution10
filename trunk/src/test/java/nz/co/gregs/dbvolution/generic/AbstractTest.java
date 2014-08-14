@@ -58,12 +58,11 @@ public abstract class AbstractTest {
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException {
 		boolean testAllDatabases = System.getProperty("testAllDatabases") != null;
-		
+
 		List<Object[]> databases = new ArrayList<Object[]>();
 		final SQLiteDB sqliteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
 		final H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
-		
-		
+
 		if (System.getProperty("testSQLite") != null) {
 			databases.add(new Object[]{"SQLiteDB", sqliteDB});
 		}
@@ -137,7 +136,8 @@ public abstract class AbstractTest {
 				return trimStr
 						.replaceAll(" oo", " __")
 						.replaceAll("\"", "")
-						.replaceAll(" *; *$", "");
+						.replaceAll(" *; *$", "")
+						.replaceAll(" as ", " ");
 			} else {
 				return trimStr;
 			}

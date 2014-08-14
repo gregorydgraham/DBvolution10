@@ -67,8 +67,12 @@ public class OuterJoinTest extends AbstractTest {
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");
 		String expectedCarCoJoin = "car_company as __78874071";
+		String expectedCarCoJoinOracle = "car_company __78874071";
 		Assert.assertThat(testableSQL(ansiJoinClause.toString()),
-				is(testableSQL(expectedCarCoJoin)));
+				anyOf(
+						is(testableSQL(expectedCarCoJoin)),
+						is(testableSQL(expectedCarCoJoinOracle))
+				));
 
 		tables.add(carCo);
 		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), mrq, tables));
