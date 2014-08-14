@@ -1164,21 +1164,26 @@ public class NumberExpression implements NumberResult {
 	}
 
 	public NumberExpression mod(NumberResult number) {
-		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
+		return new NumberExpression(new DBBinaryFunction(this, number) {
+
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " % ";
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsModulusFunction()) {
+					return super.toSQLString(db);
+				} else {
+					return db.getDefinition().doModulusTransform(first.toSQLString(db), second.toSQLString(db));
+				}
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "mod";
 			}
 		});
 	}
 
 	public NumberExpression mod(Number num) {
-		return new NumberExpression(new DBBinaryArithmetic(this, new DBNumber(num)) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return "%";
-			}
-		});
+		return this.mod(new NumberExpression(num));
 	}
 
 	public NumberExpression average() {
@@ -1549,8 +1554,8 @@ public class NumberExpression implements NumberResult {
 
 	private static abstract class DBBinaryFunction implements NumberResult {
 
-		private DBExpression first;
-		private DBExpression second;
+		protected DBExpression first;
+		protected DBExpression second;
 
 		DBBinaryFunction(NumberExpression first) {
 			this.first = first;
