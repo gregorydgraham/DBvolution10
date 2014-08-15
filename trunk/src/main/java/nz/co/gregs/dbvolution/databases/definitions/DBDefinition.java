@@ -1932,6 +1932,13 @@ public abstract class DBDefinition {
 		return true;
 	}
 
+	/**
+	 * Implements the integer division remainder (mod) function.
+	 *
+	 * @param firstNumber
+	 * @param secondNumber
+	 * @return the SQL required to get the integer division remainder.
+	 */
 	public String doModulusTransform(String firstNumber, String secondNumber) {
 		return firstNumber +" % "+secondNumber;
 	}
