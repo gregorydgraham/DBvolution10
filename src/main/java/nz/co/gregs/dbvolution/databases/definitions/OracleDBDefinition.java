@@ -152,7 +152,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String getIfNullFunctionName() {
-		return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
+		return "NVL"; //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

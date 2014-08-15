@@ -114,7 +114,7 @@ public abstract class AbstractTest {
 		if (str != null) {
 			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
 			if (database instanceof OracleDB) {
-				return trimStr.replaceAll(" oo", " __").replaceAll("\"", "").replaceAll(" *; *$", "");
+				return trimStr.replaceAll(" oo", " __").replaceAll(" +[aA][sS] +", " ").replaceAll("\"", "").replaceAll(" *; *$", "");
 			} else if (database instanceof PostgresDB) {
 				return trimStr.replaceAll("::[a-zA-Z]*", "");
 			} else {
