@@ -1923,7 +1923,6 @@ public abstract class DBDefinition {
 		return true;
 	}
 
-
 	/**
 	 * Indicates whether the database supports the modulus function.
 	 *
@@ -1935,5 +1934,14 @@ public abstract class DBDefinition {
 
 	public String doModulusTransform(String firstNumber, String secondNumber) {
 		return firstNumber +" % "+secondNumber;
+	}
+
+	/**
+	 * Indicates whether the database differentiates between NULL and an empty string.
+	 *
+	 * @return the default implementation returns TRUE.
+	 */
+	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+		return true;
 	}
 }

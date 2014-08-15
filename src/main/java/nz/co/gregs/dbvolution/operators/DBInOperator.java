@@ -72,7 +72,7 @@ public class DBInOperator extends DBOperator {
 				whereClause.append(sep).append(" ").append(qdt.toSQLString(db)).append(" ");
 				sep = ",";
 			}
-			if (this.includeNulls) {
+			if (this.includeNulls && defn.supportsDifferenceBetweenNullAndEmptyString()) {
 				whereClause.append(sep).append(" ").append(defn.getEmptyString()).append(" ");
 			}
 			whereClause.append(")");

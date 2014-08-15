@@ -106,7 +106,7 @@ public class OracleDBDefinition extends DBDefinition {
 		if (qdt instanceof DBBoolean) {
 			return " NUMBER(1)";
 		} else if (qdt instanceof DBString) {
-			return " VARCHAR2(1000) ";
+			return " VARCHAR(1000) ";
 		} else if (qdt instanceof DBDate) {
 			return " TIMESTAMP ";
 //        } else if (qdt instanceof DBLargeObject) {
@@ -180,8 +180,30 @@ public class OracleDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	/**
+	 * Oracle's MOD function returns the REMAINDER and not the results of integer division.
+	 *
+	 * @return the default implementation returns TRUE.
+	 */
+	@Override
+	public boolean supportsModulusFunction() {
+		return false;
+	}
+	
 	@Override
 	public String doModulusTransform(String firstNumber, String secondNumber) {
-		return " MOD(("+firstNumber +"), ("+secondNumber+"))";
+		return " REMAINDER(("+firstNumber +"), ("+secondNumber+"))";
+//		return "(("+firstNumber+") - ("+secondNumber+") * FLOOR(("+firstNumber+")/("+secondNumber+")))";
+//		return " trunc(trunc("+firstNumber+")/trunc("+secondNumber+"))";
+	}
+
+	/**
+	 * Oracle does not differentiate between NULL and an empty string.
+	 *
+	 * @return FALSE.
+	 */
+	@Override
+	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+		return false;
 	}
 }
