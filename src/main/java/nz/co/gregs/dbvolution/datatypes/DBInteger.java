@@ -34,537 +34,682 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  */
 public class DBInteger extends QueryableDatatype {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public DBInteger(Object someNumber) {
-        this(Long.parseLong(someNumber.toString()));
-    }
+	/**
+	 * Creates a DBInteger of an arbitrary object by attempting to parse it as a
+	 * Long.
+	 *
+	 * @param someNumber
+	 */
+	public DBInteger(Object someNumber) {
+		this(Long.parseLong(someNumber.toString()));
+	}
 
-    public DBInteger(int anInt) {
-        this(Integer.valueOf(anInt));
-    }
+	/**
+	 * Create a DBInteger with the value set to the value provided..
+	 *
+	 * @param value
+	 */
+	public DBInteger(int value) {
+		this(Integer.valueOf(value));
+	}
 
-    public DBInteger(Integer anInt) {
-        super(anInt);
-    }
+	/**
+	 * Create a DBInteger with the value set to the value provided..
+	 *
+	 * @param value
+	 */
+	public DBInteger(Integer value) {
+		super(value);
+	}
 
-    public DBInteger(long aLong) {
-        this(Long.valueOf(aLong));
-    }
+	/**
+	 * Create a DBInteger with the value set to the value provided..
+	 *
+	 * @param value
+	 */
+	public DBInteger(long value) {
+		this(Long.valueOf(value));
+	}
 
-    public DBInteger(Long aLong) {
-        super(aLong);
-    }
+	/**
+	 * Create a DBInteger with the value set to the value provided..
+	 *
+	 * @param value
+	 */
+	public DBInteger(Long value) {
+		super(value);
+	}
 
-    public DBInteger(NumberResult aLong) {
-        super(aLong);
-    }
+	/**
+	 * Create a DBInteger as a column expression.
+	 *
+	 * @param value
+	 */
+	public DBInteger(NumberResult value) {
+		super(value);
+	}
 
-    @Deprecated
-    public DBInteger(double aDouble) {
-        this(new Double(aDouble));
-    }
+	/**
+	 * The default constructor for DBInteger.
+	 *
+	 * <p>
+	 * Creates an unset undefined DBInteger object.
+	 *
+	 */
+	public DBInteger() {
+		super();
+	}
 
-    @Deprecated
-    public DBInteger(Double aDouble) {
-        this(aDouble == null ? null : aDouble.longValue());
-    }
+	@Override
+	public String getSQLDatatype() {
+		return "INTEGER";
+	}
 
-    public DBInteger() {
-        super();
-    }
+	@Override
+	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+		blankQuery();
+		if (resultSet == null || fullColumnName == null) {
+			this.setToNull();
+		} else {
+			Long dbValue;
+			try {
+				dbValue = resultSet.getLong(fullColumnName);
+				if (resultSet.wasNull()) {
+					dbValue = null;
+				}
+			} catch (SQLException ex) {
+				dbValue = null;
+			}
+			if (dbValue == null) {
+				this.setToNull();
+			} else {
+				this.setValue(dbValue);
+			}
+		}
+		setUnchanged();
+		setDefined(true);
+	}
 
-    @Override
-    public String getSQLDatatype() {
-        return "INTEGER";
-    }
+	/**
+	 * Returns a Long of the database value or NULL if the database value is null
+	 *
+	 * @return the long value or null
+	 */
+	@Override
+	public Long getValue() {
+		if (this.literalValue instanceof Long) {
+			return (Long) this.literalValue;
+		} else if (this.literalValue == null) {
+			return null;
+		} else {
+			return Long.parseLong(this.literalValue.toString());
+		}
+	}
 
-    @Override
-    public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-        blankQuery();
-        if (resultSet == null || fullColumnName == null) {
-            this.setToNull();
-        } else {
-            Long dbValue;
-            try {
-                dbValue = resultSet.getLong(fullColumnName);
-                if (resultSet.wasNull()) {
-                    dbValue = null;
-                }
-            } catch (SQLException ex) {
-                dbValue = null;
-            }
-            if (dbValue == null) {
-                this.setToNull();
-            } else {
-                this.setValue(dbValue);
-            }
-        }
-        setUnchanged();
-        setDefined(true);
-    }
+	/**
+	 * Returns an Integer of the database value or NULL if the database value is
+	 * null
+	 *
+	 * @return the integer value or null
+	 */
+	@Override
+	@SuppressWarnings("deprecation")
+	public Integer intValue() {
+		Long value = getValue();
+		return value == null ? null : value.intValue();
+	}
 
-    /**
-     * Returns a Long of the database value or NULL if the database value is
-     * null
-     *
-     * @return the long value or null
-     */
-    @Override
-    public Long getValue() {
-        if (this.literalValue instanceof Long) {
-            return (Long) this.literalValue;
-        } else if (this.literalValue == null) {
-            return null;
-        } else {
-            return Long.parseLong(this.literalValue.toString());
-        }
-    }
+	/**
+	 * Returns a Long of the database value or NULL if the database value is null
+	 *
+	 * @return the long value or null
+	 */
+	@Override
+	@SuppressWarnings("deprecation")
+	public Long longValue() {
+		return getValue();
+	}
 
-    /**
-     * Returns an Integer of the database value or NULL if the database value is
-     * null
-     *
-     * @return the integer value or null
-     */
-    @Override
-    @SuppressWarnings("deprecation")
-    public Integer intValue() {
-        Long value = getValue();
-        return value == null ? null : value.intValue();
-    }
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted
+	 */
+	public void permittedValues(Long... permitted) {
+		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+	}
 
-    /**
-     * Returns a Long of the database value or NULL if the database value is
-     * null
-     *
-     * @return the long value or null
-     */
-    @Override
-    @SuppressWarnings("deprecation")
-    public Long longValue() {
-        return getValue();
-    }
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted
+	 */
+	public void permittedValues(NumberResult... permitted) {
+		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+	}
 
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(Long... permitted) {
-        this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
-    }
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted
+	 */
+	public void permittedValues(Number... permitted) {
+		List<Long> ints = new ArrayList<Long>();
+		for (Number dbint : permitted) {
+			ints.add(dbint.longValue());
+		}
+		final Long[] longArray = ints.toArray(new Long[]{});
+		this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+	}
 
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(NumberResult... permitted) {
-        this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
-    }
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted
+	 */
+	public void permittedValues(DBInteger... permitted) {
+		List<Long> ints = new ArrayList<Long>();
+		for (DBInteger dbint : permitted) {
+			ints.add(dbint.getValue());
+		}
+		final Long[] longArray = ints.toArray(new Long[]{});
+		this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+	}
 
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(Number... permitted) {
-        List<Long> ints = new ArrayList<Long>();
-        for (Number dbint : permitted) {
-            ints.add(dbint.longValue());
-        }
-        final Long[] longArray = ints.toArray(new Long[]{});
-        this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
-    }
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted
+	 */
+	public void permittedValues(DBNumber... permitted) {
+		List<Long> ints = new ArrayList<Long>();
+		for (DBNumber dbint : permitted) {
+			ints.add(dbint.getValue().longValue());
+		}
+		final Long[] longArray = ints.toArray(new Long[]{});
+		this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+	}
 
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(DBInteger... permitted) {
-        List<Long> ints = new ArrayList<Long>();
-        for (DBInteger dbint : permitted) {
-            ints.add(dbint.getValue());
-        }
-        final Long[] longArray = ints.toArray(new Long[]{});
-        this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
-    }
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted
+	 */
+	public void permittedValues(Collection<Long> permitted) {
+		this.setOperator(new DBPermittedValuesOperator(permitted));
+	}
 
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(DBNumber... permitted) {
-        List<Long> ints = new ArrayList<Long>();
-        for (DBNumber dbint : permitted) {
-            ints.add(dbint.getValue().longValue());
-        }
-        final Long[] longArray = ints.toArray(new Long[]{});
-        this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
-    }
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted
+	 */
+	public void permittedValuesInteger(Collection<Integer> permitted) {
+		this.setOperator(new DBPermittedValuesOperator(permitted));
+	}
 
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(Collection<Long> permitted) {
-        this.setOperator(new DBPermittedValuesOperator(permitted));
-    }
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted
+	 */
+	public void permittedValues(Integer... permitted) {
+		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+	}
 
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValuesInteger(Collection<Integer> permitted) {
-        this.setOperator(new DBPermittedValuesOperator(permitted));
-    }
+	/**
+	 *
+	 * excludes the object, Set, List, Array, or vararg of objects
+	 *
+	 *
+	 * @param excluded
+	 */
+	public void excludedValues(Long... excluded) {
+		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		negateOperator();
+	}
 
-    /**
-     *
-     * reduces the rows to only the object, Set, List, Array, or vararg of
-     * objects
-     *
-     * @param permitted
-     */
-    public void permittedValues(Integer... permitted) {
-        this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
-    }
+	/**
+	 *
+	 * excludes the object, Set, List, Array, or vararg of objects
+	 *
+	 *
+	 * @param excluded
+	 */
+	public void excludedValues(DBInteger... excluded) {
+		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		negateOperator();
+	}
 
-    /**
-     *
-     * excludes the object, Set, List, Array, or vararg of objects
-     *
-     *
-     * @param excluded
-     */
-    public void excludedValues(Long... excluded) {
-        this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
-        negateOperator();
-    }
+	/**
+	 *
+	 * excludes the object, Set, List, Array, or vararg of objects
+	 *
+	 *
+	 * @param excluded
+	 */
+	public void excludedValues(Integer... excluded) {
+		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		negateOperator();
+	}
 
-    /**
-     *
-     * excludes the object, Set, List, Array, or vararg of objects
-     *
-     *
-     * @param excluded
-     */
-    public void excludedValues(DBInteger... excluded) {
-        this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
-        negateOperator();
-    }
+	/**
+	 *
+	 * excludes the object, Set, List, Array, or vararg of objects
+	 *
+	 *
+	 * @param excluded
+	 */
+	public void excludedValuesLong(List<Long> excluded) {
+		this.setOperator(new DBPermittedValuesOperator(excluded));
+		negateOperator();
+	}
 
-    /**
-     *
-     * excludes the object, Set, List, Array, or vararg of objects
-     *
-     *
-     * @param excluded
-     */
-    public void excludedValues(Integer... excluded) {
-        this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
-        negateOperator();
-    }
+	/**
+	 *
+	 * excludes the object, Set, List, Array, or vararg of objects
+	 *
+	 *
+	 * @param excluded
+	 */
+	public void excludedValuesInteger(List<Integer> excluded) {
+		this.setOperator(new DBPermittedValuesOperator(excluded));
+		negateOperator();
+	}
 
-    /**
-     *
-     * excludes the object, Set, List, Array, or vararg of objects
-     *
-     *
-     * @param excluded
-     */
-    public void excludedValuesLong(List<Long> excluded) {
-        this.setOperator(new DBPermittedValuesOperator(excluded));
-        negateOperator();
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * return 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void permittedRange(Long lowerBound, Long upperBound) {
+		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+	}
 
-    /**
-     *
-     * excludes the object, Set, List, Array, or vararg of objects
-     *
-     *
-     * @param excluded
-     */
-    public void excludedValuesInteger(List<Integer> excluded) {
-        this.setOperator(new DBPermittedValuesOperator(excluded));
-        negateOperator();
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * return 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void permittedRange(Integer lowerBound, Integer upperBound) {
+		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+	}
 
-    /**
-     * Performs searches based on a range.
-     *
-     * if both ends of the range are specified the lower-bound will be included
-     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
-     * return 1 and 2.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
-     * <br>
-     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
-     * <br>
-     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
-     *
-     * @param lowerBound
-     * @param upperBound
-     */
-    public void permittedRange(Long lowerBound, Long upperBound) {
-        setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
+	 * return 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void permittedRangeInclusive(Long lowerBound, Long upperBound) {
+		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+	}
 
-    /**
-     * Performs searches based on a range.
-     *
-     * if both ends of the range are specified the lower-bound will be included
-     * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
-     * return 1 and 2.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
-     * <br>
-     * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
-     * <br>
-     * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
-     *
-     * @param lowerBound
-     * @param upperBound
-     */
-    public void permittedRange(Integer lowerBound, Integer upperBound) {
-        setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
+	 * return 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void permittedRangeInclusive(Integer lowerBound, Integer upperBound) {
+		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+	}
 
-    /**
-     * Performs searches based on a range.
-     *
-     * if both ends of the range are specified both the lower- and upper-bound
-     * will be included in the search. I.e permittedRangeInclusive(1,3) will
-     * return 1, 2, and 3.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
-     * <br>
-     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
-     * <br>
-     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
-     *
-     * @param lowerBound
-     * @param upperBound
-     */
-    public void permittedRangeInclusive(Long lowerBound, Long upperBound) {
-        setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+	 * return 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void permittedRangeExclusive(Long lowerBound, Long upperBound) {
+		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+	}
 
-    /**
-     * Performs searches based on a range.
-     *
-     * if both ends of the range are specified both the lower- and upper-bound
-     * will be included in the search. I.e permittedRangeInclusive(1,3) will
-     * return 1, 2, and 3.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
-     * <br>
-     * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and inclusive.
-     * <br>
-     * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
-     *
-     * @param lowerBound
-     * @param upperBound
-     */
-    public void permittedRangeInclusive(Integer lowerBound, Integer upperBound) {
-        setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+	 * return 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void permittedRangeExclusive(Integer lowerBound, Integer upperBound) {
+		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+	}
 
-    /**
-     * Performs searches based on a range.
-     *
-     * if both ends of the range are specified both the lower- and upper-bound
-     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
-     * return 2.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
-     * <br>
-     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
-     * <br>
-     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
-     *
-     * @param lowerBound
-     * @param upperBound
-     */
-    public void permittedRangeExclusive(Long lowerBound, Long upperBound) {
-        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will return
+	 * -1, 0, 3, 4...
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will return 0, -1, -2, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will return 5, 6, 7, 8, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void excludedRange(Long lowerBound, Long upperBound) {
+		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		negateOperator();
+	}
 
-    /**
-     * Performs searches based on a range.
-     *
-     * if both ends of the range are specified both the lower- and upper-bound
-     * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
-     * return 2.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
-     * <br>
-     * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
-     *
-     * <p>
-     * if the upper-bound is null the range will be open ended and exclusive.
-     * <br>
-     * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
-     *
-     * @param lowerBound
-     * @param upperBound
-     */
-    public void permittedRangeExclusive(Integer lowerBound, Integer upperBound) {
-        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will return
+	 * -1, 0, 3, 4...
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will return 0, -1, -2, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will return 5, 6, 7, 8, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void excludedRange(Integer lowerBound, Integer upperBound) {
+		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		negateOperator();
+	}
 
-    public void excludedRange(Long lowerBound, Long upperBound) {
-        setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
-        negateOperator();
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e excludedRangeInclusive(1,3) will return
+	 * ..., -1, 0, 4, 5, 6, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(1,null) will return 0, -1, -2, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(null, 5) will return 6, 7, 8, 9, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void excludedRangeInclusive(Long lowerBound, Long upperBound) {
+		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+		negateOperator();
+	}
 
-    public void excludedRange(Integer lowerBound, Integer upperBound) {
-        setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
-        negateOperator();
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e excludedRangeInclusive(1,3) will return
+	 * ..., -1, 0, 4, 5, 6, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(1,null) will return 0, -1, -2, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(null, 5) will return 6, 7, 8, 9, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void excludedRangeInclusive(Integer lowerBound, Integer upperBound) {
+		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
+		negateOperator();
+	}
 
-    public void excludedRangeInclusive(Long lowerBound, Long upperBound) {
-        setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
-        negateOperator();
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will return
+	 * ..., -2-1,0,1,3,4, etc but not 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will return 1, 0, -1, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will return 5, 6, 7, 8, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void excludedRangeExclusive(Long lowerBound, Long upperBound) {
+		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+		negateOperator();
+	}
 
-    public void excludedRangeInclusive(Integer lowerBound, Integer upperBound) {
-        setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
-        negateOperator();
-    }
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will return
+	 * ..., -2-1,0,1,3,4, etc but not 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will return 1, 0, -1, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will return 5, 6, 7, 8, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void excludedRangeExclusive(Integer lowerBound, Integer upperBound) {
+		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
+		negateOperator();
+	}
 
-    public void excludedRangeExclusive(Long lowerBound, Long upperBound) {
-        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
-        negateOperator();
-    }
+	@Override
+	public void setValue(Object newLiteralValue) {
+		if (newLiteralValue == null) {
+			super.setLiteralValue(null);
+		} else if (newLiteralValue.toString().isEmpty()) {
+			super.setLiteralValue(null);
+		} else {
+			try {
+				Long literalLong = Long.parseLong(newLiteralValue.toString());
+				setLiteralValue(literalLong);
+			} catch (NumberFormatException noFormat) {
+				setLiteralValue(null);
+			}
+		}
+	}
 
-    public void excludedRangeExclusive(Integer lowerBound, Integer upperBound) {
-        setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
-        negateOperator();
-    }
+	/**
+	 * Sets the value of this DBInteger to the value provided.
+	 *
+	 * @param newLiteralValue
+	 */
+	public void setValue(DBNumber newLiteralValue) {
+		setValue(newLiteralValue.getValue());
+	}
 
-    @Override
-    public void setValue(Object newLiteralValue) {
-        if (newLiteralValue == null) {
-            super.setLiteralValue(null);
-//        } else if (newLiteralValue instanceof Long) {
-//            super.setLiteralValue(newLiteralValue);
-//        } else if (newLiteralValue instanceof Integer) {
-//            super.setLiteralValue(newLiteralValue);
-//        } else if (newLiteralValue instanceof Number) {
-//            super.setLiteralValue(newLiteralValue);
-//        } else if (newLiteralValue instanceof DBInteger) {
-//            final DBInteger dbInteger = (DBInteger) newLiteralValue;
-//            setValue(dbInteger.getValue());
-//        } else if (newLiteralValue instanceof DBNumber) {
-//            final DBNumber dbNumber = (DBNumber) newLiteralValue;
-//            setValue(dbNumber.getValue());
-        } else if (newLiteralValue.toString().isEmpty()) {
-            super.setLiteralValue(null);
-        } else {
-            try {
-                Long literalLong = Long.parseLong(newLiteralValue.toString());
-                setLiteralValue(literalLong);
-            } catch (NumberFormatException noFormat) {
-                setLiteralValue(null);
-            }
-        }
-    }
+	/**
+	 * Sets the value of this DBInteger to the value provided.
+	 *
+	 * @param newLiteralValue
+	 */
+	public void setValue(DBInteger newLiteralValue) {
+		setValue(newLiteralValue.getValue());
+	}
 
-    public void setValue(DBNumber newLiteralValue) {
-        setValue((newLiteralValue).getValue());
-    }
+	/**
+	 * Sets the value of this DBInteger to the value provided.
+	 *
+	 * @param newLiteralValue
+	 */
+	public void setValue(Number newLiteralValue) {
+		if (newLiteralValue == null) {
+			super.setLiteralValue(null);
+		} else {
+			super.setLiteralValue(newLiteralValue);
+		}
+	}
 
-    public void setValue(DBInteger newLiteralValue) {
-        setValue((newLiteralValue).getValue());
-    }
+	/**
+	 * Sets the value of this DBInteger to the value provided.
+	 *
+	 * @param newLiteralValue
+	 */
+	public void setValue(Long newLiteralValue) {
+		if (newLiteralValue == null) {
+			super.setLiteralValue(null);
+		} else {
+			super.setLiteralValue(newLiteralValue);
+		}
+	}
 
-    public void setValue(Number newLiteralValue) {
-        if (newLiteralValue == null) {
-            super.setLiteralValue(null);
-        } else {
-            super.setLiteralValue(newLiteralValue);
-        }
-    }
+	/**
+	 * Sets the value of this DBInteger to the value provided.
+	 *
+	 * @param newLiteralValue
+	 */
+	public void setValue(Integer newLiteralValue) {
+		if (newLiteralValue == null) {
+			super.setLiteralValue(null);
+		} else {
+			super.setLiteralValue(newLiteralValue);
+		}
+	}
 
-    public void setValue(Long newLiteralValue) {
-        if (newLiteralValue == null) {
-            super.setLiteralValue(null);
-        } else {
-            super.setLiteralValue(newLiteralValue);
-        }
-    }
+	/**
+	 *
+	 * @param db
+	 * @return the underlying number formatted for a SQL statement
+	 */
+	@Override
+	public String formatValueForSQLStatement(DBDatabase db) {
+		DBDefinition defn = db.getDefinition();
+		if (isNull()) {
+			return defn.getNull();
+		}
+		return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
+	}
 
-    public void setValue(Integer newLiteralValue) {
-        if (newLiteralValue == null) {
-            super.setLiteralValue(null);
-        } else {
-            super.setLiteralValue(newLiteralValue);
-        }
-    }
-
-    /**
-     *
-     * @param db
-     * @return the underlying number formatted for a SQL statement
-     */
-    @Override
-    public String formatValueForSQLStatement(DBDatabase db) {
-        DBDefinition defn = db.getDefinition();
-        if (isNull()) {
-            return defn.getNull();
-        }
-        return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
-    }
-
-    @Override
-    public boolean isAggregator() {
-        return false;
-    }
-
-    @Override
-    public void blankQuery() {
-        super.blankQuery();
-    }
-
+	@Override
+	public boolean isAggregator() {
+		return false;
+	}
 }

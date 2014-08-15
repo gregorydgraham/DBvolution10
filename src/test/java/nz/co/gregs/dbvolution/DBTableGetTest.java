@@ -171,7 +171,6 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testIsIn() throws SQLException {
         Marque hummerQuery = new Marque();
-        hummerQuery.getUidMarque().blankQuery();
         hummerQuery.getName().permittedValues("PEUGEOT", "HUMMER");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();
@@ -181,7 +180,6 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testIsInWithNull() throws SQLException {
         Marque hummerQuery = new Marque();
-        hummerQuery.getUidMarque().blankQuery();
         hummerQuery.individualAllocationsAllowed.permittedValues(null, "Y", "YES");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();
@@ -191,7 +189,6 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testIsNotInWithNull() throws SQLException {
         Marque hummerQuery = new Marque();
-        hummerQuery.getUidMarque().blankQuery();
         hummerQuery.individualAllocationsAllowed.excludedValues(null, "YES");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();

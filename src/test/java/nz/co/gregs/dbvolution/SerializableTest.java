@@ -45,7 +45,6 @@ public class SerializableTest extends AbstractTest {
         try {
 
             Marque hummerExample = new Marque();
-            hummerExample.getUidMarque().blankQuery();
             hummerExample.getName().permittedValues("PEUGEOT", "HUMMER");
             List<Marque> marqueList = database.getDBTable(hummerExample).getRowsByExample(hummerExample);
 
@@ -63,7 +62,7 @@ public class SerializableTest extends AbstractTest {
                 List<Object> list = (List<Object>) object;
                 for (Object obj : list) {
                     if (obj instanceof Marque) {
-                        System.out.println("" + ((Marque) obj));
+                        System.out.println("" + obj);
                     } else {
                         throw new RuntimeException("Unable to reload the object correctly");
                     }

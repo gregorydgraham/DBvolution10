@@ -100,11 +100,6 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	}
 
 	@Override
-	public void blankQuery() {
-		super.blankQuery();
-	}
-
-	@Override
 	public String getWhereClause(DBDatabase db, String columnName) {
 		if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
 			throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);

@@ -115,7 +115,6 @@ public class DBDatabaseGetTest extends AbstractTest {
     @Test
     public void testIsIn() throws SQLException {
         Marque hummerQuery = new Marque();
-        hummerQuery.getUidMarque().blankQuery();
         hummerQuery.getName().permittedValues("PEUGEOT", "HUMMER");
         List<Marque> gotMarques = database.get(hummerQuery);
         for (Marque row : gotMarques) {
@@ -128,7 +127,6 @@ public class DBDatabaseGetTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void testIsInWithList() throws SQLException {
         Marque hummerQuery = new Marque();
-        hummerQuery.getUidMarque().blankQuery();
         List<String> permittedMarques = new ArrayList<String>();
         permittedMarques.add("PEUGEOT");
         permittedMarques.add("HUMMER");
@@ -141,7 +139,6 @@ public class DBDatabaseGetTest extends AbstractTest {
     @SuppressWarnings("unchecked")
     public void testIsExcludedWithList() throws SQLException {
         Marque hummerQuery = new Marque();
-        hummerQuery.getUidMarque().blankQuery();
         List<Marque> allMarques = database.getDBTable(hummerQuery).setBlankQueryAllowed(true).getAllRows();
         List<String> permittedMarques = new ArrayList<String>();
         permittedMarques.add("PEUGEOT");
