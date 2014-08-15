@@ -203,4 +203,14 @@ public class SQLiteDefinition extends DBDefinition {
 	public String getRetrieveLastInsertedRowSQL() {
 		return "select last_insert_rowid();";
 	}
+
+	/**
+	 * Indicates whether the database supports the modulus function.
+	 *
+	 * @return the default implementation returns TRUE.
+	 */
+	@Override
+	public boolean supportsModulusFunction() {
+		return false;
+	}
 }

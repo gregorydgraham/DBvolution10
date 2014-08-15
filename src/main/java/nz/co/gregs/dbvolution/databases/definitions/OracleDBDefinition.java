@@ -185,17 +185,17 @@ public class OracleDBDefinition extends DBDefinition {
 	 *
 	 * @return the default implementation returns TRUE.
 	 */
-	@Override
-	public boolean supportsModulusFunction() {
-		return false;
-	}
+//	@Override
+//	public boolean supportsModulusFunction() {
+//		return false;
+//	}
 	
-	@Override
-	public String doModulusTransform(String firstNumber, String secondNumber) {
-		return " REMAINDER(("+firstNumber +"), ("+secondNumber+"))";
-//		return "(("+firstNumber+") - ("+secondNumber+") * FLOOR(("+firstNumber+")/("+secondNumber+")))";
-//		return " trunc(trunc("+firstNumber+")/trunc("+secondNumber+"))";
-	}
+//	@Override
+//	public String doModulusTransform(String firstNumber, String secondNumber) {
+//		return " REMAINDER(("+firstNumber +"), ("+secondNumber+"))";
+////		return "(("+firstNumber+") - ("+secondNumber+") * FLOOR(("+firstNumber+")/("+secondNumber+")))";
+////		return " trunc(trunc("+firstNumber+")/trunc("+secondNumber+"))";
+//	}
 
 	/**
 	 * Oracle does not differentiate between NULL and an empty string.
