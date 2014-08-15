@@ -88,4 +88,9 @@ public class PostgresDBDefinition extends DBDefinition {
 	protected String getSpecialAutoIncrementType() {
 		return " SERIAL ";
 	}
+
+	@Override
+	public boolean supportsModulusFunction() {
+		return false;
+	}
 }

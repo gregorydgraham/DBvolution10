@@ -1169,15 +1169,15 @@ public class NumberExpression implements NumberResult {
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (db.getDefinition().supportsModulusFunction()) {
-					return super.toSQLString(db);
-				} else {
 					return db.getDefinition().doModulusTransform(first.toSQLString(db), second.toSQLString(db));
+				}else{
+					return first.toSQLString(db)+" % "+ second.toSQLString(db);
 				}
 			}
 
 			@Override
 			String getFunctionName(DBDatabase db) {
-				return "mod";
+				return "MOD";
 			}
 		});
 	}
