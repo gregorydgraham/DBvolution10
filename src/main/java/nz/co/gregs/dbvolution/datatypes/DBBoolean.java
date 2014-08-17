@@ -38,8 +38,9 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * <p>
  * Yes/No Strings and 0/1 integer columns will need to use {@link DBString} and
- * {@link DBInteger} respectively. Sub-classing DBString/DBInteger or using a
- * {@link DBTypeAdaptor} may help.
+ * {@link DBInteger} respectively. Depending on your requirements you should try
+ * sub-classing DBString/DBInteger, extending DBStringEnum/DBIntegerEnum, or
+ * using a {@link DBTypeAdaptor}.
  *
  * @author Gregory Graham
  */
@@ -61,8 +62,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * Creates a DBBoolean with the value provided.
 	 *
 	 * <p>
-	 * The resulting boolean will be set as having the value provided but will
-	 * not be defined in the database.
+	 * The resulting boolean will be set as having the value provided but will not
+	 * be defined in the database.
 	 *
 	 * @param bool
 	 */
