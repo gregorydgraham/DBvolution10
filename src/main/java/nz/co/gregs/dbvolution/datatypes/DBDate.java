@@ -194,6 +194,11 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		return "TIMESTAMP";
 	}
 
+	/**
+	 * Returns the string value of the DBDate.
+	 *
+	 * @return
+	 */
 	@Override
 	public String toString() {
 		if (this.isDBNull || dateValue() == null) {
