@@ -203,7 +203,7 @@ public class QueryGraph {
 				sortedInnerBeforeLoop = sortedInnerTables.size();
 				addedInnerTables.clear();
 				// Reverse the list to make it a depth first search
-				Class[] dummyArray = new Class[]{};
+				Class<?>[] dummyArray = new Class<?>[]{};
 				Class<? extends DBRow>[] sortedArray = (Class<? extends DBRow>[]) sortedInnerTables.toArray(dummyArray);
 				List<Class<? extends DBRow>> reversedList = Arrays.asList(sortedArray);
 				Collections.reverse(reversedList);

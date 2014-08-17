@@ -5,6 +5,7 @@ package nz.co.gregs.dbvolution.exceptions;
  * @author Malcolm Lett
  */
 public class DBRuntimeException extends RuntimeException {
+
 	private static final long serialVersionUID = 1L;
 
 	public DBRuntimeException() {

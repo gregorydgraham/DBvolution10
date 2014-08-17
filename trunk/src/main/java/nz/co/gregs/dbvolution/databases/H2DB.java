@@ -64,6 +64,12 @@ public class H2DB extends DBDatabase {
         return false;
     }
 
+	/**
+	 * Clones the DBDatabase
+	 *
+	 * @return
+	 * @throws CloneNotSupportedException
+	 */
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
