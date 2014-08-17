@@ -29,6 +29,14 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
+ * Encapsulates database values that are Integers.
+ *
+ * <p>
+ * Use DBinteger when the column is a {@code INT} or {@code NUMBER(x)}, that is any numeric datatype without a decimal or fractional part.
+ *
+ * <p>
+ * Generally DBInteger is declared inside your DBRow sub-class as:
+ * {@code @DBColumn public DBInteger myIntColumn = new DBInteger();}
  *
  * @author Gregory Graham
  */
