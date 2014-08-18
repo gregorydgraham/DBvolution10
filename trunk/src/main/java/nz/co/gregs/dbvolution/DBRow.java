@@ -120,7 +120,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
 	private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
 	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
-	private String tableAlias;
+//	private String tableAlias;
 	private Boolean emptyRow = true;
 
 	/**
