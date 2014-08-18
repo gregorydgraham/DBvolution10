@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public class DBJavaObject extends QueryableDatatype {
 
-    public static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 
     @Override
     public String getSQLDatatype() {
@@ -92,5 +92,4 @@ public class DBJavaObject extends QueryableDatatype {
     public Set<DBRow> getTablesInvolved() {
         return new HashSet<DBRow>();
     }
-
 }
