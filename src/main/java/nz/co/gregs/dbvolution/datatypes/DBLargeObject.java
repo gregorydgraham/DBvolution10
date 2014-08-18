@@ -30,10 +30,6 @@ import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
  * specific classes eventually. There is also {@link DBJavaObject} for storing
  * Java objects directly in the database.
  *
- * <p>
- * Although there is only DBByteArray at present, this class is provided to
- * allow creation of other BLOB-type columns in future.
- *
  * @author Gregory Graham
  */
 public abstract class DBLargeObject extends QueryableDatatype implements LargeObjectResult {

@@ -167,7 +167,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			bytesAdded += someBytes.length;
 		}
 		String b64encoded = Base64.encodeBase64String(bytes);
-		System.out.println("BYTES TO WRITE: "+Arrays.toString(bytes));
+		//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
 		prep.setString(1, b64encoded);
 		prep.execute();
 	}

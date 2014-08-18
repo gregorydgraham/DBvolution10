@@ -35,6 +35,9 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Use DBinteger when the column is a {@code INT} or {@code NUMBER(x)}, that is any numeric datatype without a decimal or fractional part.
  *
  * <p>
+ * Use {@link DBNumber} when the numbers do not have a decimal or fractional part.
+ *
+ * <p>
  * Generally DBInteger is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBInteger myIntColumn = new DBInteger();}
  *

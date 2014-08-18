@@ -63,7 +63,7 @@ import org.apache.commons.codec.binary.Base64;
 public class DBByteArray extends DBLargeObject {
 
 	private static final long serialVersionUID = 1;
-	private InputStream byteStream = null;
+	InputStream byteStream = null;
 
 	/**
 	 * The Default constructor for a DBByteArray.

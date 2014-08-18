@@ -32,6 +32,19 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
+ * Encapsulates database values that are Number.
+ *
+ * <p>
+ * Use DBNumber when the column is a {@code NUMBER} or {@code NUMBER(x,y)}, that
+ * is any numeric datatype with a decimal or fractional part.
+ *
+ * <p>
+ * Use {@link DBInteger} when the numbers do not have a decimal or fractional
+ * part.
+ *
+ * <p>
+ * Generally DBNumber is declared inside your DBRow sub-class as:
+ * {@code @DBColumn public DBNumber myIntColumn = new DBNumber();}
  *
  * @author Gregory Graham
  */
@@ -39,29 +52,47 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	private static final long serialVersionUID = 1;
 
+	/**
+	 * The default constructor for DBNumber.
+	 *
+	 * <p>
+	 * Creates an unset undefined DBNumber object.
+	 *
+	 */
 	public DBNumber() {
 		super();
 	}
 
+	/**
+	 * Creates a column expression with a number result from the expression
+	 * provided.
+	 *
+	 * <p>
+	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
+	 * data from the database prior to retrieval.
+	 *
+	 * @param numberExpression 
+	 */
 	public DBNumber(NumberResult numberExpression) {
 		super(numberExpression);
 	}
 
 	/**
+	 * Creates a new DBNumber with the value set to the number provided.
 	 *
 	 * @param aNumber
 	 */
 	public DBNumber(Number aNumber) {
 		super(aNumber);
 	}
-
-	/**
-	 *
-	 * @param aNumber
-	 */
-	public DBNumber(Integer aNumber) {
-		super(aNumber);
-	}
+//
+//	/**
+//	 *
+//	 * @param aNumber
+//	 */
+//	public DBNumber(Integer aNumber) {
+//		super(aNumber);
+//	}
 
 	/**
 	 *
