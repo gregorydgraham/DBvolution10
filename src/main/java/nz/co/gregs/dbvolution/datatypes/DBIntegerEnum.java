@@ -512,6 +512,26 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeExclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();
@@ -611,28 +631,123 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * exclude 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRange(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
-	public void excludedRangeInclusive(Integer lowerBound, Integer upperBound) {
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e excludedRangeInclusive(1,3) will
+	 * exclude 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+		public void excludedRangeInclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeExclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Returns the set value of this DBInteger as a Number, if possible.
+	 *
+	 * @return the value as a Number.
+	 */
 	public Number numberValue() {
 		if (literalValue == null) {
 			return null;
 		} else if (literalValue instanceof Number) {
 			return (Number) literalValue;
 		} else {
-			return Double.parseDouble(literalValue.toString());
+			return Long.parseLong(literalValue.toString());
+		}
+	}
+	
+	/**
+	 * Returns the set value of this DBInteger as a Long, if possible.
+	 *
+	 * @return the value as a Long.
+	 */
+	public Long longValue() {
+		if (literalValue == null) {
+			return null;
+		} else if (literalValue instanceof Long) {
+			return (Long) literalValue;
+		} else {
+			return Long.parseLong(literalValue.toString());
+		}
+	}
+
+	/**
+	 * Returns the set value of this DBInteger as a Integer, if possible.
+	 *
+	 * @return the value as a Integer.
+	 */
+	public Integer intValue() {
+		if (literalValue == null) {
+			return null;
+		} else if (literalValue instanceof Integer) {
+			return (Integer) literalValue;
+		} else {
+			return Integer.parseInt(literalValue.toString());
 		}
 	}
 

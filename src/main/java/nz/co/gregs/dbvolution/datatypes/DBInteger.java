@@ -162,8 +162,6 @@ public class DBInteger extends QueryableDatatype {
 	 *
 	 * @return the integer value or null
 	 */
-	@Override
-	@SuppressWarnings("deprecation")
 	public Integer intValue() {
 		Long value = getValue();
 		return value == null ? null : value.intValue();
@@ -174,8 +172,6 @@ public class DBInteger extends QueryableDatatype {
 	 *
 	 * @return the long value or null
 	 */
-	@Override
-	@SuppressWarnings("deprecation")
 	public Long longValue() {
 		return getValue();
 	}
