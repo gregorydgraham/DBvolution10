@@ -36,5 +36,10 @@ public interface NumberResult extends DBExpression{
     @Override
     public NumberResult copy();
 
+	/**
+	 * Indicates whether the current search criteria requires special coverage for NULL values.
+	 *
+	 * @return TRUE if the search criteria requires NULLs to be handled, otherwise FALSE.
+	 */
 	public boolean getIncludesNull();
 }
