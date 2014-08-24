@@ -71,7 +71,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param numberExpression 
+	 * @param numberExpression
 	 */
 	public DBNumber(NumberResult numberExpression) {
 		super(numberExpression);
@@ -85,14 +85,6 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	public DBNumber(Number aNumber) {
 		super(aNumber);
 	}
-//
-//	/**
-//	 *
-//	 * @param aNumber
-//	 */
-//	public DBNumber(Integer aNumber) {
-//		super(aNumber);
-//	}
 
 	/**
 	 *
@@ -107,6 +99,15 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		return (DBNumber) super.copy();
 	}
 
+	/**
+	 * Sets the value of this DBNumber to the value of the object provided.
+	 *
+	 * <p>
+	 * You probably want {@link #setValue(java.lang.Number)} or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)
+	 * }
+	 *
+	 * @param newLiteralValue
+	 */
 	@Override
 	public void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof Number) {
@@ -118,10 +119,39 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		}
 	}
 
+	/**
+	 * Sets the value of this DBNumber to the value of the DBNumber provided.
+	 *
+	 * <p>
+	 * This allows DBNumbers to be treated somewhat like normal numbers. However {@link #setValue(java.lang.Number)
+	 * } may be more useful in normal usage.
+	 *
+	 * @param newLiteralValue
+	 */
 	public void setValue(DBNumber newLiteralValue) {
 		setValue((newLiteralValue).getValue());
 	}
 
+	/**
+	 * Set the value of this DBNumber to the Double, Long, Integer, or other
+	 * number provided.
+	 *
+	 * <p>
+	 * This probably the method you want to use to set or change the value of this
+	 * DBNumber. When creating a new row or updating an existing row use this
+	 * method or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber) to correctly set the value.
+	 *
+	 * <p>
+	 * Remember:</p>
+	 *
+	 * <ul>
+	 * <li>Set the column to NULL using setValue((Number)null)</li>
+	 * <li>Use {@link DBDatabase.insert or DBDatabase.update to make the changes
+	 * permanent.</li>
+	 * </ul>
+	 *
+	 * @param newLiteralValue
+	 */
 	public void setValue(Number newLiteralValue) {
 		if (newLiteralValue == null) {
 			super.setLiteralValue(null);
@@ -510,31 +540,151 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be within
+	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
+	 * exclude 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRange(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be within in
+	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
+	 * exclude 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRange(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
+	 * exclude 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeInclusive(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
+	 * exclude 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeInclusive(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeExclusive(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeExclusive(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();

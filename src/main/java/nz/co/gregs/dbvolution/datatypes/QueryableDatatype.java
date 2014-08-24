@@ -125,8 +125,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			qdt.setLiteralValue(((QueryableDatatype) o).literalValue);
 		} else {
 			/*if (o instanceof DBExpression) {
-				qdt = new DBDataGenerator();
-			} else*/ if (o instanceof Integer) {
+			 qdt = new DBDataGenerator();
+			 } else*/ if (o instanceof Integer) {
 				qdt = new DBInteger();
 			} else if (o instanceof Number) {
 				qdt = new DBNumber();
@@ -272,6 +272,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Subclass writers should ensure that the method handles nulls correctly and
 	 * throws an exception if an inappropriate value is supplied.
 	 *
+	 * <p>
+	 * This method is public for internal reasons and you should provide/use
+	 * another more strongly typed version of setVersion.
+	 *
 	 * @param newLiteralValue
 	 */
 	public abstract void setValue(Object newLiteralValue);
@@ -291,8 +295,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			setChanged(newLiteralValue);
 			this.literalValue = newLiteralValue;
 			/*if (newLiteralValue instanceof DBExpression) {
-				this.setOperator(new DBEqualsOperator(new DBDataGenerator((DBExpression) newLiteralValue)));
-			} else*/ if (newLiteralValue instanceof Date) {
+			 this.setOperator(new DBEqualsOperator(new DBDataGenerator((DBExpression) newLiteralValue)));
+			 } else*/ if (newLiteralValue instanceof Date) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
 			} else if (newLiteralValue instanceof Timestamp) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Timestamp) newLiteralValue)));
