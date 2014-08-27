@@ -67,7 +67,7 @@ public class H2DB extends DBDatabase {
 	/**
 	 * Clones the DBDatabase
 	 *
-	 * @return
+	 * @return a clone of the database.
 	 * @throws CloneNotSupportedException
 	 */
 	@Override
