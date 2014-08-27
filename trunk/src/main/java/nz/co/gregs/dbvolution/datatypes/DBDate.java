@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -197,7 +198,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Returns the string value of the DBDate.
 	 *
-	 * @return
+	 * @return a string version of the current value of this DBDate
 	 */
 	@Override
 	public String toString() {

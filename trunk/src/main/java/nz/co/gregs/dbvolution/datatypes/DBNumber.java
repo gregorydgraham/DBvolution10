@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
@@ -139,15 +140,16 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <p>
 	 * This probably the method you want to use to set or change the value of this
 	 * DBNumber. When creating a new row or updating an existing row use this
-	 * method or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber) to correctly set the value.
+	 * method or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to
+	 * correctly set the value.
 	 *
 	 * <p>
 	 * Remember:</p>
 	 *
 	 * <ul>
 	 * <li>Set the column to NULL using setValue((Number)null)</li>
-	 * <li>Use {@link DBDatabase.insert or DBDatabase.update to make the changes
-	 * permanent.</li>
+	 * <li>Use {@link DBDatabase#insert(nz.co.gregs.dbvolution.DBRow...) } or {@link DBDatabase#update(nz.co.gregs.dbvolution.DBRow...)
+	 * } to make the changes permanent.</li>
 	 * </ul>
 	 *
 	 * @param newLiteralValue
@@ -543,9 +545,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be within
-	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
-	 * exclude 1 and 2.
+	 * if both ends of the range are specified the lower-bound will be within the
+	 * range and the upper-bound outside. I.e excludedRange(1,3) will exclude 1
+	 * and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -569,8 +571,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified the lower-bound will be within in
-	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
-	 * exclude 1 and 2.
+	 * the range and the upper-bound outside. I.e excludedRange(1,3) will exclude
+	 * 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -594,8 +596,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
-	 * exclude 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
+	 * 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -619,8 +621,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
-	 * exclude 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
+	 * 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -644,8 +646,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
+	 * 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
@@ -669,8 +671,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
+	 * 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
