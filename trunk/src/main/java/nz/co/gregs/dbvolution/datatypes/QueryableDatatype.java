@@ -274,11 +274,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * <p>
 	 * This method is public for internal reasons and you should provide/use
-	 * another more strongly typed version of setVersion.
+	 * another more strongly typed version of setValue.
 	 *
 	 * @param newLiteralValue
 	 */
-	public abstract void setValue(Object newLiteralValue);
+	void setValue(Object newLiteralValue){
+		this.setLiteralValue(newLiteralValue);
+	}
 
 	/**
 	 * Sets the literal value of this queryable data type. Replaces any assigned

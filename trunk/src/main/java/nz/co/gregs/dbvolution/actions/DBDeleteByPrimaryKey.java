@@ -22,6 +22,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  * Provides support for the abstract concept of deleting rows based on a primary
@@ -51,7 +53,9 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
 		super(row);
 		DBRow example = DBRow.getDBRow(row.getClass());
-		example.getPrimaryKey().setValue(row.getPrimaryKey());
+		final QueryableDatatype pkQDT = example.getPrimaryKey();
+		InternalQueryableDatatypeProxy pkQDTProxy = new InternalQueryableDatatypeProxy(pkQDT);
+		pkQDTProxy.setValue(row.getPrimaryKey());
 		List<DBRow> gotRows = db.get(example);
 		for (DBRow gotRow : gotRows) {
 			savedRows.add(gotRow);
@@ -64,7 +68,8 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 		final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(row);
 		DBActionList actions = new DBActionList(newDeleteAction);
 		DBRow example = DBRow.getDBRow(row.getClass());
-		example.getPrimaryKey().setValue(row.getPrimaryKey());
+		final QueryableDatatype pkQDT = example.getPrimaryKey();
+		new InternalQueryableDatatypeProxy(pkQDT).setValue(row.getPrimaryKey());
 		List<DBRow> rowsToBeDeleted = db.get(example);
 		for (DBRow deletingRow : rowsToBeDeleted) {
 			newDeleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));

@@ -154,7 +154,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	}
 
 	@Override
-	public void setValue(Object newLiteralValue) {
+	void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof Date) {
 			setValue((Date) newLiteralValue);
 		} else if (newLiteralValue instanceof DBDate) {

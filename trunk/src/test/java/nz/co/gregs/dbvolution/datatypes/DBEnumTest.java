@@ -205,9 +205,11 @@ public class DBEnumTest extends AbstractTest {
 		}
 
 		/**
-		 * Valid values for {@link #recordType}
+		 * Valid values for {@link #recordType}.
+		 *
+		 * <p>
+		 * Nested class to make it obvious which table the enum is for
 		 */
-		// Nested class to make it obvious which table the enum is for
 		public static enum RecordType implements DBEnumValue<Integer> {
 
 			SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),

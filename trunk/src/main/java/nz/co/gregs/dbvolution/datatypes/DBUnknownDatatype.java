@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public class DBUnknownDatatype extends QueryableDatatype {
 
-    protected static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
 	/**
 	 * The default constructor for a DBUnknownDatatype.
@@ -51,7 +51,7 @@ public class DBUnknownDatatype extends QueryableDatatype {
     }
 
     @Override
-    public void setValue(Object newLiteralValue) {
+    void setValue(Object newLiteralValue) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

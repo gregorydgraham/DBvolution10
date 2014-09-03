@@ -32,10 +32,12 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Encapsulates database values that are Integers.
  *
  * <p>
- * Use DBinteger when the column is a {@code INT} or {@code NUMBER(x)}, that is any numeric datatype without a decimal or fractional part.
+ * Use DBinteger when the column is a {@code INT} or {@code NUMBER(x)}, that is
+ * any numeric datatype without a decimal or fractional part.
  *
  * <p>
- * Use {@link DBNumber} when the numbers do not have a decimal or fractional part.
+ * Use {@link DBNumber} when the numbers do not have a decimal or fractional
+ * part.
  *
  * <p>
  * Generally DBInteger is declared inside your DBRow sub-class as:
@@ -629,7 +631,7 @@ public class DBInteger extends QueryableDatatype {
 	}
 
 	@Override
-	public void setValue(Object newLiteralValue) {
+	void setValue(Object newLiteralValue) {
 		if (newLiteralValue == null) {
 			super.setLiteralValue(null);
 		} else if (newLiteralValue.toString().isEmpty()) {

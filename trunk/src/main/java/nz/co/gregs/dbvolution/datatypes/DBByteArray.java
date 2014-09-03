@@ -131,7 +131,7 @@ public class DBByteArray extends DBLargeObject {
 	}
 
 	@Override
-	public void setValue(Object newLiteralValue) {
+	void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof byte[]) {
 			setValue((byte[]) newLiteralValue);
 		} else if (newLiteralValue instanceof DBByteArray) {
@@ -309,7 +309,7 @@ public class DBByteArray extends DBLargeObject {
 
 	/**
 	 * Tries to set the DBDyteArray to the contents of the supplied file.
-	 * 
+	 *
 	 * <p>
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *

@@ -110,7 +110,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * @param newLiteralValue
 	 */
 	@Override
-	public void setValue(Object newLiteralValue) {
+	void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof Number) {
 			setValue((Number) newLiteralValue);
 		} else if (newLiteralValue instanceof DBNumber) {

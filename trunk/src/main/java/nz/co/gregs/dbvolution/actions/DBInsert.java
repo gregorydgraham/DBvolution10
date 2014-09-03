@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.logging.Log;
@@ -81,7 +82,8 @@ public class DBInsert extends DBAction {
 		DBInsert dbInsert = new DBInsert(row);
 		final DBActionList executedActions = dbInsert.execute(database);
 		if (dbInsert.generatedKeys.size() == 1 && !row.getPrimaryKey().hasBeenSet()) {
-			row.getPrimaryKey().setValue(dbInsert.generatedKeys.get(0));
+			final QueryableDatatype pkQDT = row.getPrimaryKey();
+			new InternalQueryableDatatypeProxy(pkQDT).setValue(dbInsert.generatedKeys.get(0));
 		}
 		return executedActions;
 	}
@@ -132,7 +134,8 @@ public class DBInsert extends DBAction {
 									final long pkValue = generatedKeysResultSet.getLong(pkIndex);
 									this.getGeneratedPrimaryKeys().add(pkValue);
 									log.info("GENERATED KEYS: " + pkValue);
-									this.originalRow.getPrimaryKey().setValue(pkValue);
+									final QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
+									new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
 								}
 							} catch (SQLException ex) {
 								throw new RuntimeException(ex);

@@ -34,6 +34,19 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
+ * Encapsulates database values that are strings of characters.
+ *
+ * <p>
+ * Use DBString when the column is a {@code char}, {@code varchar}, or
+ * {@code nvarchar} datatype.
+ *
+ * <p>
+ * Generally DBString is declared inside your DBRow sub-class as:
+ * {@code @DBColumn public DBString myCharColumn = new DBString();}
+ *
+ * <p>
+ * If the string column encodes repeating information like a status code, use
+ * {@link DBStringEnum} to encapsulate the values.
  *
  * @author Gregory Graham
  */
@@ -41,6 +54,13 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Utility function to return the values of a list of DBStrings in a list of
+	 * Strings.
+	 *
+	 * @param dbStrings
+	 * @return the defined values of all the DBStrings.
+	 */
 	public static List<String> toStringList(List<DBString> dbStrings) {
 		ArrayList<String> strings = new ArrayList<String>();
 		for (DBString dBString : dbStrings) {
@@ -49,20 +69,46 @@ public class DBString extends QueryableDatatype implements StringResult {
 		return strings;
 	}
 
+	/**
+	 * The default constructor for DBString.
+	 *
+	 * <p>
+	 * Creates an unset undefined DBString object.
+	 *
+	 */
 	public DBString() {
 		super();
 	}
 
+	/**
+	 * Creates a DBString with the value provided.
+	 *
+	 * <p>
+	 * The resulting DBString will be set as having the value provided but will not
+	 * be defined in the database.
+	 *
+	 * @param string
+	 */
 	public DBString(String string) {
 		super(string);
 	}
 
+	/**
+	 * Creates a column expression with a string result from the expression
+	 * provided.
+	 *
+	 * <p>
+	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
+	 * data from the database prior to retrieval.
+	 *
+	 * @param stringExpression
+	 */
 	public DBString(StringResult stringExpression) {
 		super(stringExpression);
 	}
 
 	@Override
-	public void setValue(Object newLiteralValue) {
+	void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof String) {
 			setValue((String) newLiteralValue);
 		} else {
@@ -70,6 +116,11 @@ public class DBString extends QueryableDatatype implements StringResult {
 		}
 	}
 
+	/**
+	 * Sets the value of this DBString to the value provided.
+	 *
+	 * @param str 
+	 */
 	public void setValue(String str) {
 		super.setLiteralValue(str);
 	}
@@ -337,16 +388,76 @@ public class DBString extends QueryableDatatype implements StringResult {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included within
+	 * the range and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * exclude 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRange(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included within the range. I.e excludedRangeInclusive(1,3) will
+	 * exclude 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeInclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded from the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeExclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();
@@ -362,7 +473,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Please use the pattern system appropriate to your database.
 	 *
 	 * <p>
-	 * Java0-style regular expressions are not yet supported.
+	 * Java-style regular expressions are not yet supported.
 	 *
 	 * @param pattern
 	 */
@@ -370,15 +481,57 @@ public class DBString extends QueryableDatatype implements StringResult {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
 	}
 
+	/**
+	 * Perform searches based on using database compatible pattern matching
+	 *
+	 * <p>
+	 * This facilitates the LIKE operator.
+	 *
+	 * <p>
+	 * Please use the pattern system appropriate to your database.
+	 *
+	 * <p>
+	 * Java-style regular expressions are not yet supported.
+	 *
+	 * @param pattern
+	 */
 	public void excludedPattern(String pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
 		this.negateOperator();
 	}
 
+	/**
+	 * Perform searches based on using database compatible pattern matching
+	 *
+	 * <p>
+	 * This facilitates the LIKE operator.
+	 *
+	 * <p>
+	 * Please use the pattern system appropriate to your database.
+	 *
+	 * <p>
+	 * Java-style regular expressions are not yet supported.
+	 *
+	 * @param pattern
+	 */
 	public void permittedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
 	}
 
+	/**
+	 * Perform searches based on using database compatible pattern matching
+	 *
+	 * <p>
+	 * This facilitates the LIKE operator.
+	 *
+	 * <p>
+	 * Please use the pattern system appropriate to your database.
+	 *
+	 * <p>
+	 * Java-style regular expressions are not yet supported.
+	 *
+	 * @param pattern
+	 */
 	public void excludedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
 		this.negateOperator();
@@ -478,16 +631,76 @@ public class DBString extends QueryableDatatype implements StringResult {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded from the range. I.e excludedRange(1,3) will
+	 * exclude 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRange(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
+	 * exclude 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeInclusive(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeExclusive(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();

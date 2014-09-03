@@ -160,7 +160,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public static <R extends DBRow> R getPrimaryKeyExample(R sourceRow) {
 		@SuppressWarnings("unchecked")
 		R dbRow = (R) getDBRow(sourceRow.getClass());
-		dbRow.getPrimaryKey().setValue(sourceRow.getPrimaryKey());
+		final QueryableDatatype pkQDT = dbRow.getPrimaryKey();
+		new InternalQueryableDatatypeProxy(pkQDT).setValue(sourceRow.getPrimaryKey());
 		return dbRow;
 	}
 

@@ -3,7 +3,7 @@ package nz.co.gregs.dbvolution.datatypes;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
- * Internal class. Do not use. 
+ * Internal class. Do not use.
  */
 /*
  * Note: Comments for this class are provided as non-javadoc comments
@@ -21,12 +21,18 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
  * wouldn't be needed, but it would pollute the public API.
  */
 public class InternalQueryableDatatypeProxy {
-	private QueryableDatatype qdt;
-	
+
+	private final QueryableDatatype qdt;
+
+	/**
+	 * Internal class, do not use.
+	 *
+	 * @param qdt
+	 */
 	public InternalQueryableDatatypeProxy(QueryableDatatype qdt) {
 		this.qdt = qdt;
 	}
-	
+
 	/*
 	 * Injects the PropertyWrapper into the QDT.
 	 * For use with QDT types that need meta-data only available
@@ -34,5 +40,12 @@ public class InternalQueryableDatatypeProxy {
 	 */
 	public void setPropertyWrapper(PropertyWrapperDefinition propertyWrapperDefn) {
 		qdt.setPropertyWrapper(propertyWrapperDefn);
+	}
+
+	/*
+	 * Hides the generic setValue(Object) method within QueryableDatatype while allowing it to be used.
+	 */
+	public void setValue(Object obj) {
+		qdt.setValue(obj);
 	}
 }
