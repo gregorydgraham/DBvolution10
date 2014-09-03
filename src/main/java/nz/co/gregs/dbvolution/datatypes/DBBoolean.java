@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * Creates a DBBoolean with the value provided.
 	 *
 	 * <p>
-	 * The resulting boolean will be set as having the value provided but will not
+	 * The resulting DBBoolean will be set as having the value provided but will not
 	 * be defined in the database.
 	 *
 	 * @param bool
@@ -91,7 +91,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	}
 
 	@Override
-	public void setValue(Object newLiteralValue) {
+	void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof Boolean) {
 			setValue((Boolean) newLiteralValue);
 		} else if (newLiteralValue instanceof DBBoolean) {

@@ -4,15 +4,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.HashSet;
-import java.util.Set;
-
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.ImplicitQueryableDatatype;
 
 /**
  * Adapts a non-DBvolution field or property to a DBvolution type, or adapts a
@@ -58,46 +54,6 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 public @interface DBAdaptType {
 
 	/**
-	 * Indicates that the 'type' is implied by other details.
-	 */
-	static class Implicit extends QueryableDatatype {
-
-		private static final long serialVersionUID = 1L;
-
-		private Implicit() {
-		}
-
-		@Override
-		public String getSQLDatatype() {
-			return null;
-		}
-
-		@Override
-		protected String formatValueForSQLStatement(DBDatabase db) {
-			return null;
-		}
-
-		/**
-		 * This doesn't matter.
-		 *
-		 * @param newLiteralValue
-		 */
-		@Override
-		public void setValue(Object newLiteralValue) {
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return false;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return new HashSet<DBRow>();
-		}
-	}
-
-	/**
 	 * The custom type adaptor to use to convert between the type of the annotated
 	 * field/property and the value of {@link #type()}.
 	 *
@@ -115,5 +71,5 @@ public @interface DBAdaptType {
 	 *
 	 * @return the QueryableDatatype class used internally for DB communication
 	 */
-	Class<? extends QueryableDatatype> type() default Implicit.class;
+	Class<? extends QueryableDatatype> type() default ImplicitQueryableDatatype.class;
 }

@@ -251,11 +251,6 @@ public class TypeAdaptorUsabilityTest {
             }
             
             @Override
-            public void setValue(Object newLiteralValue) {
-                super.setLiteralValue(newLiteralValue);
-            }
-
-            @Override
             public boolean isAggregator() {
                 return false;
             }
@@ -316,10 +311,6 @@ public class TypeAdaptorUsabilityTest {
                 return "unknown";
             }
 
-            @Override
-            public void setValue(Object newLiteralValue) {
-                setLiteralValue(newLiteralValue);
-            }
 
             @Override
             public boolean isAggregator() {

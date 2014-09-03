@@ -102,7 +102,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * @param newLiteralValue
 	 */
 	@Override
-	public void setValue(Object newLiteralValue) {
+	void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof Long) {
 			setValue((Long) newLiteralValue);
 		} else if (newLiteralValue instanceof Integer) {

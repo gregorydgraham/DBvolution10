@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.Date;
 
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
+import nz.co.gregs.dbvolution.datatypes.ImplicitQueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -434,7 +435,7 @@ class PropertyTypeHandler {
         }
 
         // detect default
-        if (annotation.type().equals(DBAdaptType.Implicit.class)) {
+        if (annotation.type().equals(ImplicitQueryableDatatype.class)) {
             return null;
         }
 
