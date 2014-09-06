@@ -400,7 +400,7 @@ public class DBByteArray extends DBLargeObject {
 	 * @throws IOException
 	 */
 	public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
-		if (literalValue != null && originalFile != null) {
+		if (getLiteralValue() != null && originalFile != null) {
 //			System.out.println("FILE: " + originalFile.getAbsolutePath());
 			if (!originalFile.exists()) {
 				originalFile.createNewFile();
@@ -439,7 +439,7 @@ public class DBByteArray extends DBLargeObject {
 	 * @return the byte[] value of this DBByteArray.
 	 */
 	public byte[] getBytes() {
-		return (byte[]) this.literalValue;
+		return (byte[]) this.getLiteralValue();
 	}
 
 	@Override

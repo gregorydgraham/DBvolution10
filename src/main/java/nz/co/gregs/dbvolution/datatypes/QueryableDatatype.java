@@ -42,11 +42,10 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
  */
 public abstract class QueryableDatatype extends Object implements Serializable, DBExpression {
 
-	public static final long serialVersionUID = 1L;
-	protected Object literalValue = null;
-	protected boolean isDBNull = false;
-	protected boolean includingNulls = false;
-	protected DBOperator operator = null;
+	private static final long serialVersionUID = 1L;
+	Object literalValue = null;
+	private boolean isDBNull = false;
+	private DBOperator operator = null;
 	private boolean undefined = true;
 	protected boolean changed = false;
 	protected QueryableDatatype previousValueAsQDT = null;
@@ -122,7 +121,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		QueryableDatatype qdt;
 		if (o instanceof QueryableDatatype) {
 			qdt = QueryableDatatype.getQueryableDatatypeInstance(((QueryableDatatype) o).getClass());
-			qdt.setLiteralValue(((QueryableDatatype) o).literalValue);
+			qdt.setLiteralValue(((QueryableDatatype) o).getLiteralValue());
 		} else {
 			/*if (o instanceof DBExpression) {
 			 qdt = new DBDataGenerator();
@@ -168,9 +167,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		try {
 			newQDT = this.getClass().newInstance();
 
-			newQDT.literalValue = this.literalValue;
+			newQDT.literalValue = this.getLiteralValue();
 			newQDT.isDBNull = this.isDBNull;
-			newQDT.includingNulls = this.includingNulls;
 			newQDT.operator = this.operator;
 			newQDT.undefined = this.undefined;
 			newQDT.changed = this.changed;
@@ -192,7 +190,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	@Override
 	public String toString() {
-		return (literalValue == null ? "" : literalValue.toString());
+		return (getLiteralValue() == null ? "" : getLiteralValue().toString());
 	}
 
 	/**
@@ -205,11 +203,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @return the literal value as a String
 	 */
 	public String stringValue() {
-		return (literalValue == null ? "" : literalValue.toString());
+		return (getLiteralValue() == null ? "" : getLiteralValue().toString());
 	}
 
 	protected void blankQuery() {
-		includingNulls = false;
 		isDBNull = false;
 		this.operator = null;
 	}
@@ -261,7 +258,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		if (undefined || isNull()) {
 			return null;
 		} else {
-			return literalValue;
+			return getLiteralValue();
 		}
 	}
 
@@ -358,10 +355,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	@Override
 	public final String toSQLString(DBDatabase db) {
 		DBDefinition def = db.getDefinition();
-		if (this.isDBNull || literalValue == null) {
+		if (this.isDBNull || getLiteralValue() == null) {
 			return def.getNull();
-		} else if (literalValue instanceof DBExpression) {
-			return ((DBExpression) literalValue).toSQLString(db);
+		} else if (getLiteralValue() instanceof DBExpression) {
+			return ((DBExpression) getLiteralValue()).toSQLString(db);
 		} else {
 			return formatValueForSQLStatement(db);
 		}
@@ -469,13 +466,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	private void setChanged(Object newLiteralValue) {
 		if ((this.isDBNull && newLiteralValue != null)
-				|| (literalValue != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
+				|| (getLiteralValue() != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
 			changed = true;
 			QueryableDatatype copyOfOldValues = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
 			if (this.isDBNull) {
 				copyOfOldValues.setToNull();
 			} else {
-				copyOfOldValues.setLiteralValue(this.literalValue);
+				copyOfOldValues.setLiteralValue(this.getLiteralValue());
 			}
 			previousValueAsQDT = copyOfOldValues;
 		}
@@ -496,7 +493,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * FALSE
 	 */
 	public boolean isNull() {
-		return isDBNull || literalValue == null;
+		return isDBNull || getLiteralValue() == null;
 	}
 
 	/**
@@ -661,5 +658,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 */
 	private void setHasBeenSet(boolean hasBeenSet) {
 		this.setValueHasBeenCalled = hasBeenSet;
+	}
+
+	/**
+	 * @return the literalValue
+	 */
+	protected Object getLiteralValue() {
+		return literalValue;
 	}
 }

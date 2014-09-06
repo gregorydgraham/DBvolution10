@@ -47,7 +47,7 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
         if (internalValue == null) {
             // TODO complete this
             internalQdt.setDefined(false);
-            internalQdt.operator = null;
+            internalQdt.setOperator(null);
             internalQdt.literalValue = null;
             internalQdt.changed = false;
             internalQdt.previousValueAsQDT = null;

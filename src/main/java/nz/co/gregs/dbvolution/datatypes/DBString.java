@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -146,12 +147,12 @@ public class DBString extends QueryableDatatype implements StringResult {
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
 
-		if (literalValue instanceof Date) {
-			return defn.getDateFormattedForQuery((Date) literalValue);
-		} else if (literalValue.equals("")) {
+		if (getLiteralValue() instanceof Date) {
+			return defn.getDateFormattedForQuery((Date) getLiteralValue());
+		} else if (getLiteralValue().equals("")) {
 			return defn.getEmptyString();
 		} else {
-			String unsafeValue = literalValue.toString();
+			String unsafeValue = getLiteralValue().toString();
 			return defn.beginStringValue() + defn.safeString(unsafeValue) + defn.endStringValue();
 		}
 	}

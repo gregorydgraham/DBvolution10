@@ -108,7 +108,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 		} else if (newLiteralValue instanceof Integer) {
 			setValue((Integer) newLiteralValue);
 		} else if (newLiteralValue instanceof DBIntegerEnum) {
-			setValue(((QueryableDatatype) newLiteralValue).literalValue);
+			setValue(((QueryableDatatype) newLiteralValue).getLiteralValue());
 		} else {
 			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Long: Use only Long with this class");
 		}
@@ -712,12 +712,12 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * @return the value as a Number.
 	 */
 	public Number numberValue() {
-		if (literalValue == null) {
+		if (getLiteralValue() == null) {
 			return null;
-		} else if (literalValue instanceof Number) {
-			return (Number) literalValue;
+		} else if (getLiteralValue() instanceof Number) {
+			return (Number) getLiteralValue();
 		} else {
-			return Long.parseLong(literalValue.toString());
+			return Long.parseLong(getLiteralValue().toString());
 		}
 	}
 	
@@ -727,12 +727,12 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * @return the value as a Long.
 	 */
 	public Long longValue() {
-		if (literalValue == null) {
+		if (getLiteralValue() == null) {
 			return null;
-		} else if (literalValue instanceof Long) {
-			return (Long) literalValue;
+		} else if (getLiteralValue() instanceof Long) {
+			return (Long) getLiteralValue();
 		} else {
-			return Long.parseLong(literalValue.toString());
+			return Long.parseLong(getLiteralValue().toString());
 		}
 	}
 
@@ -742,12 +742,12 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * @return the value as a Integer.
 	 */
 	public Integer intValue() {
-		if (literalValue == null) {
+		if (getLiteralValue() == null) {
 			return null;
-		} else if (literalValue instanceof Integer) {
-			return (Integer) literalValue;
+		} else if (getLiteralValue() instanceof Integer) {
+			return (Integer) getLiteralValue();
 		} else {
-			return Integer.parseInt(literalValue.toString());
+			return Integer.parseInt(getLiteralValue().toString());
 		}
 	}
 

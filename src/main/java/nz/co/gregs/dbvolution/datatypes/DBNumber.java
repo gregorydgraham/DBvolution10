@@ -194,7 +194,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		if (isNull()) {
 			return defn.getNull();
 		}
-		return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
+		return defn.beginNumberValue() + getLiteralValue().toString() + defn.endNumberValue();
 	}
 
 	/**
@@ -217,12 +217,12 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * @return the number as the original number class
 	 */
 	public Number numberValue() {
-		if (literalValue == null) {
+		if (getLiteralValue() == null) {
 			return null;
-		} else if (literalValue instanceof Number) {
-			return (Number) literalValue;
+		} else if (getLiteralValue() instanceof Number) {
+			return (Number) getLiteralValue();
 		} else {
-			return Double.parseDouble(literalValue.toString());
+			return Double.parseDouble(getLiteralValue().toString());
 		}
 	}
 
@@ -233,12 +233,12 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 */
 	@SuppressWarnings("deprecation")
 	public Double doubleValue() {
-		if (literalValue == null) {
+		if (getLiteralValue() == null) {
 			return null;
-		} else if (literalValue instanceof Number) {
-			return ((Number) literalValue).doubleValue();
+		} else if (getLiteralValue() instanceof Number) {
+			return ((Number) getLiteralValue()).doubleValue();
 		} else {
-			return Double.parseDouble(literalValue.toString());
+			return Double.parseDouble(getLiteralValue().toString());
 		}
 	}
 
@@ -249,14 +249,14 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 */
 	@SuppressWarnings("deprecation")
 	public Long longValue() {
-		if (literalValue == null) {
+		if (getLiteralValue() == null) {
 			return null;
-		} else if (literalValue instanceof Long) {
-			return (Long) literalValue;
-		} else if (literalValue instanceof Number) {
-			return ((Number) literalValue).longValue();
+		} else if (getLiteralValue() instanceof Long) {
+			return (Long) getLiteralValue();
+		} else if (getLiteralValue() instanceof Number) {
+			return ((Number) getLiteralValue()).longValue();
 		} else {
-			return Long.parseLong(literalValue.toString());
+			return Long.parseLong(getLiteralValue().toString());
 		}
 	}
 
@@ -268,12 +268,12 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 */
 	@SuppressWarnings("deprecation")
 	public Integer intValue() {
-		if (literalValue == null) {
+		if (getLiteralValue() == null) {
 			return null;
-		} else if (literalValue instanceof Number) {
-			return ((Number) literalValue).intValue();
+		} else if (getLiteralValue() instanceof Number) {
+			return ((Number) getLiteralValue()).intValue();
 		} else {
-			return Integer.parseInt(literalValue.toString());
+			return Integer.parseInt(getLiteralValue().toString());
 		}
 	}
 

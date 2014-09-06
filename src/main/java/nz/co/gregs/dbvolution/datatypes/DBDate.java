@@ -102,11 +102,11 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	DBDate(Timestamp timestamp) {
 		super(timestamp);
 		if (timestamp == null) {
-			this.isDBNull = true;
+			this.setToNull();
 		} else {
 			Date date = new Date();
 			date.setTime(timestamp.getTime());
-			literalValue = date;
+			setLiteralValue(date);
 		}
 	}
 
@@ -128,7 +128,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		final long dateLong = Date.parse(dateAsAString);
 		Date dateValue = new Date();
 		dateValue.setTime(dateLong);
-		literalValue = dateValue;
+		setLiteralValue(dateValue);
 	}
 
 	@Override
@@ -146,8 +146,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * @return the value as a Java Date.
 	 */
 	public Date dateValue() {
-		if (literalValue instanceof Date) {
-			return (Date) literalValue;
+		if (getLiteralValue() instanceof Date) {
+			return (Date) getLiteralValue();
 		} else {
 			return null;
 		}
@@ -158,7 +158,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		if (newLiteralValue instanceof Date) {
 			setValue((Date) newLiteralValue);
 		} else if (newLiteralValue instanceof DBDate) {
-			setValue(((QueryableDatatype) newLiteralValue).literalValue);
+			setValue(((QueryableDatatype) newLiteralValue).getLiteralValue());
 		} else {
 			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Date: Use only Dates with this class");
 		}
@@ -202,7 +202,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 */
 	@Override
 	public String toString() {
-		if (this.isDBNull || dateValue() == null) {
+		if (this.isNull() || dateValue() == null) {
 			return "";
 		}
 		return dateValue().toString();
