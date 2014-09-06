@@ -152,12 +152,12 @@ public class DBInteger extends QueryableDatatype {
 	 */
 	@Override
 	public Long getValue() {
-		if (this.literalValue instanceof Long) {
-			return (Long) this.literalValue;
-		} else if (this.literalValue == null) {
+		if (this.getLiteralValue() instanceof Long) {
+			return (Long) this.getLiteralValue();
+		} else if (this.getLiteralValue() == null) {
 			return null;
 		} else {
-			return Long.parseLong(this.literalValue.toString());
+			return Long.parseLong(this.getLiteralValue().toString());
 		}
 	}
 
@@ -714,7 +714,7 @@ public class DBInteger extends QueryableDatatype {
 		if (isNull()) {
 			return defn.getNull();
 		}
-		return defn.beginNumberValue() + literalValue.toString() + defn.endNumberValue();
+		return defn.beginNumberValue() + getLiteralValue().toString() + defn.endNumberValue();
 	}
 
 	@Override

@@ -265,7 +265,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 	 * @return the byte[] value of this DBByteArray.
 	 */
 	public byte[] getBytes() {
-		return (byte[]) this.literalValue;
+		return (byte[]) this.getLiteralValue();
 	}
 
 	@Override

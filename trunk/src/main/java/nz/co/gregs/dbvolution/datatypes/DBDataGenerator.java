@@ -55,11 +55,11 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     public String getSQLDatatype() {
-        if (literalValue instanceof DateResult) {
+        if (getLiteralValue() instanceof DateResult) {
             return new DBDate().getSQLDatatype();
-        } else if (literalValue instanceof NumberResult) {
+        } else if (getLiteralValue() instanceof NumberResult) {
             return new DBNumber().getSQLDatatype();
-        } else if (literalValue instanceof StringResult) {
+        } else if (getLiteralValue() instanceof StringResult) {
             return new DBString().getSQLDatatype();
         } else {
             return new DBUnknownDatatype().getSQLDatatype();
@@ -68,7 +68,7 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     protected String formatValueForSQLStatement(DBDatabase db) {
-        return ((DBExpression) literalValue).toSQLString(db);
+        return ((DBExpression) getLiteralValue()).toSQLString(db);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class DBDataGenerator extends QueryableDatatype {
         if (newLiteralValue instanceof DBExpression) {
             setValue((DBExpression) newLiteralValue);
         } else if (newLiteralValue instanceof DBDataGenerator) {
-            setValue(((DBDataGenerator) newLiteralValue).literalValue);
+            setValue(((DBDataGenerator) newLiteralValue).getLiteralValue());
         } else {
             throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A " + newLiteralValue.getClass().getSimpleName() + ": Use only Dates with this class");
         }
@@ -92,15 +92,15 @@ public class DBDataGenerator extends QueryableDatatype {
 
     @Override
     public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-        if (literalValue instanceof DateExpression) {
+        if (getLiteralValue() instanceof DateExpression) {
             return new DBDate();
-        } else if (literalValue instanceof NumberExpression) {
+        } else if (getLiteralValue() instanceof NumberExpression) {
             return new DBNumber();
-        } else if (literalValue instanceof StringExpression) {
+        } else if (getLiteralValue() instanceof StringExpression) {
             return new DBString();
-        } else if (literalValue instanceof BooleanExpression) {
+        } else if (getLiteralValue() instanceof BooleanExpression) {
             return new DBBoolean();
-        } else if (literalValue instanceof LargeObjectExpression) {
+        } else if (getLiteralValue() instanceof LargeObjectExpression) {
             return new DBByteArray();
         } else {
             return new DBUnknownDatatype();
@@ -115,13 +115,13 @@ public class DBDataGenerator extends QueryableDatatype {
     @Override
     public Set<DBRow> getTablesInvolved() {
         HashSet<DBRow> hashSet = new HashSet<DBRow>();
-        hashSet.addAll(((DBExpression) literalValue).getTablesInvolved());
+        hashSet.addAll(((DBExpression) getLiteralValue()).getTablesInvolved());
         return hashSet;
     }
 
     @Override
     public DBExpression getValue() {
-        return (DBExpression)super.literalValue;
+        return (DBExpression)super.getLiteralValue();
     }
 
 }

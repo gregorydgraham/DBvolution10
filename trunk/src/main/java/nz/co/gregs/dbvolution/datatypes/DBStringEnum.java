@@ -69,10 +69,35 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		super(value);
 	}
 
+	/**
+	 * Creates a DBStringEnum column expression based on the
+	 * {@link StringExpression} provided.
+	 *
+	 * <p>
+	 * This is used to generate a DBStringEnum result from data in the database.at
+	 * runtime. Use a StringExpression to create the data.
+	 *
+	 * <p>
+	 * DBvolution can not ensure that the results of your expression will conform
+	 * to the particular DBStringEnum values, so construct your expression
+	 * carefully.
+	 *
+	 * <p>
+	 * This can also be used to transform an existing column into a DBStringEnum,
+	 * the above warning still applies.
+	 *
+	 * @param stringExpression
+	 */
 	public DBStringEnum(StringResult stringExpression) {
 		super(stringExpression);
 	}
 
+	/**
+	 * Creates a DBStringEnum with the value set to the value of the supplied Enum
+	 * object..
+	 *
+	 * @param value
+	 */
 	public DBStringEnum(E value) {
 		super(value);
 	}
@@ -106,7 +131,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		}
 	}
 
-	public void setValue(String newLiteralValue) {
+	private void setValue(String newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 
@@ -125,7 +150,17 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		return new HashSet<DBRow>();
 	}
 
-	protected String[] convertToLiteralString(E... enumValues) {
+	/**
+	 * Create an array of Strings containing the literal values of the provided
+	 * Enums.
+	 *
+	 * <p>
+	 * Provided as a convenience function
+	 *
+	 * @param enumValues
+	 * @return a String[] of the enums values.
+	 */
+	private String[] convertToLiteralString(E... enumValues) {
 		String[] result = new String[enumValues.length];
 		for (int i = 0; i < enumValues.length; i++) {
 			E enumValue = enumValues[i];
@@ -134,7 +169,11 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		return result;
 	}
 
-	protected String[] convertToLiteralString(Collection<E> enumValues) {
+	/**
+	 * Convert the enum collection to an array of String literal values.
+	 *
+	 */
+	private String[] convertToLiteralString(Collection<E> enumValues) {
 		ArrayList<String> result = new ArrayList<String>();
 		for (E e : enumValues) {
 			result.add(convertToLiteralString(e));
@@ -142,7 +181,13 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		return result.toArray(new String[]{});
 	}
 
-	protected final String convertToLiteralString(E enumValue) {
+	/**
+	 * Convert the enum to its String literal value.
+	 *
+	 * @param enumValue
+	 * @return the literal value of the enum.
+	 */
+	private String convertToLiteralString(E enumValue) {
 		if (enumValue == null || enumValue.getCode() == null) {
 			return null;
 		} else {
@@ -153,8 +198,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
-	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * Reduces the rows returned from a query to only those matching the provided
+	 * objects.
 	 *
 	 * @param permitted
 	 */
@@ -163,9 +208,14 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
+	 * Reduces the rows returned from a query to only those matching the provided
+	 * objects.
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
-	 * ignoring letter case.
+	 * <p>
+	 * The case, upper or lower, will be ignored.
+	 *
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as expected.
 	 *
 	 * @param permitted
 	 */
@@ -174,9 +224,14 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
+	 * Reduces the rows returned from a query to only those matching the provided
+	 * expression.
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
-	 * ignoring letter case.
+	 * <p>
+	 * The case, upper or lower, will be ignored.
+	 *
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as expected.
 	 *
 	 * @param permitted
 	 */
@@ -185,30 +240,30 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
+	 * Reduces the rows returned from a query to only those matching the provided
+	 * objects.
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
-	 * ignoring letter case.
+	 * <p>
+	 * The case, upper or lower, will be ignored.
+	 *
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as expected.
 	 *
 	 * @param permitted
 	 */
-	public void permittedValuesIgnoreCase(List<String> permitted) {
+	public void permittedValuesIgnoreCase(Collection<String> permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
 	}
 
 	/**
+	 * Reduces the rows returned from a query by excluding those matching the provided
+	 * objects.
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
-	 * ignoring letter case.
+	 * <p>
+	 * The case, upper or lower, will be ignored.
 	 *
-	 * @param permitted
-	 */
-	public void permittedValuesIgnoreCase(Set<String> permitted) {
-		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
-	}
-
-	/**
-	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
-	 * Strings ignoring letter case.
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as expected.
 	 *
 	 * @param excluded
 	 */
@@ -218,8 +273,14 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
-	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
-	 * Strings ignoring letter case.
+	 * Reduces the rows returned from a query by excluding those matching the provided
+	 * objects.
+	 *
+	 * <p>
+	 * The case, upper or lower, will be ignored.
+	 *
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as expected.
 	 *
 	 * @param excluded
 	 */
@@ -229,8 +290,14 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
-	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
-	 * Strings ignoring letter case.
+	 * Reduces the rows returned from a query by excluding those matching the provided
+	 * objects.
+	 *
+	 * <p>
+	 * The case, upper or lower, will be ignored.
+	 *
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as expected.
 	 *
 	 * @param excluded
 	 */
@@ -240,6 +307,14 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
+	 * Reduces the rows returned from a query by excluding those matching the provided
+	 * objects.
+	 *
+	 * <p>
+	 * The case, upper or lower, will be ignored.
+	 *
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as expected.
 	 *
 	 * @param excluded
 	 */
@@ -249,9 +324,14 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
+	 * Reduces the rows returned from a query by excluding those matching the provided
+	 * objects.
 	 *
-	 * excludes the object, Set, List, Array, or vararg of objects
+	 * <p>
+	 * The case, upper or lower, will be ignored.
 	 *
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as expected.
 	 *
 	 * @param excluded
 	 */
@@ -311,17 +391,18 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	/**
 	 * Performs searches based on a range.
 	 *
+	 * <p>
 	 * if both ends of the range are specified both the lower- and upper-bound
 	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
 	 * return 2.
 	 *
 	 * <p>
-	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * if the upper-bound is null the range will be open ended up and exclusive.
 	 * <br>
 	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
 	 *
 	 * <p>
-	 * if the upper-bound is null the range will be open ended and exclusive.
+	 * if the lower-bound is null the range will be open ended down and exclusive.
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
@@ -332,16 +413,79 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * if both ends of the range are specified the lower-bound will included and the upper-bound
+	 * will be excluded in the range. I.e excludedRange(1,3) will
+	 * exclude 1,2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended up and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended down and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRange(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * if both ends of the range are specified both the lower-bound and the upper-bound
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
+	 * exclude 1,2,3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended up and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended down and inclusive.
+	 * <br>
+	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeInclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * if both ends of the range are specified both the lower-bound and the upper-bound
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended up and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended down and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeExclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 		negateOperator();
@@ -357,7 +501,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Please use the pattern system appropriate to your database.
 	 *
 	 * <p>
-	 * Java0-style regular expressions are not yet supported.
+	 * Java-style regular expressions are not yet supported.
 	 *
 	 * @param pattern
 	 */
@@ -365,15 +509,57 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		this.setOperator(new DBPermittedPatternOperator(pattern));
 	}
 
+	/**
+	 * Perform searches based on using database compatible pattern matching
+	 *
+	 * <p>
+	 * This facilitates the LIKE operator.
+	 *
+	 * <p>
+	 * Please use the pattern system appropriate to your database.
+	 *
+	 * <p>
+	 * Java-style regular expressions are not yet supported.
+	 *
+	 * @param pattern
+	 */
 	public void excludedPattern(String pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
 		this.negateOperator();
 	}
 
+	/**
+	 * Perform searches based on using database compatible pattern matching
+	 *
+	 * <p>
+	 * This facilitates the LIKE operator.
+	 *
+	 * <p>
+	 * Please use the pattern system appropriate to your database.
+	 *
+	 * <p>
+	 * Java-style regular expressions are not yet supported.
+	 *
+	 * @param pattern
+	 */
 	public void permittedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
 	}
 
+	/**
+	 * Perform searches based on using database compatible pattern matching
+	 *
+	 * <p>
+	 * This facilitates the LIKE operator.
+	 *
+	 * <p>
+	 * Please use the pattern system appropriate to your database.
+	 *
+	 * <p>
+	 * Java-style regular expressions are not yet supported.
+	 *
+	 * @param pattern
+	 */
 	public void excludedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
 		this.negateOperator();
@@ -506,16 +692,79 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		setOperator(new DBPermittedRangeExclusiveOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * if both ends of the range are specified the lower-bound will included and the upper-bound
+	 * will be excluded in the range. I.e excludedRange(1,3) will
+	 * exclude 1,2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended up and inclusive.
+	 * <br>
+	 * I.e excludedRange(1,null) will exclude 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended down and exclusive.
+	 * <br>
+	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRange(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * if both ends of the range are specified both the lower-bound and the upper-bound
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended up and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended down and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeInclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
 		negateOperator();
 	}
 
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * <p>
+	 * if both ends of the range are specified both the lower-bound and the upper-bound
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended up and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(1,null) will exclude 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended down and exclusive.
+	 * <br>
+	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
+	 *
+	 * @param lowerBound
+	 * @param upperBound
+	 */
 	public void excludedRangeExclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
 		negateOperator();
@@ -523,7 +772,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 
 	@Override
 	public String getValue() {
-		final Object value = super.literalValue;
+		final Object value = super.getLiteralValue();
 		if (value == null) {
 			return null;
 		} else if (value instanceof String) {

@@ -113,8 +113,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	@Override
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
-		if (literalValue instanceof Boolean) {
-			Boolean boolValue = (Boolean) literalValue;
+		if (getLiteralValue() instanceof Boolean) {
+			Boolean boolValue = (Boolean) getLiteralValue();
 			return defn.beginNumberValue() + (boolValue ? 1 : 0) + defn.endNumberValue();
 		}
 		return defn.getNull();
@@ -126,8 +126,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * @return the value of this QDT as a boolean.
 	 */
 	public Boolean booleanValue() {
-		if (this.literalValue instanceof Boolean) {
-			return (Boolean) this.literalValue;
+		if (this.getLiteralValue() instanceof Boolean) {
+			return (Boolean) this.getLiteralValue();
 		} else {
 			return null;
 		}
