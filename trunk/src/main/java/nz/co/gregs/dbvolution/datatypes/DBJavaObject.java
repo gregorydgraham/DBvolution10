@@ -48,7 +48,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 	@SuppressWarnings("unchecked")
 	public void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof DBJavaObject) {
-			final DBJavaObject valBytes = (DBJavaObject) newLiteralValue;
+			final DBJavaObject<O> valBytes = (DBJavaObject<O>) newLiteralValue;
 			setValue(valBytes.getValue());
 		} else if (newLiteralValue instanceof Object) {
 			try {
