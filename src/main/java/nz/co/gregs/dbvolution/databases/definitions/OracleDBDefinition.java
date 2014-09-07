@@ -22,6 +22,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -109,8 +110,8 @@ public class OracleDBDefinition extends DBDefinition {
 			return " VARCHAR(1000) ";
 		} else if (qdt instanceof DBDate) {
 			return " TIMESTAMP ";
-//        } else if (qdt instanceof DBLargeObject) {
-//            return " LONGBLOB ";
+        } else if (qdt instanceof DBJavaObject) {
+            return " BLOB ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
@@ -206,4 +207,9 @@ public class OracleDBDefinition extends DBDefinition {
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return false;
 	}
+
+//	@Override
+//	public boolean prefersLargeObjectsReadAsBytes() {
+//		return true;
+//	}
 }
