@@ -49,7 +49,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	private boolean undefined = true;
 	protected boolean changed = false;
 	protected QueryableDatatype previousValueAsQDT = null;
-	protected boolean isPrimaryKey = false;
+//	protected boolean isPrimaryKey = false;
 	public final static Boolean SORT_ASCENDING = Boolean.TRUE;
 	public final static Boolean SORT_DESCENDING = Boolean.FALSE;
 	protected Boolean sort = SORT_ASCENDING;
@@ -176,7 +176,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			if (this.previousValueAsQDT != null) {
 				newQDT.previousValueAsQDT = this.previousValueAsQDT.copy();
 			}
-			newQDT.isPrimaryKey = this.isPrimaryKey;
+//			newQDT.isPrimaryKey = this.isPrimaryKey;
 			newQDT.sort = this.sort;
 			newQDT.columnExpression = this.columnExpression;
 		} catch (InstantiationException ex) {
@@ -263,7 +263,11 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	}
 
 	/**
-	 * Set the value of this QDT to the value provided.
+	 * Internal method, use the subclasses setValue methods or {@link DBRow#setPrimaryKey(java.lang.Object)
+	 * } instead.
+	 *
+	 * <p>
+	 * <b>Set the value of this QDT to the value provided.</b>
 	 *
 	 * <p>
 	 * Subclass writers should ensure that the method handles nulls correctly and
@@ -275,7 +279,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * @param newLiteralValue
 	 */
-	void setValue(Object newLiteralValue){
+	void setValue(Object newLiteralValue) {
 		this.setLiteralValue(newLiteralValue);
 	}
 
@@ -286,7 +290,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @param newLiteralValue the literalValue to set
 	 */
 	protected void setLiteralValue(Object newLiteralValue) {
-		preventChangeOfPrimaryKey();
+//		preventChangeOfPrimaryKey();
 		if (newLiteralValue == null) {
 			setChanged(newLiteralValue);
 			setToNull();
@@ -458,12 +462,11 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		propertyWrapper = null;
 	}
 
-	private void preventChangeOfPrimaryKey() {
-		if (this.isPrimaryKey && !this.undefined) {
-			throw new RuntimeException("Accidental Change Of Primary Key Stopped: Use the changePrimaryKey() method to change the primary key's value.");
-		}
-	}
-
+//	private void preventChangeOfPrimaryKey() {
+//		if (this.isPrimaryKey && !this.undefined) {
+//			throw new RuntimeException("Accidental Change Of Primary Key Stopped: Use the changePrimaryKey() method to change the primary key's value.");
+//		}
+//	}
 	private void setChanged(Object newLiteralValue) {
 		if ((this.isDBNull && newLiteralValue != null)
 				|| (getLiteralValue() != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
