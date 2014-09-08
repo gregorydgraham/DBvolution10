@@ -19,6 +19,7 @@ package nz.co.gregs.dbvolution;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -62,6 +63,19 @@ public class DBRowMiscTests extends AbstractTest{
 		Assert.assertThat(primaryKeyColumnName, is("pkuid"));
 	}
 	
+	@Test
+	public void testSetPrimaryKey(){
+		SpecifiedColumnName changedPK = new SpecifiedColumnName();
+		changedPK.setPrimaryKey(2);
+		Assert.assertThat(changedPK.pkuid.intValue(), is(2));
+	}
+	
+	@Test(expected = UndefinedPrimaryKeyException.class)
+	public void testSetPrimaryKeyWithoutPrimaryKeyThrowsUndefinedPrimaryKeyException(){
+		WithoutPrimaryKey changedPK = new WithoutPrimaryKey();
+		changedPK.setPrimaryKey("2");
+	}
+	
 	public static class UnspecifiedColumnName extends DBRow{
 		private static final long serialVersionUID = 1L;
 		@DBColumn
@@ -73,6 +87,12 @@ public class DBRowMiscTests extends AbstractTest{
 		private static final long serialVersionUID = 1L;
 		@DBColumn("pk_unique_id")
 		@DBPrimaryKey
+		DBInteger pkuid = new DBInteger();
+	}
+	
+	public static class WithoutPrimaryKey extends DBRow{
+		private static final long serialVersionUID = 1L;
+		@DBColumn("pk_unique_id")
 		DBInteger pkuid = new DBInteger();
 	}
 }

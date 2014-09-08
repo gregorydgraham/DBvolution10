@@ -257,7 +257,7 @@ public class QueryableDatatypeSyncer {
 			if (sourceQdt.isNull()) {
 				targetQdt.setToNull();
 			}
-			targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
+//			targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
 			targetQdt.setDefined(sourceQdt.isDefined());
 			targetQdt.sort = sourceQdt.sort;
 			targetQdt.columnExpression = sourceQdt.columnExpression;
