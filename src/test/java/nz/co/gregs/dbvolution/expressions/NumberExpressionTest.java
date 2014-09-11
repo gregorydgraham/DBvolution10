@@ -79,10 +79,18 @@ public class NumberExpressionTest extends AbstractTest {
 				.mod(5)
 				.is(0));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-        database.print(allRows);
-		Assert.assertThat(allRows.size(), is(1));
-		Marque marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		for (DBQueryRow dBQueryRow : allRows) {
+			Marque marque = dBQueryRow.get(marq);
+			Assert.assertThat(
+					marque.uidMarque.getValue().intValue(),
+					Matchers.anyOf(
+							is(1),
+							is(4893101)
+					)
+			);
+		}
 	}
 
 	@Test

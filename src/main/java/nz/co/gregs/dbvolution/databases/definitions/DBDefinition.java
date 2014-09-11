@@ -1940,7 +1940,7 @@ public abstract class DBDefinition {
 	 * @return the SQL required to get the integer division remainder.
 	 */
 	public String doModulusTransform(String firstNumber, String secondNumber) {
-		return firstNumber +" % "+secondNumber;
+		return "("+firstNumber +") % ("+secondNumber+")";
 	}
 
 	/**
