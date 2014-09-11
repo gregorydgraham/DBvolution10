@@ -480,7 +480,7 @@ public class DBTableClassGenerator {
 			classCaseString = s.toUpperCase();
 		} else {
 //            System.out.println("Splitting: " + s);
-			String[] parts = s.split("_");
+			String[] parts = s.split("[_$#]");
 			for (String part : parts) {
 				classCaseString += toProperCase(part);
 			}

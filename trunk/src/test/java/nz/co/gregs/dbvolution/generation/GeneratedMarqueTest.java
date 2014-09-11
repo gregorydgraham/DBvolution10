@@ -157,6 +157,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 		List<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>(); // input for first compilation task
 		List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
 		for (DBTableClass dbcl : generateSchema) {
+			System.out.println(dbcl.getJavaSource());
 			compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.getJavaSource()));
 		}
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -204,8 +205,8 @@ public class GeneratedMarqueTest extends AbstractTest {
 		 *
 		 * @param name the name of the compilation unit represented by this file
 		 * object
-		 * @param code the source code for the compilation unit represented by this
-		 * file object
+		 * @param code the source code for the compilation unit represented by
+		 * this file object
 		 */
 		JavaSourceFromString(String name, String code) {
 			super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension),

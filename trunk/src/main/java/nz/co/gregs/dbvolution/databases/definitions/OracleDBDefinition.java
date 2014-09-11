@@ -180,23 +180,11 @@ public class OracleDBDefinition extends DBDefinition {
 	public boolean supportsDegreesFunction() {
 		return false;
 	}
-
-	/**
-	 * Oracle's MOD function returns the REMAINDER and not the results of integer division.
-	 *
-	 * @return the default implementation returns TRUE.
-	 */
-//	@Override
-//	public boolean supportsModulusFunction() {
-//		return false;
-//	}
 	
-//	@Override
-//	public String doModulusTransform(String firstNumber, String secondNumber) {
-//		return " REMAINDER(("+firstNumber +"), ("+secondNumber+"))";
-////		return "(("+firstNumber+") - ("+secondNumber+") * FLOOR(("+firstNumber+")/("+secondNumber+")))";
-////		return " trunc(trunc("+firstNumber+")/trunc("+secondNumber+"))";
-//	}
+	@Override
+	public String doModulusTransform(String firstNumber, String secondNumber) {
+		return " remainder("+firstNumber +", "+secondNumber+")";
+	}
 
 	/**
 	 * Oracle does not differentiate between NULL and an empty string.
@@ -207,9 +195,4 @@ public class OracleDBDefinition extends DBDefinition {
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return false;
 	}
-
-//	@Override
-//	public boolean prefersLargeObjectsReadAsBytes() {
-//		return true;
-//	}
 }

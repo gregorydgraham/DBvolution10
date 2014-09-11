@@ -76,9 +76,10 @@ public class NumberExpression implements NumberResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -87,8 +88,8 @@ public class NumberExpression implements NumberResult {
 	 * </ul>
 	 *
 	 * @param object
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static NumberExpression value(Number object) {
 		return new NumberExpression(object);
@@ -169,8 +170,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -197,8 +198,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -225,8 +226,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -253,8 +254,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -1159,10 +1160,46 @@ public class NumberExpression implements NumberResult {
 		});
 	}
 
+	/**
+	 * MOD returns the remainder from integer division.
+	 *
+	 * <p>
+	 * DBvolution implements mod as a function. The two arguments to the
+	 * function are evaluated before MOD is applied.
+	 *
+	 * <p>
+	 * This differs from some implementations where MOD is the "%" operator and
+	 * is considered equivalent to "*" and "/". However databases vary in their
+	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
+	 * Arithmetic. So I have decided to err on the side of consistency between
+	 * databases and implement it so that mod() will return the same result for
+	 * all databases.
+	 *
+	 * @param number
+	 * @return
+	 */
 	public NumberExpression dividedBy(Number num) {
 		return new NumberExpression(new DivisionBinaryArithmetic(this, new NumberExpression(num)));
 	}
 
+	/**
+	 * MOD returns the remainder from integer division.
+	 *
+	 * <p>
+	 * DBvolution implements mod as a function. The two arguments to the
+	 * function are evaluated before MOD is applied.
+	 *
+	 * <p>
+	 * This differs from some implementations where MOD is the "%" operator and
+	 * is considered equivalent to "*" and "/". However databases vary in their
+	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
+	 * Arithmetic. So I have decided to err on the side of consistency between
+	 * databases and implement it so that mod() will return the same result for
+	 * all databases.
+	 *
+	 * @param number
+	 * @return
+	 */
 	public NumberExpression mod(NumberResult number) {
 		return new NumberExpression(new DBBinaryFunction(this, number) {
 
@@ -1170,8 +1207,8 @@ public class NumberExpression implements NumberResult {
 			public String toSQLString(DBDatabase db) {
 				if (db.getDefinition().supportsModulusFunction()) {
 					return db.getDefinition().doModulusTransform(first.toSQLString(db), second.toSQLString(db));
-				}else{
-					return first.toSQLString(db)+" % "+ second.toSQLString(db);
+				} else {
+					return "(" + first.toSQLString(db) + ") % (" + second.toSQLString(db) + ")";
 				}
 			}
 
@@ -1258,9 +1295,9 @@ public class NumberExpression implements NumberResult {
 	 *
 	 * <p>
 	 * Similar to
-	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)} but
-	 * this aggregates the column or expression provided, rather than scanning a
-	 * list.
+	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)}
+	 * but this aggregates the column or expression provided, rather than
+	 * scanning a list.
 	 *
 	 * @return the greatest/largest value from the column.
 	 */
