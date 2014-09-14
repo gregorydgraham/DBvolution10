@@ -92,4 +92,8 @@ public class MySQLDBDefinition extends DBDefinition {
 		return " AUTO_INCREMENT ";
 	}
 
+	@Override
+	public String doModulusTransform(String firstNumber, String secondNumber) {
+		return getTruncFunctionName()+"("+super.doModulusTransform(firstNumber, secondNumber)+",0)"; 
+	}
 }

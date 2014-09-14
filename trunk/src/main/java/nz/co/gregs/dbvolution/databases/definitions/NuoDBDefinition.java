@@ -22,6 +22,7 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.databases.NuoDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -52,10 +53,8 @@ public class NuoDBDefinition extends DBDefinition{
 			return " boolean ";
 		} else if (qdt instanceof DBDate) {
 			return " TIMESTAMP(0) ";
-//		} else if (qdt instanceof DBByteArray) {
-//			return " LONGBLOB ";
-//		} else if (qdt instanceof DBLargeObject) {
-//			return " LONGBLOB ";
+		} else if (qdt instanceof DBJavaObject) {
+			return " BLOB ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
