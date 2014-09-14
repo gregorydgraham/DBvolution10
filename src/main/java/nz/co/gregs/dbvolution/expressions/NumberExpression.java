@@ -1191,7 +1191,7 @@ public class NumberExpression implements NumberResult {
 	 *
 	 * <p>
 	 * This differs from some implementations where MOD is the "%" operator and
-	 * is considered equivalent to "*" and "/". However databases vary in their
+	 * is considered analogous to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
@@ -1208,7 +1208,7 @@ public class NumberExpression implements NumberResult {
 				if (db.getDefinition().supportsModulusFunction()) {
 					return db.getDefinition().doModulusTransform(first.toSQLString(db), second.toSQLString(db));
 				} else {
-					return "(" + first.toSQLString(db) + ") % (" + second.toSQLString(db) + ")";
+					return "((" + first.toSQLString(db) + ") % (" + second.toSQLString(db) + "))";
 				}
 			}
 
@@ -1216,7 +1216,7 @@ public class NumberExpression implements NumberResult {
 			String getFunctionName(DBDatabase db) {
 				return "MOD";
 			}
-		});
+		}).trunc();
 	}
 
 	public NumberExpression mod(Number num) {
