@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.

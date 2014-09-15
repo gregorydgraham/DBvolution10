@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javassist.bytecode.Bytecode;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -73,9 +74,10 @@ public class DateExpression implements DateResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -84,8 +86,8 @@ public class DateExpression implements DateResult {
 	 * </ul>
 	 *
 	 * @param date
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static DateExpression value(Date date) {
 		return new DateExpression(date);
@@ -145,8 +147,8 @@ public class DateExpression implements DateResult {
 	 * Returns the day part of the date.
 	 *
 	 * <p>
-	 * Day in this sense is the number of the day within the month: that is the 23
-	 * part of Monday 25th of August 2014
+	 * Day in this sense is the number of the day within the month: that is the
+	 * 23 part of Monday 25th of August 2014
 	 *
 	 * @return a NumberExpression that will provide the day of this date.
 	 */
@@ -219,8 +221,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -247,8 +249,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -275,8 +277,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -303,8 +305,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -762,6 +764,146 @@ public class DateExpression implements DateResult {
 	@Override
 	public boolean getIncludesNull() {
 		return needsNullProtection;
+	}
+
+	public DateExpression addSeconds(int secondsToAdd) {
+		return this.addSeconds(new NumberExpression(secondsToAdd));
+	}
+
+	public DateExpression addSeconds(NumberExpression secondsToAdd) {
+		return new DateExpression(
+				new DBBinaryDateNumberFunctionWithDateResult(this, secondsToAdd) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	public DateExpression addMinutes(int minutesToAdd) {
+		return this.addMinutes(new NumberExpression(minutesToAdd));
+	}
+
+	public DateExpression addMinutes(NumberExpression minutesToAdd) {
+		return new DateExpression(
+				new DBBinaryDateNumberFunctionWithDateResult(this, minutesToAdd) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	public DateExpression addDays(int daysToAdd) {
+		return this.addDays(new NumberExpression(daysToAdd));
+	}
+
+	public DateExpression addDays(NumberExpression daysToAdd) {
+		return new DateExpression(
+				new DBBinaryDateNumberFunctionWithDateResult(this, daysToAdd) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	DateExpression addHours(int hoursToAdd) {
+		return this.addHours(new NumberExpression(hoursToAdd));
+	}
+
+	public DateExpression addHours(NumberExpression hoursToAdd) {
+		return new DateExpression(
+				new DBBinaryDateNumberFunctionWithDateResult(this, hoursToAdd) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	DateExpression addWeeks(int weeksToAdd) {
+		return this.addWeeks(new NumberExpression(weeksToAdd));
+	}
+
+	public DateExpression addWeeks(NumberExpression weeksToAdd) {
+		return new DateExpression(
+				new DBBinaryDateNumberFunctionWithDateResult(this, weeksToAdd) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	DateExpression addMonths(int monthsToAdd) {
+		return this.addMonths(new NumberExpression(monthsToAdd));
+	}
+
+	public DateExpression addMonths(NumberExpression monthsToAdd) {
+		return new DateExpression(
+				new DBBinaryDateNumberFunctionWithDateResult(this, monthsToAdd) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	DateExpression addYears(int yearsToAdd) {
+		return this.addYears(new NumberExpression(yearsToAdd));
+	}
+
+	public DateExpression addYears(NumberExpression yearsToAdd) {
+		return new DateExpression(
+				new DBBinaryDateNumberFunctionWithDateResult(this, yearsToAdd) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
 	}
 
 	private static abstract class DBNonaryFunction implements DateResult {
@@ -1298,6 +1440,68 @@ public class DateExpression implements DateResult {
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			return only.getTablesInvolved();
+		}
+	}
+
+	private static abstract class DBBinaryDateNumberFunctionWithDateResult implements DateResult {
+
+		protected DateExpression first;
+		protected NumberExpression second;
+
+		DBBinaryDateNumberFunctionWithDateResult() {
+			this.first = null;
+			this.second = null;
+		}
+
+		DBBinaryDateNumberFunctionWithDateResult(DateExpression dateExp, NumberExpression numbExp) {
+			this.first = dateExp;
+			this.second = numbExp;
+		}
+
+		@Override
+		public DBString getQueryableDatatypeForExpressionValue() {
+			return new DBString();
+		}
+
+//		abstract String getFunctionName(DBDatabase db);
+//
+//		protected String beforeValue(DBDatabase db) {
+//			return "" + getFunctionName(db) + "( ";
+//		}
+//
+//		protected String afterValue(DBDatabase db) {
+//			return ") ";
+//		}
+		@Override
+		abstract public String toSQLString(DBDatabase db); //{
+//			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
+//		}
+
+		@Override
+		public DBBinaryDateNumberFunctionWithDateResult copy() {
+			DBBinaryDateNumberFunctionWithDateResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			final Set<DBRow> tablesInvolved = first.getTablesInvolved();
+			tablesInvolved.addAll(second.getTablesInvolved());
+			return tablesInvolved;
 		}
 	}
 }

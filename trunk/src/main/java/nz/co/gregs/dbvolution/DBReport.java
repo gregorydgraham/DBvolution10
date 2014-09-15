@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBReportFieldException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBReportSubclassException;
+import nz.co.gregs.dbvolution.exceptions.UnableToSetDBReportFieldException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -318,7 +319,7 @@ public class DBReport extends RowDefinition {
 						}
 					}
 				} catch (IllegalArgumentException ex) {
-					throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
+					throw new UnableToSetDBReportFieldException(exampleReport, field, ex);
 				} catch (IllegalAccessException ex) {
 					throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
 				}

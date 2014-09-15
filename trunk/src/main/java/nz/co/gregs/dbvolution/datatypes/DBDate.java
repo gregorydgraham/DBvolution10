@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +52,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 public class DBDate extends QueryableDatatype implements DateResult {
 
 	private static final long serialVersionUID = 1L;
+	private static SimpleDateFormat toStringFormat =  new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
 
 	/**
 	 * The default constructor for DBDate.
@@ -205,7 +207,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		if (this.isNull() || dateValue() == null) {
 			return "";
 		}
-		return dateValue().toString();
+		return toStringFormat.format(dateValue());
 	}
 
 	@Override
