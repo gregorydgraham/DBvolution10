@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.print.attribute.standard.NumberOfDocuments;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 
@@ -35,13 +36,14 @@ public class H2DBDefinition extends DBDefinition {
 	private final String dateFormatStr = "yyyy-M-d hh:mm:ss";
 	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
 	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
+	private final SimpleDateFormat timeZoneOnly = new SimpleDateFormat("Z");
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		if (date == null) {
 			return getNull();
 		}
-		return " PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "') ";
+		return "PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "')";
 	}
 
 	@Override
@@ -52,5 +54,40 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String formatColumnName(String columnName) {
 		return columnName.toUpperCase();
+	}
+
+	@Override
+	public String doAddDaysTransform(String dayValue, String numberOfDays) {
+		return "DATEADD('day',"+numberOfDays+", "+dayValue+")";
+	}
+
+	@Override
+	public String doAddSecondsTransform(String secondValue, String numberOfSeconds) {
+		return "DATEADD('second',"+numberOfSeconds+","+secondValue+")";
+	}
+
+	@Override
+	public String doAddMinutesTransform(String secondValue, String numberOfMinutes) {
+		return "DATEADD('minute',"+numberOfMinutes+","+secondValue+")";
+	}
+
+	@Override
+	public String doAddHoursTransform(String hourValue, String numberOfSeconds) {
+		return "DATEADD('hour',"+numberOfSeconds+","+hourValue+")";
+	}
+
+	@Override
+	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "DATEADD('week',"+numberOfWeeks+","+dateValue+")";
+	}
+
+	@Override
+	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "DATEADD('month',"+numberOfMonths+","+dateValue+")";
+	}
+
+	@Override
+	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+		return "DATEADD('year',"+numberOfYears+","+dateValue+")";
 	}
 }

@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 
 /**
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class UnableToAccessDBReportFieldException extends RuntimeException {
 

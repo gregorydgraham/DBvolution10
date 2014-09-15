@@ -195,4 +195,39 @@ public class OracleDBDefinition extends DBDefinition {
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return false;
 	}
+
+	@Override
+	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "("+dateValue+" + numtodsinterval( "+numberOfSeconds+", 'SECOND'))";
+	}
+
+	@Override
+	public String doAddMinutesTransform(String dateValue, String numberOfSeconds) {
+		return "("+dateValue+" + numtodsinterval( "+numberOfSeconds+", 'MINUTE'))";
+	}
+
+	@Override
+	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+		return "("+dateValue+" + numtodsinterval( "+numberOfHours+", 'HOUR'))";
+	}
+
+	@Override
+	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+		return "(("+dateValue+")+("+numberOfDays+"))";
+	}
+
+	@Override
+	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "("+dateValue+" + numtodsinterval( "+numberOfWeeks+", 'WEEK'))";
+	}
+
+	@Override
+	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "("+dateValue+" + numtodsinterval( "+numberOfMonths+", 'MONTH'))";
+	}
+
+	@Override
+	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+		return "("+dateValue+" + numtodsinterval( "+numberOfYears+", 'YEAR'))";
+	}
 }

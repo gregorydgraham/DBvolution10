@@ -54,7 +54,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<libDirectory>${basedir}/lib</libDirectory>
 	</properties>
-    
+	
 	<build>
 		<plugins>  
 			<plugin>      
@@ -356,7 +356,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.178</version>
+			<version>1.4.181</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -439,11 +439,11 @@
 			<artifactId>nuodb-jdbc</artifactId>
 			<version>2.0.4</version>
 		</dependency>
-		<!--	 <dependency>
-		 <groupId>com.oracle</groupId>
-		 <artifactId>ojdbc6</artifactId>
-		 <version>11.2.1.0.1.0</version>
-		</dependency>-->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.1.0.1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>emma</groupId>
 			<artifactId>emma</artifactId>

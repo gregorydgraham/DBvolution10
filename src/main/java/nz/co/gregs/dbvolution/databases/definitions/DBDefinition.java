@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
+import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generation.DBTableField;
@@ -1950,5 +1951,33 @@ public abstract class DBDefinition {
 	 */
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return true;
+	}
+
+	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "DATE_ADD("+dateValue+", INTERVAL '"+numberOfSeconds+"' SECOND )";
+	}
+
+	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+		return "DATE_ADD("+dateValue+", INTERVAL '"+numberOfMinutes+"' MINUTE )";
+	}
+
+	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+		return "DATE_ADD("+dateValue+", INTERVAL '"+numberOfDays+"' DAY )";
+	}
+
+	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+		return "DATE_ADD("+dateValue+", INTERVAL '"+numberOfHours+"' HOUR )";
+	}
+
+	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "DATE_ADD("+dateValue+", INTERVAL '"+numberOfWeeks+"' WEEK )";
+	}
+
+	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "DATE_ADD("+dateValue+", INTERVAL '"+numberOfMonths+"' MONTH )";
+	}
+
+	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+		return "DATE_ADD("+dateValue+", INTERVAL '"+numberOfYears+"' YEAR )";
 	}
 }

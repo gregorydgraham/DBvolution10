@@ -306,9 +306,9 @@ public class OuterJoinTest extends AbstractTest {
 		String sqlForQuery = dbquery.getSQLForQuery();
 		String testableSQL = testableSQL(sqlForQuery);
 		System.out.println(sqlForQuery);
-		Assert.assertThat(testableSQL.matches(".*on.*\\(" + carCompanyCondition + "\\).*;"), is(true));
+		Assert.assertThat(testableSQL, containsString(carCompanyCondition));
 		Assert.assertThat(testableSQL.indexOf(carCompanyCondition), is(testableSQL.lastIndexOf(carCompanyCondition)));
-		Assert.assertThat(testableSQL.matches(".*on\\(.*\\(" + marqueCondition + "\\).*;"), is(true));
+		Assert.assertThat(testableSQL, containsString(marqueCondition));
 		Assert.assertThat(testableSQL.indexOf(marqueCondition), is(testableSQL.lastIndexOf(marqueCondition)));
 	}
 
