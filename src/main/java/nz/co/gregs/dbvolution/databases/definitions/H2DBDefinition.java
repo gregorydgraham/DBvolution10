@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.print.attribute.standard.NumberOfDocuments;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 
