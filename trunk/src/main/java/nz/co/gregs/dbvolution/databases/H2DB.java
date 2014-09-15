@@ -76,6 +76,12 @@ public class H2DB extends DBDatabase {
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	@Override
+	protected Connection getConnectionFromDriverManager() throws SQLException {
+		System.setProperty("h2.storeLocalTime ", "true");
+		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
+	}
     
     
 }

@@ -46,13 +46,17 @@ public class DateExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBString name = new DBString(marque.column(marque.name));
 		@DBColumn
-		public DBDate creationDate = new DBDate(marque.column(marque.creationDate));
+		public DBDate savedJavaDate = new DBDate(marque.column(marque.creationDate));
+		@DBColumn
+		public DBDate actualJavaDate = new DBDate(new Date());
 		@DBColumn
 		public DBDate currentDate = new DBDate(DateExpression.currentDate());
 		@DBColumn
 		public DBDate currentDateTime = new DBDate(DateExpression.currentDateTime());
 		@DBColumn
-		public DBDate currentDateTimeMinus10 = new DBDate(DateExpression.currentDateTime().addSeconds(-10));
+		public DBDate currentDateTimeMinus10Seconds = new DBDate(DateExpression.currentDateTime().addSeconds(-10));
+		@DBColumn
+		public DBDate currentDateTimePlus10Seconds = new DBDate(DateExpression.currentDateTime().addSeconds(10));
 	}
 
 	@Test
@@ -65,7 +69,7 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(0));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateTime().addSeconds(-10).addHours(-12), null);
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateTime().addSeconds(-10).addHours(-11), null);
 		database.print(DBReport.getAllRows(database, new CurrentDateReport()));
 		got = database.get(marq);
         database.print(got);
@@ -76,7 +80,9 @@ public class DateExpressionTest extends AbstractTest {
         database.print(got);
 		Assert.assertThat(got.size(), is(21));
 
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateTime().addSeconds(-10).addHours(-12), DateExpression.currentDateTime().addSeconds(+10));
+		marq.creationDate.permittedRangeInclusive(
+				DateExpression.currentDateTime().addSeconds(-10).addHours(-13), 
+				DateExpression.currentDateTime().addSeconds(+10));
 		got = database.get(marq);
         database.print(got);
 		Assert.assertThat(got.size(), is(1));
