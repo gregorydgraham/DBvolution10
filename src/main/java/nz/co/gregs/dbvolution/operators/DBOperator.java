@@ -19,6 +19,7 @@ import java.io.Serializable;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 /**
  *
@@ -32,12 +33,21 @@ abstract public class DBOperator implements Serializable {
     protected DBExpression firstValue;
     protected DBExpression secondValue;
     protected DBExpression thirdValue;
+	private BooleanExpression expression;
 
     public DBOperator() {
         firstValue = null;
         secondValue = null;
         thirdValue = null;
     }
+	
+	protected DBExpression getExpression(){
+		return this.expression;
+	}
+	
+	protected void setExpression(BooleanExpression operatorExpression){
+		this.expression = operatorExpression;
+	}
 
     /**
      * Formats the operator into SQL for comparing a column to pre-supplied values
@@ -47,7 +57,7 @@ abstract public class DBOperator implements Serializable {
      * values into a where clause line.
      * <p>
      * The line should formatted as " this = that " and should make use of
-     * the DBDefinition with DBDatabase to ensure compatibility with all
+     * the DBDefinition within DBDatabase to ensure compatibility with all
      * databases.
      *
      * @param database
@@ -55,24 +65,6 @@ abstract public class DBOperator implements Serializable {
      * @return the column name, operator and values as a where clause snippet
      */
     abstract public String generateWhereLine(DBDatabase database, String columnName);
-
-    /**
-     * Formats the operator into SQL for comparing 2 columns
-     *
-     * <p>
-     * Within this function you need to transform the column names and operator
-     * into a where clause line.
-     * <p>
-     * The line should formatted as " this = that " and should make use of
-     * the DBDefinition with DBDatabase to ensure compatibility with all
-     * databases.
-     *
-     * @param database
-     * @param columnName
-     * @param otherColumnName
-     * @return the column name, operator and values as a where clause snippet
-     */
-    abstract public String generateRelationship(DBDatabase database, String columnName, String otherColumnName);
 
     public void invertOperator(Boolean invertOperator) {
         this.invertOperator = invertOperator;

@@ -17,6 +17,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -27,9 +28,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class DBBetweenExclusiveOperator  extends DBOperator{
     public static final long serialVersionUID = 1L;
-
-//    private final QueryableDatatype firstValue;
-//    private final QueryableDatatype secondValue;
     
     public DBBetweenExclusiveOperator(DBExpression lowValue, DBExpression highValue){
         super();
@@ -39,17 +37,10 @@ public class DBBetweenExclusiveOperator  extends DBOperator{
     
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-//        lowValue.setDatabase(database);
         String lowerSQLValue = firstValue.toSQLString(db);
-//        highValue.setDatabase(db);
         String upperSQLValue = secondValue.toSQLString(db);
-        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
+        String beginWhereLine = "";
         return beginWhereLine + (invertOperator?" not(":"(")+columnName + " > " + lowerSQLValue + " and "+columnName + " < " + upperSQLValue+")";
-    }
-
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        throw new InappropriateRelationshipOperator(this);
     }
 
     @Override

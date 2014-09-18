@@ -160,30 +160,30 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 		return new DBInteger().getSQLDatatype();
 	}
 
-	@Override
-	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-		blankQuery();
-		if (resultSet == null || fullColumnName == null) {
-			this.setToNull();
-		} else {
-			Long dbValue;
-			try {
-				dbValue = resultSet.getLong(fullColumnName);
-				if (resultSet.wasNull()) {
-					dbValue = null;
-				}
-			} catch (SQLException ex) {
-				dbValue = null;
-			}
-			if (dbValue == null) {
-				this.setToNull();
-			} else {
-				this.setLiteralValue(dbValue);
-			}
-		}
-		setUnchanged();
-		setDefined(true);
-	}
+//	@Override
+//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+//		blankQuery();
+//		if (resultSet == null || fullColumnName == null) {
+//			this.setToNull();
+//		} else {
+//			Long dbValue;
+//			try {
+//				dbValue = resultSet.getLong(fullColumnName);
+//				if (resultSet.wasNull()) {
+//					dbValue = null;
+//				}
+//			} catch (SQLException ex) {
+//				dbValue = null;
+//			}
+//			if (dbValue == null) {
+//				this.setToNull();
+//			} else {
+//				this.setLiteralValue(dbValue);
+//			}
+//		}
+//		setUnchanged();
+//		setDefined(true);
+//	}
 
 	@Override
 	public DBInteger getQueryableDatatypeForExpressionValue() {
@@ -754,5 +754,10 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	@Override
 	public Number getValue() {
 		return numberValue();
+	}
+
+	@Override
+	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		return resultSet.getLong(fullColumnName);
 	}
 }

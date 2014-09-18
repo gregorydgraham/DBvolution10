@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -62,8 +64,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * Creates a DBBoolean with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBBoolean will be set as having the value provided but will not
-	 * be defined in the database.
+	 * The resulting DBBoolean will be set as having the value provided but will
+	 * not be defined in the database.
 	 *
 	 * @param bool
 	 */
@@ -160,7 +162,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -182,7 +185,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -212,8 +216,13 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 		return false;
 	}
 
-//	@Override
-//	public void setIncludesNull(boolean nullsAreIncluded) {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//	}
+	@Override
+	protected Boolean getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		Boolean dbValue = resultSet.getBoolean(fullColumnName);
+		if (resultSet.wasNull()) {
+			dbValue = null;
+		}
+		return dbValue;
+	}
+
 }

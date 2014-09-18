@@ -16,6 +16,8 @@
 
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -54,4 +56,36 @@ public class ImplicitQueryableDatatype extends QueryableDatatype {
 		return new HashSet<DBRow>();
 	}
 	
+//	@Override
+//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
+//		blankQuery();
+//		if (resultSet == null || resultSetColumnName == null) {
+//			this.setToNull();
+//		} else {
+//			String dbValue;
+//			try {
+//				dbValue = resultSet.getString(resultSetColumnName);
+//				if (resultSet.wasNull()) {
+//					dbValue = null;
+//				}
+//			} catch (SQLException ex) {
+//				// Probably means the column wasn't selected.
+//				dbValue = null;
+//			}
+//			if (dbValue == null) {
+//				this.setToNull();
+//			} else {
+//				this.setLiteralValue(dbValue);
+//			}
+//		}
+//		setUnchanged();
+//		setDefined(true);
+//		propertyWrapper = null;
+//	}
+	
+
+	@Override
+	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		return resultSet.getString(fullColumnName);
+	}
 }

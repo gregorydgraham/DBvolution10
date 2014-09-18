@@ -106,7 +106,7 @@ class JavaPropertyFinder {
 		// (these are inherited, so need to use the proper inheritance-aware method)
 		for (Field field: clazz.getFields()) {
 			if (filter.acceptField(field)) {
-				properties.add(new JavaProperty.JavaField(field));
+				properties.add(new JavaField(field));
 			}
 			observedFieldNames.add(field.getName());
 		}
@@ -130,7 +130,7 @@ class JavaPropertyFinder {
 							// TODO: pretty sure there's exception types that need to be caught on this call
 							field.setAccessible(true);
 							
-							properties.add(new JavaProperty.JavaField(field));
+							properties.add(new JavaField(field));
 						}
 					}
 				}
@@ -162,7 +162,7 @@ class JavaPropertyFinder {
 				
 				// add field if accepted
 				if (filter.acceptBeanProperty(getter, setter)) {
-					properties.add(new JavaProperty.JavaBeanProperty(descriptor));
+					properties.add(new JavaBeanProperty(descriptor));
 				}
 			}
 		} catch (IntrospectionException e) {

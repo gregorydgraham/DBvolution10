@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -29,45 +31,76 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public class DBUnknownDatatype extends QueryableDatatype {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The default constructor for a DBUnknownDatatype.
-	 * 
+	 *
 	 * <p>
 	 * Literally does nothing.
 	 */
 	public DBUnknownDatatype() {
-        super();
-    }
-    @Override
-    public String getSQLDatatype() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+		super();
+	}
 
-    @Override
-    public String formatValueForSQLStatement(DBDatabase db) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public String getSQLDatatype() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 
-    @Override
-    void setValue(Object newLiteralValue) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public String formatValueForSQLStatement(DBDatabase db) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 
-    @Override
-    public DBUnknownDatatype getQueryableDatatypeForExpressionValue() {
-        return new DBUnknownDatatype();
-    }
+	@Override
+	void setValue(Object newLiteralValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 
-    @Override
-    public boolean isAggregator() {
-        return false;
-    }
+	@Override
+	public DBUnknownDatatype getQueryableDatatypeForExpressionValue() {
+		return new DBUnknownDatatype();
+	}
 
-    @Override
-    public Set<DBRow> getTablesInvolved() {
-        return new HashSet<DBRow>();
-    }
+	@Override
+	public boolean isAggregator() {
+		return false;
+	}
 
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		return new HashSet<DBRow>();
+	}
+
+//	@Override
+//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
+//		blankQuery();
+//		if (resultSet == null || resultSetColumnName == null) {
+//			this.setToNull();
+//		} else {
+//			String dbValue;
+//			try {
+//				dbValue = resultSet.getString(resultSetColumnName);
+//				if (resultSet.wasNull()) {
+//					dbValue = null;
+//				}
+//			} catch (SQLException ex) {
+//				// Probably means the column wasn't selected.
+//				dbValue = null;
+//			}
+//			if (dbValue == null) {
+//				this.setToNull();
+//			} else {
+//				this.setLiteralValue(dbValue);
+//			}
+//		}
+//		setUnchanged();
+//		setDefined(true);
+//		propertyWrapper = null;
+//	}
+	@Override
+	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		return resultSet.getString(fullColumnName);
+	}
 }

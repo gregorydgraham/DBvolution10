@@ -120,30 +120,30 @@ public class DBInteger extends QueryableDatatype {
 		return "INTEGER";
 	}
 
-	@Override
-	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-		blankQuery();
-		if (resultSet == null || fullColumnName == null) {
-			this.setToNull();
-		} else {
-			Long dbValue;
-			try {
-				dbValue = resultSet.getLong(fullColumnName);
-				if (resultSet.wasNull()) {
-					dbValue = null;
-				}
-			} catch (SQLException ex) {
-				dbValue = null;
-			}
-			if (dbValue == null) {
-				this.setToNull();
-			} else {
-				this.setValue(dbValue);
-			}
-		}
-		setUnchanged();
-		setDefined(true);
-	}
+//	@Override
+//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+//		blankQuery();
+//		if (resultSet == null || fullColumnName == null) {
+//			this.setToNull();
+//		} else {
+//			Long dbValue;
+//			try {
+//				dbValue = resultSet.getLong(fullColumnName);
+//				if (resultSet.wasNull()) {
+//					dbValue = null;
+//				}
+//			} catch (SQLException ex) {
+//				dbValue = null;
+//			}
+//			if (dbValue == null) {
+//				this.setToNull();
+//			} else {
+//				this.setValue(dbValue);
+//			}
+//		}
+//		setUnchanged();
+//		setDefined(true);
+//	}
 
 	/**
 	 * Returns a Long of the database value or NULL if the database value is null
@@ -720,5 +720,10 @@ public class DBInteger extends QueryableDatatype {
 	@Override
 	public boolean isAggregator() {
 		return false;
+	}
+
+	@Override
+	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		return resultSet.getLong(fullColumnName);
 	}
 }

@@ -27,10 +27,10 @@ public class DBNonOperator extends DBOperator {
         return "";
     }
 
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return "";
-    }
+//    @Override
+//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+//        return "";
+//    }
 
     @Override
     public DBOperator getInverseOperator() {

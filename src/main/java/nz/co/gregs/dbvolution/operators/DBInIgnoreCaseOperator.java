@@ -56,11 +56,11 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
         return whereClause.toString();
     }
 
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
-        return defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName) + " ) ";
-    }
+//    @Override
+//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+//        DBDefinition defn = database.getDefinition();
+//        return defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName) + " ) ";
+//    }
     
     @Override
     public DBInIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {

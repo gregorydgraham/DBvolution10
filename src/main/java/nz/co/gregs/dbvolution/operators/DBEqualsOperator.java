@@ -80,12 +80,12 @@ public class DBEqualsOperator extends DBOperator {
 		}
 	}
 
-	@Override
-	public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-		DBDefinition defn = database.getDefinition();
-		String relationStr = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + otherColumnName;
-		return relationStr;
-	}
+//	@Override
+//	public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+//		DBDefinition defn = database.getDefinition();
+//		String relationStr = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + otherColumnName;
+//		return relationStr;
+//	}
 
 	@Override
 	public DBOperator getInverseOperator() {

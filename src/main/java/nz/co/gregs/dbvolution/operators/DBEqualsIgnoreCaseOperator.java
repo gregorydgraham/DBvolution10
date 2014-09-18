@@ -43,11 +43,11 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
         return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
     }
 
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
-        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(otherColumnName);
-    }
+//    @Override
+//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+//        DBDefinition defn = database.getDefinition();
+//        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(otherColumnName);
+//    }
 
     @Override
     public DBEqualsIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {

@@ -47,10 +47,10 @@ public class DBBetweenInclusiveOperator  extends DBOperator{
         return beginWhereLine + (invertOperator?" not (":"(")+columnName + " >= " + lowerSQLValue + " and "+columnName + " <= " + upperSQLValue+")";
     }
 
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        throw new InappropriateRelationshipOperator(this);
-    }
+//    @Override
+//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+//        throw new InappropriateRelationshipOperator(this);
+//    }
 
     @Override
     public DBOperator getInverseOperator() {
