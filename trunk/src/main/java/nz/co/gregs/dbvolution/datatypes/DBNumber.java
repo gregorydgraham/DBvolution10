@@ -138,10 +138,11 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * number provided.
 	 *
 	 * <p>
-	 * This probably the method you want to use to set or change the value of this
-	 * DBNumber. When creating a new row or updating an existing row use this
-	 * method or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to
-	 * correctly set the value.
+	 * This probably the method you want to use to set or change the value of
+	 * this DBNumber. When creating a new row or updating an existing row use
+	 * this method or
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to correctly
+	 * set the value.
 	 *
 	 * <p>
 	 * Remember:</p>
@@ -212,7 +213,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	}
 
 	/**
-	 * The current {@link #getValue()  literal value} of this DBNumber as a Number
+	 * The current {@link #getValue()  literal value} of this DBNumber as a
+	 * Number
 	 *
 	 * @return the number as the original number class
 	 */
@@ -227,7 +229,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	}
 
 	/**
-	 * The current {@link #getValue()  literal value} of this DBNumber as a Double
+	 * The current {@link #getValue()  literal value} of this DBNumber as a
+	 * Double
 	 *
 	 * @return the number as a Double
 	 */
@@ -284,39 +287,38 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * @param resultSet
 	 * @param fullColumnName
 	 */
-	@Override
-	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-		blankQuery();
-		if (resultSet == null || fullColumnName == null) {
-			this.setToNull();
-		} else {
-			Number dbValue;
-			try {
-				dbValue = resultSet.getBigDecimal(fullColumnName);
-			} catch (SQLException ex) {
-				try {
-					dbValue = resultSet.getLong(fullColumnName);
-				} catch (SQLException ex2) {
-					dbValue = null;
-				}
-			}
-			try {
-				if (resultSet.wasNull()) {
-					dbValue = null;
-				}
-			} catch (SQLException ex) {
-				dbValue = null;
-			}
-			if (dbValue == null) {
-				this.setToNull();
-			} else {
-				this.setValue(dbValue);
-			}
-		}
-		setUnchanged();
-		setDefined(true);
-	}
-
+//	@Override
+//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+//		blankQuery();
+//		if (resultSet == null || fullColumnName == null) {
+//			this.setToNull();
+//		} else {
+//			Number dbValue;
+//			try {
+//				dbValue = resultSet.getBigDecimal(fullColumnName);
+//			} catch (SQLException ex) {
+//				try {
+//					dbValue = resultSet.getLong(fullColumnName);
+//				} catch (SQLException ex2) {
+//					dbValue = null;
+//				}
+//			}
+//			try {
+//				if (resultSet.wasNull()) {
+//					dbValue = null;
+//				}
+//			} catch (SQLException ex) {
+//				dbValue = null;
+//			}
+//			if (dbValue == null) {
+//				this.setToNull();
+//			} else {
+//				this.setValue(dbValue);
+//			}
+//		}
+//		setUnchanged();
+//		setDefined(true);
+//	}
 	@Override
 	public DBNumber getQueryableDatatypeForExpressionValue() {
 		return new DBNumber();
@@ -334,7 +336,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -344,7 +347,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -354,7 +358,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -401,8 +406,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -425,8 +430,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -545,9 +550,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be within the
-	 * range and the upper-bound outside. I.e excludedRange(1,3) will exclude 1
-	 * and 2.
+	 * if both ends of the range are specified the lower-bound will be within
+	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
+	 * exclude 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -571,8 +576,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified the lower-bound will be within in
-	 * the range and the upper-bound outside. I.e excludedRange(1,3) will exclude
-	 * 1 and 2.
+	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
+	 * exclude 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -596,8 +601,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
-	 * 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
+	 * exclude 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -621,8 +626,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
-	 * 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
+	 * exclude 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -646,8 +651,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
-	 * 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
@@ -671,8 +676,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
-	 * 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
+	 * exclude 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
@@ -695,5 +700,18 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	protected Number getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		try {
+			return resultSet.getBigDecimal(fullColumnName);
+		} catch (SQLException ex) {
+			try {
+				return resultSet.getLong(fullColumnName);
+			} catch (SQLException ex2) {
+				return null;
+			}
+		}
 	}
 }

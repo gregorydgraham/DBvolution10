@@ -444,6 +444,11 @@
 			<artifactId>emma</artifactId>
 			<version>2.1.5320</version>
 		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>11.2.1.0.1.0</version>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<repository>

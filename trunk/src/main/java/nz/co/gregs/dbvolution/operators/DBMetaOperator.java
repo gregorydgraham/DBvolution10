@@ -33,10 +33,10 @@ abstract class DBMetaOperator extends DBOperator{
         return operator.copyAndAdapt(typeAdaptor);
     }
 
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        return operator.generateRelationship(database, columnName, otherColumnName);
-    }
+//    @Override
+//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+//        return operator.generateRelationship(database, columnName, otherColumnName);
+//    }
 
     @Override
     public String generateWhereLine(DBDatabase database, String columnName) {

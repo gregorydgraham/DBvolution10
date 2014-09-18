@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -54,6 +56,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 public class DBString extends QueryableDatatype implements StringResult {
 
 	private static final long serialVersionUID = 1L;
+	private boolean isDBEmptyString = true;
 
 	/**
 	 * Utility function to return the values of a list of DBStrings in a list of
@@ -85,13 +88,14 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Creates a DBString with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBString will be set as having the value provided but will not
-	 * be defined in the database.
+	 * The resulting DBString will be set as having the value provided but will
+	 * not be defined in the database.
 	 *
 	 * @param string
 	 */
 	public DBString(String string) {
 		super(string);
+		isDBEmptyString = false;
 	}
 
 	/**
@@ -106,12 +110,14 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 */
 	public DBString(StringResult stringExpression) {
 		super(stringExpression);
+		isDBEmptyString = false;
 	}
 
 	@Override
 	void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof String) {
 			setValue((String) newLiteralValue);
+			isDBEmptyString = false;
 		} else {
 			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-String: Use only Strings with this class");
 		}
@@ -120,10 +126,11 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Sets the value of this DBString to the value provided.
 	 *
-	 * @param str 
+	 * @param str
 	 */
 	public void setValue(String str) {
 		super.setLiteralValue(str);
+		isDBEmptyString = false;
 	}
 
 	@Override
@@ -157,6 +164,32 @@ public class DBString extends QueryableDatatype implements StringResult {
 		}
 	}
 
+//	@Override
+//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
+//		blankQuery();
+//		if (resultSet == null || resultSetColumnName == null) {
+//			this.setToNull();
+//		} else {
+//			String dbValue;
+//			try {
+//				dbValue = resultSet.getString(resultSetColumnName);
+//				if (resultSet.wasNull()) {
+//					dbValue = null;
+//				}
+//			} catch (SQLException ex) {
+//				// Probably means the column wasn't selected.
+//				dbValue = null;
+//			}
+//			if (dbValue == null) {
+//				this.setToNull();
+//			} else {
+//				this.setLiteralValue(dbValue);
+//			}
+//		}
+//		setUnchanged();
+//		setDefined(true);
+//		propertyWrapper = null;
+//	}
 	@Override
 	public DBString copy() {
 		return (DBString) super.copy();
@@ -179,7 +212,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -189,7 +223,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -199,7 +234,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -209,8 +245,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
-	 * ignoring letter case.
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * Strings ignoring letter case.
 	 *
 	 * @param permitted
 	 */
@@ -220,8 +256,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
-	 * ignoring letter case.
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * Strings ignoring letter case.
 	 *
 	 * @param permitted
 	 */
@@ -231,8 +267,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
-	 * ignoring letter case.
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * Strings ignoring letter case.
 	 *
 	 * @param permitted
 	 */
@@ -242,8 +278,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
-	 * ignoring letter case.
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * Strings ignoring letter case.
 	 *
 	 * @param permitted
 	 */
@@ -279,7 +315,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 *
 	 * @param excluded
 	 */
-	public void excludedValuesIgnoreCase(List<String> excluded) {
+	public void excludedValuesIgnoreCase(Collection<String> excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
 		negateOperator();
 	}
@@ -288,11 +324,10 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 *
 	 * @param excluded
 	 */
-	public void excludedValuesIgnoreCase(Set<String> excluded) {
-		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
-		negateOperator();
-	}
-
+//	public void excludedValuesIgnoreCase(Set<String> excluded) {
+//		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
+//		negateOperator();
+//	}
 	/**
 	 *
 	 * excludes the object, Set, List, Array, or vararg of objects
@@ -312,7 +347,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 *
 	 * @param excluded
 	 */
-	public void excludedValues(List<String> excluded) {
+	public void excludedValues(Collection<String> excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
 		negateOperator();
 	}
@@ -320,8 +355,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -392,9 +427,9 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included within
-	 * the range and the upper-bound excluded. I.e excludedRange(1,3) will
-	 * exclude 1 and 2.
+	 * if both ends of the range are specified the lower-bound will be included
+	 * within the range and the upper-bound excluded. I.e excludedRange(1,3)
+	 * will exclude 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -540,7 +575,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -563,8 +599,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -635,9 +671,9 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded from the range. I.e excludedRange(1,3) will
-	 * exclude 1 and 2.
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded from the range. I.e
+	 * excludedRange(1,3) will exclude 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -712,8 +748,16 @@ public class DBString extends QueryableDatatype implements StringResult {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-//	@Override
-//	public void setIncludesNull(boolean nullsAreIncluded) {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//	}
+	public boolean isEmptyString() {
+		return isDBEmptyString;
+	}
+
+	@Override
+	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		String gotString = resultSet.getString(fullColumnName);
+//		if (resultSet.wasNull()||gotString.isEmpty()){
+//			gotString = null;
+//		}
+		return gotString;
+	}
 }

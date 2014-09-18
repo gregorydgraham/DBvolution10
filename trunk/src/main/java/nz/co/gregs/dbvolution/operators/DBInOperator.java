@@ -94,10 +94,10 @@ public class DBInOperator extends DBOperator {
 		return " not in (";
 	}
 
-	@Override
-	public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-		return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
-	}
+//	@Override
+//	public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+//		return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
+//	}
 
 	@Override
 	public DBOperator getInverseOperator() {

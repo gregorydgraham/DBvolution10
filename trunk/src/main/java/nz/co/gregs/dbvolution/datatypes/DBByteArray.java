@@ -75,7 +75,8 @@ public class DBByteArray extends DBLargeObject {
 
 	/**
 	 *
-	 * @return the standard SQL datatype that corresponds to this QDT as a String
+	 * @return the standard SQL datatype that corresponds to this QDT as a
+	 * String
 	 */
 	@Override
 	public String getSQLDatatype() {
@@ -112,7 +113,8 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Unlike {@link #setValue(java.io.InputStream) setting an InputStream}, the
 	 * file is read immediately and stored internally. If you would prefer to
-	 * delay the reading of the file, wrap the file in a {@link FileInputStream}.
+	 * delay the reading of the file, wrap the file in a
+	 * {@link FileInputStream}.
 	 *
 	 * @param fileToRead
 	 * @throws IOException
@@ -145,34 +147,35 @@ public class DBByteArray extends DBLargeObject {
 		}
 	}
 
-	@Override
-	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-		blankQuery();
-		DBDefinition defn = database.getDefinition();
-		if (resultSet == null || fullColumnName == null) {
-			this.setToNull();
-		} else {
-			if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
-				try {
-					setFromCharacterReader(resultSet, fullColumnName);
-				} catch (IOException ex) {
-					throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
-				}
-			} else if (defn.prefersLargeObjectsReadAsBytes()) {
-				setFromGetBytes(resultSet, fullColumnName);
-			} else if (defn.prefersLargeObjectsReadAsCLOB()) {
-				setFromCLOB(resultSet, fullColumnName);
-			} else {
-				setFromBinaryStream(resultSet, fullColumnName);
-			}
-		}
+//	@Override
+//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+//		blankQuery();
+//		DBDefinition defn = database.getDefinition();
+//		if (resultSet == null || fullColumnName == null) {
+//			this.setToNull();
+//		} else {
+//			if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
+//				try {
+//					setFromCharacterReader(resultSet, fullColumnName);
+//				} catch (IOException ex) {
+//					throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
+//				}
+//			} else if (defn.prefersLargeObjectsReadAsBytes()) {
+//				setFromGetBytes(resultSet, fullColumnName);
+//			} else if (defn.prefersLargeObjectsReadAsCLOB()) {
+//				setFromCLOB(resultSet, fullColumnName);
+//			} else {
+//				setFromBinaryStream(resultSet, fullColumnName);
+//			}
+//		}
+//
+//		setUnchanged();
+//
+//		setDefined(true);
+//	}
 
-		setUnchanged();
-
-		setDefined(true);
-	}
-
-	private void setFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
+	private byte[] getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
+		byte[] bytes = new byte[]{};
 		InputStream inputStream;
 		inputStream = resultSet.getBinaryStream(fullColumnName);
 		if (resultSet.wasNull()) {
@@ -198,22 +201,25 @@ public class DBByteArray extends DBLargeObject {
 			} catch (IOException ex) {
 				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
 			}
-			byte[] bytes = new byte[totalBytesRead];
+			bytes = new byte[totalBytesRead];
 			int bytesAdded = 0;
 			for (byte[] someBytes : byteArrays) {
 				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 				bytesAdded += someBytes.length;
 			}
-			this.setValue(bytes);
+//			this.setValue(bytes);
 		}
+		return bytes;
 	}
 
-	private void setFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
+	private byte[] getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = resultSet.getBytes(fullColumnName);
-		this.setValue(bytes);
+//		this.setValue(bytes);
+		return bytes;
 	}
 
-	private void setFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
+	private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
+		byte[] decodeBuffer = new byte[]{};
 		Reader inputReader = null;
 		try {
 			inputReader = resultSet.getCharacterStream(fullColumnName);
@@ -247,14 +253,15 @@ public class DBByteArray extends DBLargeObject {
 					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 					bytesAdded += someBytes.length;
 				}
-				byte[] decodeBuffer = Base64.decodeBase64(bytes);
-				this.setValue(decodeBuffer);
+				decodeBuffer = Base64.decodeBase64(bytes);
+//				this.setValue(decodeBuffer);
 			}
 		}
+		return decodeBuffer;
 	}
 
-	private void setFromCLOB(ResultSet resultSet, String fullColumnName) throws SQLException {
-//		InputStream inputStream;
+	private byte[] getFromCLOB(ResultSet resultSet, String fullColumnName) throws SQLException {
+		byte[] bytes = new byte[]{};
 		Clob clob = resultSet.getClob(fullColumnName);
 		if (resultSet.wasNull() || clob == null) {
 			this.setToNull();
@@ -276,14 +283,15 @@ public class DBByteArray extends DBLargeObject {
 			} catch (IOException ex) {
 				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
 			}
-			byte[] bytes = new byte[totalBytesRead];
+			bytes = new byte[totalBytesRead];
 			int bytesAdded = 0;
 			for (byte[] someBytes : byteArrays) {
 				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 				bytesAdded += someBytes.length;
 			}
-			this.setValue(bytes);
+//			this.setValue(bytes);
 		}
+		return bytes;
 	}
 
 	@Override
@@ -434,7 +442,8 @@ public class DBByteArray extends DBLargeObject {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this DBByteArray.
+	 * Returns the byte[] used internally to store the value of this
+	 * DBByteArray.
 	 *
 	 * @return the byte[] value of this DBByteArray.
 	 */
@@ -475,6 +484,26 @@ public class DBByteArray extends DBLargeObject {
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		return new HashSet<DBRow>();
+	}
+
+	@Override
+	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		byte[] bytes = new byte[]{};
+		DBDefinition defn = database.getDefinition();
+		if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
+			try {
+				bytes = getFromCharacterReader(resultSet, fullColumnName);
+			} catch (IOException ex) {
+				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
+			}
+		} else if (defn.prefersLargeObjectsReadAsBytes()) {
+			bytes = getFromGetBytes(resultSet, fullColumnName);
+		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
+			bytes = getFromCLOB(resultSet, fullColumnName);
+		} else {
+			bytes = getFromBinaryStream(resultSet, fullColumnName);
+		}
+		return bytes;
 	}
 
 }

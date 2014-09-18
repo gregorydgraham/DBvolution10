@@ -17,14 +17,12 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
-import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.*;
-import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.reflections.Reflections;
@@ -451,6 +449,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the WHERE clause that will be used with the current parameters
 	 *
 	 */
+	@Deprecated
 	public List<String> getWhereClausesWithAliases(DBDatabase db) {
 		return getWhereClauses(db, true);
 	}
@@ -871,40 +870,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public void addRelationship(DBString thisTableField, DBRow otherTable, DBString otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
-	}
-
-	/**
-	 *
-	 * Creates a foreign key like relationship between columns on 2 different
-	 * DBRow objects.
-	 *
-	 * <p>
-	 * It is recommended that you use an <a
-	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
-	 * instead.
-	 *
-	 * <p>
-	 * this function relies on the QueryableDatatypes being part of the DBRows
-	 * that are also passed. So every call to this function should be similar to:
-	 *
-	 * <p>
-	 * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField,
-	 * new DBGreaterThanOperator());
-	 *
-	 * <p>
-	 * Uses the supplied operator to establish the relationship rather than the
-	 * default DBEqualsOperator. Not all operators can be used for relationships.
-	 *
-	 * @deprecated Use an expression instead.
-	 * @param thisTableField
-	 * @param otherTable
-	 * @param otherTableField
-	 * @param operator
-	 */
-	@Deprecated
-	public void addRelationship(QueryableDatatype thisTableField, DBRow otherTable, QueryableDatatype otherTableField, DBOperator operator) {
-//		DBRelationship dbRelationship = new DBRelationship(this, thisTableField, otherTable, otherTableField, operator);
-//		getAdHocRelationships().add(dbRelationship);
 	}
 
 	/**

@@ -436,14 +436,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @param resultSetColumnName
 	 * @throws SQLException
 	 */
-	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
+	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException	{
 		blankQuery();
 		if (resultSet == null || resultSetColumnName == null) {
 			this.setToNull();
 		} else {
-			String dbValue;
+			Object dbValue;
 			try {
-				dbValue = resultSet.getString(resultSetColumnName);
+				dbValue = getFromResultSet(database, resultSet, resultSetColumnName);
 				if (resultSet.wasNull()) {
 					dbValue = null;
 				}
@@ -461,12 +461,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		setDefined(true);
 		propertyWrapper = null;
 	}
-
-//	private void preventChangeOfPrimaryKey() {
-//		if (this.isPrimaryKey && !this.undefined) {
-//			throw new RuntimeException("Accidental Change Of Primary Key Stopped: Use the changePrimaryKey() method to change the primary key's value.");
-//		}
-//	}
+	
+	abstract protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException;
+	
 	private void setChanged(Object newLiteralValue) {
 		if ((this.isDBNull && newLiteralValue != null)
 				|| (getLiteralValue() != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {

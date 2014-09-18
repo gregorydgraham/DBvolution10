@@ -215,26 +215,32 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		return db.getDefinition().getDateFormattedForQuery(dateValue());
 	}
 
+//	@Override
+//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+//		blankQuery();
+//		if (resultSet == null || fullColumnName == null) {
+//			this.setToNull();
+//		} else {
+//			java.sql.Date dbValue = getFromResultSet(database, resultSet, fullColumnName);
+//			if (dbValue == null) {
+//				this.setToNull();
+//			} else {
+//				this.setValue(dbValue);
+//			}
+//		}
+//		setUnchanged();
+//		setDefined(true);
+//	}
+
 	@Override
-	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-		blankQuery();
-		if (resultSet == null || fullColumnName == null) {
-			this.setToNull();
+	protected java.sql.Date getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+		java.sql.Date dbValue;
+		if (database.getDefinition().prefersDatesReadAsStrings()) {
+			dbValue = setByGetString(database, resultSet, fullColumnName);
 		} else {
-			java.sql.Date dbValue;
-			if (database.getDefinition().prefersDatesReadAsStrings()) {
-				dbValue = setByGetString(database, resultSet, fullColumnName);
-			} else {
-				dbValue = setByGetDate(database, resultSet, fullColumnName);
-			}
-			if (dbValue == null) {
-				this.setToNull();
-			} else {
-				this.setValue(dbValue);
-			}
+			dbValue = setByGetDate(database, resultSet, fullColumnName);
 		}
-		setUnchanged();
-		setDefined(true);
+		return dbValue;
 	}
 
 	private java.sql.Date setByGetString(DBDatabase database, ResultSet resultSet, String fullColumnName) {

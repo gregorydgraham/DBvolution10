@@ -56,11 +56,11 @@ public class DBLikeOperator extends DBOperator {
         return invertOperator?" not like ":" like ";
     }
 
-    @Override
-    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-        DBDefinition defn = database.getDefinition();
-        return (invertOperator ? " not(" : "(") + defn.formatColumnName(columnName) + getOperator() + otherColumnName + ")";
-    }
+//    @Override
+//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
+//        DBDefinition defn = database.getDefinition();
+//        return (invertOperator ? " not(" : "(") + defn.formatColumnName(columnName) + getOperator() + otherColumnName + ")";
+//    }
 
     @Override
     public DBOperator getInverseOperator() {

@@ -4,6 +4,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
@@ -577,4 +579,9 @@ public class PropertyWrapper {
 	public boolean isAutoIncrement() {
 		return propertyDefinition.isAutoIncrementColumn();
 	}
+
+//	public ColumnProvider getColumn() {
+//		final RowDefinition actualRow = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
+//        return actualRow.column(rawJavaValue());
+//	}
 }
