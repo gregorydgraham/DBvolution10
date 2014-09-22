@@ -43,21 +43,6 @@ public class DBBetweenInclusiveOperator  extends DBOperator{
         this.firstValue = lowValue==null?lowValue:lowValue.copy();
         this.secondValue = highValue==null?highValue:highValue.copy();
     }
-    
-//    @Override
-//    public String generateWhereLine(DBDatabase db, String columnName) {
-////        lowValue.setDatabase(database);
-//        String lowerSQLValue = firstValue.toSQLString(db);
-////        highValue.setDatabase(db);
-//        String upperSQLValue = secondValue.toSQLString(db);
-//        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
-//        return beginWhereLine + (invertOperator?" not (":"(")+columnName + " >= " + lowerSQLValue + " and "+columnName + " <= " + upperSQLValue+")";
-//    }
-
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        throw new InappropriateRelationshipOperator(this);
-//    }
 
     @Override
     public DBOperator getInverseOperator() {
@@ -78,11 +63,31 @@ public class DBBetweenInclusiveOperator  extends DBOperator{
 		BooleanExpression betweenOp = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			betweenOp = stringExpression.bracket().isBetweenInclusive((StringResult) firstValue, (StringResult) secondValue);
-		} else if (genericExpression instanceof NumberExpression) {
+			StringResult firstStringExpr = null;
+			StringResult secondStringExpr = null;
+			if (firstValue instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) firstValue;
+				firstStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (firstValue instanceof StringResult) {
+				firstStringExpr = (StringResult) firstValue;
+			}
+			if (secondValue instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) secondValue;
+				secondStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (secondValue instanceof StringResult) {
+				secondStringExpr = (StringResult) secondValue;
+			}
+			if (firstStringExpr != null && secondStringExpr != null) {
+				betweenOp = stringExpression.bracket().isBetweenInclusive(firstStringExpr, secondStringExpr);
+			}
+		} else if ((genericExpression instanceof NumberExpression)
+				&&(firstValue instanceof NumberResult)
+				&&(secondValue instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetweenInclusive((NumberResult) firstValue, (NumberResult) secondValue);
-		} else if (genericExpression instanceof DateExpression) {
+		} else if ((genericExpression instanceof DateExpression)
+				&&(firstValue instanceof DateResult)
+				&&(secondValue instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetweenInclusive((DateResult) firstValue, (DateResult) secondValue);
 		}

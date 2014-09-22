@@ -15,10 +15,8 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -35,23 +33,12 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBBetweenOperator extends DBOperator{
     public static final long serialVersionUID = 1L;
-
-//    private final QueryableDatatype firstValue;
-//    private final QueryableDatatype secondValue;
     
     public DBBetweenOperator(DBExpression lowValue, DBExpression highValue){
         super();
         this.firstValue = lowValue==null?lowValue:lowValue.copy();
         this.secondValue = highValue==null?highValue:highValue.copy();
     }
-    
-//    @Override
-//    public String generateWhereLine(DBDatabase db, String columnName) {
-//        String lowerSQLValue = firstValue.toSQLString(db);
-//        String upperSQLValue = secondValue.toSQLString(db);
-//        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
-//        return beginWhereLine + (invertOperator? " not(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
-//    }
 
     @Override
     public DBOperator getInverseOperator() {
@@ -72,11 +59,31 @@ public class DBBetweenOperator extends DBOperator{
 		BooleanExpression betweenOp = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			betweenOp = stringExpression.bracket().isBetween((StringResult) firstValue, (StringResult) secondValue);
-		} else if (genericExpression instanceof NumberExpression) {
+			StringResult firstStringExpr = null;
+			StringResult secondStringExpr = null;
+			if (firstValue instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) firstValue;
+				firstStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (firstValue instanceof StringResult) {
+				firstStringExpr = (StringResult) firstValue;
+			}
+			if (secondValue instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) secondValue;
+				secondStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (secondValue instanceof StringResult) {
+				secondStringExpr = (StringResult) secondValue;
+			}
+			if (firstStringExpr != null && secondStringExpr != null) {
+				betweenOp = stringExpression.bracket().isBetween(firstStringExpr, secondStringExpr);
+			}
+		} else if ((genericExpression instanceof NumberExpression)
+				&&(firstValue instanceof NumberResult)
+				&&(secondValue instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetween((NumberResult) firstValue, (NumberResult) secondValue);
-		} else if (genericExpression instanceof DateExpression) {
+		} else if ((genericExpression instanceof DateExpression)
+				&&(firstValue instanceof DateResult)
+				&&(secondValue instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetween((DateResult) firstValue, (DateResult) secondValue);
 		}
