@@ -19,12 +19,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanResult;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.DateExpression;
-import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.expressions.StringResult;
 
 public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 
@@ -43,7 +39,11 @@ public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof BooleanExpression) {
 			BooleanExpression expr = (BooleanExpression) genericExpression;
-			op = expr.is((BooleanResult) firstValue);
+			if (firstValue instanceof BooleanResult) {
+				op = expr.is((BooleanResult) firstValue);
+			}else if (firstValue instanceof NumberResult) {
+				op = expr.is(new NumberExpression((NumberResult) firstValue).convertToBits().is(1));
+			}
 		}
 		return this.invertOperator ? op.not() : op;
 	}

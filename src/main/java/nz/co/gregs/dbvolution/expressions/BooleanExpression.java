@@ -185,6 +185,20 @@ public class BooleanExpression implements BooleanResult {
 		});
 	}
 
+	public BooleanExpression convertToInteger() {
+		return new BooleanExpression(new DBUnaryBinaryFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return super.toSQLString(db); 
+			}
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return db.getDefinition().getNegationFunctionName();
+			}
+		});
+	}
+
 	/**
 	 * Returns FALSE if this expression is TRUE, or TRUE if it is FALSE.
 	 *

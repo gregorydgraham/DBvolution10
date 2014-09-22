@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -49,6 +50,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " BYTEA ";
 		} else if (qdt instanceof DBLargeObject) {
 			return " BYTEA ";
+		} else if (qdt instanceof DBBoolean) {
+			return " BOOLEAN ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -72,6 +75,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doBitsToIntegerTransform(String columnName) {
 		return columnName + "::integer";
+	}
+
+	@Override
+	public String doIntegerToBitTransform(String columnName) {
+		return columnName + "::bit";
 	}
 
 	@Override
@@ -128,4 +136,10 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String doAddYearsTransform(String dateValue, String numberOfWeeks) {
 		return "("+dateValue+"+ ("+numberOfWeeks+"*INTERVAL '1 YEAR' ))";
 	}
+
+	@Override
+	public String doBooleanValueTransform(Boolean boolValue) {
+		return "" + (boolValue ? 1 : 0) + "::bool";
+	}
+
 }

@@ -117,7 +117,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 		DBDefinition defn = db.getDefinition();
 		if (getLiteralValue() instanceof Boolean) {
 			Boolean boolValue = (Boolean) getLiteralValue();
-			return defn.beginNumberValue() + (boolValue ? 1 : 0) + defn.endNumberValue();
+			return defn.doBooleanValueTransform(boolValue);
+//			return defn.beginNumberValue() + (boolValue ? 1 : 0) + defn.endNumberValue();
 		}
 		return defn.getNull();
 	}

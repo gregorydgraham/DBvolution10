@@ -83,7 +83,7 @@ public class DateExpressionTest extends AbstractTest {
 		marq.creationDate.permittedRangeInclusive(
 				DateExpression.currentDateTime().addSeconds(-10), 
 				DateExpression.currentDateTime().addSeconds(+10));
-		got = database.get(marq);
+		got = database.getDBTable(marq).getAllRows();
         database.print(got);
 		Assert.assertThat(got.size(), is(1));
 	}

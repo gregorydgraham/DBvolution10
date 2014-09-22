@@ -1480,6 +1480,20 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Transforms a integer expression into an bit expression.
+	 *
+	 * <p>
+	 * Used to allow comparison of integer columns in some databases.
+	 *
+	 * @param bitExpression
+	 * @return the transformation necessary to transform bitExpression into an
+	 * integer expression in the SQL.
+	 */
+	public String doIntegerToBitTransform(String bitExpression) {
+		return bitExpression;
+	}
+
+	/**
 	 * Returns the suffix added to a column definition to support
 	 * auto-incrementing a column.
 	 *
@@ -1978,5 +1992,9 @@ public abstract class DBDefinition {
 
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
 		return "DATE_ADD("+dateValue+", INTERVAL '"+numberOfYears+"' YEAR )";
+	}
+
+	public String doBooleanValueTransform(Boolean boolValue) {
+		return beginNumberValue() + (boolValue ? 1 : 0) + endNumberValue();
 	}
 }
