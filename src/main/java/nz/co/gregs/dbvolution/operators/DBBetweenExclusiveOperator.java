@@ -44,14 +44,6 @@ public class DBBetweenExclusiveOperator extends DBOperator {
 		highest = highValue == null ? highValue : highValue.copy();
 	}
 
-//	@Override
-//	public String generateWhereLine(DBDatabase db, String columnName) {
-//		String lowerSQLValue = firstValue.toSQLString(db);
-//		String upperSQLValue = secondValue.toSQLString(db);
-//		String beginWhereLine = "";
-//		return beginWhereLine + (invertOperator ? " not(" : "(") + columnName + " > " + lowerSQLValue + " and " + columnName + " < " + upperSQLValue + ")";
-//	}
-
 	@Override
 	public DBOperator getInverseOperator() {
 		throw new InappropriateRelationshipOperator(this);
@@ -71,11 +63,31 @@ public class DBBetweenExclusiveOperator extends DBOperator {
 		BooleanExpression betweenOp = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			betweenOp = stringExpression.bracket().isBetweenExclusive((StringResult) firstValue, (StringResult) secondValue);
-		} else if (genericExpression instanceof NumberExpression) {
+			StringResult firstStringExpr = null;
+			StringResult secondStringExpr = null;
+			if (firstValue instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) firstValue;
+				firstStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (firstValue instanceof StringResult) {
+				firstStringExpr = (StringResult) firstValue;
+			}
+			if (secondValue instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) secondValue;
+				secondStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (secondValue instanceof StringResult) {
+				secondStringExpr = (StringResult) secondValue;
+			}
+			if (firstStringExpr != null && secondStringExpr != null) {
+				betweenOp = stringExpression.bracket().isBetweenExclusive(firstStringExpr, secondStringExpr);
+			}
+		} else if ((genericExpression instanceof NumberExpression)
+				&&(firstValue instanceof NumberResult)
+				&&(secondValue instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetweenExclusive((NumberResult) firstValue, (NumberResult) secondValue);
-		} else if (genericExpression instanceof DateExpression) {
+		} else if ((genericExpression instanceof DateExpression)
+				&&(firstValue instanceof DateResult)
+				&&(secondValue instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetweenExclusive((DateResult) firstValue, (DateResult) secondValue);
 		}

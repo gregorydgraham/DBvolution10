@@ -36,8 +36,6 @@ public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 
 	public static final long serialVersionUID = 1L;
 
-//    private final QueryableDatatype firstValue;
-//    private final QueryableDatatype secondValue;
 	public DBBetweenInclusiveExclusiveOperator(DBExpression lowValue, DBExpression highValue) {
 		super();
 		this.firstValue = lowValue == null ? lowValue : lowValue.copy();
