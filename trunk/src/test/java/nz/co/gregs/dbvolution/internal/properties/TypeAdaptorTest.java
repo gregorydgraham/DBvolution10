@@ -147,7 +147,7 @@ public class TypeAdaptorTest {
         for(String clause: whereClauses){
             allClauses += " and "+clause;
         }
-        assertThat(allClauses, matchesRegex(".*between 25 and 3000.*"));
+        assertThat(allClauses, matchesRegex(".*>.*25.*<=.*3000.*"));
         assertThat(rows.size(), is(2));
     }
 
@@ -214,7 +214,7 @@ public class TypeAdaptorTest {
 
             @Override
             public Long toDatabaseValue(String objectValue) {
-                return (objectValue == null) ? null : Long.parseLong(objectValue);
+                return (objectValue == null) ? null : ("".equals(objectValue)) ? null : Long.parseLong(objectValue);
             }
         }
 
@@ -224,7 +224,7 @@ public class TypeAdaptorTest {
 
         @DBColumn
         @DBAdaptType(value = MyTypeAdaptor.class, type = DBInteger.class)
-        public String year;
+        public String year = new String();
     }
 
     @DBTableName("Customer")

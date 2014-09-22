@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 
@@ -53,8 +54,9 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 		for (PropertyWrapper prop : row.getPropertyWrappers()) {
 			QueryableDatatype qdt = prop.getQueryableDatatype();
 			if (qdt.isNull()) {
-				DBIsNullOperator isNullOp = new DBIsNullOperator();
-				sql += isNullOp.generateWhereLine(db, prop.columnName());
+				sql+=defn.beginAndLine()+BooleanExpression.isNull(row.column(qdt)).toSQLString(db);
+//				DBIsNullOperator isNullOp = new DBIsNullOperator();
+//				sql += isNullOp.generateWhereLine(db, prop.columnName());
 			} else {
 				sql = sql
 						+ defn.beginWhereClauseLine()

@@ -19,6 +19,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -44,11 +45,11 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class StringColumn extends StringExpression implements ColumnProvider {
 
-    private AbstractColumn column;
-    
-    private StringColumn(){
-        
-    }
+	private AbstractColumn column;
+
+	private StringColumn() {
+
+	}
 
 	/**
 	 * Create a StringColumn for the supplied field of the supplied row
@@ -56,9 +57,9 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	 * @param row
 	 * @param field
 	 */
-    public StringColumn(RowDefinition row, String field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	public StringColumn(RowDefinition row, String field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
 	/**
 	 * Create a StringColumn for the supplied field of the supplied row
@@ -66,36 +67,51 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	 * @param row
 	 * @param field
 	 */
-    public StringColumn(RowDefinition row, DBString field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	public StringColumn(RowDefinition row, DBString field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
-    }
+	/**
+	 * Create a StringColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
+	public StringColumn(RowDefinition row, DBStringEnum<?> field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    @Override
-    public synchronized StringColumn copy() {
-        StringColumn newInstance;
-        try {
-            newInstance = this.getClass().newInstance();
-            newInstance.column = column;
-            return newInstance;
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return column.toSQLString(db);
+	}
 
-    @Override
-    public AbstractColumn getColumn() {
-        return column;
-    }
+	@Override
+	public synchronized StringColumn copy() {
+		StringColumn newInstance;
+		try {
+			newInstance = this.getClass().newInstance();
+			newInstance.column = column;
+			return newInstance;
+		} catch (InstantiationException ex) {
+			throw new RuntimeException(ex);
+		} catch (IllegalAccessException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
-    @Override
-    public Set<DBRow> getTablesInvolved() {
-        return column.getTablesInvolved();
-    }
+	@Override
+	public AbstractColumn getColumn() {
+		return column;
+	}
+
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		return column.getTablesInvolved();
+	}
+
+	@Override
+	public void setUseTableAlias(boolean useTableAlias) {
+		this.column.setUseTableAlias(useTableAlias);
+	}
 }

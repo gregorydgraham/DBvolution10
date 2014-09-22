@@ -15,86 +15,135 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.DBTable;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
+ * This operator exists but is currently unsupported.
  *
  * @author Gregory Graham
- * @param <E>
  */
-public class DBExistsOperator<E extends DBRow> extends DBOperator {
+public class DBExistsOperator extends DBOperator {
 
-    public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1L;
 
-    E tableRow;
-    private final String referencedColumnName;
+	DBRow innerTable;
+	Object innerField;
 
-    /**
-     * Creates an exists operator on the given table row instance and column
-     * identified by the given property's object reference (field or method).
-     *
-     * <p>
-     * For example the following code snippet will create an exists operator on
-     * the uid column:
-     * <pre>
-     * Customer customer = ...;
-     * new DBExistsOperator(customer, customer.uid);
-     * </pre>
-     *
-     * <p>
-     * Requires that {@literal qdtOfTheRow} is from theliteralode tableRow}
-     * instance for this to work.
-     *
-     * @param tableRow
-     * @param qdtOfTheRow
-     * @throws IncorrectRowProviderInstanceSuppliedException if the
-     * {@code qdtOfTheRow} is not from the {@code tableRow} instance
-     */
-    public DBExistsOperator(E tableRow, Object qdtOfTheRow) throws IncorrectRowProviderInstanceSuppliedException {
-        this.tableRow = DBRow.copyDBRow(tableRow);
-        PropertyWrapper qdtField = tableRow.getPropertyWrapperOf(qdtOfTheRow);
-        if (qdtField == null) {
-            throw new IncorrectRowProviderInstanceSuppliedException(tableRow, qdtOfTheRow);
-        }
-        this.referencedColumnName = qdtField.columnName();
-    }
+	/**
+	 * Creates an exists operator on the given table row instance and column
+	 * identified by the given property's object reference (field or method).
+	 *
+	 * <p>
+	 * For example the following code snippet will create an exists operator on
+	 * the uid column:
+	 * <pre>
+	 * Customer customer = ...;
+	 * new DBExistsOperator(customer, customer.uid);
+	 * </pre>
+	 *
+	 * <p>
+	 * Requires that {@literal qdtOfTheRow} is from theliteralode innerTable}
+	 * instance for this to work.
+	 *
+	 * @param tableRow
+	 * @param qdtOfTheRow
+	 * @throws IncorrectRowProviderInstanceSuppliedException if the
+	 * {@code qdtOfTheRow} is not from the {@code innerTable} instance
+	 */
+	public DBExistsOperator(DBRow tableRow, Object qdtOfTheRow) throws IncorrectRowProviderInstanceSuppliedException {
+		this.innerTable = tableRow;
+		innerField = qdtOfTheRow;
+		if (innerField == null) {
+			throw new IncorrectRowProviderInstanceSuppliedException(tableRow, qdtOfTheRow);
+		}
+	}
+	
+	@Override
+	public DBOperator getInverseOperator() {
+		throw new InappropriateRelationshipOperator(this);
+	}
 
-    @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-        DBDefinition defn = database.getDefinition();
-        DBTable<E> table = DBTable.getInstance(database, tableRow);
-        String subSelect = "";
-        try {
-            table.setRawSQL(defn.beginWhereClauseLine() + columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
-            subSelect = table.getSQLForQuery().replace(";", "");
-//            subSelect = table.getSQLSelectAndFromForQuery() + table.getSQLWhereClauseWithExampleAndRawSQL(tableRow, defn.beginConditionClauseLine()+ columnName + defn.getEqualsComparator() + defn.formatColumnName(referencedColumnName));
-        } catch (SQLException ex) {
-            throw new RuntimeException("Error In DBExistsOperator", ex);
-        }
+	@Override
+	public DBExistsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		return this;
+	}
 
-        return (invertOperator ? " not " : "") + " exists (" + subSelect + ") ";
-    }
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		if (column instanceof ColumnProvider) {
+			ColumnProvider columnProvider = (ColumnProvider) column;
+			PropertyWrapper outerProp = columnProvider.getColumn().getPropertyWrapper();
+			RowDefinition outerTable = outerProp.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
+			if (outerTable instanceof DBRow) {
+				DBRow innerRow = (DBRow) outerTable;
+				Object outerQDT = outerProp.getQueryableDatatype();
+				return new ExistsExpression(innerRow, outerQDT, innerTable, innerField);
+			}
+		}
+		return BooleanExpression.trueExpression();
+	}
 
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        throw new InappropriateRelationshipOperator(this);
-//    }
+	public class ExistsExpression extends BooleanExpression {
 
-    @Override
-    public DBOperator getInverseOperator() {
-        throw new InappropriateRelationshipOperator(this);
-    }
+		private DBRow outerTable = null;
+		private DBRow innerTable = null;
 
-    @Override
-    public DBExistsOperator<E> copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-        return this;
-    }
+		protected ExistsExpression() {
+		}
+
+		public ExistsExpression(DBRow outerTable, Object outerQDT, DBRow innerTable, Object innerQDT) {
+			this.outerTable = outerTable;
+			this.innerTable = DBRow.copyDBRow(innerTable);
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			DBRow outerCopy = DBRow.copyDBRow(outerTable);
+			DBRow innerCopy = DBRow.copyDBRow(innerTable);
+			outerCopy.removeExistsOperators();
+			innerCopy.removeExistsOperators();
+			outerCopy.setReturnFields(outerCopy.getPrimaryKey());
+			innerCopy.setReturnFields();
+			DBQuery dbQuery = db.getDBQuery(outerCopy, innerCopy);
+			String sql = dbQuery.getSQLForQuery().replaceAll(";", "");
+			return " EXISTS (" + sql + ")";
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public ExistsExpression copy() {
+			ExistsExpression clone;
+			try {
+				clone = (ExistsExpression) this.clone();
+			} catch (CloneNotSupportedException ex) {
+				throw new RuntimeException(ex);
+			}
+			return clone;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			Set<DBRow> returnSet = new HashSet<DBRow>();
+			returnSet.add(outerTable);
+			returnSet.add(innerTable);
+			return returnSet;
+		}
+	}
 }

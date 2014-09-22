@@ -250,10 +250,8 @@ public class DBReport extends RowDefinition {
 	public DBReport setSortOrder(QueryableDatatype... columns) {
 		List<ColumnProvider> columnProviders = new ArrayList<ColumnProvider>();
 		for (QueryableDatatype qdt : columns) {
-			final DBExpression expr = this.column(qdt);
-			if (expr instanceof ColumnProvider) {
-				columnProviders.add((ColumnProvider)expr);
-			}
+			final ColumnProvider expr = this.column(qdt);
+			columnProviders.add(expr);
 		}
 		sortColumns = columnProviders.toArray(new ColumnProvider[]{});
 		return this;

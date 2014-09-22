@@ -18,6 +18,8 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
@@ -38,9 +40,14 @@ abstract class DBMetaOperator extends DBOperator{
 //        return operator.generateRelationship(database, columnName, otherColumnName);
 //    }
 
+//    @Override
+//    public String generateWhereLine(DBDatabase database, String columnName) {
+//        return operator.generateWhereLine(database, columnName);
+//    }
+
     @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-        return operator.generateWhereLine(database, columnName);
+    public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column){
+        return operator.generateWhereExpression(db, column);
     }
 
     @Override

@@ -69,19 +69,19 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(0));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateTime().addSeconds(-10).addHours(-11), null);
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateTime().addSeconds(-10), null);
 		database.print(DBReport.getAllRows(database, new CurrentDateReport()));
 		got = database.get(marq);
         database.print(got);
 		Assert.assertThat(got.size(), is(1));
 
-		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDateTime().addSeconds(-10).addHours(-12));
+		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDateTime().addSeconds(-10));
 		got = database.get(marq);
         database.print(got);
 		Assert.assertThat(got.size(), is(21));
 
 		marq.creationDate.permittedRangeInclusive(
-				DateExpression.currentDateTime().addSeconds(-10).addHours(-13), 
+				DateExpression.currentDateTime().addSeconds(-10), 
 				DateExpression.currentDateTime().addSeconds(+10));
 		got = database.get(marq);
         database.print(got);

@@ -32,8 +32,8 @@ import nz.co.gregs.dbvolution.databases.H2DB;
  */
 public class H2DBDefinition extends DBDefinition {
 
-	private final String dateFormatStr = "yyyy-M-d hh:mm:ss";
-	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
+	private final String dateFormatStr = "yyyy-M-d hh:mm:ss Z";
+	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss Z";
 	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
 	private final SimpleDateFormat timeZoneOnly = new SimpleDateFormat("Z");
 
@@ -88,5 +88,18 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
 		return "DATEADD('year',"+numberOfYears+","+dateValue+")";
+	}
+
+	/**
+	 * Defines the function used to get the current timestamp from the database.
+	 *
+	 * @return the H@ implementation subtracts the time zone from the current timestamp
+	 */
+	@Override
+	public String getCurrentTimestampFunction() {
+		SimpleDateFormat format = new SimpleDateFormat("Z");
+		long rawTimezone = Long.parseLong(format.format(new Date()).replaceAll("\\+", ""));
+		long timezone = rawTimezone/100+((rawTimezone%100)*(100/60));
+		return " DATEADD('hour',-1* "+timezone+",CURRENT_TIMESTAMP )";
 	}
 }

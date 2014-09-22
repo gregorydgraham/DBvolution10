@@ -133,14 +133,14 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		setLiteralValue(dateValue);
 	}
 
-	@Override
-	public String getWhereClause(DBDatabase db, String columnName) {
-		if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
-			throw new RuntimeException("DATE COLUMNS CAN'T USE \"LIKE\": " + columnName);
-		} else {
-			return super.getWhereClause(db, columnName);
-		}
-	}
+//	@Override
+//	public String getWhereClause(DBDatabase db, String columnName) {
+//		if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
+//			throw new RuntimeException("DATE COLUMNS CAN'T USE \"LIKE\": " + columnName);
+//		} else {
+//			return super.getWhereClause(db, columnName);
+//		}
+//	}
 
 	/**
 	 * Returns the set value of this DBDate as a Java Date instance.

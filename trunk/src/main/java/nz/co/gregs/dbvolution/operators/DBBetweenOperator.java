@@ -18,8 +18,16 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *
@@ -37,19 +45,12 @@ public class DBBetweenOperator extends DBOperator{
         this.secondValue = highValue==null?highValue:highValue.copy();
     }
     
-    @Override
-    public String generateWhereLine(DBDatabase db, String columnName) {
-//        lowValue.setDatabase(database);
-        String lowerSQLValue = firstValue.toSQLString(db);
-//        highValue.setDatabase(db);
-        String upperSQLValue = secondValue.toSQLString(db);
-        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
-        return beginWhereLine + (invertOperator? " not(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
-    }
-
 //    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        throw new InappropriateRelationshipOperator(this);
+//    public String generateWhereLine(DBDatabase db, String columnName) {
+//        String lowerSQLValue = firstValue.toSQLString(db);
+//        String upperSQLValue = secondValue.toSQLString(db);
+//        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
+//        return beginWhereLine + (invertOperator? " not(":"(")+columnName + " between " + lowerSQLValue + " and "+upperSQLValue+")";
 //    }
 
     @Override
@@ -64,4 +65,21 @@ public class DBBetweenOperator extends DBOperator{
     	op.includeNulls = this.includeNulls;
     	return op;
     }
+
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		BooleanExpression betweenOp = BooleanExpression.trueExpression();
+		if (genericExpression instanceof StringExpression) {
+			StringExpression stringExpression = (StringExpression) genericExpression;
+			betweenOp = stringExpression.bracket().isBetween((StringResult) firstValue, (StringResult) secondValue);
+		} else if (genericExpression instanceof NumberExpression) {
+			NumberExpression numberExpression = (NumberExpression) genericExpression;
+			betweenOp = numberExpression.isBetween((NumberResult) firstValue, (NumberResult) secondValue);
+		} else if (genericExpression instanceof DateExpression) {
+			DateExpression dateExpression = (DateExpression) genericExpression;
+			betweenOp = dateExpression.isBetween((DateResult) firstValue, (DateResult) secondValue);
+		}
+		return this.invertOperator ? betweenOp.not() : betweenOp;
+	}
 }

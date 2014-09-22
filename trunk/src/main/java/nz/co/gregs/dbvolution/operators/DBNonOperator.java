@@ -17,15 +17,17 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 public class DBNonOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
 
-    @Override
-    public String generateWhereLine(DBDatabase database, String columnName) {
-        return "";
-    }
+//    @Override
+//    public String generateWhereLine(DBDatabase database, String columnName) {
+//        return "";
+//    }
 
 //    @Override
 //    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
@@ -41,4 +43,9 @@ public class DBNonOperator extends DBOperator {
     public DBNonOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	return this;
     }
+
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		return BooleanExpression.trueExpression();
+	}
 }

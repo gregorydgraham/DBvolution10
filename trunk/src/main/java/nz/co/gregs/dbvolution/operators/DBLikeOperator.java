@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
@@ -27,52 +28,74 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
  */
 public class DBLikeOperator extends DBOperator {
 
-    public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1L;
 //    private final QueryableDatatype firstValue;
+	private StringExpression likeableValue;
 
-    public DBLikeOperator(String likeableValue) {
-        super();
-        this.firstValue = likeableValue == null ? null : new StringExpression(likeableValue);
-    }
+	public DBLikeOperator(String likeableValue) {
+		super();
+		this.likeableValue = likeableValue == null ? null : new StringExpression(likeableValue);
+	}
 
-    public DBLikeOperator(DBExpression likeableValue) {
-        super();
-        this.firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
-    }
+	public DBLikeOperator(StringExpression likeableValue) {
+		super();
+		this.likeableValue = likeableValue == null ? likeableValue : likeableValue.copy();
+	}
 
-    public DBLikeOperator() {
-        super();
-        this.firstValue = null;
-    }
+	public DBLikeOperator() {
+		super();
+		this.firstValue = null;
+	}
 
-    @Override
-    public String generateWhereLine(DBDatabase db, String columnName) {
+//    @Override
+	public String generateWhereLine(DBDatabase db, String columnName) {
 //        likeableValue.setDatabase(db);
-        DBDefinition defn = db.getDefinition();
-        return "("+ defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
-    }
+		DBDefinition defn = db.getDefinition();
+		return "(" + defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
+	}
 
-    private String getOperator() {
-        return invertOperator?" not like ":" like ";
-    }
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		BooleanExpression returnExpression = BooleanExpression.trueExpression();
+		if (genericExpression instanceof StringExpression) {
+			StringExpression strExpr = (StringExpression) genericExpression;
+			returnExpression = strExpr.bracket().isLike(getLikeableValue());
+		}
+		if (invertOperator) {
+			return returnExpression.not();
+		} else {
+			return returnExpression;
+		}
+	}
+
+	private String getOperator() {
+		return invertOperator ? " not like " : " like ";
+	}
 
 //    @Override
 //    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
 //        DBDefinition defn = database.getDefinition();
 //        return (invertOperator ? " not(" : "(") + defn.formatColumnName(columnName) + getOperator() + otherColumnName + ")";
 //    }
+	@Override
+	public DBOperator getInverseOperator() {
+		return this;
+	}
 
-    @Override
-    public DBOperator getInverseOperator() {
-        return this;
-    }
+	@Override
+	public DBLikeOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBLikeOperator op;
+		op = new DBLikeOperator((StringExpression) typeAdaptor.convert(getLikeableValue()));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
-    
-    @Override
-    public DBLikeOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBLikeOperator op = new DBLikeOperator(typeAdaptor.convert(firstValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	/**
+	 * @return the likeableValue
+	 */
+	protected StringExpression getLikeableValue() {
+		return likeableValue;
+	}
 }

@@ -16,7 +16,6 @@
 
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 
@@ -28,7 +27,7 @@ public class DBPermittedPatternOperator extends DBLikeOperator {
         super(new StringExpression(likeableValue));
     }
 
-    public DBPermittedPatternOperator(DBExpression likeableValue) {
+    public DBPermittedPatternOperator(StringExpression likeableValue) {
         super(likeableValue);
     }
 

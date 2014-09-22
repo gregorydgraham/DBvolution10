@@ -75,4 +75,9 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
 	public Set<DBRow> getTablesInvolved() {
 		return column.getTablesInvolved();
 	}
+
+	@Override
+	public void setUseTableAlias(boolean useTableAlias) {
+		this.column.setUseTableAlias(useTableAlias);
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Gregory Graham.
+ * Copyright 2014 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package nz.co.gregs.dbvolution.columns;
+package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Interface to indicate that this object can provide a column.
- * 
  *
- * @author Gregory Graham
+ * @author gregory.graham
  */
-public interface ColumnProvider {
-    
-	/**
-	 * Returns the AbstractColumn from this ColumnProvider.
-	 *
-	 * @return the column that this provider supplies.
-	 */
-	public AbstractColumn getColumn();
-
-	public void setUseTableAlias(boolean useTableAlias);
-
+public interface RangeComparable {
+	
 }

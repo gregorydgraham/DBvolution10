@@ -89,7 +89,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 								startsWith("2013-04-02")
 						)
 				);
-				foundStrings.add((dBDate.toString().substring(0,10)));
+				foundStrings.add((dBDate.toString().substring(0, 10)));
 			}
 		}
 		Assert.assertThat(foundStrings.size(), is(2));
@@ -157,6 +157,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		final CarCompany carCo = new CarCompany();
 		carCo.name.permittedValues("OTHER");
 		final Marque marque = new Marque();
+		marque.individualAllocationsAllowed.setSortOrderAscending();
 		List<DBQueryRow> distinctCombinationsOfColumnValues
 				= database
 				.getDBQuery(carCo, marque)
@@ -166,9 +167,9 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(3));
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(marque), nullValue());
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque), notNullValue());
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque).individualAllocationsAllowed.stringValue(), is("Y"));
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque), notNullValue());
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque).individualAllocationsAllowed.stringValue(), is(""));
+		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque), notNullValue());
+		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque).individualAllocationsAllowed.stringValue(), is("Y"));
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(carCo).name.stringValue(), is("OTHER"));
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(carCo).name.stringValue(), is("OTHER"));
 		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(carCo).name.stringValue(), is("OTHER"));

@@ -47,6 +47,7 @@ public class AbstractColumn implements DBExpression {
 	private final PropertyWrapper propertyWrapper;
 	private final RowDefinition dbrow;
 	private final Object field;
+	private boolean useTableAlias = true;
 
 	/**
 	 * Creates an AbstractColumn representing a table and column.
@@ -71,14 +72,21 @@ public class AbstractColumn implements DBExpression {
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		return db.getDefinition().formatTableAliasAndColumnName(this.getDBRow(), propertyWrapper.columnName());
+		RowDefinition rowDefn = this.getRowDefinition();
+		if (useTableAlias) {
+			return db.getDefinition().formatTableAliasAndColumnName(rowDefn, propertyWrapper.columnName());
+		} else if (rowDefn instanceof DBRow) {
+			DBRow dbRow = (DBRow) rowDefn;
+			return db.getDefinition().formatTableAndColumnName(dbRow, propertyWrapper.columnName());
+		}
+		return "";
 	}
 
 	@Override
 	public AbstractColumn copy() {
 		try {
-			Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(getDBRow().getClass(), getField().getClass());
-			AbstractColumn newInstance = constructor.newInstance(getDBRow(), getField());
+			Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(RowDefinition.class, Object.class);
+			AbstractColumn newInstance = constructor.newInstance(getRowDefinition(), getField());
 			return newInstance;
 		} catch (NoSuchMethodException ex) {
 			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
@@ -107,12 +115,12 @@ public class AbstractColumn implements DBExpression {
 	 *
 	 * <p>
 	 * Probably this should be implemented as:<br>
-	 * public MyValue asValue(){return new MyValue(this);}
+	 * public MyValue asExpression(){return new MyValue(this);}
 	 *
 	 * @return this instance as a StringValue, NumberValue, DateValue, or
 	 * LargeObjectValue as appropriate
 	 */
-	public DBExpression asValue() {
+	public DBExpression asExpression() {
 		return this;
 	}
 
@@ -129,8 +137,8 @@ public class AbstractColumn implements DBExpression {
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		HashSet<DBRow> hashSet = new HashSet<DBRow>();
-		if (DBRow.class.isAssignableFrom(getDBRow().getClass())) {
-			hashSet.add((DBRow) getDBRow());
+		if (DBRow.class.isAssignableFrom(getRowDefinition().getClass())) {
+			hashSet.add((DBRow) getRowDefinition());
 		}
 		return hashSet;
 	}
@@ -138,7 +146,7 @@ public class AbstractColumn implements DBExpression {
 	/**
 	 * @return the dbrow
 	 */
-	protected RowDefinition getDBRow() {
+	protected RowDefinition getRowDefinition() {
 		return dbrow;
 	}
 
@@ -147,5 +155,19 @@ public class AbstractColumn implements DBExpression {
 	 */
 	protected Object getField() {
 		return field;
+	}
+
+	/**
+	 * @return the useTableAlias
+	 */
+	protected boolean isUseTableAlias() {
+		return useTableAlias;
+	}
+
+	/**
+	 * @param useTableAlias the useTableAlias to set
+	 */
+	protected void setUseTableAlias(boolean useTableAlias) {
+		this.useTableAlias = useTableAlias;
 	}
 }

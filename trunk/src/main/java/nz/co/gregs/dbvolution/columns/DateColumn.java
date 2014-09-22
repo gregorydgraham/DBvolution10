@@ -99,4 +99,9 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	public Set<DBRow> getTablesInvolved() {
 		return column.getTablesInvolved();
 	}
+
+	@Override
+	public void setUseTableAlias(boolean useTableAlias) {
+		this.column.setUseTableAlias(useTableAlias);
+	}
 }

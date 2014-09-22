@@ -85,4 +85,9 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	public Set<DBRow> getTablesInvolved() {
 		return column.getTablesInvolved();
 	}
+
+	@Override
+	public void setUseTableAlias(boolean useTableAlias) {
+		this.column.setUseTableAlias(useTableAlias);
+	}
 }

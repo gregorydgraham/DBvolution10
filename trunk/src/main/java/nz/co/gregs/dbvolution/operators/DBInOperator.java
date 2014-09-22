@@ -16,12 +16,18 @@
 package nz.co.gregs.dbvolution.operators;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *
@@ -30,74 +36,33 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class DBInOperator extends DBOperator {
 
 	public static final long serialVersionUID = 1L;
-	protected final List<QueryableDatatype> listOfPossibleValues = new ArrayList<QueryableDatatype>();
+	protected final List<DBExpression> listOfPossibleValues = new ArrayList<DBExpression>();
+	protected final List<StringResult> listOfPossibleStrings = new ArrayList<StringResult>();
+	protected final ArrayList<NumberResult> listOfPossibleNumbers = new ArrayList<NumberResult>();
+	protected final ArrayList<DateResult> listOfPossibleDates = new ArrayList<DateResult>();
 
-	public DBInOperator(List<QueryableDatatype> listOfPossibleValues) {
+	public DBInOperator(Collection<DBExpression> listOfPossibleValues) {
 		super();
-		for (QueryableDatatype qdt : listOfPossibleValues) {
-			this.listOfPossibleValues.add(qdt == null ? null : qdt.copy());
-		}
-	}
-
-	public DBInOperator(Set<QueryableDatatype> listOfPossibleValues) {
-		super();
-		for (QueryableDatatype qdt : listOfPossibleValues) {
-			this.listOfPossibleValues.add(qdt == null ? null : qdt.copy());
-		}
-	}
-
-	public DBInOperator(QueryableDatatype[] listOfPossibleValues) {
-		super();
-		for (QueryableDatatype qdt : listOfPossibleValues) {
-			this.listOfPossibleValues.add(qdt == null ? null : qdt.copy());
+		for (DBExpression qdt : listOfPossibleValues) {
+			final DBExpression newQDT = qdt == null ? null : qdt.copy();
+			this.listOfPossibleValues.add(newQDT);
+			if (newQDT == null) {
+				listOfPossibleStrings.add(null);
+				listOfPossibleNumbers.add(null);
+				listOfPossibleDates.add(null);
+			} else if (newQDT instanceof StringResult) {
+				listOfPossibleStrings.add((StringResult) newQDT);
+			} else if ((newQDT instanceof NumberResult)) {
+				listOfPossibleNumbers.add((NumberResult) newQDT);
+			} else if ((newQDT instanceof DateResult)) {
+				listOfPossibleDates.add((DateResult) newQDT);
+			}
 		}
 	}
 
 	public DBInOperator() {
 		super();
 	}
-
-	@Override
-	public String generateWhereLine(DBDatabase db, String columnName) {
-		DBDefinition defn = db.getDefinition();
-		StringBuilder whereClause = new StringBuilder();
-		if (listOfPossibleValues.isEmpty()) {
-			// prevent any rows from returning as an empty list means no rows can match
-			whereClause.append(defn.getFalseOperation());
-		} else {
-			whereClause.append(columnName);
-			whereClause.append(invertOperator ? getInverse() : getOperator());
-			String sep = "";
-			for (QueryableDatatype qdt : listOfPossibleValues) {
-				whereClause.append(sep).append(" ").append(qdt.toSQLString(db)).append(" ");
-				sep = ",";
-			}
-			if (this.includeNulls && defn.supportsDifferenceBetweenNullAndEmptyString()) {
-				whereClause.append(sep).append(" ").append(defn.getEmptyString()).append(" ");
-			}
-			whereClause.append(")");
-		}
-		if (this.includeNulls) {
-			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-			dbIsNullOperator.invertOperator(this.invertOperator);
-			return "(" + dbIsNullOperator.generateWhereLine(db, columnName) + (this.invertOperator ? defn.beginAndLine() : defn.beginOrLine()) + whereClause.toString() + ")";
-		} else {
-			return whereClause.toString();
-		}
-	}
-
-	protected String getOperator() {
-		return " in (";
-	}
-
-	protected String getInverse() {
-		return " not in (";
-	}
-
-//	@Override
-//	public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//		return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName + " ) ";
-//	}
 
 	@Override
 	public DBOperator getInverseOperator() {
@@ -115,7 +80,7 @@ public class DBInOperator extends DBOperator {
 				if (listOfPossibleValues.size() != otherIn.listOfPossibleValues.size()) {
 					return false;
 				} else {
-					for (QueryableDatatype qdt : listOfPossibleValues) {
+					for (DBExpression qdt : listOfPossibleValues) {
 						if (!otherIn.listOfPossibleValues.contains(qdt)) {
 							return false;
 						}
@@ -130,13 +95,30 @@ public class DBInOperator extends DBOperator {
 
 	@Override
 	public DBInOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-		List<QueryableDatatype> list = new ArrayList<QueryableDatatype>();
-		for (QueryableDatatype item : listOfPossibleValues) {
-			list.add((QueryableDatatype) typeAdaptor.convert(item));
+		ArrayList<DBExpression> list = new ArrayList<DBExpression>();
+		for (DBExpression item : listOfPossibleValues) {
+			list.add(typeAdaptor.convert(item));
 		}
 		DBInOperator op = new DBInOperator(list);
 		op.invertOperator = this.invertOperator;
 		op.includeNulls = this.includeNulls;
 		return op;
+	}
+
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		BooleanExpression op = BooleanExpression.trueExpression();
+		if (genericExpression instanceof StringExpression) {
+			StringExpression stringExpression = (StringExpression) genericExpression;
+			op = stringExpression.bracket().isIn(listOfPossibleStrings.toArray(new StringResult[]{}));
+		} else if (genericExpression instanceof NumberExpression) {
+			NumberExpression numberExpression = (NumberExpression) genericExpression;
+			op = numberExpression.isIn(listOfPossibleNumbers.toArray(new NumberResult[]{}));
+		} else if (genericExpression instanceof DateExpression) {
+			DateExpression dateExpression = (DateExpression) genericExpression;
+			op = dateExpression.isIn(listOfPossibleDates.toArray(new DateResult[]{}));
+		}
+		return this.invertOperator ? op.not() : op;
 	}
 }
