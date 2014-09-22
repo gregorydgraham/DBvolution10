@@ -955,6 +955,19 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Removes all fields of this DBRow from the query results.
+	 *
+	 * <p>
+	 * All fields will be removed and the returned rows will be effectively a
+	 * NULL row, however the DBRow's table will still be used in the query to
+	 * set conditions.
+	 *
+	 */
+	public final void setReturnFieldsToNone() {
+		setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
+	}
+
+	/**
 	 * Limits the returned columns by the specified properties (fields and/or
 	 * methods) given the properties object references.
 	 *
@@ -1639,7 +1652,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				QueryableDatatype qdt = prop.getQueryableDatatype();
 				DBOperator operator = qdt.getOperator();
 				if (operator != null) {
-					if (operator instanceof DBExistsOperator){
+					if (operator instanceof DBExistsOperator) {
 						qdt.setOperator(null);
 					}
 				}

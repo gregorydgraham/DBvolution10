@@ -115,7 +115,7 @@ public class DBExistsOperator extends DBOperator {
 			outerCopy.removeExistsOperators();
 			innerCopy.removeExistsOperators();
 			outerCopy.setReturnFields(outerCopy.getPrimaryKey());
-			innerCopy.setReturnFields();
+			innerCopy.setReturnFieldsToNone();
 			DBQuery dbQuery = db.getDBQuery(outerCopy, innerCopy);
 			String sql = dbQuery.getSQLForQuery().replaceAll(";", "");
 			return " EXISTS (" + sql + ")";

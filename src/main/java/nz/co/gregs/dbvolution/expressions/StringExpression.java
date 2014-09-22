@@ -43,7 +43,7 @@ public class StringExpression implements StringResult {
 
 	public StringExpression(String stringVariable) {
 		string1 = new DBString(stringVariable);
-		if (stringVariable == null) {
+		if (stringVariable == null||stringVariable.isEmpty()) {
 			nullProtectionRequired = true;
 		}
 	}
@@ -127,11 +127,6 @@ public class StringExpression implements StringResult {
 					public boolean getIncludesNull() {
 						return false;
 					}
-
-//					@Override
-//					public void setIncludesNull(boolean nullsAreIncluded) {
-//						;
-//					}
 				});
 	}
 
