@@ -102,32 +102,6 @@ public class NumberExpression implements NumberResult {
 				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
 			}
 		});
-//		return new StringExpression(new DBUnaryStringFunction(this) {
-//			@Override
-//			protected String afterValue(DBDatabase db) {
-//				return " ";
-//			}
-//
-//			@Override
-//			protected String beforeValue(DBDatabase db) {
-//				return " ''||";
-//			}
-//
-//			@Override
-//			String getFunctionName(DBDatabase db) {
-//				return "";
-//			}
-//
-//			@Override
-//			public boolean getIncludesNull() {
-//				return false;
-//			}
-//
-//			@Override
-//			public void setIncludesNull(boolean nullsAreIncluded) {
-//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//			}
-//		});
 	}
 
 	public StringExpression append(String string) {
@@ -1102,6 +1076,21 @@ public class NumberExpression implements NumberResult {
 				return ", 0) ";
 			}
 
+		});
+	}
+
+	public NumberExpression convertToBits() {
+		return new NumberExpression(new DBUnaryFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doIntegerToBitTransform(only.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
 		});
 	}
 

@@ -80,7 +80,7 @@ public abstract class AbstractTest {
 			h2DataSource.setUser("");
 			h2DataSource.setPassword("");
 			h2DataSource.setURL("jdbc:h2:~/dbvolutionTest");
-			databases.add(new Object[]{"H2DatSourceDB", new H2DB(h2DataSource)});
+			databases.add(new Object[]{"H2DataSourceDB", new H2DB(h2DataSource)});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
