@@ -103,7 +103,7 @@ public class DBTableGetTest extends AbstractTest {
     @Test
     public void testIsLiterallyNotWithNull() throws SQLException {
         Marque literalQuery = new Marque();
-        literalQuery.getIntIndividualAllocationsAllowed().excludedValues(null,"YES");
+        literalQuery.getIntIndividualAllocationsAllowed().excludedValues(null,"YES", "");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
         database.print(rowsByExample);
         Assert.assertThat(rowsByExample.size(), is(1));
@@ -183,13 +183,13 @@ public class DBTableGetTest extends AbstractTest {
         hummerQuery.individualAllocationsAllowed.permittedValues(null, "Y", "YES");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();
-        Assert.assertThat(rowsByExample.size(), is(22));
+        Assert.assertThat(rowsByExample.size(), is(3));
     }
 
     @Test
     public void testIsNotInWithNull() throws SQLException {
         Marque hummerQuery = new Marque();
-        hummerQuery.individualAllocationsAllowed.excludedValues(null, "YES");
+        hummerQuery.individualAllocationsAllowed.excludedValues(null, "YES", "");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();
 		database.print(rowsByExample);
@@ -344,7 +344,7 @@ public class DBTableGetTest extends AbstractTest {
 		myMarqueRow.auto_created.excludedValues((String)null);
 		myMarqueRow.isUsedForTAFROs.excludedValues((String)null);
 		myMarqueRow.reservationsAllowed.excludedValues((String)null);
-		myMarqueRow.statusClassID.excludedValues((Integer)null);
+		myMarqueRow.statusClassID.excludedValues((Number)null);
 		myMarqueRow.name.excludedValues((String)null);
 		myMarqueRow.uidMarque.excludedValues((Integer)null);
         myMarqueRow.setReturnFields(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);

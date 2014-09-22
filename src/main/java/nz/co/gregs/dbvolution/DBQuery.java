@@ -2132,9 +2132,9 @@ public class DBQuery {
 				if (thisQDT != null && fieldRow != null) {
 					fieldRow.addReturnFields(thisQDT);
 					distinctQuery.setBlankQueryAllowed(true);
-					final DBExpression column = fieldRow.column(fieldDefn.getQueryableDatatype(fieldRow));
+					final ColumnProvider column = fieldRow.column(fieldDefn.getQueryableDatatype(fieldRow));
 					distinctQuery.addToSortOrder(column);
-					distinctQuery.addGroupByColumn(fieldRow, column);
+					distinctQuery.addGroupByColumn(fieldRow, column.getColumn().asExpression());
 					returnList = distinctQuery.getAllRows();
 				} else {
 					throw new DBRuntimeException("Unable To Find Columns Specified");

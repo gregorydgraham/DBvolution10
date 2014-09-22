@@ -15,33 +15,23 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
  *
  * @author gregorygraham
  */
-public class DBLikeCaseInsensitiveOperator extends DBOperator {
+public class DBLikeCaseInsensitiveOperator extends DBLikeOperator {
 
     public static final long serialVersionUID = 1L;
-//    private final QueryableDatatype firstValue;
-
-    public DBLikeCaseInsensitiveOperator(DBExpression likeableValue) {
-        super();
-        firstValue = likeableValue == null ? likeableValue : likeableValue.copy();
-    }
-
-    public DBLikeCaseInsensitiveOperator() {
-        super();
-        firstValue = null;
-    }
 
     @Override
     public String generateWhereLine(DBDatabase db, String columnName) {
-//        likeableValue.setDatabase(db);
         if (db == null) {
             throw new RuntimeException("Database Cannot Be NULL: Please supply a proper DBDatabase instance.");
         } else if (firstValue.toSQLString(db) == null) {
@@ -62,22 +52,18 @@ public class DBLikeCaseInsensitiveOperator extends DBOperator {
         return " like ";
     }
 
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        DBDefinition defn = database.getDefinition();
-//        return (invertOperator ? " not(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(otherColumnName) + ")";
-//    }
-
     @Override
     public DBOperator getInverseOperator() {
         return this;
     }
 
-    @Override
-    public DBLikeCaseInsensitiveOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBLikeCaseInsensitiveOperator op = new DBLikeCaseInsensitiveOperator(typeAdaptor.convert(firstValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		if (genericExpression instanceof StringExpression){
+			StringExpression strExpr = (StringExpression)genericExpression;
+			return strExpr.bracket().isLikeIgnoreCase(getLikeableValue());
+		}
+		return BooleanExpression.trueExpression();
+	}
 }

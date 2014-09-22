@@ -13,43 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.operators;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDatatypeForObject;
-
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 public class DBBooleanPermittedValuesOperator extends DBPermittedValuesOperator {
 
 	public static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("unchecked")
-	public DBBooleanPermittedValuesOperator(Object... permitted) {
-		ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
+	public DBBooleanPermittedValuesOperator(Boolean permitted) {
+		BooleanExpression expr = null;
 		if (permitted == null) {
 			operator = new DBIsNullOperator();
 		} else {
-			for (Object obj : permitted) {
-				if (obj == null) {
-					this.includeNulls = true;
-				} else if (obj instanceof Collection) {
-					Collection<Object> myList = (Collection) obj;
-					for (Object obj1 : myList) {
-						qdts.add(getQueryableDatatypeForObject(obj1));
-					}
-				} else {
-					qdts.add(getQueryableDatatypeForObject(obj));
-				}
-			}
-			if (qdts.isEmpty()) {
-				operator = new DBIsNullOperator();
-			} else if (qdts.size() == 1) {
-				operator = new DBBitwiseEqualsOperator(qdts.get(0));
+			if (permitted == null) {
+				this.includeNulls = true;
 			} else {
-				operator = new DBInOperator(qdts);
+				expr = new BooleanExpression(permitted);
+			}
+			if (expr==null) {
+				operator = new DBIsNullOperator();
+			} else{
+				operator = new DBBitwiseEqualsOperator(expr);
 			}
 		}
 		operator.includeNulls = this.includeNulls;

@@ -107,9 +107,9 @@ public class DBDatabaseGetTest extends AbstractTest {
         Marque literalQuery = new Marque();
         literalQuery.getUidMarque().permittedValues(4893059, 4893090);
         List<Marque> gotMarques = database.get(literalQuery);
-        Assert.assertEquals(gotMarques.size(), 2);
-        Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().toSQLString(database));
-        Assert.assertEquals("" + 4893090, gotMarques.get(1).getPrimaryKey().toSQLString(database));
+        Assert.assertThat(gotMarques.size(), is(2));
+        Assert.assertThat(gotMarques.get(0).getPrimaryKey().toSQLString(database), is("" + 4893059));
+        Assert.assertThat(gotMarques.get(1).getPrimaryKey().toSQLString(database), is("" + 4893090));
     }
     
     @Test

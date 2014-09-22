@@ -27,8 +27,6 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerEnumTable.RecordType;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringEnumTable.StringEnumType;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DBEnumTest extends AbstractTest {
@@ -66,9 +64,9 @@ public class DBEnumTest extends AbstractTest {
 				RecordType.MOVEMENT_REQUEST_RECORD,
 				RecordType.SHIPPING_MANIFEST_RECORD);
 
-		String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
+		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
 		System.out.println(sqlFragment);
-		assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
+		assertThat(sqlFragment.toLowerCase(), containsString("c_5 in ( 2, 1)"));
 	}
 
 	@Test
@@ -78,9 +76,9 @@ public class DBEnumTest extends AbstractTest {
 				RecordType.MOVEMENT_REQUEST_RECORD.getCode(),
 				RecordType.SHIPPING_MANIFEST_RECORD.getCode());
 
-		String sqlFragment = rowExemplar.recordType.getWhereClause(database, "column");
+		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
 		System.out.println(sqlFragment);
-		assertThat(sqlFragment, containsString("column in ( 2 , 1 )"));
+		assertThat(sqlFragment.toLowerCase(), containsString("c_5 in ( 2, 1)"));
 	}
 
 	@Test

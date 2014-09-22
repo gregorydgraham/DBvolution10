@@ -86,8 +86,8 @@ public class DBTable<E extends DBRow> {
 	 * The example will be copied to avoid unexpected changes of the results.
 	 *
 	 * <p>
-	 * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) } is probably a
-	 * better option.
+	 * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) } is probably
+	 * a better option.
 	 *
 	 * @param <E>
 	 * @param database
@@ -109,8 +109,8 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * <p>
 	 * If the example has no criteria specified and there is no
-	 * {@link #setRawSQL(java.lang.String) raw SQL set} then all rows of the table
-	 * will be returned.
+	 * {@link #setRawSQL(java.lang.String) raw SQL set} then all rows of the
+	 * table will be returned.
 	 *
 	 * <p>
 	 * Throws AccidentalBlankQueryException if you haven't specifically allowed
@@ -213,8 +213,8 @@ public class DBTable<E extends DBRow> {
 	 * appropriate records.
 	 *
 	 * <p>
-	 * The following will return the only record from the table where the Language
-	 * column contains JAVA:<br>
+	 * The following will return the only record from the table where the
+	 * Language column contains JAVA:<br>
 	 * {@code MyTableRow myExample = new MyTableRow();}<br>
      * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
 	 * {@code MyRow myRow = (new DBTable<MyTableRow>()).getOnlyRowByExample(myExample);}
@@ -232,8 +232,8 @@ public class DBTable<E extends DBRow> {
 	}
 
 	/**
-	 * This method retrieves all the appropriate records, and throws an exception
-	 * if the number of records differs from the required number.
+	 * This method retrieves all the appropriate records, and throws an
+	 * exception if the number of records differs from the required number.
 	 *
 	 * <p>
 	 * The following will retrieve all 10 records from the table where the
@@ -343,8 +343,8 @@ public class DBTable<E extends DBRow> {
 	 * DBvolution is really doing.
 	 *
 	 * <p>
-	 * Generates the SQL query for retrieving the objects but does not execute the
-	 * SQL. Use {@link #getAllRows() the get* methods} to retrieve the rows.
+	 * Generates the SQL query for retrieving the objects but does not execute
+	 * the SQL. Use {@link #getAllRows() the get* methods} to retrieve the rows.
 	 *
 	 * <p>
 	 * See also {@link #getSQLForCount() getSQLForCount}
@@ -482,8 +482,8 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * Updates the DBRow on the database.
 	 *
-	 * The row will be changed so that future updates will not include the current
-	 * changes.
+	 * The row will be changed so that future updates will not include the
+	 * current changes.
 	 *
 	 * @param oldRow
 	 * @return a DBActionList of the actions performed on the database
@@ -517,8 +517,8 @@ public class DBTable<E extends DBRow> {
 	}
 
 	/**
-	 * Retrieves the rows for this table and returns the primary keys of the rows
-	 * as Longs.
+	 * Retrieves the rows for this table and returns the primary keys of the
+	 * rows as Longs.
 	 *
 	 * <p>
 	 * Requires the primary key field to be a DBNumber of DBInteger
@@ -542,8 +542,8 @@ public class DBTable<E extends DBRow> {
 	}
 
 	/**
-	 * Retrieves the rows for this table and returns the primary keys of the rows
-	 * as Strings.
+	 * Retrieves the rows for this table and returns the primary keys of the
+	 * rows as Strings.
 	 *
 	 * @return a List of primary keys as Longs.
 	 * @throws SQLException
@@ -709,8 +709,9 @@ public class DBTable<E extends DBRow> {
 	 * Set the query to return rows that match any conditions
 	 *
 	 * <p>
-	 * This means that all permitted*, excluded*, and comparisons are optional for
-	 * any rows and rows will be returned if they match any of the conditions.
+	 * This means that all permitted*, excluded*, and comparisons are optional
+	 * for any rows and rows will be returned if they match any of the
+	 * conditions.
 	 *
 	 * <p>
 	 * The conditions will be connected by OR in the SQL.
@@ -726,8 +727,8 @@ public class DBTable<E extends DBRow> {
 	 * This is the default state
 	 *
 	 * <p>
-	 * This means that all permitted*, excluded*, and comparisons are required for
-	 * any rows and the conditions will be connected by AND.
+	 * This means that all permitted*, excluded*, and comparisons are required
+	 * for any rows and the conditions will be connected by AND.
 	 */
 	public void setToMatchAllConditions() {
 		options.setMatchAllConditions();
@@ -750,12 +751,13 @@ public class DBTable<E extends DBRow> {
 	 * {@link QueryableDatatype}.
 	 *
 	 * <p>
-	 * The raw SQL will be added as a condition to the where clause. It should and
-	 * SQL excerpt that starts with AND (or if you are using Match Any Condition).
+	 * The raw SQL will be added as a condition to the where clause. It should
+	 * and SQL excerpt that starts with AND (or if you are using Match Any
+	 * Condition).
 	 *
 	 * <p>
-	 * For instance {@code marque.name.permittedValues('peugeot','hummer')} could
-	 * be implemented, rather more awkwardly, as
+	 * For instance {@code marque.name.permittedValues('peugeot','hummer')}
+	 * could be implemented, rather more awkwardly, as
 	 * {@code  table.setRawSQL("and lower(name) in ('peugeot','hummer')")}.
 	 *
 	 * @param rawQuery
@@ -776,8 +778,8 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * <p>
 	 * Some tables use repeated values instead of foreign keys or do not use all
-	 * of the possible values of a foreign key. This method makes it easy to find
-	 * the distinct or unique values that are used.
+	 * of the possible values of a foreign key. This method makes it easy to
+	 * find the distinct or unique values that are used.
 	 *
 	 * @param <A>
 	 * @param fieldOfProvidedRow - the field/column that you need data for. Must
@@ -794,11 +796,9 @@ public class DBTable<E extends DBRow> {
 		exemplar.setReturnFields(thisQDT);
 		DBQuery distinctQuery = database.getDBQuery(exemplar);
 		distinctQuery.setBlankQueryAllowed(true);
-		final DBExpression column = exemplar.column(thisQDT);
-		if (column instanceof ColumnProvider) {
-			distinctQuery.setSortOrder((ColumnProvider) column);
-		}
-		distinctQuery.addGroupByColumn(exemplar, column);
+		final ColumnProvider column = exemplar.column(thisQDT);
+		distinctQuery.setSortOrder(column);
+		distinctQuery.addGroupByColumn(exemplar, column.getColumn().asExpression());
 		List<DBQueryRow> allRows = distinctQuery.getAllRows();
 		for (DBQueryRow dBQueryRow : allRows) {
 			E found = dBQueryRow.get(exemplar);

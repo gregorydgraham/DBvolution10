@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -220,16 +221,19 @@ public class BooleanExpression implements BooleanResult {
 				return " IS NOT " + db.getDefinition().getNull();
 			}
 
-//			@Override
-//			public void setIncludesNull(boolean nullsAreIncluded) {
-//				;
-//			}
-
 			@Override
 			public boolean getIncludesNull() {
 				return false;
 			}
 		});
+	}
+
+	public static BooleanExpression isNotNull(ColumnProvider possibleNullExpression) {
+		return isNotNull(possibleNullExpression.getColumn().asExpression());
+	}
+
+	public static BooleanExpression isNull(ColumnProvider possibleNullExpression) {
+		return isNull(possibleNullExpression.getColumn().asExpression());
 	}
 
 	public static BooleanExpression isNull(DBExpression possibleNullExpression) {
@@ -239,11 +243,6 @@ public class BooleanExpression implements BooleanResult {
 			protected String getEquationOperator(DBDatabase db) {
 				return " IS " + db.getDefinition().getNull();
 			}
-
-//			@Override
-//			public void setIncludesNull(boolean nullsAreIncluded) {
-//				;
-//			}
 
 			@Override
 			public boolean getIncludesNull() {

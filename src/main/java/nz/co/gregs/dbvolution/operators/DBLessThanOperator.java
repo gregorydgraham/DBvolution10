@@ -17,7 +17,14 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *
@@ -54,10 +61,10 @@ public class DBLessThanOperator extends DBOperator {
         return " < ";
     }
 
-    @Override
-    public String generateWhereLine(DBDatabase db, String columnName) {
-        return columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
-    }
+//    @Override
+//    public String generateWhereLine(DBDatabase db, String columnName) {
+//        return columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
+//    }
 
 //    @Override
 //    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
@@ -76,4 +83,21 @@ public class DBLessThanOperator extends DBOperator {
     	op.includeNulls = this.includeNulls;
     	return op;
     }
+
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		BooleanExpression op = BooleanExpression.trueExpression();
+		if (genericExpression instanceof StringExpression) {
+			StringExpression stringExpression = (StringExpression) genericExpression;
+			op = stringExpression.bracket().isLessThan((StringResult) firstValue);
+		} else if (genericExpression instanceof NumberExpression) {
+			NumberExpression numberExpression = (NumberExpression) genericExpression;
+			op = numberExpression.isLessThan((NumberResult) firstValue);
+		} else if (genericExpression instanceof DateExpression) {
+			DateExpression dateExpression = (DateExpression) genericExpression;
+			op = dateExpression.isLessThan((DateResult) firstValue);
+		}
+		return this.invertOperator ? op.not() : op;
+	}
 }

@@ -48,24 +48,7 @@ abstract public class DBOperator implements Serializable {
 	protected void setExpression(BooleanExpression operatorExpression){
 		this.expression = operatorExpression;
 	}
-
-    /**
-     * Formats the operator into SQL for comparing a column to pre-supplied values
-     *
-     * <p>
-     * Within this function you need to transform the column name, operator and
-     * values into a where clause line.
-     * <p>
-     * The line should formatted as " this = that " and should make use of
-     * the DBDefinition within DBDatabase to ensure compatibility with all
-     * databases.
-     *
-     * @param database
-     * @param columnName
-     * @return the column name, operator and values as a where clause snippet
-     */
-    abstract public String generateWhereLine(DBDatabase database, String columnName);
-
+	
     public void invertOperator(Boolean invertOperator) {
         this.invertOperator = invertOperator;
     }
@@ -91,4 +74,6 @@ abstract public class DBOperator implements Serializable {
     }
 
     abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
+
+	abstract public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column);
 }

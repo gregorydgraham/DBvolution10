@@ -45,7 +45,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @author Gregory Graham
  */
-public class DBInteger extends QueryableDatatype {
+public class DBInteger extends QueryableDatatype implements NumberResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -725,5 +725,15 @@ public class DBInteger extends QueryableDatatype {
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getLong(fullColumnName);
+	}
+
+	@Override
+	public DBInteger copy() {
+		return (DBInteger) super.copy();
+	}
+
+	@Override
+	public boolean getIncludesNull() {
+		return false;
 	}
 }

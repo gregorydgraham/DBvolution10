@@ -91,9 +91,10 @@ public class StringExpression implements StringResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -102,8 +103,8 @@ public class StringExpression implements StringResult {
 	 * </ul>
 	 *
 	 * @param string
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static StringExpression value(String string) {
 		return new StringExpression(string);
@@ -206,7 +207,9 @@ public class StringExpression implements StringResult {
 	}
 
 	public BooleanExpression is(StringResult equivalentString) {
-		if (equivalentString.getIncludesNull()) {
+		if (equivalentString == null) {
+			return new BooleanExpression(this.isNull());
+		} else if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
@@ -237,8 +240,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -265,8 +268,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -293,8 +296,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -321,8 +324,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -892,7 +895,8 @@ public class StringExpression implements StringResult {
 	 * the StringExpression.
 	 *
 	 * <p>
-	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
+	 * The index is 1-based, and returns 0 when the searchString is not
+	 * found.</p>
 	 *
 	 * @param searchString
 	 * @return an expression that will find the location of the searchString.
@@ -981,10 +985,15 @@ public class StringExpression implements StringResult {
 		return nullProtectionRequired;
 	}
 
-//	@Override
-//	public void setIncludesNull(boolean nullsAreIncluded) {
-//		this.nullProtectionRequired = nullsAreIncluded;
-//	}
+	public StringExpression bracket() {
+		return new StringExpression(new DBUnaryStringFunction(this) {
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
+		});
+	}
+
 	private static abstract class DBBinaryStringArithmetic implements StringResult {
 
 		private StringResult first;
@@ -1680,7 +1689,9 @@ public class StringExpression implements StringResult {
 		DBNnaryBooleanFunction(StringExpression leftHandSide, StringResult[] rightHandSide) {
 			this.column = leftHandSide;
 			for (StringResult stringResult : rightHandSide) {
-				if (stringResult.getIncludesNull()) {
+				if (stringResult == null) {
+					this.includesNulls = true;
+				} else if (stringResult.getIncludesNull()) {
 					this.includesNulls = true;
 				} else {
 					values.add(stringResult);

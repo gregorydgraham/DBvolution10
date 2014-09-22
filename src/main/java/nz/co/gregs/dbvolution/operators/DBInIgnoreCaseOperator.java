@@ -19,15 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 public class DBInIgnoreCaseOperator extends DBInOperator {
 
     public static final long serialVersionUID = 1L;
 
-    public DBInIgnoreCaseOperator(List<QueryableDatatype> listOfPossibleValues) {
+    public DBInIgnoreCaseOperator(List<DBExpression> listOfPossibleValues) {
         super(listOfPossibleValues);
     }
 
@@ -35,26 +40,26 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
         super();
     }
 
-    @Override
-    public String generateWhereLine(DBDatabase db, String columnName) {
-        DBDefinition defn = db.getDefinition();
-        StringBuilder whereClause = new StringBuilder();
-        whereClause.append("");
-        if (listOfPossibleValues.isEmpty()) {
-            // prevent any rows from returning: an empty list means no rows can match
-            whereClause.append(defn.getFalseOperation());
-        } else {
-            whereClause.append(defn.toLowerCase(columnName));
-            whereClause.append(invertOperator ? getInverse() : getOperator());
-            String sep = "";
-            for (QueryableDatatype qdt : listOfPossibleValues) {
-                whereClause.append(sep).append(" ").append(qdt.toSQLString(db).toLowerCase()).append(" ");
-                sep = ",";
-            }
-            whereClause.append(")");
-        }
-        return whereClause.toString();
-    }
+//    @Override
+//    public String generateWhereLine(DBDatabase db, String columnName) {
+//        DBDefinition defn = db.getDefinition();
+//        StringBuilder whereClause = new StringBuilder();
+//        whereClause.append("");
+//        if (listOfPossibleValues.isEmpty()) {
+//            // prevent any rows from returning: an empty list means no rows can match
+//            whereClause.append(defn.getFalseOperation());
+//        } else {
+//            whereClause.append(defn.toLowerCase(columnName));
+//            whereClause.append(invertOperator ? getInverse() : getOperator());
+//            String sep = "";
+//            for (DBExpression qdt : listOfPossibleValues) {
+//                whereClause.append(sep).append(" ").append(qdt.toSQLString(db).toLowerCase()).append(" ");
+//                sep = ",";
+//            }
+//            whereClause.append(")");
+//        }
+//        return whereClause.toString();
+//    }
 
 //    @Override
 //    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
@@ -64,13 +69,30 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
     
     @Override
     public DBInIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	List<QueryableDatatype> list = new ArrayList<QueryableDatatype>();
-    	for (QueryableDatatype item: listOfPossibleValues) {
-    		list.add((QueryableDatatype)typeAdaptor.convert(item));
+    	ArrayList<DBExpression> list = new ArrayList<DBExpression>();
+    	for (DBExpression item: listOfPossibleValues) {
+    		list.add(typeAdaptor.convert(item));
     	}
     	DBInIgnoreCaseOperator op = new DBInIgnoreCaseOperator(list);
     	op.invertOperator = this.invertOperator;
     	op.includeNulls = this.includeNulls;
     	return op;
     }
+
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		BooleanExpression op = BooleanExpression.trueExpression();
+		if (genericExpression instanceof StringExpression) {
+			StringExpression stringExpression = (StringExpression) genericExpression;
+			op = stringExpression.bracket().lowercase().isIn(((StringExpression) firstValue).lowercase());
+		} else if (genericExpression instanceof NumberExpression) {
+			NumberExpression numberExpression = (NumberExpression) genericExpression;
+			op = numberExpression.isIn((NumberResult) firstValue);
+		} else if (genericExpression instanceof DateExpression) {
+			DateExpression dateExpression = (DateExpression) genericExpression;
+			op = dateExpression.isIn((DateResult) firstValue);
+		}
+		return this.invertOperator ? op.not() : op;
+	}
 }

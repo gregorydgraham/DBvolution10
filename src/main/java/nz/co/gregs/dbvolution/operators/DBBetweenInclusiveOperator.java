@@ -19,7 +19,14 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *
@@ -37,15 +44,15 @@ public class DBBetweenInclusiveOperator  extends DBOperator{
         this.secondValue = highValue==null?highValue:highValue.copy();
     }
     
-    @Override
-    public String generateWhereLine(DBDatabase db, String columnName) {
-//        lowValue.setDatabase(database);
-        String lowerSQLValue = firstValue.toSQLString(db);
-//        highValue.setDatabase(db);
-        String upperSQLValue = secondValue.toSQLString(db);
-        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
-        return beginWhereLine + (invertOperator?" not (":"(")+columnName + " >= " + lowerSQLValue + " and "+columnName + " <= " + upperSQLValue+")";
-    }
+//    @Override
+//    public String generateWhereLine(DBDatabase db, String columnName) {
+////        lowValue.setDatabase(database);
+//        String lowerSQLValue = firstValue.toSQLString(db);
+////        highValue.setDatabase(db);
+//        String upperSQLValue = secondValue.toSQLString(db);
+//        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
+//        return beginWhereLine + (invertOperator?" not (":"(")+columnName + " >= " + lowerSQLValue + " and "+columnName + " <= " + upperSQLValue+")";
+//    }
 
 //    @Override
 //    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
@@ -58,10 +65,27 @@ public class DBBetweenInclusiveOperator  extends DBOperator{
     }
     
     @Override
-    public DBBetweenOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBBetweenOperator op = new DBBetweenOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
+    public DBBetweenInclusiveOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
+    	DBBetweenInclusiveOperator op = new DBBetweenInclusiveOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
     	op.invertOperator = this.invertOperator;
     	op.includeNulls = this.includeNulls;
     	return op;
     }
+
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		BooleanExpression betweenOp = BooleanExpression.trueExpression();
+		if (genericExpression instanceof StringExpression) {
+			StringExpression stringExpression = (StringExpression) genericExpression;
+			betweenOp = stringExpression.bracket().isBetweenInclusive((StringResult) firstValue, (StringResult) secondValue);
+		} else if (genericExpression instanceof NumberExpression) {
+			NumberExpression numberExpression = (NumberExpression) genericExpression;
+			betweenOp = numberExpression.isBetweenInclusive((NumberResult) firstValue, (NumberResult) secondValue);
+		} else if (genericExpression instanceof DateExpression) {
+			DateExpression dateExpression = (DateExpression) genericExpression;
+			betweenOp = dateExpression.isBetweenInclusive((DateResult) firstValue, (DateResult) secondValue);
+		}
+		return this.invertOperator ? betweenOp.not() : betweenOp;
+	}
 }

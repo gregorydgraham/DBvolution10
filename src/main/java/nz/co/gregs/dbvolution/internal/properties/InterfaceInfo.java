@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Used internally to extract information about generics in reflected classes.
  */
-class InterfaceInfo {
+public class InterfaceInfo {
 	private boolean interfaceImplementedByImplementation = false;
 	private ParameterBounds[] typeArgumentBounds;
 
@@ -27,7 +27,7 @@ class InterfaceInfo {
 	 * If the implementation class does not extend or implement the supertype orinterface
 	 * (after a recursive search), this method returns {@code null}.
 	 * @param interfaceClass the supertype class or interface you're looking for
-	 * @param implementation the actual implementation object you're testing
+	 * @param implementationObject the actual implementation object you're testing
 	 * @throws UnsupportedOperationException if encounter generics that aren't handled yet
 	 */
 	public InterfaceInfo(Class<?> interfaceClass, Object implementationObject) {
@@ -190,9 +190,7 @@ class InterfaceInfo {
 		// get all "implements yyy"
 		Type[] interfaces = child.getGenericInterfaces();
 		if (interfaces != null) {
-			for (Type interfaceType: interfaces) {
-				ancestors.add(interfaceType);
-			}
+			ancestors.addAll(Arrays.asList(interfaces));
 		}
 		
 		return ancestors;
@@ -300,7 +298,9 @@ class InterfaceInfo {
 			}
 			
 			for (Type type: types) {
-				if (!first) buf.append(",");
+				if (!first) {
+					buf.append(",");
+				}
 				buf.append(descriptionOf(type, observedTypeVariables));
 				first = false;
 			}
@@ -348,7 +348,9 @@ class InterfaceInfo {
 					
 					boolean first = true;
 					for (Type boundingType: typeVariable.getBounds()) {
-						if (!first) buf.append(",");
+						if (!first) {
+							buf.append(",");
+						}
 						String boundingTypeDescr = descriptionOf(boundingType, nestedObservedTypeVariables);
 						if (boundingTypeDescr.contains(" ")) {
 							buf.append("(").append(boundingTypeDescr).append(")");
@@ -371,7 +373,9 @@ class InterfaceInfo {
 				buf.append(" extends ");
 				boolean first = true;
 				for (Type boundingType: wildcard.getUpperBounds()) {
-					if (!first) buf.append(",");
+					if (!first) {
+						buf.append(",");
+					}
 					String boundingTypeDescr = descriptionOf(boundingType, observedTypeVariables);
 					if (boundingTypeDescr.contains(" ")) {
 						buf.append("(").append(boundingTypeDescr).append(")");
@@ -386,7 +390,9 @@ class InterfaceInfo {
 				buf.append(" super ");
 				boolean first = true;
 				for (Type boundingType: wildcard.getLowerBounds()) {
-					if (!first) buf.append(",");
+					if (!first) {
+						buf.append(",");
+					}
 					String boundingTypeDescr = descriptionOf(boundingType, observedTypeVariables);
 					if (boundingTypeDescr.contains(" ")) {
 						buf.append("(").append(boundingTypeDescr).append(")");
@@ -437,8 +443,8 @@ class InterfaceInfo {
 	 * Attempts to use it will result in an UnsupportedOperationException.
 	 */
 	public static class ParameterBounds {
-		private Type[] upperTypes; // always null or non-empty
-		private Type[] lowerTypes; // always null or non-empty
+		private final Type[] upperTypes; // always null or non-empty
+		private final Type[] lowerTypes; // always null or non-empty
 		
 		/**
 		 * Gets a default single bound given no further information.
@@ -595,6 +601,7 @@ class InterfaceInfo {
 		
 		/**
 		 * Gets a string representation suitable for debugging.
+		 * @return 
 		 */
 		@Override
 		public String toString() {

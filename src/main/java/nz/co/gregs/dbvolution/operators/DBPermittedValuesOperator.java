@@ -17,8 +17,8 @@ package nz.co.gregs.dbvolution.operators;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDatatypeForObject;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 public class DBPermittedValuesOperator extends DBMetaOperator {
 
@@ -26,7 +26,7 @@ public class DBPermittedValuesOperator extends DBMetaOperator {
 
 	@SuppressWarnings("unchecked")
 	public DBPermittedValuesOperator(Object... permitted) {
-		ArrayList<QueryableDatatype> qdts = new ArrayList<QueryableDatatype>();
+		ArrayList<DBExpression> expressions = new ArrayList<DBExpression>();
 		int objectCount = 0;
 		if (permitted == null) {
 			operator = new DBIsNullOperator();
@@ -34,24 +34,28 @@ public class DBPermittedValuesOperator extends DBMetaOperator {
 			for (Object obj : permitted) {
 				if (obj == null) {
 					this.includeNulls = true;
+					expressions.add(null);
 					objectCount++;
 				} else if (obj instanceof Collection) {
 					Collection<Object> myList = (Collection) obj;
 					for (Object obj1 : myList) {
-						qdts.add(getQueryableDatatypeForObject(obj1));
+						if (obj == null) {
+							this.includeNulls = true;
+						}
+						expressions.add(getQueryableDatatypeForObject(obj1));
 						objectCount++;
 					}
 				} else {
-					qdts.add(getQueryableDatatypeForObject(obj));
+					expressions.add(getQueryableDatatypeForObject(obj));
 					objectCount++;
 				}
 			}
-			if (objectCount == 0||qdts.isEmpty()) {
+			if (objectCount == 0 || expressions.isEmpty()) {
 				operator = new DBIsNullOperator();
 			} else if (objectCount == 1) {
-				operator = new DBEqualsOperator(qdts.get(0));
+				operator = new DBEqualsOperator(expressions.get(0));
 			} else {
-				operator = new DBInOperator(qdts);
+				operator = new DBInOperator(expressions);
 			}
 		}
 		operator.includeNulls = this.includeNulls;

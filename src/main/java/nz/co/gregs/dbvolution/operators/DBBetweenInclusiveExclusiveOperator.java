@@ -13,55 +13,84 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *
  * @author Gregory Graham
  */
-public class DBBetweenInclusiveExclusiveOperator  extends DBOperator{
-    public static final long serialVersionUID = 1L;
+public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
+
+	public static final long serialVersionUID = 1L;
 
 //    private final QueryableDatatype firstValue;
 //    private final QueryableDatatype secondValue;
-    
-    public DBBetweenInclusiveExclusiveOperator(DBExpression lowValue, DBExpression highValue){
-        super();
-        this.firstValue = lowValue==null?lowValue:lowValue.copy();
-        this.secondValue = highValue==null?highValue:highValue.copy();
-    }
-    
-    @Override
-    public String generateWhereLine(DBDatabase db, String columnName) {
-//        lowValue.setDatabase(database);
-        String lowerSQLValue = firstValue.toSQLString(db);
-//        highValue.setDatabase(db);
-        String upperSQLValue = secondValue.toSQLString(db);
-        String beginWhereLine = "";//db.getDefinition().beginWhereClauseLine();
-        return beginWhereLine + (invertOperator?" not (":"(")+columnName + " >= " + lowerSQLValue + " and "+columnName + " < " + upperSQLValue+")";
-    }
+	public DBBetweenInclusiveExclusiveOperator(DBExpression lowValue, DBExpression highValue) {
+		super();
+		this.firstValue = lowValue == null ? lowValue : lowValue.copy();
+		this.secondValue = highValue == null ? highValue : highValue.copy();
+	}
 
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        throw new InappropriateRelationshipOperator(this);
-//    }
+	@Override
+	public DBOperator getInverseOperator() {
+		throw new InappropriateRelationshipOperator(this);
+	}
 
-    @Override
-    public DBOperator getInverseOperator() {
-        throw new InappropriateRelationshipOperator(this);
-    }
-    
-    @Override
-    public DBBetweenOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBBetweenOperator op = new DBBetweenOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	@Override
+	public DBBetweenInclusiveExclusiveOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBBetweenInclusiveExclusiveOperator op = new DBBetweenInclusiveExclusiveOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
+
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		BooleanExpression betweenOp = BooleanExpression.trueExpression();
+		if (genericExpression instanceof StringExpression) {
+			StringExpression stringExpression = (StringExpression) genericExpression;
+			StringResult firstStringExpr = null;
+			StringResult secondStringExpr = null;
+			if (firstValue instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) firstValue;
+				firstStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (firstValue instanceof StringResult) {
+				firstStringExpr = (StringResult) firstValue;
+			}
+			if (secondValue instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) secondValue;
+				secondStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (secondValue instanceof StringResult) {
+				secondStringExpr = (StringResult) secondValue;
+			}
+			if (firstStringExpr != null && secondStringExpr != null) {
+				betweenOp = stringExpression.bracket().isBetween(firstStringExpr, secondStringExpr);
+			}
+		} else if ((genericExpression instanceof NumberExpression)
+				&&(firstValue instanceof NumberResult)
+				&&(secondValue instanceof NumberResult)) {
+			NumberExpression numberExpression = (NumberExpression) genericExpression;
+			betweenOp = numberExpression.isBetween((NumberResult) firstValue, (NumberResult) secondValue);
+		} else if ((genericExpression instanceof DateExpression)
+				&&(firstValue instanceof DateResult)
+				&&(secondValue instanceof DateResult)) {
+			DateExpression dateExpression = (DateExpression) genericExpression;
+			betweenOp = dateExpression.isBetween((DateResult) firstValue, (DateResult) secondValue);
+		}
+		return this.invertOperator ? betweenOp.not() : betweenOp;
+	}
 }

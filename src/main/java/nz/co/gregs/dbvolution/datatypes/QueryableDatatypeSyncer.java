@@ -49,10 +49,16 @@ public class QueryableDatatypeSyncer {
 	 *
 	 * @param propertyName used in error messages
 	 * @param internalQdtType
+	 * @param internalQdtLiteralType
+	 * @param externalSimpleType
 	 * @param typeAdaptor
 	 */
-	public QueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype> internalQdtType,
-			Class<?> internalQdtLiteralType, Class<?> externalSimpleType, DBTypeAdaptor<Object, Object> typeAdaptor) {
+	public QueryableDatatypeSyncer(
+			String propertyName,
+			Class<? extends QueryableDatatype> internalQdtType,
+			Class<?> internalQdtLiteralType,
+			Class<?> externalSimpleType,
+			DBTypeAdaptor<Object, Object> typeAdaptor) {
 		if (typeAdaptor == null) {
 			throw new DBRuntimeException("Null typeAdaptor was passed, this is an internal bug");
 		}
@@ -164,8 +170,8 @@ public class QueryableDatatypeSyncer {
 	 * brand new one, and copies from one QDT to another.
 	 *
 	 * <p>
-	 * DBOperators can reference the same QDT that own the operator instance, such
-	 * as:
+	 * DBOperators can reference the same QDT that own the operator instance,
+	 * such as:
 	 * <code>QueryableDatatype.setLiteralValue{this.operator = new DBEqualsOperator(this)}</code>.
 	 * Cycles are handled by tracking source QDTs observed and returning the
 	 * previously mapped target QDT when re-observed.
@@ -175,9 +181,9 @@ public class QueryableDatatypeSyncer {
 	 */
 	public static class DBSafeInternalQDTAdaptor {
 
-		private Class<? extends QueryableDatatype> targetQdtType;
-		private SafeOneWaySimpleTypeAdaptor simpleTypeAdaptor;
-		private List<Map.Entry<QueryableDatatype, QueryableDatatype>> observedSourcesAndTargets
+		private final Class<? extends QueryableDatatype> targetQdtType;
+		private final SafeOneWaySimpleTypeAdaptor simpleTypeAdaptor;
+		private final List<Map.Entry<QueryableDatatype, QueryableDatatype>> observedSourcesAndTargets
 				= new ArrayList<Map.Entry<QueryableDatatype, QueryableDatatype>>();
 
 		public DBSafeInternalQDTAdaptor(
@@ -188,9 +194,9 @@ public class QueryableDatatypeSyncer {
 		}
 
 		/**
-		 * Creates a brand new QDT of the configured target type, based on converted
-		 * values from the given QDT. Recursively traverses the operators and inner
-		 * QDT references within the given QDT.
+		 * Creates a brand new QDT of the configured target type, based on
+		 * converted values from the given QDT. Recursively traverses the
+		 * operators and inner QDT references within the given QDT.
 		 *
 		 * <p>
 		 * If {@code source} is null, returns {@code null}.
@@ -205,7 +211,7 @@ public class QueryableDatatypeSyncer {
 			} else {
 				QueryableDatatype sourceQDT = (QueryableDatatype) source;
 				try {
-                // cycle-detection
+					// cycle-detection
 					// (note: important that it uses reference equality, not object equality)
 					for (Map.Entry<QueryableDatatype, QueryableDatatype> sourceAndTarget : observedSourcesAndTargets) {
 						if (sourceAndTarget.getKey() == sourceQDT) {
@@ -228,12 +234,12 @@ public class QueryableDatatypeSyncer {
 
 		/**
 		 * Updates the target QDT with converted values from the source QDT.
-		 * Recursively traverses the operations and inner QDT references within the
-		 * given source QTD.
+		 * Recursively traverses the operations and inner QDT references within
+		 * the given source QTD.
 		 *
 		 * @param targetQdt the QDT to update (must not be null)
-		 * @param sourceQdt the QDT with values to convert and copy to the target
-		 * (must not be null)
+		 * @param sourceQdt the QDT with values to convert and copy to the
+		 * target (must not be null)
 		 */
 		protected void setTargetQDTFromSourceQDT(QueryableDatatype targetQdt, QueryableDatatype sourceQdt) {
 			// sanity checks
@@ -242,7 +248,7 @@ public class QueryableDatatypeSyncer {
 						+ targetQdt.getClass().getSimpleName() + " != " + targetQdtType + ":" + targetQdtType.getSimpleName());
 			}
 
-            // cycle-detection
+			// cycle-detection
 			// (note: important that it uses reference equality, not object equality)
 			for (Map.Entry<QueryableDatatype, QueryableDatatype> soFarEntry : observedSourcesAndTargets) {
 				if (soFarEntry.getKey() == sourceQdt) {

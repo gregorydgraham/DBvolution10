@@ -19,6 +19,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -80,6 +81,16 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
         this.column = new AbstractColumn(row, field);
     }
 
+	/**
+	 * Create a IntegerColumn for the supplied field of the supplied row
+	 *
+	 * @param row
+	 * @param field
+	 */
+    public IntegerColumn(RowDefinition row, DBIntegerEnum<?> field) {
+        this.column = new AbstractColumn(row, field);
+    }
+
     @Override
     public String toSQLString(DBDatabase db) {
         return column.toSQLString(db);
@@ -108,4 +119,9 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
     public Set<DBRow> getTablesInvolved() {
         return column.getTablesInvolved();
     }
+
+	@Override
+	public void setUseTableAlias(boolean useTableAlias) {
+		this.column.setUseTableAlias(useTableAlias);
+	}
 }

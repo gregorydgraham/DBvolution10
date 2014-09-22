@@ -31,7 +31,7 @@ package nz.co.gregs.dbvolution.expressions;
  * @author greg
  * @see DBExpression
  */
-public interface DateResult extends DBExpression {
+public interface DateResult extends DBExpression, RangeComparable {
 
     @Override
     public DateResult copy();

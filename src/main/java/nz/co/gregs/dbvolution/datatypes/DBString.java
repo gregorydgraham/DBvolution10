@@ -745,7 +745,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	@Override
 	public boolean getIncludesNull() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return false;
 	}
 
 	public boolean isEmptyString() {

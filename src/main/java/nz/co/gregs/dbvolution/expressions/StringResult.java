@@ -31,7 +31,7 @@ package nz.co.gregs.dbvolution.expressions;
  * @author Gregory Graham
  * @see DBExpression
  */
-public interface StringResult extends DBExpression{
+public interface StringResult extends DBExpression, RangeComparable{
     
     @Override
     public StringResult copy();

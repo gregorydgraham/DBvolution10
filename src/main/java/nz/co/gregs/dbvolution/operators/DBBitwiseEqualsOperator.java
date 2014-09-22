@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.BooleanResult;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 
@@ -29,31 +33,18 @@ public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 	public DBBitwiseEqualsOperator() {
 	}
 
-	public DBBitwiseEqualsOperator(DBExpression equalTo) {
+	public DBBitwiseEqualsOperator(BooleanExpression equalTo) {
 		super(equalTo);
 	}
 
-	public DBBitwiseEqualsOperator(Object equalTo) {
-		super(equalTo);
-	}
-	
 	@Override
-	public String generateWhereLine(DBDatabase db, String columnName) {
-		DBDefinition defn = db.getDefinition();
-		String whereLine;
-		if ((firstValue instanceof QueryableDatatype) && ((QueryableDatatype) firstValue).isNull()) {
-			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-			dbIsNullOperator.invertOperator(this.invertOperator);
-			whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
-		} else {
-			whereLine = defn.doBitsToIntegerTransform(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.doBitsToIntegerTransform(firstValue.toSQLString(db));
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		DBExpression genericExpression = column;
+		BooleanExpression op = BooleanExpression.trueExpression();
+		if (genericExpression instanceof BooleanExpression) {
+			BooleanExpression expr = (BooleanExpression) genericExpression;
+			op = expr.is((BooleanResult) firstValue);
 		}
-		if (this.includeNulls) {
-			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-			dbIsNullOperator.invertOperator(this.invertOperator);
-			return "(" + dbIsNullOperator.generateWhereLine(db, columnName) + (this.invertOperator?defn.beginAndLine():defn.beginOrLine()) + whereLine + ")";
-		} else {
-			return whereLine;
-		}
+		return this.invertOperator ? op.not() : op;
 	}
 }
