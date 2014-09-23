@@ -24,8 +24,6 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;

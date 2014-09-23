@@ -43,11 +43,6 @@ public class DBBetweenInclusiveOperator  extends DBOperator{
         this.firstValue = lowValue==null?lowValue:lowValue.copy();
         this.secondValue = highValue==null?highValue:highValue.copy();
     }
-
-    @Override
-    public DBOperator getInverseOperator() {
-        throw new InappropriateRelationshipOperator(this);
-    }
     
     @Override
     public DBBetweenInclusiveOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {

@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
-import nz.co.gregs.dbvolution.exceptions.InappropriateRelationshipOperator;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
@@ -29,27 +28,6 @@ public class DBIsNullOperator extends DBOperator {
 
 	public static final long serialVersionUID = 1L;
 
-//	@Override
-//	public String generateWhereLine(DBDatabase database, String columnName) {
-//		return columnName + (invertOperator ? getInverse() : getOperator());
-//	}
-
-	private String getOperator() {
-		return " is null ";
-	}
-
-	private String getInverse() {
-		return " is not null ";
-	}
-
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        throw new InappropriateRelationshipOperator(this);
-//    }
-	@Override
-	public DBOperator getInverseOperator() {
-		throw new InappropriateRelationshipOperator(this);
-	}
 
 	@Override
 	public DBIsNullOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {

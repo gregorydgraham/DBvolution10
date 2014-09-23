@@ -989,6 +989,22 @@ public class StringExpression implements StringResult {
 		});
 	}
 
+	public BooleanExpression isInIgnoreCase(StringResult[] toArray) {
+		List<StringResult> lowerStrings = new ArrayList<StringResult>();
+		for (StringResult toArray1 : toArray) {
+			StringExpression lowercase = new StringExpression(toArray1).lowercase();
+			lowerStrings.add(lowercase);
+		}
+		
+		final BooleanExpression isInExpression = this.lowercase().isIn(lowerStrings.toArray(new StringResult[]{}));
+		
+		if (isInExpression.getIncludesNull()) {
+			return BooleanExpression.anyOf(new BooleanExpression(this.isNull()), isInExpression);
+		} else {
+			return isInExpression;
+		}
+	}
+
 	private static abstract class DBBinaryStringArithmetic implements StringResult {
 
 		private StringResult first;

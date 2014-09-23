@@ -68,7 +68,8 @@ public class TypeAdaptorTest {
         db.dropTable(new CustomerWithDBInteger());
         try {
             db.preventDroppingOfDatabases(false);
-            db.dropDatabase();
+            db.dropDatabase(true);
+            db.preventDroppingOfDatabases(true);
         } catch (UnsupportedOperationException ex) {
             ;
         }

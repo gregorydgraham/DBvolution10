@@ -67,36 +67,6 @@ public class DBEqualsOperator extends DBOperator {
 		return " = ";
 	}
 
-//	@Override
-//	public String generateWhereLine(DBDatabase db, String columnName) {
-//		DBDefinition defn = db.getDefinition();
-//		String whereLine;
-//		if ((firstValue instanceof QueryableDatatype) && ((QueryableDatatype) firstValue).isNull()) {
-//			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-//			dbIsNullOperator.invertOperator(this.invertOperator);
-//			whereLine = dbIsNullOperator.generateWhereLine(db, columnName);
-//		} else {
-//			whereLine = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + firstValue.toSQLString(db);
-//		}
-//		if (this.includeNulls) {
-//			DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-//			dbIsNullOperator.invertOperator(this.invertOperator);
-//			return "(" + dbIsNullOperator.generateWhereLine(db, columnName) + (this.invertOperator?defn.beginAndLine():defn.beginOrLine()) + whereLine + ")";
-//		} else {
-//			return whereLine;
-//		}
-//	}
-//	@Override
-//	public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//		DBDefinition defn = database.getDefinition();
-//		String relationStr = columnName + (invertOperator ? getInverse(defn) : getOperator(defn)) + otherColumnName;
-//		return relationStr;
-//	}
-	@Override
-	public DBOperator getInverseOperator() {
-		return this;
-	}
-
 	@Override
 	public DBEqualsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
 		DBEqualsOperator op = new DBEqualsOperator(typeAdaptor.convert(firstValue));

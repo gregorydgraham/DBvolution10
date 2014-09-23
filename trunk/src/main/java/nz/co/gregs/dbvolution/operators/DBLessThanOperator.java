@@ -52,29 +52,6 @@ public class DBLessThanOperator extends DBOperator {
         super();
         this.firstValue = null;
     }
-
-    public String getInverse() {
-        return " >= ";
-    }
-
-    public String getOperator() {
-        return " < ";
-    }
-
-//    @Override
-//    public String generateWhereLine(DBDatabase db, String columnName) {
-//        return columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
-//    }
-
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        return columnName + (invertOperator ? getInverse() : getOperator()) + otherColumnName;
-//    }
-
-    @Override
-    public DBOperator getInverseOperator() {
-        return new DBGreaterThanOrEqualsOperator(firstValue);
-    }
     
     @Override
     public DBLessThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {

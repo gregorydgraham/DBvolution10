@@ -45,11 +45,6 @@ public class DBBetweenExclusiveOperator extends DBOperator {
 	}
 
 	@Override
-	public DBOperator getInverseOperator() {
-		throw new InappropriateRelationshipOperator(this);
-	}
-
-	@Override
 	public DBBetweenExclusiveOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
 		DBBetweenExclusiveOperator op = new DBBetweenExclusiveOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
 		op.invertOperator = this.invertOperator;

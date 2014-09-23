@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.StringResult;
+import nz.co.gregs.dbvolution.operators.DBPermittedPatternIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
@@ -759,5 +760,9 @@ public class DBString extends QueryableDatatype implements StringResult {
 //			gotString = null;
 //		}
 		return gotString;
+	}
+
+	public void permittedPatternIgnoreCase(String pattern) {
+		this.setOperator(new DBPermittedPatternIgnoreCaseOperator(pattern));
 	}
 }

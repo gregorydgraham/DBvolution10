@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
+import java.util.Date;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -34,15 +35,22 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
 public class DBBetweenOperator extends DBOperator{
     public static final long serialVersionUID = 1L;
     
+    public DBBetweenOperator(int lowValue, int highValue){
+        this(NumberExpression.value(lowValue), NumberExpression.value(highValue));
+    }
+    
+    public DBBetweenOperator(String lowValue, String highValue){
+        this(StringExpression.value(lowValue), StringExpression.value(highValue));
+    }
+    
+    public DBBetweenOperator(Date lowValue, Date highValue){
+        this(DateExpression.value(lowValue), DateExpression.value(highValue));
+    }
+    
     public DBBetweenOperator(DBExpression lowValue, DBExpression highValue){
         super();
         this.firstValue = lowValue==null?lowValue:lowValue.copy();
         this.secondValue = highValue==null?highValue:highValue.copy();
-    }
-
-    @Override
-    public DBOperator getInverseOperator() {
-        throw new InappropriateRelationshipOperator(this);
     }
     
     @Override

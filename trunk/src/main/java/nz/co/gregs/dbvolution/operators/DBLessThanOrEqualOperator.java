@@ -38,21 +38,6 @@ public class DBLessThanOrEqualOperator extends DBLessThanOperator {
     public DBLessThanOrEqualOperator() {
         super();
     }
-
-    @Override
-    public String getInverse() {
-        return " > ";
-    }
-
-    @Override
-    public String getOperator() {
-        return " <= ";
-    }
-    
-    @Override
-    public DBOperator getInverseOperator() {
-        return new DBGreaterThanOperator(firstValue);
-    }
     
     @Override
     public DBLessThanOrEqualOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {

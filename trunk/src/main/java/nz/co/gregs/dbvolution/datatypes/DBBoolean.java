@@ -88,6 +88,15 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	}
 
 	@Override
+	public boolean equals(QueryableDatatype other) {
+		if (other instanceof DBBoolean) {
+			DBBoolean otherDBBoolean=  (DBBoolean) other;
+			return getValue().equals(otherDBBoolean.getValue());
+		}
+		return false;
+	}
+
+	@Override
 	public String getSQLDatatype() {
 		return "BIT(1)";
 	}
