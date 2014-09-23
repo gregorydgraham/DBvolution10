@@ -2,7 +2,6 @@ package nz.co.gregs.dbvolution.mysql;
 
 import java.io.File;
 import java.io.IOException;
-import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
 
 /*
@@ -22,11 +21,11 @@ import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
  */
 /**
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class MySQLMXJDBInitialisation {
 
-	public synchronized static MySQLDB getMySQLDBInstance() throws IOException, ClassNotFoundException {
+	public synchronized static MySQLMXJDB getMySQLDBInstance() throws IOException, ClassNotFoundException {
 
 		int port = Integer.parseInt(System.getProperty("c-mxj_test_port", "3336"));
 
@@ -36,7 +35,7 @@ public class MySQLMXJDBInitialisation {
 
 		Class.forName("com.mysql.jdbc.Driver");
 
-		MySQLDB database = new MySQLMXJDB("localhost", port, databaseName, databaseDir.toString(), "dbvtest", "testpass");
+		MySQLMXJDB database = new MySQLMXJDB("localhost", port, databaseName, databaseDir.toString(), "dbvtest", "testpass");
 		return database;
 	}
 

@@ -29,7 +29,7 @@ public class ForeignKeyCannotBeComparedToPrimaryKey extends DBRuntimeException {
 	public ForeignKeyCannotBeComparedToPrimaryKey(Exception ex, RowDefinition source, PropertyWrapper sourceFK, RowDefinition target, PropertyWrapper targetPK) {
 		super("Unable To Construct An Expression Representing The Foreign Key Relationship From "
 				+source.getClass().getSimpleName()+":"+sourceFK.javaName()
-				+" To "+target.getClass().getSimpleName()+":"+targetPK.javaName()+": Ckeck that the 2 fields have similar and comparable datatypes or remove the @DBForeignKey annotation", 
+				+" To "+target.getClass().getSimpleName()+":"+targetPK.javaName()+": Check that the 2 fields have similar and comparable datatypes or remove the @DBForeignKey annotation", 
 				ex);
 	}
 	

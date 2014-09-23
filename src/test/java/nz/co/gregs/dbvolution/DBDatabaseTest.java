@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -108,6 +109,14 @@ public class DBDatabaseTest extends AbstractTest {
 		database.dropTable(new DropTableTestClass());
 		database.preventDroppingOfTables(true);
 		System.out.println("DropTableTestClass table dropped successfully");
+	}
+
+	@Test(expected = AccidentalDroppingOfDatabaseException.class)
+	public void testDropDatabaseException() throws SQLException, Exception {
+		database.preventDroppingOfDatabases(true);
+		database.preventDroppingOfTables(false);
+		database.dropDatabase(false);
+		database.preventDroppingOfTables(true);
 	}
 
 	public static class CreateTableTestClass extends DBRow {

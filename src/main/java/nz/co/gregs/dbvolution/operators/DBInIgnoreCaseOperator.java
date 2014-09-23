@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 
 public class DBInIgnoreCaseOperator extends DBInOperator {
 
@@ -39,33 +40,6 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
     public DBInIgnoreCaseOperator() {
         super();
     }
-
-//    @Override
-//    public String generateWhereLine(DBDatabase db, String columnName) {
-//        DBDefinition defn = db.getDefinition();
-//        StringBuilder whereClause = new StringBuilder();
-//        whereClause.append("");
-//        if (listOfPossibleValues.isEmpty()) {
-//            // prevent any rows from returning: an empty list means no rows can match
-//            whereClause.append(defn.getFalseOperation());
-//        } else {
-//            whereClause.append(defn.toLowerCase(columnName));
-//            whereClause.append(invertOperator ? getInverse() : getOperator());
-//            String sep = "";
-//            for (DBExpression qdt : listOfPossibleValues) {
-//                whereClause.append(sep).append(" ").append(qdt.toSQLString(db).toLowerCase()).append(" ");
-//                sep = ",";
-//            }
-//            whereClause.append(")");
-//        }
-//        return whereClause.toString();
-//    }
-
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        DBDefinition defn = database.getDefinition();
-//        return defn.toLowerCase(columnName) + (invertOperator ? getInverse() : getOperator()) + defn.toLowerCase(otherColumnName) + " ) ";
-//    }
     
     @Override
     public DBInIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
@@ -85,13 +59,7 @@ public class DBInIgnoreCaseOperator extends DBInOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			op = stringExpression.bracket().lowercase().isIn(((StringExpression) firstValue).lowercase());
-		} else if (genericExpression instanceof NumberExpression) {
-			NumberExpression numberExpression = (NumberExpression) genericExpression;
-			op = numberExpression.isIn((NumberResult) firstValue);
-		} else if (genericExpression instanceof DateExpression) {
-			DateExpression dateExpression = (DateExpression) genericExpression;
-			op = dateExpression.isIn((DateResult) firstValue);
+			op = stringExpression.bracket().isInIgnoreCase(listOfPossibleStrings.toArray(new StringResult[]{}));
 		}
 		return this.invertOperator ? op.not() : op;
 	}

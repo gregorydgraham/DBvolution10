@@ -16,8 +16,6 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -28,40 +26,25 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
  */
 public class DBLikeCaseInsensitiveOperator extends DBLikeOperator {
 
-    public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1L;
 
-    @Override
-    public String generateWhereLine(DBDatabase db, String columnName) {
-        if (db == null) {
-            throw new RuntimeException("Database Cannot Be NULL: Please supply a proper DBDatabase instance.");
-        } else if (firstValue.toSQLString(db) == null) {
-            throw new RuntimeException("Actual Comparison Is Required: please supply an actual object to compare against");
-        } else if (columnName == null) {
-            throw new RuntimeException("MalFormed DBRow: please supply a column name using the DBColumn annotation");
-        } else if (invertOperator == null) {
-            throw new RuntimeException("Invert Operator Missing: somehow you have removed the invertOperator instance, whatever you did with it, stop it.");
-        } else if (getOperator() == null) {
-            throw new RuntimeException("Get Operator Returns NULL: the getOperator() method returned null when it should return a String of the database's operator.");
-        } else {
-            DBDefinition defn = db.getDefinition();
-            return (invertOperator ? " not(" : "(") + defn.toLowerCase(defn.formatColumnName(columnName)) + getOperator() + " " + defn.toLowerCase(firstValue.toSQLString(db)) + ")";
-        }
-    }
+	public DBLikeCaseInsensitiveOperator(String likeableValue) {
+		super(likeableValue);
+	}
 
-    private String getOperator() {
-        return " like ";
-    }
+	public DBLikeCaseInsensitiveOperator(StringExpression likeableValue) {
+		super(likeableValue);
+	}
 
-    @Override
-    public DBOperator getInverseOperator() {
-        return this;
-    }
+	public DBLikeCaseInsensitiveOperator() {
+		super();
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
 		DBExpression genericExpression = column;
-		if (genericExpression instanceof StringExpression){
-			StringExpression strExpr = (StringExpression)genericExpression;
+		if (genericExpression instanceof StringExpression) {
+			StringExpression strExpr = (StringExpression) genericExpression;
 			return strExpr.bracket().isLikeIgnoreCase(getLikeableValue());
 		}
 		return BooleanExpression.trueExpression();

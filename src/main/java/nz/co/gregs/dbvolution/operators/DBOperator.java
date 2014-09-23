@@ -56,10 +56,7 @@ abstract public class DBOperator implements Serializable {
     public void not() {
         invertOperator = true;
     }
-
-    abstract public DBOperator getInverseOperator();
-
-    // TODO
+	
     public void includeNulls() {
         includeNulls = true;
     }

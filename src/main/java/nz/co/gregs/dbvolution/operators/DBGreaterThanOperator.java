@@ -57,18 +57,6 @@ public class DBGreaterThanOperator extends DBOperator {
         return " > ";
     }
 
-//    @Override
-//    public String generateWhereLine(DBDatabase db, String columnName) {
-////        firstValue.setDatabase(database);
-//        DBDefinition defn = db.getDefinition();
-//        return columnName + (invertOperator ? getInverse() : getOperator()) + firstValue.toSQLString(db) + " ";
-//    }
-
-    @Override
-    public DBOperator getInverseOperator() {
-        return new DBLessThanOrEqualOperator(firstValue);
-    }
-
     @Override
     public DBGreaterThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	DBGreaterThanOperator op = new DBGreaterThanOperator(typeAdaptor.convert(firstValue));

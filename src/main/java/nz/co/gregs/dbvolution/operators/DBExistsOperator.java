@@ -69,11 +69,6 @@ public class DBExistsOperator extends DBOperator {
 			throw new IncorrectRowProviderInstanceSuppliedException(tableRow, qdtOfTheRow);
 		}
 	}
-	
-	@Override
-	public DBOperator getInverseOperator() {
-		throw new InappropriateRelationshipOperator(this);
-	}
 
 	@Override
 	public DBExistsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {

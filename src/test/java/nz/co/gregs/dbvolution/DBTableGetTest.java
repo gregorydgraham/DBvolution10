@@ -26,8 +26,11 @@ import net.sourceforge.tedhi.DateRange;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.MarqueSelectQuery;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.operators.DBBetweenOperator;
+import nz.co.gregs.dbvolution.operators.DBNonOperator;
 import static org.hamcrest.Matchers.*;
 import org.junit.*;
 
@@ -66,10 +69,11 @@ public class DBTableGetTest extends AbstractTest {
         Assert.assertTrue("Incorrect number of marques retreived", singleMarque.getAllRows().size() == 1);
     }
 
-    @Test
-    public void newDBRowWillCauseBlankQuery() {
+    @Test(expected = AccidentalBlankQueryException.class)
+    public void newDBRowWillCauseBlankQuery() throws SQLException {
         Marque marque = new Marque();
         Assert.assertThat(marque.willCreateBlankQuery(database), is(true));
+		database.get(marque);
     }
 
     @Test
@@ -83,6 +87,50 @@ public class DBTableGetTest extends AbstractTest {
     public void testNumberIsBetween() throws SQLException {
         Marque marqueQuery = new Marque();
         marqueQuery.getUidMarque().permittedRange(0, 90000000);
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(marqueQuery);
+        for (Marque row : rowsByExample) {
+            System.out.println(row);
+        }
+        Assert.assertTrue("Incorrect number of marques retreived", rowsByExample.size() == marqueRows.size());
+    }
+
+    @Test
+    public void testUsingDBNonOperator() throws SQLException {
+        Marque marqueQuery = new Marque();
+        marqueQuery.getUidMarque().setOperator(new DBNonOperator());
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(marqueQuery);
+        for (Marque row : rowsByExample) {
+            System.out.println(row);
+        }
+        Assert.assertThat(rowsByExample.size(), is(marqueRows.size()));
+    }
+
+    @Test
+    public void testNumberIsBetweenUsingDBBetweenOperator() throws SQLException {
+        Marque marqueQuery = new Marque();
+        marqueQuery.getUidMarque().setOperator(new DBBetweenOperator(0,90000000));
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(marqueQuery);
+        for (Marque row : rowsByExample) {
+            System.out.println(row);
+        }
+        Assert.assertTrue("Incorrect number of marques retreived", rowsByExample.size() == marqueRows.size());
+    }
+
+    @Test
+    public void testNumberIsBetweenExclusive() throws SQLException {
+        Marque marqueQuery = new Marque();
+        marqueQuery.getUidMarque().permittedRangeExclusive(0, 90000000);
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(marqueQuery);
+        for (Marque row : rowsByExample) {
+            System.out.println(row);
+        }
+        Assert.assertTrue("Incorrect number of marques retreived", rowsByExample.size() == marqueRows.size());
+    }
+
+    @Test
+    public void testNumberIsBetweenInclusive() throws SQLException {
+        Marque marqueQuery = new Marque();
+        marqueQuery.getUidMarque().permittedRangeInclusive(0, 90000000);
         List<Marque> rowsByExample = marquesTable.getRowsByExample(marqueQuery);
         for (Marque row : rowsByExample) {
             System.out.println(row);
@@ -113,6 +161,16 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsLike() throws SQLException {
         Marque likeQuery = new Marque();
         likeQuery.name.permittedPattern("TOY%");
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+        marquesTable.print();
+        Assert.assertEquals(1, rowsByExample.size());
+        Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
+    }
+
+    @Test
+    public void testIsLikeCaseInsensitive() throws SQLException {
+        Marque likeQuery = new Marque();
+        likeQuery.name.permittedPatternIgnoreCase("TOY%");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
         marquesTable.print();
         Assert.assertEquals(1, rowsByExample.size());
@@ -172,6 +230,15 @@ public class DBTableGetTest extends AbstractTest {
     public void testIsIn() throws SQLException {
         Marque hummerQuery = new Marque();
         hummerQuery.getName().permittedValues("PEUGEOT", "HUMMER");
+        List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
+        marquesTable.print();
+        Assert.assertThat(rowsByExample.size(), is(2));
+    }
+
+    @Test
+    public void testIsInIgnoreCase() throws SQLException {
+        Marque hummerQuery = new Marque();
+        hummerQuery.getName().permittedValuesIgnoreCase("PEUGEOT", "HUMMER");
         List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
         marquesTable.print();
         Assert.assertThat(rowsByExample.size(), is(2));

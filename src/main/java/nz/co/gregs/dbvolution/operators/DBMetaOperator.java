@@ -35,24 +35,9 @@ abstract class DBMetaOperator extends DBOperator{
         return operator.copyAndAdapt(typeAdaptor);
     }
 
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        return operator.generateRelationship(database, columnName, otherColumnName);
-//    }
-
-//    @Override
-//    public String generateWhereLine(DBDatabase database, String columnName) {
-//        return operator.generateWhereLine(database, columnName);
-//    }
-
     @Override
     public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column){
         return operator.generateWhereExpression(db, column);
-    }
-
-    @Override
-    public DBOperator getInverseOperator() {
-        return this.operator.getInverseOperator();
     }
 
     @Override

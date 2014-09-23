@@ -65,11 +65,6 @@ public class DBInOperator extends DBOperator {
 	}
 
 	@Override
-	public DBOperator getInverseOperator() {
-		return this;
-	}
-
-	@Override
 	public boolean equals(DBOperator other) {
 
 		if (super.equals(other) == false) {

@@ -47,13 +47,6 @@ public class DBLikeOperator extends DBOperator {
 		this.firstValue = null;
 	}
 
-//    @Override
-	public String generateWhereLine(DBDatabase db, String columnName) {
-//        likeableValue.setDatabase(db);
-		DBDefinition defn = db.getDefinition();
-		return "(" + defn.formatColumnName(columnName) + getOperator() + firstValue.toSQLString(db) + ")";
-	}
-
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
 		DBExpression genericExpression = column;
@@ -67,20 +60,6 @@ public class DBLikeOperator extends DBOperator {
 		} else {
 			return returnExpression;
 		}
-	}
-
-	private String getOperator() {
-		return invertOperator ? " not like " : " like ";
-	}
-
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        DBDefinition defn = database.getDefinition();
-//        return (invertOperator ? " not(" : "(") + defn.formatColumnName(columnName) + getOperator() + otherColumnName + ")";
-//    }
-	@Override
-	public DBOperator getInverseOperator() {
-		return this;
 	}
 
 	@Override

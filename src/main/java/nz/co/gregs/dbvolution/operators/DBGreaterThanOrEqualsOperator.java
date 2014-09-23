@@ -43,21 +43,6 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
     public DBGreaterThanOrEqualsOperator(DBExpression greaterThanThis) {
         super(greaterThanThis);
     }
-
-    @Override
-    public String getOperator() {
-        return " >= ";
-    }
-
-    @Override
-    public String getInverse() {
-        return " < ";
-    }
-    
-    @Override
-    public DBOperator getInverseOperator() {
-        return new DBLessThanOperator(firstValue);
-    }
     @Override
     public DBGreaterThanOrEqualsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
     	DBGreaterThanOrEqualsOperator op = new DBGreaterThanOrEqualsOperator(typeAdaptor.convert(firstValue));

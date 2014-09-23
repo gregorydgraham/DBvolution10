@@ -24,20 +24,6 @@ public class DBNonOperator extends DBOperator {
 
     public static final long serialVersionUID = 1L;
 
-//    @Override
-//    public String generateWhereLine(DBDatabase database, String columnName) {
-//        return "";
-//    }
-
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        return "";
-//    }
-
-    @Override
-    public DBOperator getInverseOperator() {
-        return this;
-    }
     
     @Override
     public DBNonOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {

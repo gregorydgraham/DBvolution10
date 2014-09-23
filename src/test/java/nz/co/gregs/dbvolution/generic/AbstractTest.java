@@ -95,10 +95,6 @@ public abstract class AbstractTest {
 			// Do basic testing
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
-//				            {"Oracle11DB", new Oracle11DB("localhost", 1521, "xe", "dbvolution", "oracle")},
-//				            {"PostgresDB", new PostgresDB("localhost", "5432", "", "postgres", "postgres")},
-//				            {"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true&server.initialize-user=true", "", "")},
-//				            {"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()}
 
 		return databases;
 	}
@@ -221,7 +217,8 @@ public abstract class AbstractTest {
 		database.dropTableNoExceptions(myCarCompanyRow);
 		try {
 			database.preventDroppingOfDatabases(false);
-			database.dropDatabase();
+			database.dropDatabase(true);
+			database.preventDroppingOfDatabases(true);
 		} catch (UnsupportedOperationException unsupported) {
 			;
 		}
