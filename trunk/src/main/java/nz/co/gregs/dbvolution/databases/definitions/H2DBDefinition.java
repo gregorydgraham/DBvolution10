@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -105,7 +103,7 @@ public class H2DBDefinition extends DBDefinition {
 	 * @return the H@ implementation subtracts the time zone from the current timestamp
 	 */
 	@Override
-	public String getCurrentTimestampFunction() {
+	public String getCurrentDateTimeFunction() {
 		SimpleDateFormat format = new SimpleDateFormat("Z");
 		long rawTimezone = Long.parseLong(format.format(new Date()).replaceAll("\\+", ""));
 		long timezone = rawTimezone/100+((rawTimezone%100)*(100/60));

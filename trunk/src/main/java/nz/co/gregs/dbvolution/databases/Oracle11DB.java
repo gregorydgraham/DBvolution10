@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 /**
  * Implements support for version 11 and prior of the Oracle database.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  * @see OracleDB
  * @see Oracle12DB
  * @see Oracle11DBDefinition

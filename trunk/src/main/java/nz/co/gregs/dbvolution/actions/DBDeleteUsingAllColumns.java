@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class DBDeleteUsingAllColumns extends DBDelete {
 
@@ -94,7 +94,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 					+ defn.getEqualsComparator()
 					+ (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
 		}
-		sql = sql + defn.endDeleteLine();
+		sql += defn.endDeleteLine();
 		ArrayList<String> strs = new ArrayList<String>();
 		strs.add(sql);
 		return strs;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregory.graham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * This DBDefinition is automatically included in {@link NuoDB} instances, and
  * you should not need to use it directly.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class NuoDBDefinition extends DBDefinition{
 
@@ -63,7 +63,8 @@ public class NuoDBDefinition extends DBDefinition{
 	@Override
 	public String doTruncTransform(String firstString, String secondString) {
 		//A1-MOD(A1,1*(A1/ABS(A1)))
-		return ""+firstString+"-MOD("+firstString+",1*("+firstString+"/ABS("+firstString+")))";
+//		return ""+firstString+"-MOD("+firstString+",1*("+firstString+"/ABS("+firstString+")))";
+		return "(((CAST((("+firstString+")>0) AS INTEGER))-0.5)*2)*floor(abs("+firstString+"))";
 	}
 
 	@Override
@@ -95,6 +96,21 @@ public class NuoDBDefinition extends DBDefinition{
 	@Deprecated
 	public String doLeftTrimTransform(String toSQLString) {
 		return " (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
+	}
+
+	@Override
+	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+		return "DATE_ADD("+dateValue+", INTERVAL (("+numberOfHours+")*60*60) SECOND )";
+	}
+
+	@Override
+	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+		return "DATE_ADD("+dateValue+", INTERVAL (("+numberOfMinutes+")*60) SECOND )";
+	}
+
+	@Override
+	public String getCurrentDateOnlyFunctionName() {
+		return super.getCurrentDateOnlyFunctionName(); //To change body of generated methods, choose Tools | Templates.
 	}
 
 

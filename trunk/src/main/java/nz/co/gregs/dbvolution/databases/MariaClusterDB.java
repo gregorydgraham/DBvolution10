@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregory.graham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
  * You should probably be using {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)
  * }
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class MariaClusterDB extends DBDatabase {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregory.graham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.junit.*;
 
 /**
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class ExpressionsInDBRowFields extends AbstractTest {
 
@@ -46,7 +46,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		DBQuery query = database.getDBQuery(exprExample);
 
 		final String sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
 		Assert.assertThat(sqlForQuery, containsString(ExpressionRow.STRING_VALUE));
 		Assert.assertThat(sqlForQuery, containsString(NumberExpression.value(5).times(3).toSQLString(database)));
 		final List<DBQueryRow> allRows = query.getAllRows();
@@ -57,7 +57,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 //			System.out.println("Expression Row SysDate SQL: " + expressionRow.stringColumnOnClass.toSQLString(database));
 //			System.out.println("Expression Row SysDate SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
 			DBDate currentDate = expressionRow.sysDateColumnOnClass;
-//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDate.dateValue());
+//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDateOnly.dateValue());
 			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
 			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
 			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
@@ -75,7 +75,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		DBQuery query = database.getDBQuery(exprExample);
 
 		String sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
 
 		for (DBQueryRow row : query.getAllRows()) {
 			ExpressionRow expressionRow = row.get(exprExample);
@@ -83,7 +83,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 //			System.out.println("Expression Row stringColumnOnClass SQL: " + expressionRow.stringColumnOnClass.toSQLString(database));
 //			System.out.println("Expression Row numberColumnOnClass SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
 			DBDate currentDate = expressionRow.sysDateColumnOnClass;
-//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDate.dateValue());
+//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDateOnly.dateValue());
 			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
 			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
 			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
@@ -98,7 +98,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		query = database.getDBQuery(exprExample2);
 
 		sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
 		final List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(0));
@@ -112,7 +112,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 
 		final String sqlForQuery = table.getSQLForQuery();
 //		System.out.println(sqlForQuery);
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
 		final List<ExpressionRow> rowsByExample = table.getAllRows();
 		database.print(rowsByExample);
 
@@ -121,7 +121,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 //			System.out.println("Expression Row stringColumnOnClass SQL: " + expressionRow.stringColumnOnClass.toSQLString(database));
 //			System.out.println("Expression Row numberColumnOnClass SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
 			DBDate currentDate = expressionRow.sysDateColumnOnClass;
-//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDate.dateValue());
+//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDateOnly.dateValue());
 			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
 			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
 			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
@@ -175,7 +175,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		public static final String STRING_VALUE = "THis ValuE";
 
 		@DBColumn
-		DBDate sysDateColumnOnClass = new DBDate(DateExpression.currentDate());
+		DBDate sysDateColumnOnClass = new DBDate(DateExpression.currentDateOnly());
 
 		@DBColumn
 		DBString stringColumnOnClass = new DBString(StringExpression.value(STRING_VALUE).uppercase());
@@ -209,7 +209,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		DBString uidNameAndYear = new DBString(this.column(this.uidMarque).append("-").append(this.column(this.name)).append("-").append(this.column(this.creationDate).year()));
 
 		@DBColumn
-		DBString uidNameAndNVLYear = new DBString(this.column(this.uidMarque).ifDBNull(NumberExpression.value(-1).times(NumberExpression.value(2))).append("-").append(this.column(this.name).ifDBNull("UNKNOWN")).append("-").append(this.column(this.creationDate).ifDBNull(DateExpression.currentDate()).year().ifDBNull(2000)));
+		DBString uidNameAndNVLYear = new DBString(this.column(this.uidMarque).ifDBNull(NumberExpression.value(-1).times(NumberExpression.value(2))).append("-").append(this.column(this.name).ifDBNull("UNKNOWN")).append("-").append(this.column(this.creationDate).ifDBNull(DateExpression.currentDateOnly()).year().ifDBNull(2000)));
 
 	}
 }

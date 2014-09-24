@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 /**
  * Extends the PostgreSQL database connection by adding SSL.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class PostgresDBOverSSL extends PostgresDB {
 

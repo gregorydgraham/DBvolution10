@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 /**
  * Used by {@link DBInsert} to insert BLOB columns.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 

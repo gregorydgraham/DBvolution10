@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregorygraham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,39 +48,39 @@ public class DateExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBDate actualJavaDate = new DBDate(new Date());
 		@DBColumn
-		public DBDate currentDate = new DBDate(DateExpression.currentDate());
+		public DBDate currentDate = new DBDate(DateExpression.currentDateOnly());
 		@DBColumn
-		public DBDate currentDateTime = new DBDate(DateExpression.currentDateTime());
+		public DBDate currentDateTime = new DBDate(DateExpression.currentDate());
 		@DBColumn
-		public DBDate currentDateTimeMinus10Seconds = new DBDate(DateExpression.currentDateTime().addSeconds(-10));
+		public DBDate currentDateTimeMinus10Seconds = new DBDate(DateExpression.currentDate().addSeconds(-10));
 		@DBColumn
-		public DBDate currentDateTimePlus10Seconds = new DBDate(DateExpression.currentDateTime().addSeconds(10));
+		public DBDate currentDateTimePlus10Seconds = new DBDate(DateExpression.currentDate().addSeconds(10));
 	}
 
 	@Test
 	public void testCurrentDateTimeAndAddSecondsFunctions() throws SQLException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateOnly(), null);
 		List<Marque> got = database.get(marq);
 //        database.print(got);
 		Assert.assertThat(got.size(), is(0));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateTime().addSeconds(-10), null);
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addSeconds(-10), null);
 		database.print(DBReport.getAllRows(database, new CurrentDateReport()));
 		got = database.get(marq);
         database.print(got);
 		Assert.assertThat(got.size(), is(1));
 
-		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDateTime().addSeconds(-10));
+		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDate().addSeconds(-10));
 		got = database.get(marq);
         database.print(got);
 		Assert.assertThat(got.size(), is(21));
 
 		marq.creationDate.permittedRangeInclusive(
-				DateExpression.currentDateTime().addSeconds(-10), 
-				DateExpression.currentDateTime().addSeconds(+10));
+				DateExpression.currentDate().addSeconds(-10), 
+				DateExpression.currentDate().addSeconds(+10));
 		got = database.getDBTable(marq).getAllRows();
         database.print(got);
 		Assert.assertThat(got.size(), is(1));
@@ -90,25 +90,105 @@ public class DateExpressionTest extends AbstractTest {
 	public void testCurrentDateAndAddDaysFunctions() throws SQLException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateOnly(), null);
+		List<Marque> got = database.get(marq);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(0));
+
+		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateOnly().addDays(-1), null);
+		got = database.get(marq);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(1));
+
+		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDateOnly().addDays(-1));
+		got = database.get(marq);
+        database.print(got);
+		Assert.assertThat(got.size(), is(21));
+
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateOnly().addDays(-1), DateExpression.currentDateOnly().addDays(+1));
+		got = database.get(marq);
+        database.print(got);
+		Assert.assertThat(got.size(), is(1));
+	}
+
+	@Test
+	public void testCurrentDateAndAddHoursFunctions() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateOnly(), null);
+		List<Marque> got = database.get(marq);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(0));
+
+		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addHours(-1), null);
+		got = database.get(marq);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(1));
+	}
+
+	@Test
+	public void testCurrentDateAndAddWeeksFunctions() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
 		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
 		List<Marque> got = database.get(marq);
 //        database.print(got);
 		Assert.assertThat(got.size(), is(0));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addDays(-1), null);
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addWeeks(-1), null);
 		got = database.get(marq);
 //        database.print(got);
 		Assert.assertThat(got.size(), is(1));
+	}
 
-		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDate().addDays(-1));
-		got = database.get(marq);
-        database.print(got);
-		Assert.assertThat(got.size(), is(21));
+	@Test
+	public void testCurrentDateAndAddMinutesFunctions() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
+		List<Marque> got = database.get(marq);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(0));
 
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addDays(-1), DateExpression.currentDate().addDays(+1));
+		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addMinutes(-1), null);
 		got = database.get(marq);
-        database.print(got);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(1));
+	}
+
+	@Test
+	public void testCurrentDateAndAddMonthsFunctions() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
+		List<Marque> got = database.get(marq);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(0));
+
+		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addMonths(-1), null);
+		got = database.get(marq);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(1));
+	}
+
+	@Test
+	public void testCurrentDateAndAddYearsFunctions() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateOnly(), null);
+		List<Marque> got = database.get(marq);
+//        database.print(got);
+		Assert.assertThat(got.size(), is(0));
+
+		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addYears(-1), null);
+		got = database.get(marq);
+//        database.print(got);
 		Assert.assertThat(got.size(), is(1));
 	}
 

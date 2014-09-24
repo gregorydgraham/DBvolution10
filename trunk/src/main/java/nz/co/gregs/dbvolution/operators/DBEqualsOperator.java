@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
 
 /**
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class DBEqualsOperator extends DBOperator {
 
@@ -51,20 +51,6 @@ public class DBEqualsOperator extends DBOperator {
 	public DBEqualsOperator(Object equalTo) {
 		QueryableDatatype first = QueryableDatatype.getQueryableDatatypeForObject(equalTo);
 		this.firstValue = (first == null ? first : first.copy());
-	}
-
-	public String getInverse(DBDefinition defn) {
-		if (defn != null) {
-			return defn.getNotEqualsComparator();
-		}
-		return " <> ";
-	}
-
-	public String getOperator(DBDefinition defn) {
-		if (defn != null) {
-			return defn.getEqualsComparator();
-		}
-		return " = ";
 	}
 
 	@Override

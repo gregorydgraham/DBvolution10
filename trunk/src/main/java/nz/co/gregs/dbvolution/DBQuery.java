@@ -84,7 +84,7 @@ import org.apache.commons.collections15.Transformer;
  * DBQuery can even scan the Class path and find all related DBRow classes and
  * add them on request.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class DBQuery {
 
