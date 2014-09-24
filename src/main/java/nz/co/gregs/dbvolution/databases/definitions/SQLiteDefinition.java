@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregory.graham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * This DBDefinition is automatically included in {@link SQLiteDB} instances,
  * and you should not need to use it directly.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class SQLiteDefinition extends DBDefinition {
 
@@ -114,12 +114,12 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getCurrentDateFunctionName() {
+	public String getCurrentDateOnlyFunctionName() {
 		return " DATETIME('now','localtime') ";
 	}
 
 	@Override
-	public String getCurrentTimestampFunction() {
+	public String getCurrentDateTimeFunction() {
 		return " DATETIME('now','localtime') ";
 	}
 
@@ -221,36 +221,36 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doAddDaysTransform(String dayValue, String numberOfDays) {
-		return "datetime(" + dayValue + ", '" + numberOfDays + " day')";
+		return "datetime(" + dayValue + ", (" + numberOfDays + ")||' days')";
 	}
 
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
-		return "datetime(" + dateValue + ", '" + numberOfSeconds + " second')";
+		return "datetime(" + dateValue + ", (" + numberOfSeconds + ")||' second')";
 	}
 
 	@Override
 	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
-		return "datetime(" + dateValue + ", '" + numberOfMinutes + " minute')";
+		return "datetime(" + dateValue + ", (" + numberOfMinutes + ")||' minute')";
 	}
 
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
-		return "datetime(" + dateValue + ", '" + numberOfHours + " hour')";
+		return "datetime(" + dateValue + ", (" + numberOfHours + ")||' hour')";
 	}
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "datetime(" + dateValue + ", '" + numberOfWeeks + " week')";
+		return "datetime(" + dateValue + ", (7*(" + numberOfWeeks + "))||' days')";
 	}
 
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
-		return "datetime(" + dateValue + ", '" + numberOfMonths + " month')";
+		return "datetime(" + dateValue + ", (" + numberOfMonths + ")||' month')";
 	}
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
-		return "datetime(" + dateValue + ", '" + numberOfYears + " year')";
+		return "datetime(" + dateValue + ", (" + numberOfYears + ")||' year')";
 	}
 }

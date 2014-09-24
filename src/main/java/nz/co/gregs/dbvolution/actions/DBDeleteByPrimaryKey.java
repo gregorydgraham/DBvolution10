@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class DBDeleteByPrimaryKey extends DBDelete {
 

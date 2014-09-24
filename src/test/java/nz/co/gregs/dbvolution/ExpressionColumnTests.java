@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregory.graham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,10 +42,10 @@ public class ExpressionColumnTests extends AbstractTest {
 		DBQuery query = database.getDBQuery(marque, carCompany);
 		
 		final Date dateKey = new Date();
-		query.addExpressionColumn(dateKey, DateExpression.currentDate());
+		query.addExpressionColumn(dateKey, DateExpression.currentDateOnly());
 		
 		final String sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
 		
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(dateKey);

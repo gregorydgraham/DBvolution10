@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import java.util.Map;
  * Each instance is accessible thru the
  * {@link #get(nz.co.gregs.dbvolution.DBRow) get(DBRow) method}.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  *
  */
 public class DBQueryRow extends HashMap<Class<?>, DBRow> {

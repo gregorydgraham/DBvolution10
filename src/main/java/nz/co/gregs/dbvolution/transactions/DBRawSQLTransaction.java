@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 /**
  * Performs transactions for arbitrary SQL strings.
  * 
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 

@@ -92,22 +92,22 @@ public class DateExpression implements DateResult {
 		return new DateExpression(date);
 	}
 
+	public static DateExpression currentDateOnly() {
+		return new DateExpression(
+				new DBNonaryFunction() {
+					@Override
+					String getFunctionName(DBDatabase db) {
+						return db.getDefinition().getCurrentDateOnlyFunctionName();
+					}
+				});
+	}
+
 	public static DateExpression currentDate() {
 		return new DateExpression(
 				new DBNonaryFunction() {
 					@Override
 					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getCurrentDateFunctionName();
-					}
-				});
-	}
-
-	public static DateExpression currentDateTime() {
-		return new DateExpression(
-				new DBNonaryFunction() {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getCurrentTimestampFunction();
+						return db.getDefinition().getCurrentDateTimeFunction();
 					}
 				});
 	}

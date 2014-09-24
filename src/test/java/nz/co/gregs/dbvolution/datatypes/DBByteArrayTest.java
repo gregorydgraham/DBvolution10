@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.*;
 
 /**
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class DBByteArrayTest extends AbstractTest {
 
@@ -314,7 +314,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ "fk_car_company INTEGER, \n"
 			+ "fk_company_logo INTEGER)\n"
 			+ ";\n"
-			+ "FILE: /Users/gregorygraham/Projects/DBvolution-https/trunk/toyota_share_logo.jpg\n"
+			+ "FILE: /Users/Gregory Graham/Projects/DBvolution-https/trunk/toyota_share_logo.jpg\n"
 			+ "EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 1,1,'toyota_logo.jpg');\n"
 			+ "INFO  DBStatement - EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 1,1,'toyota_logo.jpg');\n"
 			+ "INFO  DBUpdateLargeObjects - UPDATE CompanyLogo SET image_file =  ?  WHERE logo_id = 1;\n"
@@ -333,7 +333,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ " WHERE  1=1  AND (_1159239592.logo_id = 1)\n"
 			+ ";\n"
 			+ "row = CompanyLogo logoID:1, carCompany:1, imageBytes:/*BINARY DATA*/, imageFilename:toyota_logo.jpg\n"
-			+ "FILE: /Users/gregorygraham/Projects/DBvolution-https/trunk/found_toyota_logo.jpg\n"
+			+ "FILE: /Users/Gregory Graham/Projects/DBvolution-https/trunk/found_toyota_logo.jpg\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE lt_carco_logo;\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE CompanyLogo;\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE marque;\n"
@@ -403,7 +403,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ "fk_car_company INTEGER, \n"
 			+ "fk_company_logo INTEGER)\n"
 			+ ";\n"
-			+ "FILE: /Users/gregorygraham/Projects/DBvolution-https/trunk/toyota_share_logo.jpg\n"
+			+ "FILE: /Users/Gregory Graham/Projects/DBvolution-https/trunk/toyota_share_logo.jpg\n"
 			+ "EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 1,1,'toyota_logo.jpg');\n"
 			+ "INFO  DBStatement - EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 1,1,'toyota_logo.jpg');\n"
 			+ "INFO  DBUpdateLargeObjects - UPDATE CompanyLogo SET image_file =  ?  WHERE logo_id = 1;\n"
@@ -417,7 +417,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ " FROM  car_company AS __78874071 \n"
 			+ " WHERE  1=1  AND ( lower(__78874071.name) =  lower('FORD') )\n"
 			+ ";\n"
-			+ "FILE: /Users/gregorygraham/Projects/DBvolution-https/trunk/ford_logo.jpg\n"
+			+ "FILE: /Users/Gregory Graham/Projects/DBvolution-https/trunk/ford_logo.jpg\n"
 			+ "EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 2,2,'ford_logo.jpg');\n"
 			+ "INFO  DBStatement - EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 2,2,'ford_logo.jpg');\n"
 			+ "INFO  DBUpdateLargeObjects - UPDATE CompanyLogo SET image_file =  ?  WHERE logo_id = 2;\n"

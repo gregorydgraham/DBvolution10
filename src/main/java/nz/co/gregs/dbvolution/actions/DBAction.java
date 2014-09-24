@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.DBRow;
  * }, and {@link DBInsert#getInserts(nz.co.gregs.dbvolution.DBRow...) },
  * allowing a series of changes to be created then executed in a single batch.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public abstract class DBAction {
 

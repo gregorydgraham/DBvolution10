@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 /**
  * DBDatabase tweaked for the MySQL MXJ Database.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class MySQLMXJDB extends MySQLDB {
 

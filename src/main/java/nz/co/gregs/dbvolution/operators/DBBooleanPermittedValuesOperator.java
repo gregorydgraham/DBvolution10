@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregorygraham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

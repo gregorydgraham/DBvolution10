@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregorygraham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 
 /**
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 @DBTableName("lt_carco_logo_with_prev")
 @SuppressWarnings("serial")

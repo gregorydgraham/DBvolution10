@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * <p>
  * This class is provided to help with the 1% of queries that DBvolution is not designed for, use it rarely and carefully.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

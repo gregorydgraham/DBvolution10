@@ -56,7 +56,8 @@ public class NumberExpressionTest extends AbstractTest {
 
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
-		dbQuery.addCondition(NumberExpression.value(0).is(marq.column(marq.uidMarque).mod(2)));
+		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0));
+//		dbQuery.addCondition(NumberExpression.value(0).is(marq.column(marq.uidMarque).mod(2)));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(11));
@@ -228,7 +229,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				carCo.column(carCo.uidCarCompany).exp().times(1000).trunc().is(7389));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+        database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 		CarCompany carCompany = allRows.get(0).get(carCo);
 		Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(), is(2));

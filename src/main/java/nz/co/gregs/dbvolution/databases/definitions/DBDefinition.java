@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 gregorygraham.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public abstract class DBDefinition {
 
@@ -976,7 +976,7 @@ public abstract class DBDefinition {
 	 *
 	 * @return the default implementation returns " CURRENT_DATE "
 	 */
-	public String getCurrentDateFunctionName() {
+	public String getCurrentDateOnlyFunctionName() {
 		return " CURRENT_DATE ";
 	}
 
@@ -985,7 +985,7 @@ public abstract class DBDefinition {
 	 *
 	 * @return the default implementation returns " CURRENT_TIMESTAMP "
 	 */
-	public String getCurrentTimestampFunction() {
+	public String getCurrentDateTimeFunction() {
 		return " CURRENT_TIMESTAMP ";
 	}
 
