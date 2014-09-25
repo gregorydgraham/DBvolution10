@@ -61,9 +61,9 @@ public class DateExpressionTest extends AbstractTest {
 	public void testCurrentDateTimeAndAddSecondsFunctions() throws SQLException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDateOnly(), null);
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
 		List<Marque> got = database.get(marq);
-//        database.print(got);
+        database.print(got);
 		Assert.assertThat(got.size(), is(0));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
@@ -79,8 +79,8 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(21));
 
 		marq.creationDate.permittedRangeInclusive(
-				DateExpression.currentDate().addSeconds(-10), 
-				DateExpression.currentDate().addSeconds(+10));
+				DateExpression.currentDate().addSeconds(-20), 
+				DateExpression.currentDate().addSeconds(+20));
 		got = database.getDBTable(marq).getAllRows();
         database.print(got);
 		Assert.assertThat(got.size(), is(1));
