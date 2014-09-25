@@ -234,7 +234,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 //	public String getWhereClause(DBDatabase db, String columnName) {
 //		return getWhereClauseUsingOperators(db, columnName);
 //	}
-
 	/**
 	 *
 	 * @param db
@@ -253,8 +252,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 //		}
 //		return whereClause;
 //	}
-
-	private  String getWhereClauseUsingOperators(DBDatabase db, ColumnProvider column) {
+	private String getWhereClauseUsingOperators(DBDatabase db, ColumnProvider column) {
 		String whereClause = "";
 		DBOperator op = this.getOperator();
 		if (op != null) {
@@ -329,16 +327,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @param newLiteralValue the literalValue to set
 	 */
 	protected void setLiteralValue(Object newLiteralValue) {
-//		preventChangeOfPrimaryKey();
 		if (newLiteralValue == null) {
 			setChanged(newLiteralValue);
 			setToNull();
 		} else {
 			setChanged(newLiteralValue);
 			this.literalValue = newLiteralValue;
-			/*if (newLiteralValue instanceof DBExpression) {
-			 this.setOperator(new DBEqualsOperator(new DBDataGenerator((DBExpression) newLiteralValue)));
-			 } else*/ if (newLiteralValue instanceof Date) {
+			if (newLiteralValue instanceof Date) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
 			} else if (newLiteralValue instanceof Timestamp) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Timestamp) newLiteralValue)));
@@ -502,6 +497,16 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		propertyWrapper = null;
 	}
 
+	/**
+	 * Returns the correct object from the ResultSet for the QueryableDatatype
+	 * to handle.
+	 *
+	 * @param database
+	 * @param resultSet
+	 * @param fullColumnName
+	 * @return the expected object from the ResultSet.
+	 * @throws SQLException
+	 */
 	abstract protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException;
 
 	private void setChanged(Object newLiteralValue) {

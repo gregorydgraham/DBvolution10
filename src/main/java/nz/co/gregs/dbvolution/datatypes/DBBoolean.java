@@ -87,6 +87,12 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 		super(bool);
 	}
 
+	/**
+	 * Implements the standard Java equals method.
+	 *
+	 * @param other
+	 * @return
+	 */
 	@Override
 	public boolean equals(QueryableDatatype other) {
 		if (other instanceof DBBoolean) {

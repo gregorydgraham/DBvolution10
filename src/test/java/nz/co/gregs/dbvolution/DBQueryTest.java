@@ -177,4 +177,67 @@ public class DBQueryTest extends AbstractTest {
 		System.out.println();
 		System.out.println(rows);
 	}
+	
+	@Test
+	public void thrownExceptionIfTheForeignKeyFieldsToBeIgnoredIsNotInTheInstance() throws Exception {
+		Marque wrongMarque = new Marque();
+		Marque marqueQuery = new Marque();
+		marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.getValue());
+		
+		DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
+		try {
+			marqueQuery.ignoreForeignKeys(wrongMarque.carCompany,wrongMarque.carCompany);
+			throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
+		} catch (IncorrectRowProviderInstanceSuppliedException wrongDBRowEx) {
+		}
+		marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
+		query.setCartesianJoinsAllowed(true);
+		List<DBQueryRow> rows = query.getAllRows();
+		System.out.println(query.getSQLForQuery());
+		
+		System.out.println();
+		System.out.println(rows);
+	}
+	
+	@Test
+	public void thrownExceptionIfTheForeignKeyColumnsToBeIgnoredIsNotInTheInstance() throws Exception {
+		Marque wrongMarque = new Marque();
+		Marque marqueQuery = new Marque();
+		marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.getValue());
+		
+		DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
+		try {
+			marqueQuery.ignoreForeignKeys(marqueQuery.column(wrongMarque.carCompany),marqueQuery.column(wrongMarque.carCompany));
+			throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
+		} catch (IncorrectRowProviderInstanceSuppliedException wrongDBRowEx) {
+		}
+		marqueQuery.ignoreForeignKeys(marqueQuery.column(marqueQuery.carCompany),marqueQuery.column(marqueQuery.carCompany));
+		query.setCartesianJoinsAllowed(true);
+		List<DBQueryRow> rows = query.getAllRows();
+		System.out.println(query.getSQLForQuery());
+		
+		System.out.println();
+		System.out.println(rows);
+	}
+	
+	@Test
+	public void thrownExceptionIfAllTheForeignKeyFieldsToBeIgnoredIsNotInTheInstance() throws Exception {
+		Marque wrongMarque = new Marque();
+		Marque marqueQuery = new Marque();
+		marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.getValue());
+		
+		DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
+		try {
+			marqueQuery.ignoreAllForeignKeysExcept(wrongMarque.carCompany);
+			throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
+		} catch (IncorrectRowProviderInstanceSuppliedException wrongDBRowEx) {
+		}		
+		marqueQuery.ignoreAllForeignKeysExcept(marqueQuery.carCompany);
+		query.setCartesianJoinsAllowed(true);
+		List<DBQueryRow> rows = query.getAllRows();
+		System.out.println(query.getSQLForQuery());
+		
+		System.out.println();
+		System.out.println(rows);
+	}
 }

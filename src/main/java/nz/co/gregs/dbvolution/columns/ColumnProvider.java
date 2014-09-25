@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.columns;
 
 /**
  * Interface to indicate that this object can provide a column.
- * 
+ *
  *
  * @author Gregory Graham
  */
 public interface ColumnProvider {
-    
+
 	/**
 	 * Returns the AbstractColumn from this ColumnProvider.
 	 *
@@ -31,6 +30,17 @@ public interface ColumnProvider {
 	 */
 	public AbstractColumn getColumn();
 
+	/**
+	 * Indicates whether the ColumnProvider should use the table alias during
+	 * query creation.
+	 *
+	 * <p>
+	 * the standard implementation is
+	 * {@code this.column.setUseTableAlias(useTableAlias);} and passes the
+	 * boolean along to the underlying AbstractColumn
+	 *
+	 * @param useTableAlias
+	 */
 	public void setUseTableAlias(boolean useTableAlias);
 
 }

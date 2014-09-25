@@ -279,46 +279,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 			return Integer.parseInt(getLiteralValue().toString());
 		}
 	}
-
-	/**
-	 * Internal method to automatically set the value using information from the
-	 * database
-	 *
-	 * @param resultSet
-	 * @param fullColumnName
-	 */
-//	@Override
-//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-//		blankQuery();
-//		if (resultSet == null || fullColumnName == null) {
-//			this.setToNull();
-//		} else {
-//			Number dbValue;
-//			try {
-//				dbValue = resultSet.getBigDecimal(fullColumnName);
-//			} catch (SQLException ex) {
-//				try {
-//					dbValue = resultSet.getLong(fullColumnName);
-//				} catch (SQLException ex2) {
-//					dbValue = null;
-//				}
-//			}
-//			try {
-//				if (resultSet.wasNull()) {
-//					dbValue = null;
-//				}
-//			} catch (SQLException ex) {
-//				dbValue = null;
-//			}
-//			if (dbValue == null) {
-//				this.setToNull();
-//			} else {
-//				this.setValue(dbValue);
-//			}
-//		}
-//		setUnchanged();
-//		setDefined(true);
-//	}
+	
 	@Override
 	public DBNumber getQueryableDatatypeForExpressionValue() {
 		return new DBNumber();

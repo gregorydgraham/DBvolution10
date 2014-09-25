@@ -487,13 +487,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				} else {
 					column = this.column(qdt);
 				}
-				if (!useTableAlias) {
-					column.setUseTableAlias(useTableAlias);
-				}
-//					possibleWhereClause = qdt.getWhereClause(db, prop.getSelectableName(db));
-//				} else {
-//					possibleWhereClause = qdt.getWhereClause(db, defn.formatTableAndColumnName(this, prop.columnName()));
-//				}
+				column.setUseTableAlias(useTableAlias);
 				possibleWhereClause = qdt.getWhereClause(db, column);
 				if (!possibleWhereClause.replaceAll(" ", "").isEmpty()) {
 					whereClause.add("(" + possibleWhereClause + ")");
@@ -748,7 +742,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param importantForeignKeys
 	 */
-	public void ignoreAllForeignKeysExcept(Object... importantForeignKeys) {
+	public void ignoreAllForeignKeysExcept(Object... importantForeignKeys) throws IncorrectRowProviderInstanceSuppliedException {
 		ArrayList<PropertyWrapperDefinition> importantFKs = new ArrayList<PropertyWrapperDefinition>();
 		for (Object object : importantForeignKeys) {
 			PropertyWrapper importantProp = getPropertyWrapperOf(object);
@@ -756,6 +750,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				if (importantProp.isColumn() && importantProp.isForeignKey()) {
 					importantFKs.add(importantProp.getDefinition());
 				}
+			} else {
+				throw new IncorrectRowProviderInstanceSuppliedException(this, object);
 			}
 		}
 		List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
@@ -1645,6 +1641,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		this.returnColumns = returnColumns;
 	}
 
+	/**
+	 * Used internally to avoid infinite loops when using the exists operator.
+	 *
+	 */
 	public void removeExistsOperators() {
 		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
 		for (PropertyWrapper prop : props) {
