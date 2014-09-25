@@ -139,7 +139,7 @@
 							<systemPropertyVariables>
 								<testAllDatabases>true</testAllDatabases>
 								<testSQLite>true</testSQLite>
-								<testMySQLMXJDB>true</testMySQLMXJDB>
+								<!--<testMySQLMXJDB>true</testMySQLMXJDB>-->
 								<testH2DB>true</testH2DB>
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>

@@ -749,6 +749,24 @@ public class DBString extends QueryableDatatype implements StringResult {
 		return false;
 	}
 
+	/**
+	 * Indicates whether this DBString value is the SQL equivalent of a java
+	 * empty String.
+	 *
+	 * <p>
+	 * Some databases, notably Oracle, cannot differentiate between empty
+	 * strings and NULL strings. This method helps programmers access the empty
+	 * or NULL states will allowing DBV to provide a consistent interface.
+	 *
+	 * <p>
+	 * In Oracle and similar databases isDBNull and isEmptyString will both be
+	 * TRUE when the value is NULL. However most databases will have
+	 * isEmptyString false when the string is null, and isDBNull false when the
+	 * string is empty.
+	 *
+	 * @return true if the database value represents an empty string, otherwise
+	 * FALSE.
+	 */
 	public boolean isEmptyString() {
 		return isDBEmptyString;
 	}
@@ -756,12 +774,23 @@ public class DBString extends QueryableDatatype implements StringResult {
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-//		if (resultSet.wasNull()||gotString.isEmpty()){
-//			gotString = null;
-//		}
 		return gotString;
 	}
 
+	/**
+	 * Perform case-insensitive searches based on using database compatible pattern matching. 
+	 *
+	 * <p>
+	 * This facilitates the LIKE operator.
+	 *
+	 * <p>
+	 * Please use the pattern system appropriate to your database.
+	 *
+	 * <p>
+	 * Java-style regular expressions are not yet supported.
+	 *
+	 * @param pattern
+	 */
 	public void permittedPatternIgnoreCase(String pattern) {
 		this.setOperator(new DBPermittedPatternIgnoreCaseOperator(pattern));
 	}
