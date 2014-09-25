@@ -104,9 +104,10 @@ public class H2DBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String getCurrentDateTimeFunction() {
-		SimpleDateFormat format = new SimpleDateFormat("Z");
-		long rawTimezone = Long.parseLong(format.format(new Date()).replaceAll("\\+", ""));
-		long timezone = rawTimezone/100+((rawTimezone%100)*(100/60));
-		return " DATEADD('hour',-1* "+timezone+",CURRENT_TIMESTAMP )";
+//		SimpleDateFormat format = new SimpleDateFormat("Z");
+//		long rawTimezone = Long.parseLong(format.format(new Date()).replaceAll("\\+", ""));
+//		long timezone = rawTimezone/100+((rawTimezone%100)*(100/60));
+//		return " DATEADD('hour',-1* "+timezone+",CURRENT_TIMESTAMP )";
+		return " CURRENT_TIMESTAMP ";
 	}
 }
