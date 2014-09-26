@@ -86,7 +86,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
 		}
 		if (System.getProperty("testNuo") != null) {
-			databases.add(new Object[]{"NuoDB", new NuoDB(Arrays.asList(new String[]{"localhost"}), "dbv", "dbv", "dbv", "dbv")});
+			databases.add(new Object[]{"NuoDB", new NuoDB(Arrays.asList(new String[]{"localhost"}), Arrays.asList(new Long[]{48004L}), "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracle") != null) {
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("localhost", 1521, "XE", "dbv", "dbv")});
@@ -154,6 +154,7 @@ public abstract class AbstractTest {
 		database.dropTableNoExceptions(new Marque());
 		database.createTable(myMarqueRow);
 
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(myCarCompanyRow);
 		database.createTable(myCarCompanyRow);
 
@@ -193,14 +194,15 @@ public abstract class AbstractTest {
 
 		marquesTable.insert(marqueRows);
 
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CompanyLogo());
 		database.createTable(new CompanyLogo());
 
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
 		database.createTable(new LinkCarCompanyAndLogo());
 
 		database.setPrintSQLBeforeExecuting(true);
-		database.preventDroppingOfTables(true);
 	}
 
 	@After
@@ -212,13 +214,17 @@ public abstract class AbstractTest {
 		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CompanyLogo());
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(myMarqueRow);
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(myCarCompanyRow);
 		try {
+			database.preventDroppingOfTables(false);
+			database.preventDroppingOfDatabases(false);
 			database.preventDroppingOfDatabases(false);
 			database.dropDatabase(true);
-			database.preventDroppingOfDatabases(true);
 		} catch (UnsupportedOperationException unsupported) {
 			;
 		}

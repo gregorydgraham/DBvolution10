@@ -117,7 +117,6 @@ public class DBByteArrayTest extends AbstractTest {
 		ByteArrayWithAutoIncrement testRow = new ByteArrayWithAutoIncrement();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(testRow);
-		database.preventDroppingOfTables(true);
 		database.createTable(testRow);
 
 		testRow.carCompany.setValue(1);
@@ -133,7 +132,6 @@ public class DBByteArrayTest extends AbstractTest {
 		
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(testRow);
-		database.preventDroppingOfTables(true);
 	}
 
 	@DBTableName("bytearraywithautoincrement")

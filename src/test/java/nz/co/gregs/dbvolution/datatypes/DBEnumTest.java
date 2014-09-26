@@ -86,7 +86,6 @@ public class DBEnumTest extends AbstractTest {
 		final IntegerEnumTable integerTableExemplar = new IntegerEnumTable();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(integerTableExemplar);
-		database.preventDroppingOfTables(true);
 		database.createTable(integerTableExemplar);
 		try {
 			database.insert(
@@ -112,7 +111,6 @@ public class DBEnumTest extends AbstractTest {
 		} finally {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(integerTableExemplar);
-			database.preventDroppingOfTables(true);
 		}
 	}
 
@@ -121,7 +119,6 @@ public class DBEnumTest extends AbstractTest {
 		final StringEnumTable stringTableExemplar = new StringEnumTable();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(stringTableExemplar);
-		database.preventDroppingOfTables(true);
 		database.createTable(stringTableExemplar);
 		try {
 			database.insert(
@@ -147,7 +144,6 @@ public class DBEnumTest extends AbstractTest {
 		} finally {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(stringTableExemplar);
-			database.preventDroppingOfTables(true);
 
 		}
 	}

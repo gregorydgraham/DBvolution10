@@ -940,6 +940,7 @@ public abstract class DBDatabase implements Cloneable {
 		} finally {
 			dbStatement.close();
 		}
+		preventAccidentalDroppingOfTables=true;
 	}
 
 	/**
@@ -1037,6 +1038,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @throws UnsupportedOperationException
 	 * @throws AutoCommitActionDuringTransactionException
 	 * @throws AccidentalDroppingOfTableException
+	 * @throws AccidentalDroppingOfDatabaseException
 	 */
 	public void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
@@ -1054,6 +1056,8 @@ public abstract class DBDatabase implements Cloneable {
 		if (doIt) {
 			this.doTransaction(new DBRawSQLTransaction(dropStr));
 		}
+		preventAccidentalDroppingOfTables=true;
+		preventAccidentalDroppingDatabase=true;
 	}
 
 	/**
