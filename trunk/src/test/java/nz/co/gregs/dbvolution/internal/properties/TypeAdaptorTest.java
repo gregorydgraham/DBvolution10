@@ -31,225 +31,193 @@ import org.junit.Test;
 @SuppressWarnings("serial")
 public class TypeAdaptorTest {
 
-    private DBDatabase db;
+	private DBDatabase db;
 
-    @Before
-    public void setup() throws SQLException {
-        this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
-        this.db.setPrintSQLBeforeExecuting(false);
+	@Before
+	public void setup() throws SQLException {
+		this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
+		this.db.setPrintSQLBeforeExecuting(false);
 
 		db.preventDroppingOfTables(false);
 		db.dropTableNoExceptions(new CustomerWithDBInteger());
-		db.preventDroppingOfTables(true);
-        // create tables and add standard records
-        db.createTable(new CustomerWithDBInteger());
+		// create tables and add standard records
+		db.createTable(new CustomerWithDBInteger());
 
 //		System.out.println("Threads:");
 //		for(Thread thread: Thread.getAllStackTraces().keySet()) {
 //			System.out.println("  "+thread.getId()+": "+thread.getName());
 //		}
-        CustomerWithDBInteger c = new CustomerWithDBInteger();
-        c.uid.setValue(23);
-        c.year.setValue(2013);
-        db.insert(c);
+		CustomerWithDBInteger c = new CustomerWithDBInteger();
+		c.uid.setValue(23);
+		c.year.setValue(2013);
+		db.insert(c);
 
-        c = new CustomerWithDBInteger();
-        c.uid.setValue(22);
-        c.year.setValue(2012);
-        db.insert(c);
+		c = new CustomerWithDBInteger();
+		c.uid.setValue(22);
+		c.year.setValue(2012);
+		db.insert(c);
 
-        this.db.setPrintSQLBeforeExecuting(true);
-    }
+		this.db.setPrintSQLBeforeExecuting(true);
+	}
 
-    @After
-    public void tearDown() throws Exception {
-        db.setPrintSQLBeforeExecuting(false);
-        db.preventDroppingOfTables(false);
-        db.dropTable(new CustomerWithDBInteger());
-        try {
-            db.preventDroppingOfDatabases(false);
-            db.dropDatabase(true);
-            db.preventDroppingOfDatabases(true);
-        } catch (UnsupportedOperationException ex) {
-            ;
-        }
-    }
+	@After
+	public void tearDown() throws Exception {
+		db.setPrintSQLBeforeExecuting(false);
+		db.preventDroppingOfTables(false);
+		db.dropTable(new CustomerWithDBInteger());
+		try {
+			db.preventDroppingOfTables(false);
+			db.preventDroppingOfDatabases(false);
+			db.dropDatabase(true);
+		} catch (UnsupportedOperationException ex) {
+			;
+		}
+	}
+	
+	@Test
+	public void queriesOnDBIntegerGivenDBInteger() throws SQLException {
+		CustomerWithDBInteger query = new CustomerWithDBInteger();
+		query.uid.permittedValues(23);
 
-//	private void assertDbSetup() throws SQLException {
-//		db.setPrintSQLBeforeExecuting(false);
-//		CustomerWithDBInteger q = new CustomerWithDBInteger();
-//		q.uid.permittedValues(23);
-//		List<CustomerWithDBInteger> rows = db.get(q);
-//		assertThat(rows.size(), is(1));
-//		assertThat(rows.get(0).uid.intValue(), is(23));
-//		assertThat(rows.get(0).year.intValue(), is(2013));
-//
-//		q = new CustomerWithDBInteger();
-//		q.uid.permittedValues(22);
-//		rows = db.get(q);
-//		assertThat(rows.size(), is(1));
-//		assertThat(rows.get(0).uid.intValue(), is(22));
-//		assertThat(rows.get(0).year.intValue(), is(2012));
-//		db.setPrintSQLBeforeExecuting(true);
-//	}
-//	@Test
-//	public void createDatabaseFromSimpleTestClasses() throws SQLException {
-//		db.createTable(new CustomerWithDBInteger());
-//		
-//		CustomerWithDBInteger c = new CustomerWithDBInteger();
-//		c.uid.setLiteralValue(23);
-//		db.insert(c);
-//		
-//		CustomerWithDBInteger q = new CustomerWithDBInteger();
-//		q.uid.permittedValues(23);
-//		List<CustomerWithDBInteger> rows = db.get(q);
-//		assertThat(rows.size(), is(1));
-//		assertThat(rows.get(0).uid.intValue(), is(23));
-//	}
-    @Test
-    public void queriesOnDBIntegerGivenDBInteger() throws SQLException {
-        CustomerWithDBInteger query = new CustomerWithDBInteger();
-        query.uid.permittedValues(23);
+		List<CustomerWithDBInteger> rows = db.get(query);
+		assertThat(rows.size(), is(1));
+		assertThat(rows.get(0).uid.getValue().intValue(), is(23));
+		assertThat(rows.get(0).year.getValue().intValue(), is(2013));
+	}
 
-        List<CustomerWithDBInteger> rows = db.get(query);
-        assertThat(rows.size(), is(1));
-        assertThat(rows.get(0).uid.getValue().intValue(), is(23));
-        assertThat(rows.get(0).year.getValue().intValue(), is(2013));
-    }
+	@Test
+	public void queriesOnDBIntegerGivenStringIntegerTypeAdaptor() throws SQLException {
+		CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
+		query.uid.permittedValues(23);
 
-    @Test
-    public void queriesOnDBIntegerGivenStringIntegerTypeAdaptor() throws SQLException {
-        CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
-        query.uid.permittedValues(23);
+		List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
+		assertThat(rows.size(), is(1));
+	}
 
-        List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
-        assertThat(rows.size(), is(1));
-    }
+	@Test
+	public void queriesOnNonNullStringGivenStringIntegerTypeAdaptor() throws SQLException {
+		CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
+		query.year = "2013";
 
-    @Test
-    public void queriesOnNonNullStringGivenStringIntegerTypeAdaptor() throws SQLException {
-        CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
-        query.year = "2013";
+		List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
+		assertThat(rows.size(), is(1));
+		assertThat(rows.get(0).uid.getValue().intValue(), is(23));
+		assertThat(rows.get(0).year, is("2013"));
+	}
 
-        List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
-        assertThat(rows.size(), is(1));
-        assertThat(rows.get(0).uid.getValue().intValue(), is(23));
-        assertThat(rows.get(0).year, is("2013"));
-    }
+	@Test
+	public void queriesOnStringRangeGivenStringIntegerTypeAdaptor() throws SQLException {
+		CustomerWithDBStringIntegerTypeAdaptor query = new CustomerWithDBStringIntegerTypeAdaptor();
+		query.year.permittedRange("25", "3000");
 
-    @Test
-    public void queriesOnStringRangeGivenStringIntegerTypeAdaptor() throws SQLException {
-        CustomerWithDBStringIntegerTypeAdaptor query = new CustomerWithDBStringIntegerTypeAdaptor();
-        query.year.permittedRange("25", "3000");
+		List<CustomerWithDBStringIntegerTypeAdaptor> rows = db.get(query);
+		List<String> whereClauses = query.getWhereClausesWithoutAliases(db);
+		String allClauses = "";
+		for (String clause : whereClauses) {
+			allClauses += " and " + clause;
+		}
+		assertThat(allClauses, matchesRegex(".*>.*25.*<=.*3000.*"));
+		assertThat(rows.size(), is(2));
+	}
 
-        List<CustomerWithDBStringIntegerTypeAdaptor> rows = db.get(query);
-        List<String> whereClauses = query.getWhereClausesWithoutAliases(db);
-        String allClauses = "";
-        for(String clause: whereClauses){
-            allClauses += " and "+clause;
-        }
-        assertThat(allClauses, matchesRegex(".*>.*25.*<=.*3000.*"));
-        assertThat(rows.size(), is(2));
-    }
+	@Test
+	public void queriesWithoutFilteringOnNullSimpleFieldGivenTypeAdaptor() throws SQLException {
+		CustomerWithStringIntegerTypeAdaptor exemplar = new CustomerWithStringIntegerTypeAdaptor();
+		exemplar.uid.clear();
+		exemplar.year = null;
 
-    @Test
-    public void queriesWithoutFilteringOnNullSimpleFieldGivenTypeAdaptor() throws SQLException {
-        CustomerWithStringIntegerTypeAdaptor exemplar = new CustomerWithStringIntegerTypeAdaptor();
-        exemplar.uid.clear();
-        exemplar.year = null;
-
-        DBQuery query = db.getDBQuery(exemplar);
+		DBQuery query = db.getDBQuery(exemplar);
 //        DBQuery query = DBQuery.getInstance(db, exemplar);
-        query.setBlankQueryAllowed(true);
+		query.setBlankQueryAllowed(true);
 
-        List<CustomerWithStringIntegerTypeAdaptor> rows = query.getAllInstancesOf(exemplar);
-        assertThat(rows.size(), is(2));
-    }
+		List<CustomerWithStringIntegerTypeAdaptor> rows = query.getAllInstancesOf(exemplar);
+		assertThat(rows.size(), is(2));
+	}
 
-    @Test
-    public void populatesStringWhenQueryingOnDBIntegerGivenStringIntegerTypeAdaptor() throws SQLException {
-        CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
-        query.uid.permittedValues(23);
+	@Test
+	public void populatesStringWhenQueryingOnDBIntegerGivenStringIntegerTypeAdaptor() throws SQLException {
+		CustomerWithStringIntegerTypeAdaptor query = new CustomerWithStringIntegerTypeAdaptor();
+		query.uid.permittedValues(23);
 
-        List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
-        assertThat(rows.size(), is(1));
-        assertThat(rows.get(0).uid.getValue().intValue(), is(23));
-        assertThat(rows.get(0).year, is("2013"));
-    }
+		List<CustomerWithStringIntegerTypeAdaptor> rows = db.get(query);
+		assertThat(rows.size(), is(1));
+		assertThat(rows.get(0).uid.getValue().intValue(), is(23));
+		assertThat(rows.get(0).year, is("2013"));
+	}
 
-    @Test
-    public void insertsGivenStringIntegerTypeAdaptor() throws SQLException {
-        CustomerWithStringIntegerTypeAdaptor row = new CustomerWithStringIntegerTypeAdaptor();
-        row.uid.setValue(50);
-        row.year = "2050";
-        db.insert(row);
+	@Test
+	public void insertsGivenStringIntegerTypeAdaptor() throws SQLException {
+		CustomerWithStringIntegerTypeAdaptor row = new CustomerWithStringIntegerTypeAdaptor();
+		row.uid.setValue(50);
+		row.year = "2050";
+		db.insert(row);
 
-        CustomerWithDBInteger q = new CustomerWithDBInteger();
-        q.uid.permittedValues(50);
-        List<CustomerWithDBInteger> rows = db.get(q);
-        assertThat(rows.size(), is(1));
-        assertThat(rows.get(0).uid.getValue().intValue(), is(50));
-        assertThat(rows.get(0).year.getValue().intValue(), is(2050));
-    }
+		CustomerWithDBInteger q = new CustomerWithDBInteger();
+		q.uid.permittedValues(50);
+		List<CustomerWithDBInteger> rows = db.get(q);
+		assertThat(rows.size(), is(1));
+		assertThat(rows.get(0).uid.getValue().intValue(), is(50));
+		assertThat(rows.get(0).year.getValue().intValue(), is(2050));
+	}
 
-    // base-case "Customer": DBInteger uid (PK), DBInteger year
-    @DBTableName("Customer")
-    public static class CustomerWithDBInteger extends DBRow {
+	// base-case "Customer": DBInteger uid (PK), DBInteger year
+	@DBTableName("Customer")
+	public static class CustomerWithDBInteger extends DBRow {
 
-        @DBColumn
-        public DBInteger uid = new DBInteger();
+		@DBColumn
+		public DBInteger uid = new DBInteger();
 
-        @DBColumn
-        public DBInteger year = new DBInteger();
-    }
+		@DBColumn
+		public DBInteger year = new DBInteger();
+	}
 
-    @DBTableName("Customer")
-    public static class CustomerWithStringIntegerTypeAdaptor extends DBRow {
+	@DBTableName("Customer")
+	public static class CustomerWithStringIntegerTypeAdaptor extends DBRow {
 
-        public static class MyTypeAdaptor implements DBTypeAdaptor<String, Long> {
+		public static class MyTypeAdaptor implements DBTypeAdaptor<String, Long> {
 
-            @Override
-            public String fromDatabaseValue(Long dbvValue) {
-                return (dbvValue == null) ? null : dbvValue.toString();
-            }
+			@Override
+			public String fromDatabaseValue(Long dbvValue) {
+				return (dbvValue == null) ? null : dbvValue.toString();
+			}
 
-            @Override
-            public Long toDatabaseValue(String objectValue) {
-                return (objectValue == null) ? null : ("".equals(objectValue)) ? null : Long.parseLong(objectValue);
-            }
-        }
+			@Override
+			public Long toDatabaseValue(String objectValue) {
+				return (objectValue == null) ? null : ("".equals(objectValue)) ? null : Long.parseLong(objectValue);
+			}
+		}
 
-        @DBPrimaryKey
-        @DBColumn
-        public DBInteger uid = new DBInteger();
+		@DBPrimaryKey
+		@DBColumn
+		public DBInteger uid = new DBInteger();
 
-        @DBColumn
-        @DBAdaptType(value = MyTypeAdaptor.class, type = DBInteger.class)
-        public String year = new String();
-    }
+		@DBColumn
+		@DBAdaptType(value = MyTypeAdaptor.class, type = DBInteger.class)
+		public String year = new String();
+	}
 
-    @DBTableName("Customer")
-    public static class CustomerWithDBStringIntegerTypeAdaptor extends DBRow {
+	@DBTableName("Customer")
+	public static class CustomerWithDBStringIntegerTypeAdaptor extends DBRow {
 
-        public static class MyTypeAdaptor implements DBTypeAdaptor<String, Long> {
+		public static class MyTypeAdaptor implements DBTypeAdaptor<String, Long> {
 
-            @Override
-            public String fromDatabaseValue(Long dbvValue) {
-                return (dbvValue == null) ? null : dbvValue.toString();
-            }
+			@Override
+			public String fromDatabaseValue(Long dbvValue) {
+				return (dbvValue == null) ? null : dbvValue.toString();
+			}
 
-            @Override
-            public Long toDatabaseValue(String objectValue) {
-                return (objectValue == null) ? null : Long.parseLong(objectValue);
-            }
-        }
+			@Override
+			public Long toDatabaseValue(String objectValue) {
+				return (objectValue == null) ? null : Long.parseLong(objectValue);
+			}
+		}
 
-        @DBPrimaryKey
-        @DBColumn
-        public DBInteger uid = new DBInteger();
+		@DBPrimaryKey
+		@DBColumn
+		public DBInteger uid = new DBInteger();
 
-        @DBColumn
-        @DBAdaptType(value = MyTypeAdaptor.class, type = DBInteger.class)
-        public DBString year = new DBString();
-    }
+		@DBColumn
+		@DBAdaptType(value = MyTypeAdaptor.class, type = DBInteger.class)
+		public DBString year = new DBString();
+	}
 }

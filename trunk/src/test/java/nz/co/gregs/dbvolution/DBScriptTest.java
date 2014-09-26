@@ -89,7 +89,6 @@ public class DBScriptTest extends AbstractTest {
 		final DBTable<ScriptTestTable> table = database.getDBTable(scriptTestTable);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(scriptTestTable);
-		database.preventDroppingOfTables(true);
 		database.createTable(scriptTestTable);
 		List<ScriptTestTable> origRows = table.setBlankQueryAllowed(true).getAllRows();
 
@@ -111,7 +110,6 @@ public class DBScriptTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(origRows.size()));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(scriptTestTable);
-		database.preventDroppingOfTables(true);
 	}
 
 	@Test
@@ -120,7 +118,6 @@ public class DBScriptTest extends AbstractTest {
 		final DBTable<ScriptTestTable> table = database.getDBTable(scriptTestTable);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(scriptTestTable);
-		database.preventDroppingOfTables(true);
 		database.createTable(scriptTestTable);
 		List<ScriptTestTable> origRows = table.setBlankQueryAllowed(true).getAllRows();
 
@@ -139,7 +136,6 @@ public class DBScriptTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(origRows.size()));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(scriptTestTable);
-		database.preventDroppingOfTables(true);
 	}
 
 	public class ScriptThatAdds2Marques extends DBScript {

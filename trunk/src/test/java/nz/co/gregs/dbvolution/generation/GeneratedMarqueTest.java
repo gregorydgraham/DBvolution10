@@ -84,7 +84,6 @@ public class GeneratedMarqueTest extends AbstractTest {
 
 			database.preventDroppingOfTables(false);
 			database.dropTable(new TestAutoIncrementDetection());
-			database.preventDroppingOfTables(true);
 		}
 	}
 

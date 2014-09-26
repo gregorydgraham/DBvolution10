@@ -64,7 +64,6 @@ public class DBInsertTest extends AbstractTest {
 
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
-			database.preventDroppingOfTables(true);
 
 			database.createTable(row);
 
@@ -80,7 +79,6 @@ public class DBInsertTest extends AbstractTest {
 
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
-			database.preventDroppingOfTables(true);
 		}
 	}
 
@@ -90,7 +88,6 @@ public class DBInsertTest extends AbstractTest {
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
-		database.preventDroppingOfTables(true);
 
 		database.createTable(row);
 
@@ -100,7 +97,6 @@ public class DBInsertTest extends AbstractTest {
 		} finally {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
-			database.preventDroppingOfTables(true);
 		}
 	}
 

@@ -42,7 +42,6 @@ public class DoubleJoinTest extends AbstractTest {
 		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithSubclasses());
-		database.preventDroppingOfTables(true);
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithSubclasses());
 		final DoubleLinkedWithSubclasses doubleLinked = new DoubleJoinTest.DoubleLinkedWithSubclasses();
 		doubleLinked.uidDoubleLink.setValue(1);
@@ -68,7 +67,6 @@ public class DoubleJoinTest extends AbstractTest {
 		
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithSubclasses());
-		database.preventDroppingOfTables(true);
 	}
 
 	@Test
@@ -76,7 +74,6 @@ public class DoubleJoinTest extends AbstractTest {
 		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
-		database.preventDroppingOfTables(true);
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
 		final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
 		doubleLinked.uidDoubleLink.setValue(1);
@@ -97,7 +94,6 @@ public class DoubleJoinTest extends AbstractTest {
 		database.print(allRows);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
-		database.preventDroppingOfTables(true);
 	}
 
 	@Test
@@ -105,7 +101,6 @@ public class DoubleJoinTest extends AbstractTest {
 		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
-		database.preventDroppingOfTables(true);
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
 		final DoubleLinkedWithClass doubleLinked = new DoubleJoinTest.DoubleLinkedWithClass();
 		doubleLinked.uidDoubleLink.setValue(1);
@@ -126,7 +121,6 @@ public class DoubleJoinTest extends AbstractTest {
 		database.print(allRows);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
-		database.preventDroppingOfTables(true);
 	}
 
 	@DBTableName("double_linked_with_subclasses")

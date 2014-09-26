@@ -49,11 +49,12 @@ public class DBDateOnlyTest extends AbstractTest{
 		dateOnlyTest.dateOnly.setValue(new Date());
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(dateOnlyTest);
-		database.preventDroppingOfTables(true);
 		database.createTable(dateOnlyTest);
 		database.insert(dateOnlyTest);
 		List<DateOnlyTest> allRows = database.getDBTable(new DateOnlyTest()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(dateOnlyTest);
 	}
 	
 	public static class DateOnlyTest extends DBRow{

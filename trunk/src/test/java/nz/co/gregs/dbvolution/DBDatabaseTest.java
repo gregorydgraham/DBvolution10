@@ -49,7 +49,6 @@ public class DBDatabaseTest extends AbstractTest {
 	public void tearDown() throws Exception {
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DropTable2TestClass());
-		database.preventDroppingOfTables(true);
 		super.tearDown();
 	}
 
@@ -59,7 +58,6 @@ public class DBDatabaseTest extends AbstractTest {
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableTestClass());
-			database.preventDroppingOfTables(true);
 		} catch (AutoCommitActionDuringTransactionException ex) {
 			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
@@ -71,7 +69,6 @@ public class DBDatabaseTest extends AbstractTest {
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableTestClass());
-			database.preventDroppingOfTables(true);
 		} catch (AutoCommitActionDuringTransactionException ex) {
 			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
@@ -79,6 +76,7 @@ public class DBDatabaseTest extends AbstractTest {
 
 	@Test
 	public void testDropTableException() throws SQLException {
+		database.preventDroppingOfTables(true);
 		try {
 			database.createTable(new DropTable2TestClass());
 		} catch (SQLException ex) {
@@ -88,7 +86,14 @@ public class DBDatabaseTest extends AbstractTest {
 		}
 		try {
 			database.dropTable(new DropTable2TestClass());
-			database.preventDroppingOfTables(true);
+			throw new DBRuntimeException("Drop Table Method failed to throw a AccidentalDroppingOfTableException exception.");
+		} catch (AccidentalDroppingOfTableException oops) {
+			System.out.println("AccidentalDroppingOfTableException successfully thrown");
+		}
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTable(new DropTable2TestClass());
+			database.createTable(new DropTable2TestClass());
 			database.dropTable(new DropTable2TestClass());
 			throw new DBRuntimeException("Drop Table Method failed to throw a AccidentalDroppingOfTableException exception.");
 		} catch (AccidentalDroppingOfTableException oops) {
@@ -107,16 +112,14 @@ public class DBDatabaseTest extends AbstractTest {
 		}
 		database.preventDroppingOfTables(false);
 		database.dropTable(new DropTableTestClass());
-		database.preventDroppingOfTables(true);
 		System.out.println("DropTableTestClass table dropped successfully");
 	}
 
 	@Test(expected = AccidentalDroppingOfDatabaseException.class)
 	public void testDropDatabaseException() throws SQLException, Exception {
-		database.preventDroppingOfDatabases(true);
 		database.preventDroppingOfTables(false);
+		database.preventDroppingOfDatabases(true);
 		database.dropDatabase(false);
-		database.preventDroppingOfTables(true);
 	}
 
 	public static class CreateTableTestClass extends DBRow {

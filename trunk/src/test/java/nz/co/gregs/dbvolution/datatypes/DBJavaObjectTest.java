@@ -54,7 +54,6 @@ public class DBJavaObjectTest extends AbstractTest {
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
-		database.preventDroppingOfTables(true);
 
 		database.createTable(row);
 
@@ -72,7 +71,6 @@ public class DBJavaObjectTest extends AbstractTest {
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(foundRow);
-		database.preventDroppingOfTables(true);
 	}
 
 	public static class DBJavaObjectTable extends DBRow {
