@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.StringResult;
+import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedPatternIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
@@ -165,32 +166,6 @@ public class DBString extends QueryableDatatype implements StringResult {
 		}
 	}
 
-//	@Override
-//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
-//		blankQuery();
-//		if (resultSet == null || resultSetColumnName == null) {
-//			this.setToNull();
-//		} else {
-//			String dbValue;
-//			try {
-//				dbValue = resultSet.getString(resultSetColumnName);
-//				if (resultSet.wasNull()) {
-//					dbValue = null;
-//				}
-//			} catch (SQLException ex) {
-//				// Probably means the column wasn't selected.
-//				dbValue = null;
-//			}
-//			if (dbValue == null) {
-//				this.setToNull();
-//			} else {
-//				this.setLiteralValue(dbValue);
-//			}
-//		}
-//		setUnchanged();
-//		setDefined(true);
-//		propertyWrapper = null;
-//	}
 	@Override
 	public DBString copy() {
 		return (DBString) super.copy();
@@ -774,11 +749,17 @@ public class DBString extends QueryableDatatype implements StringResult {
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
+		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+			if (gotString != null && gotString.isEmpty()) {
+				return null;
+			}
+		}
 		return gotString;
 	}
 
 	/**
-	 * Perform case-insensitive searches based on using database compatible pattern matching. 
+	 * Perform case-insensitive searches based on using database compatible
+	 * pattern matching.
 	 *
 	 * <p>
 	 * This facilitates the LIKE operator.
@@ -794,4 +775,14 @@ public class DBString extends QueryableDatatype implements StringResult {
 	public void permittedPatternIgnoreCase(String pattern) {
 		this.setOperator(new DBPermittedPatternIgnoreCaseOperator(pattern));
 	}
+
+	@Override
+	protected DBOperator setToNull(DBDatabase database) {
+		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+			this.isDBEmptyString = true;
+			return setToNull();
+		}
+		return setToNull();
+	}
+
 }

@@ -51,7 +51,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 public class DBDate extends QueryableDatatype implements DateResult {
 
 	private static final long serialVersionUID = 1L;
-	private static SimpleDateFormat toStringFormat =  new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
+	private static SimpleDateFormat toStringFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
 
 	/**
 	 * The default constructor for DBDate.
@@ -68,8 +68,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Creates a DBDate with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBDate will be set as having the value provided but will not
-	 * be defined in the database.
+	 * The resulting DBDate will be set as having the value provided but will
+	 * not be defined in the database.
 	 *
 	 * @param date
 	 */
@@ -95,8 +95,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Creates a DBDate with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBDate will be set as having the value provided but will not
-	 * be defined in the database.
+	 * The resulting DBDate will be set as having the value provided but will
+	 * not be defined in the database.
 	 *
 	 * @param timestamp
 	 */
@@ -115,12 +115,12 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Creates a DBDate with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBDate will be set as having the value provided but will not
-	 * be defined in the database.
+	 * The resulting DBDate will be set as having the value provided but will
+	 * not be defined in the database.
 	 *
 	 * <p>
-	 * The string is parsed using {@link Date#parse(java.lang.String) } so please
-	 * ensure your string matches the requirements of that method.
+	 * The string is parsed using {@link Date#parse(java.lang.String) } so
+	 * please ensure your string matches the requirements of that method.
 	 *
 	 * @param dateAsAString
 	 */
@@ -131,15 +131,6 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		dateValue.setTime(dateLong);
 		setLiteralValue(dateValue);
 	}
-
-//	@Override
-//	public String getWhereClause(DBDatabase db, String columnName) {
-//		if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
-//			throw new RuntimeException("DATE COLUMNS CAN'T USE \"LIKE\": " + columnName);
-//		} else {
-//			return super.getWhereClause(db, columnName);
-//		}
-//	}
 
 	/**
 	 * Returns the set value of this DBDate as a Java Date instance.
@@ -178,8 +169,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
-	 * The date String will be parsed by {@link Date#parse(java.lang.String) } so
-	 * please confirms to the requirements of that method.
+	 * The date String will be parsed by {@link Date#parse(java.lang.String) }
+	 * so please confirms to the requirements of that method.
 	 *
 	 * @param dateStr
 	 */
@@ -214,26 +205,9 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		return db.getDefinition().getDateFormattedForQuery(dateValue());
 	}
 
-//	@Override
-//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-//		blankQuery();
-//		if (resultSet == null || fullColumnName == null) {
-//			this.setToNull();
-//		} else {
-//			java.sql.Date dbValue = getFromResultSet(database, resultSet, fullColumnName);
-//			if (dbValue == null) {
-//				this.setToNull();
-//			} else {
-//				this.setValue(dbValue);
-//			}
-//		}
-//		setUnchanged();
-//		setDefined(true);
-//	}
-
 	@Override
-	protected java.sql.Date getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-		java.sql.Date dbValue;
+	protected Date getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+		Date dbValue;
 		if (database.getDefinition().prefersDatesReadAsStrings()) {
 			dbValue = setByGetString(database, resultSet, fullColumnName);
 		} else {
@@ -242,35 +216,35 @@ public class DBDate extends QueryableDatatype implements DateResult {
 		return dbValue;
 	}
 
-	private java.sql.Date setByGetString(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+	private Date setByGetString(DBDatabase database, ResultSet resultSet, String fullColumnName) {
 		String string = null;
 		try {
 			string = resultSet.getString(fullColumnName);
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			throw new DBRuntimeException(sqlex);
 		}
 		if (string == null || string.isEmpty()) {
 			return null;
 		} else {
 			try {
-				return new java.sql.Date(database.getDefinition().getDateGetStringFormat().parse(string).getTime());
+				return new Date(database.getDefinition().getDateGetStringFormat().parse(string).getTime());
 			} catch (ParseException ex) {
 				throw new DBRuntimeException("Unable To Parse Date: " + string, ex);
 			}
 		}
 	}
 
-	private java.sql.Date setByGetDate(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-		java.sql.Date dbValue = null;
+	private Date setByGetDate(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+		Date dbValue = null;
 		try {
-			java.sql.Date dateValue = resultSet.getDate(fullColumnName);
+			Date dateValue = resultSet.getDate(fullColumnName);
 			if (resultSet.wasNull()) {
 				dbValue = null;
 			} else {
 				// Some drivers interpret getDate as meaning return only the date without the time
 				// so we should check both the date and the timestamp find the latest time.
 				final long timestamp = resultSet.getTimestamp(fullColumnName).getTime();
-				java.sql.Date timestampValue = new java.sql.Date(timestamp);
+				Date timestampValue = new Date(timestamp);
 				if (timestampValue.after(dateValue)) {
 					dbValue = timestampValue;
 				} else {
@@ -278,7 +252,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 				}
 			}
 		} catch (SQLException sqlex) {
-			sqlex.printStackTrace();
+			throw new DBRuntimeException(sqlex);
 		}
 		return dbValue;
 	}
@@ -310,7 +284,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -333,8 +308,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -407,12 +382,12 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	public void permittedRangeExclusive(Date lowerBound, Date upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
-	
+
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
 	 * return everything except 1 and 2.
 	 *
 	 * <p>
@@ -491,7 +466,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted
 	 */
@@ -514,8 +490,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -588,12 +564,12 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	public void permittedRangeExclusive(DateExpression lowerBound, DateExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
 	}
-	
+
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
 	 * return everything except 1 and 2.
 	 *
 	 * <p>
@@ -671,7 +647,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	}
 
 	/**
-	 * Used internally to decide whether the required query needs to include NULL values.
+	 * Used internally to decide whether the required query needs to include
+	 * NULL values.
 	 *
 	 * @return whether the query expression needs to test for NULL.
 	 */

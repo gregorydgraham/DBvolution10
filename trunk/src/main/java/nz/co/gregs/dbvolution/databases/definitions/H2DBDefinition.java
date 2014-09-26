@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -43,15 +44,7 @@ public class H2DBDefinition extends DBDefinition {
 		}
 		return "PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "')";
 	}
-
-//	@Override
-//	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
-//		if (qdt instanceof DBDate){
-//			return "TIMESTAMP WITH TIMEZONE";
-//		}
-//		return super.getSQLTypeOfDBDatatype(qdt);
-//	}
-
+	
 	@Override
 	public String formatTableName(DBRow table) {
 		return table.getTableName().toUpperCase();

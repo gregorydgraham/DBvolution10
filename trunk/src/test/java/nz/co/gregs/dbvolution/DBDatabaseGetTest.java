@@ -284,6 +284,7 @@ public class DBDatabaseGetTest extends AbstractTest {
     }
     
     @Test
+	@SuppressWarnings("unchecked")
     public void testUnignoringColumnsOnQuery() throws SQLException {
         Marque myMarqueRow = new Marque();
 		myMarqueRow.auto_created.excludedValues((String)null);
