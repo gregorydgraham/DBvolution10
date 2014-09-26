@@ -100,8 +100,8 @@ public class DBReport extends RowDefinition {
 	 * @param <A>
 	 * @param database
 	 * @param exampleReport
-	 * @return a list of DBReport instances representing the results of the report
-	 * query.
+	 * @return a list of DBReport instances representing the results of the
+	 * report query.
 	 * @throws SQLException
 	 */
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
@@ -116,18 +116,28 @@ public class DBReport extends RowDefinition {
 	}
 
 	/**
-	 * Gets all the report rows of the supplied DBReport using the supplied
+	 * Gets all the report rows of the supplied DBReport limited by the supplied
 	 * example rows.
 	 *
+	 * <p>
 	 * All supplied rows should be from a DBRow subclass that is included in the
 	 * report.
+	 *
+	 * <p>
+	 * Builtin report limitation will be used, the example rows supply further
+	 * details for constraining the report.
+	 *
+	 * <p>
+	 * This method allows you to create generic reports and apply dynamic
+	 * limitations such as date ranges, department name, and other highly
+	 * variable parameters.
 	 *
 	 * @param <A>
 	 * @param database
 	 * @param exampleReport
 	 * @param rows
-	 * @return a list of DBReport instances representing the results of the report
-	 * query.
+	 * @return a list of DBReport instances representing the results of the
+	 * report query.
 	 * @throws SQLException
 	 */
 	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
@@ -148,8 +158,8 @@ public class DBReport extends RowDefinition {
 	 * DBvolution is really doing.
 	 *
 	 * <p>
-	 * Generates the SQL query for retrieving the objects but does not execute the
-	 * SQL. Use
+	 * Generates the SQL query for retrieving the objects but does not execute
+	 * the SQL. Use
 	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  the getAllRows method}
 	 * to retrieve the rows.
 	 *
@@ -332,7 +342,7 @@ public class DBReport extends RowDefinition {
 
 	/**
 	 * Returns the list of sort columns
-	 * 
+	 *
 	 * @return the sortColumns
 	 */
 	protected ColumnProvider[] getSortColumns() {

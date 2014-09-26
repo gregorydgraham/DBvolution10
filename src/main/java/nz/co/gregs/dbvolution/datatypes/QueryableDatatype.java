@@ -487,7 +487,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 				dbValue = null;
 			}
 			if (dbValue == null) {
-				this.setToNull();
+				this.setToNull(database);
 			} else {
 				this.setLiteralValue(dbValue);
 			}
@@ -710,5 +710,25 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 */
 	protected Object getLiteralValue() {
 		return literalValue;
+	}
+
+	/**
+	 * Used during setFromResultSet to set the QDT to a database NULL value.
+	 *
+	 * <p>
+	 * DBDatabase is supplied so that database-specific processing, such as
+	 * Oracle empty strings, can be performed.
+	 *
+	 * <p>
+	 * Sets the value of this column to DBNull Also changes the operator to
+	 * DBIsNullOperator for comparisons.
+	 * 
+	 * <p>The default implementation just calls {@link #setToNull() }
+	 *
+	 * @param database
+	 * @return the DBOperator that will be used with this QDT
+	 */
+	protected DBOperator setToNull(DBDatabase database) {
+		return setToNull();
 	}
 }
