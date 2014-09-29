@@ -13,24 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.exceptions;
 
 import java.lang.reflect.Field;
 
 /**
+ * Thrown when DBvolution is unable to access a field it needs.
+ *
+ * <p>
+ * A lot of reflection is used in DBV, please ensure that the fields are
+ * publicly accessible and non-null.
  *
  * @author Gregory Graham
  */
 public class UnableToAccessDBReportFieldException extends RuntimeException {
 
-		public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-		public UnableToAccessDBReportFieldException(Object badReport, Field field, Exception ex) {
-			super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null: Especially field: " + field.getName(), ex);
-		}
-
-		public UnableToAccessDBReportFieldException(Object badReport, Exception ex) {
-			super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null.", ex);
-		}
+	/**
+	 * Thrown when DBvolution is unable to access a field it needs.
+	 *
+	 * <p>
+	 * A lot of reflection is used in DBV, please ensure that the fields are
+	 * publicly accessible and non-null.
+	 *
+	 * @author Gregory Graham
+	 * @param badReport
+	 * @param field
+	 * @param ex
+	 */
+	public UnableToAccessDBReportFieldException(Object badReport, Field field, Exception ex) {
+		super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null: Especially field: " + field.getName(), ex);
 	}
+
+	/**
+	 * Thrown when DBvolution is unable to access a field it needs.
+	 *
+	 * <p>
+	 * A lot of reflection is used in DBV, please ensure that the fields are
+	 * publicly accessible and non-null.
+	 *
+	 * @author Gregory Graham
+	 * @param badReport
+	 * @param ex
+	 */
+	public UnableToAccessDBReportFieldException(Object badReport, Exception ex) {
+		super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null.", ex);
+	}
+}

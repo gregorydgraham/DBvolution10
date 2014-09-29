@@ -37,6 +37,7 @@ import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringResult;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
@@ -53,14 +54,25 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	private boolean isDBNull = false;
 	private DBOperator operator = null;
 	private boolean undefined = true;
-	protected boolean changed = false;
-	protected QueryableDatatype previousValueAsQDT = null;
-//	protected boolean isPrimaryKey = false;
+	private boolean changed = false;
+	private QueryableDatatype previousValueAsQDT = null;
+
+	/**
+	 * Used to indicate the the QDT should be sorted so that the values run from
+	 * A->Z or 0->9 when using the {@link #setSortOrder(java.lang.Boolean) }
+	 * method.
+	 */
 	public final static Boolean SORT_ASCENDING = Boolean.TRUE;
+
+	/**
+	 * Used to indicate the the QDT should be sorted so that the values run from
+	 * Z->A or 9->0 when using the {@link #setSortOrder(java.lang.Boolean) }
+	 * method.
+	 */
 	public final static Boolean SORT_DESCENDING = Boolean.FALSE;
-	protected Boolean sort = SORT_ASCENDING;
-	transient protected PropertyWrapperDefinition propertyWrapper; // no guarantees whether this gets set
-	protected DBExpression columnExpression = null;
+	private Boolean sort = SORT_ASCENDING;
+	transient private PropertyWrapperDefinition propertyWrapperDefn; // no guarantees whether this gets set
+	private DBExpression columnExpression = null;
 	private boolean setValueHasBeenCalled = false;
 
 	/**
@@ -105,6 +117,18 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		this.columnExpression = columnExpression.copy();
 	}
 
+	/**
+	 * Factory method that creates a new QDT instance with the same class as the
+	 * provided example.
+	 *
+	 * <p>
+	 * This method only provides a new blank instance. To copy the QDT and its
+	 * fields, use {@link #copy() }.
+	 *
+	 * @param <T>
+	 * @param requiredQueryableDatatype
+	 * @return
+	 */
 	public static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
 		try {
 			return requiredQueryableDatatype.getConstructor().newInstance();
@@ -123,6 +147,17 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		}
 	}
 
+	/**
+	 * Returns an appropriate QueryableDatatype for the provided object.
+	 *
+	 * <p>
+	 * Provides the base QDTs for Integer, Number, String, Date, Byte[],
+	 * Boolean, NumberResult, StringResult, DateResult, LargeObjectResult,
+	 * BooleanResult and defaults everything else to DBJavaObject.
+	 *
+	 * @param o
+	 * @return a QDT that will provide good results for the provided object.
+	 */
 	static public QueryableDatatype getQueryableDatatypeForObject(Object o) {
 		QueryableDatatype qdt;
 		if (o instanceof QueryableDatatype) {
@@ -192,7 +227,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			}
 //			newQDT.isPrimaryKey = this.isPrimaryKey;
 			newQDT.sort = this.sort;
-			newQDT.columnExpression = this.columnExpression;
+			newQDT.setColumnExpression(this.getColumnExpression());
 		} catch (InstantiationException ex) {
 			throw new UnableInstantiateQueryableDatatypeException(this, ex);
 		} catch (IllegalAccessException ex) {
@@ -220,9 +255,19 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		return (getLiteralValue() == null ? "" : getLiteralValue().toString());
 	}
 
-	protected void blankQuery() {
+	/**
+	 * Remove the conditions, criteria, and operators applied to this QDT.
+	 *
+	 * <p>
+	 * After calling this method, this object will not cause a where clause to
+	 * be generated in any subsequent queries.
+	 *
+	 * @return this instance.
+	 */
+	protected QueryableDatatype blankQuery() {
 		isDBNull = false;
 		this.operator = null;
+		return this;
 	}
 
 	/**
@@ -267,6 +312,18 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		return whereClause;
 	}
 
+	/**
+	 * Negate the meaning of the comparison associated with this object.
+	 *
+	 * <p>
+	 * For instance, given thisQDT.permittedValue(1), thisQDT.negateOperator()
+	 * will cause the operator to return everything other than 1.
+	 *
+	 * <p>
+	 * If this object has an operator defined for it, this method will invert
+	 * the meaning of the operator by calling the operator's {@link DBOperator#invertOperator(java.lang.Boolean)
+	 * } with "true".
+	 */
 	public void negateOperator() {
 		if (getOperator() != null) {
 			getOperator().invertOperator(true);
@@ -328,10 +385,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 */
 	protected void setLiteralValue(Object newLiteralValue) {
 		if (newLiteralValue == null) {
-			setChanged(newLiteralValue);
+			QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
 			setToNull();
 		} else {
-			setChanged(newLiteralValue);
+			QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
 			this.literalValue = newLiteralValue;
 			if (newLiteralValue instanceof Date) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
@@ -344,9 +401,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		this.setHasBeenSet(true);
 	}
 
+	/**
+	 * Clear the changes to this QDT and remove the previous value as though
+	 * this QDT had never had any value other than the current value.
+	 *
+	 */
 	public void setUnchanged() {
 		changed = false;
-		previousValueAsQDT = null;
+		setPreviousValue(null);
 	}
 
 	/**
@@ -363,6 +425,16 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		return getOperator();
 	}
 
+	/**
+	 * Causes the underlying operator to explicitly include NULL values in it's
+	 * processing.
+	 *
+	 * <p>
+	 * For instance: normally thisQDT.permittedValue(1) will only return fields
+	 * with the value 1. Calling thisQDT.includingNulls() as well will cause the
+	 * operator to return fields with value 1 and those with value NULL.
+	 *
+	 */
 	public void includingNulls() {
 		this.operator.includeNulls();
 	}
@@ -447,6 +519,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		}
 	}
 
+	/**
+	 * Indicates that the value of this QDT has been changed from its defined
+	 * value.
+	 *
+	 * @return
+	 */
 	public boolean hasChanged() {
 		return changed;
 	}
@@ -494,7 +572,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		}
 		setUnchanged();
 		setDefined(true);
-		propertyWrapper = null;
+		propertyWrapperDefn = null;
 	}
 
 	/**
@@ -509,7 +587,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 */
 	abstract protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException;
 
-	private void setChanged(Object newLiteralValue) {
+	private void moveCurrentValueToPreviousValue(Object newLiteralValue) {
 		if ((this.isDBNull && newLiteralValue != null)
 				|| (getLiteralValue() != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
 			changed = true;
@@ -519,7 +597,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			} else {
 				copyOfOldValues.setLiteralValue(this.getLiteralValue());
 			}
-			previousValueAsQDT = copyOfOldValues;
+			setPreviousValue(copyOfOldValues);
 		}
 	}
 
@@ -552,7 +630,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @return the previous value of this field as an SQL formatted String
 	 */
 	public String getPreviousSQLValue(DBDatabase db) {
-		return (previousValueAsQDT == null) ? null : previousValueAsQDT.toSQLString(db);
+		QueryableDatatype prevQDT = getPreviousValue();
+		return (prevQDT == null) ? null : prevQDT.toSQLString(db);
 	}
 
 	/**
@@ -590,14 +669,37 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		return this.setSortOrder(false);
 	}
 
+	/**
+	 * Return the order in which this QDT will be sorted.
+	 *
+	 * @return
+	 */
 	public Boolean getSortOrder() {
 		return sort;
 	}
 
-	public void clear() {
-		blankQuery();
+	/**
+	 * Remove the conditions, criteria, and operators applied to this QDT.
+	 *
+	 * <p>
+	 * After calling this method, this object will not cause a where clause to
+	 * be generated in any subsequent queries.
+	 *
+	 * <p>
+	 * Synonym for {@link #blankQuery() }.
+	 *
+	 * @return this instance
+	 */
+	public QueryableDatatype clear() {
+		return blankQuery();
 	}
 
+	/**
+	 * Implements the standard Java equals method.
+	 *
+	 * @param other
+	 * @return true if the other QDT is the same as this one.
+	 */
 	public boolean equals(QueryableDatatype other) {
 		if (other == null) {
 			return false;
@@ -646,7 +748,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @param propertyWrapper
 	 */
 	void setPropertyWrapper(PropertyWrapperDefinition propertyWrapper) {
-		this.propertyWrapper = propertyWrapper;
+		this.propertyWrapperDefn = propertyWrapper;
 	}
 
 	@Override
@@ -722,13 +824,63 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * <p>
 	 * Sets the value of this column to DBNull Also changes the operator to
 	 * DBIsNullOperator for comparisons.
-	 * 
-	 * <p>The default implementation just calls {@link #setToNull() }
+	 *
+	 * <p>
+	 * The default implementation just calls {@link #setToNull() }
 	 *
 	 * @param database
 	 * @return the DBOperator that will be used with this QDT
 	 */
 	protected DBOperator setToNull(DBDatabase database) {
 		return setToNull();
+	}
+
+	/**
+	 * Used internally.
+	 *
+	 * @param hasChanged
+	 */
+	protected void setChanged(boolean hasChanged) {
+		if (hasChanged) {
+			changed = true;
+		} else {
+			setUnchanged();
+		}
+	}
+
+	/**
+	 * Used internally.
+	 *
+	 * @return the previous value of this QDT.
+	 */
+	protected QueryableDatatype getPreviousValue() {
+		return previousValueAsQDT;
+	}
+
+	/**
+	 * Used internally.
+	 *
+	 * @param queryableDatatype
+	 */
+	protected void setPreviousValue(QueryableDatatype queryableDatatype) {
+		this.previousValueAsQDT = queryableDatatype;
+	}
+
+	/**
+	 * Used internally.
+	 *
+	 * @return the PropertyWrapperDefinition
+	 */
+	protected PropertyWrapperDefinition getPropertyWrapperDefinition() {
+		return propertyWrapperDefn;
+	}
+
+	/**
+	 * Used Internally.
+	 *
+	 * @param columnExpression the columnExpression to set
+	 */
+	protected void setColumnExpression(DBExpression columnExpression) {
+		this.columnExpression = columnExpression;
 	}
 }

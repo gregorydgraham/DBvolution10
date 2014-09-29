@@ -16,23 +16,48 @@
 package nz.co.gregs.dbvolution.exceptions;
 
 /**
- * Thrown when a type is encountered that is not valid in the context in which it is found.
+ * Thrown when a type is encountered that is not valid in the context in which
+ * it is found.
  */
 public class InvalidDeclaredTypeException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
 
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Thrown when a type is encountered that is not valid in the context in
+	 * which it is found.
+	 */
 	public InvalidDeclaredTypeException() {
 		super();
 	}
-    
-    public InvalidDeclaredTypeException(String string) {
-    	super(string);
-    }
 
+	/**
+	 * Thrown when a type is encountered that is not valid in the context in
+	 * which it is found.
+	 *
+	 * @param string
+	 */
+	public InvalidDeclaredTypeException(String string) {
+		super(string);
+	}
+
+	/**
+	 * Thrown when a type is encountered that is not valid in the context in
+	 * which it is found.
+	 *
+	 * @param cause
+	 */
 	public InvalidDeclaredTypeException(Throwable cause) {
 		super(cause);
 	}
 
+	/**
+	 * Thrown when a type is encountered that is not valid in the context in
+	 * which it is found.
+	 *
+	 * @param message
+	 * @param cause
+	 */
 	public InvalidDeclaredTypeException(String message, Throwable cause) {
 		super(message, cause);
 	}

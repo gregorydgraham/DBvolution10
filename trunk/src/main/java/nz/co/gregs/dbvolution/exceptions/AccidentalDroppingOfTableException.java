@@ -21,9 +21,14 @@ package nz.co.gregs.dbvolution.exceptions;
  */
 public class AccidentalDroppingOfTableException extends DBRuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public AccidentalDroppingOfTableException() {
-        super("Accidental Dropping Of Table Detected: Dropping a table is virtually never the solution to your problem.  If, however, you really want to do this, enable dropping of tables with the DBDatabase.preventDroppingOfTables(bool) method.");
-    }
+	/**
+	 * Thrown when attempting to drop a table without first explicitly allowing
+	 * it.
+	 *
+	 */
+	public AccidentalDroppingOfTableException() {
+		super("Accidental Dropping Of Table Detected: Dropping a table is virtually never the solution to your problem.  If, however, you really want to do this, enable dropping of tables with the DBDatabase.preventDroppingOfTables(bool) method.");
+	}
 }

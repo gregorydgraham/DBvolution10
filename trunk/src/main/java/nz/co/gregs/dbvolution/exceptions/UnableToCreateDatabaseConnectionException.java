@@ -19,17 +19,33 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 /**
+ * Thrown when the database is inaccessible due to a myriad of reasons.
  *
- * @author greg
+ * @author Gregory Graham
  */
 public class UnableToCreateDatabaseConnectionException extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Thrown when the database is inaccessible due to a myriad of reasons.
+	 *
+	 * @author Gregory Graham
+	 * @param jdbcURL
+	 * @param username
+	 * @param noConnection
+	 */
 	public UnableToCreateDatabaseConnectionException(String jdbcURL, String username, SQLException noConnection) {
 		super("Unable to create a Database Connection: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + jdbcURL + " USERNAME=" + username, noConnection);
 	}
 
+	/**
+	 * Thrown when the database is inaccessible due to a myriad of reasons.
+	 *
+	 * @author Gregory Graham
+	 * @param dataSource
+	 * @param noConnection
+	 */
 	public UnableToCreateDatabaseConnectionException(DataSource dataSource, SQLException noConnection) {
 		super("Unable to create a Database Connection: please check the database URL, username, and password, and that the appropriate libaries have been supplied: DATASOURCE=" + dataSource.toString(), noConnection);
 	}

@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 /**
+ * Primary keys are sometimes required.
  *
  * @author Gregory Graham
  */
@@ -28,10 +29,24 @@ public class UndefinedPrimaryKeyException extends RuntimeException {
     public UndefinedPrimaryKeyException() {
     }
 
+/**
+ * Primary keys are sometimes required.
+ *
+ * @author Gregory Graham
+	 * @param <E>
+	 * @param thisClass
+ */
     public <E extends DBRow> UndefinedPrimaryKeyException(Class<E> thisClass) {
         super("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + " using the @"+ DBPrimaryKey.class.getSimpleName()+" annotation.");
     }
 
+/**
+ * Primary keys are sometimes required.
+ *
+ * @author Gregory Graham
+	 * @param <E>
+	 * @param thisRow
+ */
     public <E extends DBRow> UndefinedPrimaryKeyException(E thisRow) {
         this(thisRow.getClass());
     }

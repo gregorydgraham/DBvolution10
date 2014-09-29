@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
  * Base class for enumeration-aware queryable datatypes. Enumeration-aware
@@ -207,6 +208,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	@SuppressWarnings("unchecked")
 	private Class<E> getEnumType() {
 		if (enumType == null) {
+			PropertyWrapperDefinition propertyWrapper = getPropertyWrapperDefinition();
 			if (propertyWrapper == null) {
 				throw new IllegalStateException(
 						"Unable to convert literal value to enum: enum type unable to be inferred at this point. "

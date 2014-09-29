@@ -15,17 +15,21 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-
 /**
  *
  * @author Gregory Graham
  */
 public class AccidentalDroppingOfDatabaseException extends DBRuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public AccidentalDroppingOfDatabaseException() {
-        super("Accidental Dropping Of Database Prevented: Do Not Drop Databases.");
-    }
+	/**
+	 * Thrown when trying to drop a database.
+	 *
+	 * <p>
+	 * Why do you want to drop a database?
+	 */
+	public AccidentalDroppingOfDatabaseException() {
+		super("Accidental Dropping Of Database Prevented: Do Not Drop Databases.");
+	}
 }

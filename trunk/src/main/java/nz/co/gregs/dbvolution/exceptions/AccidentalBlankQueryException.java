@@ -22,7 +22,11 @@ package nz.co.gregs.dbvolution.exceptions;
 @SuppressWarnings("serial")
 public class AccidentalBlankQueryException extends RuntimeException {
 
-    public AccidentalBlankQueryException() {
+	/**
+	 * Thrown when a DBQuery or DBTable attempts to run a query without any parameters and without explicitly allowing blank queries.
+	 *
+	 */
+	public AccidentalBlankQueryException() {
         super("Accidental Blank Query Aborted: ensure you have added all the required tables, defined all the criteria, and are using the correct allowBlankQueries() setting.");
     }
     

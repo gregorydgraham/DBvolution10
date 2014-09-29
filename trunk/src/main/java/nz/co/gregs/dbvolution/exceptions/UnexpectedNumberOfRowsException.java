@@ -21,37 +21,69 @@ package nz.co.gregs.dbvolution.exceptions;
  */
 public class UnexpectedNumberOfRowsException extends Exception {
 
-    public static final long serialVersionUID = 1;
-    private long expectedRows;
-    private long actualRows;
-    public UnexpectedNumberOfRowsException(long expected, long actual, String message, Exception cause) {
-        super(message, cause);
-        this.expectedRows = expected;
-        this.actualRows = actual;
-    }
-    
-    public UnexpectedNumberOfRowsException(long expected, long actual, String message) {
-        this(expected,actual,message,null);
-        
-    }
+	private static final long serialVersionUID = 1;
+	private long expectedRows;
+	private long actualRows;
 
-    public UnexpectedNumberOfRowsException(long expected, long actual) {
-        this(expected,actual,"Unexpected Number Of Rows Found: expected "+expected+ " but found "+actual,null);
-        
-    }
+	/**
+	 * The method requires an exact number of rows to be returned, and the
+	 * actual number was wrong.
+	 *
+	 * <p>
+	 * There has probably been a mistake.
+	 *
+	 * @param expected
+	 * @param actual
+	 * @param message
+	 * @param cause
+	 */
+	public UnexpectedNumberOfRowsException(long expected, long actual, String message, Exception cause) {
+		super(message, cause);
+		this.expectedRows = expected;
+		this.actualRows = actual;
+	}
 
-    /**
-     * @return the expectedRows
-     */
-    public long getExpectedRows() {
-        return expectedRows;
-    }
+	/**
+	 * The method requires an exact number of rows to be returned, and the
+	 * actual number was wrong.
+	 *
+	 * <p>
+	 * There has probably been a mistake.
+	 * @param expected
+	 * @param actual
+	 * @param message
+	 */
+	public UnexpectedNumberOfRowsException(long expected, long actual, String message) {
+		this(expected, actual, message, null);
 
-    /**
-     * @return the actualRows
-     */
-    public long getActualRows() {
-        return actualRows;
-    }
-    
+	}
+
+	/**
+	 * The method requires an exact number of rows to be returned, and the
+	 * actual number was wrong.
+	 *
+	 * <p>
+	 * There has probably been a mistake.
+	 * @param expected
+	 * @param actual
+	 */
+	public UnexpectedNumberOfRowsException(long expected, long actual) {
+		this(expected, actual, "Unexpected Number Of Rows Found: expected " + expected + " but found " + actual, null);
+
+	}
+
+	/**
+	 * @return the expectedRows
+	 */
+	public long getExpectedRows() {
+		return expectedRows;
+	}
+
+	/**
+	 * @return the actualRows
+	 */
+	public long getActualRows() {
+		return actualRows;
+	}
+
 }

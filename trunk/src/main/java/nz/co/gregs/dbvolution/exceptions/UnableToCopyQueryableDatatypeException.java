@@ -18,15 +18,31 @@ package nz.co.gregs.dbvolution.exceptions;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
+ * Thrown when DBvolution is unable to access a field it needs.
+ *
+ * <p>
+ * A lot of reflection is used in DBV, please ensure that the fields are
+ * publicly accessible and non-null.
  *
  * @author Gregory Graham
  */
 public class UnableToCopyQueryableDatatypeException extends DBRuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public UnableToCopyQueryableDatatypeException(QueryableDatatype qdt, IllegalAccessException ex) {
-        super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + ex.getClass().getSimpleName() + ": Please ensure that all fields are accessible.", ex);
-    }
+	/**
+	 * Thrown when DBvolution is unable to access a field it needs.
+	 *
+	 * <p>
+	 * A lot of reflection is used in DBV, please ensure that the fields are
+	 * publicly accessible and non-null.
+	 *
+	 * @author Gregory Graham
+	 * @param qdt
+	 * @param ex
+	 */
+	public UnableToCopyQueryableDatatypeException(QueryableDatatype qdt, IllegalAccessException ex) {
+		super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + ex.getClass().getSimpleName() + ": Please ensure that all fields are accessible.", ex);
+	}
 
 }

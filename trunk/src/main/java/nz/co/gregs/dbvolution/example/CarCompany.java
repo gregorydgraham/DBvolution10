@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.annotations.*;
 @DBTableName("car_company")
 public class CarCompany extends DBRow {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @DBColumn("name")
     public DBString name = new DBString();
@@ -35,11 +35,20 @@ public class CarCompany extends DBRow {
     @DBColumn("uid_carcompany")
     public DBInteger uidCarCompany = new DBInteger();
 
-    public CarCompany() {
+	/**
+	 * Required Default Constructor.
+	 */
+	public CarCompany() {
     }
 
-    public CarCompany(String anme, int id) {
-        this.name.setValue(anme);
+	/**
+	 * Simple constructor.
+	 *
+	 * @param name
+	 * @param id
+	 */
+	public CarCompany(String name, int id) {
+        this.name.setValue(name);
         this.uidCarCompany.setValue(id);
     }
 }
