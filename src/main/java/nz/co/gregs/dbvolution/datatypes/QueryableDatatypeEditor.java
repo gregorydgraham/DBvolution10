@@ -25,19 +25,25 @@ public class QueryableDatatypeEditor extends PropertyEditorSupport {
 
     private String format;
 
-    public void setFormat(String format) {
+	/**
+	 * Only "upperCase" is supported.
+	 *
+	 * @param format
+	 */
+	public void setFormat(String format) {
         this.format = format;
     }
 
     @Override
     public void setAsText(String text) {
+		String inputText = text;
         if (format != null && format.equals("upperCase")) {
-            text = text.toUpperCase();
+            inputText = inputText.toUpperCase();
         }
         Object value = getValue();
         if (value instanceof QueryableDatatype) {
             QueryableDatatype qdt = (QueryableDatatype) value;
-            qdt.setValue(text);
+            qdt.setValue(inputText);
         } else {
             QueryableDatatype type = QueryableDatatype.getQueryableDatatypeForObject(value);
             setValue(type);

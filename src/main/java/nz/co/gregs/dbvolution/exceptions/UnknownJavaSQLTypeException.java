@@ -16,30 +16,44 @@
 package nz.co.gregs.dbvolution.exceptions;
 
 /**
+ * Sometimes a database has a datatype that DBvolution has not yet supported,
+ * this is one of those times.
  *
  * @author Gregory Graham
  */
 public class UnknownJavaSQLTypeException extends RuntimeException {
-    public static final long serialVersionUID = 1L;
-    
-    private int unknownJavaSQLType;
 
-    public UnknownJavaSQLTypeException(String string) {
-        super(string);
-    }
+	private static final long serialVersionUID = 1L;
 
-    public UnknownJavaSQLTypeException(String string, int columnType) {
-        this(string);
-        unknownJavaSQLType = columnType;
-    }
+	private int unknownJavaSQLType;
 
-    /**
-     * @return the unknownJavaSQLType
-     */
-    public int getUnknownJavaSQLType() {
-        return unknownJavaSQLType;
-    }
-    
-    
-    
+	/**
+	 * Sometimes a database has a datatype that DBvolution has not yet
+	 * supported, this is one of those times.
+	 *
+	 * @param string
+	 */
+	public UnknownJavaSQLTypeException(String string) {
+		super(string);
+	}
+
+	/**
+	 * Sometimes a database has a datatype that DBvolution has not yet
+	 * supported, this is one of those times.
+	 *
+	 * @param string
+	 * @param columnType
+	 */
+	public UnknownJavaSQLTypeException(String string, int columnType) {
+		this(string);
+		unknownJavaSQLType = columnType;
+	}
+
+	/**
+	 * @return the unknownJavaSQLType
+	 */
+	public int getUnknownJavaSQLType() {
+		return unknownJavaSQLType;
+	}
+
 }

@@ -13,24 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.exceptions;
 
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
+ * Thrown when there is a mismatch between the datatype of a DBRow's primary key
+ * and another's foreign key reference to it.
+ *
+ * <p>
+ * That is to say a DBPrimaryKey field has been declared as, for instance,
+ * DBInteger but the DBForeignKey elsewhere is associated with a, for instance,
+ * DBString.
+ *
+ * <p>
+ * Generally this means the foreign key field needs to be changed to the correct
+ * datatype.
  *
  * @author Gregory Graham
  */
 public class ForeignKeyCannotBeComparedToPrimaryKey extends DBRuntimeException {
+
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Thrown when there is a mismatch between the datatype of a DBRow's primary
+	 * key and another's foreign key reference to it.
+	 */
 	public ForeignKeyCannotBeComparedToPrimaryKey(Exception ex, RowDefinition source, PropertyWrapper sourceFK, RowDefinition target, PropertyWrapper targetPK) {
 		super("Unable To Construct An Expression Representing The Foreign Key Relationship From "
-				+source.getClass().getSimpleName()+":"+sourceFK.javaName()
-				+" To "+target.getClass().getSimpleName()+":"+targetPK.javaName()+": Check that the 2 fields have similar and comparable datatypes or remove the @DBForeignKey annotation", 
+				+ source.getClass().getSimpleName() + ":" + sourceFK.javaName()
+				+ " To " + target.getClass().getSimpleName() + ":" + targetPK.javaName() + ": Check that the 2 fields have similar and comparable datatypes or remove the @DBForeignKey annotation",
 				ex);
 	}
-	
+
 }

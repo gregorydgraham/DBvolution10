@@ -25,7 +25,12 @@ public class AccidentalUpdateOfUndefinedRowException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    public AccidentalUpdateOfUndefinedRowException(DBRow row) {
+	/**
+	 * Thrown when attempting to update an undefined DBRow.
+	 * 
+	 * @param row
+	 */
+	public AccidentalUpdateOfUndefinedRowException(DBRow row) {
         super("Accidental Update Of Undefined Row: Only rows that exist on the database already can be updated. Please use only rows from the database or insert the row and retreive it before updating.");
     }
 

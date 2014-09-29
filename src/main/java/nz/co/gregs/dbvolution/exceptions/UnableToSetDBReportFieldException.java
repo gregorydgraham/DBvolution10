@@ -13,24 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.exceptions;
 
 import java.lang.reflect.Field;
 
 /**
+ * Thrown when DBvolution is unable to access a field it needs.
+ *
+ * <p>
+ * A lot of reflection is used in DBV, please ensure that the fields are
+ * publicly accessible and non-null.
+ *
  *
  * @author Gregory Graham
  */
 public class UnableToSetDBReportFieldException extends RuntimeException {
 
-		public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1L;
 
-		public UnableToSetDBReportFieldException(Object badReport, Field field, Exception ex) {
-			super("Unable To Set DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " have the correct datatype: Especially field: " + field.getName(), ex);
-		}
-
-		public UnableToSetDBReportFieldException(Object badReport, Exception ex) {
-			super("Unable To Set DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " have the correct datatype.", ex);
-		}
+	/**
+	 * Thrown when DBvolution is unable to access a field it needs.
+	 *
+	 * <p>
+	 * A lot of reflection is used in DBV, please ensure that the fields are
+	 * publicly accessible and non-null.
+	 *
+	 * @param badReport
+	 * @param field
+	 * @param ex
+	 */
+	public UnableToSetDBReportFieldException(Object badReport, Field field, Exception ex) {
+		super("Unable To Set DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " have the correct datatype: Especially field: " + field.getName(), ex);
 	}
+
+	/**
+	 * Thrown when DBvolution is unable to access a field it needs.
+	 *
+	 * <p>
+	 * A lot of reflection is used in DBV, please ensure that the fields are
+	 * publicly accessible and non-null.
+	 *
+	 * @param badReport
+	 * @param ex
+	 */
+	public UnableToSetDBReportFieldException(Object badReport, Exception ex) {
+		super("Unable To Set DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " have the correct datatype.", ex);
+	}
+}

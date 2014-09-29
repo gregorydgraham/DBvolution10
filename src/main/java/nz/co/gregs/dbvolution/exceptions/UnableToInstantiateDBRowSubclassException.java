@@ -13,17 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.exceptions;
 
 import nz.co.gregs.dbvolution.DBRow;
 
-
+/**
+ * DBvolution needed to create an instance of your DBRow but was unable to do
+ * so.
+ *
+ * <p>
+ * Please ensure all DBReports have a public, argument-less, default
+ * constructor.
+ *
+ */
 public class UnableToInstantiateDBRowSubclassException extends DBRuntimeException {
+
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * DBvolution needed to create an instance of your DBRow but was unable
+	 * to do so.
+	 *
+	 * <p>
+	 * Please ensure all DBReports have a public, argument-less, default
+	 * constructor.
+	 *
+	 * @param requiredDBRow
+	 * @param cause
+	 */
 	public UnableToInstantiateDBRowSubclassException(Class<? extends DBRow> requiredDBRow, Throwable cause) {
 		super("Unable To Create " + requiredDBRow.getSimpleName() + ": Please ensure that the constructor of  " + requiredDBRow.getSimpleName() + " has no arguments, throws no exceptions, and is public. If you are using an Inner Class, make sure the inner class is \"public static\" as well.", cause);
 	}
-	
+
 }

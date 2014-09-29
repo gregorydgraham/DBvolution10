@@ -38,12 +38,12 @@ public class QueryableDatatypeSyncer {
 
 	private static final Log log = LogFactory.getLog(QueryableDatatypeSyncer.class);
 
-	protected final String propertyName;
-	protected final DBTypeAdaptor<Object, Object> typeAdaptor;
-	protected final Class<? extends QueryableDatatype> internalQdtType;
-	protected QueryableDatatype internalQdt;
-	protected SafeOneWaySimpleTypeAdaptor toExternalSimpleTypeAdaptor;
-	protected SafeOneWaySimpleTypeAdaptor toInternalSimpleTypeAdaptor;
+	private final String propertyName;
+	private final DBTypeAdaptor<Object, Object> typeAdaptor;
+	private final Class<? extends QueryableDatatype> internalQdtType;
+	private QueryableDatatype internalQdt;
+	private SafeOneWaySimpleTypeAdaptor toExternalSimpleTypeAdaptor;
+	private SafeOneWaySimpleTypeAdaptor toInternalSimpleTypeAdaptor;
 
 	/**
 	 *
@@ -84,6 +84,11 @@ public class QueryableDatatypeSyncer {
 		}
 	}
 
+	/**
+	 * supplies the QDT used internally, that is the QDT the represents the database's view of the data.
+	 *
+	 * @return the internal QDT.
+	 */
 	public QueryableDatatype getInternalQueryableDatatype() {
 		return internalQdt;
 	}
@@ -114,10 +119,10 @@ public class QueryableDatatypeSyncer {
 		if (externalQdt == null) {
 			internalQdt = null;
 		} else {
-			DBSafeInternalQDTAdaptor qdtAdaptor = new DBSafeInternalQDTAdaptor(internalQdtType, toInternalSimpleTypeAdaptor);
-			qdtAdaptor.setTargetQDTFromSourceQDT(internalQdt, externalQdt);
+			DBSafeInternalQDTAdaptor qdtAdaptor = new DBSafeInternalQDTAdaptor(internalQdtType, getToInternalSimpleTypeAdaptor());
+			qdtAdaptor.setTargetQDTFromSourceQDT(getInternalQueryableDatatype(), externalQdt);
 		}
-		return internalQdt;
+		return getInternalQueryableDatatype();
 	}
 
 	/**
@@ -128,11 +133,11 @@ public class QueryableDatatypeSyncer {
 	 * @return the updated external QDT or null if the internal QDT is null
 	 */
 	public QueryableDatatype setExternalFromInternalQDT(QueryableDatatype externalQdt) {
-		if (internalQdt == null) {
+		if (getInternalQueryableDatatype() == null) {
 			return null;
 		} else {
-			DBSafeInternalQDTAdaptor qdtAdaptor = new DBSafeInternalQDTAdaptor(externalQdt.getClass(), toExternalSimpleTypeAdaptor);
-			qdtAdaptor.setTargetQDTFromSourceQDT(externalQdt, internalQdt);
+			DBSafeInternalQDTAdaptor qdtAdaptor = new DBSafeInternalQDTAdaptor(externalQdt.getClass(), getToExternalSimpleTypeAdaptor());
+			qdtAdaptor.setTargetQDTFromSourceQDT(externalQdt, getInternalQueryableDatatype());
 		}
 		return externalQdt;
 	}
@@ -166,6 +171,20 @@ public class QueryableDatatypeSyncer {
 	}
 
 	/**
+	 * @return the toExternalSimpleTypeAdaptor
+	 */
+	protected SafeOneWaySimpleTypeAdaptor getToExternalSimpleTypeAdaptor() {
+		return toExternalSimpleTypeAdaptor;
+	}
+
+	/**
+	 * @return the toInternalSimpleTypeAdaptor
+	 */
+	protected SafeOneWaySimpleTypeAdaptor getToInternalSimpleTypeAdaptor() {
+		return toInternalSimpleTypeAdaptor;
+	}
+
+	/**
 	 * One-shot cycle-aware recursive QDT adaptor. Converts from existing QDT to
 	 * brand new one, and copies from one QDT to another.
 	 *
@@ -186,6 +205,12 @@ public class QueryableDatatypeSyncer {
 		private final List<Map.Entry<QueryableDatatype, QueryableDatatype>> observedSourcesAndTargets
 				= new ArrayList<Map.Entry<QueryableDatatype, QueryableDatatype>>();
 
+		/**
+		 * Constructor
+		 *
+		 * @param targetQdtType
+		 * @param typeAdaptor
+		 */
 		public DBSafeInternalQDTAdaptor(
 				Class<? extends QueryableDatatype> targetQdtType,
 				SafeOneWaySimpleTypeAdaptor typeAdaptor) {
@@ -259,20 +284,24 @@ public class QueryableDatatypeSyncer {
 			observedSourcesAndTargets.add(new SimpleEntry<QueryableDatatype, QueryableDatatype>(sourceQdt, targetQdt));
 
 			// copy simple fields
-			targetQdt.changed = sourceQdt.changed;
+			targetQdt.setChanged(sourceQdt.hasChanged());
 			if (sourceQdt.isNull()) {
 				targetQdt.setToNull();
 			}
 //			targetQdt.isPrimaryKey = sourceQdt.isPrimaryKey;
 			targetQdt.setDefined(sourceQdt.isDefined());
-			targetQdt.sort = sourceQdt.sort;
-			targetQdt.columnExpression = sourceQdt.columnExpression;
+			if (sourceQdt.getSortOrder().equals(QueryableDatatype.SORT_ASCENDING)) {
+				targetQdt.setSortOrderAscending();
+			} else {
+				targetQdt.setSortOrderDescending();
+			}
+			targetQdt.setColumnExpression(sourceQdt.getColumnExpression());
 
 			// copy literal value with translation
 			targetQdt.setLiteralValue(simpleTypeAdaptor.convert(sourceQdt.getLiteralValue()));
 
 			// copy previous value with translation
-			targetQdt.previousValueAsQDT = (QueryableDatatype) convert(sourceQdt.previousValueAsQDT);
+			targetQdt.setPreviousValue((QueryableDatatype) convert(sourceQdt.getPreviousValue()));
 
 			// copy operator with translation
 			if (sourceQdt.getOperator() == null) {

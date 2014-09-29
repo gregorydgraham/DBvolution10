@@ -17,13 +17,19 @@ package nz.co.gregs.dbvolution.exceptions;
 
 /**
  * Thrown when a required annotation is missing from a class or property.
+ *
  * @author Gregory Graham
  */
 public class MissingAnnotationException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public MissingAnnotationException(String string) {
-    	super(string);
-    }
+	/**
+	 * Thrown when a required annotation is missing from a class or property.
+	 *
+	 * @param string
+	 */
+	public MissingAnnotationException(String string) {
+		super(string);
+	}
 }

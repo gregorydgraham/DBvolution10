@@ -22,49 +22,50 @@ package nz.co.gregs.dbvolution.datatypes;
  */
 public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer {
 
-    /**
-     *
-     * @param propertyName used in error messages
-     * @param internalQdtType
-     * @param internalQdtLiteralType
-     * @param externalSimpleType
-     * @param typeAdaptor
-     */
-    public SimpleValueQueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype> internalQdtType,
-            Class<?> internalQdtLiteralType, Class<?> externalSimpleType, DBTypeAdaptor<Object, Object> typeAdaptor) {
-        super(propertyName, internalQdtType, internalQdtLiteralType, externalSimpleType, typeAdaptor);
-    }
+	/**
+	 *
+	 * @param propertyName used in error messages
+	 * @param internalQdtType
+	 * @param internalQdtLiteralType
+	 * @param externalSimpleType
+	 * @param typeAdaptor
+	 */
+	public SimpleValueQueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype> internalQdtType,
+			Class<?> internalQdtLiteralType, Class<?> externalSimpleType, DBTypeAdaptor<Object, Object> typeAdaptor) {
+		super(propertyName, internalQdtType, internalQdtLiteralType, externalSimpleType, typeAdaptor);
+	}
 
-    /**
-     * Sets the cached internal QDT value from the provided non-QDT external
-     * value.
-     *
-     * @param externalValue may be null
-     * @return the updated internal QDT
-     */
-    public QueryableDatatype setInternalQDTFromExternalSimpleValue(Object externalValue) {
-        Object internalValue = toInternalSimpleTypeAdaptor.convert(externalValue);
-        if (internalValue == null) {
-            // TODO complete this
-            internalQdt.setDefined(false);
-            internalQdt.setOperator(null);
-            internalQdt.literalValue = null;
-            internalQdt.changed = false;
-            internalQdt.previousValueAsQDT = null;
-        } else {
-            // TODO what type checking can/should be done here?
-            internalQdt.setValue(internalValue);
-        }
-        return internalQdt;
-    }
+	/**
+	 * Sets the cached internal QDT value from the provided non-QDT external
+	 * value.
+	 *
+	 * @param externalValue may be null
+	 * @return the updated internal QDT
+	 */
+	public QueryableDatatype setInternalQDTFromExternalSimpleValue(Object externalValue) {
+		Object internalValue = getToInternalSimpleTypeAdaptor().convert(externalValue);
+		QueryableDatatype internalQDT = getInternalQueryableDatatype();
+		if (internalValue == null) {
+			// TODO complete this
+			internalQDT.setDefined(false);
+			internalQDT.setOperator(null);
+			internalQDT.literalValue = null;
+			internalQDT.setChanged(false);
+			internalQDT.setPreviousValue(null);
+		} else {
+			// TODO what type checking can/should be done here?
+			internalQDT.setValue(internalValue);
+		}
+		return internalQDT;
+	}
 
-    /**
-     * Warning: this directly returns the value from the type adaptor, without
-     * casting to the specific type expected by the target java property.
-     *
-     * @return the internal value as a base Java object
-     */
-    public Object getExternalSimpleValueFromInternalQDT() {
-        return toExternalSimpleTypeAdaptor.convert(internalQdt.getValue());
-    }
+	/**
+	 * Warning: this directly returns the value from the type adaptor, without
+	 * casting to the specific type expected by the target java property.
+	 *
+	 * @return the internal value as a base Java object
+	 */
+	public Object getExternalSimpleValueFromInternalQDT() {
+		return getToExternalSimpleTypeAdaptor().convert(getInternalQueryableDatatype().getValue());
+	}
 }

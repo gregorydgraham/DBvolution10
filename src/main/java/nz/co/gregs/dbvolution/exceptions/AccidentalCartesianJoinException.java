@@ -22,11 +22,25 @@ package nz.co.gregs.dbvolution.exceptions;
 @SuppressWarnings("serial")
 public class AccidentalCartesianJoinException extends RuntimeException {
 
-    public AccidentalCartesianJoinException() {
-        super("Accidental Cartesian Join Aborted: ensure you have added all the required tables, defined all primary and foreign keys, and are using the correct allowCartesianJoin() setting.");
-    }
-	
+	/**
+	 * Thrown when a query will create a Cartesian Join and cartesian joins have
+	 * not been explicitly permitted.
+	 * 
+	 * <p>
+	 * Cartesian joins are generally a mistake.
+	 */
+	public AccidentalCartesianJoinException() {
+		super("Accidental Cartesian Join Aborted: ensure you have added all the required tables, defined all primary and foreign keys, and are using the correct allowCartesianJoin() setting.");
+	}
+
+	/**
+	 * Thrown when a query will create a Cartesian Join and cartesian joins have
+	 * not been explicitly permitted.
+	 * 
+	 * <p>
+	 * Cartesian joins are generally a mistake.
+	 */
 	public AccidentalCartesianJoinException(String sqlString) {
-        super("Accidental Cartesian Join Aborted: ensure you have added all the required tables, defined all primary and foreign keys, and are using the correct allowCartesianJoin() setting. SQL => "+sqlString);
-    }
+		super("Accidental Cartesian Join Aborted: ensure you have added all the required tables, defined all primary and foreign keys, and are using the correct allowCartesianJoin() setting. SQL => " + sqlString);
+	}
 }

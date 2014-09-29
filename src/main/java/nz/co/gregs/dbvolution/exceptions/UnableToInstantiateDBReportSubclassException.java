@@ -22,9 +22,18 @@ package nz.co.gregs.dbvolution.exceptions;
  */
 	public class UnableToInstantiateDBReportSubclassException extends RuntimeException {
 
-		public static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 
-		public UnableToInstantiateDBReportSubclassException(Object badReport, Exception ex) {
+	/**
+	 * DBvolution needed to create an instance of your DBReport but was unable to do so.
+	 * 
+	 * <p>
+	 * Please ensure all DBReports have a public, argument-less, default constructor.
+	 *
+	 * @param badReport
+	 * @param ex
+	 */
+	public UnableToInstantiateDBReportSubclassException(Object badReport, Exception ex) {
 			super("Unable To Create DBReport Instance: please ensure that your DBReport subclass, " + badReport.getClass().getSimpleName() + ", has a Public, No Parameter Constructor. The class itself may need to be \"public static\" as well.", ex);
 		}
 	}

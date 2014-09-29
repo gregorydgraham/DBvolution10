@@ -15,10 +15,26 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
+/**
+ * Usually thrown when 'target' isn't of the same type as 'field' is declared
+ * on.
+ *
+ * @author gregory.graham
+ */
 public class FailedToSetPropertyValueOnRowDefinition extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Thrown when the internal field cannot be read correctly.
+	 *
+	 * <p>
+	 * Apparently this should never happen.
+	 *
+	 * @param qualifiedName
+	 * @param className
+	 * @param cause
+	 */
 	public FailedToSetPropertyValueOnRowDefinition(String qualifiedName, String className, Throwable cause) {
 		super("Internal error reading field "
 				+ qualifiedName + " on object of type "
