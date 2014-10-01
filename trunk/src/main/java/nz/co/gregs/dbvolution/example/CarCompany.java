@@ -21,34 +21,74 @@ import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.annotations.*;
 
 /**
+ * A DBRow Java class that represents the "car_company" table.
+ *
+ * <p>
+ * &#64;DBTableName annotation allows the class to be renamed to fit better
+ * within a Java library while preserving the actual database name.
  *
  * @author Gregory Graham
  */
 @DBTableName("car_company")
 public class CarCompany extends DBRow {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @DBColumn("name")
-    public DBString name = new DBString();
-    @DBPrimaryKey
-    @DBColumn("uid_carcompany")
-    public DBInteger uidCarCompany = new DBInteger();
+	/**
+	 * A DBString field representing the "name" column in the database.
+	 *
+	 * <p>
+	 * &#64;DBColumn both indicates that the field is part of the database table
+	 * and protects the actual database column name from any refactoring.
+	 *
+	 * <p>
+	 * DBString indicates that the field is CHAR or VARCHAR field that naturally
+	 * provides String values in Java. It has an instance as that just makes
+	 * everyone's life easier.
+	 *
+	 */
+	@DBColumn("name")
+	public DBString name = new DBString();
+
+	/**
+	 * A DBInteger field representing the "uid_carcompany" column in the database.
+	 *
+	 * <p>
+	 * &#64;DBPrimaryKey both indicates that the field is the primary key of the
+	 * table and should be used to connect other related tables to this table.
+	 *
+	 * <p>
+	 * &#64;DBColumn both indicates that the field is part of the database table
+	 * and protects the actual database column name from any refactoring.
+	 *
+	 * <p>
+	 * DBInteger indicates that the field is INTEGER or NUMBER field that
+	 * naturally provides Integer values in Java. It has an instance as that just
+	 * makes everyone's life easier.
+	 *
+	 */
+	@DBPrimaryKey
+	@DBColumn("uid_carcompany")
+	public DBInteger uidCarCompany = new DBInteger();
 
 	/**
 	 * Required Default Constructor.
+	 *
+	 * <p>
+	 * Lots of reflection is used in DBvolution so a default no-parameter
+	 * constructor is required.
 	 */
 	public CarCompany() {
-    }
+	}
 
 	/**
-	 * Simple constructor.
+	 * Simple convenience constructor.
 	 *
 	 * @param name
 	 * @param id
 	 */
 	public CarCompany(String name, int id) {
-        this.name.setValue(name);
-        this.uidCarCompany.setValue(id);
-    }
+		this.name.setValue(name);
+		this.uidCarCompany.setValue(id);
+	}
 }

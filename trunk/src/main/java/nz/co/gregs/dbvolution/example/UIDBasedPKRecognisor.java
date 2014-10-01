@@ -17,10 +17,21 @@ package nz.co.gregs.dbvolution.example;
 
 import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
 
+/**
+ * An Example Provide To Demonstrate Implementing A PrimaryKeyRecognisor.
+ *
+ * @author gregorygraham
+ */
 public class UIDBasedPKRecognisor extends PrimaryKeyRecognisor {
-
-    @Override
-    public boolean isPrimaryKeyColumn(String tableName, String columnName) {
-        return columnName.toLowerCase().equals("uid_" + tableName.toLowerCase());
-    }
+/**
+ * Returns TRUE if the column starts with "uid_".
+ * 
+ * @param tableName
+ * @param columnName
+ * @return TRUE if the column looks like a primary key.
+ */
+	@Override
+	public boolean isPrimaryKeyColumn(String tableName, String columnName) {
+		return columnName.toLowerCase().equals("uid_" + tableName.toLowerCase());
+	}
 }
