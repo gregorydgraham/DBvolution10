@@ -20,60 +20,64 @@ import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
 
 /**
+ * An Example Class To Demonstrate Implementing A ForeignKeyRecognisor.
  *
  * @author Gregory Graham
  */
 public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 
-    Pattern fkStartPattern = Pattern.compile("^[fF][kK]_");
+	Pattern fkStartPattern = Pattern.compile("^[fF][kK]_");
 
-    /**
-     *
-     * @param tableName
-     * @param columnName
-     * @return TRUE if the column is a foreign key column, FALSE otherwise
-     */
-    @Override
-    public boolean isForeignKeyColumn(String tableName, String columnName) {
-        return columnName.toLowerCase().startsWith("fk_");
-    }
+	/**
+	 * Indicates that the column is a foreign key if the column name starts with "fk_".
+	 *
+	 * @param tableName
+	 * @param columnName
+	 * @return TRUE if the column is a foreign key column, FALSE otherwise
+	 */
+	@Override
+	public boolean isForeignKeyColumn(String tableName, String columnName) {
+		return columnName.toLowerCase().startsWith("fk_");
+	}
 
-    /**
-     *
-     * @param tableName
-     * @param columnName
-     * @return The name of the referenced column
-     */
-    @Override
-    public String getReferencedColumn(String tableName, String columnName) {
-        if (isForeignKeyColumn(tableName, columnName)) {
-            String strippedOfFK = "";
+	/**
+	 * Converts the foreign key to the referenced column name.
+	 *
+	 * @param tableName
+	 * @param columnName
+	 * @return The name of the referenced column
+	 */
+	@Override
+	public String getReferencedColumn(String tableName, String columnName) {
+		if (isForeignKeyColumn(tableName, columnName)) {
+			String strippedOfFK = "";
 
-            strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_").replaceAll("^(uid_[a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
+			strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("uid_").replaceAll("^(uid_[a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
 
-            return strippedOfFK;
-        } else {
-            return null;
-        }
-    }
+			return strippedOfFK;
+		} else {
+			return null;
+		}
+	}
 
-    /**
-     *
-     * @param tableName
-     * @param columnName
-     * @return the name of the referenced table
-     */
-    @Override
-    public String getReferencedTable(String tableName, String columnName) {
-        if (isForeignKeyColumn(tableName, columnName)) {
-            String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("");
-            if (strippedOfFK.matches("^[0-9_]+$")) {
-                return "T_" + strippedOfFK.replaceAll("^([a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
-            } else {
-                return DBTableClassGenerator.toClassCase(strippedOfFK.replaceAll("_[0-9]+$", ""));
-            }
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Converts the column name into the name of the referenced table.
+	 *
+	 * @param tableName
+	 * @param columnName
+	 * @return the name of the referenced table
+	 */
+	@Override
+	public String getReferencedTable(String tableName, String columnName) {
+		if (isForeignKeyColumn(tableName, columnName)) {
+			String strippedOfFK = fkStartPattern.matcher(columnName).replaceAll("");
+			if (strippedOfFK.matches("^[0-9_]+$")) {
+				return "T_" + strippedOfFK.replaceAll("^([a-zA-Z0-9]+)(_[0-9]*)*$", "$1");
+			} else {
+				return DBTableClassGenerator.toClassCase(strippedOfFK.replaceAll("_[0-9]+$", ""));
+			}
+		} else {
+			return null;
+		}
+	}
 }

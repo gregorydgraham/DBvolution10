@@ -22,6 +22,12 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 
 /**
+ * A DBRow Java class that represents the "lt_carco_logo_with_prev" table.
+ *
+ * <p>
+ * &#64;DBTableName annotation allows the class to be renamed to fit better
+ * within a Java library while preserving the actual database name.
+ *
  *
  * @author Gregory Graham
  */
@@ -29,15 +35,66 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 @SuppressWarnings("serial")
 public class LinkCarCompanyAndLogoWithPreviousLink extends DBRow{
     
-    @DBForeignKey(CarCompany.class)
+	/**
+	 * A DBInteger field representing the "fk_car_company" column in the database.
+	 *
+	 * <p>
+	 * &#64;DBColumn both indicates that the field is part of the database table
+	 * and protects the actual database column name from any refactoring.
+	 *
+	 * <p>
+	 * &#64;DBForeignKey indicates that this field is a reference to the primary
+	 * key of the table represented by CarCompany.
+	 *
+	 * <p>
+	 * DBInteger indicates that the field is INTEGER or NUMBER field that
+	 * naturally provides Integer values in Java. It has an instance as that just
+	 * makes everyone's life easier.
+	 * 
+	 */
+	@DBForeignKey(CarCompany.class)
     @DBColumn("fk_car_company")
     public DBInteger fkCarCompany  = new DBInteger();
     
-    @DBForeignKey(CompanyLogo.class)
+	/**
+	 * A DBInteger field representing the "fk_company_logo" column in the database.
+	 *
+	 * <p>
+	 * &#64;DBColumn both indicates that the field is part of the database table
+	 * and protects the actual database column name from any refactoring.
+	 *
+	 * <p>
+	 * &#64;DBForeignKey indicates that this field is a reference to the primary
+	 * key of the table represented by CompanyLogo.
+	 *
+	 * <p>
+	 * DBInteger indicates that the field is INTEGER or NUMBER field that
+	 * naturally provides Integer values in Java. It has an instance as that just
+	 * makes everyone's life easier.
+	 * 
+	 */
+	@DBForeignKey(CompanyLogo.class)
     @DBColumn("fk_company_logo")
     public DBInteger fkCompanyLogo  = new DBInteger();
     
-    @DBForeignKey(CompanyLogo.class)
+	/**
+	 * A DBInteger field representing the "fk_prev_company_logo" column in the database.
+	 *
+	 * <p>
+	 * &#64;DBColumn both indicates that the field is part of the database table
+	 * and protects the actual database column name from any refactoring.
+	 *
+	 * <p>
+	 * &#64;DBForeignKey indicates that this field is a reference to the primary
+	 * key of the table represented by CompanyLogo.
+	 *
+	 * <p>
+	 * DBInteger indicates that the field is INTEGER or NUMBER field that
+	 * naturally provides Integer values in Java. It has an instance as that just
+	 * makes everyone's life easier.
+	 * 
+	 */
+	@DBForeignKey(CompanyLogo.class)
     @DBColumn("fk_prev_company_logo")
     public DBInteger fkPrevCompanyLogo  = new DBInteger();
 }

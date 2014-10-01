@@ -51,8 +51,9 @@ public class RelatedTableTest extends AbstractTest {
         Marque marque = new Marque();
         
         Set<Class<? extends DBRow>> allConnectedTables = (new CarCompany()).getAllConnectedTables();
-        Assert.assertThat(allConnectedTables.size(), is(4));
+        Assert.assertThat(allConnectedTables.size(), is(5));
         Assert.assertThat(allConnectedTables.contains(Marque.class), is(true));
+        Assert.assertThat(allConnectedTables.contains(MarqueSelectQuery.class), is(true));
         Assert.assertThat(allConnectedTables.contains(CompanyLogo.class), is(true));
         Assert.assertThat(allConnectedTables.contains(LinkCarCompanyAndLogo.class), is(true));
         
@@ -72,8 +73,9 @@ public class RelatedTableTest extends AbstractTest {
         Marque marque = new Marque();
         
         Set<Class<? extends DBRow>> allRelatedTables = (new CarCompany()).getRelatedTables();
-        Assert.assertThat(allRelatedTables.size(), is(4));
+        Assert.assertThat(allRelatedTables.size(), is(5));
         Assert.assertThat(allRelatedTables.contains(Marque.class), is(true));
+        Assert.assertThat(allRelatedTables.contains(MarqueSelectQuery.class), is(true));
         Assert.assertThat(allRelatedTables.contains(CompanyLogo.class), is(true));
         Assert.assertThat(allRelatedTables.contains(LinkCarCompanyAndLogo.class), is(true));
         Assert.assertThat(allRelatedTables.contains(LinkCarCompanyAndLogoWithPreviousLink.class), is(true));
