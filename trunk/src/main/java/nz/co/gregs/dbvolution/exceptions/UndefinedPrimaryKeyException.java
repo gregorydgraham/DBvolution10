@@ -21,33 +21,53 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 /**
  * Primary keys are sometimes required.
  *
+ * <p>
+ * Indicate the Primary Key of a table by adding the
+ * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
+ *
  * @author Gregory Graham
  */
 @SuppressWarnings("serial")
 public class UndefinedPrimaryKeyException extends RuntimeException {
 
-    public UndefinedPrimaryKeyException() {
-    }
+	/**
+	 * Primary Keys are sometimes required.
+	 *
+	 * <p>
+	 * Indicate the Primary Key of a table by adding the
+	 * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
+	 *
+	 */
+	public UndefinedPrimaryKeyException() {
+	}
 
-/**
- * Primary keys are sometimes required.
- *
- * @author Gregory Graham
+	/**
+	 * Primary keys are sometimes required.
+	 *
+	 * <p>
+	 * Indicate the Primary Key of a table by adding the
+	 * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
+	 *
+	 * @author Gregory Graham
 	 * @param <E>
 	 * @param thisClass
- */
-    public <E extends DBRow> UndefinedPrimaryKeyException(Class<E> thisClass) {
-        super("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + " using the @"+ DBPrimaryKey.class.getSimpleName()+" annotation.");
-    }
+	 */
+	public <E extends DBRow> UndefinedPrimaryKeyException(Class<E> thisClass) {
+		super("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + " using the @" + DBPrimaryKey.class.getSimpleName() + " annotation.");
+	}
 
-/**
- * Primary keys are sometimes required.
- *
- * @author Gregory Graham
+	/**
+	 * Primary keys are sometimes required.
+	 *
+	 * <p>
+	 * Indicate the Primary Key of a table by adding the
+	 * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
+	 *	 
+	 * @author Gregory Graham
 	 * @param <E>
 	 * @param thisRow
- */
-    public <E extends DBRow> UndefinedPrimaryKeyException(E thisRow) {
-        this(thisRow.getClass());
-    }
+	 */
+	public <E extends DBRow> UndefinedPrimaryKeyException(E thisRow) {
+		this(thisRow.getClass());
+	}
 }

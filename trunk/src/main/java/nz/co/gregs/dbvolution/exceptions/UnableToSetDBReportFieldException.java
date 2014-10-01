@@ -29,7 +29,7 @@ import java.lang.reflect.Field;
  */
 public class UnableToSetDBReportFieldException extends RuntimeException {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Thrown when DBvolution is unable to access a field it needs.
