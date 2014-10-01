@@ -18,13 +18,42 @@ package nz.co.gregs.dbvolution.expressions;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
+/**
+ * BooleanExpression implements standard functions that produce a Boolean or
+ * TRUE/FALSE result.
+ *
+ * <p>
+ * Most query requirements are provided by {@link QueryableDatatype}s like
+ * {@link DBString} or {@link DBInteger} but expressions can provide more
+ * functions or more precise control.
+ *
+ * <p>
+ * Use a BooleanExpression to produce a conditional expression as used in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}.
+ *
+ * <p>
+ * Generally you get a BooleanExpression using an "is" method from one of the
+ * other DBExpressions but you can use {@link BooleanExpression#value(java.lang.Boolean)} or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBBoolean)} to start your Boolean expression.
+ *
+ * <p>
+ * BooleanExpression also provides the means for grouping BooleanExpressions
+ * together with the {@link #allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) allOf} or {@link #anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) anyOf} methods.
+ *
+ * <p>
+ * There are also comparisons with NULL, negations, and static true and false
+ * expressions.
+ *
+ * @author gregorygraham
+ */
 public class BooleanExpression implements BooleanResult {
 
 	private final BooleanResult onlyBool;
@@ -70,10 +99,9 @@ public class BooleanExpression implements BooleanResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -82,8 +110,8 @@ public class BooleanExpression implements BooleanResult {
 	 * </ul>
 	 *
 	 * @param bool
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static BooleanExpression value(Boolean bool) {
 		return new BooleanExpression(bool);
@@ -120,7 +148,7 @@ public class BooleanExpression implements BooleanResult {
 	 * @param booleanExpressions
 	 * @return a boolean expression that returns true IFF all the
 	 * booleanExpressions are true.
-	 * @see #anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
+	 * @see #anyOf(BooleanExpression...)
 	 */
 	public static BooleanExpression allOf(final BooleanExpression... booleanExpressions) {
 		return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
@@ -144,7 +172,7 @@ public class BooleanExpression implements BooleanResult {
 	 * @param booleanExpressions
 	 * @return a boolean expression that returns true if any of the
 	 * booleanExpressions is true.
-	 * @see #allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
+	 * @see #allOf(BooleanExpression...)
 	 */
 	public static BooleanExpression anyOf(final BooleanExpression... booleanExpressions) {
 		return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
@@ -190,8 +218,9 @@ public class BooleanExpression implements BooleanResult {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return super.toSQLString(db); 
+				return super.toSQLString(db);
 			}
+
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getNegationFunctionName();
@@ -328,15 +357,14 @@ public class BooleanExpression implements BooleanResult {
 	}
 
 	/**
-	 * Indicates if this expression is a relationship between 2, or more,
-	 * tables.
+	 * Indicates if this expression is a relationship between 2, or more, tables.
 	 *
 	 * @return the relationship
 	 */
 	public boolean isRelationship() {
 		return this.getTablesInvolved().size() > 1;
 	}
-	
+
 	@Override
 	public boolean getIncludesNull() {
 		return includeNulls || onlyBool.getIncludesNull();
@@ -346,8 +374,6 @@ public class BooleanExpression implements BooleanResult {
 //	public void setIncludesNull(boolean nullsAreIncluded) {
 //		this.includeNulls = nullsAreIncluded;
 //	}
-
-
 	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
 
 		private DBExpression onlyBool;
