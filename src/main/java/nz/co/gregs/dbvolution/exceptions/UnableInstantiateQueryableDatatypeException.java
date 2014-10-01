@@ -18,15 +18,26 @@ package nz.co.gregs.dbvolution.exceptions;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
+ * DBvolution uses a lot of reflection and this exception is thrown when a
+ * {@link QueryableDatatype} cannot be created as required.
+ *
+ * <p>
+ * Generally this means your QDT does not have a publicly accessible default constructor.
  *
  * @author Gregory Graham
  */
 public class UnableInstantiateQueryableDatatypeException extends DBRuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public UnableInstantiateQueryableDatatypeException(QueryableDatatype qdt, Exception exception) {
-        super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + exception.getClass().getSimpleName() + ": Please ensure the newInstance() method works correctly.", exception);
-    }
+	/**
+	 * Thrown when a QueryableDatatype cannot be created using the {@link Class#newInstance() } method.
+	 *
+	 * @param qdt
+	 * @param exception
+	 */
+	public UnableInstantiateQueryableDatatypeException(QueryableDatatype qdt, Exception exception) {
+		super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + exception.getClass().getSimpleName() + ": Please ensure the newInstance() method works correctly.", exception);
+	}
 
 }
