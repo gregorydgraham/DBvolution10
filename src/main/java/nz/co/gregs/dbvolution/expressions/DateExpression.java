@@ -23,20 +23,61 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBDateOnly;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 
+/**
+ * DateExpression implements standard functions that produce a Date or Time
+ * result.
+ *
+ * <p>
+ * Date and Time are considered synonymous with timestamp as that appears to be
+ * the standard usage by developers. So every date has a time component and
+ * every time has a date component. {@link DBDateOnly} implements a time-less
+ * date for DBvolution but is considered a DBDate with a time of Midnight for
+ * DateExpression purposes.
+ *
+ * <p>
+ * Most query requirements are provided by {@link QueryableDatatype}s like
+ * {@link DBString} or {@link DBInteger} but expressions can provide more
+ * functions or more precise control.
+ *
+ * <p>
+ * Use a DateExpression to produce a date from an existing column, expression or
+ * value and perform date arithmetic.
+ *
+ * <p>
+ * Generally you get a DateExpression from a column or value using
+ * {@link DateExpression#value(java.util.Date) } or
+ * {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBDate)}.
+ *
+ * @author Gregory Graham
+ */
 public class DateExpression implements DateResult {
 
 	private DateResult date1;
 	private boolean needsNullProtection = false;
 
+	/**
+	 * Default Constructor
+	 */
 	protected DateExpression() {
 	}
 
+	/**
+	 * Create a DateExpression based on an existing {@link DateResult}.
+	 *
+	 * <p>
+	 * {@link DateResult} is generally a DateExpression but it may also be a
+	 * {@link DBDate} or {@link DBDateOnly}.
+	 *
+	 * @param dateVariable
+	 */
 	public DateExpression(DateResult dateVariable) {
 		date1 = dateVariable;
 		if (date1 == null || date1.getIncludesNull()) {
@@ -44,6 +85,15 @@ public class DateExpression implements DateResult {
 		}
 	}
 
+	/**
+	 * Create a DateExpression based on an existing Date.
+	 *
+	 * <p>
+	 * This performs a similar function to {@link DateExpression#value(java.util.Date)
+	 * }.
+	 *
+	 * @param date
+	 */
 	public DateExpression(Date date) {
 		date1 = new DBDate(date);
 		if (date == null || date1.getIncludesNull()) {
@@ -92,6 +142,17 @@ public class DateExpression implements DateResult {
 		return new DateExpression(date);
 	}
 
+	/**
+	 * Creates a date expression that returns only the date part of current date
+	 * on the database.
+	 *
+	 * <p>
+	 * That is to say the expression returns the current day, according to the
+	 * database, with the time set to Midnight.
+	 *
+	 * @return a date expression of only the date part of the current database
+	 * timestamp.
+	 */
 	public static DateExpression currentDateOnly() {
 		return new DateExpression(
 				new DBNonaryFunction() {
@@ -102,6 +163,15 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates a date expression that returns the current date on the database.
+	 *
+	 * <p>
+	 * That is to say the expression returns the current day and time according
+	 * to the database.
+	 *
+	 * @return a date expression of the current database timestamp.
+	 */
 	public static DateExpression currentDate() {
 		return new DateExpression(
 				new DBNonaryFunction() {
@@ -112,6 +182,16 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates a date expression that returns the current time on the database.
+	 *
+	 * <p>
+	 * That is to say the expression returns the current time, according to the
+	 * database, with the date set to database's zero date.
+	 *
+	 * @return a date expression of only the time part of the current database
+	 * timestamp.
+	 */
 	public static DateExpression currentTime() {
 		return new DateExpression(
 				new DBNonaryFunction() {
@@ -122,6 +202,12 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates an SQL expression that returns the year part of this date
+	 * expression.
+	 *
+	 * @return the year of this date expression as a number.
+	 */
 	public NumberExpression year() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
@@ -132,6 +218,12 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates an SQL expression that returns the month part of this date
+	 * expression.
+	 *
+	 * @return the month of this date expression as a number.
+	 */
 	public NumberExpression month() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
@@ -161,6 +253,12 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates an SQL expression that returns the hour part of this date
+	 * expression.
+	 *
+	 * @return the hour of this date expression as a number.
+	 */
 	public NumberExpression hour() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
@@ -171,6 +269,12 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates an SQL expression that returns the minute part of this date
+	 * expression.
+	 *
+	 * @return the minute of this date expression as a number.
+	 */
 	public NumberExpression minute() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
@@ -181,6 +285,12 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates an SQL expression that returns the second part of this date
+	 * expression.
+	 *
+	 * @return the second of this date expression as a number.
+	 */
 	public NumberExpression second() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
@@ -191,10 +301,29 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is equal
+	 * to the supplied date.
+	 *
+	 * <p>
+	 * Be careful when using this expression as dates have lots of fields and it
+	 * is easy to miss a similar date.
+	 *
+	 * @param date
+	 * @return a BooleanExpression comparing the date and this DateExpression.
+	 */
 	public BooleanExpression is(Date date) {
 		return is(value(date));
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is equal
+	 * to the supplied date.
+	 *
+	 * @param dateExpression
+	 * @return a BooleanExpression comparing the DateResult and this
+	 * DateExpression.
+	 */
 	public BooleanExpression is(DateResult dateExpression) {
 		BooleanExpression isExpr = new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -209,10 +338,20 @@ public class DateExpression implements DateResult {
 		}
 	}
 
+	/**
+	 * Returns FALSE if this expression evaluates to NULL, otherwise TRUE.
+	 *
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isNotNull() {
 		return BooleanExpression.isNotNull(this);
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to NULL, otherwise FALSE.
+	 *
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
 	}
@@ -561,10 +700,24 @@ public class DateExpression implements DateResult {
 		);
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is less
+	 * than to the supplied date.
+	 *
+	 * @param date
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isLessThan(Date date) {
 		return isLessThan(value(date));
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is less
+	 * than to the supplied date.
+	 *
+	 * @param dateExpression
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isLessThan(DateResult dateExpression) {
 		return new BooleanExpression(new DateExpression.DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -579,10 +732,24 @@ public class DateExpression implements DateResult {
 		});
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is less
+	 * than or equal to the supplied date.
+	 *
+	 * @param date
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isLessThanOrEqual(Date date) {
 		return isLessThanOrEqual(value(date));
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is less
+	 * than or equal to the supplied DateResult.
+	 *
+	 * @param dateExpression
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -597,10 +764,24 @@ public class DateExpression implements DateResult {
 		});
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is
+	 * greater than the supplied date.
+	 *
+	 * @param date
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isGreaterThan(Date date) {
 		return isGreaterThan(value(date));
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is
+	 * greater than the supplied DateResult.
+	 *
+	 * @param dateExpression
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isGreaterThan(DateResult dateExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -615,10 +796,24 @@ public class DateExpression implements DateResult {
 		});
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is
+	 * greater than or equal to the supplied Date.
+	 *
+	 * @param date
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isGreaterThanOrEqual(Date date) {
 		return isGreaterThanOrEqual(value(date));
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is
+	 * greater than or equal to the supplied DateResult.
+	 *
+	 * @param dateExpression
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -633,6 +828,17 @@ public class DateExpression implements DateResult {
 		});
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is
+	 * included in the list of Dates.
+	 *
+	 * <p>
+	 * Be careful when using this expression as dates have lots of fields and it
+	 * is easy to miss a similar date.
+	 *
+	 * @param possibleValues
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isIn(Date... possibleValues) {
 		List<DateExpression> possVals = new ArrayList<DateExpression>();
 		for (Date num : possibleValues) {
@@ -641,6 +847,17 @@ public class DateExpression implements DateResult {
 		return isIn(possVals.toArray(new DateExpression[]{}));
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is
+	 * included in the list of Dates.
+	 *
+	 * <p>
+	 * Be careful when using this expression as dates have lots of fields and it
+	 * is easy to miss a similar date.
+	 *
+	 * @param possibleValues
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isIn(Collection<? extends Date> possibleValues) {
 		List<DateExpression> possVals = new ArrayList<DateExpression>();
 		for (Date num : possibleValues) {
@@ -649,6 +866,17 @@ public class DateExpression implements DateResult {
 		return isIn(possVals.toArray(new DateExpression[]{}));
 	}
 
+	/**
+	 * Creates an SQL expression that test whether this date expression is
+	 * included in the list of DateResults.
+	 *
+	 * <p>
+	 * Be careful when using this expression as dates have lots of fields and it
+	 * is easy to miss a similar date.
+	 *
+	 * @param possibleValues
+	 * @return a boolean expression representing the required comparison
+	 */
 	public BooleanExpression isIn(DateResult... possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
 			@Override
@@ -663,6 +891,16 @@ public class DateExpression implements DateResult {
 		}
 	}
 
+	/**
+	 * Creates and expression that replaces a NULL result with the supplied
+	 * date.
+	 *
+	 * <p>
+	 * This is a way of handling dates that should have a value but don't.
+	 *
+	 * @param alternative
+	 * @return a boolean expression representing the required comparison
+	 */
 	public DateExpression ifDBNull(Date alternative) {
 		return new DateExpression(
 				new DateExpression.DBBinaryFunction(this, new DateExpression(alternative)) {
@@ -678,6 +916,16 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Creates and expression that replaces a NULL result with the supplied
+	 * DateResult.
+	 *
+	 * <p>
+	 * This is a way of handling dates that should have a value but don't.
+	 *
+	 * @param alternative
+	 * @return a boolean expression representing the required comparison
+	 */
 	public DateExpression ifDBNull(DateResult alternative) {
 		return new DateExpression(
 				new DateExpression.DBBinaryFunction(this, alternative) {
@@ -693,6 +941,11 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Aggregates the dates found in a query as a count of items.
+	 *
+	 * @return a number expression.
+	 */
 	public NumberExpression count() {
 		return new NumberExpression(new DBUnaryNumberFunction(this) {
 			@Override
@@ -707,6 +960,15 @@ public class DateExpression implements DateResult {
 		});
 	}
 
+	/**
+	 * Aggregates the dates found in a query to find the maximum date in the
+	 * selection.
+	 *
+	 * <p>
+	 * For use in expression columns and {@link DBReport}.
+	 *
+	 * @return a number expression.
+	 */
 	public DateExpression max() {
 		return new DateExpression(new DBUnaryDateFunction(this) {
 			@Override
@@ -726,6 +988,15 @@ public class DateExpression implements DateResult {
 		});
 	}
 
+	/**
+	 * Aggregates the dates found in a query to find the minimum date in the
+	 * selection.
+	 *
+	 * <p>
+	 * For use in expression columns and {@link DBReport}.
+	 *
+	 * @return a number expression.
+	 */
 	public DateExpression min() {
 		return new DateExpression(new DBUnaryDateFunction(this) {
 			@Override
@@ -765,10 +1036,30 @@ public class DateExpression implements DateResult {
 		return needsNullProtection;
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of seconds to the date
+	 * expression.
+	 *
+	 * <p>
+	 * Negative seconds are supported.
+	 *
+	 * @param secondsToAdd
+	 * @return a DateExpression
+	 */
 	public DateExpression addSeconds(int secondsToAdd) {
 		return this.addSeconds(new NumberExpression(secondsToAdd));
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of seconds to the date
+	 * expression.
+	 *
+	 * <p>
+	 * Negative seconds are supported.
+	 *
+	 * @param secondsToAdd
+	 * @return a DateExpression
+	 */
 	public DateExpression addSeconds(NumberExpression secondsToAdd) {
 		return new DateExpression(
 				new DBBinaryDateNumberFunctionWithDateResult(this, secondsToAdd) {
@@ -785,10 +1076,28 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of minutes to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param minutesToAdd 
+	 * @return a DateExpression
+	 */
 	public DateExpression addMinutes(int minutesToAdd) {
 		return this.addMinutes(new NumberExpression(minutesToAdd));
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of minutes to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param minutesToAdd 
+	 * @return a DateExpression
+	 */
 	public DateExpression addMinutes(NumberExpression minutesToAdd) {
 		return new DateExpression(
 				new DBBinaryDateNumberFunctionWithDateResult(this, minutesToAdd) {
@@ -805,10 +1114,28 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param daysToAdd 
+	 * @return a DateExpression
+	 */
 	public DateExpression addDays(int daysToAdd) {
 		return this.addDays(new NumberExpression(daysToAdd));
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param daysToAdd 
+	 * @return a DateExpression
+	 */
 	public DateExpression addDays(NumberExpression daysToAdd) {
 		return new DateExpression(
 				new DBBinaryDateNumberFunctionWithDateResult(this, daysToAdd) {
@@ -825,10 +1152,28 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of hours to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param hoursToAdd  
+	 * @return a DateExpression
+	 */
 	DateExpression addHours(int hoursToAdd) {
 		return this.addHours(new NumberExpression(hoursToAdd));
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of hours to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param hoursToAdd  
+	 * @return a DateExpression
+	 */
 	public DateExpression addHours(NumberExpression hoursToAdd) {
 		return new DateExpression(
 				new DBBinaryDateNumberFunctionWithDateResult(this, hoursToAdd) {
@@ -845,10 +1190,28 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of weeks to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param weeksToAdd  
+	 * @return a DateExpression
+	 */
 	DateExpression addWeeks(int weeksToAdd) {
 		return this.addWeeks(new NumberExpression(weeksToAdd));
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of weeks to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param weeksToAdd  
+	 * @return a DateExpression
+	 */
 	public DateExpression addWeeks(NumberExpression weeksToAdd) {
 		return new DateExpression(
 				new DBBinaryDateNumberFunctionWithDateResult(this, weeksToAdd) {
@@ -865,10 +1228,28 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param monthsToAdd  
+	 * @return a DateExpression
+	 */
 	DateExpression addMonths(int monthsToAdd) {
 		return this.addMonths(new NumberExpression(monthsToAdd));
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param monthsToAdd  
+	 * @return a DateExpression
+	 */
 	public DateExpression addMonths(NumberExpression monthsToAdd) {
 		return new DateExpression(
 				new DBBinaryDateNumberFunctionWithDateResult(this, monthsToAdd) {
@@ -885,10 +1266,28 @@ public class DateExpression implements DateResult {
 				});
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of years to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param yearsToAdd  
+	 * @return a DateExpression
+	 */
 	DateExpression addYears(int yearsToAdd) {
 		return this.addYears(new NumberExpression(yearsToAdd));
 	}
 
+	/**
+	 * Date Arithmetic: add the supplied number of years to the date expression.
+	 * 
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param yearsToAdd  
+	 * @return a DateExpression
+	 */
 	public DateExpression addYears(NumberExpression yearsToAdd) {
 		return new DateExpression(
 				new DBBinaryDateNumberFunctionWithDateResult(this, yearsToAdd) {

@@ -1159,7 +1159,7 @@ public class NumberExpression implements NumberResult {
 	 * databases and implement it so that mod() will return the same result for
 	 * all databases.
 	 *
-	 * @param number
+	 * @param num 
 	 * @return
 	 */
 	public NumberExpression dividedBy(Number num) {

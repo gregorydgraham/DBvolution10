@@ -60,7 +60,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * There are also comparisons with NULL, negations, and static true and false
  * expressions.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class BooleanExpression implements BooleanResult {
 
