@@ -92,4 +92,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String getColumnAutoIncrementSuffix() {
 		return " IDENTITY ";
 	}
+
+	public boolean supportsXOROperator() {
+		return true;
+	}
 }

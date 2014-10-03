@@ -38,15 +38,23 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * functions or more precise control.
  *
  * <p>
- * Use a BooleanExpression to produce a conditional expression as used in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}.
+ * Use a BooleanExpression to produce a conditional expression as used in
+ * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}.
  *
  * <p>
  * Generally you get a BooleanExpression using an "is" method from one of the
- * other DBExpressions but you can use {@link BooleanExpression#value(java.lang.Boolean)} or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBBoolean)} to start your Boolean expression.
+ * other DBExpressions but you can use
+ * {@link BooleanExpression#value(java.lang.Boolean)} or
+ * {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBBoolean)} to start
+ * your Boolean expression.
  *
  * <p>
  * BooleanExpression also provides the means for grouping BooleanExpressions
- * together with the {@link #allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) allOf} or {@link #anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) anyOf} methods.
+ * together with the
+ * {@link #allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) allOf}
+ * or
+ * {@link #anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) anyOf}
+ * methods.
  *
  * <p>
  * There are also comparisons with NULL, negations, and static true and false
@@ -59,10 +67,28 @@ public class BooleanExpression implements BooleanResult {
 	private final BooleanResult onlyBool;
 	private boolean includeNulls;
 
+	/**
+	 * Default Constructor for creating new BooleanExpressions.
+	 *
+	 * <p>
+	 * The BooleanExpression created has no value or operation and is generally
+	 * useless for the end user. however it is required for sub-classing.
+	 *
+	 */
 	protected BooleanExpression() {
 		onlyBool = new DBBoolean();
 	}
 
+	/**
+	 * The normal method for creating a BooleanExpression.
+	 *
+	 * <p>
+	 * BooleanExpressions generally wrap other BooleanExpressions or similar
+	 * objects and add functionality to them. Use this constructor to wrap an
+	 * existing BooleanExpression.
+	 *
+	 * @param booleanResult
+	 */
 	public BooleanExpression(BooleanResult booleanResult) {
 		onlyBool = booleanResult;
 		if (booleanResult.getIncludesNull()) {
@@ -70,7 +96,17 @@ public class BooleanExpression implements BooleanResult {
 		}
 	}
 
-	public BooleanExpression(Boolean bool) {
+	/**
+	 * The easy way to create a BooleanExpression based on a literal value.
+	 *
+	 * <p>
+	 * BooleanExpressions generally wrap other BooleanExpressions or similar
+	 * objects and add functionality to them. Use this constructor to wrap a
+	 * known value for use in a BooleanExpression.
+	 *
+	 * @param bool
+	 */
+	private BooleanExpression(Boolean bool) {
 		onlyBool = new DBBoolean(bool);
 		if (bool == null) {
 			includeNulls = true;
@@ -99,9 +135,10 @@ public class BooleanExpression implements BooleanResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -110,17 +147,36 @@ public class BooleanExpression implements BooleanResult {
 	 * </ul>
 	 *
 	 * @param bool
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanExpression value(Boolean bool) {
 		return new BooleanExpression(bool);
 	}
 
+	/**
+	 * Compare this BooleanExpression and the given boolean using the equality
+	 * operator, that is "=" or similar.
+	 *
+	 * @param bool
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
+	 */
 	public BooleanExpression is(Boolean bool) {
 		return is(new BooleanExpression(bool));
 	}
 
+	/**
+	 * Compare this BooleanExpression and the given {@link BooleanResult} using
+	 * the equality operator, that is "=" or similar.
+	 *
+	 * <p>
+	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
+	 *
+	 * @param bool
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
+	 */
 	public BooleanExpression is(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
 			@Override
@@ -130,8 +186,39 @@ public class BooleanExpression implements BooleanResult {
 		});
 	}
 
+	/**
+	 * Compare this BooleanExpression and the given {@link BooleanResult} using
+	 * the Exclusive OR operator, that is "=" or similar.
+	 *
+	 * <p>
+	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
+	 *
+	 * @param bool
+	 * @return
+	 */
 	public BooleanExpression xor(BooleanResult bool) {
-		return this.is(bool).not();
+		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsXOROperator()) {
+					return super.toSQLString(db);
+				} else {
+					return BooleanExpression.anyOf(
+							BooleanExpression.allOf(
+									this.getFirst(), this.getSecond().not()
+							),
+							BooleanExpression.allOf(
+									this.getFirst().not(), this.getSecond())
+					).toSQLString(db);
+				}
+			}
+
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return "^";
+			}
+		});
 	}
 
 	/**
@@ -213,19 +300,49 @@ public class BooleanExpression implements BooleanResult {
 		});
 	}
 
-	public BooleanExpression convertToInteger() {
-		return new BooleanExpression(new DBUnaryBinaryFunction(this) {
+	/**
+	 * Converts boolean values to the database integer representation.
+	 *
+	 * @return a boolean
+	 */
+	public NumberExpression convertToInteger() {
+		return new NumberExpression() {
+			BooleanExpression innerBool = new BooleanExpression(onlyBool);
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return super.toSQLString(db);
+				return db.getDefinition().doBitsToIntegerTransform(this.innerBool.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getNegationFunctionName();
+			public NumberExpression copy() {
+				try {
+					return (NumberExpression) this.clone();
+				} catch (CloneNotSupportedException ex) {
+					throw new RuntimeException(ex);
+				}
 			}
-		});
+
+			@Override
+			public boolean getIncludesNull() {
+				return innerBool.getIncludesNull();
+			}
+
+			@Override
+			public DBNumber getQueryableDatatypeForExpressionValue() {
+				return new DBNumber();
+			}
+
+			@Override
+			public boolean isAggregator() {
+				return false;
+			}
+
+			@Override
+			public Set<DBRow> getTablesInvolved() {
+				return innerBool.getTablesInvolved();
+			}
+		};
 	}
 
 	/**
@@ -256,6 +373,20 @@ public class BooleanExpression implements BooleanResult {
 		return this.negate();
 	}
 
+	/**
+	 * Returns FALSE if the given {@link DBExpression} evaluates to NULL,
+	 * otherwise TRUE.
+	 *
+	 * <p>
+	 * DBExpression subclasses include
+	 * {@link QueryableDatatype QueryableDatatypes} like {@link DBString} and
+	 * {@link DBInteger} as well as
+	 * {@link NumberExpression}, {@link StringExpression}, {@link DateExpression},
+	 * and {@link LargeObjectExpression}.
+	 *
+	 * @param possibleNullExpression
+	 * @return a BooleanExpression
+	 */
 	public static BooleanExpression isNotNull(DBExpression possibleNullExpression) {
 		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
 
@@ -271,14 +402,48 @@ public class BooleanExpression implements BooleanResult {
 		});
 	}
 
+	/**
+	 * Returns FALSE if the given {@link ColumnProvider} evaluates to NULL, otherwise
+	 * TRUE.
+	 * 
+	 * <p>
+	 * Obtain a {@link ColumnProvider} by using the column method of {@link DBRow}.
+	 *
+	 * @param possibleNullExpression
+	 * @return a BooleanExpression
+	 */
 	public static BooleanExpression isNotNull(ColumnProvider possibleNullExpression) {
 		return isNotNull(possibleNullExpression.getColumn().asExpression());
 	}
 
+	/**
+	 * Returns TRUE if the given {@link ColumnProvider} evaluates to NULL, otherwise
+	 * FALSE.
+	 * 
+	 * <p>
+	 * Obtain a {@link ColumnProvider} by using the column method of {@link DBRow}.
+	 *
+	 * @param possibleNullExpression
+	 * @return a BooleanExpression
+	 */
 	public static BooleanExpression isNull(ColumnProvider possibleNullExpression) {
 		return isNull(possibleNullExpression.getColumn().asExpression());
 	}
 
+	/**
+	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL,
+	 * otherwise FALSE.
+	 *
+	 * <p>
+	 * DBExpression subclasses include
+	 * {@link QueryableDatatype QueryableDatatypes} like {@link DBString} and
+	 * {@link DBInteger} as well as
+	 * {@link NumberExpression}, {@link StringExpression}, {@link DateExpression},
+	 * and {@link LargeObjectExpression}.
+	 *
+	 * @param possibleNullExpression
+	 * @return a BooleanExpression
+	 */
 	public static BooleanExpression isNull(DBExpression possibleNullExpression) {
 		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
 
@@ -295,6 +460,14 @@ public class BooleanExpression implements BooleanResult {
 		});
 	}
 
+	/**
+	 * Creates an Aggregate function that counts the rows returned by the query.
+	 * 
+	 * <p>
+	 * For use within a {@link DBReport}
+	 *
+	 * @return a NumberExpression to add to a DBReport field.
+	 */
 	public NumberExpression count() {
 		return new NumberExpression(new DBUnaryNumberFunction(this) {
 			@Override
@@ -309,6 +482,11 @@ public class BooleanExpression implements BooleanResult {
 		});
 	}
 
+	/**
+	 * Creates an expression that will always return FALSE.
+	 *
+	 * @return an expression that will always evaluate to TRUE.
+	 */
 	public static BooleanExpression falseExpression() {
 		return new BooleanExpression() {
 			@Override
@@ -323,6 +501,11 @@ public class BooleanExpression implements BooleanResult {
 		};
 	}
 
+	/**
+	 * Creates an expression that will always return TRUE.
+	 *
+	 * @return an expression that will always evaluate to TRUE.
+	 */
 	public static BooleanExpression trueExpression() {
 		return new BooleanExpression() {
 			@Override
@@ -357,7 +540,8 @@ public class BooleanExpression implements BooleanResult {
 	}
 
 	/**
-	 * Indicates if this expression is a relationship between 2, or more, tables.
+	 * Indicates if this expression is a relationship between 2, or more,
+	 * tables.
 	 *
 	 * @return the relationship
 	 */
@@ -365,6 +549,10 @@ public class BooleanExpression implements BooleanResult {
 		return this.getTablesInvolved().size() > 1;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public boolean getIncludesNull() {
 		return includeNulls || onlyBool.getIncludesNull();
@@ -627,12 +815,27 @@ public class BooleanExpression implements BooleanResult {
 
 	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
 
-		private BooleanResult first;
-		private BooleanResult second;
+		private BooleanExpression first;
+		private BooleanExpression second;
 
-		DBBinaryBooleanArithmetic(BooleanResult first, BooleanResult second) {
+		DBBinaryBooleanArithmetic(BooleanExpression first, BooleanExpression second) {
 			this.first = first;
 			this.second = second;
+		}
+
+		DBBinaryBooleanArithmetic(BooleanResult first, BooleanExpression second) {
+			this.first = new BooleanExpression(first);
+			this.second = second;
+		}
+
+		DBBinaryBooleanArithmetic(BooleanExpression first, BooleanResult second) {
+			this.first = first;
+			this.second = new BooleanExpression(second);
+		}
+
+		DBBinaryBooleanArithmetic(BooleanResult first, BooleanResult second) {
+			this.first = new BooleanExpression(first);
+			this.second = new BooleanExpression(second);
 		}
 
 		@Override
@@ -642,14 +845,14 @@ public class BooleanExpression implements BooleanResult {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			String sqlString = first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
-			if (first.getIncludesNull()) {
+			String sqlString = getFirst().toSQLString(db) + this.getEquationOperator(db) + getSecond().toSQLString(db);
+			if (getFirst().getIncludesNull()) {
 				final DBDefinition defn = db.getDefinition();
-				sqlString = second.toSQLString(db) + " IS " + defn.getNull() + defn.beginOrLine() + sqlString;
+				sqlString = getSecond().toSQLString(db) + " IS " + defn.getNull() + defn.beginOrLine() + sqlString;
 			}
-			if (second.getIncludesNull()) {
+			if (getSecond().getIncludesNull()) {
 				final DBDefinition defn = db.getDefinition();
-				sqlString = first.toSQLString(db) + " IS " + defn.getNull() + defn.beginOrLine() + sqlString;
+				sqlString = getFirst().toSQLString(db) + " IS " + defn.getNull() + defn.beginOrLine() + sqlString;
 			}
 			return "(" + sqlString + ")";
 		}
@@ -664,8 +867,8 @@ public class BooleanExpression implements BooleanResult {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond().copy();
 			return newInstance;
 		}
 
@@ -674,18 +877,18 @@ public class BooleanExpression implements BooleanResult {
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
 			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
 			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator();
 		}
 
 		@Override
@@ -697,5 +900,18 @@ public class BooleanExpression implements BooleanResult {
 //		public void setIncludesNull(boolean nullsAreIncluded) {
 //			;
 //		}
+		/**
+		 * @return the first
+		 */
+		protected BooleanExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		protected BooleanExpression getSecond() {
+			return second;
+		}
 	}
 }

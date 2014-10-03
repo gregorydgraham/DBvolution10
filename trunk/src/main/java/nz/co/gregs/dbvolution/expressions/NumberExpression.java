@@ -500,11 +500,6 @@ public class NumberExpression implements NumberResult {
 			public boolean getIncludesNull() {
 				return false;
 			}
-
-//			@Override
-//			public void setIncludesNull(boolean nullsAreIncluded) {
-//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//			}
 		});
 	}
 

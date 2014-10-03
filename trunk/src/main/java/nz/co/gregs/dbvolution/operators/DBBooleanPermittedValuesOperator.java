@@ -30,7 +30,7 @@ public class DBBooleanPermittedValuesOperator extends DBPermittedValuesOperator 
 			if (permitted == null) {
 				this.includeNulls = true;
 			} else {
-				expr = new BooleanExpression(permitted);
+				expr = BooleanExpression.value(permitted);
 			}
 			if (expr==null) {
 				operator = new DBIsNullOperator();

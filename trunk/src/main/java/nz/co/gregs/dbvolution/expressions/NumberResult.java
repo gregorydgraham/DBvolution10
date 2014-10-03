@@ -31,15 +31,8 @@ package nz.co.gregs.dbvolution.expressions;
  * @author greg
  * @see DBExpression
  */
-public interface NumberResult extends DBExpression, RangeComparable{
+public interface NumberResult extends DBExpression, RangeComparable, ExpressionCanHaveNullValues{
     
     @Override
     public NumberResult copy();
-
-	/**
-	 * Indicates whether the current search criteria requires special coverage for NULL values.
-	 *
-	 * @return TRUE if the search criteria requires NULLs to be handled, otherwise FALSE.
-	 */
-	public boolean getIncludesNull();
 }

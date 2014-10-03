@@ -94,9 +94,6 @@ public class DBExistsOperator extends DBOperator {
 		private DBRow outerTable = null;
 		private DBRow innerTable = null;
 
-		protected ExistsExpression() {
-		}
-
 		public ExistsExpression(DBRow outerTable, Object outerQDT, DBRow innerTable, Object innerQDT) {
 			this.outerTable = outerTable;
 			this.innerTable = DBRow.copyDBRow(innerTable);
