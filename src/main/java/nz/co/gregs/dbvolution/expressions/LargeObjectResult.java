@@ -32,9 +32,10 @@ package nz.co.gregs.dbvolution.expressions;
  * @author greg
  * @see DBExpression
  */
-public interface LargeObjectResult extends DBExpression {
+public interface LargeObjectResult extends DBExpression, ExpressionCanHaveNullValues {
 
     @Override
     public LargeObjectResult copy();
+	
     
 }

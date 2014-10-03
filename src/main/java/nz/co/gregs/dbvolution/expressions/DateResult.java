@@ -31,10 +31,9 @@ package nz.co.gregs.dbvolution.expressions;
  * @author greg
  * @see DBExpression
  */
-public interface DateResult extends DBExpression, RangeComparable {
+public interface DateResult extends DBExpression, RangeComparable, ExpressionCanHaveNullValues {
 
     @Override
     public DateResult copy();
 
-	public boolean getIncludesNull();
 }

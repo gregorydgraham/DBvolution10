@@ -31,16 +31,9 @@ package nz.co.gregs.dbvolution.expressions;
  * @author Gregory Graham
  * @see DBExpression
  */
-public interface StringResult extends DBExpression, RangeComparable{
+public interface StringResult extends DBExpression, RangeComparable, ExpressionCanHaveNullValues{
     
     @Override
     public StringResult copy();
-
-	/**
-	 * Returns TRUE if this expression requires support for possible NULL database values.
-	 *
-	 * @return TRUE if the expression should check for NULLs, FALSE otherwise. 
-	 */
-	public boolean getIncludesNull();
     
 }

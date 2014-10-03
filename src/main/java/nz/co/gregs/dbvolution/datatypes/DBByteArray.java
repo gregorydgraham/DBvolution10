@@ -506,4 +506,9 @@ public class DBByteArray extends DBLargeObject {
 		return bytes;
 	}
 
+	@Override
+	public boolean getIncludesNull() {
+		return false;
+	}
+
 }

@@ -2064,4 +2064,13 @@ public abstract class DBDefinition {
 	public String doBooleanValueTransform(Boolean boolValue) {
 		return beginNumberValue() + (boolValue ? 1 : 0) + endNumberValue();
 	}
+
+	/**
+	 * Indicates whether the database supports use of the "^" operator to perform boolean XOR.
+	 *
+	 * @return TRUE if the database supports "^" as XOR, FALSE otherwise.
+	 */
+	public boolean supportsXOROperator() {
+		return false;
+	}
 }

@@ -328,4 +328,9 @@ public class DBJavaObject<O> extends DBLargeObject {
 		}
 		return obj;
 	}
+	
+	@Override
+	public boolean getIncludesNull() {
+		return false;
+	}
 }

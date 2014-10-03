@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 public class LargeObjectExpression implements LargeObjectResult {
 
     private final LargeObjectResult qdt;
+	private boolean nullProtectionRequired;
 
     protected LargeObjectExpression() {
         qdt = new DBByteArray();
@@ -31,6 +32,9 @@ public class LargeObjectExpression implements LargeObjectResult {
 
     public LargeObjectExpression(LargeObjectResult copy) {
         qdt = copy;
+		if (copy == null || copy.getIncludesNull()) {
+			nullProtectionRequired = true;
+		}
     }
 
     @Override
@@ -68,6 +72,11 @@ public class LargeObjectExpression implements LargeObjectResult {
 
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
+	}
+
+	@Override
+	public boolean getIncludesNull() {
+		return nullProtectionRequired;
 	}
 
 }
