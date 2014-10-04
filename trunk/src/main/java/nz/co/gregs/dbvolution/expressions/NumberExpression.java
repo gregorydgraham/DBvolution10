@@ -1160,7 +1160,7 @@ public class NumberExpression implements NumberResult {
 	 * all databases.
 	 *
 	 * @param num 
-	 * @return
+	 * @return a NumberExpression of a division operation.
 	 */
 	public NumberExpression dividedBy(Number num) {
 		return new NumberExpression(new DivisionBinaryArithmetic(this, new NumberExpression(num)));
@@ -1182,7 +1182,7 @@ public class NumberExpression implements NumberResult {
 	 * all databases.
 	 *
 	 * @param number
-	 * @return
+	 * @return a NumberExpression of a Modulus operation.
 	 */
 	public NumberExpression mod(NumberResult number) {
 		return new NumberExpression(new DBBinaryFunction(this, number) {

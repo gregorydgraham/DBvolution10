@@ -37,7 +37,6 @@ public class UnableToAccessDBReportFieldException extends RuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @author Gregory Graham
 	 * @param badReport
 	 * @param field
 	 * @param ex
@@ -53,7 +52,6 @@ public class UnableToAccessDBReportFieldException extends RuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @author Gregory Graham
 	 * @param badReport
 	 * @param ex
 	 */

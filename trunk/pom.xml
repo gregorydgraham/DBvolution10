@@ -168,6 +168,7 @@
 								<testNuoDB>true</testNuoDB>
 								<testOracle>true</testOracle>
 								<testMySQLMXJDB>true</testMySQLMXJDB>
+								<testJavaDB>true</testJavaDB>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -377,6 +378,28 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>JavaDBTest</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.17</version>
+						<configuration>
+							<systemPropertyVariables>
+								<testJavaDB>true</testJavaDB>
+							</systemPropertyVariables>
+							<includes>
+								<include>**/*.java</include>
+							</includes>
+							<threadCount>1</threadCount>
+							<forkCount>1</forkCount>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
   
 	<dependencies>
@@ -494,6 +517,11 @@
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.1.0.1.0</version>
 		</dependency>-->
+	 <dependency>
+	  <groupId>org.apache.derby</groupId>
+	  <artifactId>derbyclient</artifactId>
+	  <version>10.11.1.1</version>
+	 </dependency>
 	</dependencies>
 	<distributionManagement>
 		<repository>

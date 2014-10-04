@@ -91,7 +91,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * Implements the standard Java equals method.
 	 *
 	 * @param other
-	 * @return
+	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
 	public boolean equals(QueryableDatatype other) {

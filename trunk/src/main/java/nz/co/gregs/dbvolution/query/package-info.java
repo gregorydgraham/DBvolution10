@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Internal API plus QueryGraph.
  * <p>
  * Somewhat internal but the QueryGraph is too cool to hide.  Show it of using {@link nz.co.gregs.dbvolution.DBQuery#displayQueryGraph() }
  * <p>

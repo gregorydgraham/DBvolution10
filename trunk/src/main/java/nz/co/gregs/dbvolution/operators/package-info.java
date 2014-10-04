@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * The Operators Used By QueryableDatatypes To Provide The Most Common Conditions.
  * <p>
  * Operators are used internally by QueryableDatatypes, you shouldn't need them directly.
  * <p>

@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Classes To Implement And Store Database Changes and Actions.
  * <p>
  * DBAction collects the semantics of INSERT, UPDATE, and DELETE in a database agnostic way.
  * <p>

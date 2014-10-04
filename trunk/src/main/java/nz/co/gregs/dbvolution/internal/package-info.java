@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Internal API.
  * <p>
  * Internal API. Please don't use the internal as it is subject to arbitrary change.
  * <p>

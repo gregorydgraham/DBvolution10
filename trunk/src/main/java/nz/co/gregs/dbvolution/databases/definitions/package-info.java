@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * DBDefinition Subclasses For Supported Databases.
  * <p>
  * DBDefinitions hold all the SQL snippets required to make correct SQL scripts.
  * <p>

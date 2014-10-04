@@ -1,18 +1,10 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
-import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
-import nz.co.gregs.dbvolution.exceptions.FailedToSetPropertyValueOnRowDefinition;
 
 /**
  * Low-level internal abstraction layer over java fields and bean-properties.
@@ -104,7 +96,7 @@ interface JavaProperty {
 	/**
      * Gets a <tt>Type</tt> object that represents the formal type of the property,
      * including generic parameters, if any.
-	 * @return
+	 * @return the generic type of the property.
 	 */
 	public Type genericType();
 	

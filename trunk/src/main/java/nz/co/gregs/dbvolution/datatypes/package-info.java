@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * DBvolution Equivalents For The Standard Java and Database Types.
  * <p>
  * QueryableDatatypes like DBString, DBByteArray, and DBInteger make querying
  * trivial.

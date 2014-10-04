@@ -1,5 +1,5 @@
 /**
- * <h2>DBvolution: Always Java, Never SQL.</h2>
+ * <h2>Core DBvolution Classes</h2>
  * <p>
  * DBvolution removes Object/Relational Impedance by using classes to represent
  * and store the information on each table, and using special datatypes to make

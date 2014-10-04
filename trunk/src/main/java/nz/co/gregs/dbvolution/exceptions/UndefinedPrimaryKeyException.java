@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 /**
- * Primary keys are sometimes required.
+ * Primary keys are sometimes required, this is one of those times.
  *
  * <p>
  * Indicate the Primary Key of a table by adding the
@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 public class UndefinedPrimaryKeyException extends RuntimeException {
 
 	/**
-	 * Primary Keys are sometimes required.
+	 * Primary Keys are sometimes required, this is one of those times.
 	 *
 	 * <p>
 	 * Indicate the Primary Key of a table by adding the
@@ -48,7 +48,6 @@ public class UndefinedPrimaryKeyException extends RuntimeException {
 	 * Indicate the Primary Key of a table by adding the
 	 * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
 	 *
-	 * @author Gregory Graham
 	 * @param <E>
 	 * @param thisClass
 	 */
@@ -63,7 +62,6 @@ public class UndefinedPrimaryKeyException extends RuntimeException {
 	 * Indicate the Primary Key of a table by adding the
 	 * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
 	 *	 
-	 * @author Gregory Graham
 	 * @param <E>
 	 * @param thisRow
 	 */

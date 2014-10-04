@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Classes For Creating Portable References To Database Columns In Java Classes.
  * <p>
  * Columns are an abstract concept that allows the programmer to collect the table, row, and field information in one object.
  * <p>

@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Automatically Create DBRow Classes Based An Existing Schema.
  * <p>
  * To use DBV, first create a connection to your database using the DBDatabase
  * subclasses in {@link nz.co.gregs.dbvolution.databases}.
