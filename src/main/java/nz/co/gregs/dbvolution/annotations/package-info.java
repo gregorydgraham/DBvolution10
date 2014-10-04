@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Annotations To Store Database Semantics In Java.
  * <p>
  * These annotations help collect the semantic information known about the database.
  * <p>

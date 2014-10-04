@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Examples Used In Development And Testing That May Be Useful For Learning.
  * <p>
  * Examples of DBRow sub-classes used in the tests and provided as a resource to the new programmer.
  * <p>

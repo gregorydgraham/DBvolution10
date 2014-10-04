@@ -30,7 +30,6 @@ public class UnableToCreateDatabaseConnectionException extends DBRuntimeExceptio
 	/**
 	 * Thrown when the database is inaccessible due to a myriad of reasons.
 	 *
-	 * @author Gregory Graham
 	 * @param jdbcURL
 	 * @param username
 	 * @param noConnection
@@ -42,7 +41,6 @@ public class UnableToCreateDatabaseConnectionException extends DBRuntimeExceptio
 	/**
 	 * Thrown when the database is inaccessible due to a myriad of reasons.
 	 *
-	 * @author Gregory Graham
 	 * @param dataSource
 	 * @param noConnection
 	 */

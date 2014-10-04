@@ -240,7 +240,7 @@ public class JavaBeanProperty implements JavaProperty {
 	 * Tests whether two annotations are semantically identical.
 	 * @param ann1
 	 * @param ann2
-	 * @return
+	 * @return TRUE if the annotations are semantically identical, otherwise FALSE.
 	 */
 	protected static <A extends Annotation> boolean annotationsEqual(A ann1, A ann2) {
 		List<Object> values1 = getAnnotationValues(ann1);
@@ -251,7 +251,7 @@ public class JavaBeanProperty implements JavaProperty {
 	/**
 	 * Gets the attribute values of the annotation.
 	 * @param annotation
-	 * @return
+	 * @return a list of the values associated with the annotation.
 	 */
 	protected static <A extends Annotation> List<Object> getAnnotationValues(A annotation) {
 		List<Object> values = new ArrayList<Object>();

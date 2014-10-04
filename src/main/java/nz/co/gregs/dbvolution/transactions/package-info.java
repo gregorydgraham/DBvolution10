@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Low-Level Transaction Support.
  * <p>
  * Implements transactions and used automatically by {@link nz.co.gregs.dbvolution.DBScript}
  * <p>

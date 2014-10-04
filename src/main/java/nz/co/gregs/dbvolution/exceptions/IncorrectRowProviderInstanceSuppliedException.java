@@ -62,7 +62,7 @@ public class IncorrectRowProviderInstanceSuppliedException extends RuntimeExcept
 	 * of the object, but it isn't.
 	 *
 	 * @param qdt
-	 * @return
+	 * @return an IncorrectRowProviderInstanceSuppliedException
 	 */
 	public static IncorrectRowProviderInstanceSuppliedException newMultiRowInstance(Object qdt) {
 		StringBuilder buf = new StringBuilder();

@@ -16,7 +16,6 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	 * example, this exception will be thrown when property accessor methods
 	 * throw exceptions.
 	 *
-	 * @author Malcolm Lett
 	 */
 	public DBThrownByEndUserCodeException() {
 	}
@@ -26,7 +25,6 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	 * example, this exception will be thrown when property accessor methods
 	 * throw exceptions.
 	 *
-	 * @author Malcolm Lett
 	 * @param message
 	 */
 	public DBThrownByEndUserCodeException(String message) {
@@ -38,7 +36,6 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	 * example, this exception will be thrown when property accessor methods
 	 * throw exceptions.
 	 *
-	 * @author Malcolm Lett
 	 * @param cause
 	 */
 	public DBThrownByEndUserCodeException(Throwable cause) {
@@ -50,7 +47,6 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	 * example, this exception will be thrown when property accessor methods
 	 * throw exceptions.
 	 *
-	 * @author Malcolm Lett
 	 * @param message
 	 * @param cause
 	 */

@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * DBDatabase Subclasses That Connect to Specific Supported Databases.
  * <p>
  * DBvolution removes Object/Relational Impedance by using classes to represent
  * and store the information on each table, and using special datatypes to make

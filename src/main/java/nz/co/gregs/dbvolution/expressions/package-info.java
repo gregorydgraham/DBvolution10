@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Make Complex Conditions For Your Queries Using Expressions .
  * <p>
  * DBExpressions like {@link nz.co.gregs.dbvolution.expressions.StringExpression}, {@link nz.co.gregs.dbvolution.expressions.NumberExpression}, and {@link nz.co.gregs.dbvolution.expressions.DateExpression} allow the construction of complicated query criteria and conditions.
  * <p>

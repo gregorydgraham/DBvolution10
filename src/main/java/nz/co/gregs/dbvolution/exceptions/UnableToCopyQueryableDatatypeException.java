@@ -37,7 +37,6 @@ public class UnableToCopyQueryableDatatypeException extends DBRuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @author Gregory Graham
 	 * @param qdt
 	 * @param ex
 	 */

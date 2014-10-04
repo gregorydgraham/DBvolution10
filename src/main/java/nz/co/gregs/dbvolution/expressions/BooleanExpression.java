@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -194,7 +195,7 @@ public class BooleanExpression implements BooleanResult {
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool
-	 * @return
+	 * @return a BooleanExpression of an XOR operation.
 	 */
 	public BooleanExpression xor(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
@@ -549,19 +550,11 @@ public class BooleanExpression implements BooleanResult {
 		return this.getTablesInvolved().size() > 1;
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	@Override
 	public boolean getIncludesNull() {
 		return includeNulls || onlyBool.getIncludesNull();
 	}
 
-//	@Override
-//	public void setIncludesNull(boolean nullsAreIncluded) {
-//		this.includeNulls = nullsAreIncluded;
-//	}
 	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
 
 		private DBExpression onlyBool;

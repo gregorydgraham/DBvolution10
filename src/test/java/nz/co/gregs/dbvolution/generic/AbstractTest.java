@@ -91,6 +91,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testOracle") != null) {
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("localhost", 1521, "XE", "dbv", "dbv")});
 		}
+		if (System.getProperty("testJavaDB") != null) {
+			databases.add(new Object[]{"JavaDB", new JavaDB("localhost", 1527, "dbv", "dbv", "dbv")});
+		}
 		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
@@ -109,7 +112,7 @@ public abstract class AbstractTest {
 	public String testableSQL(String str) {
 		if (str != null) {
 			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
-			if (database instanceof OracleDB) {
+			if ((database instanceof OracleDB)||(database instanceof JavaDB)) {
 				return trimStr.replaceAll(" oo", " __").replaceAll(" +[aA][sS] +", " ").replaceAll("\"", "").replaceAll(" *; *$", "");
 			} else if (database instanceof PostgresDB) {
 				return trimStr.replaceAll("::[a-zA-Z]*", "");
@@ -128,7 +131,9 @@ public abstract class AbstractTest {
 					.replaceAll(" DB[_0-9]+", "")
 					.replaceAll("[ \\r\\n]+", " ")
 					.toLowerCase();
-			if (database instanceof OracleDB) {
+			if ((database instanceof OracleDB)
+					||(database instanceof JavaDB)
+					) {
 				return trimStr
 						.replaceAll(" oo", " __")
 						.replaceAll("\"", "")

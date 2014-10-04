@@ -1,5 +1,5 @@
 /**
- * DBvolution: Always Java, Never SQL.
+ * Specific Exceptions For Specific Errors.
  * <p>
  * One of the big problems with JDBC is the refusal by vendors to sub-class
  * SQLException, which prevents any programmer from automatically coping with

@@ -50,7 +50,7 @@ public class InterfaceInfo {
 	
 	/**
 	 * Indicates whether the implementation type actually makes any attempt to implement the interface type.
-	 * @return
+	 * @return TRUE or FALSE
 	 */
 	public boolean isInterfaceImplementedByImplementation() {
 		return interfaceImplementedByImplementation;
@@ -254,7 +254,7 @@ public class InterfaceInfo {
 	 * Converts the given type into a concise representation
 	 * suitable for inclusion in error messages and logging.
 	 * @param type
-	 * @return
+	 * @return a String describing the type succinctly
 	 */
 	protected static String descriptionOf(Type type) {
 		try {
@@ -270,7 +270,7 @@ public class InterfaceInfo {
 	 * Converts the given type array into a concise representation
 	 * suitable for inclusion in error messages and logging.
 	 * @param type
-	 * @return
+	 * @return a String describing the types succinctly.
 	 */
 	static String descriptionOf(Type[] types) {
 		try {
@@ -449,7 +449,7 @@ public class InterfaceInfo {
 		/**
 		 * Gets a default single bound given no further information.
 		 * This has an upper bound of {@code Object}, and no lower bound.
-		 * @return
+		 * @return a ParameterBounds
 		 */
 		public static ParameterBounds defaultBounds() {
 			return new ParameterBounds(new Type[]{Object.class}, null);
@@ -472,7 +472,7 @@ public class InterfaceInfo {
 		 * @param paramValuesByTypeVariableName a map from TypeVariable name to actual specified bounds;
 		 *        must contain values for all type variable references;
 		 *        null if none defined
-		 * @return
+		 * @return an array of ParameterBounds object.
 		 * @throws UnsupportedOperationException if not a class or parameterized type
 		 */
 		public static ParameterBounds[] boundsForParametersOf(Type parameterizedTypeRef,
@@ -505,7 +505,7 @@ public class InterfaceInfo {
 		 * will reflect that.
 		 * If the class has no generic parameters, an empty array is returned.
 		 * @param parameterizedClass
-		 * @return
+		 * @return an array of ParameterBounds objects
 		 */
 		public static ParameterBounds[] boundsForParametersOf(Class<?> parameterizedClass) {
 			List<ParameterBounds> bounds = new ArrayList<ParameterBounds>();
@@ -601,7 +601,7 @@ public class InterfaceInfo {
 		
 		/**
 		 * Gets a string representation suitable for debugging.
-		 * @return 
+		 * @return a string of this object.
 		 */
 		@Override
 		public String toString() {
