@@ -82,15 +82,22 @@ public class DBByteArrayTest extends AbstractTest {
 		companyLogo.imageBytes.setFromFileSystem(image);
 		database.insert(companyLogo);
 
-		File newFile = new File("found_toyota_logo.jpg");
-		newFile.delete();
+		database.print(database.getDBTable(new CompanyLogo()).setBlankQueryAllowed(true).getAllRows());
+		
+		File newFile = new File("retrieveRowWithByteArray.jpg");
+		try {
+			newFile.delete();
+		} catch (Exception exp) {
+			;// I just need it gone
+		}
 
 		companyLogo = new CompanyLogo();
 		CompanyLogo firstRow = database.getDBTable(companyLogo).getRowsByPrimaryKey(1).get(0);
-		System.out.println("row = " + firstRow.toString());
+		database.print(database.getDBTable(companyLogo).getRowsByPrimaryKey(1));
 		firstRow.imageBytes.writeToFileSystem(newFile.getName());
 		newFile = new File(newFile.getName());
 		Assert.assertThat(newFile.length(), is(image.length()));
+		newFile.delete();
 	}
 
 	@Test
@@ -129,7 +136,7 @@ public class DBByteArrayTest extends AbstractTest {
 		System.out.println("row = " + firstRow.toString());
 		String stringValue = firstRow.imageBytes.stringValue();
 		Assert.assertThat(stringValue, is(sourceDataAsString));
-		
+
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(testRow);
 	}

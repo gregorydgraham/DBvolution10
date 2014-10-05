@@ -43,7 +43,7 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
         super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
-		System.setProperty("h2.storeLocalTime ", "true");
+//		System.setProperty("h2.storeLocalTime ", "true");
 		this.storedConnection = getConnection();
 		this.storedConnection.createStatement();
     }
@@ -56,7 +56,7 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(DataSource dataSource) throws SQLException {
         super(new H2DBDefinition(), dataSource);
-		System.setProperty("h2.storeLocalTime ", "true");
+//		System.setProperty("h2.storeLocalTime ", "true");
 		this.storedConnection = getConnection();
 		this.storedConnection.createStatement();
     }
@@ -79,7 +79,7 @@ public class H2DB extends DBDatabase {
 
 	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {
-		System.setProperty("h2.storeLocalTime ", "true");
+//		System.setProperty("h2.storeLocalTime ", "true");
 		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
 	}
     

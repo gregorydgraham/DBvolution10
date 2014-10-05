@@ -50,7 +50,7 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean supportsGeneratedKeys(QueryOptions options) {
+	public boolean supportsGeneratedKeys() {
 		return false;
 	}
 

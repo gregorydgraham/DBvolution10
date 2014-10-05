@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -75,8 +76,7 @@ public class DBByteArray extends DBLargeObject {
 
 	/**
 	 *
-	 * @return the standard SQL datatype that corresponds to this QDT as a
-	 * String
+	 * @return the standard SQL datatype that corresponds to this QDT as a String
 	 */
 	@Override
 	public String getSQLDatatype() {
@@ -113,8 +113,7 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Unlike {@link #setValue(java.io.InputStream) setting an InputStream}, the
 	 * file is read immediately and stored internally. If you would prefer to
-	 * delay the reading of the file, wrap the file in a
-	 * {@link FileInputStream}.
+	 * delay the reading of the file, wrap the file in a {@link FileInputStream}.
 	 *
 	 * @param fileToRead
 	 * @throws IOException
@@ -173,7 +172,6 @@ public class DBByteArray extends DBLargeObject {
 //
 //		setDefined(true);
 //	}
-
 	private byte[] getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		InputStream inputStream;
@@ -184,31 +182,50 @@ public class DBByteArray extends DBLargeObject {
 		if (inputStream == null) {
 			this.setToNull();
 		} else {
-			InputStream input = new BufferedInputStream(inputStream);
-			List<byte[]> byteArrays = new ArrayList<byte[]>();
-
-			int totalBytesRead = 0;
-			try {
-				byte[] resultSetBytes;
-				resultSetBytes = new byte[100000];
-				int bytesRead = input.read(resultSetBytes);
-				while (bytesRead > 0) {
-					totalBytesRead += bytesRead;
-					byteArrays.add(resultSetBytes);
-					resultSetBytes = new byte[100000];
-					bytesRead = input.read(resultSetBytes);
-				}
-			} catch (IOException ex) {
-				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			bytes = new byte[totalBytesRead];
-			int bytesAdded = 0;
-			for (byte[] someBytes : byteArrays) {
-				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-				bytesAdded += someBytes.length;
-			}
-//			this.setValue(bytes);
+			bytes = getBytesFromInputStream(inputStream, bytes);
 		}
+		return bytes;
+	}
+
+	private byte[] getFromBLOB(ResultSet resultSet, String fullColumnName) throws SQLException {
+		byte[] bytes = new byte[]{};
+		Blob blob = resultSet.getBlob(fullColumnName);
+		if (resultSet.wasNull()) {
+			blob = null;
+		}
+		if (blob == null) {
+			this.setToNull();
+		} else {
+			InputStream inputStream = blob.getBinaryStream();
+			bytes = getBytesFromInputStream(inputStream, bytes);
+		}
+		return bytes;
+	}
+
+	private byte[] getBytesFromInputStream(InputStream inputStream, byte[] bytes) {
+		InputStream input = new BufferedInputStream(inputStream);
+		List<byte[]> byteArrays = new ArrayList<byte[]>();
+		int totalBytesRead = 0;
+		try {
+			byte[] resultSetBytes;
+			resultSetBytes = new byte[100000];
+			int bytesRead = input.read(resultSetBytes);
+			while (bytesRead > 0) {
+				totalBytesRead += bytesRead;
+				byteArrays.add(resultSetBytes);
+				resultSetBytes = new byte[100000];
+				bytesRead = input.read(resultSetBytes);
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		bytes = new byte[totalBytesRead];
+		int bytesAdded = 0;
+		for (byte[] someBytes : byteArrays) {
+			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+			bytesAdded += someBytes.length;
+		}
+//			this.setValue(bytes);
 		return bytes;
 	}
 
@@ -442,8 +459,7 @@ public class DBByteArray extends DBLargeObject {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this
-	 * DBByteArray.
+	 * Returns the byte[] used internally to store the value of this DBByteArray.
 	 *
 	 * @return the byte[] value of this DBByteArray.
 	 */
@@ -500,6 +516,8 @@ public class DBByteArray extends DBLargeObject {
 			bytes = getFromGetBytes(resultSet, fullColumnName);
 		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
 			bytes = getFromCLOB(resultSet, fullColumnName);
+		} else if (defn.prefersLargeObjectsReadAsBLOB()) {
+			bytes = getFromBLOB(resultSet, fullColumnName);
 		} else {
 			bytes = getFromBinaryStream(resultSet, fullColumnName);
 		}

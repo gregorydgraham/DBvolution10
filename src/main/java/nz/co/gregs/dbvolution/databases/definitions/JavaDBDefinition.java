@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 public class JavaDBDefinition extends DBDefinition {
@@ -130,7 +131,20 @@ public class JavaDBDefinition extends DBDefinition {
 				+ (length.trim().isEmpty() ? "" : ", " + length)
 				+ ") ";
 	}
-	
-	
+
+	@Override
+	public boolean prefersLargeObjectsReadAsBLOB() {
+		return true;
+	}
+
+	@Override
+	public boolean prefersLargeObjectsSetAsBLOB() {
+		return false;
+	}
+
+	@Override
+	public boolean supportsPagingNatively(QueryOptions options) {
+		return false;
+	}
 
 }

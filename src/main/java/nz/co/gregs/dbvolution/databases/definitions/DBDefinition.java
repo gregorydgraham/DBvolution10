@@ -855,7 +855,7 @@ public abstract class DBDefinition {
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		int rowLimit = options.getRowLimit();
 		Integer pageNumber = options.getPageIndex();
-		if (rowLimit < 1) {
+		if (rowLimit < 1||!this.supportsPagingNatively(options)) {
 			return "";
 		} else {
 			long offset = pageNumber * rowLimit;
@@ -1419,15 +1419,14 @@ public abstract class DBDefinition {
 	 * } and {@link #getRetrieveLastInsertedRowSQL() }
 	 *
 	 * <p>
-	 * If both {@link #supportsGeneratedKeys(nz.co.gregs.dbvolution.query.QueryOptions)
+	 * If both {@link #supportsGeneratedKeys()
 	 * } and {@link #supportsRetrievingLastInsertedRowViaSQL() } return false
 	 * DBvolution will not retrieve auto-incremented primary keys.
 	 *
-	 * @param options
 	 * @return TRUE if this database supports the generated keys API, FLASE
 	 * otherwise.
 	 */
-	public boolean supportsGeneratedKeys(QueryOptions options) {
+	public boolean supportsGeneratedKeys() {
 		return true;
 	}
 
@@ -1674,6 +1673,16 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Indicates whether the database prefers reading BLOBs using the getBlob()
+	 * method.
+	 *
+	 * @return the default implementation returns FALSE
+	 */
+	public boolean prefersLargeObjectsReadAsBLOB() {
+		return false;
+	}
+
+	/**
 	 * Transforms the arguments into a SQL snippet that produces a substring of
 	 * the originalString from the start for length characters.
 	 *
@@ -1706,6 +1715,22 @@ public abstract class DBDefinition {
 	public boolean prefersLargeObjectsSetAsCharacterStream() {
 		return false;
 	}
+
+	/**
+	 * Indicates that the database prefers Large Object values to be set using
+	 * the setBLOB method.
+	 *
+	 * <p>
+	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
+	 * {@link #prefersLargeObjectsSetAsBase64String()} return FALSE, DBvolution
+	 * will use the setBinaryStream method to set the value.
+	 *
+	 * @return the default implementation returns FALSE.
+	 */
+	public boolean prefersLargeObjectsSetAsBLOB() {
+		return false;
+	}
+
 
 	/**
 	 * Indicates that the database prefers Large Object values to be set using

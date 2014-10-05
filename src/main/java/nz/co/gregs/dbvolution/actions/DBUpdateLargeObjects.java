@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -77,6 +78,8 @@ public class DBUpdateLargeObjects extends DBUpdate {
 					setUsingCharacterStream(defn, row, col, largeObject, db, statement);
 				} else if (defn.prefersLargeObjectsSetAsBase64String()) {
 					setUsingBase64String(defn, row, col, largeObject, db, statement);
+				} else if (defn.prefersLargeObjectsSetAsBLOB()) {
+					setUsingBLOB(defn, row, col, largeObject, db, statement);
 				} else {
 					setUsingBinaryStream(defn, row, col, largeObject, db, statement);
 				}
@@ -126,7 +129,34 @@ public class DBUpdateLargeObjects extends DBUpdate {
 //					db.printSQLIfRequested(sqlString);
 		log.info(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
+		try {
+			prep.setBinaryStream(1, largeObject.getInputStream());
+		} catch (SQLException exp) {
+			try {
+				prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
+			} catch (SQLException exp2) {
+				throw new DBRuntimeException(exp);
+			}
+		}
+		prep.execute();
+	}
+
+	private void setUsingBLOB(DBDefinition defn, DBRow row, String col, DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+		String sqlString = defn.beginUpdateLine()
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getPreparedVariableSymbol()
+				+ defn.beginWhereClause()
+				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
+				+ defn.getEqualsComparator()
+				+ row.getPrimaryKey().toSQLString(db)
+				+ defn.endSQLStatement();
+//					db.printSQLIfRequested(sqlString);
+		log.info(sqlString);
+		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+		prep.setBlob(1, largeObject.getInputStream(), largeObject.getSize());
 		prep.execute();
 	}
 
