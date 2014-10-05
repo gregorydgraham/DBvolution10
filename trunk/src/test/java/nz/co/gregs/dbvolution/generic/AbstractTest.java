@@ -228,7 +228,6 @@ public abstract class AbstractTest {
 		try {
 			database.preventDroppingOfTables(false);
 			database.preventDroppingOfDatabases(false);
-			database.preventDroppingOfDatabases(false);
 			database.dropDatabase(true);
 		} catch (UnsupportedOperationException unsupported) {
 			;

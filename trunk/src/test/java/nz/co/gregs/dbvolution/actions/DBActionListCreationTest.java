@@ -128,7 +128,7 @@ public class DBActionListCreationTest extends AbstractTest {
 		logo.carCompany.setValue(2);
 		logo.imageFilename.setValue("some logo file.jpg");
 		logo.logoID.setValue(798);
-		logo.imageBytes.setFromFileSystem("found_toyota_logo.jpg");
+		logo.imageBytes.setFromFileSystem("toyota_share_logo.jpg");
 		DBActionList insertActions = database.insert(logo);
 		CompanyLogo example = new CompanyLogo();
 		example.logoID.permittedValues(798);
@@ -280,7 +280,7 @@ public class DBActionListCreationTest extends AbstractTest {
 		logo.carCompany.setValue(2);
 		logo.imageFilename.setValue("some logo file.jpg");
 		logo.logoID.setValue(798);
-		logo.imageBytes.setFromFileSystem("found_toyota_logo.jpg");
+		logo.imageBytes.setFromFileSystem("toyota_share_logo.jpg");
 		dataChanges.addAll(database.insert(logo));
 
 		System.out.println("Data Changes: ");

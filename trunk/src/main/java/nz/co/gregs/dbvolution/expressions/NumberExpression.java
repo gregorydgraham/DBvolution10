@@ -29,36 +29,36 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 public class NumberExpression implements NumberResult {
-
+	
 	private NumberResult innerNumberResult;
 	private boolean nullProtectionRequired;
-
+	
 	protected NumberExpression() {
 	}
-
+	
 	public NumberExpression(Number value) {
 		innerNumberResult = new DBNumber(value);
 		if (value == null || innerNumberResult.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
-
+	
 	public NumberExpression(NumberResult value) {
 		innerNumberResult = value;
 		if (value == null || innerNumberResult.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
-
+	
 	@Override
 	public String toSQLString(DBDatabase db) {
 		return getInputNumber().toSQLString(db);
 	}
-
+	
 	protected NumberResult getInputNumber() {
 		return getInnerNumberResult();
 	}
-
+	
 	@Override
 	public NumberExpression copy() {
 		return new NumberExpression(getInputNumber());
@@ -76,10 +76,9 @@ public class NumberExpression implements NumberResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -88,13 +87,17 @@ public class NumberExpression implements NumberResult {
 	 * </ul>
 	 *
 	 * @param object
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static NumberExpression value(Number object) {
-		return new NumberExpression(object);
+		final NumberExpression numberExpression = new NumberExpression(object);
+		if (object==null){
+			numberExpression.nullProtectionRequired = true;
+		}
+		return numberExpression;
 	}
-
+	
 	public StringExpression stringResult() {
 		return new StringExpression(new DBBinaryStringNumberFunction(StringExpression.value(""), this) {
 			@Override
@@ -103,19 +106,19 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public StringExpression append(String string) {
 		return this.stringResult().append(string);
 	}
-
+	
 	public StringExpression append(StringResult string) {
 		return this.stringResult().append(string);
 	}
-
+	
 	public BooleanExpression is(Number number) {
 		return is(value(number));
 	}
-
+	
 	public BooleanExpression is(NumberResult numberExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
 			@Override
@@ -124,19 +127,19 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public BooleanExpression isNotNull() {
 		return BooleanExpression.isNotNull(this);
 	}
-
+	
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
 	}
-
+	
 	public BooleanExpression isNot(Number number) {
 		return is(value(number)).not();
 	}
-
+	
 	public BooleanExpression isNot(NumberResult number) {
 		return is(number).not();
 	}
@@ -144,8 +147,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -172,8 +175,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -200,8 +203,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -228,8 +231,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -484,36 +487,36 @@ public class NumberExpression implements NumberResult {
 				this.isLessThan(upperBound)
 		);
 	}
-
+	
 	public BooleanExpression isLessThan(Number number) {
 		return isLessThan(value(number));
 	}
-
+	
 	public BooleanExpression isLessThan(NumberResult numberExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " < ";
 			}
-
+			
 			@Override
 			public boolean getIncludesNull() {
 				return false;
 			}
 		});
 	}
-
+	
 	public BooleanExpression isLessThanOrEqual(Number number) {
 		return isLessThanOrEqual(value(number));
 	}
-
+	
 	public BooleanExpression isLessThanOrEqual(NumberResult numberExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " <= ";
 			}
-
+			
 			@Override
 			public boolean getIncludesNull() {
 				return false;
@@ -525,18 +528,18 @@ public class NumberExpression implements NumberResult {
 //			}
 		});
 	}
-
+	
 	public BooleanExpression isGreaterThan(Number number) {
 		return isGreaterThan(value(number));
 	}
-
+	
 	public BooleanExpression isGreaterThan(NumberResult number) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, number) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " > ";
 			}
-
+			
 			@Override
 			public boolean getIncludesNull() {
 				return false;
@@ -548,18 +551,18 @@ public class NumberExpression implements NumberResult {
 //			}
 		});
 	}
-
+	
 	public BooleanExpression isGreaterThanOrEqual(Number number) {
 		return isGreaterThanOrEqual(value(number));
 	}
-
+	
 	public BooleanExpression isGreaterThanOrEqual(NumberResult number) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, number) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " >= ";
 			}
-
+			
 			@Override
 			public boolean getIncludesNull() {
 				return false;
@@ -571,15 +574,19 @@ public class NumberExpression implements NumberResult {
 //			}
 		});
 	}
-
+	
 	public BooleanExpression isIn(Number... possibleValues) {
 		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
 		for (Number num : possibleValues) {
-			possVals.add(value(num));
+			if (num == null) {
+				possVals.add(null);
+			} else {
+				possVals.add(value(num));
+			}
 		}
 		return isIn(possVals.toArray(new NumberExpression[]{}));
 	}
-
+	
 	public BooleanExpression isIn(Collection<? extends Number> possibleValues) {
 		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
 		for (Number num : possibleValues) {
@@ -587,7 +594,7 @@ public class NumberExpression implements NumberResult {
 		}
 		return isIn(possVals.toArray(new NumberExpression[]{}));
 	}
-
+	
 	public BooleanExpression isIn(NumberResult... possibleValues) {
 		BooleanExpression isinExpr
 				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
@@ -716,11 +723,11 @@ public class NumberExpression implements NumberResult {
 				});
 		return greatestExpr;
 	}
-
+	
 	public static NumberExpression getNextSequenceValue(String sequenceName) {
 		return getNextSequenceValue(null, sequenceName);
 	}
-
+	
 	public static NumberExpression getNextSequenceValue(String schemaName, String sequenceName) {
 		if (schemaName != null) {
 			return new NumberExpression(
@@ -740,7 +747,7 @@ public class NumberExpression implements NumberResult {
 					});
 		}
 	}
-
+	
 	public NumberExpression ifDBNull(Number alternative) {
 		return new NumberExpression(
 				new DBBinaryFunction(this, new NumberExpression(alternative)) {
@@ -750,7 +757,7 @@ public class NumberExpression implements NumberResult {
 					}
 				});
 	}
-
+	
 	public NumberExpression ifDBNull(NumberResult alternative) {
 		return new NumberExpression(
 				new DBBinaryFunction(this, alternative) {
@@ -760,15 +767,15 @@ public class NumberExpression implements NumberResult {
 					}
 				});
 	}
-
+	
 	public NumberExpression bracket() {
 		return new NumberExpression(
 				new BracketUnaryFunction(this));
 	}
-
+	
 	public NumberExpression exp() {
 		return new NumberExpression(new DBUnaryFunction(this) {
-
+			
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (!db.getDefinition().supportsExpFunction() && (this.only instanceof NumberExpression)) {
@@ -777,14 +784,14 @@ public class NumberExpression implements NumberResult {
 					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
 				}
 			}
-
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getExpFunctionName();
 			}
 		});
 	}
-
+	
 	public NumberExpression cos() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -793,7 +800,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression cosh() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -802,7 +809,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression sin() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -811,7 +818,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression sinh() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -820,7 +827,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression tan() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -829,7 +836,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression tanh() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -838,7 +845,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression abs() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -847,7 +854,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression arccos() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -856,7 +863,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression arcsin() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -865,7 +872,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression arctan() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -874,7 +881,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression arctan2(NumberExpression n) {
 		return new NumberExpression(new DBBinaryFunction(this, n) {
 			@Override
@@ -883,7 +890,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression cotangent() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -892,10 +899,10 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression degrees() {
 		return new NumberExpression(new DBUnaryFunction(this) {
-
+			
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (db.getDefinition().supportsDegreesFunction()) {
@@ -904,14 +911,14 @@ public class NumberExpression implements NumberResult {
 					return db.getDefinition().doDegreesTransform(this.only.toSQLString(db));
 				}
 			}
-
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "degrees";
 			}
 		});
 	}
-
+	
 	public NumberExpression radians() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -922,14 +929,14 @@ public class NumberExpression implements NumberResult {
 					return db.getDefinition().doRadiansTransform(this.only.toSQLString(db));
 				}
 			}
-
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "radians";
 			}
 		});
 	}
-
+	
 	public NumberExpression log() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -938,7 +945,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression logBase10() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -947,7 +954,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression power(NumberExpression n) {
 		return new NumberExpression(new DBBinaryFunction(this, n) {
 			@Override
@@ -956,7 +963,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression random() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -965,7 +972,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression sign() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -974,7 +981,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression squareRoot() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
@@ -1055,50 +1062,50 @@ public class NumberExpression implements NumberResult {
 	 */
 	public NumberExpression trunc() {
 		return new NumberExpression(new DBUnaryFunction(this) {
-
+			
 			@Override
 			public String toSQLString(DBDatabase db) {
 				return db.getDefinition().doTruncTransform(only.toSQLString(db), "0");
 			}
-
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getTruncFunctionName();
 			}
-
+			
 			@Override
 			protected String afterValue(DBDatabase db) {
 				return ", 0) ";
 			}
-
+			
 		});
 	}
-
+	
 	public NumberExpression convertToBits() {
 		return new NumberExpression(new DBUnaryFunction(this) {
-
+			
 			@Override
 			public String toSQLString(DBDatabase db) {
 				return db.getDefinition().doIntegerToBitTransform(only.toSQLString(db));
 			}
-
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "";
 			}
 		});
 	}
-
+	
 	public NumberExpression minus(NumberExpression equation) {
 		return new NumberExpression(new MinusBinaryArithmetic(this, equation));
 	}
-
+	
 	public NumberExpression minus(Number num) {
 		final NumberExpression minusThisExpression = new NumberExpression(num);
 		final DBBinaryArithmetic minusExpression = new MinusBinaryArithmetic(this, minusThisExpression);
 		return new NumberExpression(minusExpression);
 	}
-
+	
 	public NumberExpression plus(NumberResult number) {
 		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
 			@Override
@@ -1107,7 +1114,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression plus(Number num) {
 		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(num)) {
 			@Override
@@ -1116,7 +1123,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression times(NumberResult number) {
 		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
 			@Override
@@ -1125,7 +1132,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression times(Number num) {
 		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(num)) {
 			@Override
@@ -1134,7 +1141,7 @@ public class NumberExpression implements NumberResult {
 			}
 		});
 	}
-
+	
 	public NumberExpression dividedBy(NumberResult number) {
 		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
 			@Override
@@ -1148,18 +1155,18 @@ public class NumberExpression implements NumberResult {
 	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the
-	 * function are evaluated before MOD is applied.
+	 * DBvolution implements mod as a function. The two arguments to the function
+	 * are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and
-	 * is considered equivalent to "*" and "/". However databases vary in their
+	 * This differs from some implementations where MOD is the "%" operator and is
+	 * considered equivalent to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
 	 * all databases.
 	 *
-	 * @param num 
+	 * @param num
 	 * @return a NumberExpression of a division operation.
 	 */
 	public NumberExpression dividedBy(Number num) {
@@ -1170,12 +1177,12 @@ public class NumberExpression implements NumberResult {
 	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the
-	 * function are evaluated before MOD is applied.
+	 * DBvolution implements mod as a function. The two arguments to the function
+	 * are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and
-	 * is considered analogous to "*" and "/". However databases vary in their
+	 * This differs from some implementations where MOD is the "%" operator and is
+	 * considered analogous to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
@@ -1186,7 +1193,7 @@ public class NumberExpression implements NumberResult {
 	 */
 	public NumberExpression mod(NumberResult number) {
 		return new NumberExpression(new DBBinaryFunction(this, number) {
-
+			
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (db.getDefinition().supportsModulusFunction()) {
@@ -1195,25 +1202,25 @@ public class NumberExpression implements NumberResult {
 					return "((" + first.toSQLString(db) + ") % (" + second.toSQLString(db) + "))";
 				}
 			}
-
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "MOD";
 			}
 		}).trunc();
 	}
-
+	
 	public NumberExpression mod(Number num) {
 		return this.mod(new NumberExpression(num));
 	}
-
+	
 	public NumberExpression average() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getAverageFunctionName();
 			}
-
+			
 			@Override
 			public boolean isAggregator() {
 				return true;
@@ -1230,10 +1237,10 @@ public class NumberExpression implements NumberResult {
 	public NumberExpression stddev() {
 		return standardDeviation();
 	}
-
+	
 	public NumberExpression standardDeviation() {
 		return new NumberExpression(new DBUnaryFunction(this) {
-
+			
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (db.getDefinition().supportsStandardDeviationFunction()) {
@@ -1247,26 +1254,26 @@ public class NumberExpression implements NumberResult {
 					}
 				}
 			}
-
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getStandardDeviationFunctionName();
 			}
-
+			
 			@Override
 			public boolean isAggregator() {
 				return true;
 			}
 		});
 	}
-
+	
 	public NumberExpression count() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getCountFunctionName();
 			}
-
+			
 			@Override
 			public boolean isAggregator() {
 				return true;
@@ -1279,9 +1286,9 @@ public class NumberExpression implements NumberResult {
 	 *
 	 * <p>
 	 * Similar to
-	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)}
-	 * but this aggregates the column or expression provided, rather than
-	 * scanning a list.
+	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)} but
+	 * this aggregates the column or expression provided, rather than scanning a
+	 * list.
 	 *
 	 * @return the greatest/largest value from the column.
 	 */
@@ -1314,7 +1321,7 @@ public class NumberExpression implements NumberResult {
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getSumFunctionName();
 			}
-
+			
 			@Override
 			public boolean isAggregator() {
 				return true;
@@ -1333,29 +1340,29 @@ public class NumberExpression implements NumberResult {
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getCountFunctionName();
 			}
-
+			
 			@Override
 			protected String afterValue(DBDatabase db) {
 				return "(*)";
 			}
-
+			
 			@Override
 			public boolean isAggregator() {
 				return true;
 			}
 		});
 	}
-
+	
 	@Override
 	public DBNumber getQueryableDatatypeForExpressionValue() {
 		return new DBNumber();
 	}
-
+	
 	@Override
 	public boolean isAggregator() {
 		return getInnerNumberResult() == null ? false : getInnerNumberResult().isAggregator();
 	}
-
+	
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -1378,37 +1385,37 @@ public class NumberExpression implements NumberResult {
 	public void setInnerNumberResult(NumberResult innerNumberResult) {
 		this.innerNumberResult = innerNumberResult;
 	}
-
+	
 	@Override
 	public boolean getIncludesNull() {
 		return nullProtectionRequired;
 	}
-
+	
 	private static abstract class DBBinaryArithmetic implements NumberResult {
-
+		
 		public NumberResult first;
 		public NumberResult second;
-
+		
 		DBBinaryArithmetic() {
 			this.first = null;
 			this.second = null;
 		}
-
+		
 		DBBinaryArithmetic(NumberResult first, NumberResult second) {
 			this.first = first;
 			this.second = second;
 		}
-
+		
 		@Override
 		public DBNumber getQueryableDatatypeForExpressionValue() {
 			return new DBNumber();
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 		}
-
+		
 		@Override
 		public DBBinaryArithmetic copy() {
 			DBBinaryArithmetic newInstance;
@@ -1423,7 +1430,7 @@ public class NumberExpression implements NumberResult {
 			newInstance.second = second.copy();
 			return newInstance;
 		}
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -1435,40 +1442,40 @@ public class NumberExpression implements NumberResult {
 			}
 			return hashSet;
 		}
-
+		
 		protected abstract String getEquationOperator(DBDatabase db);
-
+		
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
-
+		
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
 	}
-
+	
 	private static abstract class DBNonaryFunction implements NumberResult {
-
+		
 		DBNonaryFunction() {
 		}
-
+		
 		abstract String getFunctionName(DBDatabase db);
-
+		
 		protected String beforeValue(DBDatabase db) {
 			return " " + getFunctionName(db) + "";
 		}
-
+		
 		protected String afterValue(DBDatabase db) {
 			return " ";
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return this.beforeValue(db) + this.afterValue(db);
 		}
-
+		
 		@Override
 		public DBNonaryFunction copy() {
 			DBNonaryFunction newInstance;
@@ -1481,64 +1488,64 @@ public class NumberExpression implements NumberResult {
 			}
 			return newInstance;
 		}
-
+		
 		@Override
 		public QueryableDatatype getQueryableDatatypeForExpressionValue() {
 			return new DBNumber();
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return false;
 		}
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			return new HashSet<DBRow>();
 		}
-
+		
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
 	}
-
+	
 	private static abstract class DBUnaryFunction implements NumberResult {
-
+		
 		protected DBExpression only;
-
+		
 		DBUnaryFunction() {
 			this.only = null;
 		}
-
+		
 		DBUnaryFunction(NumberExpression only) {
 			this.only = only;
 		}
-
+		
 		DBUnaryFunction(DBExpression only) {
 			this.only = only;
 		}
-
+		
 		@Override
 		public DBNumber getQueryableDatatypeForExpressionValue() {
 			return new DBNumber();
 		}
-
+		
 		abstract String getFunctionName(DBDatabase db);
-
+		
 		protected String beforeValue(DBDatabase db) {
 			return "" + getFunctionName(db) + "( ";
 		}
-
+		
 		protected String afterValue(DBDatabase db) {
 			return ") ";
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
-
+		
 		@Override
 		public DBUnaryFunction copy() {
 			DBUnaryFunction newInstance;
@@ -1552,7 +1559,7 @@ public class NumberExpression implements NumberResult {
 			newInstance.only = only.copy();
 			return newInstance;
 		}
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -1561,43 +1568,43 @@ public class NumberExpression implements NumberResult {
 			}
 			return hashSet;
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return only.isAggregator();
 		}
-
+		
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
 	}
-
+	
 	private static abstract class DBBinaryFunction implements NumberResult {
-
+		
 		protected DBExpression first;
 		protected DBExpression second;
-
+		
 		DBBinaryFunction(NumberExpression first) {
 			this.first = first;
 			this.second = null;
 		}
-
+		
 		DBBinaryFunction(DBExpression first, DBExpression second) {
 			this.first = first;
 			this.second = second;
 		}
-
+		
 		@Override
 		public DBNumber getQueryableDatatypeForExpressionValue() {
 			return new DBNumber();
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return this.beforeValue(db) + first.toSQLString(db) + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db)) + this.afterValue(db);
 		}
-
+		
 		@Override
 		public DBBinaryFunction copy() {
 			DBBinaryFunction newInstance;
@@ -1612,21 +1619,21 @@ public class NumberExpression implements NumberResult {
 			newInstance.second = second.copy();
 			return newInstance;
 		}
-
+		
 		abstract String getFunctionName(DBDatabase db);
-
+		
 		protected String beforeValue(DBDatabase db) {
 			return " " + getFunctionName(db) + "( ";
 		}
-
+		
 		protected String getSeparator(DBDatabase db) {
 			return ", ";
 		}
-
+		
 		protected String afterValue(DBDatabase db) {
 			return ") ";
 		}
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -1638,36 +1645,36 @@ public class NumberExpression implements NumberResult {
 			}
 			return hashSet;
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
-
+		
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
 	}
-
+	
 	private static abstract class DBBinaryStringNumberFunction implements StringResult {
-
+		
 		private DBExpression first;
 		private DBExpression second;
-
+		
 		DBBinaryStringNumberFunction(StringResult first, NumberResult second) {
 			this.first = first;
 			this.second = second;
 		}
-
+		
 		@Override
 		public DBNumber getQueryableDatatypeForExpressionValue() {
 			return new DBNumber();
 		}
-
+		
 		@Override
 		abstract public String toSQLString(DBDatabase db);
-
+		
 		@Override
 		public DBBinaryStringNumberFunction copy() {
 			DBBinaryStringNumberFunction newInstance;
@@ -1682,7 +1689,7 @@ public class NumberExpression implements NumberResult {
 			newInstance.second = second.copy();
 			return newInstance;
 		}
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -1694,41 +1701,41 @@ public class NumberExpression implements NumberResult {
 			}
 			return hashSet;
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
-
+		
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
 	}
-
+	
 	private static abstract class DBTrinaryFunction implements NumberResult {
-
+		
 		private DBExpression first;
 		private DBExpression second;
 		private DBExpression third;
-
+		
 		DBTrinaryFunction(DBExpression first) {
 			this.first = first;
 			this.second = null;
 			this.third = null;
 		}
-
+		
 		DBTrinaryFunction(DBExpression first, DBExpression second) {
 			this.first = first;
 			this.second = second;
 		}
-
+		
 		DBTrinaryFunction(DBExpression first, DBExpression second, DBExpression third) {
 			this.first = first;
 			this.second = second;
 			this.third = third;
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return this.beforeValue(db) + first.toSQLString(db)
@@ -1736,7 +1743,7 @@ public class NumberExpression implements NumberResult {
 					+ this.getSeparator(db) + (third == null ? "" : third.toSQLString(db))
 					+ this.afterValue(db);
 		}
-
+		
 		@Override
 		public DBTrinaryFunction copy() {
 			DBTrinaryFunction newInstance;
@@ -1751,33 +1758,33 @@ public class NumberExpression implements NumberResult {
 			newInstance.second = second == null ? null : second.copy();
 			return newInstance;
 		}
-
+		
 		abstract String getFunctionName(DBDatabase db);
-
+		
 		protected String beforeValue(DBDatabase db) {
 			return " " + getFunctionName(db) + "( ";
 		}
-
+		
 		protected String getSeparator(DBDatabase db) {
 			return ", ";
 		}
-
+		
 		protected String afterValue(DBDatabase db) {
 			return ") ";
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator() || third.isAggregator();
 		}
 	}
-
+	
 	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
-
+		
 		private NumberExpression first;
 		private NumberResult second;
 		private boolean requiresNullProtection;
-
+		
 		DBBinaryBooleanArithmetic(NumberExpression first, NumberResult second) {
 			this.first = first;
 			this.second = second;
@@ -1785,12 +1792,12 @@ public class NumberExpression implements NumberResult {
 				this.requiresNullProtection = true;
 			}
 		}
-
+		
 		@Override
 		public DBBoolean getQueryableDatatypeForExpressionValue() {
 			return new DBBoolean();
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			if (this.getIncludesNull()) {
@@ -1799,7 +1806,7 @@ public class NumberExpression implements NumberResult {
 				return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 			}
 		}
-
+		
 		@Override
 		public DBBinaryBooleanArithmetic copy() {
 			DBBinaryBooleanArithmetic newInstance;
@@ -1814,9 +1821,9 @@ public class NumberExpression implements NumberResult {
 			newInstance.second = second.copy();
 			return newInstance;
 		}
-
+		
 		protected abstract String getEquationOperator(DBDatabase db);
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -1828,27 +1835,27 @@ public class NumberExpression implements NumberResult {
 			}
 			return hashSet;
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
-
+		
 		@Override
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
 		}
 	}
-
+	
 	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
-
+		
 		protected NumberExpression column;
 		protected final List<NumberResult> values = new ArrayList<NumberResult>();
 		boolean nullProtectionRequired = false;
-
+		
 		DBNnaryBooleanFunction() {
 		}
-
+		
 		DBNnaryBooleanFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
 			this.column = leftHandSide;
 			for (NumberResult numberResult : rightHandSide) {
@@ -1862,22 +1869,22 @@ public class NumberExpression implements NumberResult {
 				}
 			}
 		}
-
+		
 		@Override
 		public DBBoolean getQueryableDatatypeForExpressionValue() {
 			return new DBBoolean();
 		}
-
+		
 		abstract String getFunctionName(DBDatabase db);
-
+		
 		protected String beforeValue(DBDatabase db) {
 			return "( ";
 		}
-
+		
 		protected String afterValue(DBDatabase db) {
 			return ") ";
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			StringBuilder builder = new StringBuilder();
@@ -1895,7 +1902,7 @@ public class NumberExpression implements NumberResult {
 			builder.append(this.afterValue(db));
 			return builder.toString();
 		}
-
+		
 		@Override
 		public DBNnaryBooleanFunction copy() {
 			DBNnaryBooleanFunction newInstance;
@@ -1910,7 +1917,7 @@ public class NumberExpression implements NumberResult {
 			Collections.copy(this.values, newInstance.values);
 			return newInstance;
 		}
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -1924,7 +1931,7 @@ public class NumberExpression implements NumberResult {
 			}
 			return hashSet;
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			boolean result = column.isAggregator();
@@ -1933,7 +1940,7 @@ public class NumberExpression implements NumberResult {
 			}
 			return result;
 		}
-
+		
 		@Override
 		public boolean getIncludesNull() {
 			return nullProtectionRequired;
@@ -1944,16 +1951,16 @@ public class NumberExpression implements NumberResult {
 //			this.nullProtectionRequired = nullsAreIncluded;
 //		}
 	}
-
+	
 	private static abstract class DBNnaryNumberFunction implements NumberResult {
-
+		
 		protected NumberExpression column;
 		protected final List<NumberResult> values = new ArrayList<NumberResult>();
 		boolean nullProtectionRequired = false;
-
+		
 		DBNnaryNumberFunction() {
 		}
-
+		
 		DBNnaryNumberFunction(NumberResult[] rightHandSide) {
 			for (NumberResult numberResult : rightHandSide) {
 				if (numberResult == null) {
@@ -1966,22 +1973,22 @@ public class NumberExpression implements NumberResult {
 				}
 			}
 		}
-
+		
 		@Override
 		public DBNumber getQueryableDatatypeForExpressionValue() {
 			return new DBNumber();
 		}
-
+		
 		abstract String getFunctionName(DBDatabase db);
-
+		
 		protected String beforeValue(DBDatabase db) {
 			return "( ";
 		}
-
+		
 		protected String afterValue(DBDatabase db) {
 			return ") ";
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			StringBuilder builder = new StringBuilder();
@@ -1998,7 +2005,7 @@ public class NumberExpression implements NumberResult {
 			builder.append(this.afterValue(db));
 			return builder.toString();
 		}
-
+		
 		@Override
 		public DBNnaryNumberFunction copy() {
 			DBNnaryNumberFunction newInstance;
@@ -2013,7 +2020,7 @@ public class NumberExpression implements NumberResult {
 			Collections.copy(this.values, newInstance.values);
 			return newInstance;
 		}
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -2027,7 +2034,7 @@ public class NumberExpression implements NumberResult {
 			}
 			return hashSet;
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			boolean result = column.isAggregator();
@@ -2036,7 +2043,7 @@ public class NumberExpression implements NumberResult {
 			}
 			return result;
 		}
-
+		
 		@Override
 		public boolean getIncludesNull() {
 			return nullProtectionRequired;
@@ -2047,39 +2054,39 @@ public class NumberExpression implements NumberResult {
 //			this.nullProtectionRequired = nullsAreIncluded;
 //		}
 	}
-
+	
 	private static abstract class DBUnaryStringFunction implements StringResult {
-
+		
 		protected DBExpression only;
-
+		
 		DBUnaryStringFunction() {
 			this.only = null;
 		}
-
+		
 		DBUnaryStringFunction(DBExpression only) {
 			this.only = only;
 		}
-
+		
 		@Override
 		public DBString getQueryableDatatypeForExpressionValue() {
 			return new DBString();
 		}
-
+		
 		abstract String getFunctionName(DBDatabase db);
-
+		
 		protected String beforeValue(DBDatabase db) {
 			return "" + getFunctionName(db) + "( ";
 		}
-
+		
 		protected String afterValue(DBDatabase db) {
 			return ") ";
 		}
-
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
-
+		
 		@Override
 		public DBUnaryStringFunction copy() {
 			DBUnaryStringFunction newInstance;
@@ -2093,7 +2100,7 @@ public class NumberExpression implements NumberResult {
 			newInstance.only = only.copy();
 			return newInstance;
 		}
-
+		
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
@@ -2102,77 +2109,77 @@ public class NumberExpression implements NumberResult {
 			}
 			return hashSet;
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return only.isAggregator();
 		}
 	}
-
+	
 	private static class MaxUnaryFunction extends DBUnaryFunction {
-
+		
 		public MaxUnaryFunction(DBExpression only) {
 			super(only);
 		}
-
+		
 		@Override
 		String getFunctionName(DBDatabase db) {
 			return db.getDefinition().getMaxFunctionName();
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return true;
 		}
 	}
-
+	
 	private static class MinUnaryFunction extends DBUnaryFunction {
-
+		
 		MinUnaryFunction(DBExpression only) {
 			super(only);
 		}
-
+		
 		@Override
 		String getFunctionName(DBDatabase db) {
 			return db.getDefinition().getMinFunctionName();
 		}
-
+		
 		@Override
 		public boolean isAggregator() {
 			return true;
 		}
 	}
-
+	
 	private static class MinusBinaryArithmetic extends DBBinaryArithmetic {
-
+		
 		MinusBinaryArithmetic(NumberResult first, NumberResult second) {
 			super(first, second);
 		}
-
+		
 		@Override
 		protected String getEquationOperator(DBDatabase db) {
 			return " - ";
 		}
 	}
-
+	
 	private static class BracketUnaryFunction extends DBUnaryFunction {
-
+		
 		BracketUnaryFunction(DBExpression only) {
 			super(only);
 		}
-
+		
 		@Override
 		String getFunctionName(DBDatabase db) {
 			return "";
 		}
 	}
-
+	
 	private static class DivisionBinaryArithmetic extends DBBinaryArithmetic {
-
+		
 		DivisionBinaryArithmetic(NumberResult first, NumberResult second) {
 			super(first, second);
 		}
-
+		
 		@Override
 		protected String getEquationOperator(DBDatabase db) {
 			return " / ";

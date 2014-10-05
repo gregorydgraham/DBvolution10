@@ -58,7 +58,7 @@ public class DBInsertTest extends AbstractTest {
 
 	@Test
 	public void testSaveWithDefaultValues() throws Exception {
-		if (database.getDefinition().supportsGeneratedKeys(null) || database.getDefinition().supportsRetrievingLastInsertedRowViaSQL()) {
+		if (database.getDefinition().supportsGeneratedKeys() || database.getDefinition().supportsRetrievingLastInsertedRowViaSQL()) {
 			TestDefaultValueRetrieval row = new TestDefaultValueRetrieval();
 			TestDefaultValueRetrieval row2 = new TestDefaultValueRetrieval();
 

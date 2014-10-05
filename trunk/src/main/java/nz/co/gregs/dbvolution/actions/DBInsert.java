@@ -114,7 +114,7 @@ public class DBInsert extends DBAction {
 		DBStatement statement = db.getDBStatement();
 		try {
 			for (String sql : getSQLStatements(db)) {
-				if (defn.supportsGeneratedKeys(null)) {
+				if (defn.supportsGeneratedKeys()) {
 					try {
 						String primaryKeyColumnName = row.getPrimaryKeyColumnName();
 						Integer pkIndex = row.getPrimaryKeyIndex();
@@ -132,10 +132,12 @@ public class DBInsert extends DBAction {
 							try {
 								while (generatedKeysResultSet.next()) {
 									final long pkValue = generatedKeysResultSet.getLong(pkIndex);
-									this.getGeneratedPrimaryKeys().add(pkValue);
-									log.info("GENERATED KEYS: " + pkValue);
-									final QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
-									new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+									if (pkValue > 0) {
+										this.getGeneratedPrimaryKeys().add(pkValue);
+										log.info("GENERATED KEYS: " + pkValue);
+										final QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
+										new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+									}
 								}
 							} catch (SQLException ex) {
 								throw new RuntimeException(ex);
