@@ -19,23 +19,59 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 
+/**
+ * A version of DBDatabase tweaked for JavaDB.
+ *
+ * <p>
+ * Uses the Apache Derby ClientDriver internally to allow access to remote
+ * JavaDBs.
+ *
+ * @author Gregory Graham
+ */
 public class JavaDB extends DBDatabase {
 
 	private static final String driverName = "org.apache.derby.jdbc.ClientDriver";
 
+	/**
+	 * Default Constructor.
+	 *
+	 */
 	public JavaDB() {
 	}
 
-	public JavaDB(DataSource ds) {
-		super(new JavaDBDefinition(), ds);
+	/**
+	 * Creates a new JavaDB instance that will connect to the DataSource.
+	 *
+	 * @param dataSource
+	 */
+	public JavaDB(DataSource dataSource) {
+		super(new JavaDBDefinition(), dataSource);
 	}
 
+	/**
+	 * Creates a new JavaDB instance that will connect to the JDBC URL using the
+	 * username and password supplied..
+	 *
+	 * @param jdbcURL
+	 * @param username
+	 * @param password
+	 */
 	public JavaDB(String jdbcURL, String username, String password) {
 		super(new JavaDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
+	/**
+	 * Creates a new JavaDB instance that will connect to the database on the
+	 * named host on the specified port with the supplied username and password.
+	 *
+	 * @param host
+	 * @param port
+	 * @param database
+	 * @param username
+	 * @param password
+	 */
 	public JavaDB(String host, int port, String database, String username, String password) {
-		super(new JavaDBDefinition(), driverName, "jdbc:derby://"+host+":"+port+"/" + database + ";create=true", username, password);
+		super(new JavaDBDefinition(), driverName, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
 	}
 
 	@Override

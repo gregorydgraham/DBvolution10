@@ -18,58 +18,86 @@ package nz.co.gregs.dbvolution.expressions;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 
+/**
+ * LargeObjectExpression exposes database expressions for manipulating BLOBs,
+ * CLOBs, and JavaObjects.
+ *
+ * @author gregorygraham
+ */
 public class LargeObjectExpression implements LargeObjectResult {
 
-    private final LargeObjectResult qdt;
+	private final LargeObjectResult blobResult;
 	private boolean nullProtectionRequired;
 
-    protected LargeObjectExpression() {
-        qdt = new DBByteArray();
-    }
+	/**
+	 * Default Constructor.
+	 */
+	protected LargeObjectExpression() {
+		blobResult = new DBByteArray();
+	}
 
-    public LargeObjectExpression(LargeObjectResult copy) {
-        qdt = copy;
-		if (copy == null || copy.getIncludesNull()) {
+	/**
+	 * Wraps the LargeObjectResult with a LargeObjectExpression to allow further
+	 * processing.
+	 *
+	 * @param originalBlob
+	 */
+	public LargeObjectExpression(LargeObjectResult originalBlob) {
+		blobResult = originalBlob;
+		if (originalBlob == null || originalBlob.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
-    }
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return qdt.toSQLString(db);
-    }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return blobResult.toSQLString(db);
+	}
 
-    @Override
-    public LargeObjectExpression copy() {
-        return new LargeObjectExpression(qdt.copy());
-    }
+	@Override
+	public LargeObjectExpression copy() {
+		return new LargeObjectExpression(blobResult.copy());
+	}
 
-    @Override
-    public DBByteArray getQueryableDatatypeForExpressionValue() {
-        return new DBByteArray();
-    }
+	@Override
+	public DBByteArray getQueryableDatatypeForExpressionValue() {
+		return new DBByteArray();
+	}
 
-    @Override
-    public boolean isAggregator() {
-        return qdt.isAggregator();
-    }
+	@Override
+	public boolean isAggregator() {
+		return blobResult.isAggregator();
+	}
 
-    @Override
-    public Set<DBRow> getTablesInvolved() {
-        HashSet<DBRow> hashSet = new HashSet<DBRow>();
-        if (qdt != null) {
-            hashSet.addAll(qdt.getTablesInvolved());
-        }
-        return hashSet;
-    }
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		HashSet<DBRow> hashSet = new HashSet<DBRow>();
+		if (blobResult != null) {
+			hashSet.addAll(blobResult.getTablesInvolved());
+		}
+		return hashSet;
+	}
 
+	/**
+	 * Tests the LargeObjectExpression to see if it is not NULL in the database.
+	 *
+	 * @return a BooleanExpression to use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 */
 	public BooleanExpression isNotNull() {
 		return BooleanExpression.isNotNull(this);
 	}
 
+	/**
+	 * Tests the LargeObjectExpression to see if it is NULL in the database.
+	 *
+	 * @return a BooleanExpression to use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 */
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
 	}
