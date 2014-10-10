@@ -19,6 +19,6 @@ package nz.co.gregs.dbvolution.expressions;
  *
  * @author Gregory Graham
  */
-public interface RangeComparable {
+public interface RangeComparable extends EqualComparable {
 	
 }

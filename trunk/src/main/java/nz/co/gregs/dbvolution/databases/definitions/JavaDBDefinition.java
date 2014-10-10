@@ -152,4 +152,61 @@ public class JavaDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	@Override
+	public String doTruncTransform(String realNumberExpression, String numberOfDecimalPlacesExpression) {
+		return "(case when " + realNumberExpression + " >= 0 then floor(exp(" + numberOfDecimalPlacesExpression + " * ln(10)) * " + realNumberExpression + ") / exp(" + numberOfDecimalPlacesExpression + " * ln(10)) else ceil(exp(" + numberOfDecimalPlacesExpression + " * ln(10)) * " + realNumberExpression + ") / exp(" + numberOfDecimalPlacesExpression + " * ln(10)) end)";
+	}
+
+	@Override
+	public String doModulusTransform(String firstNumber, String secondNumber) {
+		return " MOD(" + firstNumber + "," + secondNumber + ") ";
+	}
+
+	@Override
+	public String doLeastOfTransformation(List<String> strs) {
+		String sql = "";
+		String prevCase = null;
+		if (strs.size() == 1) {
+			return strs.get(0);
+		}
+		for (String str : strs) {
+			if (prevCase == null) {
+				prevCase = "(" + str + ")";
+			} else {
+				sql = "(case when " + str + " < " + prevCase + " then " + str + " else " + prevCase + " end)";
+			}
+		}
+		return sql;
+	}
+
+	@Override
+	public String doGreatestOfTransformation(List<String> strs) {
+		String sql = "";
+		String prevCase = null;
+		if (strs.size() == 1) {
+			return strs.get(0);
+		}
+		for (String str : strs) {
+			if (prevCase == null) {
+				prevCase = "(" + str + ")";
+			} else {
+				sql = "(case when " + str + " > " + prevCase + " then " + str + " else " + prevCase + " end)";
+			}
+		}
+		return sql;
+	}
+
+	/**
+	 * Transforms an SQL snippet into an SQL snippet that provides the index of
+	 * the string to find.
+	 *
+	 * @param originalString
+	 * @param stringToFind
+	 * @return a SQL snippet that will produce the index of the find string.
+	 */
+	@Override
+	public String doPositionInStringTransform(String originalString, String stringToFind) {
+		return "LOCATE(" + stringToFind + ", " + originalString + ")";
+	}
+
 }

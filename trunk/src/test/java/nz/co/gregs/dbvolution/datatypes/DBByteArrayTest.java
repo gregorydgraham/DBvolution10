@@ -73,17 +73,22 @@ public class DBByteArrayTest extends AbstractTest {
 	@Test
 	public void retrieveRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
-		CompanyLogo companyLogo = new CompanyLogo();
-//        database.print(database.get(companyLogo));
-		companyLogo.logoID.setValue(1);
-		companyLogo.carCompany.setValue(1);//Toyota
-		companyLogo.imageFilename.setValue("toyota_logo.jpg");
+		CompanyLogoForRetreivingByteArray blobTable = new CompanyLogoForRetreivingByteArray();
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(blobTable);
+		database.createTable(blobTable);
+
+		int primaryKey = 3;
+		blobTable.logoID.setValue(primaryKey);
+		blobTable.carCompany.setValue(1);//Toyota
+		blobTable.imageFilename.setValue("toyota_logo.jpg");
 		File image = new File("toyota_share_logo.jpg");
-		companyLogo.imageBytes.setFromFileSystem(image);
-		database.insert(companyLogo);
+		blobTable.imageBytes.setFromFileSystem(image);
+		database.insert(blobTable);
 
 		database.print(database.getDBTable(new CompanyLogo()).setBlankQueryAllowed(true).getAllRows());
-		
+
 		File newFile = new File("retrieveRowWithByteArray.jpg");
 		try {
 			newFile.delete();
@@ -91,31 +96,42 @@ public class DBByteArrayTest extends AbstractTest {
 			;// I just need it gone
 		}
 
-		companyLogo = new CompanyLogo();
-		CompanyLogo firstRow = database.getDBTable(companyLogo).getRowsByPrimaryKey(1).get(0);
-		database.print(database.getDBTable(companyLogo).getRowsByPrimaryKey(1));
+		blobTable = new CompanyLogoForRetreivingByteArray();
+		CompanyLogoForRetreivingByteArray firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
+		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(1));
 		firstRow.imageBytes.writeToFileSystem(newFile.getName());
 		newFile = new File(newFile.getName());
 		Assert.assertThat(newFile.length(), is(image.length()));
 		newFile.delete();
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(blobTable);
 	}
 
 	@Test
 	public void retrieveStringWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
-		CompanyLogo companyLogo = new CompanyLogo();
+		CompanyLogoForRetreivingString clobTable = new CompanyLogoForRetreivingString();
 
-		companyLogo.logoID.setValue(1);
-		companyLogo.carCompany.setValue(1);
-		companyLogo.imageFilename.setValue("toyota_logo.jpg");
-		File image = new File("toyota_share_logo.jpg");
-		companyLogo.imageBytes.setValue(sourceDataAsString);
-		database.insert(companyLogo);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(clobTable);
+		database.createTable(clobTable);
 
-		CompanyLogo firstRow = database.getDBTable(new CompanyLogo()).getRowsByPrimaryKey(1).get(0);
+		int primaryKey = 4;
+		clobTable.logoID.setValue(primaryKey);
+		clobTable.carCompany.setValue(1);
+		clobTable.imageFilename.setValue("toyota_logo.jpg");
+		clobTable.imageBytes.setValue(sourceDataAsString);
+		database.insert(clobTable);
+
+		CompanyLogoForRetreivingString firstRow = database.getDBTable(new CompanyLogoForRetreivingString()).getRowsByPrimaryKey(primaryKey).get(0);
 		System.out.println("row = " + firstRow.toString());
 		String stringValue = firstRow.imageBytes.stringValue();
 		Assert.assertThat(stringValue, is(sourceDataAsString));
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(clobTable);
+
 	}
 
 	@Test
@@ -149,6 +165,46 @@ public class DBByteArrayTest extends AbstractTest {
 		@DBPrimaryKey
 		@DBColumn("logo_id")
 		@DBAutoIncrement
+		public DBInteger logoID = new DBInteger();
+
+		@DBForeignKey(CarCompany.class)
+		@DBColumn("car_company_fk")
+		public DBInteger carCompany = new DBInteger();
+
+		@DBColumn("image_file")
+		public DBByteArray imageBytes = new DBByteArray();
+
+		@DBColumn("image_name")
+		public DBString imageFilename = new DBString();
+	}
+
+	@DBTableName("bigblob")
+	public static class CompanyLogoForRetreivingByteArray extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn("logo_id")
+		public DBInteger logoID = new DBInteger();
+
+		@DBForeignKey(CarCompany.class)
+		@DBColumn("car_company_fk")
+		public DBInteger carCompany = new DBInteger();
+
+		@DBColumn("image_file")
+		public DBByteArray imageBytes = new DBByteArray();
+
+		@DBColumn("image_name")
+		public DBString imageFilename = new DBString();
+	}
+
+	@DBTableName("bigstring")
+	public static class CompanyLogoForRetreivingString extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn("logo_id")
 		public DBInteger logoID = new DBInteger();
 
 		@DBForeignKey(CarCompany.class)
@@ -319,7 +375,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ "fk_car_company INTEGER, \n"
 			+ "fk_company_logo INTEGER)\n"
 			+ ";\n"
-			+ "FILE: /Users/Gregory Graham/Projects/DBvolution-https/trunk/toyota_share_logo.jpg\n"
+			+ "FILE: /Users/gregorygraham/Projects/DBvolution-https/trunk/toyota_share_logo.jpg\n"
 			+ "EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 1,1,'toyota_logo.jpg');\n"
 			+ "INFO  DBStatement - EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 1,1,'toyota_logo.jpg');\n"
 			+ "INFO  DBUpdateLargeObjects - UPDATE CompanyLogo SET image_file =  ?  WHERE logo_id = 1;\n"
@@ -338,7 +394,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ " WHERE  1=1  AND (_1159239592.logo_id = 1)\n"
 			+ ";\n"
 			+ "row = CompanyLogo logoID:1, carCompany:1, imageBytes:/*BINARY DATA*/, imageFilename:toyota_logo.jpg\n"
-			+ "FILE: /Users/Gregory Graham/Projects/DBvolution-https/trunk/found_toyota_logo.jpg\n"
+			+ "FILE: /Users/gregorygraham/Projects/DBvolution-https/trunk/found_toyota_logo.jpg\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE lt_carco_logo;\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE CompanyLogo;\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE marque;\n"
@@ -408,7 +464,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ "fk_car_company INTEGER, \n"
 			+ "fk_company_logo INTEGER)\n"
 			+ ";\n"
-			+ "FILE: /Users/Gregory Graham/Projects/DBvolution-https/trunk/toyota_share_logo.jpg\n"
+			+ "FILE: /Users/gregorygraham/Projects/DBvolution-https/trunk/toyota_share_logo.jpg\n"
 			+ "EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 1,1,'toyota_logo.jpg');\n"
 			+ "INFO  DBStatement - EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 1,1,'toyota_logo.jpg');\n"
 			+ "INFO  DBUpdateLargeObjects - UPDATE CompanyLogo SET image_file =  ?  WHERE logo_id = 1;\n"
@@ -422,7 +478,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ " FROM  car_company AS __78874071 \n"
 			+ " WHERE  1=1  AND ( lower(__78874071.name) =  lower('FORD') )\n"
 			+ ";\n"
-			+ "FILE: /Users/Gregory Graham/Projects/DBvolution-https/trunk/ford_logo.jpg\n"
+			+ "FILE: /Users/gregorygraham/Projects/DBvolution-https/trunk/ford_logo.jpg\n"
 			+ "EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 2,2,'ford_logo.jpg');\n"
 			+ "INFO  DBStatement - EXECUTING: INSERT INTO CompanyLogo( logo_id, car_company_fk, image_name)  VALUES ( 2,2,'ford_logo.jpg');\n"
 			+ "INFO  DBUpdateLargeObjects - UPDATE CompanyLogo SET image_file =  ?  WHERE logo_id = 2;\n"

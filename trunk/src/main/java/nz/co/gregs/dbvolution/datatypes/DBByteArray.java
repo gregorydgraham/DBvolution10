@@ -146,32 +146,6 @@ public class DBByteArray extends DBLargeObject {
 		}
 	}
 
-//	@Override
-//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-//		blankQuery();
-//		DBDefinition defn = database.getDefinition();
-//		if (resultSet == null || fullColumnName == null) {
-//			this.setToNull();
-//		} else {
-//			if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
-//				try {
-//					setFromCharacterReader(resultSet, fullColumnName);
-//				} catch (IOException ex) {
-//					throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
-//				}
-//			} else if (defn.prefersLargeObjectsReadAsBytes()) {
-//				setFromGetBytes(resultSet, fullColumnName);
-//			} else if (defn.prefersLargeObjectsReadAsCLOB()) {
-//				setFromCLOB(resultSet, fullColumnName);
-//			} else {
-//				setFromBinaryStream(resultSet, fullColumnName);
-//			}
-//		}
-//
-//		setUnchanged();
-//
-//		setDefined(true);
-//	}
 	private byte[] getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		InputStream inputStream;
@@ -295,6 +269,42 @@ public class DBByteArray extends DBLargeObject {
 					totalBytesRead += bytesRead;
 					byteArrays.add(String.valueOf(resultSetBytes).getBytes());
 					resultSetBytes = new char[100000];
+					bytesRead = input.read(resultSetBytes);
+				}
+			} catch (IOException ex) {
+				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+			}
+			bytes = new byte[totalBytesRead];
+			int bytesAdded = 0;
+			for (byte[] someBytes : byteArrays) {
+				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+				bytesAdded += someBytes.length;
+			}
+//			this.setValue(bytes);
+		}
+		return bytes;
+	}
+
+	private byte[] getBytesFromBinaryStream(ResultSet resultSet, InputStream inputStream) throws SQLException {
+		byte[] bytes = new byte[]{};
+		if (resultSet.wasNull()) {
+			inputStream = null;
+		}
+		if (inputStream == null) {
+			this.setToNull();
+		} else {
+			InputStream input = new BufferedInputStream(inputStream);
+			List<byte[]> byteArrays = new ArrayList<byte[]>();
+
+			int totalBytesRead = 0;
+			try {
+				byte[] resultSetBytes;
+				resultSetBytes = new byte[100000];
+				int bytesRead = input.read(resultSetBytes);
+				while (bytesRead > 0) {
+					totalBytesRead += bytesRead;
+					byteArrays.add(resultSetBytes);
+					resultSetBytes = new byte[100000];
 					bytesRead = input.read(resultSetBytes);
 				}
 			} catch (IOException ex) {

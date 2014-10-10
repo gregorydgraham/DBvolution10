@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 greg.
+ * Copyright 2014 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,9 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Interface required to be implemented by all DBExpressions that produce
- * Boolean results
- *
- * <p>
- * DBvolution attempts to maintain type safety using the *Result interfaces.
- * Most operations requiring a boolean will not accept anything other than an
- * actual Boolean or a BooleanResult.
- *
- * <p>
- * Add {@code implements BooleanResult} to your class and override the copy
- * method so that it returns your class type.
  *
  * @author Gregory Graham
- * @see DBExpression
  */
-public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues, EqualComparable {
-
-    @Override
-    public BooleanResult copy();
-
+interface EqualComparable {
+	
 }
