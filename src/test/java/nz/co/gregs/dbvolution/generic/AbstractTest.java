@@ -91,6 +91,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testOracle") != null) {
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("localhost", 1521, "XE", "dbv", "dbv")});
 		}
+		if (System.getProperty("testJavaDBMemory") != null) {
+			databases.add(new Object[]{"JavaDBMemory", new JavaDBMemoryDB("localhost", 1527, "dbv", "dbv", "dbv")});
+		}
 		if (System.getProperty("testJavaDB") != null) {
 			databases.add(new Object[]{"JavaDB", new JavaDB("localhost", 1527, "dbv", "dbv", "dbv")});
 		}

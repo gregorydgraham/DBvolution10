@@ -2098,4 +2098,24 @@ public abstract class DBDefinition {
 	public boolean supportsXOROperator() {
 		return false;
 	}
+
+	public String doLeastOfTransformation(List<String> strs) {
+		StringBuilder sql = new StringBuilder(getLeastOfFunctionName()+"(");
+		String comma = "";
+		for (String str : strs) {
+			sql.append(comma).append(str);
+			comma = ", ";
+		}
+		return sql.append(")").toString();
+	}
+
+	public String doGreatestOfTransformation(List<String> strs) {
+		StringBuilder sql = new StringBuilder(getGreatestOfFunctionName()+"(");
+		String comma = "";
+		for (String str : strs) {
+			sql.append(comma).append(str);
+			comma = ", ";
+		}
+		return sql.append(")").toString();
+	}
 }
