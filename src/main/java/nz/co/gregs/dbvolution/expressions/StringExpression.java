@@ -43,7 +43,7 @@ public class StringExpression implements StringResult {
 
 	public StringExpression(String stringVariable) {
 		string1 = new DBString(stringVariable);
-		if (stringVariable == null||stringVariable.isEmpty()) {
+		if (stringVariable == null || stringVariable.isEmpty()) {
 			nullProtectionRequired = true;
 		}
 	}
@@ -91,10 +91,9 @@ public class StringExpression implements StringResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -103,8 +102,8 @@ public class StringExpression implements StringResult {
 	 * </ul>
 	 *
 	 * @param string
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static StringExpression value(String string) {
 		return new StringExpression(string);
@@ -235,8 +234,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -263,8 +262,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -291,8 +290,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -319,8 +318,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -760,9 +759,18 @@ public class StringExpression implements StringResult {
 		}
 		return new StringExpression(
 				new DBTrinaryStringFunction(this, findString, replaceValue) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doReplaceTransform(
+								this.getFirst().toSQLString(db),
+								this.getSecond().toSQLString(db),
+								this.getThird().toSQLString(db));
+					}
+
 					@Override
 					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getReplaceFunctionName();
+						return "REPLACE";
 					}
 
 					@Override
@@ -890,8 +898,7 @@ public class StringExpression implements StringResult {
 	 * the StringExpression.
 	 *
 	 * <p>
-	 * The index is 1-based, and returns 0 when the searchString is not
-	 * found.</p>
+	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
 	 *
 	 * @param searchString
 	 * @return an expression that will find the location of the searchString.
@@ -995,9 +1002,9 @@ public class StringExpression implements StringResult {
 			StringExpression lowercase = new StringExpression(toArray1).lowercase();
 			lowerStrings.add(lowercase);
 		}
-		
+
 		final BooleanExpression isInExpression = this.lowercase().isIn(lowerStrings.toArray(new StringResult[]{}));
-		
+
 		if (isInExpression.getIncludesNull()) {
 			return BooleanExpression.anyOf(new BooleanExpression(this.isNull()), isInExpression);
 		} else {
@@ -1368,9 +1375,9 @@ public class StringExpression implements StringResult {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + first.toSQLString(db)
-					+ this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))
-					+ this.getSeparator(db) + (third == null ? "" : third.toSQLString(db))
+			return this.beforeValue(db) + getFirst().toSQLString(db)
+					+ this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db))
+					+ this.getSeparator(db) + (getThird() == null ? "" : getThird().toSQLString(db))
 					+ this.afterValue(db);
 		}
 
@@ -1384,9 +1391,9 @@ public class StringExpression implements StringResult {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first == null ? null : first.copy();
-			newInstance.second = second == null ? null : second.copy();
-			newInstance.third = third == null ? null : third.copy();
+			newInstance.first = getFirst() == null ? null : getFirst().copy();
+			newInstance.second = getSecond() == null ? null : getSecond().copy();
+			newInstance.third = getThird() == null ? null : getThird().copy();
 			return newInstance;
 		}
 
@@ -1407,21 +1414,42 @@ public class StringExpression implements StringResult {
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
 			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
 			}
-			if (third != null) {
-				hashSet.addAll(third.getTablesInvolved());
+			if (getThird() != null) {
+				hashSet.addAll(getThird().getTablesInvolved());
 			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator() || third.isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator() || getThird().isAggregator();
+		}
+
+		/**
+		 * @return the first
+		 */
+		protected DBExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		protected DBExpression getSecond() {
+			return second;
+		}
+
+		/**
+		 * @return the third
+		 */
+		protected DBExpression getThird() {
+			return third;
 		}
 	}
 

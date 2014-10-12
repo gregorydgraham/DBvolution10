@@ -61,13 +61,23 @@ public class DBByteArrayTest extends AbstractTest {
 		companyLogo.logoID.setValue(2);
 		companyLogo.carCompany.setValue(ford.uidCarCompany.getValue());
 		companyLogo.imageFilename.setValue("ford_logo.jpg");
-		companyLogo.imageBytes.setFromFileSystem("ford_logo.jpg");
+		File fordLogoFile = new File("ford_logo.jpg");
+		companyLogo.imageBytes.setFromFileSystem(fordLogoFile);
 		database.insert(companyLogo);
 
 		CompanyLogo logoExample = new CompanyLogo();
 		logoExample.carCompany.permittedValues(ford.uidCarCompany);
-		List<CompanyLogo> foundLogo = database.get(logoExample);
-		database.print(foundLogo);
+		List<CompanyLogo> foundLogos = database.get(logoExample);
+		database.print(foundLogos);
+		Assert.assertThat(foundLogos.size(), is(1));
+		final CompanyLogo foundLogo = foundLogos.get(0);
+		Assert.assertThat(foundLogo.logoID.intValue(), is(2));
+		Assert.assertThat(foundLogo.imageFilename.stringValue(), is("ford_logo.jpg"));
+		Assert.assertThat(foundLogo.imageBytes.isNull(), is(false));
+		File tempFile = new File("tempfileForCreateRowWithByteArray.jpg");
+		foundLogo.imageBytes.writeToFileSystem(tempFile);
+		Assert.assertThat(tempFile.length(), is(fordLogoFile.length()));
+		tempFile.delete();
 	}
 
 	@Test
@@ -98,11 +108,10 @@ public class DBByteArrayTest extends AbstractTest {
 
 		blobTable = new CompanyLogoForRetreivingByteArray();
 		CompanyLogoForRetreivingByteArray firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
-		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(1));
-		firstRow.imageBytes.writeToFileSystem(newFile.getName());
-		newFile = new File(newFile.getName());
+		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey));
+		firstRow.imageBytes.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
-		newFile.delete();
+//		newFile.delete();
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(blobTable);
@@ -130,7 +139,7 @@ public class DBByteArrayTest extends AbstractTest {
 		Assert.assertThat(stringValue, is(sourceDataAsString));
 
 		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(clobTable);
+	    database.dropTableNoExceptions(clobTable);
 
 	}
 

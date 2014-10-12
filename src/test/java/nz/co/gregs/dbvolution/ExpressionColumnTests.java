@@ -45,7 +45,7 @@ public class ExpressionColumnTests extends AbstractTest {
 		query.addExpressionColumn(dateKey, DateExpression.currentDateOnly());
 		
 		final String sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName().trim()));
 		
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(dateKey);

@@ -125,10 +125,9 @@ public class DateExpression implements DateResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -137,8 +136,8 @@ public class DateExpression implements DateResult {
 	 * </ul>
 	 *
 	 * @param date
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static DateExpression value(Date date) {
 		return new DateExpression(date);
@@ -158,6 +157,12 @@ public class DateExpression implements DateResult {
 	public static DateExpression currentDateOnly() {
 		return new DateExpression(
 				new DBNonaryFunction() {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doCurrentDateOnlyTransform();
+					}
+
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getCurrentDateOnlyFunctionName();
@@ -169,8 +174,8 @@ public class DateExpression implements DateResult {
 	 * Creates a date expression that returns the current date on the database.
 	 *
 	 * <p>
-	 * That is to say the expression returns the current day and time according
-	 * to the database.
+	 * That is to say the expression returns the current day and time according to
+	 * the database.
 	 *
 	 * @return a date expression of the current database timestamp.
 	 */
@@ -240,8 +245,8 @@ public class DateExpression implements DateResult {
 	 * Returns the day part of the date.
 	 *
 	 * <p>
-	 * Day in this sense is the number of the day within the month: that is the
-	 * 23 part of Monday 25th of August 2014
+	 * Day in this sense is the number of the day within the month: that is the 25
+	 * part of Monday 25th of August 2014
 	 *
 	 * @return a NumberExpression that will provide the day of this date.
 	 */
@@ -361,8 +366,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -389,8 +394,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -417,8 +422,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -445,8 +450,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -767,8 +772,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is
-	 * greater than the supplied date.
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than the supplied date.
 	 *
 	 * @param date
 	 * @return a boolean expression representing the required comparison
@@ -778,8 +783,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is
-	 * greater than the supplied DateResult.
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than the supplied DateResult.
 	 *
 	 * @param dateExpression
 	 * @return a boolean expression representing the required comparison
@@ -799,8 +804,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is
-	 * greater than or equal to the supplied Date.
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than or equal to the supplied Date.
 	 *
 	 * @param date
 	 * @return a boolean expression representing the required comparison
@@ -810,8 +815,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is
-	 * greater than or equal to the supplied DateResult.
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than or equal to the supplied DateResult.
 	 *
 	 * @param dateExpression
 	 * @return a boolean expression representing the required comparison
@@ -894,8 +899,7 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates and expression that replaces a NULL result with the supplied
-	 * date.
+	 * Creates and expression that replaces a NULL result with the supplied date.
 	 *
 	 * <p>
 	 * This is a way of handling dates that should have a value but don't.
@@ -1039,8 +1043,7 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date
-	 * expression.
+	 * Date Arithmetic: add the supplied number of seconds to the date expression.
 	 *
 	 * <p>
 	 * Negative seconds are supported.
@@ -1053,8 +1056,7 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date
-	 * expression.
+	 * Date Arithmetic: add the supplied number of seconds to the date expression.
 	 *
 	 * <p>
 	 * Negative seconds are supported.
@@ -1080,11 +1082,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of minutes to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param minutesToAdd 
+	 * @param minutesToAdd
 	 * @return a DateExpression
 	 */
 	public DateExpression addMinutes(int minutesToAdd) {
@@ -1093,11 +1095,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of minutes to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param minutesToAdd 
+	 * @param minutesToAdd
 	 * @return a DateExpression
 	 */
 	public DateExpression addMinutes(NumberExpression minutesToAdd) {
@@ -1118,11 +1120,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of days to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param daysToAdd 
+	 * @param daysToAdd
 	 * @return a DateExpression
 	 */
 	public DateExpression addDays(int daysToAdd) {
@@ -1131,11 +1133,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of days to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param daysToAdd 
+	 * @param daysToAdd
 	 * @return a DateExpression
 	 */
 	public DateExpression addDays(NumberExpression daysToAdd) {
@@ -1156,11 +1158,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of hours to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param hoursToAdd  
+	 * @param hoursToAdd
 	 * @return a DateExpression
 	 */
 	DateExpression addHours(int hoursToAdd) {
@@ -1169,11 +1171,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of hours to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param hoursToAdd  
+	 * @param hoursToAdd
 	 * @return a DateExpression
 	 */
 	public DateExpression addHours(NumberExpression hoursToAdd) {
@@ -1194,11 +1196,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of weeks to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param weeksToAdd  
+	 * @param weeksToAdd
 	 * @return a DateExpression
 	 */
 	DateExpression addWeeks(int weeksToAdd) {
@@ -1207,11 +1209,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of weeks to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param weeksToAdd  
+	 * @param weeksToAdd
 	 * @return a DateExpression
 	 */
 	public DateExpression addWeeks(NumberExpression weeksToAdd) {
@@ -1232,11 +1234,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of months to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param monthsToAdd  
+	 * @param monthsToAdd
 	 * @return a DateExpression
 	 */
 	DateExpression addMonths(int monthsToAdd) {
@@ -1245,11 +1247,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of months to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param monthsToAdd  
+	 * @param monthsToAdd
 	 * @return a DateExpression
 	 */
 	public DateExpression addMonths(NumberExpression monthsToAdd) {
@@ -1270,11 +1272,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of years to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param yearsToAdd  
+	 * @param yearsToAdd
 	 * @return a DateExpression
 	 */
 	DateExpression addYears(int yearsToAdd) {
@@ -1283,11 +1285,11 @@ public class DateExpression implements DateResult {
 
 	/**
 	 * Date Arithmetic: add the supplied number of years to the date expression.
-	 * 
+	 *
 	 * <p>
 	 * Negative values are supported.
 	 *
-	 * @param yearsToAdd  
+	 * @param yearsToAdd
 	 * @return a DateExpression
 	 */
 	public DateExpression addYears(NumberExpression yearsToAdd) {

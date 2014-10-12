@@ -25,7 +25,6 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generation.DBTableField;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
  * Defines the features of the SQLite database that differ from the standard
@@ -115,6 +114,11 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String getCurrentDateOnlyFunctionName() {
+		return "DATETIME";
+	}
+
+	@Override
+	public String doCurrentDateOnlyTransform() {
 		return " DATETIME('now','localtime') ";
 	}
 
