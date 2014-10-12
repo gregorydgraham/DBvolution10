@@ -293,6 +293,15 @@ public class JavaDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	@Override
+	public Object getOrderByDirectionClause(Boolean sortOrder) {
+		return super.getOrderByDirectionClause(sortOrder) + (sortOrder ? " NULLS FIRST " : " NULLS LAST ");
+	}
+
+//	@Override
+//	public String endOrderByClause() {
+//		return " NULLS FIRST ";
+//	}
 //	@Override
 //	public String beginStringValue() {
 //		return "cast('";
@@ -302,5 +311,4 @@ public class JavaDBDefinition extends DBDefinition {
 //	public String endStringValue() {
 //		return "' as VARCHAR(1000))"; //To change body of generated methods, choose Tools | Templates.
 //	}
-
 }
