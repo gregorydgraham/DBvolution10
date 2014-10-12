@@ -15,16 +15,12 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 import org.apache.derby.agg.Aggregator;
-import org.apache.derby.jdbc.ClientDriver;
 
 /**
  * A version of DBDatabase tweaked for JavaDB.
@@ -95,6 +91,8 @@ public class JavaDB extends DBDatabase {
 //  EXTERNAL NAME 'com.example.myapp.aggs.Mode';
 	public class StandardDeviationDouble implements Aggregator<Double, Double, StandardDeviationDouble> {
 
+		private static final long serialVersionUID = 1l;
+		
 		private ArrayList<Double> _values;
 
 		public StandardDeviationDouble() {/*Empty constructor*/

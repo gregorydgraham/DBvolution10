@@ -19,9 +19,12 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -60,15 +63,22 @@ public class StringExpressionTest extends AbstractTest {
 		got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(2));
 	}
+	
+	public static class MarqueTrim extends Marque{
+		@DBColumn 
+		DBString ltrimName = new DBString(this.column(this.name).leftTrim());
+		@DBColumn 
+		DBString rtrimName = new DBString(this.column(this.name).rightTrim());
+	}
 
 	@Test
 	public void testLeftAndRightTrimTransforms() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		Marque marq = new Marque();
+		MarqueTrim marq = new MarqueTrim();
 		marq.name.permittedValuesIgnoreCase("HUMMER");
 		DBQuery dbQuery = database.getDBQuery(marq);
-		List<Marque> got = dbQuery.getAllInstancesOf(marq);
+		List<MarqueTrim> got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(1));
 
 		marq.name.clear();
@@ -237,7 +247,7 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat(got.get(0).name.stringValue(), is("VOLVO"));
 		Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
 	}
-
+	
 	@Test
 	public void testConcatTransform() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
@@ -246,6 +256,15 @@ public class StringExpressionTest extends AbstractTest {
 		List<Marque> got;
 		final StringColumn nameColumn = marq.column(marq.name);
 		final StringExpression nameValue = nameColumn;
+
+		query = database.getDBQuery(marq);
+		// Find VW and BMW by appending V and W around the replaced brands
+		query.addCondition(nameValue.replace("M", "O").is("BOW"));
+		query.setSortOrder(nameColumn);
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
 
 		query = database.getDBQuery(marq);
 		// Find VW and BMW by appending V and W around the replaced brands

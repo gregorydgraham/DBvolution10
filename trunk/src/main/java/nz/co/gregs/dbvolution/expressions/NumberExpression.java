@@ -100,10 +100,20 @@ public class NumberExpression implements NumberResult {
 	}
 
 	public StringExpression stringResult() {
-		return new StringExpression(new DBBinaryStringNumberFunction(StringExpression.value(""), this) {
+		return new StringExpression(new DBUnaryStringFunction(this) {
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
+				return db.getDefinition().doNumberToStringTransform(super.only.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return only.getIncludesNull();
 			}
 		});
 	}
@@ -2077,13 +2087,13 @@ public class NumberExpression implements NumberResult {
 
 	private static abstract class DBUnaryStringFunction implements StringResult {
 
-		protected DBExpression only;
+		protected NumberExpression only;
 
 		DBUnaryStringFunction() {
 			this.only = null;
 		}
 
-		DBUnaryStringFunction(DBExpression only) {
+		DBUnaryStringFunction(NumberExpression only) {
 			this.only = only;
 		}
 

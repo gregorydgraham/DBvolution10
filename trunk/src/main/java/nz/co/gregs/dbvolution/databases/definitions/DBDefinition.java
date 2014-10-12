@@ -979,7 +979,7 @@ public abstract class DBDefinition {
 	 * @return the default implementation returns " CURRENT_DATE "
 	 */
 	public String getCurrentDateOnlyFunctionName() {
-		return " CURRENT_DATE ";
+		return " CURRENT_DATE";
 	}
 
 	/**
@@ -1106,25 +1106,6 @@ public abstract class DBDefinition {
 	 */
 	public String getNextSequenceValueFunctionName() {
 		return "NEXTVAL";
-	}
-
-	/**
-	 * Returns the function name of the function used to replace the value of a
-	 * substring with another string.
-	 *
-	 * @return "REPLACE"
-	 * @see StringExpression#replace(java.lang.String, java.lang.String)
-	 * @see StringExpression#replace(java.lang.String,
-	 * nz.co.gregs.dbvolution.expressions.StringResult)
-	 * @see
-	 * StringExpression#replace(nz.co.gregs.dbvolution.expressions.StringResult,
-	 * java.lang.String)
-	 * @see
-	 * StringExpression#replace(nz.co.gregs.dbvolution.expressions.StringResult,
-	 * nz.co.gregs.dbvolution.expressions.StringResult)
-	 */
-	public String getReplaceFunctionName() {
-		return "REPLACE";
 	}
 
 	/**
@@ -2117,5 +2098,35 @@ public abstract class DBDefinition {
 			comma = ", ";
 		}
 		return sql.append(")").toString();
+	}
+
+	/**
+	 * Returns the SQL string used to replace the value of a
+	 * substring with another string.
+	 *
+	 * @param withinString search within this value
+	 * @param findString search for this value
+	 * @param replaceString replace with this value
+	 * @return "REPLACE(withinString, findString, replaceString)"
+	 * @see StringExpression#replace(java.lang.String, java.lang.String)
+	 * @see StringExpression#replace(java.lang.String,
+	 * nz.co.gregs.dbvolution.expressions.StringResult)
+	 * @see
+	 * StringExpression#replace(nz.co.gregs.dbvolution.expressions.StringResult,
+	 * java.lang.String)
+	 * @see
+	 * StringExpression#replace(nz.co.gregs.dbvolution.expressions.StringResult,
+	 * nz.co.gregs.dbvolution.expressions.StringResult)
+	 */
+	public String doReplaceTransform(String withinString, String findString, String replaceString) {
+		return "REPLACE("+withinString+","+findString+","+replaceString+")";
+	}
+
+	public String doNumberToStringTransform(String numberExpression) {
+		return doConcatTransform(numberExpression, getEmptyString());
+	}
+
+	public String doCurrentDateOnlyTransform() {
+		return getCurrentDateOnlyFunctionName().trim()+"()";
 	}
 }

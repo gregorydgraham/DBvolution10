@@ -494,7 +494,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(9));
 
-		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", tedhiFormat.parse(firstDateStr).asDate(), 4, null);
+		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", datetimeFormat.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
 
 		dbQuery = database.getDBQuery(marque);
@@ -524,7 +524,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(0));
 
-		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", tedhiFormat.parse(firstDateStr).asDate(), 4, null);
+		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", datetimeFormat.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
 
 		dbQuery = database.getDBQuery(marque);
@@ -555,7 +555,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(0));
 
-		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", tedhiFormat.parse(firstDateStr).asDate(), 4, null);
+		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", datetimeFormat.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
 
 		dbQuery = database.getDBQuery(marque);

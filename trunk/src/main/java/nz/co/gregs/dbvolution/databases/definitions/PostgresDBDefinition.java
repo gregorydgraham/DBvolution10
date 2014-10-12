@@ -142,4 +142,9 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "" + (boolValue ? 1 : 0) + "::bool";
 	}
 
+	@Override
+	public String doCurrentDateOnlyTransform() {
+		return super.getCurrentDateOnlyFunctionName(); //To change body of generated methods, choose Tools | Templates.
+	}
+
 }

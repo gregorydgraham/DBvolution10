@@ -258,12 +258,72 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testHourFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).hour().is(12));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).hour().is(1));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(3));
+
+	}
+
+	@Test
+	public void testMinuteFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).minute().is(34));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).minute().is(2));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(3));
+
+	}
+
+	@Test
+	public void testSecondFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).second().is(56));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).second().is(3));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(3));
+
+	}
+
+	@Test
 	public void testIsInWithNulls() throws SQLException, ParseException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).isIn((Date) null, tedhiFormat.parse(firstDateStr).asDate())
+				marque.column(marque.creationDate).isIn((Date) null, datetimeFormat.parse(firstDateStr))
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -279,7 +339,7 @@ public class DateExpressionTest extends AbstractTest {
 		database.print(allRows);
 
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).isIn((Date) null, tedhiFormat.parse(firstDateStr).asDate())
+				marque.column(marque.creationDate).isIn((Date) null, datetimeFormat.parse(firstDateStr))
 		);
 
 		allRows = dbQuery.getAllRows();

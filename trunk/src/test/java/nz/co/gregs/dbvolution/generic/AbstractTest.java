@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.generic;
 import nz.co.gregs.dbvolution.DBDatabase;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,13 +52,13 @@ public abstract class AbstractTest {
 	public List<Marque> marqueRows = new ArrayList<Marque>();
 	public List<CarCompany> carTableRows = new ArrayList<CarCompany>();
 	public static final FlexibleDateFormat tedhiFormat = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
+	public static final SimpleDateFormat datetimeFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
 	public static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
-	public String firstDateStr = "23/March/2013";
-	public String secondDateStr = "2/April/2013";
+	public String firstDateStr = "23/March/2013 12:34:56";
+	public String secondDateStr = "2/April/2013 1:02:03";
 
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException {
-		boolean testAllDatabases = System.getProperty("testAllDatabases") != null;
 
 		List<Object[]> databases = new ArrayList<Object[]>();
 		final SQLiteDB sqliteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
@@ -115,7 +116,7 @@ public abstract class AbstractTest {
 	public String testableSQL(String str) {
 		if (str != null) {
 			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
-			if ((database instanceof OracleDB)||(database instanceof JavaDB)) {
+			if ((database instanceof OracleDB) || (database instanceof JavaDB)) {
 				return trimStr.replaceAll(" oo", " __").replaceAll(" +[aA][sS] +", " ").replaceAll("\"", "").replaceAll(" *; *$", "");
 			} else if (database instanceof PostgresDB) {
 				return trimStr.replaceAll("::[a-zA-Z]*", "");
@@ -135,8 +136,7 @@ public abstract class AbstractTest {
 					.replaceAll("[ \\r\\n]+", " ")
 					.toLowerCase();
 			if ((database instanceof OracleDB)
-					||(database instanceof JavaDB)
-					) {
+					|| (database instanceof JavaDB)) {
 				return trimStr
 						.replaceAll(" oo", " __")
 						.replaceAll("\"", "")
@@ -174,8 +174,8 @@ public abstract class AbstractTest {
 		carTableRows.add(new CarCompany("OTHER", 4));
 		carCompanies.insert(carTableRows);
 
-		Date firstDate = tedhiFormat.parse(firstDateStr).asDate();
-		Date secondDate = tedhiFormat.parse(secondDateStr).asDate();
+		Date firstDate = datetimeFormat.parse(firstDateStr);
+		Date secondDate = datetimeFormat.parse(secondDateStr);
 
 		marqueRows.add(new Marque(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, null));
 		marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", firstDate, 2, null));
