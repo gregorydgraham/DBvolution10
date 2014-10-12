@@ -236,9 +236,8 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat(got.get(0).name.stringValue(), is("BMW"));
 		Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
 
-		// A rather compilicated way to find out how many marquesTable start with V
+		// A rather complicated way to find out how many marques start with V
 		query = database.getDBQuery(marq);
-		System.out.println("VALUE OF DBInteger(1): " + (new DBInteger(1)).toSQLString(database));
 		query.addCondition(nameValue.replace(nameValue.substring(1), StringExpression.value("")).is("V"));
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);

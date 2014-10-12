@@ -263,7 +263,7 @@ public class JavaDBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddYearsTransform(String dateExpression, String numberOfDays) {
-		return "cast({timestampadd(SQL_TSI_YEAR, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
+		return "cast({fn timestampadd(SQL_TSI_YEAR, " + numberOfDays + ", " + dateExpression + ")} as timestamp)";
 	}
 
 	@Override
@@ -280,12 +280,27 @@ public class JavaDBDefinition extends DBDefinition {
 
 	@Override
 	public String doNumberToStringTransform(String numberExpression) {
-		return "trim(cast(cast(" + numberExpression + " as char(38)) as varchar(32672)))";
+		return "trim(cast(cast(" + numberExpression + " as char(38)) as varchar(1000)))";
 	}
 
 	@Override
 	public String doCurrentDateOnlyTransform() {
-		return "cast(cast((cast( "+getCurrentDateOnlyFunctionName()+"  as VARCHAR(32672))||' 00:00:00') as VARCHAR(32672)) as TIMESTAMP) ";
+		return "cast(cast((cast( " + getCurrentDateOnlyFunctionName() + "  as VARCHAR(1000))||' 00:00:00') as VARCHAR(1000)) as TIMESTAMP) ";
 	}
+
+	@Override
+	public boolean supportsStandardDeviationFunction() {
+		return false;
+	}
+
+//	@Override
+//	public String beginStringValue() {
+//		return "cast('";
+//	}
+//
+//	@Override
+//	public String endStringValue() {
+//		return "' as VARCHAR(1000))"; //To change body of generated methods, choose Tools | Templates.
+//	}
 
 }
