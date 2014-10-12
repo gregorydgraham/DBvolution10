@@ -121,28 +121,29 @@ public class DBInsert extends DBAction {
 						if (pkIndex == null || primaryKeyColumnName == null) {
 							statement.execute(sql);
 						} else {
-							if (primaryKeyColumnName == null || primaryKeyColumnName.isEmpty()) {
+							if (primaryKeyColumnName.isEmpty()) {
 								statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
 							} else {
 								statement.execute(sql, new String[]{primaryKeyColumnName});
 								pkIndex = 1;
 							}
-
-							ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
-							try {
-								while (generatedKeysResultSet.next()) {
-									final long pkValue = generatedKeysResultSet.getLong(pkIndex);
-									if (pkValue > 0) {
-										this.getGeneratedPrimaryKeys().add(pkValue);
-										log.info("GENERATED KEYS: " + pkValue);
-										final QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
-										new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+							if (row.getPrimaryKey().hasBeenSet() == false) {
+								ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+								try {
+									while (generatedKeysResultSet.next()) {
+										final long pkValue = generatedKeysResultSet.getLong(pkIndex);
+										if (pkValue > 0) {
+											this.getGeneratedPrimaryKeys().add(pkValue);
+											log.info("GENERATED KEYS: " + pkValue);
+											final QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
+											new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+										}
 									}
+								} catch (SQLException ex) {
+									throw new RuntimeException(ex);
+								} finally {
+									generatedKeysResultSet.close();
 								}
-							} catch (SQLException ex) {
-								throw new RuntimeException(ex);
-							} finally {
-								generatedKeysResultSet.close();
 							}
 						}
 					} catch (SQLException sqlex) {
@@ -156,7 +157,7 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql);
-						if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
+						if (row.getPrimaryKey().hasBeenSet() == false && defn.supportsRetrievingLastInsertedRowViaSQL()) {
 							String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 							ResultSet rs = statement.executeQuery(retrieveSQL);
 							try {
