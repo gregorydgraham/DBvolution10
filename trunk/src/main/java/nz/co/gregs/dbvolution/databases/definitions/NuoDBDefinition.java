@@ -113,6 +113,11 @@ public class NuoDBDefinition extends DBDefinition{
 		return super.getCurrentDateOnlyFunctionName(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
+	public String doCurrentDateOnlyTransform() {
+		return getCurrentDateOnlyFunctionName().trim();
+	}
+
 
 	
 }

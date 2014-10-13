@@ -218,16 +218,21 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "("+dateValue+" + numtodsinterval( "+numberOfWeeks+", 'WEEK'))";
+		return doAddDaysTransform(dateValue, "("+numberOfWeeks+")*7");
 	}
 
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
-		return "("+dateValue+" + numtodsinterval( "+numberOfMonths+", 'MONTH'))";
+		return "ADD_MONTHS("+dateValue+", "+numberOfMonths+")";
 	}
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
-		return "("+dateValue+" + numtodsinterval( "+numberOfYears+", 'YEAR'))";
+		return doAddMonthsTransform(dateValue, "("+numberOfYears+")*12");
+	}
+
+	@Override
+	public String doCurrentDateOnlyTransform() {
+		return getCurrentDateOnlyFunctionName().trim();
 	}
 }

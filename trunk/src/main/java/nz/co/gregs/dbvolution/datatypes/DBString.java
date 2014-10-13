@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.StringResult;
+import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedPatternIgnoreCaseOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
@@ -58,7 +59,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 public class DBString extends QueryableDatatype implements StringResult {
 
 	private static final long serialVersionUID = 1L;
-	private boolean isDBEmptyString = true;
+	private boolean isDBEmptyString = false;
 
 	/**
 	 * Utility function to return the values of a list of DBStrings in a list of
@@ -97,7 +98,6 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 */
 	public DBString(String string) {
 		super(string);
-		isDBEmptyString = false;
 	}
 
 	/**
@@ -112,14 +112,12 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 */
 	public DBString(StringResult stringExpression) {
 		super(stringExpression);
-		isDBEmptyString = false;
 	}
 
 	@Override
 	void setValue(Object newLiteralValue) {
 		if (newLiteralValue instanceof String) {
 			setValue((String) newLiteralValue);
-			isDBEmptyString = false;
 		} else {
 			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-String: Use only Strings with this class");
 		}
@@ -132,7 +130,6 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 */
 	public void setValue(String str) {
 		super.setLiteralValue(str);
-		isDBEmptyString = false;
 	}
 
 	@Override
@@ -780,9 +777,12 @@ public class DBString extends QueryableDatatype implements StringResult {
 	protected DBOperator setToNull(DBDatabase database) {
 		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			this.isDBEmptyString = true;
-			return setToNull();
 		}
 		return setToNull();
+	}
+	
+	public boolean isEmptyOrNullString(){
+		return isEmptyString()||isNull();
 	}
 
 }
