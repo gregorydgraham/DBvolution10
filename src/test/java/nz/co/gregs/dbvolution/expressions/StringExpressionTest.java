@@ -63,22 +63,15 @@ public class StringExpressionTest extends AbstractTest {
 		got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(2));
 	}
-	
-	public static class MarqueTrim extends Marque{
-		@DBColumn 
-		DBString ltrimName = new DBString(this.column(this.name).leftTrim());
-		@DBColumn 
-		DBString rtrimName = new DBString(this.column(this.name).rightTrim());
-	}
 
 	@Test
 	public void testLeftAndRightTrimTransforms() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		MarqueTrim marq = new MarqueTrim();
+		Marque marq = new Marque();
 		marq.name.permittedValuesIgnoreCase("HUMMER");
 		DBQuery dbQuery = database.getDBQuery(marq);
-		List<MarqueTrim> got = dbQuery.getAllInstancesOf(marq);
+		List<Marque> got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(1));
 
 		marq.name.clear();

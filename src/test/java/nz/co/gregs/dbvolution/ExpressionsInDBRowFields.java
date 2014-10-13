@@ -37,7 +37,6 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		super(testIterationName, db);
 	}
 
-//    @Ignore
 	@Test
 	public void selectDBRowExpressionWithDBQuery() throws Exception {
 		final ExpressionRow exprExample = new ExpressionRow();
@@ -53,11 +52,6 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 
 		for (DBQueryRow row : allRows) {
 			ExpressionRow expressionRow = row.get(exprExample);
-//			System.out.println("Expression Row SysDate SQL: " + expressionRow.sysDateColumnOnClass.toSQLString(database));
-//			System.out.println("Expression Row SysDate SQL: " + expressionRow.stringColumnOnClass.toSQLString(database));
-//			System.out.println("Expression Row SysDate SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
-			DBDate currentDate = expressionRow.sysDateColumnOnClass;
-//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDateOnly.dateValue());
 			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
 			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
 			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
@@ -79,11 +73,6 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 
 		for (DBQueryRow row : query.getAllRows()) {
 			ExpressionRow expressionRow = row.get(exprExample);
-//			System.out.println("Expression Row SysDate SQL: " + expressionRow.sysDateColumnOnClass.toSQLString(database));
-//			System.out.println("Expression Row stringColumnOnClass SQL: " + expressionRow.stringColumnOnClass.toSQLString(database));
-//			System.out.println("Expression Row numberColumnOnClass SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
-			DBDate currentDate = expressionRow.sysDateColumnOnClass;
-//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDateOnly.dateValue());
 			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
 			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
 			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
@@ -117,11 +106,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		database.print(rowsByExample);
 
 		for (ExpressionRow expressionRow : table.getAllRows()) {
-//			System.out.println("Expression Row SysDate SQL: " + expressionRow.sysDateColumnOnClass.toSQLString(database));
-//			System.out.println("Expression Row stringColumnOnClass SQL: " + expressionRow.stringColumnOnClass.toSQLString(database));
-//			System.out.println("Expression Row numberColumnOnClass SQL: " + expressionRow.numberColumnOnClass.toSQLString(database));
 			DBDate currentDate = expressionRow.sysDateColumnOnClass;
-//			System.out.println("Expression Row.sysDateColumnOnClass = " + currentDateOnly.dateValue());
 			Assert.assertThat(expressionRow.stringColumnOnClass.stringValue(), is(ExpressionRow.STRING_VALUE.toUpperCase()));
 			Assert.assertThat(expressionRow.numberColumnOnClass.intValue(), is(15));
 			Assert.assertThat(expressionRow.marqueUIDTimes10.intValue(), is(10));
@@ -134,12 +119,9 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 	@SuppressWarnings("deprecation")
 	public void selectDBRowExpressionAllMarques() throws Exception {
 		final ExpressionRow expressionRow = new ExpressionRow();
-//		expressionRow.creationDate.excludedValues((Date) null);
 		final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow);
 		final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
 		database.print(allMarques);
-
-//		Assert.assertThat(allMarques.size(), is(21));
 
 		for (ExpressionRow row : allMarques) {
 			Assert.assertThat(row.uidAndName.stringValue(),
@@ -152,7 +134,6 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 						row.uidMarque.stringValue() + "-"
 						+ row.name.stringValue() + "-"
 						+ year));
-//                        + (dateValue.getYear() + 1900)));
 				Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
 						row.uidMarque.stringValue() + "-"
 						+ row.name.stringValue() + "-"

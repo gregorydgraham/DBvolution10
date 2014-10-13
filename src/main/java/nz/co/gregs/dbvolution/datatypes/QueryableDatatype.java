@@ -468,7 +468,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		if (this.isDBNull || getLiteralValue() == null) {
 			return def.getNull();
 		} else if (getLiteralValue() instanceof DBExpression) {
-			return ((DBExpression) getLiteralValue()).toSQLString(db);
+			return "("+((DBExpression) getLiteralValue()).toSQLString(db)+")";
 		} else {
 			return formatValueForSQLStatement(db);
 		}
