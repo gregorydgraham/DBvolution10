@@ -77,9 +77,13 @@ public class QueryGraphVisualisationTest {
 	private static void tearDown(DBDatabase database) {
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogoWithPreviousLink());
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CompanyLogo());
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CarCompany());
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new Marque());
 		database.preventDroppingOfTables(true);
 	}
