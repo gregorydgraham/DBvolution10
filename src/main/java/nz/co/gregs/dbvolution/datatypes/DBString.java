@@ -781,6 +781,11 @@ public class DBString extends QueryableDatatype implements StringResult {
 		return setToNull();
 	}
 	
+	/**
+	 * Returns TRUE if the database value is the empty string or NULL
+	 *
+	 * @return TRUE if the database value is "" or NULL, otherwise FALSE.
+	 */
 	public boolean isEmptyOrNullString(){
 		return isEmptyString()||isNull();
 	}
