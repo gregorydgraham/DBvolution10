@@ -42,10 +42,10 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * <p>
  * Use a NumberExpression to produce a number from an existing column,
- * expression or value and perform arithmetic.
+ * expression or value, and perform arithmetic.
  *
  * <p>
- * Generally you get a NumberExpression from a column or value using null {@link NumberExpression#NumberExpression(java.lang.Number)
+ * Generally you get a NumberExpression from a column or value using {@link NumberExpression#NumberExpression(java.lang.Number) 
  * } or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBInteger) }.
  *
  * @author Gregory Graham

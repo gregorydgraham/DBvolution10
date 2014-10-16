@@ -23,17 +23,50 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 
+/**
+ * StringExpression implements standard functions that produce a character or
+ * string result, including CHAR and VARCHAR.
+ *
+ * <p>
+ * Most query requirements are provided by {@link QueryableDatatype}s like
+ * {@link DBString} or {@link DBInteger} but expressions can provide more
+ * functions or more precise control.
+ *
+ * <p>
+ * Use a StringExpression to produce a string from an existing column,
+ * expression, or value and perform string manipulation.
+ *
+ * <p>
+ * Generally you get a StringExpression from a value or column using {@link StringExpression#value(java.lang.String)
+ * } or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBString) }.
+ *
+ * @author Gregory Graham
+ */
 public class StringExpression implements StringResult {
 
 	private StringResult string1;
 	private boolean nullProtectionRequired;
 
+	/**
+	 * Default Constructor
+	 *
+	 */
 	protected StringExpression() {
 	}
 
+	/**
+	 * Creates a StringExpression from an arbitrary StringResult object.
+	 *
+	 * <p>
+	 * {@link StringResult} objects are generally StringExpressions but they can
+	 * be {@link DBString}, {@link StringColumn}, or other types.
+	 *
+	 * @param stringVariable
+	 */
 	public StringExpression(StringResult stringVariable) {
 		string1 = stringVariable;
 		if (stringVariable == null || stringVariable.getIncludesNull()) {
@@ -41,6 +74,14 @@ public class StringExpression implements StringResult {
 		}
 	}
 
+	/**
+	 * Creates a StringExpression from an arbitrary String object.
+	 *
+	 * <p>
+	 * Essentially the same as {@link StringExpression#value(java.lang.String) }
+	 *
+	 * @param stringVariable
+	 */
 	public StringExpression(String stringVariable) {
 		string1 = new DBString(stringVariable);
 		if (stringVariable == null || stringVariable.isEmpty()) {
@@ -48,6 +89,31 @@ public class StringExpression implements StringResult {
 		}
 	}
 
+	/**
+	 * Creates a StringExpression from an arbitrary DBString object.
+	 *
+	 * @param stringVariable
+	 */
+	public StringExpression(DBString stringVariable) {
+		string1 = stringVariable.copy();
+		if (stringVariable == null || stringVariable.getIncludesNull()) {
+			nullProtectionRequired = true;
+		}
+	}
+
+	/**
+	 * Creates a StringExpression from an arbitrary Number object.
+	 *
+	 * <p>
+	 * Essentially the same as {@code NumberExpression.value(numberVariable).stringResult()
+	 * }.
+	 *
+	 * <p>
+	 * Refer to {@link NumberExpression#NumberExpression(java.lang.Number) } and {@link NumberExpression#stringResult()
+	 * } for more information.
+	 *
+	 * @param numberVariable
+	 */
 	public StringExpression(NumberExpression numberVariable) {
 		string1 = numberVariable.stringResult();
 		if (numberVariable == null || string1.getIncludesNull()) {
@@ -55,16 +121,22 @@ public class StringExpression implements StringResult {
 		}
 	}
 
+	/**
+	 * Creates a StringExpression from an arbitrary Number object.
+	 *
+	 * <p>
+	 * Essentially the same as {@code NumberExpression.value(numberVariable).stringResult()
+	 * }.
+	 *
+	 * <p>
+	 * Refer to {@link NumberExpression#NumberExpression(java.lang.Number) } and {@link NumberExpression#stringResult()
+	 * } for more information.
+	 *
+	 * @param numberVariable
+	 */
 	public StringExpression(Number numberVariable) {
 		string1 = NumberExpression.value(numberVariable).stringResult();
 		if (numberVariable == null || string1.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
-	}
-
-	public StringExpression(DBString stringVariable) {
-		string1 = stringVariable.copy();
-		if (stringVariable == null || stringVariable.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
@@ -91,9 +163,10 @@ public class StringExpression implements StringResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -102,17 +175,33 @@ public class StringExpression implements StringResult {
 	 * </ul>
 	 *
 	 * @param string
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static StringExpression value(String string) {
 		return new StringExpression(string);
 	}
 
+	/**
+	 * Provides a default option when the StringExpression resolves to NULL
+	 * within the query.
+	 *
+	 * @param alternative
+	 * @return a StringExpression that will substitute to the given value when
+	 * the StringExpression resolves to NULL.
+	 */
 	public StringExpression ifDBNull(String alternative) {
 		return this.ifDBNull(new StringExpression(alternative));
 	}
 
+	/**
+	 * Provides a default option when the StringExpression resolves to NULL
+	 * within the query.
+	 *
+	 * @param alternative
+	 * @return a StringExpression that will substitute to the given value when
+	 * the StringExpression resolves to NULL.
+	 */
 	public StringExpression ifDBNull(StringResult alternative) {
 		return new StringExpression(
 				new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
@@ -129,10 +218,42 @@ public class StringExpression implements StringResult {
 				});
 	}
 
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param sqlPattern
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isLike(String sqlPattern) {
 		return isLike(value(sqlPattern));
 	}
 
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param sqlPattern
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isLike(StringResult sqlPattern) {
 		if (sqlPattern.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
@@ -147,59 +268,208 @@ public class StringExpression implements StringResult {
 				public boolean getIncludesNull() {
 					return false;
 				}
-
-//				@Override
-//				public void setIncludesNull(boolean nullsAreIncluded) {
-//					;
-//				}
 			});
 		}
 	}
 
+	/**
+	 * Creates a query comparison using the LIKE operator and the LOWERCASE
+	 * function.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern changing both
+	 * expressions to lowercase first.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param sqlPattern
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isLikeIgnoreCase(String sqlPattern) {
 		return isLikeIgnoreCase(value(sqlPattern));
 	}
 
+	/**
+	 * Creates a query comparison using the LIKE operator and the LOWERCASE
+	 * function.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern changing both
+	 * expressions to lowercase first.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param sqlPattern
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isLikeIgnoreCase(StringResult sqlPattern) {
 		return this.isLikeIgnoreCase(new StringExpression(sqlPattern));
 	}
 
-	public BooleanExpression isLikeIgnoreCase(StringExpression sqlpattern) {
-		return this.lowercase().isLike(sqlpattern.lowercase());
+	/**
+	 * Creates a query comparison using the LIKE operator and the LOWERCASE
+	 * function.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern changing both
+	 * expressions to lowercase first.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param sqlPattern
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression isLikeIgnoreCase(StringExpression sqlPattern) {
+		return this.lowercase().isLike(sqlPattern.lowercase());
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator and the LOWERCASE
+	 * function.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value changing both expressions
+	 * to lowercase first.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isIgnoreCase(String equivalentString) {
 		return isIgnoreCase(value(equivalentString));
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator and the LOWERCASE
+	 * function.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value changing both expressions
+	 * to lowercase first.
+	 *
+	 * @param numberResult
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isIgnoreCase(NumberExpression numberResult) {
 		return isIgnoreCase(numberResult.stringResult().lowercase());
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator and the LOWERCASE
+	 * function.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value changing both expressions
+	 * to lowercase first.
+	 *
+	 * @param number
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isIgnoreCase(Number number) {
 		return isIgnoreCase(NumberExpression.value(number).stringResult().lowercase());
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator and the LOWERCASE
+	 * function.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value changing both expressions
+	 * to lowercase first.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isIgnoreCase(StringResult equivalentString) {
 		return isIgnoreCase(new StringExpression(equivalentString));
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator and the LOWERCASE
+	 * function.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value changing both expressions
+	 * to lowercase first.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isIgnoreCase(StringExpression equivalentString) {
 		return this.lowercase().is(equivalentString.lowercase());
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression is(String equivalentString) {
 		return this.is(value(equivalentString));
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param numberResult
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression is(NumberExpression numberResult) {
 		return this.is(numberResult.stringResult());
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param number
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression is(Number number) {
 		return is(NumberExpression.value(number).stringResult());
 	}
 
+	/**
+	 * Creates a query comparison using the EQUALS operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression is(StringResult equivalentString) {
 		if (equivalentString == null) {
 			return new BooleanExpression(this.isNull());
@@ -222,11 +492,6 @@ public class StringExpression implements StringResult {
 				public boolean getIncludesNull() {
 					return false;
 				}
-
-//				@Override
-//				public void setIncludesNull(boolean nullsAreIncluded) {
-//					;
-//				}
 			});
 		}
 	}
@@ -234,8 +499,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -262,8 +527,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -290,8 +555,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -318,8 +583,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -575,10 +840,30 @@ public class StringExpression implements StringResult {
 		);
 	}
 
+	/**
+	 * Creates a query comparison using the LESSTHAN operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isLessThan(String equivalentString) {
 		return isLessThan(value(equivalentString));
 	}
 
+	/**
+	 * Creates a query comparison using the LESSTHAN operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isLessThan(StringResult equivalentString) {
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
@@ -593,19 +878,34 @@ public class StringExpression implements StringResult {
 				public boolean getIncludesNull() {
 					return false;
 				}
-
-//				@Override
-//				public void setIncludesNull(boolean nullsAreIncluded) {
-//					;
-//				}
 			});
 		}
 	}
 
+	/**
+	 * Creates a query comparison using the "<=" operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isLessThanOrEqual(String equivalentString) {
 		return isLessThanOrEqual(value(equivalentString));
 	}
 
+	/**
+	 * Creates a query comparison using the "<=" operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isLessThanOrEqual(StringResult equivalentString) {
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
@@ -620,19 +920,34 @@ public class StringExpression implements StringResult {
 				public boolean getIncludesNull() {
 					return false;
 				}
-
-//				@Override
-//				public void setIncludesNull(boolean nullsAreIncluded) {
-//					;
-//				}
 			});
 		}
 	}
 
+	/**
+	 * Creates a query comparison using the GREATERTHAN operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isGreaterThan(String equivalentString) {
 		return isGreaterThan(value(equivalentString));
 	}
 
+	/**
+	 * Creates a query comparison using the GREATERTHAN operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isGreaterThan(StringResult equivalentString) {
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNotNull());
@@ -647,19 +962,34 @@ public class StringExpression implements StringResult {
 				public boolean getIncludesNull() {
 					return false;
 				}
-
-//				@Override
-//				public void setIncludesNull(boolean nullsAreIncluded) {
-//					;
-//				}
 			});
 		}
 	}
 
+	/**
+	 * Creates a query comparison using the ">=" operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isGreaterThanOrEqual(String equivalentString) {
 		return isGreaterThanOrEqual(value(equivalentString));
 	}
 
+	/**
+	 * Creates a query comparison using the ">=" operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isGreaterThanOrEqual(StringResult equivalentString) {
 		if (equivalentString.getIncludesNull()) {
 			return this.is(equivalentString).not();
@@ -674,15 +1004,20 @@ public class StringExpression implements StringResult {
 				public boolean getIncludesNull() {
 					return false;
 				}
-
-//				@Override
-//				public void setIncludesNull(boolean nullsAreIncluded) {
-//					;
-//				}
 			});
 		}
 	}
 
+	/**
+	 * Creates a query comparison using the IN operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that indicates
+	 * whether the current StringExpression is included in the supplied values.
+	 *
+	 * @param possibleValues
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isIn(String... possibleValues) {
 		List<StringExpression> possVals = new ArrayList<StringExpression>();
 		for (String str : possibleValues) {
@@ -691,6 +1026,16 @@ public class StringExpression implements StringResult {
 		return isIn(possVals.toArray(new StringExpression[]{}));
 	}
 
+	/**
+	 * Creates a query comparison using the IN operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that indicates
+	 * whether the current StringExpression is included in the supplied values.
+	 *
+	 * @param possibleValues
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isIn(Collection<String> possibleValues) {
 		List<StringExpression> possVals = new ArrayList<StringExpression>();
 		for (String str : possibleValues) {
@@ -699,6 +1044,16 @@ public class StringExpression implements StringResult {
 		return isIn(possVals.toArray(new StringExpression[]{}));
 	}
 
+	/**
+	 * Creates a query comparison using the IN operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that indicates
+	 * whether the current StringExpression is included in the supplied values.
+	 *
+	 * @param possibleValues
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
 	public BooleanExpression isIn(StringResult... possibleValues) {
 		final BooleanExpression isInExpression
 				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
@@ -714,6 +1069,13 @@ public class StringExpression implements StringResult {
 		}
 	}
 
+	/**
+	 * Creates a query expression that appends the supplied value to the current
+	 * StringExpression.
+	 *
+	 * @param string2
+	 * @return a StringExpression.
+	 */
 	public StringExpression append(StringResult string2) {
 		return new StringExpression(new DBBinaryStringArithmetic(this, string2) {
 			@Override
@@ -728,30 +1090,83 @@ public class StringExpression implements StringResult {
 		});
 	}
 
+	/**
+	 * Creates a query expression that appends the supplied value to the current
+	 * StringExpression.
+	 *
+	 * @param string2
+	 * @return a StringExpression.
+	 */
 	public StringExpression append(String string2) {
 		return this.append(StringExpression.value(string2));
 	}
 
+	/**
+	 * Creates a query expression that appends the supplied value to the current
+	 * StringExpression.
+	 *
+	 * @param number1
+	 * @return a StringExpression.
+	 */
 	public StringExpression append(NumberResult number1) {
 		return this.append(new NumberExpression(number1).stringResult());
 	}
 
+	/**
+	 * Creates a query expression that appends the supplied value to the current
+	 * StringExpression.
+	 *
+	 * @param number1
+	 * @return a StringExpression.
+	 */
 	public StringExpression append(Number number1) {
 		return this.append(NumberExpression.value(number1));
 	}
 
+	/**
+	 * Creates a query expression that replaces the supplied value within the
+	 * current StringExpression.
+	 *
+	 * @param findString
+	 * @param replaceWith
+	 * @return a StringExpression.
+	 */
 	public StringExpression replace(String findString, String replaceWith) {
 		return this.replace(new StringExpression(findString), new StringExpression(replaceWith));
 	}
 
+	/**
+	 * Creates a query expression that replaces the supplied value within the
+	 * current StringExpression.
+	 *
+	 * @param findString
+	 * @param replaceWith
+	 * @return a StringExpression.
+	 */
 	public StringExpression replace(StringResult findString, String replaceWith) {
 		return this.replace(findString, StringExpression.value(replaceWith));
 	}
 
+	/**
+	 * Creates a query expression that replaces the supplied value within the
+	 * current StringExpression.
+	 *
+	 * @param findString
+	 * @param replaceWith
+	 * @return a StringExpression.
+	 */
 	public StringExpression replace(String findString, StringResult replaceWith) {
 		return this.replace(StringExpression.value(findString), replaceWith);
 	}
 
+	/**
+	 * Creates a query expression that replaces the supplied value within the
+	 * current StringExpression.
+	 *
+	 * @param findString
+	 * @param replaceWith
+	 * @return a StringExpression.
+	 */
 	public StringExpression replace(StringResult findString, StringResult replaceWith) {
 		StringResult replaceValue = replaceWith;
 		if (replaceWith.getIncludesNull()) {
@@ -781,6 +1196,12 @@ public class StringExpression implements StringResult {
 				});
 	}
 
+	/**
+	 * Creates a query expression that trims all leading and trailing spaces
+	 * from the current StringExpression.
+	 *
+	 * @return a StringExpression.
+	 */
 	public StringExpression trim() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
@@ -796,6 +1217,12 @@ public class StringExpression implements StringResult {
 				});
 	}
 
+	/**
+	 * Creates a query expression that trims all leading spaces from the current
+	 * StringExpression.
+	 *
+	 * @return a StringExpression.
+	 */
 	public StringExpression leftTrim() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
@@ -811,6 +1238,12 @@ public class StringExpression implements StringResult {
 				});
 	}
 
+	/**
+	 * Creates a query expression that trims all trailing spaces from the
+	 * current StringExpression.
+	 *
+	 * @return a StringExpression.
+	 */
 	public StringExpression rightTrim() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
@@ -821,6 +1254,12 @@ public class StringExpression implements StringResult {
 				});
 	}
 
+	/**
+	 * Creates a query expression that changes all the letters in the current
+	 * StringExpression to lowercase.
+	 *
+	 * @return a StringExpression.
+	 */
 	public StringExpression lowercase() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
@@ -831,6 +1270,12 @@ public class StringExpression implements StringResult {
 				});
 	}
 
+	/**
+	 * Creates a query expression that changes all the letters in the current
+	 * StringExpression to UPPERCASE.
+	 *
+	 * @return a StringExpression.
+	 */
 	public StringExpression uppercase() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
@@ -841,7 +1286,16 @@ public class StringExpression implements StringResult {
 				});
 	}
 
-	/*endIndex0Based*/
+	/**
+	 * Create substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end of the string.
+	 * 
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based
+	 * @return a StringExpression
+	 */
 	public StringExpression substring(Number startingIndex0Based) {
 		return new Substring(this, startingIndex0Based);
 	}
@@ -898,7 +1352,8 @@ public class StringExpression implements StringResult {
 	 * the StringExpression.
 	 *
 	 * <p>
-	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
+	 * The index is 1-based, and returns 0 when the searchString is not
+	 * found.</p>
 	 *
 	 * @param searchString
 	 * @return an expression that will find the location of the searchString.
