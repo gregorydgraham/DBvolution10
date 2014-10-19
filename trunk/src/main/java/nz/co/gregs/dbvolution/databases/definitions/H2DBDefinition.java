@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -33,8 +32,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class H2DBDefinition extends DBDefinition {
 
-	private final String dateFormatStr = "yyyy-M-d hh:mm:ss";
-	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss";
+	private final String dateFormatStr = "yyyy-M-d HH:mm:ss Z";
+	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss Z";
 	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
 
 	@Override
