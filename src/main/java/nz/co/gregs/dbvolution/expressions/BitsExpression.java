@@ -31,6 +31,9 @@ public class BitsExpression implements BitsResult {
 
 	private final BitsResult innerBitResult;
 
+	public BitsExpression() {
+		this.innerBitResult = new DBBits();
+	}
 	public BitsExpression(BitsResult bitResult) {
 		this.innerBitResult = bitResult;
 	}
@@ -38,6 +41,22 @@ public class BitsExpression implements BitsResult {
 	@Override
 	public BitsExpression copy() {
 		return new BitsExpression(this.getInnerBitResult());
+	}
+
+	public BitsExpression value(int number) {
+		return NumberExpression.value(number).convertToBits();
+	}
+
+	public BitsExpression value(long number) {
+		return NumberExpression.value(number).convertToBits();
+	}
+
+	public BitsExpression value(double number) {
+		return NumberExpression.value(number).convertToBits();
+	}
+
+	public BitsExpression value(Number number) {
+		return NumberExpression.value(number).convertToBits();
 	}
 
 	@Override
