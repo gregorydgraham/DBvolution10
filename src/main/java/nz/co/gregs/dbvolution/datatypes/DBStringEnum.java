@@ -134,7 +134,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		}
 	}
 
-	private void setValue(String newLiteralValue) {
+	public void setValue(String newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 
