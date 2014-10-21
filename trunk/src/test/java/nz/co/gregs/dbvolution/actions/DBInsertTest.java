@@ -82,6 +82,30 @@ public class DBInsertTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testSaveWithoutValues() throws Exception {
+		if (database.getDefinition().supportsGeneratedKeys() || database.getDefinition().supportsRetrievingLastInsertedRowViaSQL()) {
+			TestDefaultValueRetrieval row = new TestDefaultValueRetrieval();
+			TestDefaultValueRetrieval row2 = new TestDefaultValueRetrieval();
+
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+
+			database.createTable(row);
+
+			database.insert(row);
+			Assert.assertThat(row.pk_uid.getValue(), is(1L));
+			database.insert(row2);
+			Assert.assertThat(row2.pk_uid.getValue(), is(2L));
+			final Long pkValue = row2.pk_uid.getValue();
+			TestDefaultValueRetrieval gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+			Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+		}
+	}
+
 	@Test(expected = AutoIncrementFieldClassAndDatatypeMismatch.class)
 	public void testSaveWithDefaultValuesAndIncorrectDatatype() throws Exception {
 		TestDefaultValueIncorrectDatatype row = new TestDefaultValueIncorrectDatatype();

@@ -43,10 +43,12 @@ public class DBInsert extends DBAction {
 
 	private static final Log log = LogFactory.getLog(DBInsert.class);
 
-	private transient StringBuilder allColumns;
-	private transient StringBuilder allValues;
+	private transient StringBuilder allChangedColumns;
+	private transient StringBuilder allSetValues;
 	private final List<Long> generatedKeys = new ArrayList<Long>();
 	private final DBRow originalRow;
+	private StringBuilder allColumns;
+	private StringBuilder allValues;
 
 	/**
 	 * Creates a DBInsert action for the row.
@@ -62,8 +64,8 @@ public class DBInsert extends DBAction {
 	/**
 	 * Saves the row to the database.
 	 *
-	 * Creates the appropriate actions to save the row permanently in the database
-	 * and executes them.
+	 * Creates the appropriate actions to save the row permanently in the
+	 * database and executes them.
 	 * <p>
 	 * Supports automatic retrieval of the new primary key in limited cases:
 	 * <ul>
@@ -95,13 +97,23 @@ public class DBInsert extends DBAction {
 		processAllFieldsForInsert(db, row);
 
 		ArrayList<String> strs = new ArrayList<String>();
-		strs.add(defn.beginInsertLine()
-				+ defn.formatTableName(row)
-				+ defn.beginInsertColumnList()
-				+ allColumns
-				+ defn.endInsertColumnList()
-				+ allValues
-				+ defn.endInsertLine());
+		if (allChangedColumns.length() != 0) {
+			strs.add(defn.beginInsertLine()
+					+ defn.formatTableName(row)
+					+ defn.beginInsertColumnList()
+					+ allChangedColumns
+					+ defn.endInsertColumnList()
+					+ allSetValues
+					+ defn.endInsertLine());
+		} else {
+			strs.add(defn.beginInsertLine()
+					+ defn.formatTableName(row)
+					+ defn.beginInsertColumnList()
+					+ allColumns
+					+ defn.endInsertColumnList()
+					+ allValues
+					+ defn.endInsertLine());
+		}
 		return strs;
 	}
 
@@ -151,7 +163,7 @@ public class DBInsert extends DBAction {
 							sqlex.printStackTrace();
 							statement.execute(sql);
 						} catch (SQLException ex) {
-							throw new RuntimeException(ex);
+							throw new RuntimeException(sql, ex);
 						}
 					}
 				} else {
@@ -201,29 +213,47 @@ public class DBInsert extends DBAction {
 	private void processAllFieldsForInsert(DBDatabase database, DBRow row) {
 		allColumns = new StringBuilder();
 		allValues = new StringBuilder();
+		allChangedColumns = new StringBuilder();
+		allSetValues = new StringBuilder();
 		DBDefinition defn = database.getDefinition();
 		List<PropertyWrapper> props = row.getPropertyWrappers();
+		String allColumnSeparator = "";
 		String columnSeparator = "";
 		String valuesSeparator = defn.beginValueClause();
+		String allValuesSeparator = defn.beginValueClause();
 		for (PropertyWrapper prop : props) {
 			// BLOBS are not inserted normally so don't include them
 			if (prop.isColumn()) {
 				final QueryableDatatype qdt = prop.getQueryableDatatype();
-				if (!(qdt instanceof DBLargeObject) && qdt.hasBeenSet()) {
-					// nice normal columns
-					// Add the column
-					allColumns
-							.append(columnSeparator)
-							.append(" ")
-							.append(defn.formatColumnName(prop.columnName()));
-					columnSeparator = defn.getValuesClauseColumnSeparator();
-					// add the value
-					allValues.append(valuesSeparator).append(qdt.toSQLString(database));
-					valuesSeparator = defn.getValuesClauseValueSeparator();
+				if (!(qdt instanceof DBLargeObject)) {
+					//support for inserting empty rows in a table with an autoincrementing pk
+					if (!prop.isAutoIncrement()) {
+						allColumns
+								.append(allColumnSeparator)
+								.append(" ")
+								.append(defn.formatColumnName(prop.columnName()));
+						allColumnSeparator = defn.getValuesClauseColumnSeparator();
+						// add the value
+						allValues.append(allValuesSeparator).append(qdt.toSQLString(database));
+						allValuesSeparator = defn.getValuesClauseValueSeparator();
+					}
+					if (qdt.hasBeenSet()) {
+						// nice normal columns
+						// Add the column
+						allChangedColumns
+								.append(columnSeparator)
+								.append(" ")
+								.append(defn.formatColumnName(prop.columnName()));
+						columnSeparator = defn.getValuesClauseColumnSeparator();
+						// add the value
+						allSetValues.append(valuesSeparator).append(qdt.toSQLString(database));
+						valuesSeparator = defn.getValuesClauseValueSeparator();
+					}
 				}
 			}
 		}
 		allValues.append(defn.endValueClause());
+		allSetValues.append(defn.endValueClause());
 	}
 
 	@Override
