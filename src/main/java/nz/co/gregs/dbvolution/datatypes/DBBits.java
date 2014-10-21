@@ -130,8 +130,8 @@ public class DBBits extends QueryableDatatype implements BitsResult {
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
 		if (getLiteralValue() != null) {
-			byte[] boolValue = (byte[]) getLiteralValue();
-			return defn.doBitsValueTransform(boolValue);
+			byte[] bitsArray = (byte[]) getLiteralValue();
+			return defn.doBitsValueTransform(bitsArray);
 //			return defn.beginNumberValue() + (boolValue ? 1 : 0) + defn.endNumberValue();
 		}
 		return defn.getNull();
