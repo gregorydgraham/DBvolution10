@@ -2172,7 +2172,13 @@ public abstract class DBDefinition {
 		return getCurrentDateOnlyFunctionName().trim() + "()";
 	}
 
-	public String doBitsValueTransform(byte[] boolValue) {
+	/**
+	 * Convert the byte array of bit values into the SQL equivalent.
+	 *
+	 * @param byteArray
+	 * @return SQL snippet.
+	 */
+	public String doBitsValueTransform(byte[] byteArray) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

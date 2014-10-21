@@ -22,8 +22,27 @@ import nz.co.gregs.dbvolution.datatypes.DBBits;
 import nz.co.gregs.dbvolution.expressions.BitsExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
-
-public class BitsColumn extends BitsExpression implements ColumnProvider{
+/**
+ * Represents a database column storing an array of bits.
+ *
+ * <p>
+ * Bits are not BLOBs or large objects, rather they are a collection of boolean
+ * values stored as a single field in a byte array, or integer.
+ * <p>
+ * This class adds the necessary methods to use a collection of bits like a
+ * byte[].
+ *
+ * <p>
+ * Internally the class uses an AbsractColumn to store the column and overrides
+ * methods in BitsExpression to insert the column into the expression.
+ *
+ *
+ * @author Gregory Graham
+ * @see RowDefinition
+ * @see AbstractColumn
+ * @see BitsExpression
+ */
+public class BitsColumn extends BitsExpression implements ColumnProvider {
 
 	private final AbstractColumn column;
 

@@ -24,8 +24,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.operators.DBLikeCaseInsensitiveOperator;
-import nz.co.gregs.dbvolution.operators.DBLikeOperator;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
@@ -138,7 +136,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * number provided.
 	 *
 	 * <p>
-	 * This probably the method you want to use to set or change the value of
+	 * This is probably the method you want to use to set or change the value of
 	 * this DBNumber. When creating a new row or updating an existing row use
 	 * this method or
 	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to correctly

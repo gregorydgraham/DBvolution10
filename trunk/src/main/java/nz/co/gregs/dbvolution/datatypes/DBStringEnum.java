@@ -134,6 +134,25 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		}
 	}
 
+	/**
+	 * Set the value of this DBStringEnum to the String provided.
+	 *
+	 * <p>
+	 * This is probably the method you want to use to set or change the value of
+	 * this DBStringEnum. When creating a new row or updating an existing row use
+	 * this method to correctly set the value.
+	 *
+	 * <p>
+	 * Remember:</p>
+	 *
+	 * <ul>
+	 * <li>Set the column to NULL using setValue((String)null)</li>
+	 * <li>Use {@link DBDatabase#insert(nz.co.gregs.dbvolution.DBRow...) } or {@link DBDatabase#update(nz.co.gregs.dbvolution.DBRow...)
+	 * } to make the changes permanent.</li>
+	 * </ul>
+	 *
+	 * @param newLiteralValue
+	 */
 	public void setValue(String newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
@@ -218,7 +237,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * The case, upper or lower, will be ignored.
 	 *
 	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as expected.
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
 	 *
 	 * @param permitted
 	 */
@@ -234,7 +254,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * The case, upper or lower, will be ignored.
 	 *
 	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as expected.
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
 	 *
 	 * @param permitted
 	 */
@@ -250,7 +271,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * The case, upper or lower, will be ignored.
 	 *
 	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as expected.
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
 	 *
 	 * @param permitted
 	 */
@@ -259,14 +281,15 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
-	 * Reduces the rows returned from a query by excluding those matching the provided
-	 * objects.
+	 * Reduces the rows returned from a query by excluding those matching the
+	 * provided objects.
 	 *
 	 * <p>
 	 * The case, upper or lower, will be ignored.
 	 *
 	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as expected.
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
 	 *
 	 * @param excluded
 	 */
@@ -276,14 +299,15 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
-	 * Reduces the rows returned from a query by excluding those matching the provided
-	 * objects.
+	 * Reduces the rows returned from a query by excluding those matching the
+	 * provided objects.
 	 *
 	 * <p>
 	 * The case, upper or lower, will be ignored.
 	 *
 	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as expected.
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
 	 *
 	 * @param excluded
 	 */
@@ -293,14 +317,15 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
-	 * Reduces the rows returned from a query by excluding those matching the provided
-	 * objects.
+	 * Reduces the rows returned from a query by excluding those matching the
+	 * provided objects.
 	 *
 	 * <p>
 	 * The case, upper or lower, will be ignored.
 	 *
 	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as expected.
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
 	 *
 	 * @param excluded
 	 */
@@ -310,14 +335,15 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
-	 * Reduces the rows returned from a query by excluding those matching the provided
-	 * objects.
+	 * Reduces the rows returned from a query by excluding those matching the
+	 * provided objects.
 	 *
 	 * <p>
 	 * The case, upper or lower, will be ignored.
 	 *
 	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as expected.
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
 	 *
 	 * @param excluded
 	 */
@@ -327,14 +353,15 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	}
 
 	/**
-	 * Reduces the rows returned from a query by excluding those matching the provided
-	 * objects.
+	 * Reduces the rows returned from a query by excluding those matching the
+	 * provided objects.
 	 *
 	 * <p>
 	 * The case, upper or lower, will be ignored.
 	 *
 	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as expected.
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
 	 *
 	 * @param excluded
 	 */
@@ -420,8 +447,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Performs searches based on a range.
 	 *
 	 * <p>
-	 * if both ends of the range are specified the lower-bound will included and the upper-bound
-	 * will be excluded in the range. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will included and
+	 * the upper-bound will be excluded in the range. I.e excludedRange(1,3) will
 	 * exclude 1,2.
 	 *
 	 * <p>
@@ -446,9 +473,9 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Performs searches based on a range.
 	 *
 	 * <p>
-	 * if both ends of the range are specified both the lower-bound and the upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
-	 * exclude 1,2,3.
+	 * if both ends of the range are specified both the lower-bound and the
+	 * upper-bound will be included in the range. I.e excludedRangeInclusive(1,3)
+	 * will exclude 1,2,3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended up and inclusive.
@@ -472,9 +499,9 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Performs searches based on a range.
 	 *
 	 * <p>
-	 * if both ends of the range are specified both the lower-bound and the upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * if both ends of the range are specified both the lower-bound and the
+	 * upper-bound will be excluded in the range. I.e excludedRangeExclusive(1,3)
+	 * will exclude 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended up and exclusive.
@@ -699,8 +726,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Performs searches based on a range.
 	 *
 	 * <p>
-	 * if both ends of the range are specified the lower-bound will included and the upper-bound
-	 * will be excluded in the range. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will included and
+	 * the upper-bound will be excluded in the range. I.e excludedRange(1,3) will
 	 * exclude 1,2.
 	 *
 	 * <p>
@@ -725,9 +752,9 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Performs searches based on a range.
 	 *
 	 * <p>
-	 * if both ends of the range are specified both the lower-bound and the upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * if both ends of the range are specified both the lower-bound and the
+	 * upper-bound will be excluded in the range. I.e excludedRangeExclusive(1,3)
+	 * will exclude 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended up and exclusive.
@@ -751,9 +778,9 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Performs searches based on a range.
 	 *
 	 * <p>
-	 * if both ends of the range are specified both the lower-bound and the upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * if both ends of the range are specified both the lower-bound and the
+	 * upper-bound will be excluded in the range. I.e excludedRangeExclusive(1,3)
+	 * will exclude 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended up and exclusive.
@@ -811,7 +838,6 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 //		setDefined(true);
 //		propertyWrapper = null;
 //	}
-
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getString(fullColumnName);
