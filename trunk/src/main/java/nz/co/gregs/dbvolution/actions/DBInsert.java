@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -36,6 +38,12 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Provides support for the abstract concept of inserting rows.
+ *
+ * <p>
+ * Inserting empty rows (meaning DBRows without any set fields) is supported for
+ * any DBRow with an
+ * {@link DBAutoIncrement autoincrementing} {@link DBPrimaryKey primary key}
+ * field.
  *
  * @author Gregory Graham
  */

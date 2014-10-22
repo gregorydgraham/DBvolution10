@@ -226,6 +226,28 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
+	 * Creates an SQL expression that tests the year part of this date
+	 * expression.
+	 *
+	 * @param yearRequired
+	 * @return a BooleanExpression that is TRUE if the year is the same as the example supplied.
+	 */
+	public BooleanExpression isYear(Number yearRequired) {
+		return this.year().is(yearRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the year part of this date
+	 * expression.
+	 *
+	 * @param yearRequired
+	 * @return a BooleanExpression that is TRUE if the year is the same as the example supplied.
+	 */
+	public BooleanExpression isYear(NumberResult yearRequired) {
+		return this.year().is(yearRequired);
+	}
+
+	/**
 	 * Creates an SQL expression that returns the month part of this date
 	 * expression.
 	 *
@@ -239,6 +261,28 @@ public class DateExpression implements DateResult {
 						return db.getDefinition().doMonthTransform(this.only.toSQLString(db));
 					}
 				});
+	}
+
+	/**
+	 * Creates an SQL expression that tests the month part of this date
+	 * expression.
+	 *
+	 * @param monthRequired
+	 * @return a BooleanExpression that is TRUE if the month is the same as the example supplied.
+	 */
+	public BooleanExpression isMonth(Number monthRequired) {
+		return this.month().is(monthRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the month part of this date
+	 * expression.
+	 *
+	 * @param monthRequired
+	 * @return a BooleanExpression that is TRUE if the month is the same as the example supplied.
+	 */
+	public BooleanExpression isMonth(NumberResult monthRequired) {
+		return this.month().is(monthRequired);
 	}
 
 	/**
@@ -261,6 +305,28 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
+	 * Creates an SQL expression that tests the day part of this date
+	 * expression.
+	 *
+	 * @param dayRequired
+	 * @return a BooleanExpression that is TRUE if the day is the same as the example supplied.
+	 */
+	public BooleanExpression isDay(Number dayRequired) {
+		return this.day().is(dayRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the day part of this date
+	 * expression.
+	 *
+	 * @param dayRequired
+	 * @return a BooleanExpression that is TRUE if the day is the same as the example supplied.
+	 */
+	public BooleanExpression isDay(NumberResult dayRequired) {
+		return this.day().is(dayRequired);
+	}
+
+	/**
 	 * Creates an SQL expression that returns the hour part of this date
 	 * expression.
 	 *
@@ -274,6 +340,28 @@ public class DateExpression implements DateResult {
 						return db.getDefinition().doHourTransform(this.only.toSQLString(db));
 					}
 				});
+	}
+
+	/**
+	 * Creates an SQL expression that tests the hour part of this date
+	 * expression.
+	 *
+	 * @param hourRequired
+	 * @return a BooleanExpression that is TRUE if the hour is the same as the example supplied.
+	 */
+	public BooleanExpression isHour(Number hourRequired) {
+		return this.hour().is(hourRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the hour part of this date
+	 * expression.
+	 *
+	 * @param hourRequired
+	 * @return a BooleanExpression that is TRUE if the hour is the same as the example supplied.
+	 */
+	public BooleanExpression isHour(NumberResult hourRequired) {
+		return this.hour().is(hourRequired);
 	}
 
 	/**
@@ -293,6 +381,28 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
+	 * Creates an SQL expression that tests the minute part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired
+	 * @return a BooleanExpression that is TRUE if the minute is the same as the example supplied.
+	 */
+	public BooleanExpression isMinute(Number minuteRequired) {
+		return this.minute().is(minuteRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the minute part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired
+	 * @return a BooleanExpression that is TRUE if the minute is the same as the example supplied.
+	 */
+	public BooleanExpression isMinute(NumberResult minuteRequired) {
+		return this.minute().is(minuteRequired);
+	}
+
+	/**
 	 * Creates an SQL expression that returns the second part of this date
 	 * expression.
 	 *
@@ -306,6 +416,28 @@ public class DateExpression implements DateResult {
 						return db.getDefinition().doSecondTransform(this.only.toSQLString(db));
 					}
 				});
+	}
+
+	/**
+	 * Creates an SQL expression that tests the second part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired
+	 * @return a BooleanExpression that is TRUE if the second is the same as the example supplied.
+	 */
+	public BooleanExpression isSecond(Number minuteRequired) {
+		return this.second().is(minuteRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the second part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired
+	 * @return a BooleanExpression that is TRUE if the second is the same as the example supplied.
+	 */
+	public BooleanExpression isSecond(NumberResult minuteRequired) {
+		return this.second().is(minuteRequired);
 	}
 
 	/**
