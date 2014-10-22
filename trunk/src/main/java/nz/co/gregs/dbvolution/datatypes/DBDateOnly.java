@@ -27,8 +27,8 @@ import nz.co.gregs.dbvolution.expressions.DateResult;
  *
  * <p>
  * Use this when the actual date value only stores a partial date without any
- * time value. The instance will behave as a {@link DBDate} but time information will be
- * ignore/discarded.
+ * time value. The instance will behave as a {@link DBDate} but time information
+ * will be ignore/discarded.
  *
  * @author Gregory Graham
  */
@@ -52,7 +52,7 @@ public class DBDateOnly extends DBDate {
 	 * <p>
 	 * The resulting DBDate will be set as having the value provided but will not
 	 * be defined in the database.
-	 * 
+	 *
 	 * <p>
 	 * Any time information in the date will be ignored.
 	 *
@@ -101,22 +101,23 @@ public class DBDateOnly extends DBDate {
 	@SuppressWarnings("deprecation")
 	public Date dateValue() {
 		Date dateValue = super.dateValue();
-		dateValue.setHours(0);
-		dateValue.setMinutes(0);
-		dateValue.setSeconds(0);
+		if (dateValue != null) {
+			dateValue.setHours(12);
+			dateValue.setMinutes(0);
+			dateValue.setSeconds(0);
+		}
 		return dateValue;
 	}
-	
+
 	@Override
 	@SuppressWarnings("deprecation")
 	public String formatValueForSQLStatement(DBDatabase db) {
 		final Date dateValue = dateValue();
-		dateValue.setHours(0);
-		dateValue.setMinutes(0);
-		dateValue.setSeconds(0);
+		if (dateValue != null) {
+			dateValue.setHours(12);
+			dateValue.setMinutes(0);
+			dateValue.setSeconds(0);
+		}
 		return db.getDefinition().getDateFormattedForQuery(dateValue);
 	}
-
-
-
 }
