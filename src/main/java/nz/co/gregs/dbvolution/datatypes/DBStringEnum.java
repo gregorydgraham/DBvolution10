@@ -140,7 +140,9 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <p>
 	 * This is probably the method you want to use to set or change the value of
 	 * this DBStringEnum. When creating a new row or updating an existing row use
-	 * this method to correctly set the value.
+	 * the
+	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
+	 * } method to correctly set the value.
 	 *
 	 * <p>
 	 * Remember:</p>
@@ -153,7 +155,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * @param newLiteralValue
 	 */
-	public void setValue(String newLiteralValue) {
+	private void setValue(String newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 

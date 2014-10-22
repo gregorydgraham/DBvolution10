@@ -120,11 +120,13 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <p>
 	 * DBIntegerEnums retrieved from the database will be automatically set.
 	 * However if you are creating a new entry to save in the database you should
-	 * probably use this, or a similar, method.
+	 * probably use the
+	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
+	 * } method.
 	 *
 	 * @param newLiteralValue
 	 */
-	public void setValue(Long newLiteralValue) {
+	private void setValue(Long newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 
@@ -134,11 +136,13 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <p>
 	 * DBIntegerEnums retrieved from the database will be automatically set.
 	 * However if you are creating a new entry to save in the database you should
-	 * probably use this, or a similar, method.
+	 * probably use the
+	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
+	 * } method.
 	 *
 	 * @param newLiteralValue
 	 */
-	public void setValue(Integer newLiteralValue) {
+	private void setValue(Integer newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 
@@ -159,31 +163,6 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	public String getSQLDatatype() {
 		return new DBInteger().getSQLDatatype();
 	}
-
-//	@Override
-//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-//		blankQuery();
-//		if (resultSet == null || fullColumnName == null) {
-//			this.setToNull();
-//		} else {
-//			Long dbValue;
-//			try {
-//				dbValue = resultSet.getLong(fullColumnName);
-//				if (resultSet.wasNull()) {
-//					dbValue = null;
-//				}
-//			} catch (SQLException ex) {
-//				dbValue = null;
-//			}
-//			if (dbValue == null) {
-//				this.setToNull();
-//			} else {
-//				this.setLiteralValue(dbValue);
-//			}
-//		}
-//		setUnchanged();
-//		setDefined(true);
-//	}
 
 	@Override
 	public DBInteger getQueryableDatatypeForExpressionValue() {
@@ -676,7 +655,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * @param lowerBound
 	 * @param upperBound
 	 */
-		public void excludedRangeInclusive(Integer lowerBound, Integer upperBound) {
+	public void excludedRangeInclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
 		negateOperator();
 	}
@@ -720,7 +699,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 			return Long.parseLong(getLiteralValue().toString());
 		}
 	}
-	
+
 	/**
 	 * Returns the set value of this DBInteger as a Long, if possible.
 	 *
