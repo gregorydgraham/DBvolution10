@@ -232,7 +232,7 @@ public class DateExpression implements DateResult {
 	 * @param yearRequired
 	 * @return a BooleanExpression that is TRUE if the year is the same as the example supplied.
 	 */
-	public BooleanExpression isYear(Number yearRequired) {
+	public BooleanExpression yearIs(Number yearRequired) {
 		return this.year().is(yearRequired);
 	}
 
@@ -243,7 +243,7 @@ public class DateExpression implements DateResult {
 	 * @param yearRequired
 	 * @return a BooleanExpression that is TRUE if the year is the same as the example supplied.
 	 */
-	public BooleanExpression isYear(NumberResult yearRequired) {
+	public BooleanExpression yearIs(NumberResult yearRequired) {
 		return this.year().is(yearRequired);
 	}
 
@@ -270,7 +270,7 @@ public class DateExpression implements DateResult {
 	 * @param monthRequired
 	 * @return a BooleanExpression that is TRUE if the month is the same as the example supplied.
 	 */
-	public BooleanExpression isMonth(Number monthRequired) {
+	public BooleanExpression monthIs(Number monthRequired) {
 		return this.month().is(monthRequired);
 	}
 
@@ -281,7 +281,7 @@ public class DateExpression implements DateResult {
 	 * @param monthRequired
 	 * @return a BooleanExpression that is TRUE if the month is the same as the example supplied.
 	 */
-	public BooleanExpression isMonth(NumberResult monthRequired) {
+	public BooleanExpression monthIs(NumberResult monthRequired) {
 		return this.month().is(monthRequired);
 	}
 
@@ -311,7 +311,7 @@ public class DateExpression implements DateResult {
 	 * @param dayRequired
 	 * @return a BooleanExpression that is TRUE if the day is the same as the example supplied.
 	 */
-	public BooleanExpression isDay(Number dayRequired) {
+	public BooleanExpression dayIs(Number dayRequired) {
 		return this.day().is(dayRequired);
 	}
 
@@ -322,7 +322,7 @@ public class DateExpression implements DateResult {
 	 * @param dayRequired
 	 * @return a BooleanExpression that is TRUE if the day is the same as the example supplied.
 	 */
-	public BooleanExpression isDay(NumberResult dayRequired) {
+	public BooleanExpression dayIs(NumberResult dayRequired) {
 		return this.day().is(dayRequired);
 	}
 
@@ -349,7 +349,7 @@ public class DateExpression implements DateResult {
 	 * @param hourRequired
 	 * @return a BooleanExpression that is TRUE if the hour is the same as the example supplied.
 	 */
-	public BooleanExpression isHour(Number hourRequired) {
+	public BooleanExpression hourIs(Number hourRequired) {
 		return this.hour().is(hourRequired);
 	}
 
@@ -360,7 +360,7 @@ public class DateExpression implements DateResult {
 	 * @param hourRequired
 	 * @return a BooleanExpression that is TRUE if the hour is the same as the example supplied.
 	 */
-	public BooleanExpression isHour(NumberResult hourRequired) {
+	public BooleanExpression hourIs(NumberResult hourRequired) {
 		return this.hour().is(hourRequired);
 	}
 
@@ -387,7 +387,7 @@ public class DateExpression implements DateResult {
 	 * @param minuteRequired
 	 * @return a BooleanExpression that is TRUE if the minute is the same as the example supplied.
 	 */
-	public BooleanExpression isMinute(Number minuteRequired) {
+	public BooleanExpression minuteIs(Number minuteRequired) {
 		return this.minute().is(minuteRequired);
 	}
 
@@ -398,7 +398,7 @@ public class DateExpression implements DateResult {
 	 * @param minuteRequired
 	 * @return a BooleanExpression that is TRUE if the minute is the same as the example supplied.
 	 */
-	public BooleanExpression isMinute(NumberResult minuteRequired) {
+	public BooleanExpression minuteIs(NumberResult minuteRequired) {
 		return this.minute().is(minuteRequired);
 	}
 
@@ -425,7 +425,7 @@ public class DateExpression implements DateResult {
 	 * @param minuteRequired
 	 * @return a BooleanExpression that is TRUE if the second is the same as the example supplied.
 	 */
-	public BooleanExpression isSecond(Number minuteRequired) {
+	public BooleanExpression secondIs(Number minuteRequired) {
 		return this.second().is(minuteRequired);
 	}
 
@@ -436,7 +436,7 @@ public class DateExpression implements DateResult {
 	 * @param minuteRequired
 	 * @return a BooleanExpression that is TRUE if the second is the same as the example supplied.
 	 */
-	public BooleanExpression isSecond(NumberResult minuteRequired) {
+	public BooleanExpression secondIs(NumberResult minuteRequired) {
 		return this.second().is(minuteRequired);
 	}
 

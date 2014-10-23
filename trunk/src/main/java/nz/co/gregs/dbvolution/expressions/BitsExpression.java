@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
+ * The Expression object for bit array columns.
  *
  * @author gregory.graham
  */
@@ -31,9 +32,18 @@ public class BitsExpression implements BitsResult {
 
 	private final BitsResult innerBitResult;
 
-	public BitsExpression() {
+	/**
+	 * Default Constructor.
+	 */
+	protected BitsExpression() {
 		this.innerBitResult = new DBBits();
 	}
+	
+	/**
+	 * Create a BitsExpression from an existing BitResult object.
+	 *
+	 * @param bitResult
+	 */
 	public BitsExpression(BitsResult bitResult) {
 		this.innerBitResult = bitResult;
 	}
