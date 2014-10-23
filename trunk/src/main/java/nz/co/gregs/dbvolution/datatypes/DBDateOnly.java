@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
@@ -98,26 +99,24 @@ public class DBDateOnly extends DBDate {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public Date dateValue() {
 		Date dateValue = super.dateValue();
+		Date finalDateValue = dateValue;
 		if (dateValue != null) {
-			dateValue.setHours(12);
-			dateValue.setMinutes(0);
-			dateValue.setSeconds(0);
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dateValue);
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			finalDateValue = cal.getTime();
 		}
-		return dateValue;
+		return finalDateValue;
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public String formatValueForSQLStatement(DBDatabase db) {
 		final Date dateValue = dateValue();
-		if (dateValue != null) {
-			dateValue.setHours(12);
-			dateValue.setMinutes(0);
-			dateValue.setSeconds(0);
-		}
 		return db.getDefinition().getDateFormattedForQuery(dateValue);
 	}
 }
