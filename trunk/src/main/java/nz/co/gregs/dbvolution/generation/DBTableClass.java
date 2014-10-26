@@ -27,21 +27,54 @@ import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
  */
 public class DBTableClass {
 
-	public long serialversionUIDBValue = 1L;
+	private long serialversionUIDBValue = 1L;
 
 	private final Class<DBUnknownDatatype> unknownDatatype = DBUnknownDatatype.class;
 	private String packageName;
-	public String className;
+	private String className;
 	private String tableName;
 	private String javaSource;
 	private final List<DBTableField> fields = new ArrayList<DBTableField>();
 	private final String lineSeparator = System.getProperty("line.separator");
 	private final String conceptBreak = lineSeparator + lineSeparator;
-
-	public String getFullyQualifiedName() {
-		return this.getPackageName() + "." + className;
+	
+	/**
+	 * Constructor with required information for automatically creating a DBRow class.
+	 *
+	 * @param tableName
+	 * @param packageName
+	 * @param className
+	 */
+	public DBTableClass(String tableName, String packageName, String className){
+		this.tableName = tableName;
+		this.packageName = packageName;
+		this.className = className;
 	}
 
+	/**
+	 * Returns the package and class name formatted for use in Java code.
+	 *
+	 * <>
+	 * F
+	 * or a class named AClass in the package com.acme.database {@link #getFullyQualifiedName()
+	 * } will return "com.acme.database.AClass".
+	 *
+	 * @return a String of the fully qualified class name.
+	 */
+	public String getFullyQualifiedName() {
+		return this.getPackageName() + "." + getClassName();
+	}
+
+	/**
+	 * Transforms the information encapsulated within the DBTableClass into valid
+	 * Java source code.
+	 *
+	 * <p>
+	 * After all available information has been set for this DBTableClass, this
+	 * method is called to generate the required Java source.
+	 *
+	 * @return a String of the source code of the new DBRow class.
+	 */
 	public String generateJavaSource() {
 		StringBuilder javaSrc = new StringBuilder();
 		final String outputPackageName = this.getPackageName();
@@ -68,7 +101,7 @@ public class DBTableClass {
 
 		javaSrc.append("@").append(tableNameAnnotation).append("(\"").append(this.getTableName()).append("\") ");
 		javaSrc.append(lineSeparator);
-		javaSrc.append("public class ").append(this.className).append(" extends ").append(dbRowClassName).append(" {");
+		javaSrc.append("public class ").append(this.getClassName()).append(" extends ").append(dbRowClassName).append(" {");
 		javaSrc.append(conceptBreak);
 
 		javaSrc.append("    public static final long serialVersionUID = ").append(serialversionUIDBValue).append("L;");
@@ -117,7 +150,7 @@ public class DBTableClass {
 	/**
 	 * @param packageName the packageName to set
 	 */
-	public void setPackageName(String packageName) {
+	private void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
 
@@ -145,7 +178,21 @@ public class DBTableClass {
 	/**
 	 * @param tableName the tableName to set
 	 */
-	public void setTableName(String tableName) {
+	private void setTableName(String tableName) {
 		this.tableName = tableName;
+	}
+
+	/**
+	 * @return the className
+	 */
+	public String getClassName() {
+		return className;
+	}
+
+	/**
+	 * @param className the className to set
+	 */
+	private void setClassName(String className) {
+		this.className = className;
 	}
 }

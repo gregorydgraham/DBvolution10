@@ -165,10 +165,9 @@ public class StringExpression implements StringResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -177,32 +176,32 @@ public class StringExpression implements StringResult {
 	 * </ul>
 	 *
 	 * @param string
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static StringExpression value(String string) {
 		return new StringExpression(string);
 	}
 
 	/**
-	 * Provides a default option when the StringExpression resolves to NULL
-	 * within the query.
+	 * Provides a default option when the StringExpression resolves to NULL within
+	 * the query.
 	 *
 	 * @param alternative
-	 * @return a StringExpression that will substitute to the given value when
-	 * the StringExpression resolves to NULL.
+	 * @return a StringExpression that will substitute to the given value when the
+	 * StringExpression resolves to NULL.
 	 */
 	public StringExpression ifDBNull(String alternative) {
 		return this.ifDBNull(new StringExpression(alternative));
 	}
 
 	/**
-	 * Provides a default option when the StringExpression resolves to NULL
-	 * within the query.
+	 * Provides a default option when the StringExpression resolves to NULL within
+	 * the query.
 	 *
 	 * @param alternative
-	 * @return a StringExpression that will substitute to the given value when
-	 * the StringExpression resolves to NULL.
+	 * @return a StringExpression that will substitute to the given value when the
+	 * StringExpression resolves to NULL.
 	 */
 	public StringExpression ifDBNull(StringResult alternative) {
 		return new StringExpression(
@@ -346,8 +345,8 @@ public class StringExpression implements StringResult {
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
 	 * @param equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
@@ -362,8 +361,8 @@ public class StringExpression implements StringResult {
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
 	 * @param numberResult
 	 * @return a BooleanExpression of the SQL comparison.
@@ -378,8 +377,8 @@ public class StringExpression implements StringResult {
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
 	 * @param number
 	 * @return a BooleanExpression of the SQL comparison.
@@ -394,8 +393,8 @@ public class StringExpression implements StringResult {
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
 	 * @param equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
@@ -410,8 +409,8 @@ public class StringExpression implements StringResult {
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
 	 * @param equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
@@ -501,8 +500,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -529,8 +528,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -557,8 +556,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -585,8 +584,8 @@ public class StringExpression implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -1014,8 +1013,8 @@ public class StringExpression implements StringResult {
 	 * Creates a query comparison using the IN operator.
 	 *
 	 * <p>
-	 * Use this comparison to generate a BooleanExpression that indicates
-	 * whether the current StringExpression is included in the supplied values.
+	 * Use this comparison to generate a BooleanExpression that indicates whether
+	 * the current StringExpression is included in the supplied values.
 	 *
 	 * @param possibleValues
 	 * @return a BooleanExpression of the SQL comparison.
@@ -1032,8 +1031,8 @@ public class StringExpression implements StringResult {
 	 * Creates a query comparison using the IN operator.
 	 *
 	 * <p>
-	 * Use this comparison to generate a BooleanExpression that indicates
-	 * whether the current StringExpression is included in the supplied values.
+	 * Use this comparison to generate a BooleanExpression that indicates whether
+	 * the current StringExpression is included in the supplied values.
 	 *
 	 * @param possibleValues
 	 * @return a BooleanExpression of the SQL comparison.
@@ -1050,8 +1049,8 @@ public class StringExpression implements StringResult {
 	 * Creates a query comparison using the IN operator.
 	 *
 	 * <p>
-	 * Use this comparison to generate a BooleanExpression that indicates
-	 * whether the current StringExpression is included in the supplied values.
+	 * Use this comparison to generate a BooleanExpression that indicates whether
+	 * the current StringExpression is included in the supplied values.
 	 *
 	 * @param possibleValues
 	 * @return a BooleanExpression of the SQL comparison.
@@ -1199,8 +1198,8 @@ public class StringExpression implements StringResult {
 	}
 
 	/**
-	 * Creates a query expression that trims all leading and trailing spaces
-	 * from the current StringExpression.
+	 * Creates a query expression that trims all leading and trailing spaces from
+	 * the current StringExpression.
 	 *
 	 * @return a StringExpression.
 	 */
@@ -1241,8 +1240,8 @@ public class StringExpression implements StringResult {
 	}
 
 	/**
-	 * Creates a query expression that trims all trailing spaces from the
-	 * current StringExpression.
+	 * Creates a query expression that trims all trailing spaces from the current
+	 * StringExpression.
 	 *
 	 * @return a StringExpression.
 	 */
@@ -1289,9 +1288,9 @@ public class StringExpression implements StringResult {
 	}
 
 	/**
-	 * Create substring of the current StringExpression starting from the
+	 * Create a substring of the current StringExpression starting from the
 	 * position supplied and continuing until the end of the string.
-	 * 
+	 *
 	 * <p>
 	 * The first character is at position zero (0).
 	 *
@@ -1302,26 +1301,85 @@ public class StringExpression implements StringResult {
 		return new Substring(this, startingIndex0Based);
 	}
 
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end of the string.
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based
+	 * @return a StringExpression
+	 */
 	public StringExpression substring(NumberExpression startingIndex0Based) {
 		return new Substring(this, startingIndex0Based);
 	}
 
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end position supplied..
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based
+	 * @param endIndex0Based
+	 * @return a StringExpression
+	 */
 	public StringExpression substring(Number startingIndex0Based, Number endIndex0Based) {
 		return new Substring(this, startingIndex0Based, endIndex0Based);
 	}
 
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end position supplied..
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based
+	 * @param endIndex0Based
+	 * @return a StringExpression
+	 */
 	public StringExpression substring(NumberExpression startingIndex0Based, Number endIndex0Based) {
 		return new Substring(this, startingIndex0Based, new NumberExpression(endIndex0Based));
 	}
 
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end position supplied..
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based
+	 * @param endIndex0Based
+	 * @return a StringExpression
+	 */
 	public StringExpression substring(Number startingIndex0Based, NumberExpression endIndex0Based) {
 		return new Substring(this, new NumberExpression(startingIndex0Based), endIndex0Based);
 	}
 
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end position supplied..
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based
+	 * @param endIndex0Based
+	 * @return a StringExpression
+	 */
 	public StringExpression substring(NumberExpression startingIndex0Based, NumberExpression endIndex0Based) {
 		return new Substring(this, startingIndex0Based, endIndex0Based);
 	}
 
+	/**
+	 * Create a expression that returns the length of the current expression.
+	 *
+	 * @return a NumberExpression of the expression's length.
+	 */
 	public NumberExpression length() {
 		return new NumberExpression(
 				new DBUnaryNumberFunction(this) {
@@ -1332,6 +1390,16 @@ public class StringExpression implements StringResult {
 				});
 	}
 
+	/**
+	 * Create a {@link StringExpression} that returns the name of the current
+	 * user.
+	 *
+	 * <p>
+	 * This should be the current username under which the application is
+	 * accessing the database.
+	 *
+	 * @return a StringExpression
+	 */
 	public static StringExpression currentUser() {
 		return new StringExpression(
 				new DBNonaryStringFunction() {
@@ -1343,6 +1411,8 @@ public class StringExpression implements StringResult {
 	}
 
 	/**
+	 * Get the StringResult used internally.
+	 *
 	 * @return the string1
 	 */
 	protected StringResult getStringInput() {
@@ -1354,8 +1424,7 @@ public class StringExpression implements StringResult {
 	 * the StringExpression.
 	 *
 	 * <p>
-	 * The index is 1-based, and returns 0 when the searchString is not
-	 * found.</p>
+	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
 	 *
 	 * @param searchString
 	 * @return an expression that will find the location of the searchString.
@@ -1369,6 +1438,16 @@ public class StringExpression implements StringResult {
 		});
 	}
 
+	/**
+	 * Creates an expression that will count all the non-null values of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * Count is an aggregator function for use in DBReport or in a column
+	 * expression.
+	 *
+	 * @return a number expression.
+	 */
 	public NumberExpression count() {
 		return new NumberExpression(new DBUnaryNumberFunction(this) {
 
@@ -1384,6 +1463,16 @@ public class StringExpression implements StringResult {
 		});
 	}
 
+	/**
+	 * Creates an expression that will find the largest value in the column
+	 * supplied.
+	 *
+	 * <p>
+	 * Max is an aggregator function for use in DBReport or in a column
+	 * expression.
+	 *
+	 * @return a String expression.
+	 */
 	public StringExpression max() {
 		return new StringExpression(new DBUnaryStringFunction(this) {
 			@Override
@@ -1398,6 +1487,16 @@ public class StringExpression implements StringResult {
 		});
 	}
 
+	/**
+	 * Creates an expression that will find the smallest value in the column
+	 * supplied.
+	 *
+	 * <p>
+	 * Min is an aggregator function for use in DBReport or in a column
+	 * expression.
+	 *
+	 * @return a String expression.
+	 */
 	public StringExpression min() {
 		return new StringExpression(new DBUnaryStringFunction(this) {
 			@Override
@@ -1431,10 +1530,28 @@ public class StringExpression implements StringResult {
 		return string1 == null ? false : string1.isAggregator();
 	}
 
+	/**
+	 * Creates a BooleanExpression that tests to ensure the database value is not
+	 * a database NULL value.
+	 *
+	 * <P>
+	 * The expression will be true if the value is not NULL, and false otherwise.
+	 *
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isNotNull() {
 		return BooleanExpression.isNotNull(this);
 	}
 
+	/**
+	 * Creates a BooleanExpression that tests to ensure the database value is a
+	 * database NULL value.
+	 *
+	 * <P>
+	 * The expression will be true if the value is NULL, and false otherwise.
+	 *
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
 	}
@@ -1444,6 +1561,12 @@ public class StringExpression implements StringResult {
 		return nullProtectionRequired;
 	}
 
+	/**
+	 * Adds an explicit bracket at this point in the expression chain.
+	 *
+	 * @return a StringExpression that will have the current expression wrapped in
+	 * brackets.
+	 */
 	public StringExpression bracket() {
 		return new StringExpression(new DBUnaryStringFunction(this) {
 			@Override
@@ -1453,9 +1576,21 @@ public class StringExpression implements StringResult {
 		});
 	}
 
-	public BooleanExpression isInIgnoreCase(StringResult[] toArray) {
+	/**
+	 * Provides direct access to the IN operator.
+	 *
+	 * <p>
+	 * isInIgnoreCase creates a BooleanExpression that compares the current
+	 * expression to the list of values using the IN operator. The resulting
+	 * expression will return true if the current expression's value is included in the
+	 * list of potential values, otherwise it will return false.
+	 *
+	 * @param potentialValues
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isInIgnoreCase(StringResult[] potentialValues) {
 		List<StringResult> lowerStrings = new ArrayList<StringResult>();
-		for (StringResult toArray1 : toArray) {
+		for (StringResult toArray1 : potentialValues) {
 			StringExpression lowercase = new StringExpression(toArray1).lowercase();
 			lowerStrings.add(lowercase);
 		}
