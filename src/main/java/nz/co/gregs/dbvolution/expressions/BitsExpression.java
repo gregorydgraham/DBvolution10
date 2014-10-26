@@ -30,42 +30,146 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class BitsExpression implements BitsResult {
 
-	private final BitsResult innerBitResult;
+	private final BitsResult innerBitsResult;
 
 	/**
 	 * Default Constructor.
 	 */
 	protected BitsExpression() {
-		this.innerBitResult = new DBBits();
+		this.innerBitsResult = new DBBits();
 	}
-	
+
 	/**
 	 * Create a BitsExpression from an existing BitResult object.
 	 *
 	 * @param bitResult
 	 */
 	public BitsExpression(BitsResult bitResult) {
-		this.innerBitResult = bitResult;
+		this.innerBitsResult = bitResult;
 	}
 
 	@Override
 	public BitsExpression copy() {
-		return new BitsExpression(this.getInnerBitResult());
+		return new BitsExpression(this.getInnerBitsResult());
 	}
 
-	public BitsExpression value(int number) {
+	/**
+	 * Create An Appropriate BitsExpression Object For This Object.
+	 *
+	 * <p>
+	 * The expression framework requires an Expression to work with. The easiest
+	 * way to get that are the {@code DBRow.column()} methods.
+	 *
+	 * <p>
+	 * However if you wish your expression to start with a literal value it is
+	 * even easier.
+	 *
+	 * <p>
+	 * This method provides the easy route to an expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
+	 *
+	 * <ul>
+	 * <li>Only object classes that are appropriate need to be handle by the
+	 * DBExpression subclass.<li>
+	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
+	 *
+	 * @param number integer to base the BitsExpression on.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
+	 */
+	public static BitsExpression value(int number) {
 		return NumberExpression.value(number).convertToBits();
 	}
 
-	public BitsExpression value(long number) {
+	/**
+	 * Create An Appropriate BitsExpression Object For This Object.
+	 *
+	 * <p>
+	 * The expression framework requires an Expression to work with. The easiest
+	 * way to get that are the {@code DBRow.column()} methods.
+	 *
+	 * <p>
+	 * However if you wish your expression to start with a literal value it is
+	 * even easier.
+	 *
+	 * <p>
+	 * This method provides the easy route to an expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
+	 *
+	 * <ul>
+	 * <li>Only object classes that are appropriate need to be handle by the
+	 * DBExpression subclass.<li>
+	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
+	 *
+	 * @param number integer to base the BitsExpression on.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
+	 */
+	public static BitsExpression value(long number) {
 		return NumberExpression.value(number).convertToBits();
 	}
 
-	public BitsExpression value(double number) {
+	/**
+	 * Create An Appropriate BitsExpression Object For This Object.
+	 *
+	 * <p>
+	 * The expression framework requires an Expression to work with. The easiest
+	 * way to get that are the {@code DBRow.column()} methods.
+	 *
+	 * <p>
+	 * However if you wish your expression to start with a literal value it is
+	 * even easier.
+	 *
+	 * <p>
+	 * This method provides the easy route to an expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
+	 *
+	 * <ul>
+	 * <li>Only object classes that are appropriate need to be handle by the
+	 * DBExpression subclass.<li>
+	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
+	 *
+	 * @param number integer to base the BitsExpression on.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
+	 */
+	public static BitsExpression value(double number) {
 		return NumberExpression.value(number).convertToBits();
 	}
 
-	public BitsExpression value(Number number) {
+	/**
+	 * Create An Appropriate BitsExpression Object For This Object.
+	 *
+	 * <p>
+	 * The expression framework requires an Expression to work with. The easiest
+	 * way to get that are the {@code DBRow.column()} methods.
+	 *
+	 * <p>
+	 * However if you wish your expression to start with a literal value it is
+	 * even easier.
+	 *
+	 * <p>
+	 * This method provides the easy route to an expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
+	 *
+	 * <ul>
+	 * <li>Only object classes that are appropriate need to be handle by the
+	 * DBExpression subclass.<li>
+	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
+	 *
+	 * @param number integer to base the BitsExpression on.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
+	 */
+	public static BitsExpression value(Number number) {
 		return NumberExpression.value(number).convertToBits();
 	}
 
@@ -76,8 +180,8 @@ public class BitsExpression implements BitsResult {
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		if (innerBitResult != null) {
-			return innerBitResult.toSQLString(db);
+		if (innerBitsResult != null) {
+			return innerBitsResult.toSQLString(db);
 		} else {
 			return "";
 		}
@@ -85,8 +189,8 @@ public class BitsExpression implements BitsResult {
 
 	@Override
 	public boolean isAggregator() {
-		if (innerBitResult != null) {
-			return innerBitResult.isAggregator();
+		if (innerBitsResult != null) {
+			return innerBitsResult.isAggregator();
 		} else {
 			return false;
 		}
@@ -94,8 +198,8 @@ public class BitsExpression implements BitsResult {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		if (innerBitResult != null) {
-			return innerBitResult.getTablesInvolved();
+		if (innerBitsResult != null) {
+			return innerBitsResult.getTablesInvolved();
 		} else {
 			return new HashSet<DBRow>();
 		}
@@ -103,18 +207,62 @@ public class BitsExpression implements BitsResult {
 
 	@Override
 	public boolean getIncludesNull() {
-		if (innerBitResult != null) {
-			return innerBitResult.getIncludesNull();
+		if (innerBitsResult != null) {
+			return innerBitsResult.getIncludesNull();
 		} else {
 			return false;
 		}
 	}
 
-	protected BitsResult getInnerBitResult() {
-		return innerBitResult;
+	/**
+	 * Return the BitsResult held internally in this class.
+	 *
+	 * @return The BitsResult used internally.
+	 */
+	protected BitsResult getInnerBitsResult() {
+		return innerBitsResult;
 	}
 
+	/**
+	 * Create a BooleanExpression that will compare the integer provided to this
+	 * BitsExpression using the equivalent of the EQUALS operator.
+	 *
+	 * @param i
+	 * @return a BooleanExpresson of the Bit comparison of the integer and this expression.
+	 */
 	public BooleanExpression is(int i) {
+		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " = ";
+			}
+		});
+	}
+
+	/**
+	 * Create a BooleanExpression that will compare the long provided to this
+	 * BitsExpression using the equivalent of the EQUALS operator.
+	 *
+	 * @param i
+	 * @return a BooleanExpresson of the Bit comparison of the long and this expression.
+	 */
+	public BooleanExpression is(long i) {
+		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " = ";
+			}
+		});
+	}
+
+	/**
+	 * Create a BooleanExpression that will compare the number provided to this
+	 * BitsExpression using the equivalent of the EQUALS operator.
+	 *
+	 * @param i
+	 * @return a BooleanExpresson of the Bit comparison of the number and this expression.
+	 */
+	public BooleanExpression is(Number i) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
