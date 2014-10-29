@@ -254,7 +254,7 @@ public class OuterJoinTest extends AbstractTest {
 		carCompany.name.permittedRangeInclusive("ford", "TOYOTA");
 		dbquery.add(carCompany);
 		final Marque marque = new Marque();
-		marque.enabled.permittedValues(Boolean.TRUE);
+		marque.enabled.permittedValues(true);
 		dbquery.addOptional(marque);
 		String sqlForQuery = dbquery.getSQLForQuery();
 
