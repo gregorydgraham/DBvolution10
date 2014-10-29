@@ -68,6 +68,7 @@
 				<version>2.5.1</version>
 				<configuration>
 					<mavenExecutorId>forked-path</mavenExecutorId>
+					<arguments>-Dhttps.protocols="TLSv1"</arguments>
 				</configuration>
 			</plugin>
 			<plugin>
