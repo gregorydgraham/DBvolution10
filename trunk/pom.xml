@@ -4,7 +4,7 @@
 
 	<groupId>nz.co.gregs</groupId>
 	<artifactId>dbvolution</artifactId>
-	<version>0.9.42</version>
+	<version>0.9.42-SNAPSHOT</version>
 	<packaging>jar</packaging>
     
 	<name>DBvolution</name>
@@ -26,9 +26,9 @@
 		</license>
 	</licenses>
 	<scm>
-		<connection>scm:svn:https://svn.code.sf.net/p/dbvolution/code-0/tags/dbvolution-0.9.42</connection>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/dbvolution/code-0/tags/dbvolution-0.9.42</developerConnection>
-		<url>https://svn.code.sf.net/p/dbvolution/code-0/tags/dbvolution-0.9.42</url>
+		<connection>scm:svn:https://svn.code.sf.net/p/dbvolution/code-0/trunk</connection>
+		<developerConnection>scm:svn:https://svn.code.sf.net/p/dbvolution/code-0/trunk</developerConnection>
+		<url>https://svn.code.sf.net/p/dbvolution/code-0/trunk</url>
 	</scm>
 	<developers>
 		<developer>
@@ -47,7 +47,7 @@
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
-		<version>7</version>
+		<version>9</version>
 	</parent>
         
 	<properties>
@@ -68,7 +68,6 @@
 				<version>2.5.1</version>
 				<configuration>
 					<mavenExecutorId>forked-path</mavenExecutorId>
-					<arguments>-Dhttps.protocols="TLSv1"</arguments>
 				</configuration>
 			</plugin>
 			<plugin>
