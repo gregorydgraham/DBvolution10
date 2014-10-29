@@ -214,6 +214,26 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
+	 * Tests the NumberExpression to see if the result is an even number.
+	 *
+	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 */
+	public BooleanExpression isEven() {
+		return this.mod(2).is(0);
+	}
+
+	/**
+	 * Tests the NumberExpression to see if the result is an odd number.
+	 *
+	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 */
+	public BooleanExpression isOdd() {
+		return this.mod(2).is(1);
+	}
+
+	/**
 	 * Tests the NumberExpression against the value NULL and returns true if the
 	 * Number Expression is not NULL.
 	 *
@@ -2699,7 +2719,7 @@ public class NumberExpression implements NumberResult {
 
 	private static class MaxUnaryFunction extends DBUnaryFunction {
 
-		public MaxUnaryFunction(DBExpression only) {
+		MaxUnaryFunction(DBExpression only) {
 			super(only);
 		}
 
