@@ -193,7 +193,6 @@ public class DBTableClassGenerator {
 	 *
 	 * @param database
 	 * @param packageName
-	 * @param versionNumber
 	 * @param pkRecog
 	 * @param fkRecog
 	 * @return a List of DBTableClass instances representing the tables found on
@@ -218,7 +217,6 @@ public class DBTableClassGenerator {
 	 *
 	 * @param database
 	 * @param packageName
-	 * @param versionNumber
 	 * @param pkRecog
 	 * @param fkRecog
 	 * @return a List of DBTableClass instances representing the views found on
