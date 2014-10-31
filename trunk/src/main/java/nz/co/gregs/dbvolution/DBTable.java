@@ -21,14 +21,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -282,6 +283,32 @@ public class DBTable<E extends DBRow> {
 		}
 		this.query = database.getDBQuery(newInstance);
 		return getAllRows();
+	}
+	
+	/**
+	 * Retrieves that DBRows for the page supplied.
+	 *
+	 * <p>
+	 * DBvolution supports paging through this method. Use {@link #setRowLimit(int)
+	 * } to set the page size and then call this method with the desired page
+	 * number.
+	 *
+	 * <p>
+	 * This method is zero-based so the first page is getAllRows(0).
+	 *
+	 * @param pageNumber
+	 * @return a list of the DBRows for the selected page.
+	 * @throws SQLException
+	 */
+	public List<E> getRowsForPage(Integer pageNumber) throws SQLException {
+		query.refreshQuery();
+		applyConfigs();
+		List<DBQueryRow> allRowsForPage = query.getAllRowsForPage(pageNumber);
+		Set<E> set = new HashSet<E>();
+		for (DBQueryRow row : allRowsForPage) {
+			set.add(row.get(exemplar));
+		}
+		return new ArrayList<E>(set);
 	}
 
 	/**
