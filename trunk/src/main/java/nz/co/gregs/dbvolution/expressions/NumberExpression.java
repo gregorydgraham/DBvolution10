@@ -80,38 +80,6 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Create a NumberExpression based on an existing Number.
-	 *
-	 * <p>
-	 * This performs a similar function to
-	 * {@code NumberExpression(NumberResult)}.
-	 *
-	 * @param value
-	 */
-	public NumberExpression(Integer value) {
-		innerNumberResult = new DBNumber(value);
-		if (value == null || innerNumberResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
-	}
-
-	/**
-	 * Create a NumberExpression based on an existing Number.
-	 *
-	 * <p>
-	 * This performs a similar function to
-	 * {@code NumberExpression(NumberResult)}.
-	 *
-	 * @param value
-	 */
-	public NumberExpression(Long value) {
-		innerNumberResult = new DBNumber(value);
-		if (value == null || innerNumberResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
-	}
-
-	/**
 	 * Create a NumberExpression based on an existing {@link NumberResult}.
 	 *
 	 * <p>
