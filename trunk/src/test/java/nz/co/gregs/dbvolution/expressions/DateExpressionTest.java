@@ -421,7 +421,7 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void testDayDifferenceFunction() throws SQLException, ParseException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
@@ -454,7 +454,7 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void testWeekDifferenceFunction() throws SQLException, ParseException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
@@ -487,7 +487,7 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void testMonthDifferenceFunction() throws SQLException, ParseException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
@@ -520,7 +520,7 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void testYearDifferenceFunction() throws SQLException, ParseException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
@@ -553,7 +553,7 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void testHourDifferenceFunction() throws SQLException, ParseException {
 //        database.setPrintSQLBeforeExecuting(true);
 		database.print(DBReport.getAllRows(database, new DiffTestReport()));
@@ -587,7 +587,7 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void testMinutesDifferenceFunction() throws SQLException, ParseException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
@@ -620,7 +620,7 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	@Ignore
+//	@Ignore
 	public void testSecondsDifferenceFunction() throws SQLException, ParseException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
