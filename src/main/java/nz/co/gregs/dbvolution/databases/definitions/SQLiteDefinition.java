@@ -257,4 +257,32 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
 		return "datetime(" + dateValue + ", (" + numberOfYears + ")||' year')";
 	}
+	
+	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(julianday("+otherDateValue+") - julianday("+dateValue+"))"; 
+	}
+
+	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
+		return "("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
+	}
+
+	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(strftime('%m',"+otherDateValue+")+12*strftime('%Y',"+otherDateValue+")) - (strftime('%m',"+dateValue+")+12*strftime('%Y',"+dateValue+"))"; 
+	}
+
+	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(strftime('%Y',"+otherDateValue+")) - (strftime('%Y',"+dateValue+"))"; 
+	}
+
+	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(cast((strftime('%s',"+otherDateValue+")-strftime('%s',"+dateValue+")) AS real)/60/60)"; 
+	}
+
+	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(cast((strftime('%s',"+otherDateValue+")-strftime('%s',"+dateValue+")) AS real)/60)"; 
+	}
+
+	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "cast((strftime('%s',"+otherDateValue+")-strftime('%s',"+dateValue+")) AS real)"; 
+	}
 }
