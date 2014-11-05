@@ -96,4 +96,32 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doModulusTransform(String firstNumber, String secondNumber) {
 		return getTruncFunctionName()+"("+super.doModulusTransform(firstNumber, secondNumber)+",0)"; 
 	}
+
+	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
+		return "TIMESTAMPDIFF(DAY, "+dateValue+","+otherDateValue+")"; 
+	}
+
+	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
+		return "TIMESTAMPDIFF(WEEK, "+dateValue+","+otherDateValue+")"; 
+	}
+
+	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
+		return "TIMESTAMPDIFF(MONTH, "+dateValue+","+otherDateValue+")"; 
+	}
+
+	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
+		return "TIMESTAMPDIFF(YEAR, "+dateValue+","+otherDateValue+")"; 
+	}
+
+	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
+		return "TIMESTAMPDIFF(HOUR, "+dateValue+","+otherDateValue+")"; 
+	}
+
+	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
+		return "TIMESTAMPDIFF(MINUTE, "+dateValue+","+otherDateValue+")"; 
+	}
+
+	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "TIMESTAMPDIFF(SECOND, "+dateValue+","+otherDateValue+")"; 
+	}
 }

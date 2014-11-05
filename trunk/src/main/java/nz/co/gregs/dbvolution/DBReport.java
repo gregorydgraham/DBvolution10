@@ -115,6 +115,34 @@ public class DBReport extends RowDefinition {
 		return reportRows;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		Field[] fields = this.getClass().getFields();
+		for (Field field : fields) {
+			final Object value;
+			try {
+				value = field.get(this);
+				if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
+					if (value instanceof DBRow) {
+						final DBRow dbRow = (DBRow) value;
+						str.append(dbRow.toString());
+					}
+				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
+					if ((value instanceof QueryableDatatype)) {
+						QueryableDatatype qdt = (QueryableDatatype)value;
+						str.append(field.getName()+": "+qdt.toString()+" ");
+					}
+				}
+			} catch (IllegalArgumentException ex) {
+				throw new UnableToAccessDBReportFieldException(this, field, ex);
+			} catch (IllegalAccessException ex) {
+				throw new UnableToAccessDBReportFieldException(this, field, ex);
+			}
+		}
+		return str.toString();
+	}
+
 	/**
 	 * Gets all the report rows of the supplied DBReport limited by the supplied
 	 * example rows.

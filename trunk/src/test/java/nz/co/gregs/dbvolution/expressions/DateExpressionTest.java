@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -409,6 +410,16 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(2));
 	}
 
+	public static class DiffTestReport extends DBReport {
+		public Marque marq = new Marque();
+		public DBNumber dayDiff = new DBNumber(marq.column(marq.creationDate).daysFrom(
+				marq.column(marq.creationDate).addDays(2)));
+		public DBNumber hourDiff = new DBNumber(marq.column(marq.creationDate).hoursFrom(
+				marq.column(marq.creationDate).addHours(2)));
+		public DBNumber monthDiff = new DBNumber(marq.column(marq.creationDate).monthsFrom(
+				marq.column(marq.creationDate).addMonths(2)));
+	}
+
 	@Test
 	@Ignore
 	public void testDayDifferenceFunction() throws SQLException, ParseException {
@@ -545,6 +556,7 @@ public class DateExpressionTest extends AbstractTest {
 	@Ignore
 	public void testHourDifferenceFunction() throws SQLException, ParseException {
 //        database.setPrintSQLBeforeExecuting(true);
+		database.print(DBReport.getAllRows(database, new DiffTestReport()));
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
