@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.tedhiFormat;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DateExpressionTest extends AbstractTest {
@@ -37,8 +38,9 @@ public class DateExpressionTest extends AbstractTest {
 	public DateExpressionTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
-	public static class CurrentDateReport extends DBReport{
+
+	public static class CurrentDateReport extends DBReport {
+
 		private static final long serialVersionUID = 1L;
 		public Marque marque = new Marque();
 		@DBColumn
@@ -63,31 +65,31 @@ public class DateExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate(), null);
 		List<Marque> got = database.get(marq);
-        database.print(got);
+		database.print(got);
 		Assert.assertThat(got.size(), is(0));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		
+
 		Marque reportLimitingMarque = new Marque();
 		reportLimitingMarque.name.permittedPatternIgnoreCase("% HUMMER %");
 		CurrentDateReport currentDateReport = new CurrentDateReport();
 		database.print(DBReport.getRows(database, currentDateReport, reportLimitingMarque));
-		
-		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addSeconds(-10), null);		
+
+		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addSeconds(-10), null);
 		got = database.get(marq);
-        database.print(got);
+		database.print(got);
 		Assert.assertThat(got.size(), is(1));
 
 		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDate().addSeconds(-10));
 		got = database.get(marq);
-        database.print(got);
+		database.print(got);
 		Assert.assertThat(got.size(), is(21));
 
 		marq.creationDate.permittedRangeInclusive(
-				DateExpression.currentDate().addSeconds(-20), 
+				DateExpression.currentDate().addSeconds(-20),
 				DateExpression.currentDate().addSeconds(+20));
 		got = database.getDBTable(marq).getAllRows();
-        database.print(got);
+		database.print(got);
 		Assert.assertThat(got.size(), is(1));
 	}
 
@@ -108,12 +110,12 @@ public class DateExpressionTest extends AbstractTest {
 
 		marq.creationDate.permittedRangeInclusive(null, DateExpression.currentDate().addDays(-1));
 		got = database.get(marq);
-        database.print(got);
+		database.print(got);
 		Assert.assertThat(got.size(), is(21));
 
 		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addDays(-1), DateExpression.currentDate().addDays(+1));
 		got = database.get(marq);
-        database.print(got);
+		database.print(got);
 		Assert.assertThat(got.size(), is(1));
 	}
 
@@ -213,7 +215,7 @@ public class DateExpressionTest extends AbstractTest {
 				marq.column(marq.creationDate).year().is(2013));
 		got = query.getAllInstancesOf(marq);
 		database.print(got);
-		Assert.assertThat(got.size(), is(21));
+		Assert.assertThat(got.size(), is(18));
 
 	}
 
@@ -405,5 +407,236 @@ public class DateExpressionTest extends AbstractTest {
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
+	}
+
+	@Test
+	@Ignore
+	public void testDayDifferenceFunction() throws SQLException, ParseException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.daysFrom(
+						marq.column(marq.creationDate).addDays(2))
+				.is(2));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.daysFrom(secondDate)
+				.is(0));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque secondDateMarques = new Marque();
+		secondDateMarques.creationDate.permittedValues(secondDate);
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+	}
+
+	@Test
+	@Ignore
+	public void testWeekDifferenceFunction() throws SQLException, ParseException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.weeksFrom(
+						marq.column(marq.creationDate).addWeeks(2))
+				.is(2));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.weeksFrom(secondDate)
+				.is(0));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque secondDateMarques = new Marque();
+		secondDateMarques.creationDate.permittedValues(secondDate);
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+	}
+
+	@Test
+	@Ignore
+	public void testMonthDifferenceFunction() throws SQLException, ParseException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.monthsFrom(
+						marq.column(marq.creationDate).addMonths(2))
+				.is(2));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.monthsFrom(secondDate)
+				.is(0));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque secondDateMarques = new Marque();
+		secondDateMarques.creationDate.permittedValues(secondDate);
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+	}
+
+	@Test
+	@Ignore
+	public void testYearDifferenceFunction() throws SQLException, ParseException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.yearsFrom(
+						marq.column(marq.creationDate).addYears(2))
+				.is(2));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.yearsFrom(secondDate)
+				.is(0));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque secondDateMarques = new Marque();
+		secondDateMarques.creationDate.permittedValues(secondDate);
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+	}
+
+	@Test
+	@Ignore
+	public void testHourDifferenceFunction() throws SQLException, ParseException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.hoursFrom(
+						marq.column(marq.creationDate).addHours(2))
+				.is(2));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.hoursFrom(secondDate)
+				.is(0));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque secondDateMarques = new Marque();
+		secondDateMarques.creationDate.permittedValues(secondDate);
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+	}
+
+	@Test
+	@Ignore
+	public void testMinutesDifferenceFunction() throws SQLException, ParseException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.minutesFrom(
+						marq.column(marq.creationDate).addMinutes(2))
+				.is(2));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.minutesFrom(secondDate)
+				.is(0));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque secondDateMarques = new Marque();
+		secondDateMarques.creationDate.permittedValues(secondDate);
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+	}
+
+	@Test
+	@Ignore
+	public void testSecondsDifferenceFunction() throws SQLException, ParseException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.secondsFrom(
+						marq.column(marq.creationDate).addSeconds(2))
+				.is(2));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.minutesFrom(secondDate)
+				.is(0));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque secondDateMarques = new Marque();
+		secondDateMarques.creationDate.permittedValues(secondDate);
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 }

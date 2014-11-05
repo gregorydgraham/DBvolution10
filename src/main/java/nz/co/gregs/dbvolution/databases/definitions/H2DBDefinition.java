@@ -76,7 +76,7 @@ public class H2DBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "DATEADD('week',"+numberOfWeeks+","+dateValue+")";
+		return "DATEADD('WEEK',"+numberOfWeeks+","+dateValue+")";
 	}
 
 	@Override
