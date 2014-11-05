@@ -147,4 +147,43 @@ public class PostgresDBDefinition extends DBDefinition {
 		return super.getCurrentDateOnlyFunctionName(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
+	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(EXTRACT(DAY from ("+otherDateValue+")-("+dateValue+")))"; 
+	}
+
+	@Override
+	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
+		return "ROUND("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
+	}
+
+	private String doAgeTransformation(String dateValue, String otherDateValue){
+		return "age(("+dateValue+"), ("+otherDateValue+"))";
+	}
+	
+	@Override
+	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
+		return "ROUND(EXTRACT(YEAR FROM "+doAgeTransformation(dateValue, otherDateValue)+") * 12 + EXTRACT(MONTH FROM "+doAgeTransformation(dateValue, otherDateValue)+")*-1)"; 
+	}
+
+	@Override
+	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
+		return "round(EXTRACT(YEAR FROM "+doAgeTransformation(dateValue, otherDateValue)+")*-1)"; 
+	}
+
+	@Override
+	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
+		return "round(EXTRACT(EPOCH FROM ("+dateValue+") - ("+otherDateValue+")) / -3600)"; 
+	}
+
+	@Override
+	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
+		return "round(EXTRACT(EPOCH FROM ("+dateValue+") - ("+otherDateValue+")) / -60)"; 
+	}
+
+	@Override
+	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "round(EXTRACT(EPOCH FROM ("+dateValue+") - ("+otherDateValue+"))*-1)"; 
+	}
+
 }
