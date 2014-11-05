@@ -62,14 +62,14 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				Assert.assertThat(dBDate.toString(),
 						anyOf(
 								startsWith("2013-03-23"),
-								startsWith("2013-04-02")
+								startsWith("2012-04-02")
 						)
 				);
 				foundStrings.add((dBDate.toString().substring(0, 10)));
 			}
 		}
 		Assert.assertThat(foundStrings.size(), is(2));
-		Assert.assertThat(foundStrings, hasItems("2013-03-23", "2013-04-02"));
+		Assert.assertThat(foundStrings, hasItems("2013-03-23", "2012-04-02"));
 	}
 
 	@Test
@@ -86,16 +86,16 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				Assert.assertThat(dBDate.toString(),
 						anyOf(
 								startsWith("2013-03-23"),
-								startsWith("2013-04-02")
+								startsWith("2012-04-02")
 						)
 				);
 				foundStrings.add((dBDate.toString().substring(0, 10)));
 			}
 		}
 		Assert.assertThat(foundStrings.size(), is(2));
-		Assert.assertThat(foundStrings, hasItems("2013-03-23", "2013-04-02"));
-		Assert.assertThat(foundStrings.get(0), is("2013-03-23"));
-		Assert.assertThat(foundStrings.get(1), is("2013-04-02"));
+		Assert.assertThat(foundStrings, hasItems("2013-03-23", "2012-04-02"));
+		Assert.assertThat(foundStrings.get(0), is("2012-04-02"));
+		Assert.assertThat(foundStrings.get(1), is("2013-03-23"));
 	}
 
 	@Test

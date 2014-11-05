@@ -1327,7 +1327,7 @@ public class DateExpression implements DateResult {
 	 * @param hoursToAdd
 	 * @return a DateExpression
 	 */
-	DateExpression addHours(int hoursToAdd) {
+	public DateExpression addHours(int hoursToAdd) {
 		return this.addHours(new NumberExpression(hoursToAdd));
 	}
 
@@ -1365,7 +1365,7 @@ public class DateExpression implements DateResult {
 	 * @param weeksToAdd
 	 * @return a DateExpression
 	 */
-	DateExpression addWeeks(int weeksToAdd) {
+	public DateExpression addWeeks(int weeksToAdd) {
 		return this.addWeeks(new NumberExpression(weeksToAdd));
 	}
 
@@ -1404,7 +1404,7 @@ public class DateExpression implements DateResult {
 	 * @param monthsToAdd
 	 * @return a DateExpression
 	 */
-	DateExpression addMonths(int monthsToAdd) {
+	public DateExpression addMonths(int monthsToAdd) {
 		return this.addMonths(new NumberExpression(monthsToAdd));
 	}
 
@@ -1443,7 +1443,7 @@ public class DateExpression implements DateResult {
 	 * @param yearsToAdd
 	 * @return a DateExpression
 	 */
-	DateExpression addYears(int yearsToAdd) {
+	public DateExpression addYears(int yearsToAdd) {
 		return this.addYears(new NumberExpression(yearsToAdd));
 	}
 
@@ -1468,6 +1468,286 @@ public class DateExpression implements DateResult {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	/**
+	 * Date Arithmetic: get the days between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression daysFrom(Date dateToCompareTo) {
+		return daysFrom(DateExpression.value(dateToCompareTo));
+	}
+
+	/**
+	 * Date Arithmetic: get the days between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression daysFrom(DateExpression dateToCompareTo) {
+		return new NumberExpression(
+				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doDayDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	/**
+	 * Date Arithmetic: get the weeks between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression weeksFrom(Date dateToCompareTo) {
+		return weeksFrom(DateExpression.value(dateToCompareTo));
+	}
+
+	/**
+	 * Date Arithmetic: get the weeks between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression weeksFrom(DateExpression dateToCompareTo) {
+		return new NumberExpression(
+				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doWeekDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	/**
+	 * Date Arithmetic: get the months between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression monthsFrom(Date dateToCompareTo) {
+		return monthsFrom(DateExpression.value(dateToCompareTo));
+	}
+
+	/**
+	 * Date Arithmetic: get the months between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression monthsFrom(DateExpression dateToCompareTo) {
+		return new NumberExpression(
+				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doMonthDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	/**
+	 * Date Arithmetic: get the years between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression yearsFrom(Date dateToCompareTo) {
+		return yearsFrom(DateExpression.value(dateToCompareTo));
+	}
+
+	/**
+	 * Date Arithmetic: get the years between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression yearsFrom(DateExpression dateToCompareTo) {
+		return new NumberExpression(
+				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doYearDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	/**
+	 * Date Arithmetic: get the Hours between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression hoursFrom(Date dateToCompareTo) {
+		return hoursFrom(DateExpression.value(dateToCompareTo));
+	}
+
+	/**
+	 * Date Arithmetic: get the Hours between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression hoursFrom(DateExpression dateToCompareTo) {
+		return new NumberExpression(
+				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doHourDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	/**
+	 * Date Arithmetic: get the minutes between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression minutesFrom(Date dateToCompareTo) {
+		return minutesFrom(DateExpression.value(dateToCompareTo));
+	}
+
+	/**
+	 * Date Arithmetic: get the days between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression minutesFrom(DateExpression dateToCompareTo) {
+		return new NumberExpression(
+				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doMinuteDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	/**
+	 * Date Arithmetic: get the seconds between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression secondsFrom(Date dateToCompareTo) {
+		return secondsFrom(DateExpression.value(dateToCompareTo));
+	}
+
+	/**
+	 * Date Arithmetic: get the days between the date expression and the
+	 * supplied date.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param dateToCompareTo
+	 * @return a NumberExpression
+	 */
+	public NumberExpression secondsFrom(DateExpression dateToCompareTo) {
+		return new NumberExpression(
+				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doSecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 					}
 				});
 	}
@@ -1589,7 +1869,7 @@ public class DateExpression implements DateResult {
 		DBBinaryBooleanArithmetic(DateExpression first, DateResult second) {
 			this.first = first;
 			this.second = second;
-			if (second.getIncludesNull()) {
+			if (second == null || second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -2046,6 +2326,57 @@ public class DateExpression implements DateResult {
 		@Override
 		public DBBinaryDateNumberFunctionWithDateResult copy() {
 			DBBinaryDateNumberFunctionWithDateResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			final Set<DBRow> tablesInvolved = first.getTablesInvolved();
+			tablesInvolved.addAll(second.getTablesInvolved());
+			return tablesInvolved;
+		}
+	}
+
+	private static abstract class DBBinaryDateFunctionWithNumberResult implements NumberResult {
+
+		protected DateExpression first;
+		protected DateExpression second;
+
+		DBBinaryDateFunctionWithNumberResult() {
+			this.first = null;
+			this.second = null;
+		}
+
+		DBBinaryDateFunctionWithNumberResult(DateExpression dateExp, DateExpression otherDateExp) {
+			this.first = dateExp;
+			this.second = otherDateExp;
+		}
+
+		@Override
+		public DBString getQueryableDatatypeForExpressionValue() {
+			return new DBString();
+		}
+
+		@Override
+		abstract public String toSQLString(DBDatabase db);
+
+		@Override
+		public DBBinaryDateFunctionWithNumberResult copy() {
+			DBBinaryDateFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

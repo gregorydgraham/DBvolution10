@@ -2199,4 +2199,32 @@ public abstract class DBDefinition {
 	public String doBitsValueTransform(byte[] byteArray) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(DATEDIFF('DAY', "+dateValue+","+otherDateValue+"))"; 
+	}
+
+	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
+		return "("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
+	}
+
+	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(DATEDIFF('MONTH', "+dateValue+","+otherDateValue+"))"; 
+	}
+
+	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(DATEDIFF('YEAR', "+dateValue+","+otherDateValue+"))"; 
+	}
+
+	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(DATEDIFF('HOUR', "+dateValue+","+otherDateValue+"))"; 
+	}
+
+	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(DATEDIFF('MINUTE', "+dateValue+","+otherDateValue+"))"; 
+	}
+
+	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(DATEDIFF('SECOND', "+dateValue+","+otherDateValue+"))"; 
+	}
 }
