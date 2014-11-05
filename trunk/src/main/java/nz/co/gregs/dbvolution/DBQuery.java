@@ -1624,7 +1624,7 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Adding connected tables means adding their connections as well. However
-	 * sometimes you just want the tables added with connecting them to all the
+	 * sometimes you just want the tables added without connecting them to all the
 	 * other tables correctly.
 	 *
 	 * <p>

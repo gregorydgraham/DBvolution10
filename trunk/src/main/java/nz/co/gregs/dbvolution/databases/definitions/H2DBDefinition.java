@@ -95,7 +95,7 @@ public class H2DBDefinition extends DBDefinition {
 	 * @return the H@ implementation subtracts the time zone from the current timestamp
 	 */
 	@Override
-	public String getCurrentDateTimeFunction() {
+	protected String getCurrentDateTimeFunction() {
 //		SimpleDateFormat format = new SimpleDateFormat("Z");
 //		long rawTimezone = Long.parseLong(format.format(new Date()).replaceAll("\\+", ""));
 //		long timezone = rawTimezone/100+((rawTimezone%100)*(100/60));

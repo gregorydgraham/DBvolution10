@@ -89,10 +89,35 @@ public class InformixDBDefinition extends DBDefinition {
         return "";
     }
 
+	@Override
+	protected String getCurrentTimeFunction() {
+		throw new UnsupportedOperationException("Informix Does Not Support CurrentTime as a Function: Please use doCurrentTimeTransform() instead of getCurrentTimeFunction().");
+	}
+
+	@Override
+	protected String getCurrentDateTimeFunction() {
+		throw new UnsupportedOperationException("Informix Does Not Support CurrentDateTime as a Function: Please use doCurrentDateTimeTransform() instead of getCurrentDateTimeFunction().");
+	}
+
     @Override
-    public String getCurrentDateOnlyFunctionName() {
-        return " current ";
+    protected String getCurrentDateOnlyFunctionName() {
+		throw new UnsupportedOperationException("Informix Does Not Support CurrentDateOnly as a Function: Please use doCurrentDateOnlyTransform() instead of getCurrentDateOnlyFunctionName().");
     }
+
+	@Override
+	public String doCurrentTimeTransform() {
+		return "(CURRENT HOUR TO FRACTION(3))";
+	}
+
+	@Override
+	public String doCurrentDateTimeTransform() {
+		return "(CURRENT)";
+	}
+
+	@Override
+	public String doCurrentDateOnlyTransform() {
+		return "(CURRENT YEAR TO DAY)";
+	}
 
     @Override
     public String doDayTransform(String dateExpression) {
@@ -118,4 +143,39 @@ public class InformixDBDefinition extends DBDefinition {
     public boolean supportsGeneratedKeys() {
         return false;
     }
+
+	@Override
+	public String doAddYearsTransform(String dateValue, String numberOfYears) {
+		return "(("+dateValue+")+ ("+numberOfYears+") UNITS YEAR)";
+	}
+
+	@Override
+	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
+		return "(("+dateValue+")+ ("+numberOfMonths+") UNITS MONTH)";
+	}
+
+	@Override
+	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
+		return "(("+dateValue+")+ ("+numberOfWeeks+") UNITS WEEK)";
+	}
+
+	@Override
+	public String doAddHoursTransform(String dateValue, String numberOfHours) {
+		return "(("+dateValue+")+ ("+numberOfHours+") UNITS HOUR)";
+	}
+
+	@Override
+	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+		return "(("+dateValue+")+ ("+numberOfDays+") UNITS DAY)";
+	}
+
+	@Override
+	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
+		return "(("+dateValue+")+ ("+numberOfMinutes+") UNITS MINUTE)";
+	}
+
+	@Override
+	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
+		return "(("+dateValue+")+ ("+numberOfSeconds+") UNITS SECOND)";
+	}
 }

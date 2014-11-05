@@ -16,21 +16,83 @@
 package nz.co.gregs.dbvolution.generation;
 
 /**
+ * Stores information needed to automatically create a Java field from a
+ * database column.
  *
  * @author Gregory Graham
  */
 public class DBTableField {
-    public String fieldName;
-    public String columnName;
-    public boolean isPrimaryKey = false;
-    public boolean isForeignKey = false;
-    public String referencesClass;
-    public String referencesField;
-    public Class<? extends Object> columnType;
-    public int precision;
-    public int javaSQLDatatype = 0;
+
+	/**
+	 * Stores the Java name of the DBTableField.
+	 *
+	 */
+	public String fieldName;
+
+	/**
+	 * Stores the actual database name of the DBTableField.
+	 */
+	public String columnName;
+
+	/**
+	 * TRUE if the column/field is a Primary Key DBTableField, otherwise FALSE.
+	 *
+	 */
+	public boolean isPrimaryKey = false;
+
+	/**
+	 * TRUE if the column/field is a Foreign Key DBTableField, otherwise FALSE.
+	 *
+	 */
+	public boolean isForeignKey = false;
+
+	/**
+	 * Stores the name of the class referenced by this DBTableField if it is a
+	 * Foreign Key, otherwise null.
+	 */
+	public String referencesClass;
+
+	/**
+	 * Stores the name of the field in the referenced class referenced by this
+	 * column/field if this DBTableField is a foreign key, otherwise null.
+	 *
+	 */
+	public String referencesField;
+
+	/**
+	 * Stores the class of the Java field that will be created.
+	 *
+	 */
+	public Class<? extends Object> columnType;
+
+	/**
+	 * Stores the precision of the column.
+	 *
+	 */
+	public int precision;
+
+	/**
+	 * Stores the datatype reported by Java in case an unknown datatype is
+	 * reported.
+	 *
+	 */
+	public int javaSQLDatatype = 0;
+
+	/**
+	 * Stores column comments/remarks from the database.
+	 *
+	 */
 	public String comments;
+
+	/**
+	 * TRUE if the DBTableField is an auto-incrementing column, otherwise FALSE.
+	 *
+	 */
 	public boolean isAutoIncrement;
+
+	/**
+	 * Stores the data type of the DBTableField as reported from the database.
+	 */
 	public int sqlDataTypeInt;
-    
+
 }

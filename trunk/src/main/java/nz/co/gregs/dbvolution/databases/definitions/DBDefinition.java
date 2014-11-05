@@ -978,7 +978,7 @@ public abstract class DBDefinition {
 	 *
 	 * @return the default implementation returns " CURRENT_DATE "
 	 */
-	public String getCurrentDateOnlyFunctionName() {
+	protected String getCurrentDateOnlyFunctionName() {
 		return " CURRENT_DATE";
 	}
 
@@ -987,8 +987,17 @@ public abstract class DBDefinition {
 	 *
 	 * @return the default implementation returns " CURRENT_TIMESTAMP "
 	 */
-	public String getCurrentDateTimeFunction() {
+	protected String getCurrentDateTimeFunction() {
 		return " CURRENT_TIMESTAMP ";
+	}
+
+	/**
+	 * Creates the CURRENTTIMESTAMP function for this database.
+	 *
+	 * @return a String of the SQL required to get the CurrentDateTime value.
+	 */
+	public String doCurrentDateTimeTransform() {
+		return getCurrentDateTimeFunction();
 	}
 
 	/**
@@ -996,8 +1005,17 @@ public abstract class DBDefinition {
 	 *
 	 * @return the default implementation returns " CURRENT_TIMESTAMP "
 	 */
-	public String getCurrentTimeFunction() {
+	protected String getCurrentTimeFunction() {
 		return " CURRENT_TIMESTAMP ";
+	}
+
+	/**
+	 * Creates the CURRENTTIME function for this database.
+	 *
+	 * @return a String of the SQL required to get the CurrentTime value.
+	 */
+	public String doCurrentTimeTransform() {
+		return getCurrentTimeFunction();
 	}
 
 	/**

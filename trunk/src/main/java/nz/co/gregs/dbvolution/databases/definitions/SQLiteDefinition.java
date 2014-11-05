@@ -113,7 +113,7 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getCurrentDateOnlyFunctionName() {
+	protected String getCurrentDateOnlyFunctionName() {
 		return "DATETIME";
 	}
 
@@ -123,7 +123,7 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getCurrentDateTimeFunction() {
+	protected String getCurrentDateTimeFunction() {
 		return " DATETIME('now','localtime') ";
 	}
 
