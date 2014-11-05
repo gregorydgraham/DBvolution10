@@ -45,7 +45,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		DBQuery query = database.getDBQuery(exprExample);
 
 		final String sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		Assert.assertThat(sqlForQuery, containsString(ExpressionRow.STRING_VALUE));
 		Assert.assertThat(sqlForQuery, containsString(NumberExpression.value(5).times(3).toSQLString(database)));
 		final List<DBQueryRow> allRows = query.getAllRows();
@@ -69,7 +69,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		DBQuery query = database.getDBQuery(exprExample);
 
 		String sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 
 		for (DBQueryRow row : query.getAllRows()) {
 			ExpressionRow expressionRow = row.get(exprExample);
@@ -87,7 +87,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		query = database.getDBQuery(exprExample2);
 
 		sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		final List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(0));
@@ -101,7 +101,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 
 		final String sqlForQuery = table.getSQLForQuery();
 //		System.out.println(sqlForQuery);
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().getCurrentDateOnlyFunctionName()));
+		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		final List<ExpressionRow> rowsByExample = table.getAllRows();
 		database.print(rowsByExample);
 

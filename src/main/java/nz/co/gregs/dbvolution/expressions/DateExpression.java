@@ -125,9 +125,10 @@ public class DateExpression implements DateResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -136,8 +137,8 @@ public class DateExpression implements DateResult {
 	 * </ul>
 	 *
 	 * @param date
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static DateExpression value(Date date) {
 		return new DateExpression(date);
@@ -165,7 +166,7 @@ public class DateExpression implements DateResult {
 
 					@Override
 					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getCurrentDateOnlyFunctionName();
+						return "";
 					}
 				});
 	}
@@ -174,17 +175,23 @@ public class DateExpression implements DateResult {
 	 * Creates a date expression that returns the current date on the database.
 	 *
 	 * <p>
-	 * That is to say the expression returns the current day and time according to
-	 * the database.
+	 * That is to say the expression returns the current day and time according
+	 * to the database.
 	 *
 	 * @return a date expression of the current database timestamp.
 	 */
 	public static DateExpression currentDate() {
 		return new DateExpression(
 				new DBNonaryFunction() {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doCurrentDateTimeTransform();
+					}
+
 					@Override
 					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getCurrentDateTimeFunction();
+						return "";
 					}
 				});
 	}
@@ -202,9 +209,15 @@ public class DateExpression implements DateResult {
 	public static DateExpression currentTime() {
 		return new DateExpression(
 				new DBNonaryFunction() {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doCurrentTimeTransform();
+					}
+
 					@Override
 					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getCurrentTimeFunction();
+						return "";
 					}
 				});
 	}
@@ -230,7 +243,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param yearRequired
-	 * @return a BooleanExpression that is TRUE if the year is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the year is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression yearIs(Number yearRequired) {
 		return this.year().is(yearRequired);
@@ -241,7 +255,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param yearRequired
-	 * @return a BooleanExpression that is TRUE if the year is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the year is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression yearIs(NumberResult yearRequired) {
 		return this.year().is(yearRequired);
@@ -268,7 +283,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param monthRequired
-	 * @return a BooleanExpression that is TRUE if the month is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the month is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression monthIs(Number monthRequired) {
 		return this.month().is(monthRequired);
@@ -279,7 +295,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param monthRequired
-	 * @return a BooleanExpression that is TRUE if the month is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the month is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression monthIs(NumberResult monthRequired) {
 		return this.month().is(monthRequired);
@@ -289,8 +306,8 @@ public class DateExpression implements DateResult {
 	 * Returns the day part of the date.
 	 *
 	 * <p>
-	 * Day in this sense is the number of the day within the month: that is the 25
-	 * part of Monday 25th of August 2014
+	 * Day in this sense is the number of the day within the month: that is the
+	 * 25 part of Monday 25th of August 2014
 	 *
 	 * @return a NumberExpression that will provide the day of this date.
 	 */
@@ -309,7 +326,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param dayRequired
-	 * @return a BooleanExpression that is TRUE if the day is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the day is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression dayIs(Number dayRequired) {
 		return this.day().is(dayRequired);
@@ -320,7 +338,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param dayRequired
-	 * @return a BooleanExpression that is TRUE if the day is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the day is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression dayIs(NumberResult dayRequired) {
 		return this.day().is(dayRequired);
@@ -347,7 +366,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param hourRequired
-	 * @return a BooleanExpression that is TRUE if the hour is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the hour is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression hourIs(Number hourRequired) {
 		return this.hour().is(hourRequired);
@@ -358,7 +378,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param hourRequired
-	 * @return a BooleanExpression that is TRUE if the hour is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the hour is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression hourIs(NumberResult hourRequired) {
 		return this.hour().is(hourRequired);
@@ -385,7 +406,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param minuteRequired
-	 * @return a BooleanExpression that is TRUE if the minute is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the minute is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression minuteIs(Number minuteRequired) {
 		return this.minute().is(minuteRequired);
@@ -396,7 +418,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param minuteRequired
-	 * @return a BooleanExpression that is TRUE if the minute is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the minute is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression minuteIs(NumberResult minuteRequired) {
 		return this.minute().is(minuteRequired);
@@ -423,7 +446,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param minuteRequired
-	 * @return a BooleanExpression that is TRUE if the second is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the second is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression secondIs(Number minuteRequired) {
 		return this.second().is(minuteRequired);
@@ -434,7 +458,8 @@ public class DateExpression implements DateResult {
 	 * expression.
 	 *
 	 * @param minuteRequired
-	 * @return a BooleanExpression that is TRUE if the second is the same as the example supplied.
+	 * @return a BooleanExpression that is TRUE if the second is the same as the
+	 * example supplied.
 	 */
 	public BooleanExpression secondIs(NumberResult minuteRequired) {
 		return this.second().is(minuteRequired);
@@ -498,8 +523,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -526,8 +551,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -554,8 +579,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -582,8 +607,8 @@ public class DateExpression implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -904,8 +929,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is greater
-	 * than the supplied date.
+	 * Creates an SQL expression that test whether this date expression is
+	 * greater than the supplied date.
 	 *
 	 * @param date
 	 * @return a boolean expression representing the required comparison
@@ -915,8 +940,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is greater
-	 * than the supplied DateResult.
+	 * Creates an SQL expression that test whether this date expression is
+	 * greater than the supplied DateResult.
 	 *
 	 * @param dateExpression
 	 * @return a boolean expression representing the required comparison
@@ -936,8 +961,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is greater
-	 * than or equal to the supplied Date.
+	 * Creates an SQL expression that test whether this date expression is
+	 * greater than or equal to the supplied Date.
 	 *
 	 * @param date
 	 * @return a boolean expression representing the required comparison
@@ -947,8 +972,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is greater
-	 * than or equal to the supplied DateResult.
+	 * Creates an SQL expression that test whether this date expression is
+	 * greater than or equal to the supplied DateResult.
 	 *
 	 * @param dateExpression
 	 * @return a boolean expression representing the required comparison
@@ -1031,7 +1056,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Creates and expression that replaces a NULL result with the supplied date.
+	 * Creates and expression that replaces a NULL result with the supplied
+	 * date.
 	 *
 	 * <p>
 	 * This is a way of handling dates that should have a value but don't.
@@ -1175,7 +1201,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date expression.
+	 * Date Arithmetic: add the supplied number of seconds to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative seconds are supported.
@@ -1188,7 +1215,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date expression.
+	 * Date Arithmetic: add the supplied number of seconds to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative seconds are supported.
@@ -1213,7 +1241,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of minutes to the date expression.
+	 * Date Arithmetic: add the supplied number of minutes to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1226,7 +1255,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of minutes to the date expression.
+	 * Date Arithmetic: add the supplied number of minutes to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1365,7 +1395,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * Date Arithmetic: add the supplied number of months to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1378,7 +1409,8 @@ public class DateExpression implements DateResult {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * Date Arithmetic: add the supplied number of months to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
