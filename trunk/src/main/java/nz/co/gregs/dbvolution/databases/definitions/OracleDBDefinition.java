@@ -236,10 +236,12 @@ public class OracleDBDefinition extends DBDefinition {
 		return getCurrentDateOnlyFunctionName().trim();
 	}
 	
+	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(DAY FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))))"; 
 	}
 
+	@Override
 	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
 		return "("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
 	}
@@ -254,16 +256,19 @@ public class OracleDBDefinition extends DBDefinition {
 		return "(MONTHS_BETWEEN("+otherDateValue+","+dateValue+")/12)"; 
 	}
 
+	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(HOUR FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
 				"+("+doDayDifferenceTransform(dateValue, otherDateValue)+"*24))"; 
 	}
 
+	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(MINUTE FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
 				"+("+doHourDifferenceTransform(dateValue, otherDateValue)+"*60))";
 	}
 
+	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(SECOND FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
 				"+("+doMinuteDifferenceTransform(dateValue, otherDateValue)+"*60))";

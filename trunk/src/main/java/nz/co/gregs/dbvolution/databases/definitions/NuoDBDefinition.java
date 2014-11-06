@@ -112,6 +112,41 @@ public class NuoDBDefinition extends DBDefinition{
 	public String doCurrentDateOnlyTransform() {
 		return getCurrentDateOnlyFunctionName().trim();
 	}
+	
+	@Override
+	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(EXTRACT(DAY FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))))"; 
+	}
+
+	@Override
+	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
+		return "("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
+	}
+
+	@Override
+	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
+		return "MONTHS_BETWEEN("+otherDateValue+","+dateValue+")"; 
+	}
+
+	@Override
+	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(MONTHS_BETWEEN("+otherDateValue+","+dateValue+")/12)"; 
+	}
+
+	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(EXTRACT(HOUR FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
+				"+("+doDayDifferenceTransform(dateValue, otherDateValue)+"*24))"; 
+	}
+
+	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(EXTRACT(MINUTE FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
+				"+("+doHourDifferenceTransform(dateValue, otherDateValue)+"*60))";
+	}
+
+	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(EXTRACT(SECOND FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
+				"+("+doMinuteDifferenceTransform(dateValue, otherDateValue)+"*60))";
+	}
 
 
 	
