@@ -28,10 +28,8 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import static nz.co.gregs.dbvolution.generic.AbstractTest.tedhiFormat;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DateExpressionTest extends AbstractTest {
@@ -412,10 +410,14 @@ public class DateExpressionTest extends AbstractTest {
 
 	public static class DiffTestReport extends DBReport {
 		public Marque marq = new Marque();
+		public DBDate dayNormal = new DBDate(
+				marq.column(marq.creationDate));
+		public DBDate dayAdds = new DBDate(
+				marq.column(marq.creationDate).addDays(2));
 		public DBNumber dayDiff = new DBNumber(marq.column(marq.creationDate).daysFrom(
 				marq.column(marq.creationDate).addDays(2)));
-		public DBNumber hourDiff = new DBNumber(marq.column(marq.creationDate).hoursFrom(
-				marq.column(marq.creationDate).addHours(2)));
+		public DBNumber dayDiffAsHours = new DBNumber(marq.column(marq.creationDate).hoursFrom(
+				marq.column(marq.creationDate).addDays(2)));
 		public DBNumber monthDiff = new DBNumber(marq.column(marq.creationDate).monthsFrom(
 				marq.column(marq.creationDate).addMonths(2)));
 	}
@@ -423,7 +425,8 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 //	@Ignore
 	public void testDayDifferenceFunction() throws SQLException, ParseException {
-//        database.setPrintSQLBeforeExecuting(true);
+		database.print(DBReport.getAllRows(database, new DiffTestReport()));
+		
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -436,6 +439,20 @@ public class DateExpressionTest extends AbstractTest {
 		Marque nonNullMarque = new Marque();
 		nonNullMarque.creationDate.excludedValues((Date) null);
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.hoursFrom(
+						marq.column(marq.creationDate).addDays(2))
+				.is(48));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
 		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
@@ -456,7 +473,6 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 //	@Ignore
 	public void testWeekDifferenceFunction() throws SQLException, ParseException {
-//        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -489,7 +505,6 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 //	@Ignore
 	public void testMonthDifferenceFunction() throws SQLException, ParseException {
-//        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -522,7 +537,6 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 //	@Ignore
 	public void testYearDifferenceFunction() throws SQLException, ParseException {
-//        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -555,8 +569,6 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 //	@Ignore
 	public void testHourDifferenceFunction() throws SQLException, ParseException {
-//        database.setPrintSQLBeforeExecuting(true);
-		database.print(DBReport.getAllRows(database, new DiffTestReport()));
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -589,7 +601,6 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 //	@Ignore
 	public void testMinutesDifferenceFunction() throws SQLException, ParseException {
-//        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -622,7 +633,6 @@ public class DateExpressionTest extends AbstractTest {
 	@Test
 //	@Ignore
 	public void testSecondsDifferenceFunction() throws SQLException, ParseException {
-//        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
