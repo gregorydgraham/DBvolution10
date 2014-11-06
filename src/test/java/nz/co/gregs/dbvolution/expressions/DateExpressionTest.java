@@ -418,8 +418,8 @@ public class DateExpressionTest extends AbstractTest {
 				marq.column(marq.creationDate).addDays(2)));
 		public DBNumber dayDiffAsHours = new DBNumber(marq.column(marq.creationDate).hoursFrom(
 				marq.column(marq.creationDate).addDays(2)));
-		public DBNumber monthDiff = new DBNumber(marq.column(marq.creationDate).monthsFrom(
-				marq.column(marq.creationDate).addMonths(2)));
+//		public DBNumber monthDiff = new DBNumber(marq.column(marq.creationDate).monthsFrom(
+//				marq.column(marq.creationDate).addMonths(2)));
 	}
 
 	@Test
