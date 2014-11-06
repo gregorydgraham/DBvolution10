@@ -447,7 +447,7 @@ public class DateExpressionTest extends AbstractTest {
 				marq.column(marq.creationDate)
 				.hoursFrom(
 						marq.column(marq.creationDate).addDays(2))
-				.is(48));
+				.isIn(48,49)); //Interestingly  one of my examples is near DST transition and NuoDB gives 49 hours
 		got = query.getAllInstancesOf(marq);
 		database.print(got);
 		nonNullMarque = new Marque();

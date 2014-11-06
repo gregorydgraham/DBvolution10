@@ -115,7 +115,7 @@ public class NuoDBDefinition extends DBDefinition{
 	
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(DAY FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))))"; 
+		return "ROUND(CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))"; 
 	}
 
 	@Override
@@ -125,27 +125,27 @@ public class NuoDBDefinition extends DBDefinition{
 
 	@Override
 	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
-		return "MONTHS_BETWEEN("+otherDateValue+","+dateValue+")"; 
+		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))/30.43)"; 
 	}
 
 	@Override
 	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(MONTHS_BETWEEN("+otherDateValue+","+dateValue+")/12)"; 
+		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))/365.25)"; 
 	}
 
+	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(HOUR FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
-				"+("+doDayDifferenceTransform(dateValue, otherDateValue)+"*24))"; 
+		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24)"; 
 	}
 
+	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(MINUTE FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
-				"+("+doHourDifferenceTransform(dateValue, otherDateValue)+"*60))";
+		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60)"; 
 	}
 
+	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(SECOND FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
-				"+("+doMinuteDifferenceTransform(dateValue, otherDateValue)+"*60))";
+		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60*60)"; 
 	}
 
 
