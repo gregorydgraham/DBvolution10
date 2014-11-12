@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -78,6 +79,25 @@ public class NuoDB extends DBDatabase {
 	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
 	 * using the ports supplied for each broker.
 	 *
+	 * @param broker  a single NuoDB broker to use.
+	 * @param port the port for the broker provided.
+	 * @param databaseName the database required from the brokers.
+	 * @param schema the schema on the database to be used.
+	 * @param username the user to login as.
+	 * @param password the user's password.
+	 */
+	public NuoDB(String broker, Long port, String databaseName, String schema, String username, String password) {
+		List<String> brokers = new ArrayList<String>();
+		List<Long> ports = new ArrayList<Long>();
+		brokers.add(broker);
+		ports.add(port);
+		initNuoDB(brokers, ports, databaseName, schema, username, password);
+	}
+	
+	/**
+	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
+	 * using the ports supplied for each broker.
+	 *
 	 * @param brokers a list of the NuoDB brokers to use.
 	 * @param ports a list of the port for each broker provided.
 	 * @param databaseName the database required from the brokers.
@@ -86,6 +106,10 @@ public class NuoDB extends DBDatabase {
 	 * @param password the user's password.
 	 */
 	public NuoDB(List<String> brokers, List<Long> ports, String databaseName, String schema, String username, String password) {
+		initNuoDB(brokers, ports, databaseName, schema, username, password);
+	}
+
+	private void initNuoDB(List<String> brokers, List<Long> ports, String databaseName, String schema, String username, String password) {
 		String hosts = "";
 		String sep = "";
 		if (brokers.size() == ports.size()) {
