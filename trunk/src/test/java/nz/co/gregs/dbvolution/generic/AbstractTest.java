@@ -87,7 +87,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
 		}
 		if (System.getProperty("testNuo") != null) {
-			databases.add(new Object[]{"NuoDB", new NuoDB(Arrays.asList(new String[]{"localhost"}), Arrays.asList(new Long[]{48004L}), "dbv", "dbv", "dbv", "dbv")});
+			databases.add(new Object[]{"NuoDB", new NuoDB("localhost",48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracle") != null) {
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("localhost", 1521, "XE", "dbv", "dbv")});

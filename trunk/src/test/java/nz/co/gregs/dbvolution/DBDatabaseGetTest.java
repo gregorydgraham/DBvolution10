@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import net.sourceforge.tedhi.DateRange;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -152,8 +153,8 @@ public class DBDatabaseGetTest extends AbstractTest {
     @Test
     public void testDateIsBetween() throws SQLException, ParseException {
         
-        Date beforeAllTheDates = tedhiFormat.parse("July 2010").asDate();
-        Date afterAllTheDates = tedhiFormat.parse("July 2013").asDate();
+        Date beforeAllTheDates = tedhiFormat.parse("July 2010", Locale.ENGLISH).toDate();
+        Date afterAllTheDates = tedhiFormat.parse("July 2013", Locale.ENGLISH).toDate();
         DateRange coversFirstDate = tedhiRangeFormat.parse("March 2013");
         
         Marque oldQuery = new Marque();

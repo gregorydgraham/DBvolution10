@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalElement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import net.sourceforge.tedhi.DateRange;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -266,7 +268,7 @@ public class DBTableGetTest extends AbstractTest {
 	@Test
 	public void testDateIsBetween() throws SQLException, ParseException {
 
-		Date afterAllTheDates = tedhiFormat.parse("July 2013").asDate();
+		Date afterAllTheDates = tedhiFormat.parse("July 2013", Locale.ENGLISH).toDate();
 		DateRange coversFirstDate = tedhiRangeFormat.parse("March 2013");
 
 		Marque oldQuery = new Marque();
