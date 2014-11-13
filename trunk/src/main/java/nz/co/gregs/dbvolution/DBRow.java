@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -1659,7 +1660,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 		}
 	}
-
+	
 	/**
 	 * Default sorting for DBRow in the various collections in DBRow and
 	 * DBQuery.
@@ -1667,7 +1668,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	private static class ClassNameComparator implements Comparator<Class<?>> {
 
-		public ClassNameComparator() {
+		ClassNameComparator() {
 		}
 
 		@Override
