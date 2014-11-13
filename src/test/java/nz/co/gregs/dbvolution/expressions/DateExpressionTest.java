@@ -409,6 +409,9 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	public static class DiffTestReport extends DBReport {
+		
+		private static final long serialVersionUID = 1L;
+		
 		public Marque marq = new Marque();
 		public DBDate dayNormal = new DBDate(
 				marq.column(marq.creationDate));
