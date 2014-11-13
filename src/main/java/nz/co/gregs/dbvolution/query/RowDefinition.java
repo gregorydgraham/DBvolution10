@@ -871,6 +871,52 @@ public class RowDefinition implements Serializable {
 		}
 		return string.toString();
 	}
+	
+	public String toSeparatedLine(String separatorToUse) {
+		StringBuilder string = new StringBuilder();
+		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+
+		String separator = "" + this.getClass().getSimpleName();
+
+		for (PropertyWrapper field : fields) {
+			if (field.isColumn()) {
+				string.append(separator).append(field.getQueryableDatatype().toString().trim().replaceAll("\"", "\"\""));
+				separator = separatorToUse;
+			}
+		}
+		return string.toString();
+	}
+	
+	public String toSeparatedHeader(String separatorToUse) {
+		StringBuilder string = new StringBuilder();
+		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+
+		String separator = "" + this.getClass().getSimpleName();
+
+		for (PropertyWrapper field : fields) {
+			if (field.isColumn()) {
+				string.append(separator).append(field.javaName());
+				separator = separatorToUse;
+			}
+		}
+		return string.toString();
+	}
+
+	public String toCSVHeader() {
+		return toSeparatedHeader(",");
+	}
+
+	public String toCSVLine() throws IllegalArgumentException, IllegalAccessException {
+		return toSeparatedLine(",");
+	}
+
+	public String toTabbedHeader() {
+		return toSeparatedHeader("\t");
+	}
+
+	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
+		return toSeparatedLine("\t");
+	}
 
 	public String getHTMLTableRow(String tableRowCSSClass) {
 		StringBuilder string = new StringBuilder();

@@ -143,7 +143,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		String separator = "";
 		List<String> fieldNames = this.getFieldNames();
 		for (String fieldName : fieldNames) {
-			returnStr.append(separator).append("\"").append(fieldName).append("\"");
+			returnStr.append(separator).append("\"").append(fieldName.replaceAll("\"", "\"\"")).append("\"");
 			separator = separatorToUseBetweenValues;
 		}
 		return returnStr.toString();
@@ -154,7 +154,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		String separator = "";
 		List<String> fieldValues = this.getFieldValues();
 		for (String fieldValue : fieldValues) {
-			returnStr.append(separator).append("\"").append(fieldValue).append("\"");
+			returnStr.append(separator).append("\"").append(fieldValue.replaceAll("\"", "\"\"")).append("\"");
 			separator = separatorToUseBetweenValues;
 		}
 		return returnStr.toString();
