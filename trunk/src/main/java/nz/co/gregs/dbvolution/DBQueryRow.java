@@ -17,9 +17,13 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains all the instances of DBRow that are associated with one line of a
@@ -103,5 +107,72 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
 	QueryableDatatype getExpressionColumnValue(Object key) {
 		return expressionColumnValues.get(key);
+	}
+
+	public List<String> getFieldNames() throws SecurityException {
+		List<String> returnList = new ArrayList<String>();
+		Set<Class<?>> keySet = this.keySet();
+		for (Class<?> keySet1 : keySet) {
+			Field[] fields = keySet1.getFields();
+			for (Field field : fields) {
+				returnList.add(field.getName());
+			}
+		}
+		return returnList;
+	}
+
+	public List<String> getFieldValues() throws IllegalArgumentException, IllegalAccessException {
+		List<String> returnList = new ArrayList<String>();
+		Set<Class<?>> keySet = this.keySet();
+		for (Class<?> keySet1 : keySet) {
+			DBRow row = this.get(keySet1);
+			Field[] fields = keySet1.getFields();
+			for (Field field : fields) {
+				String value = "";
+				if (row != null) {
+					value = field.get(row).toString().trim();
+				}
+				returnList.add(value);
+			}
+		}
+		return returnList;
+	}
+
+	public String toSeparatedHeader(String separatorToUseBetweenValues) {
+		StringBuilder returnStr = new StringBuilder();
+		String separator = "";
+		List<String> fieldNames = this.getFieldNames();
+		for (String fieldName : fieldNames) {
+			returnStr.append(separator).append("\"").append(fieldName).append("\"");
+			separator = separatorToUseBetweenValues;
+		}
+		return returnStr.toString();
+	}
+
+	public String toSeparatedLine(String separatorToUseBetweenValues) throws IllegalArgumentException, IllegalAccessException {
+		StringBuilder returnStr = new StringBuilder();
+		String separator = "";
+		List<String> fieldValues = this.getFieldValues();
+		for (String fieldValue : fieldValues) {
+			returnStr.append(separator).append("\"").append(fieldValue).append("\"");
+			separator = separatorToUseBetweenValues;
+		}
+		return returnStr.toString();
+	}
+
+	public String toCSVHeader() {
+		return toSeparatedHeader(",");
+	}
+
+	public String toCSVLine() throws IllegalArgumentException, IllegalAccessException {
+		return toSeparatedLine(",");
+	}
+
+	public String toTabbedHeader() {
+		return toSeparatedHeader("\t");
+	}
+
+	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
+		return toSeparatedLine("\t");
 	}
 }

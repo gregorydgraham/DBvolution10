@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.LocalElement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
