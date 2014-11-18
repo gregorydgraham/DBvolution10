@@ -26,12 +26,15 @@ import javax.tools.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.FKBasedFKRecognisor;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.freshvanilla.compile.CachedCompiler;
@@ -84,6 +87,41 @@ public class GeneratedMarqueTest extends AbstractTest {
 
 			database.preventDroppingOfTables(false);
 			database.dropTable(new TestAutoIncrementDetection());
+		}
+	}
+
+	@Test
+	public void testGetSchemaOfGeneratedForeignKeys() throws SQLException {
+		if (database instanceof H2MemoryDB) {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CreateTableForeignKey());
+			database.createTableWithForeignKeys(new CreateTableForeignKey());
+			int classesTested = 0;
+			List<DBTableClass> generateSchema;
+			List<String> testClassNames = Arrays.asList(new String[]{"CreateTableForeignKey"});
+			List<String> testClasses = new ArrayList<String>();
+			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEY\") \npublic class CreateTableForeignKey extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(Marque.class)\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
+			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", null, null);
+			for (DBTableClass dbcl : generateSchema) {
+				if (testClassNames.contains(dbcl.getClassName())) {
+					classesTested++;
+					boolean found = false;
+					for (String str : testClasses) {
+						final String testcaseLowercase = str.toLowerCase().replaceAll("[ \n\r\t]+", " ");
+						final String sourceLowercase = dbcl.getJavaSource().toLowerCase().replaceAll("[ \n\r\t]+", " ");
+						if (testcaseLowercase.equals(sourceLowercase)) {
+							found = true;
+						}
+					}
+					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
+				} else {
+					System.out.println("SKIPPED: " + dbcl.getClassName());
+				}
+			}
+			Assert.assertThat(classesTested, is(1));
+
+			database.preventDroppingOfTables(false);
+			database.dropTable(new CreateTableForeignKey());
 		}
 	}
 
@@ -204,8 +242,8 @@ public class GeneratedMarqueTest extends AbstractTest {
 		 *
 		 * @param name the name of the compilation unit represented by this file
 		 * object
-		 * @param code the source code for the compilation unit represented by
-		 * this file object
+		 * @param code the source code for the compilation unit represented by this
+		 * file object
 		 */
 		JavaSourceFromString(String name, String code) {
 			super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension),
@@ -262,5 +300,22 @@ public class GeneratedMarqueTest extends AbstractTest {
 		@DBColumn
 		public DBString name = new DBString();
 
+	}
+
+	@DBTableName("create_table_foreign_key")
+	public static class CreateTableForeignKey extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString name = new DBString();
+
+		@DBColumn
+		@DBForeignKey(Marque.class)
+		DBInteger marqueForeignKey = new DBInteger();
+
+		@DBColumn
+		@DBForeignKey(CarCompany.class)
+		DBInteger carCoForeignKey = new DBInteger();
 	}
 }

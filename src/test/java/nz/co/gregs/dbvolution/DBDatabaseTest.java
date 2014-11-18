@@ -17,7 +17,11 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
@@ -41,7 +45,9 @@ public class DBDatabaseTest extends AbstractTest {
 	@SuppressWarnings("empty-statement")
 	@Override
 	public void setUp() throws Exception {
-		setup(database);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
+		super.setUp();
 	}
 
 	@After
@@ -75,6 +81,28 @@ public class DBDatabaseTest extends AbstractTest {
 	}
 
 	@Test
+	public void testCreateTableWithForeignKeys() throws SQLException {
+
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
+		} catch (AutoCommitActionDuringTransactionException ex) {
+			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+		}
+
+		final CreateTableWithForeignKeyTestClass createTableTestClass = new CreateTableWithForeignKeyTestClass();
+		database.createTableWithForeignKeys(createTableTestClass);
+		System.out.println("CreateTableTestClass table created successfully");
+
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
+		} catch (AutoCommitActionDuringTransactionException ex) {
+			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+		}
+	}
+
+	@Test
 	public void testDropTableException() throws SQLException {
 		database.preventDroppingOfTables(true);
 		try {
@@ -99,6 +127,8 @@ public class DBDatabaseTest extends AbstractTest {
 		} catch (AccidentalDroppingOfTableException oops) {
 			System.out.println("AccidentalDroppingOfTableException successfully thrown");
 		}
+		database.preventDroppingOfTables(false);
+		database.dropTable(new DropTable2TestClass());
 	}
 
 	@Test
@@ -128,6 +158,22 @@ public class DBDatabaseTest extends AbstractTest {
 
 		@DBColumn
 		DBString name = new DBString();
+	}
+
+	public static class CreateTableWithForeignKeyTestClass extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString name = new DBString();
+
+		@DBColumn
+		@DBForeignKey(Marque.class)
+		DBInteger marqueForeignKey = new DBInteger();
+		
+		@DBColumn
+		@DBForeignKey(CarCompany.class)
+		DBInteger carCoForeignKey = new DBInteger();
 	}
 
 	public static class DropTableTestClass extends DBRow {
