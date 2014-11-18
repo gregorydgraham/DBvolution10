@@ -243,12 +243,21 @@ public class DBTableClassGenerator {
 	 * @param database
 	 * @param packageName
 	 * @param dbObjectTypes
-	 * @return a List of DBTableClass instances representing the tables and
-	 * views found on the database
+	 * @return a List of DBTableClass instances representing the tables and views
+	 * found on the database
 	 * @throws SQLException
 	 */
-	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, String... dbObjectTypes) throws SQLException {
+	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecognisor, ForeignKeyRecognisor fkRecogisor, String... dbObjectTypes) throws SQLException {
 		List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
+		PrimaryKeyRecognisor pkRecog = pkRecognisor;
+		if (pkRecognisor == null) {
+			pkRecog = new PrimaryKeyRecognisor();
+		}
+
+		ForeignKeyRecognisor fkRecog = fkRecogisor;
+		if (fkRecogisor == null) {
+			fkRecog = new ForeignKeyRecognisor();
+		}
 
 		DBStatement dbStatement = database.getDBStatement();
 		try {
@@ -334,9 +343,9 @@ public class DBTableClassGenerator {
 							if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
 								dbTableField.isPrimaryKey = true;
 							}
-							
+
 							database.getDefinition().sanityCheckDBTableField(dbTableField);
-							
+
 							String[] pkData = fkNames.get(dbTableField.columnName);
 							if (pkData != null && pkData.length == 2) {
 								dbTableField.isForeignKey = true;

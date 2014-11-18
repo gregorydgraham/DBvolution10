@@ -219,21 +219,21 @@ public abstract class AbstractTest {
 	}
 
 	public void tearDown(DBDatabase database) throws Exception {
-		database.setPrintSQLBeforeExecuting(false);
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(new CompanyLogo());
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(myMarqueRow);
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(myCarCompanyRow);
-		try {
-			database.preventDroppingOfTables(false);
-			database.preventDroppingOfDatabases(false);
-			database.dropDatabase(true);
-		} catch (UnsupportedOperationException unsupported) {
-			;
-		}
+//		database.setPrintSQLBeforeExecuting(false);
+//		database.preventDroppingOfTables(false);
+//		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
+//		database.preventDroppingOfTables(false);
+//		database.dropTableNoExceptions(new CompanyLogo());
+//		database.preventDroppingOfTables(false);
+//		database.dropTableNoExceptions(myMarqueRow);
+//		database.preventDroppingOfTables(false);
+//		database.dropTableNoExceptions(myCarCompanyRow);
+//		try {
+//			database.preventDroppingOfTables(false);
+//			database.preventDroppingOfDatabases(false);
+//			database.dropDatabase(true);
+//		} catch (UnsupportedOperationException unsupported) {
+//			;
+//		}
 	}
 }

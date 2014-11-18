@@ -2227,4 +2227,11 @@ public abstract class DBDefinition {
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF('SECOND', "+dateValue+","+otherDateValue+"))"; 
 	}
+
+	public String getForeignKeyClauseForCreateTable(PropertyWrapper field) {
+		if(field.isForeignKey()){
+			return " FOREIGN KEY ("+field.columnName()+") REFERENCES "+field.referencedTableName()+ "("+field.referencedColumnName()+") ";
+		}
+		return "";
+	}
 }
