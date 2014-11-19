@@ -64,4 +64,14 @@ public abstract class OracleDB extends DBDatabase {
 		return super.clone();
 	}
 
+	/**
+	 * Oracle does not differentiate between NULL and an empty string.
+	 *
+	 * @return FALSE.
+	 */
+	@Override
+	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+		return false;
+	}
+
 }

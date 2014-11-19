@@ -209,6 +209,11 @@ public class StringExpression implements StringResult {
 				new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
 
 					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+					}
+
+					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
 					}
@@ -497,7 +502,6 @@ public class StringExpression implements StringResult {
 			});
 		}
 	}
-	
 
 	/**
 	 * Creates a query comparison using the NOT EQUALS operator.
@@ -1116,6 +1120,16 @@ public class StringExpression implements StringResult {
 	public BooleanExpression isIn(StringResult... possibleValues) {
 		final BooleanExpression isInExpression
 				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						List<String> sqlValues = new ArrayList<String>();
+						for (StringResult value : values) {
+							sqlValues.add(value.toSQLString(db));
+						}
+						return db.getDefinition().doInTransform(column.toSQLString(db), sqlValues);
+					}
+
 					@Override
 					protected String getFunctionName(DBDatabase db) {
 						return " IN ";
@@ -2173,8 +2187,8 @@ public class StringExpression implements StringResult {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + first.toSQLString(db)
-					+ this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))
+			return this.beforeValue(db) + getFirst().toSQLString(db)
+					+ this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db))
 					+ this.afterValue(db);
 		}
 
@@ -2188,8 +2202,8 @@ public class StringExpression implements StringResult {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first == null ? null : first.copy();
-			newInstance.second = second == null ? null : second.copy();
+			newInstance.first = getFirst() == null ? null : getFirst().copy();
+			newInstance.second = getSecond() == null ? null : getSecond().copy();
 			return newInstance;
 		}
 
@@ -2210,18 +2224,32 @@ public class StringExpression implements StringResult {
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
 			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
 			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator();
+		}
+
+		/**
+		 * @return the first
+		 */
+		protected StringResult getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		protected StringResult getSecond() {
+			return second;
 		}
 	}
 

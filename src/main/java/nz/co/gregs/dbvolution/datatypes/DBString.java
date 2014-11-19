@@ -745,7 +745,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
 			if (gotString != null && gotString.isEmpty()) {
 				return null;
 			}
@@ -774,7 +774,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	@Override
 	protected DBOperator setToNull(DBDatabase database) {
-		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
 			this.isDBEmptyString = true;
 		}
 		return setToNull();

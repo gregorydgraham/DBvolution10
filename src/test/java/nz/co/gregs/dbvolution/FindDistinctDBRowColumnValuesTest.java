@@ -102,7 +102,11 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	public void testDBRowMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
 		List<DBString> distinctValuesForColumn = marque.getDistinctValuesOfColumn(database, marque.individualAllocationsAllowed);
-		Assert.assertThat(distinctValuesForColumn.size(), is(3));
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertThat(distinctValuesForColumn.size(), is(3));
+		} else {
+			Assert.assertThat(distinctValuesForColumn.size(), is(2));
+		}
 		Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
 
 		List<String> foundStrings = new ArrayList<String>();
@@ -118,10 +122,16 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				foundStrings.add((val.toString()));
 			}
 		}
-		Assert.assertThat(foundStrings.size(), is(2));
-		Assert.assertThat(foundStrings, hasItems("Y", ""));
-		Assert.assertThat(foundStrings.get(0), is(""));
-		Assert.assertThat(foundStrings.get(1), is("Y"));
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertThat(foundStrings.size(), is(2));
+			Assert.assertThat(foundStrings, hasItems("Y", ""));
+			Assert.assertThat(foundStrings.get(0), is(""));
+			Assert.assertThat(foundStrings.get(1), is("Y"));
+		} else {
+			Assert.assertThat(foundStrings.size(), is(1));
+			Assert.assertThat(foundStrings, hasItems("Y"));
+			Assert.assertThat(foundStrings.get(0), is("Y"));
+		}
 	}
 
 	@Test
@@ -145,11 +155,18 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				System.out.println("DISTINCT VAL: NULL");
 			}
 		}
-		Assert.assertThat(distinctValuesForColumn.size(), is(3));
-		Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
-		Assert.assertThat(foundStrings.size(), is(2));
-		Assert.assertThat(foundStrings.get(0), is(""));
-		Assert.assertThat(foundStrings.get(1), is("Y"));
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertThat(distinctValuesForColumn.size(), is(3));
+			Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
+			Assert.assertThat(foundStrings.size(), is(2));
+			Assert.assertThat(foundStrings.get(0), is(""));
+			Assert.assertThat(foundStrings.get(1), is("Y"));
+		} else {
+			Assert.assertThat(distinctValuesForColumn.size(), is(2));
+			Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
+			Assert.assertThat(foundStrings.size(), is(1));
+			Assert.assertThat(foundStrings.get(0), is("Y"));
+		}
 	}
 
 	@Test
@@ -164,15 +181,24 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				.setBlankQueryAllowed(true)
 				.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);
 		database.print(distinctCombinationsOfColumnValues);
-		Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(3));
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(marque), nullValue());
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque), notNullValue());
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque).individualAllocationsAllowed.stringValue(), is(""));
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque), notNullValue());
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque).individualAllocationsAllowed.stringValue(), is("Y"));
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(carCo).name.stringValue(), is("OTHER"));
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(carCo).name.stringValue(), is("OTHER"));
-		Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(carCo).name.stringValue(), is("OTHER"));
+		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(3));
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(marque), nullValue());
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque), notNullValue());
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque).individualAllocationsAllowed.stringValue(), is(""));
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque), notNullValue());
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(marque).individualAllocationsAllowed.stringValue(), is("Y"));
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(carCo).name.stringValue(), is("OTHER"));
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(carCo).name.stringValue(), is("OTHER"));
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(2).get(carCo).name.stringValue(), is("OTHER"));
+		} else {
+			Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(2));
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(marque), nullValue());
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque), notNullValue());
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(marque).individualAllocationsAllowed.stringValue(), is("Y"));
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(carCo).name.stringValue(), is("OTHER"));
+			Assert.assertThat(distinctCombinationsOfColumnValues.get(1).get(carCo).name.stringValue(), is("OTHER"));
+		}
 	}
 
 }

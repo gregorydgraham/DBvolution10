@@ -127,7 +127,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 			Assert.assertThat(row.uidAndName.stringValue(),
 					is(row.uidMarque.stringValue() + "-" + row.name.stringValue()));
 			final Date dateValue = row.creationDate.dateValue();
-			
+
 			if (dateValue != null) {
 				String year = new SimpleDateFormat("yyyy").format(dateValue);
 				Assert.assertThat(row.uidNameAndYear.stringValue(), is(
@@ -139,12 +139,23 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 						+ row.name.stringValue() + "-"
 						+ year));
 			} else {
-				Assert.assertThat(row.uidNameAndYear.stringValue(), isEmptyOrNullString());
-				String year = new SimpleDateFormat("yyyy").format(new Date());
-				Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
-						row.uidMarque.stringValue() + "-"
-						+ row.name.stringValue() + "-"
-						+ year));
+				if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+					Assert.assertThat(row.uidNameAndYear.stringValue(), isEmptyOrNullString());
+					String year = new SimpleDateFormat("yyyy").format(new Date());
+					Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+							row.uidMarque.stringValue() + "-"
+							+ row.name.stringValue() + "-"
+							+ year));
+				} else {
+					Assert.assertThat(row.uidNameAndYear.stringValue(), is(
+							row.uidMarque.stringValue() + "-"
+							+ row.name.stringValue() + "-"));
+					String year = new SimpleDateFormat("yyyy").format(new Date());
+					Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(
+							row.uidMarque.stringValue() + "-"
+							+ row.name.stringValue() + "-"
+							+ year));
+				}
 			}
 		}
 	}

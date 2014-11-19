@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.expressions.StringResult;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -1987,9 +1988,13 @@ public abstract class DBDefinition {
 	/**
 	 * Indicates whether the database differentiates between NULL and an empty
 	 * string.
+	 * 
+	 * <p>
+	 * This method has been replaced by {@link DBDatabase#supportsDifferenceBetweenNullAndEmptyString() }.
 	 *
 	 * @return the default implementation returns TRUE.
 	 */
+	@Deprecated
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return true;
 	}
@@ -2178,7 +2183,7 @@ public abstract class DBDefinition {
 	 * into a character or String type.
 	 */
 	public String doNumberToStringTransform(String numberExpression) {
-		return doConcatTransform(numberExpression, getEmptyString());
+		return doConcatTransform(getEmptyString(), numberExpression);
 	}
 
 	/**
@@ -2201,37 +2206,68 @@ public abstract class DBDefinition {
 	}
 
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(DATEDIFF('DAY', "+dateValue+","+otherDateValue+"))"; 
+		return "(DATEDIFF('DAY', " + dateValue + "," + otherDateValue + "))";
 	}
 
 	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
-		return "("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
+		return "(" + doDayDifferenceTransform(dateValue, otherDateValue) + "/7)";
 	}
 
 	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(DATEDIFF('MONTH', "+dateValue+","+otherDateValue+"))"; 
+		return "(DATEDIFF('MONTH', " + dateValue + "," + otherDateValue + "))";
 	}
 
 	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(DATEDIFF('YEAR', "+dateValue+","+otherDateValue+"))"; 
+		return "(DATEDIFF('YEAR', " + dateValue + "," + otherDateValue + "))";
 	}
 
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(DATEDIFF('HOUR', "+dateValue+","+otherDateValue+"))"; 
+		return "(DATEDIFF('HOUR', " + dateValue + "," + otherDateValue + "))";
 	}
 
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(DATEDIFF('MINUTE', "+dateValue+","+otherDateValue+"))"; 
+		return "(DATEDIFF('MINUTE', " + dateValue + "," + otherDateValue + "))";
 	}
 
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(DATEDIFF('SECOND', "+dateValue+","+otherDateValue+"))"; 
+		return "(DATEDIFF('SECOND', " + dateValue + "," + otherDateValue + "))";
 	}
 
 	public String getForeignKeyClauseForCreateTable(PropertyWrapper field) {
-		if(field.isForeignKey()){
-			return " FOREIGN KEY ("+field.columnName()+") REFERENCES "+field.referencedTableName()+ "("+field.referencedColumnName()+") ";
+		if (field.isForeignKey()) {
+			return " FOREIGN KEY (" + field.columnName() + ") REFERENCES " + field.referencedTableName() + "(" + field.referencedColumnName() + ") ";
 		}
 		return "";
+	}
+
+	public String doStringIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
+		return this.getIfNullFunctionName() + "(" + possiblyNullValue
+				+ ","
+				+ (alternativeIfNull == null ? "NULL" : alternativeIfNull)
+				+ ")";
+	}
+
+	public String doNumberIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
+		return doStringIfNullTransform(possiblyNullValue, alternativeIfNull);
+	}
+
+	public String doDateIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
+		return doStringIfNullTransform(possiblyNullValue, alternativeIfNull);
+	}
+
+	public String doInTransform(String column, List<String> values) {
+		StringBuilder builder = new StringBuilder();
+		builder
+				.append(column)
+				.append(" IN ( ");
+		String separator = "";
+		for (String val : values) {
+			if (val != null) {
+				builder.append(separator).append(val);
+			}
+			separator = ", ";
+		}
+		builder.append(")");
+		return builder.toString();
 	}
 }
