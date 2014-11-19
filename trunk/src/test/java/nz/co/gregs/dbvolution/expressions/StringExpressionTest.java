@@ -256,7 +256,7 @@ public class StringExpressionTest extends AbstractTest {
 
 		query = database.getDBQuery(marq);
 		// Find VW and BMW by appending V and W around the replaced brands
-		query.addCondition(StringExpression.value("V").append(nameValue.replace("BMW", "").replace("VW", "")).append("W").is("VW"));
+		query.addCondition(StringExpression.value("V").append(nameValue.replace("BMW", "-").replace("VW", "-")).replace("-","W").is("VW"));
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);
 		database.print(got);

@@ -1043,6 +1043,15 @@ public class DateExpression implements DateResult {
 	 */
 	public BooleanExpression isIn(DateResult... possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						List<String> sqlValues = new ArrayList<String>();
+						for (DateResult value : getValues()) {
+							sqlValues.add(value.toSQLString(db));
+						}
+						return db.getDefinition().doInTransform(getColumn().toSQLString(db), sqlValues);
+					}
 			@Override
 			protected String getFunctionName(DBDatabase db) {
 				return " IN ";
@@ -1093,6 +1102,12 @@ public class DateExpression implements DateResult {
 	public DateExpression ifDBNull(DateResult alternative) {
 		return new DateExpression(
 				new DateExpression.DBBinaryFunction(this, alternative) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doDateIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+					}
+
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
@@ -1999,8 +2014,8 @@ public class DateExpression implements DateResult {
 
 	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
 
-		protected DateExpression column;
-		protected List<DateResult> values = new ArrayList<DateResult>();
+		private DateExpression column;
+		private List<DateResult> values = new ArrayList<DateResult>();
 		boolean nullProtectionRequired = false;
 
 		DBNnaryBooleanFunction() {
@@ -2040,11 +2055,11 @@ public class DateExpression implements DateResult {
 		public String toSQLString(DBDatabase db) {
 			StringBuilder builder = new StringBuilder();
 			builder
-					.append(column.toSQLString(db))
+					.append(getColumn().toSQLString(db))
 					.append(this.getFunctionName(db))
 					.append(this.beforeValue(db));
 			String separator = "";
-			for (DateResult val : values) {
+			for (DateResult val : getValues()) {
 				if (val != null) {
 					builder.append(separator).append(val.toSQLString(db));
 				}
@@ -2064,18 +2079,18 @@ public class DateExpression implements DateResult {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.column = this.column.copy();
-			Collections.copy(this.values, newInstance.values);
+			newInstance.column = this.getColumn().copy();
+			Collections.copy(this.getValues(), newInstance.getValues());
 			return newInstance;
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (column != null) {
-				hashSet.addAll(column.getTablesInvolved());
+			if (getColumn() != null) {
+				hashSet.addAll(getColumn().getTablesInvolved());
 			}
-			for (DateResult val : values) {
+			for (DateResult val : getValues()) {
 				if (val != null) {
 					hashSet.addAll(val.getTablesInvolved());
 				}
@@ -2085,8 +2100,8 @@ public class DateExpression implements DateResult {
 
 		@Override
 		public boolean isAggregator() {
-			boolean result = false || column.isAggregator();
-			for (DateResult dater : values) {
+			boolean result = false || getColumn().isAggregator();
+			for (DateResult dater : getValues()) {
 				result = result || dater.isAggregator();
 			}
 			return result;
@@ -2095,6 +2110,20 @@ public class DateExpression implements DateResult {
 		@Override
 		public boolean getIncludesNull() {
 			return nullProtectionRequired;
+		}
+
+		/**
+		 * @return the column
+		 */
+		protected DateExpression getColumn() {
+			return column;
+		}
+
+		/**
+		 * @return the values
+		 */
+		protected List<DateResult> getValues() {
+			return values;
 		}
 	}
 
@@ -2120,7 +2149,7 @@ public class DateExpression implements DateResult {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + first.toSQLString(db) + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db)) + this.afterValue(db);
+			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
 		}
 
 		@Override
@@ -2133,19 +2162,19 @@ public class DateExpression implements DateResult {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond().copy();
 			return newInstance;
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
 			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
 			}
 			return hashSet;
 		}
@@ -2166,7 +2195,21 @@ public class DateExpression implements DateResult {
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator();
+		}
+
+		/**
+		 * @return the first
+		 */
+		protected DateExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		protected DateResult getSecond() {
+			return second;
 		}
 	}
 

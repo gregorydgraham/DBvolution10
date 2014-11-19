@@ -110,8 +110,8 @@ public class OracleDBDefinition extends DBDefinition {
 			return " VARCHAR(1000) ";
 		} else if (qdt instanceof DBDate) {
 			return " TIMESTAMP ";
-        } else if (qdt instanceof DBJavaObject) {
-            return " BLOB ";
+		} else if (qdt instanceof DBJavaObject) {
+			return " BLOB ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
@@ -157,6 +157,26 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doStringIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
+		return "DECODE(" + possiblyNullValue + ","
+				+ "NULL," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
+				+ ",''," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
+				+ "," + possiblyNullValue + ")";
+	}
+
+	@Override
+	public String doNumberIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
+		return "DECODE(" + possiblyNullValue
+				+ ",NULL," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
+				+ "," + possiblyNullValue + ")";
+	}
+
+	@Override
+	public String doDateIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
+		return doNumberIfNullTransform(possiblyNullValue, alternativeIfNull);
+	}
+
+	@Override
 	public String getStringLengthFunctionName() {
 		return "LENGTH";
 	}
@@ -180,97 +200,115 @@ public class OracleDBDefinition extends DBDefinition {
 	public boolean supportsDegreesFunction() {
 		return false;
 	}
-	
+
 	@Override
 	public String doModulusTransform(String firstNumber, String secondNumber) {
-		return " remainder("+firstNumber +", "+secondNumber+")";
-	}
-
-	/**
-	 * Oracle does not differentiate between NULL and an empty string.
-	 *
-	 * @return FALSE.
-	 */
-	@Override
-	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
-		return false;
+		return " remainder(" + firstNumber + ", " + secondNumber + ")";
 	}
 
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
-		return "("+dateValue+" + numtodsinterval( "+numberOfSeconds+", 'SECOND'))";
+		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'SECOND'))";
 	}
 
 	@Override
 	public String doAddMinutesTransform(String dateValue, String numberOfSeconds) {
-		return "("+dateValue+" + numtodsinterval( "+numberOfSeconds+", 'MINUTE'))";
+		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'MINUTE'))";
 	}
 
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
-		return "("+dateValue+" + numtodsinterval( "+numberOfHours+", 'HOUR'))";
+		return "(" + dateValue + " + numtodsinterval( " + numberOfHours + ", 'HOUR'))";
 	}
 
 	@Override
 	public String doAddDaysTransform(String dateValue, String numberOfDays) {
-		return "(("+dateValue+")+("+numberOfDays+"))";
+		return "((" + dateValue + ")+(" + numberOfDays + "))";
 	}
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return doAddDaysTransform(dateValue, "("+numberOfWeeks+")*7");
+		return doAddDaysTransform(dateValue, "(" + numberOfWeeks + ")*7");
 	}
 
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
-		return "ADD_MONTHS("+dateValue+", "+numberOfMonths+")";
+		return "ADD_MONTHS(" + dateValue + ", " + numberOfMonths + ")";
 	}
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
-		return doAddMonthsTransform(dateValue, "("+numberOfYears+")*12");
+		return doAddMonthsTransform(dateValue, "(" + numberOfYears + ")*12");
 	}
 
 	@Override
 	public String doCurrentDateOnlyTransform() {
 		return getCurrentDateOnlyFunctionName().trim();
 	}
-	
+
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(DAY FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))))"; 
+		return "(EXTRACT(DAY FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))))";
 	}
 
 	@Override
 	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
-		return "("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
+		return "(" + doDayDifferenceTransform(dateValue, otherDateValue) + "/7)";
 	}
 
 	@Override
 	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
-		return "MONTHS_BETWEEN("+otherDateValue+","+dateValue+")"; 
+		return "MONTHS_BETWEEN(" + otherDateValue + "," + dateValue + ")";
 	}
 
 	@Override
 	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(MONTHS_BETWEEN("+otherDateValue+","+dateValue+")/12)"; 
+		return "(MONTHS_BETWEEN(" + otherDateValue + "," + dateValue + ")/12)";
 	}
 
 	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(HOUR FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
-				"+("+doDayDifferenceTransform(dateValue, otherDateValue)+"*24))"; 
+		return "(EXTRACT(HOUR FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
+				+ "+(" + doDayDifferenceTransform(dateValue, otherDateValue) + "*24))";
 	}
 
 	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(MINUTE FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
-				"+("+doHourDifferenceTransform(dateValue, otherDateValue)+"*60))";
+		return "(EXTRACT(MINUTE FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
+				+ "+(" + doHourDifferenceTransform(dateValue, otherDateValue) + "*60))";
 	}
 
 	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(SECOND FROM (CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP)))"+
-				"+("+doMinuteDifferenceTransform(dateValue, otherDateValue)+"*60))";
+		return "(EXTRACT(SECOND FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
+				+ "+(" + doMinuteDifferenceTransform(dateValue, otherDateValue) + "*60))";
+	}
+
+	@Override
+	public String doInTransform(String column, List<String> values) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(")
+				.append(column)
+				.append(" IN ( ");
+		String separator = "";
+		for (String val : values) {
+			if (val != null && !val.equals(getEmptyString())) {
+				builder.append(separator).append(val);
+				separator = ", ";
+			}
+		}
+		builder.append("))");
+		return builder.toString();
+	}
+	
+	@Override
+	public Object getOrderByDirectionClause(Boolean sortOrder) {
+		if (sortOrder == null) {
+			return "";
+		} else if (sortOrder) {
+			return " ASC NULLS FIRST";
+		} else {
+			return " DESC NULLS LAST";
+		}
 	}
 }

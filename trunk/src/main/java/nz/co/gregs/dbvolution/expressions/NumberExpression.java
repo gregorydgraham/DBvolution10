@@ -806,6 +806,16 @@ public class NumberExpression implements NumberResult {
 	public BooleanExpression isIn(NumberResult... possibleValues) {
 		BooleanExpression isinExpr
 				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						List<String> sqlValues = new ArrayList<String>();
+						for (NumberResult value : this.getValues()) {
+							sqlValues.add(value.toSQLString(db));
+						}
+						return db.getDefinition().doInTransform(getColumn().toSQLString(db), sqlValues);
+					}
+
 					@Override
 					protected String getFunctionName(DBDatabase db) {
 						return " IN ";
@@ -999,13 +1009,7 @@ public class NumberExpression implements NumberResult {
 	 * NumberExpression resolves to NULL.
 	 */
 	public NumberExpression ifDBNull(Number alternative) {
-		return new NumberExpression(
-				new DBBinaryFunction(this, new NumberExpression(alternative)) {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getIfNullFunctionName();
-					}
-				});
+		return ifDBNull(NumberExpression.value(alternative));
 	}
 
 	/**
@@ -1019,6 +1023,12 @@ public class NumberExpression implements NumberResult {
 	public NumberExpression ifDBNull(NumberResult alternative) {
 		return new NumberExpression(
 				new DBBinaryFunction(this, alternative) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doNumberIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+					}
+
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
@@ -1687,9 +1697,9 @@ public class NumberExpression implements NumberResult {
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (db.getDefinition().supportsModulusFunction()) {
-					return db.getDefinition().doModulusTransform(first.toSQLString(db), second.toSQLString(db));
+					return db.getDefinition().doModulusTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
-					return "((" + first.toSQLString(db) + ") % (" + second.toSQLString(db) + "))";
+					return "((" + getFirst().toSQLString(db) + ") % (" + getSecond().toSQLString(db) + "))";
 				}
 			}
 
@@ -2183,8 +2193,8 @@ public class NumberExpression implements NumberResult {
 
 	private static abstract class DBBinaryFunction implements NumberResult {
 
-		protected DBExpression first;
-		protected DBExpression second;
+		private DBExpression first;
+		private DBExpression second;
 
 		DBBinaryFunction(NumberExpression first) {
 			this.first = first;
@@ -2203,7 +2213,7 @@ public class NumberExpression implements NumberResult {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + first.toSQLString(db) + this.getSeparator(db) + (second == null ? "" : second.toSQLString(db)) + this.afterValue(db);
+			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
 		}
 
 		@Override
@@ -2216,8 +2226,8 @@ public class NumberExpression implements NumberResult {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond().copy();
 			return newInstance;
 		}
 
@@ -2238,23 +2248,37 @@ public class NumberExpression implements NumberResult {
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
 			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
 			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator();
 		}
 
 		@Override
 		public boolean getIncludesNull() {
 			return false;
+		}
+
+		/**
+		 * @return the first
+		 */
+		protected DBExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		protected DBExpression getSecond() {
+			return second;
 		}
 	}
 
@@ -2450,8 +2474,8 @@ public class NumberExpression implements NumberResult {
 
 	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
 
-		protected NumberExpression column;
-		protected final List<NumberResult> values = new ArrayList<NumberResult>();
+		private NumberExpression column;
+		private final List<NumberResult> values = new ArrayList<NumberResult>();
 		boolean nullProtectionRequired = false;
 
 		DBNnaryBooleanFunction() {
@@ -2490,11 +2514,11 @@ public class NumberExpression implements NumberResult {
 		public String toSQLString(DBDatabase db) {
 			StringBuilder builder = new StringBuilder();
 			builder
-					.append(column.toSQLString(db))
+					.append(getColumn().toSQLString(db))
 					.append(this.getFunctionName(db))
 					.append(this.beforeValue(db));
 			String separator = "";
-			for (NumberResult val : values) {
+			for (NumberResult val : getValues()) {
 				if (val != null) {
 					builder.append(separator).append(val.toSQLString(db));
 				}
@@ -2514,18 +2538,18 @@ public class NumberExpression implements NumberResult {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.column = this.column.copy();
-			Collections.copy(this.values, newInstance.values);
+			newInstance.column = this.getColumn().copy();
+			Collections.copy(this.getValues(), newInstance.getValues());
 			return newInstance;
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (column != null) {
-				hashSet.addAll(column.getTablesInvolved());
+			if (getColumn() != null) {
+				hashSet.addAll(getColumn().getTablesInvolved());
 			}
-			for (NumberResult second : values) {
+			for (NumberResult second : getValues()) {
 				if (second != null) {
 					hashSet.addAll(second.getTablesInvolved());
 				}
@@ -2535,8 +2559,8 @@ public class NumberExpression implements NumberResult {
 
 		@Override
 		public boolean isAggregator() {
-			boolean result = column.isAggregator();
-			for (NumberResult numer : values) {
+			boolean result = getColumn().isAggregator();
+			for (NumberResult numer : getValues()) {
 				result = result || numer.isAggregator();
 			}
 			return result;
@@ -2551,6 +2575,20 @@ public class NumberExpression implements NumberResult {
 //		public void setIncludesNull(boolean nullsAreIncluded) {
 //			this.nullProtectionRequired = nullsAreIncluded;
 //		}
+
+		/**
+		 * @return the column
+		 */
+		protected NumberExpression getColumn() {
+			return column;
+		}
+
+		/**
+		 * @return the values
+		 */
+		protected List<NumberResult> getValues() {
+			return values;
+		}
 	}
 
 	private static abstract class DBNnaryNumberFunction implements NumberResult {

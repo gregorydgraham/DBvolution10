@@ -1398,4 +1398,13 @@ public abstract class DBDatabase implements Cloneable {
 		}
 		return connList;
 	}
+
+	/**
+	 * Oracle does not differentiate between NULL and an empty string.
+	 *
+	 * @return FALSE.
+	 */
+	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+		return true;
+	}
 }
