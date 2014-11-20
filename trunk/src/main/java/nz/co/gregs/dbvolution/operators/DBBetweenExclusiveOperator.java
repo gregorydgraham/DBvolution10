@@ -32,11 +32,10 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBBetweenExclusiveOperator extends DBOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	DBExpression lowest;
 	DBExpression highest;
-
-	@SuppressWarnings("unchecked")
+	
 	public DBBetweenExclusiveOperator(DBExpression lowValue, DBExpression highValue) {
 		super();
 		lowest = lowValue == null ? lowValue : lowValue.copy();
@@ -75,13 +74,13 @@ public class DBBetweenExclusiveOperator extends DBOperator {
 				betweenOp = stringExpression.bracket().isBetweenExclusive(firstStringExpr, secondStringExpr);
 			}
 		} else if ((genericExpression instanceof NumberExpression)
-				&&(firstValue instanceof NumberResult)
-				&&(secondValue instanceof NumberResult)) {
+				&& (firstValue instanceof NumberResult)
+				&& (secondValue instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetweenExclusive((NumberResult) firstValue, (NumberResult) secondValue);
 		} else if ((genericExpression instanceof DateExpression)
-				&&(firstValue instanceof DateResult)
-				&&(secondValue instanceof DateResult)) {
+				&& (firstValue instanceof DateResult)
+				&& (secondValue instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetweenExclusive((DateResult) firstValue, (DateResult) secondValue);
 		}

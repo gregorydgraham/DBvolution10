@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public DBPermittedValuesIgnoreCaseOperator(String... permitted) {
         ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();

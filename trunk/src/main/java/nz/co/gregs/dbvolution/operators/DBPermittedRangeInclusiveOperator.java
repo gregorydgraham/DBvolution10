@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 public class DBPermittedRangeInclusiveOperator extends DBMetaOperator {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     
        public DBPermittedRangeInclusiveOperator(Object lowerBound, Object upperBound) {
         if (lowerBound != null && upperBound != null) {

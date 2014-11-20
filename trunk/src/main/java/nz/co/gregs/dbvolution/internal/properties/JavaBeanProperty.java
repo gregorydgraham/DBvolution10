@@ -30,12 +30,18 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  * Implementation over bean properties.
  */
 public class JavaBeanProperty implements JavaProperty {
+
 	private final String name;
 	private final Class<?> type;
 	private Type genericType;
 	private final Method getter;
 	private final Method setter;
 
+	/**
+	 * Create a new JavaBeanProperty from the supplied descriptor.
+	 *
+	 * @param descriptor
+	 */
 	public JavaBeanProperty(PropertyDescriptor descriptor) {
 		this.name = descriptor.getName();
 		this.type = descriptor.getPropertyType();
@@ -53,6 +59,8 @@ public class JavaBeanProperty implements JavaProperty {
 
 	/**
 	 * String representation suitable for debugging and logging
+	 *
+	 * @return a very brief summary of the property.
 	 */
 	@Override
 	public String toString() {
@@ -60,8 +68,9 @@ public class JavaBeanProperty implements JavaProperty {
 	}
 
 	/**
-	 * Hash-code based on the underlying java getter and
-	 * setter methods.
+	 * Hash-code based on the underlying java getter and setter methods.
+	 *
+	 * @return the hash-code of this property.
 	 */
 	@Override
 	public int hashCode() {
@@ -73,8 +82,9 @@ public class JavaBeanProperty implements JavaProperty {
 	}
 
 	/**
-	 * Tests for equality, based on the underlying java
-	 * getter and setter methods.
+	 * Tests for equality, based on the underlying java getter and setter
+	 * methods.
+	 * @return TRUE if the two objects are the same, otherwise FALSE
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -238,9 +248,12 @@ public class JavaBeanProperty implements JavaProperty {
 
 	/**
 	 * Tests whether two annotations are semantically identical.
+	 *
+	 * @param <A>
 	 * @param ann1
 	 * @param ann2
-	 * @return TRUE if the annotations are semantically identical, otherwise FALSE.
+	 * @return TRUE if the annotations are semantically identical, otherwise
+	 * FALSE.
 	 */
 	protected static <A extends Annotation> boolean annotationsEqual(A ann1, A ann2) {
 		List<Object> values1 = getAnnotationValues(ann1);
@@ -250,6 +263,8 @@ public class JavaBeanProperty implements JavaProperty {
 
 	/**
 	 * Gets the attribute values of the annotation.
+	 *
+	 * @param <A>
 	 * @param annotation
 	 * @return a list of the values associated with the annotation.
 	 */
@@ -281,5 +296,5 @@ public class JavaBeanProperty implements JavaProperty {
 		}
 		return values;
 	}
-	
+
 }

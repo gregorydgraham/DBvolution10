@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public DBGreaterThanOrEqualsOperator() {
         super();

@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBInOperator extends DBOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	protected final List<DBExpression> listOfPossibleValues = new ArrayList<DBExpression>();
 	protected final List<StringResult> listOfPossibleStrings = new ArrayList<StringResult>();
 	protected final ArrayList<NumberResult> listOfPossibleNumbers = new ArrayList<NumberResult>();

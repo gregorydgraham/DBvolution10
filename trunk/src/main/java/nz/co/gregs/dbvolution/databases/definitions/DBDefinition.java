@@ -1988,9 +1988,10 @@ public abstract class DBDefinition {
 	/**
 	 * Indicates whether the database differentiates between NULL and an empty
 	 * string.
-	 * 
+	 *
 	 * <p>
-	 * This method has been replaced by {@link DBDatabase#supportsDifferenceBetweenNullAndEmptyString() }.
+	 * This method has been replaced by {@link DBDatabase#supportsDifferenceBetweenNullAndEmptyString()
+	 * }.
 	 *
 	 * @return the default implementation returns TRUE.
 	 */
@@ -2205,34 +2206,91 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Convert the 2 SQL date values into a difference in days.
+	 *
+	 * @param dateValue
+	 * @param otherDateValue
+	 * @return SQL
+	 */
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF('DAY', " + dateValue + "," + otherDateValue + "))";
 	}
 
+	/**
+	 * Convert the 2 SQL date values into a difference in days.
+	 *
+	 * @param dateValue
+	 * @param otherDateValue
+	 * @return SQL
+	 */
 	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(" + doDayDifferenceTransform(dateValue, otherDateValue) + "/7)";
 	}
 
+	/**
+	 * Convert the 2 SQL date values into a difference in months.
+	 *
+	 * @param dateValue
+	 * @param otherDateValue
+	 * @return SQL
+	 */
 	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF('MONTH', " + dateValue + "," + otherDateValue + "))";
 	}
 
+	/**
+	 * Convert the 2 SQL date values into a difference in years.
+	 *
+	 * @param dateValue
+	 * @param otherDateValue
+	 * @return SQL
+	 */
 	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF('YEAR', " + dateValue + "," + otherDateValue + "))";
 	}
 
+	/**
+	 * Convert the 2 SQL date values into a difference in hours.
+	 *
+	 * @param dateValue
+	 * @param otherDateValue
+	 * @return SQL
+	 */
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF('HOUR', " + dateValue + "," + otherDateValue + "))";
 	}
 
+	/**
+	 * Convert the 2 SQL date values into a difference in minutes.
+	 *
+	 * @param dateValue
+	 * @param otherDateValue
+	 * @return SQL
+	 */
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF('MINUTE', " + dateValue + "," + otherDateValue + "))";
 	}
 
+	/**
+	 * Convert the 2 SQL date values into a difference in seconds.
+	 *
+	 * @param dateValue
+	 * @param otherDateValue
+	 * @return SQL
+	 */
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF('SECOND', " + dateValue + "," + otherDateValue + "))";
 	}
 
+	/**
+	 * Create a foreign key clause for use in a CREATE TABLE statement from the
+	 * {@link PropertyWrapper} provided.
+	 *
+	 * @param field
+	 * @return The default implementation returns something like " FOREIGN KEY
+	 * (column) REFERENCES table(reference_column) "
+	 */
 	public String getForeignKeyClauseForCreateTable(PropertyWrapper field) {
 		if (field.isForeignKey()) {
 			return " FOREIGN KEY (" + field.columnName() + ") REFERENCES " + field.referencedTableName() + "(" + field.referencedColumnName() + ") ";
@@ -2240,6 +2298,14 @@ public abstract class DBDefinition {
 		return "";
 	}
 
+	/**
+	 * Produce SQL that will provide return the second value if the first is
+	 * NULL.
+	 *
+	 * @param possiblyNullValue
+	 * @param alternativeIfNull
+	 * @return SQL
+	 */
 	public String doStringIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
 		return this.getIfNullFunctionName() + "(" + possiblyNullValue
 				+ ","
@@ -2247,18 +2313,42 @@ public abstract class DBDefinition {
 				+ ")";
 	}
 
+	/**
+	 * Produce SQL that will provide return the second value if the first is
+	 * NULL.
+	 *
+	 * @param possiblyNullValue
+	 * @param alternativeIfNull
+	 * @return SQL
+	 */
 	public String doNumberIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
 		return doStringIfNullTransform(possiblyNullValue, alternativeIfNull);
 	}
 
+	/**
+	 * Produce SQL that will provide return the second value if the first is
+	 * NULL.
+	 *
+	 * @param possiblyNullValue
+	 * @param alternativeIfNull
+	 * @return SQL
+	 */
 	public String doDateIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
 		return doStringIfNullTransform(possiblyNullValue, alternativeIfNull);
 	}
 
-	public String doInTransform(String column, List<String> values) {
+	/**
+	 * Produce SQL that will compare the first value to all the other values
+	 * using the IN operator.
+	 *
+	 * @param comparableValue
+	 * @param values
+	 * @return
+	 */
+	public String doInTransform(String comparableValue, List<String> values) {
 		StringBuilder builder = new StringBuilder();
 		builder
-				.append(column)
+				.append(comparableValue)
 				.append(" IN ( ");
 		String separator = "";
 		for (String val : values) {

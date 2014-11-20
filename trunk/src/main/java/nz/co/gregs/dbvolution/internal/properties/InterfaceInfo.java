@@ -235,7 +235,7 @@ public class InterfaceInfo {
 	
 	// supports only classes and parameterized types
 	// doesn't support Array[] types or wildcard types
-	protected static Class<?> resolveClassOf(Type type) throws UnsupportedType {
+	private static Class<?> resolveClassOf(Type type) throws UnsupportedType {
 		if (type instanceof Class<?>) {
 			return (Class<?>)type;
 		}
@@ -625,19 +625,19 @@ public class InterfaceInfo {
 			return buf.toString();
 		}
 		
-		public boolean hasUpperBound() {
+		boolean hasUpperBound() {
 			return (upperTypes != null);
 		}
 
-		public boolean hasLowerBound() {
+		boolean hasLowerBound() {
 			return (lowerTypes != null);
 		}
 		
-		public boolean isUpperMulti() {
+		boolean isUpperMulti() {
 			return (upperTypes != null) && (upperTypes.length > 1);
 		}
 
-		public boolean isLowerMulti() {
+		boolean isLowerMulti() {
 			return (lowerTypes != null) && (lowerTypes.length > 1);
 		}
 
@@ -647,7 +647,7 @@ public class InterfaceInfo {
 		 * @throws UnsupportedType if type reference cannot be converted to a class
 		 * @throws IllegalStateException if there's actually more than one class
 		 */
-		public Class<?> upperClass() throws UnsupportedType {
+		Class<?> upperClass() throws UnsupportedType {
 			Type type = upperType();
 			if (type != null) {
 				return resolveClassOf(type);
@@ -771,10 +771,10 @@ public class InterfaceInfo {
 	}
 	
 	/** Thrown internally when a Type is not supported by a method */
-	public static class UnsupportedType extends Exception {
+	static class UnsupportedType extends Exception {
 		private static final long serialVersionUID = 1L;
 		
-		public UnsupportedType(String message) {
+		UnsupportedType(String message) {
 			super(message);
 		}
 	}

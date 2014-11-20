@@ -492,20 +492,20 @@ public class PropertyWrapperDefinition {
 	public RowDefinitionClassWrapper getRowDefinitionClassWrapper() {
 		return classWrapper;
 	}
-
-	public void setColumnExpression(DBExpression expression) {
+	
+	private void setColumnExpression(DBExpression expression) {
 		columnHandler.setColumnExpression(expression);
 	}
 
-	protected DBExpression getColumnExpression() {
+	DBExpression getColumnExpression() {
 		return columnHandler.getColumnExpression();
 	}
 
-	protected boolean hasColumnExpression() {
+	boolean hasColumnExpression() {
 		return columnHandler.getColumnExpression() != null;
 	}
 
-	protected String getSelectableName(DBDatabase db, RowDefinition actualRow) {
+	String getSelectableName(DBDatabase db, RowDefinition actualRow) {
 		DBDefinition defn = db.getDefinition();
 		checkForColumnAlias(actualRow);
 		if (hasColumnExpression()) {
@@ -515,7 +515,7 @@ public class PropertyWrapperDefinition {
 		}
 	}
 
-	protected String getColumnAlias(DBDatabase db, RowDefinition actualRow) {
+	String getColumnAlias(DBDatabase db, RowDefinition actualRow) {
 		DBDefinition defn = db.getDefinition();
 		checkForColumnAlias(actualRow);
 		if (hasColumnExpression()) {

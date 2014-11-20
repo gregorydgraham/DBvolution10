@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 public class DBPermittedPatternOperator extends DBLikeOperator {
     
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public DBPermittedPatternOperator(String likeableValue) {
         super(new StringExpression(likeableValue));

@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class DBExistsOperator extends DBOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	DBRow innerTable;
 	Object innerField;

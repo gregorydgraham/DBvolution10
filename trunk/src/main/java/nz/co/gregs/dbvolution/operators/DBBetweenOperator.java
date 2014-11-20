@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  * @author Gregory Graham
  */
 public class DBBetweenOperator extends DBOperator{
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     
     public DBBetweenOperator(int lowValue, int highValue){
         this(NumberExpression.value(lowValue), NumberExpression.value(highValue));

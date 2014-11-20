@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 public class DBBooleanPermittedValuesOperator extends DBPermittedValuesOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("unchecked")
 	public DBBooleanPermittedValuesOperator(Boolean permitted) {
