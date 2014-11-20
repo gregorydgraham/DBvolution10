@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	public DBBetweenInclusiveExclusiveOperator(DBExpression lowValue, DBExpression highValue) {
 		super();

@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 public class DBPermittedValuesOperator extends DBMetaOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("unchecked")
 	public DBPermittedValuesOperator(Object... permitted) {

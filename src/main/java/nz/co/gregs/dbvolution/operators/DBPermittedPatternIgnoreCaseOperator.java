@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
  */
 public class DBPermittedPatternIgnoreCaseOperator extends DBLikeCaseInsensitiveOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	public DBPermittedPatternIgnoreCaseOperator(String likeableValue) {
 		super(new StringExpression(likeableValue));

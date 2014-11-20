@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  * @author Gregory Graham
  */
 public class DBBetweenInclusiveOperator  extends DBOperator{
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
 //    private final QueryableDatatype firstValue;
 //    private final QueryableDatatype secondValue;

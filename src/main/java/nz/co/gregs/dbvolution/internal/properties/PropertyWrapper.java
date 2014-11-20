@@ -572,16 +572,25 @@ public class PropertyWrapper {
         return propertyDefinition.getColumnAlias(db, actualRow);
     }
 
-    public boolean isForeignKeyTo(DBRow table) {
+	/**
+	 * Returns TRUE if the property wrapped is a foreign key reference to the table supplied
+	 *
+	 * @param table
+	 * @return TRUE if the property wrapped is a foreign key reference to the table supplied, otherwise FALSE.
+	 */
+	public boolean isForeignKeyTo(DBRow table) {
         return propertyDefinition.isForeignKeyTo(table);
     }
 
+	/**
+	 * Returns true if the property wrapped is an auto-incrementing column.
+	 * 
+	 * <p>
+	 * This generally means that the column is a primary key. and definitely means you do not need to set the value of the column.
+	 *
+	 * @return TRUE if the value of this column is provided by the database's auto-increment functionality, otherwise FALSE.
+	 */
 	public boolean isAutoIncrement() {
 		return propertyDefinition.isAutoIncrementColumn();
 	}
-
-//	public ColumnProvider getColumn() {
-//		final RowDefinition actualRow = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
-//        return actualRow.column(rawJavaValue());
-//	}
 }

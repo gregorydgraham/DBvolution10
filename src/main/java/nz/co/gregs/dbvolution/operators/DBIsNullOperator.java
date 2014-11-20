@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class DBIsNullOperator extends DBOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 
 	@Override

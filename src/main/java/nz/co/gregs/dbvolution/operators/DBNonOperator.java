@@ -22,8 +22,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 public class DBNonOperator extends DBOperator {
 
-    public static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 1L;
     
     @Override
     public DBNonOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {

@@ -20,7 +20,11 @@ public class SafeOneWaySimpleTypeAdaptor {
 
     private static final Log log = LogFactory.getLog(SafeOneWaySimpleTypeAdaptor.class);
 
-    public static enum Direction {
+	/**
+	 * Enumerates the possible directions that a QDT Sync operation can have.
+	 *
+	 */
+	public static enum Direction {
 
         /**
          * To DBvolution-centric type. toDatabaseValue() method

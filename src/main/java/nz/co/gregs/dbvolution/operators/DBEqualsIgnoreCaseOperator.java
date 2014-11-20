@@ -28,7 +28,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
 
 public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public DBEqualsIgnoreCaseOperator() {
         super();

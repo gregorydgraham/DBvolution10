@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.expressions.NumberResult;
 
 public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	public DBBitwiseEqualsOperator() {
 	}

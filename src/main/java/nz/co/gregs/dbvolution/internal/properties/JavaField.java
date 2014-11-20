@@ -27,6 +27,11 @@ import nz.co.gregs.dbvolution.exceptions.FailedToSetPropertyValueOnRowDefinition
 public class JavaField implements JavaProperty {
 	private final Field field;
 
+	/**
+	 * Create a JavaField for the supplied field.
+	 *
+	 * @param field
+	 */
 	public JavaField(Field field) {
 		this.field = field;
 	}

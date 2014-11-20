@@ -109,6 +109,24 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		return expressionColumnValues.get(key);
 	}
 
+	/**
+	 * Returns all the fields names from all the DBRow types in the DBQueryRow.
+	 *
+	 * <p>
+	 * This is essentially a list of all the columns returned from the database
+	 * query.
+	 *
+	 * <p>
+	 * Column data may not have been populated.
+	 *
+	 * <p>
+	 * Please note this is a crude instrument for accessing the data in this
+	 * DBQueryRow. You should probably be using {@link DBQueryRow#get(nz.co.gregs.dbvolution.DBRow)
+	 * } and using the fields and methods of the individual DBRow classes.
+	 *
+	 * @return a list of field names.
+	 * @throws SecurityException
+	 */
 	public List<String> getFieldNames() throws SecurityException {
 		List<String> returnList = new ArrayList<String>();
 		Set<Class<?>> keySet = this.keySet();
@@ -121,6 +139,22 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		return returnList;
 	}
 
+	/**
+	 * Returns all the fields values from all the DBRow types in the DBQueryRow.
+	 *
+	 * <p>
+	 * This is essentially a list of all the values returned from the database
+	 * query.
+	 *
+	 * <p>
+	 * Please note this is a crude instrument for accessing the data in this
+	 * DBQueryRow. You should probably be using {@link DBQueryRow#get(nz.co.gregs.dbvolution.DBRow)
+	 * } and using the fields and methods of the individual DBRow classes.
+	 *
+	 * @return a list of field names.
+	 * @throws SecurityException
+	 * @throws java.lang.IllegalAccessException
+	 */
 	public List<String> getFieldValues() throws IllegalArgumentException, IllegalAccessException {
 		List<String> returnList = new ArrayList<String>();
 		Set<Class<?>> keySet = this.keySet();
@@ -138,6 +172,12 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		return returnList;
 	}
 
+	/**
+	 * Convenience method to convert this DBQueryRow into a CSV or TSV type header.
+	 *
+	 * @param separatorToUseBetweenValues
+	 * @return a list of all the fields in the DBQueryRow separated by the supplied value
+	 */
 	public String toSeparatedHeader(String separatorToUseBetweenValues) {
 		StringBuilder returnStr = new StringBuilder();
 		String separator = "";
@@ -149,6 +189,13 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		return returnStr.toString();
 	}
 
+	/**
+	 * Convenience method to convert this DBQueryRow into a CSV or TSV type line.
+	 *
+	 * @param separatorToUseBetweenValues
+	 * @return a list of all the values in the DBQueryRow formatted for a TSV or CSV file
+	 * @throws java.lang.IllegalAccessException
+	 */
 	public String toSeparatedLine(String separatorToUseBetweenValues) throws IllegalArgumentException, IllegalAccessException {
 		StringBuilder returnStr = new StringBuilder();
 		String separator = "";
@@ -160,18 +207,40 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		return returnStr.toString();
 	}
 
+	/**
+	 * Convenience method to convert this DBQueryRow into a CSV file's header.
+	 *
+	 * @return a list of all the fields in the DBQueryRow formatted for a CSV file
+	 */
 	public String toCSVHeader() {
 		return toSeparatedHeader(",");
 	}
 
+	/**
+	 * Convenience method to convert this DBQueryRow into a CSV line.
+	 *
+	 * @return a list of all the values in the DBQueryRow formatted for a CSV file
+	 * @throws java.lang.IllegalAccessException
+	 */
 	public String toCSVLine() throws IllegalArgumentException, IllegalAccessException {
 		return toSeparatedLine(",");
 	}
 
+	/**
+	 * Convenience method to convert this DBQueryRow into a Tab Separated Values file's header.
+	 *
+	 * @return a list of all the fields in the DBQueryRow formatted for a TSV file
+	 */
 	public String toTabbedHeader() {
 		return toSeparatedHeader("\t");
 	}
 
+	/**
+	 * Convenience method to convert this DBQueryRow into a Tab Separated Values line.
+	 *
+	 * @return a list of all the values in the DBQueryRow formatted for a TSV file
+	 * @throws java.lang.IllegalAccessException
+	 */
 	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
 		return toSeparatedLine("\t");
 	}

@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBEqualsOperator extends DBOperator {
 
-	public static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 //    protected DBDefinition defn;
 
 	/**
