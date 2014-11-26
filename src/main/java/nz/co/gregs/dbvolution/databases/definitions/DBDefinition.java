@@ -762,12 +762,6 @@ public abstract class DBDefinition {
 		}
 	}
 
-//	public String getStartingJoinOperationSeparator() {
-//		return "";
-//	}
-//	public String getSubsequentJoinOperationSeparator(QueryOptions options) {
-//		return beginConditionClauseLine(options);
-//	}
 	/**
 	 * Used during the creation of an ANSI join to add a table with a normal, or
 	 * "required" join.
@@ -2343,7 +2337,7 @@ public abstract class DBDefinition {
 	 *
 	 * @param comparableValue
 	 * @param values
-	 * @return
+	 * @return SQL similar to "comparableValue IN (value, value, value)"
 	 */
 	public String doInTransform(String comparableValue, List<String> values) {
 		StringBuilder builder = new StringBuilder();
