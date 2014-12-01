@@ -84,7 +84,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2DataSourceDB", new H2DB(h2DataSource)});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
-			databases.add(new Object[]{"PostgresSQL", new PostgresDB("localhost", "5432", "dbvtest", "dbv", "dbv", "")});
+			databases.add(new Object[]{"PostgresSQL", new PostgresDB("dbvtest", "dbv", "dbv", "")});
 		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost",48004L, "dbv", "dbv", "dbv", "dbv")});
