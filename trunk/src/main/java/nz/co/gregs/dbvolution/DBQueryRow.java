@@ -17,13 +17,11 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Contains all the instances of DBRow that are associated with one line of a
@@ -50,6 +48,12 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
 	private static final long serialVersionUID = 1;
 	private final Map<Object, QueryableDatatype> expressionColumnValues = new LinkedHashMap<Object, QueryableDatatype>();
+	private final DBQuery baseQuery;
+
+	public DBQueryRow(DBQuery queryThatThisRowWasGeneratedFor) {
+		super();
+		baseQuery = queryThatThisRowWasGeneratedFor;
+	}
 
 	/**
 	 * Returns the instance of exemplar contained within this DBQueryRow.
@@ -125,16 +129,11 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * } and using the fields and methods of the individual DBRow classes.
 	 *
 	 * @return a list of field names.
-	 * @throws SecurityException
 	 */
-	public List<String> getFieldNames() throws SecurityException {
+	public List<String> getFieldNames() {
 		List<String> returnList = new ArrayList<String>();
-		Set<Class<?>> keySet = this.keySet();
-		for (Class<?> keySet1 : keySet) {
-			Field[] fields = keySet1.getFields();
-			for (Field field : fields) {
-				returnList.add(field.getName());
-			}
+		for (DBRow tab : baseQuery.getAllQueryTables()) {
+			returnList.addAll(tab.getFieldNames());
 		}
 		return returnList;
 	}
@@ -153,30 +152,30 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 *
 	 * @return a list of field names.
 	 * @throws SecurityException
-	 * @throws java.lang.IllegalAccessException
 	 */
-	public List<String> getFieldValues() throws IllegalArgumentException, IllegalAccessException {
+	public List<String> getFieldValues() {
 		List<String> returnList = new ArrayList<String>();
-		Set<Class<?>> keySet = this.keySet();
-		for (Class<?> keySet1 : keySet) {
-			DBRow row = this.get(keySet1);
-			Field[] fields = keySet1.getFields();
-			for (Field field : fields) {
-				String value = "";
-				if (row != null) {
-					value = field.get(row).toString().trim();
-				}
-				returnList.add(value);
+
+		for (DBRow tab : baseQuery.getAllQueryTables()) {
+			DBRow actualRow = this.get(tab);
+			if (actualRow != null) {
+				returnList.addAll(actualRow.getFieldValues());
 			}
 		}
 		return returnList;
 	}
 
 	/**
-	 * Convenience method to convert this DBQueryRow into a CSV or TSV type header.
+	 * Convenience method to convert this DBQueryRow into a CSV or TSV type
+	 * header.
+	 * 
+	 * <p>
+	 * The line separator is not included in the results, to allow for
+	 * portability and post-processing.
 	 *
 	 * @param separatorToUseBetweenValues
-	 * @return a list of all the fields in the DBQueryRow separated by the supplied value
+	 * @return a list of all the fields in the DBQueryRow separated by the
+	 * supplied value
 	 */
 	public String toSeparatedHeader(String separatorToUseBetweenValues) {
 		StringBuilder returnStr = new StringBuilder();
@@ -190,13 +189,18 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	}
 
 	/**
-	 * Convenience method to convert this DBQueryRow into a CSV or TSV type line.
+	 * Convenience method to convert this DBQueryRow into a CSV or TSV type
+	 * line.
+	 * 
+	 * <p>
+	 * The line separator is not included in the results, to allow for
+	 * portability and post-processing.
 	 *
 	 * @param separatorToUseBetweenValues
-	 * @return a list of all the values in the DBQueryRow formatted for a TSV or CSV file
-	 * @throws java.lang.IllegalAccessException
+	 * @return a list of all the values in the DBQueryRow formatted for a TSV or
+	 * CSV file
 	 */
-	public String toSeparatedLine(String separatorToUseBetweenValues) throws IllegalArgumentException, IllegalAccessException {
+	public String toSeparatedLine(String separatorToUseBetweenValues) {
 		StringBuilder returnStr = new StringBuilder();
 		String separator = "";
 		List<String> fieldValues = this.getFieldValues();
@@ -210,7 +214,12 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Convenience method to convert this DBQueryRow into a CSV file's header.
 	 *
-	 * @return a list of all the fields in the DBQueryRow formatted for a CSV file
+	 * <p>
+	 * The line separator is not included in the results, to allow for
+	 * portability and post-processing.
+	 *
+	 * @return a list of all the fields in the DBQueryRow formatted for a CSV
+	 * file
 	 */
 	public String toCSVHeader() {
 		return toSeparatedHeader(",");
@@ -219,29 +228,50 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Convenience method to convert this DBQueryRow into a CSV line.
 	 *
-	 * @return a list of all the values in the DBQueryRow formatted for a CSV file
+	 * <p>
+	 * The line separator is not included in the results, to allow for
+	 * portability and post-processing.
+	 * 
+	 * @return a list of all the values in the DBQueryRow formatted for a CSV
+	 * file
 	 * @throws java.lang.IllegalAccessException
 	 */
-	public String toCSVLine() throws IllegalArgumentException, IllegalAccessException {
+	public String toCSVLine() {
 		return toSeparatedLine(",");
 	}
 
 	/**
-	 * Convenience method to convert this DBQueryRow into a Tab Separated Values file's header.
+	 * Convenience method to convert this DBQueryRow into a Tab Separated Values
+	 * file's header.
+	 * 
+ 	 * <p>
+	 * The line separator is not included in the results, to allow for
+	 * portability and post-processing.
 	 *
-	 * @return a list of all the fields in the DBQueryRow formatted for a TSV file
+	 * @return a list of all the fields in the DBQueryRow formatted for a TSV
+	 * file
 	 */
 	public String toTabbedHeader() {
 		return toSeparatedHeader("\t");
 	}
 
 	/**
-	 * Convenience method to convert this DBQueryRow into a Tab Separated Values line.
+	 * Convenience method to convert this DBQueryRow into a Tab Separated Values
+	 * line.
+ 	 * <p>
+	 * The line separator is not included in the results, to allow for
+	 * portability and post-processing.
 	 *
-	 * @return a list of all the values in the DBQueryRow formatted for a TSV file
+	 * @return a list of all the values in the DBQueryRow formatted for a TSV
+	 * file
 	 * @throws java.lang.IllegalAccessException
 	 */
 	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
 		return toSeparatedLine("\t");
+	}
+
+	@Override
+	public DBQueryRow clone() {
+		return (DBQueryRow) super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 }

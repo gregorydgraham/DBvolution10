@@ -612,7 +612,7 @@ public class DBQuery {
 						&& ((database.getDefinition().supportsPagingNatively(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
 						|| (!database.getDefinition().supportsPagingNatively(options) && results.size() < options.getRowLimit()) // paging not supported and required so truncate it
 						)) {
-					queryRow = new DBQueryRow();
+					queryRow = new DBQueryRow(this);
 
 					setExpressionColumns(resultSet, queryRow);
 
@@ -654,6 +654,7 @@ public class DBQuery {
 			DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
 			setFieldsFromColumns(tableRow, newInstance, resultSet);
+			newInstance.setReturnFieldsBasedOn(tableRow);
 
 			newInstance.setDefined(); // Actually came from the database so it is a defined row.
 
@@ -1517,6 +1518,20 @@ public class DBQuery {
 	}
 
 	/**
+	 * Returns all the DBRow subclasses used in this query.
+	 *
+	 * @return A list of DBRow subclasses included in this query.
+	 * @see #getRelatedTables()
+	 * @see #getReferencedTables() 
+	 * @see DBRow#getReferencedTables()
+	 * @see DBRow#getRelatedTables()
+	 *
+	 */
+	protected List<DBRow> getAllQueryTables() {
+		return allQueryTables;
+	}
+
+	/**
 	 * Creates a list of all DBRow subclasses that are connected to this query.
 	 *
 	 * <p>
@@ -1624,8 +1639,8 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Adding connected tables means adding their connections as well. However
-	 * sometimes you just want the tables added without connecting them to all the
-	 * other tables correctly.
+	 * sometimes you just want the tables added without connecting them to all
+	 * the other tables correctly.
 	 *
 	 * <p>
 	 * This method adds all the connected tables as if they were only connected
