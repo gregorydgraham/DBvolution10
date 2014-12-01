@@ -272,6 +272,19 @@ public class BooleanExpression implements BooleanResult {
 	}
 
 	/**
+	 * Returns true only if all of the conditions are FALSE.
+	 *
+	 * @param booleanExpressions
+	 * @return a boolean expression that returns true if all of the
+	 * booleanExpressions evaluate to FALSE.
+	 * @see #allOf(BooleanExpression...)
+	 * @see #anyOf(BooleanExpression...)
+	 */
+	public static BooleanExpression noneOf(final BooleanExpression... booleanExpressions) {
+		return BooleanExpression.anyOf(booleanExpressions).not();
+	}
+
+	/**
 	 * Negates this BooleanExpression.
 	 *
 	 * <p>
