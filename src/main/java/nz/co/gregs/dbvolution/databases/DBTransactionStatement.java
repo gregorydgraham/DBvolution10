@@ -18,6 +18,8 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBScript;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Extends DBStatement to add support for database transactions.
@@ -38,8 +40,11 @@ import nz.co.gregs.dbvolution.DBScript;
  */
 public class DBTransactionStatement extends DBStatement {
 
+	private static final Log log = LogFactory.getLog(DBTransactionStatement.class);
+
 	/**
-	 * Creates a DBTransactionStatement for the given DBDatabase and DBStatement.
+	 * Creates a DBTransactionStatement for the given DBDatabase and
+	 * DBStatement.
 	 *
 	 * <p>
 	 * Used within {@link DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
@@ -54,18 +59,33 @@ public class DBTransactionStatement extends DBStatement {
 	}
 
 	/**
-	 * Closes the internal statement and creates a new statement for the next operation.
-	 * 
+	 * Closes the internal statement and creates a new statement for the next
+	 * operation.
+	 *
 	 * <p>
 	 * To close a transaction call the {@link #transactionFinished() } method.
-	 * 
-	 * @throws SQLException 
+	 * @throws java.sql.SQLException
 	 */
 	@Override
 	public void close() throws SQLException {
-		getInternalStatement().close();
-		setInternalStatement(getConnection().createStatement());
-		;
+		try {
+			getInternalStatement().close();
+		} catch (SQLException ex) {
+			try {
+				getInternalStatement().close();
+			} catch (SQLException ex1) {
+				log.info("Exception while closing transaction, continuing regardless.", ex);
+			}
+		}
+		try {
+			setInternalStatement(getConnection().createStatement());
+		} catch (SQLException ex) {
+			try {
+				setInternalStatement(getConnection().createStatement());
+			} catch (SQLException ex1) {
+				throw ex;
+			}
+		}
 	}
 
 	/**
