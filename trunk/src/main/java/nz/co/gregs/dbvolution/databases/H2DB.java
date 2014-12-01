@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
@@ -27,44 +29,56 @@ import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
  * @author Gregory Graham
  */
 public class H2DB extends DBDatabase {
-	/** 
+
+	/**
 	 * Used to hold the database open
-	 * 
+	 *
 	 */
 	protected final Connection storedConnection;
 
 	/**
 	 * Creates a DBDatabase for a H2 database.
-	 * 
+	 *
 	 * @param jdbcURL
 	 * @param username
 	 * @param password
 	 * @throws SQLException
 	 */
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
-        super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
-//		System.setProperty("h2.storeLocalTime ", "true");
+		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
 		this.storedConnection = getConnection();
 		this.storedConnection.createStatement();
-    }
+	}
+
+	/**
+	 * Creates a DBDatabase for a H2 database in the file supplied.
+	 *
+	 * @param file
+	 * @param username
+	 * @param password
+	 * @throws java.io.IOException
+	 * @throws SQLException
+	 */
+	public H2DB(File file, String username, String password) throws IOException, SQLException {
+		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
+	}
 
 	/**
 	 * Creates a DBDatabase for a H2 database.
-	 * 
+	 *
 	 * @param dataSource
 	 * @throws SQLException
 	 */
 	public H2DB(DataSource dataSource) throws SQLException {
-        super(new H2DBDefinition(), dataSource);
-//		System.setProperty("h2.storeLocalTime ", "true");
+		super(new H2DBDefinition(), dataSource);
 		this.storedConnection = getConnection();
 		this.storedConnection.createStatement();
-    }
+	}
 
-    @Override
-    public boolean supportsFullOuterJoinNatively() {
-        return false;
-    }
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
 
 	/**
 	 * Clones the DBDatabase
@@ -77,11 +91,4 @@ public class H2DB extends DBDatabase {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	protected Connection getConnectionFromDriverManager() throws SQLException {
-//		System.setProperty("h2.storeLocalTime ", "true");
-		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
-	}
-    
-    
 }
