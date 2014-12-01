@@ -343,14 +343,34 @@ public class BooleanExpressionTest extends AbstractTest {
 		longs.add(new Long(1));
 		longs.add(new Long(2));
 
-		dbQuery.addCondition(BooleanExpression.anyOf(
-				marque.column(marque.uidMarque).is(1),
-				marque.column(marque.uidMarque).is(2)
-		));
+		dbQuery.addCondition(
+				BooleanExpression.anyOf(
+						marque.column(marque.uidMarque).is(1),
+						marque.column(marque.uidMarque).is(2)
+				));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
+	}
+
+	@Test
+	public void testNumberIsNoneOf() throws SQLException {
+		Marque marque = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marque);
+		List<Long> longs = new ArrayList<Long>();
+		longs.add(new Long(1));
+		longs.add(new Long(2));
+
+		dbQuery.addCondition(
+				BooleanExpression.noneOf(
+						marque.column(marque.uidMarque).is(1),
+						marque.column(marque.uidMarque).is(2)
+				));
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(20));
 	}
 
 	/*
@@ -540,7 +560,6 @@ public class BooleanExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 	}
-
 
 	@Test
 	public void testNumberIsNull() throws SQLException, ParseException {
