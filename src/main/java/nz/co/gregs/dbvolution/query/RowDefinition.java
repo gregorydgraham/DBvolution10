@@ -16,6 +16,8 @@
 package nz.co.gregs.dbvolution.query;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
@@ -43,6 +45,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.StringResult;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
 
 /**
@@ -57,6 +60,7 @@ public class RowDefinition implements Serializable {
 
 	private static final RowDefinitionWrapperFactory wrapperFactory = new RowDefinitionWrapperFactory();
 	private transient RowDefinitionInstanceWrapper wrapper = null;
+	private transient List<PropertyWrapperDefinition> returnColumns = null;
 
 	/**
 	 * Gets a wrapper for the underlying property (field or method) given the
@@ -948,6 +952,76 @@ public class RowDefinition implements Serializable {
 		}
 		string.append("</tr>");
 		return string.toString();
+	}
+
+	/**
+	 * Returns all the fields names from all fields in this DBRow.
+	 *
+	 * <p>
+	 * This is essentially a list of all the columns returned from the database
+	 * query.
+	 *
+	 * <p>
+	 * Column data may not have been populated.
+	 *
+	 * <p>
+	 * Please note this is a crude instrument for accessing the data in this
+	 * DBRow. You should probably be using the fields and methods of the actual
+	 * DBRow class.
+	 *
+	 * @return a list of field names.
+	 * @throws SecurityException
+	 */
+	public Collection<? extends String> getFieldNames() {
+		List<String> returnList = new ArrayList<String>();
+		List<PropertyWrapperDefinition> fieldDefns = this.getReturnColumns();
+		for (PropertyWrapperDefinition prop : fieldDefns) {
+			returnList.add(prop.javaName());
+		}
+		return returnList;
+	}
+
+	/**
+	 * Returns all the fields values from this DBRow.
+	 *
+	 * <p>
+	 * This is essentially a list of all the values returned from the database
+	 * query.
+	 *
+	 * <p>
+	 * Please note this is a crude instrument for accessing the data in this
+	 * DBRow. You should probably be using the fields and methods of the DBRow
+	 * class.
+	 *
+	 * @return a list of field names.
+	 * @throws SecurityException
+	 */
+	public Collection<? extends String> getFieldValues() {
+		List<String> returnList = new ArrayList<String>();
+		for (PropertyWrapperDefinition prop : this.getReturnColumns()) {
+			returnList.add(prop.getQueryableDatatype(this).stringValue());
+		}
+		return returnList;
+	}
+
+	protected List<PropertyWrapperDefinition> getReturnColumns() {
+		if (returnColumns == null) {
+			returnColumns = this.getAllPropertyWrapperDefinitions();
+		}
+		return returnColumns;
+	}
+	
+	protected void setReturnColumns(List<PropertyWrapperDefinition> returnColumns) {
+		this.returnColumns = returnColumns;
+	}
+
+	protected List<PropertyWrapperDefinition> getAllPropertyWrapperDefinitions() {
+		List<PropertyWrapperDefinition> columns = new ArrayList<PropertyWrapperDefinition>();
+		List<PropertyWrapper> propertyWrappers = this.getPropertyWrappers();
+		for (PropertyWrapper propertyWrapper : propertyWrappers) {
+			columns.add(propertyWrapper.getDefinition());
+		}
+		return columns;
 	}
 
 }

@@ -1,7 +1,6 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -117,7 +116,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	private boolean isDefined = false;
 	private final List<PropertyWrapperDefinition> ignoredForeignKeys = Collections.synchronizedList(new ArrayList<PropertyWrapperDefinition>());
-	private List<PropertyWrapperDefinition> returnColumns = null;
 	private final List<BooleanExpression> adHocRelationships = Collections.synchronizedList(new ArrayList<BooleanExpression>());
 	private transient Boolean hasBlobs;
 	private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
@@ -1629,20 +1627,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * @return the returnColumns
-	 */
-	protected List<PropertyWrapperDefinition> getReturnColumns() {
-		return returnColumns;
-	}
-
-	/**
-	 * @param returnColumns the returnColumns to set
-	 */
-	protected void setReturnColumns(List<PropertyWrapperDefinition> returnColumns) {
-		this.returnColumns = returnColumns;
-	}
-
-	/**
 	 * Used internally to avoid infinite loops when using the exists operator.
 	 *
 	 */
@@ -1660,7 +1644,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 		}
 	}
-	
+
+	void setReturnFieldsBasedOn(DBRow tableRow) {
+		this.setReturnColumns(tableRow.getReturnColumns());
+	}
+
 	/**
 	 * Default sorting for DBRow in the various collections in DBRow and
 	 * DBQuery.
