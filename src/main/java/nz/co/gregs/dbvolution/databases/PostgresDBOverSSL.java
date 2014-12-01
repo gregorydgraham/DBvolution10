@@ -46,7 +46,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @param password
 	 * @param urlExtras
 	 */
-	public PostgresDBOverSSL(String hostname, String port, String databaseName, String username, String password, String urlExtras) {
+	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
         super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"+(urlExtras==null||urlExtras.isEmpty()?"":"&"+urlExtras));
     }
 
@@ -59,7 +59,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @param username
 	 * @param password
 	 */
-	public PostgresDBOverSSL(String hostname, String port, String databaseName, String username, String password) {
+	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) {
         this(hostname, port, databaseName, username, password, "");
     }
 
