@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.query;
+package nz.co.gregs.dbvolution.internal.querygraph;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
  *

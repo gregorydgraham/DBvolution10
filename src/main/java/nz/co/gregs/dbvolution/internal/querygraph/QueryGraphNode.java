@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nz.co.gregs.dbvolution.query;
+package nz.co.gregs.dbvolution.internal.querygraph;
 
 import java.util.HashSet;
 import java.util.Set;
