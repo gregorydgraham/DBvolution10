@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.query;
 
+import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;

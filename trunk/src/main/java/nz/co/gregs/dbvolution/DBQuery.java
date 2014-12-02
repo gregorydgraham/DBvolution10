@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.internal.querygraph.*;
 import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.*;
@@ -23,7 +24,6 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Paint;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
@@ -41,10 +41,9 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.query.QueryOptions;
-import nz.co.gregs.dbvolution.query.QueryGraph;
-import nz.co.gregs.dbvolution.query.QueryGraphNode;
+import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
+import nz.co.gregs.dbvolution.internal.querygraph.QueryGraphNode;
 import nz.co.gregs.dbvolution.query.RowDefinition;
-import org.apache.commons.collections15.Transformer;
 
 /**
  * The Definition of a Query on a Database
@@ -371,12 +370,12 @@ public class DBQuery {
 		String sqlString = "";
 
 		if (allQueryTables.size() > 0) {
-			QueryState queryState = new QueryState(this, database);
+			QueryState queryState = new QueryState(this, getDatabase());
 
 			initialiseQueryGraph();
 			queryState.setGraph(this.queryGraph);
 
-			DBDefinition defn = database.getDefinition();
+			DBDefinition defn = getDatabase().getDefinition();
 			StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
 			int columnIndex = 1;
 			String groupByColumnIndex = defn.beginGroupByClause();
@@ -408,7 +407,7 @@ public class DBQuery {
 
 				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
 				for (PropertyWrapper propWrapper : tabProps) {
-					selectClause.append(colSep).append(propWrapper.getSelectableName(database)).append(" ").append(propWrapper.getColumnAlias(database));
+					selectClause.append(colSep).append(propWrapper.getSelectableName(getDatabase())).append(" ").append(propWrapper.getColumnAlias(getDatabase()));
 					colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
 
 					// Now deal with the GROUP BY and ORDER BY clause requirements
@@ -420,12 +419,12 @@ public class DBQuery {
 				if (!options.isUseANSISyntax()) {
 					fromClause.append(separator).append(tableName);
 				} else {
-					fromClause.append(getANSIJoinClause(database, queryState, tabRow, joinedTables));
+					fromClause.append(getANSIJoinClause(getDatabase(), queryState, tabRow, joinedTables));
 				}
 				joinedTables.add(tabRow);
 
 				if (!options.isUseANSISyntax()) {
-					List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(database);
+					List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(getDatabase());
 					if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
 						for (String clause : tabRowCriteria) {
 							whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
@@ -444,7 +443,7 @@ public class DBQuery {
 			}
 
 			for (DBRow extra : extraExamples) {
-				List<String> extraCriteria = extra.getWhereClausesWithAliases(database);
+				List<String> extraCriteria = extra.getWhereClausesWithAliases(getDatabase());
 				if (extraCriteria != null && !extraCriteria.isEmpty()) {
 					for (String clause : extraCriteria) {
 						whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
@@ -453,14 +452,14 @@ public class DBQuery {
 			}
 
 			for (BooleanExpression expression : queryState.getRemainingExpressions()) {
-				whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append("(").append(expression.toSQLString(database)).append(")");
+				whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append("(").append(expression.toSQLString(getDatabase())).append(")");
 				queryState.consumeExpression(expression);
 			}
 
 			for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
 				final Object key = entry.getKey();
 				final DBExpression expression = entry.getValue();
-				selectClause.append(colSep).append(expression.toSQLString(database)).append(" ").append(defn.formatExpressionAlias(key));
+				selectClause.append(colSep).append(expression.toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
 				colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
 				if (!expression.isAggregator()) {
 					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
@@ -471,7 +470,7 @@ public class DBQuery {
 			}
 
 			for (Map.Entry<Object, DBExpression> entry : dbReportGroupByColumns.entrySet()) {
-				groupByClause.append(groupByColSep).append(entry.getValue().toSQLString(database));
+				groupByClause.append(groupByColSep).append(entry.getValue().toSQLString(getDatabase()));
 				groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 			}
 
@@ -510,7 +509,7 @@ public class DBQuery {
 
 	private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep) {
 		for (DBExpression rel : tabRow.getAdHocRelationships()) {
-			whereClause.append(defn.beginConditionClauseLine(options)).append("(").append(rel.toSQLString(database)).append(")");
+			whereClause.append(defn.beginConditionClauseLine(options)).append("(").append(rel.toSQLString(getDatabase())).append(")");
 		}
 
 		for (DBRow otherTab : otherTables) {
@@ -604,12 +603,12 @@ public class DBQuery {
 
 		DBQueryRow queryRow;
 
-		DBStatement dbStatement = database.getDBStatement();
+		DBStatement dbStatement = getDatabase().getDBStatement();
 		try {
 			ResultSet resultSet = getResultSetForSQL(dbStatement);
 			try {
 				while (resultSet.next()
-						&& ((database.getDefinition().supportsPagingNatively(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
+						&& ((getDatabase().getDefinition().supportsPagingNatively(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
 						|| (!database.getDefinition().supportsPagingNatively(options) && results.size() < options.getRowLimit()) // paging not supported and required so truncate it
 						)) {
 					queryRow = new DBQueryRow(this);
@@ -697,10 +696,10 @@ public class DBQuery {
 		if (primaryKey != null) {
 			final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
 			if (qdt != null) {
-				existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.database));
+				existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.getDatabase()));
 				if (existingInstance == null) {
 					existingInstance = newInstance;
-					existingInstancesOfThisTableRow.put(qdt.toSQLString(this.database), existingInstance);
+					existingInstancesOfThisTableRow.put(qdt.toSQLString(this.getDatabase()), existingInstance);
 				}
 			}
 		}
@@ -744,9 +743,9 @@ public class DBQuery {
 			for (PropertyWrapper propertyWrapper : selectedProperties) {
 				if (propertyWrapper.getDefinition().equals(newProp.getDefinition())) {
 
-					String resultSetColumnName = newProp.getColumnAlias(database);
+					String resultSetColumnName = newProp.getColumnAlias(getDatabase());
 
-					qdt.setFromResultSet(database, resultSet, resultSetColumnName);
+					qdt.setFromResultSet(getDatabase(), resultSet, resultSetColumnName);
 
 					if (newInstance.isEmptyRow() && !qdt.isNull()) {
 						newInstance.setEmptyRow(false);
@@ -769,9 +768,9 @@ public class DBQuery {
 	 */
 	protected void setExpressionColumns(ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
 		for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
-			String expressionAlias = database.getDefinition().formatExpressionAlias(entry.getKey());
+			String expressionAlias = getDatabase().getDefinition().formatExpressionAlias(entry.getKey());
 			QueryableDatatype expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
-			expressionQDT.setFromResultSet(database, resultSet, expressionAlias);
+			expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
 			queryRow.addExpressionColumnValue(entry.getKey(), expressionQDT);
 		}
 	}
@@ -990,7 +989,7 @@ public class DBQuery {
 				if (rowPart != null) {
 					final QueryableDatatype primaryKey = rowPart.getPrimaryKey();
 					if (primaryKey != null) {
-						String rowPartStr = primaryKey.toSQLString(this.database);
+						String rowPartStr = primaryKey.toSQLString(this.getDatabase());
 						ps.print(" " + rowPart.getPrimaryKeyColumnName() + ": " + rowPartStr);
 					}
 				}
@@ -1036,7 +1035,7 @@ public class DBQuery {
 		} else {
 			Long result = 0L;
 
-			DBStatement dbStatement = database.getDBStatement();
+			DBStatement dbStatement = getDatabase().getDBStatement();
 			try {
 				final String sqlForCount = this.getSQLForCount();
 				ResultSet resultSet = dbStatement.executeQuery(sqlForCount);
@@ -1076,10 +1075,10 @@ public class DBQuery {
 	public boolean willCreateBlankQuery() {
 		boolean willCreateBlankQuery = true;
 		for (DBRow table : allQueryTables) {
-			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
+			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.getDatabase());
 		}
 		for (DBRow table : extraExamples) {
-			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.database);
+			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.getDatabase());
 		}
 		return willCreateBlankQuery && (conditions.isEmpty());
 	}
@@ -1247,7 +1246,7 @@ public class DBQuery {
 	}
 
 	private String getOrderByClause(Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
-		DBDefinition defn = database.getDefinition();
+		DBDefinition defn = getDatabase().getDefinition();
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
@@ -1269,7 +1268,7 @@ public class DBQuery {
 					sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 				} else {
 					if (qdt.hasColumnExpression()) {
-						final String dbColumnName = qdt.getColumnExpression().toSQLString(database);
+						final String dbColumnName = qdt.getColumnExpression().toSQLString(getDatabase());
 						if (dbColumnName != null) {
 							orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
 							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
@@ -1725,7 +1724,7 @@ public class DBQuery {
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
 		int rowLimit = this.options.getRowLimit();
 
-		if (database.supportsPaging(options)) {
+		if (getDatabase().supportsPaging(options)) {
 			this.options.setPageIndex(pageNumber);
 		} else {
 			this.options.setRowLimit(-1);
@@ -1897,7 +1896,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptionalIfNonspecific(DBRow exampleWithOrWithoutCriteria) {
-		if (exampleWithOrWithoutCriteria.willCreateBlankQuery(database)) {
+		if (exampleWithOrWithoutCriteria.willCreateBlankQuery(getDatabase())) {
 			addOptional(exampleWithOrWithoutCriteria);
 		} else {
 			add(exampleWithOrWithoutCriteria);
@@ -2037,10 +2036,11 @@ public class DBQuery {
 		vv.setGraphMouse(gm);
 
 		RenderContext<QueryGraphNode, DBExpression> renderContext = vv.getRenderContext();
-		renderContext.setEdgeLabelTransformer(new QueryGraphEdgeLabelTransformer());
+		renderContext.setEdgeLabelTransformer(new QueryGraphEdgeLabelTransformer(this));
 		renderContext.setVertexLabelTransformer(new ToStringLabeller<QueryGraphNode>());
 		renderContext.setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(Color.BLUE, false));
 		renderContext.setVertexFillPaintTransformer(new QueryGraphVertexFillPaintTransformer());
+		renderContext.setEdgeStrokeTransformer(new QueryGraphEdgeStrokeTransformer(this));
 
 		queryGraphFrame = new JFrame("DBQuery Graph");
 		queryGraphFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -2052,12 +2052,12 @@ public class DBQuery {
 
 	private void initialiseQueryGraph() {
 		if (queryGraph == null) {
-			queryGraph = new QueryGraph(database, requiredQueryTables, getConditions(), options);
-			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, getConditions(), options);
+			queryGraph = new QueryGraph(getDatabase(), requiredQueryTables, getConditions(), options);
+			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), optionalQueryTables, getConditions(), options);
 		} else {
 			queryGraph.clear();
-			queryGraph.addAndConnectToRelevant(database, requiredQueryTables, getConditions(), options);
-			queryGraph.addOptionalAndConnectToRelevant(database, optionalQueryTables, getConditions(), options);
+			queryGraph.addAndConnectToRelevant(getDatabase(), requiredQueryTables, getConditions(), options);
+			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), optionalQueryTables, getConditions(), options);
 		}
 	}
 
@@ -2107,7 +2107,7 @@ public class DBQuery {
 	public List<DBQueryRow> getDistinctCombinationsOfColumnValues(Object... fieldsOfProvidedRows) throws AccidentalBlankQueryException, SQLException {
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
 
-		DBQuery distinctQuery = database.getDBQuery();
+		DBQuery distinctQuery = getDatabase().getDBQuery();
 		for (DBRow row : requiredQueryTables) {
 			final DBRow copyDBRow = DBRow.copyDBRow(row);
 			copyDBRow.removeAllFieldsFromResults();
@@ -2157,6 +2157,21 @@ public class DBQuery {
 			}
 		}
 		return returnList;
+	}
+
+	/**
+	 * @return the database
+	 */
+	public DBDatabase getDatabase() {
+		try {
+			return database.clone();
+		} catch (CloneNotSupportedException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public List<DBRow> getOptionalTables() {
+		return new ArrayList<DBRow>(this.optionalQueryTables);
 	}
 
 	/**
@@ -2267,32 +2282,6 @@ public class DBQuery {
 				return firstCanonicalName.compareTo(secondCanonicalName);
 			} else {
 				return first.getClass().getSimpleName().compareTo(second.getClass().getSimpleName());
-			}
-		}
-	}
-
-	private class QueryGraphEdgeLabelTransformer extends ToStringLabeller<DBExpression> {
-
-		QueryGraphEdgeLabelTransformer() {
-		}
-
-		@Override
-		public String transform(DBExpression v) {
-			return v.toSQLString(database).replaceAll("[^ ]*\\.", "");
-		}
-	}
-
-	private static class QueryGraphVertexFillPaintTransformer implements Transformer<QueryGraphNode, Paint> {
-
-		QueryGraphVertexFillPaintTransformer() {
-		}
-
-		@Override
-		public Paint transform(QueryGraphNode i) {
-			if (i.isRequiredNode()) {
-				return Color.RED;
-			} else {
-				return Color.ORANGE;
 			}
 		}
 	}
