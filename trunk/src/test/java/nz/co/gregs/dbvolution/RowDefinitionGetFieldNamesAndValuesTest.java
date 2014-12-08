@@ -50,7 +50,7 @@ public class RowDefinitionGetFieldNamesAndValuesTest extends AbstractTest {
 		database.print(rows);
 		if (rows.size() > 0) {
 			String header = "" + rows.get(0).toCSVHeader();
-			Assert.assertThat(header, is("\"name\",\"name\",\"uidCarCompany\""));
+			Assert.assertThat(header, is("\"Marque:name\",\"CarCompany:name\",\"CarCompany:uidCarCompany\""));
 			System.out.println(header);
 			for (DBQueryRow row : rows) {
 				String csvLine = "" + row.toCSVLine();

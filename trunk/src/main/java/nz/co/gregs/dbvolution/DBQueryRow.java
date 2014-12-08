@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -133,7 +134,10 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	public List<String> getFieldNames() {
 		List<String> returnList = new ArrayList<String>();
 		for (DBRow tab : baseQuery.getAllQueryTables()) {
-			returnList.addAll(tab.getFieldNames());
+			Collection<? extends String> fieldNames = tab.getFieldNames();
+			for (String fieldName : fieldNames) {
+				returnList.add(tab.getClass().getSimpleName() + ":" + fieldName);
+			}
 		}
 		return returnList;
 	}
@@ -160,6 +164,10 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 			DBRow actualRow = this.get(tab);
 			if (actualRow != null) {
 				returnList.addAll(actualRow.getFieldValues());
+			} else {
+				for (String returnList1 : tab.getFieldNames()) {
+					returnList.add("");
+				}
 			}
 		}
 		return returnList;
@@ -168,7 +176,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Convenience method to convert this DBQueryRow into a CSV or TSV type
 	 * header.
-	 * 
+	 *
 	 * <p>
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
@@ -191,7 +199,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Convenience method to convert this DBQueryRow into a CSV or TSV type
 	 * line.
-	 * 
+	 *
 	 * <p>
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
@@ -231,7 +239,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * <p>
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
-	 * 
+	 *
 	 * @return a list of all the values in the DBQueryRow formatted for a CSV
 	 * file
 	 * @throws java.lang.IllegalAccessException
@@ -243,8 +251,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Convenience method to convert this DBQueryRow into a Tab Separated Values
 	 * file's header.
-	 * 
- 	 * <p>
+	 *
+	 * <p>
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
 	 *
@@ -258,7 +266,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Convenience method to convert this DBQueryRow into a Tab Separated Values
 	 * line.
- 	 * <p>
+	 * <p>
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
 	 *
