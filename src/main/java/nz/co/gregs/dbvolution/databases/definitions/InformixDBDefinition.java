@@ -26,68 +26,70 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link InformixDB} instances, and
- * you should not need to use it directly.
+ * This DBDefinition is automatically included in {@link InformixDB} instances,
+ * and you should not need to use it directly.
  *
  * @author Gregory Graham
  */
 public class InformixDBDefinition extends DBDefinition {
 
-    private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    //TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
-    private final String informixDateFormat = "%Y-%m-%d %H:%M:%S";
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+	private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	//TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
+	private final String informixDateFormat = "%Y-%m-%d %H:%M:%S";
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 
-    @Override
-    public boolean prefersIndexBasedGroupByClause() {
-        return true;
-    }
+	@Override
+	public boolean prefersIndexBasedGroupByClause() {
+		return true;
+	}
 
-    @Override
-    public boolean prefersIndexBasedOrderByClause() {
-        return true;
-    }
+	@Override
+	public boolean prefersIndexBasedOrderByClause() {
+		return true;
+	}
 
-    @Override
-    public String getDateFormattedForQuery(Date date) {
-        return "TO_DATE('" + dateFormat.format(date) + "','" + informixDateFormat + "')";
-    }
+	@Override
+	public String getDateFormattedForQuery(Date date) {
+		return "TO_DATE('" + dateFormat.format(date) + "','" + informixDateFormat + "')";
+	}
 
-    /**
-     *
-     * @param table
-     * @param columnName
-     * @return a string of the table and column name for the select clause
-     */
-    @Override
-    public String formatTableAndColumnName(DBRow table, String columnName) {
-        return "" + formatTableName(table) + "." + formatColumnName(columnName) + "";
-    }
+	/**
+	 *
+	 * @param table
+	 * @param columnName
+	 * @return a string of the table and column name for the select clause
+	 */
+	@Override
+	public String formatTableAndColumnName(DBRow table, String columnName) {
+		return "" + formatTableName(table) + "." + formatColumnName(columnName) + "";
+	}
 
-    @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-        int rowLimit = options.getRowLimit();
-        Integer pageNumber = options.getPageIndex();
-        if (rowLimit < 1) {
-            return "";
-        } else {
-            if (supportsPagingNatively(options)) {
-                long offset = pageNumber * rowLimit;
-                if (offset > 0L) {
-                    return " SKIP " + offset + " FIRST " + rowLimit + " ";
-                } else {
-                    return " FIRST " + rowLimit + " ";
-                }
-            } else {
-                return " FIRST " + rowLimit + " ";
-            }
-        }
-    }
+	@Override
+	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+		int rowLimit = options.getRowLimit();
+		Integer pageNumber = options.getPageIndex();
+		if (rowLimit < 1) {
+			return "";
+		} else {
+			if (supportsPagingNatively(options)) {
+				String rowLimitStr = " FIRST " + rowLimit + " ";
+				long offset = pageNumber * rowLimit;
+				String offsetStr = "";
+				if (offset > 0L) {
+					offsetStr = " SKIP " + offset;
 
-    @Override
-    public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
-        return "";
-    }
+				}
+				return offsetStr + rowLimitStr;
+			} else {
+				return "";
+			}
+		}
+	}
+
+	@Override
+	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+		return "";
+	}
 
 	@Override
 	protected String getCurrentTimeFunction() {
@@ -99,10 +101,10 @@ public class InformixDBDefinition extends DBDefinition {
 		throw new UnsupportedOperationException("Informix Does Not Support CurrentDateTime as a Function: Please use doCurrentDateTimeTransform() instead of getCurrentDateTimeFunction().");
 	}
 
-    @Override
-    protected String getCurrentDateOnlyFunctionName() {
+	@Override
+	protected String getCurrentDateOnlyFunctionName() {
 		throw new UnsupportedOperationException("Informix Does Not Support CurrentDateOnly as a Function: Please use doCurrentDateOnlyTransform() instead of getCurrentDateOnlyFunctionName().");
-    }
+	}
 
 	@Override
 	public String doCurrentTimeTransform() {
@@ -119,63 +121,63 @@ public class InformixDBDefinition extends DBDefinition {
 		return "(CURRENT YEAR TO DAY)";
 	}
 
-    @Override
-    public String doDayTransform(String dateExpression) {
-        return "DAY(" + dateExpression + ")";
-    }
+	@Override
+	public String doDayTransform(String dateExpression) {
+		return "DAY(" + dateExpression + ")";
+	}
 
-    @Override
-    public String doMonthTransform(String dateExpression) {
-        return "MONTH(" + dateExpression + ")";
-    }
+	@Override
+	public String doMonthTransform(String dateExpression) {
+		return "MONTH(" + dateExpression + ")";
+	}
 
-    @Override
-    public String doYearTransform(String dateExpression) {
-        return "YEAR(" + dateExpression + ")";
-    }
+	@Override
+	public String doYearTransform(String dateExpression) {
+		return "YEAR(" + dateExpression + ")";
+	}
 
-    @Override
-    public boolean supportsPagingNatively(QueryOptions options) {
-        return false;
-    }
+	@Override
+	public boolean supportsPagingNatively(QueryOptions options) {
+		return false;
+	}
 
-    @Override
-    public boolean supportsGeneratedKeys() {
-        return false;
-    }
+	@Override
+	public boolean supportsGeneratedKeys() {
+		return false;
+	}
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
-		return "(("+dateValue+")+ ("+numberOfYears+") UNITS YEAR)";
+		return "((" + dateValue + ")+ (" + numberOfYears + ") UNITS YEAR)";
 	}
 
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
-		return "(("+dateValue+")+ ("+numberOfMonths+") UNITS MONTH)";
+		return "((" + dateValue + ")+ (" + numberOfMonths + ") UNITS MONTH)";
 	}
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "(("+dateValue+")+ ("+numberOfWeeks+") UNITS WEEK)";
+		return "((" + dateValue + ")+ (" + numberOfWeeks + ") UNITS WEEK)";
 	}
 
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
-		return "(("+dateValue+")+ ("+numberOfHours+") UNITS HOUR)";
+		return "((" + dateValue + ")+ (" + numberOfHours + ") UNITS HOUR)";
 	}
 
 	@Override
 	public String doAddDaysTransform(String dateValue, String numberOfDays) {
-		return "(("+dateValue+")+ ("+numberOfDays+") UNITS DAY)";
+		return "((" + dateValue + ")+ (" + numberOfDays + ") UNITS DAY)";
 	}
 
 	@Override
 	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
-		return "(("+dateValue+")+ ("+numberOfMinutes+") UNITS MINUTE)";
+		return "((" + dateValue + ")+ (" + numberOfMinutes + ") UNITS MINUTE)";
 	}
 
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
-		return "(("+dateValue+")+ ("+numberOfSeconds+") UNITS SECOND)";
+		return "((" + dateValue + ")+ (" + numberOfSeconds + ") UNITS SECOND)";
 	}
 }
