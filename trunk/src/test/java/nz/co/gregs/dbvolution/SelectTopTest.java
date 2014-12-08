@@ -24,88 +24,92 @@ import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 
-
 public class SelectTopTest extends AbstractTest {
 
-    public SelectTopTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
-    
-    @Test
-    public void selectTop2CarCompanies() throws SQLException {
-        CarCompany carCompany = new CarCompany();
-        DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
-        carCoTable.setRowLimit(2);
-        List<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
-        carCoTable.print();
-        Assert.assertThat(allRows.size(), is(2));
-    }
-    
-    @Test
-    public void selectTop3CarCompanies() throws SQLException {
-        CarCompany carCompany = new CarCompany();
-        DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
-        carCoTable.setRowLimit(3);
-        List<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
-        carCoTable.print();
-        Assert.assertThat(allRows.size(), is(3));
-    }
-    
-    
-    @Test
-    public void testClearingTheRowLimit() throws SQLException {
-        CarCompany carCompany = new CarCompany();
-        DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
-        carCoTable.setBlankQueryAllowed(true);
-        
-        List<CarCompany> allRows = carCoTable.setRowLimit(2).getAllRows();
-        carCoTable.print();
-        Assert.assertThat(allRows.size(), is(2));
-        
-        allRows = carCoTable.clearRowLimit().getAllRows();
-        carCoTable.print();
-        Assert.assertThat(allRows.size(), is(4));
-    }
-    
-    @Test
-    public void queryTopTest() throws SQLException {
-        CarCompany carCompany = new CarCompany();
-        DBQuery query = database.getDBQuery(carCompany, new Marque());
-        query.setBlankQueryAllowed(true);
-        query.setRowLimit(2);
-        List<DBQueryRow> allRows = query.getAllRows();
-        query.print();
-        Assert.assertThat(allRows.size(), is(2));
-        query.setRowLimit(3);
-        allRows = query.getAllRows();
-        query.print();
-        Assert.assertThat(allRows.size(), is(3));
-        query.clearRowLimit();
-        allRows = query.getAllRows();
-        query.print();
-        Assert.assertThat(allRows.size(), is(22));
-    }
-    
-    
-    @Test
-    public void queryPagingTest() throws SQLException {
-        CarCompany carCompany = new CarCompany();
-        final Marque marque = new Marque();
-        DBQuery query = database.getDBQuery(carCompany, marque);
-        query.setSortOrder(carCompany.column(carCompany.name), marque.column(marque.name));
-        query.setBlankQueryAllowed(true);
-        query.setRowLimit(5);
-        System.out.println("PAGE 1:");
-        List<DBQueryRow> firstPage = query.getAllRowsForPage(0);
-        query.print();
-        Assert.assertThat(firstPage.get(0).get(carCompany).name.stringValue(), is("Ford"));
-        Assert.assertThat(firstPage.get(1).get(carCompany).name.stringValue(), is("GENERAL MOTORS"));
-        System.out.println("PAGE 2:");
-        List<DBQueryRow> secondPage = query.getAllRowsForPage(1);
-        query.print();
-        Assert.assertThat(secondPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
-        Assert.assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
-        Assert.assertThat(secondPage.get(0).get(marque).name.stringValue(), is("CHRYSLER"));
-        Assert.assertThat(secondPage.get(1).get(marque).name.stringValue(), is("DAEWOO"));
-    }
+	public SelectTopTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
+
+	@Test
+	public void selectTop2CarCompanies() throws SQLException {
+		CarCompany carCompany = new CarCompany();
+		DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
+		carCoTable.setRowLimit(2);
+		List<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
+		carCoTable.print();
+		Assert.assertThat(allRows.size(), is(2));
+	}
+
+	@Test
+	public void selectTop3CarCompanies() throws SQLException {
+		CarCompany carCompany = new CarCompany();
+		DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
+		carCoTable.setRowLimit(3);
+		List<CarCompany> allRows = carCoTable.setBlankQueryAllowed(true).getAllRows();
+		carCoTable.print();
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testClearingTheRowLimit() throws SQLException {
+		CarCompany carCompany = new CarCompany();
+		DBTable<CarCompany> carCoTable = database.getDBTable(carCompany);
+		carCoTable.setBlankQueryAllowed(true);
+
+		List<CarCompany> allRows = carCoTable.setRowLimit(2).getAllRows();
+		carCoTable.print();
+		Assert.assertThat(allRows.size(), is(2));
+
+		allRows = carCoTable.clearRowLimit().getAllRows();
+		carCoTable.print();
+		Assert.assertThat(allRows.size(), is(4));
+	}
+
+	@Test
+	public void queryTopTest() throws SQLException {
+		CarCompany carCompany = new CarCompany();
+		DBQuery query = database.getDBQuery(carCompany, new Marque());
+		query.setBlankQueryAllowed(true);
+		query.setRowLimit(2);
+		List<DBQueryRow> allRows = query.getAllRows();
+		query.print();
+		Assert.assertThat(allRows.size(), is(2));
+		query.setRowLimit(3);
+		allRows = query.getAllRows();
+		query.print();
+		Assert.assertThat(allRows.size(), is(3));
+		query.clearRowLimit();
+		allRows = query.getAllRows();
+		query.print();
+		Assert.assertThat(allRows.size(), is(22));
+	}
+
+	@Test
+	public void queryPagingTest() throws SQLException {
+		CarCompany carCompany = new CarCompany();
+		final Marque marque = new Marque();
+		DBQuery query = database.getDBQuery(carCompany, marque);
+		query.setSortOrder(carCompany.column(carCompany.name), marque.column(marque.name));
+		query.setBlankQueryAllowed(true);
+		query.setRowLimit(5);
+		System.out.println("PAGE 1:");
+		List<DBQueryRow> firstPage = query.getAllRowsForPage(0);
+		query.print();
+		Assert.assertThat(firstPage.get(0).get(carCompany).name.stringValue(), is("Ford"));
+		Assert.assertThat(firstPage.get(1).get(carCompany).name.stringValue(), is("GENERAL MOTORS"));
+		System.out.println("PAGE 2:");
+		List<DBQueryRow> secondPage = query.getAllRowsForPage(1);
+		query.print();
+		Assert.assertThat(secondPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
+		Assert.assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
+		Assert.assertThat(secondPage.get(0).get(marque).name.stringValue(), is("CHRYSLER"));
+		Assert.assertThat(secondPage.get(1).get(marque).name.stringValue(), is("DAEWOO"));
+		secondPage = query.getAllRowsForPage(2);
+		query.print();
+		database.print(secondPage);
+		Assert.assertThat(secondPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
+		Assert.assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
+		Assert.assertThat(secondPage.get(0).get(marque).name.stringValue(), is("LANDROVER"));
+		Assert.assertThat(secondPage.get(1).get(marque).name.stringValue(), is("MAZDA"));
+	}
 }

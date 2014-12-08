@@ -607,10 +607,10 @@ public class DBQuery {
 		try {
 			ResultSet resultSet = getResultSetForSQL(dbStatement);
 			try {
-				while (resultSet.next()
-						&& ((getDatabase().getDefinition().supportsPagingNatively(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
-						|| (!database.getDefinition().supportsPagingNatively(options) && results.size() < options.getRowLimit()) // paging not supported and required so truncate it
-						)) {
+				while (resultSet.next()){
+//						&& ((getDatabase().getDefinition().supportsPagingNatively(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
+//						|| (!database.getDefinition().supportsPagingNatively(options) && results.size() < options.getRowLimit()) // paging not supported and required so truncate it
+//						)) {
 					queryRow = new DBQueryRow(this);
 
 					setExpressionColumns(resultSet, queryRow);
@@ -1521,7 +1521,7 @@ public class DBQuery {
 	 *
 	 * @return A list of DBRow subclasses included in this query.
 	 * @see #getRelatedTables()
-	 * @see #getReferencedTables() 
+	 * @see #getReferencedTables()
 	 * @see DBRow#getReferencedTables()
 	 * @see DBRow#getRelatedTables()
 	 *
@@ -1715,25 +1715,47 @@ public class DBQuery {
 	 * number.
 	 *
 	 * <p>
-	 * This method is zero-based so the first page is getAllRows(0).
+	 * This method is zero-based so the first page is getPage(0).
+	 *
+	 * <p>
+	 * Convenience method for {@link #getAllRowsForPage(java.lang.Integer) }.
+	 *
+	 * @param pageNumber
+	 * @return a list of the DBQueryRows for the selected page.
+	 * @throws SQLException
+	 */
+	public List<DBQueryRow> getPage(Integer pageNumber) throws SQLException {
+		return getAllRowsForPage(pageNumber);
+	}
+
+	/**
+	 * Retrieves that DBQueryRows for the page supplied.
+	 *
+	 * <p>
+	 * DBvolution supports paging through this method. Use {@link #setRowLimit(int)
+	 * } to set the page size and then call this method with the desired page
+	 * number.
+	 *
+	 * <p>
+	 * This method is zero-based so the first page is getAllRowsForPage(0).
 	 *
 	 * @param pageNumber
 	 * @return a list of the DBQueryRows for the selected page.
 	 * @throws SQLException
 	 */
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
-		int rowLimit = this.options.getRowLimit();
 
-		if (getDatabase().supportsPaging(options)) {
+		if (database.supportsPaging(options)) {
 			this.options.setPageIndex(pageNumber);
+			if (this.needsResults()) {
+				getAllRows();
+			}
+			return results;
 		} else {
-			this.options.setRowLimit(-1);
-		}
-		if (this.needsResults()) {
-			getAllRows();
-			this.options.setRowLimit(rowLimit);
-		}
-		if (!database.supportsPaging(options)) {
+			if (this.needsResults()) {
+				getAllRows();
+			}
+			int rowLimit = this.options.getRowLimit();
 			int startIndex = rowLimit * pageNumber;
 			startIndex = (startIndex < 0 ? 0 : startIndex);
 			int stopIndex = rowLimit * (pageNumber + 1) - 1;
@@ -1743,8 +1765,6 @@ public class DBQuery {
 			} else {
 				return results.subList(startIndex, stopIndex);
 			}
-		} else {
-			return results;
 		}
 	}
 
