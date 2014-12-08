@@ -977,14 +977,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * Requires the field to be from this instance to work.
 	 *
-	 * @param <T> A list or List of fields of this DBRow
 	 * @param fields a list of fields/methods from this object
 	 */
 	//@SafeVarargs
-	public final <T> void setReturnFields(T... fields) throws IncorrectRowProviderInstanceSuppliedException {
+	public final void setReturnFields(Object... fields) throws IncorrectRowProviderInstanceSuppliedException {
 		setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
 		PropertyWrapper propWrapper;
-		for (T property : fields) {
+		for (Object property : fields) {
 			propWrapper = getPropertyWrapperOf(property);
 			if (propWrapper == null) {
 				throw new IncorrectRowProviderInstanceSuppliedException(this, property);
@@ -1073,6 +1072,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the foreign keys and ad-hoc relationships as an SQL String or a
 	 * null pointer
 	 */
+	@Deprecated
 	public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
 		StringBuilder rels = new StringBuilder();
 		DBDefinition defn = db.getDefinition();
@@ -1647,6 +1647,26 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	void setReturnFieldsBasedOn(DBRow tableRow) {
 		this.setReturnColumns(tableRow.getReturnColumns());
+	}
+
+	public static List<DBRow> getDBRowSubclassesFromPackage(Package referencePackage) {
+		List<DBRow> resultList = new ArrayList<DBRow>();
+		Reflections reflections = new Reflections(referencePackage);
+		Set<Class<? extends DBRow>> tables = reflections.getSubTypesOf(DBRow.class);
+		for (Class<? extends DBRow> tab : tables) {
+			if (tab.getSuperclass().equals(DBRow.class) && tab.getPackage().equals(referencePackage)) {
+				DBRow tabInstance;
+				try {
+					tabInstance = tab.newInstance();
+				} catch (InstantiationException ex) {
+					throw new RuntimeException(ex);
+				} catch (IllegalAccessException ex) {
+					throw new RuntimeException(ex);
+				}
+				resultList.add(tabInstance);
+			}
+		}
+		return resultList;
 	}
 
 	/**
