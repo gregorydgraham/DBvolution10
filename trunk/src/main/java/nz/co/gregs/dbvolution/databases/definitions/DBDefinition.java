@@ -850,12 +850,11 @@ public abstract class DBDefinition {
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		int rowLimit = options.getRowLimit();
 		Integer pageNumber = options.getPageIndex();
-		if (rowLimit < 1 || !this.supportsPagingNatively(options)) {
-			return "";
-		} else {
+		if (rowLimit > 0 && supportsPagingNatively(options)) {
 			long offset = pageNumber * rowLimit;
-
 			return "LIMIT " + rowLimit + " OFFSET " + offset;
+		} else {
+			return "";
 		}
 	}
 
