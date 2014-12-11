@@ -67,7 +67,7 @@ public abstract class DBDatabase implements Cloneable {
 	private String username = "";
 	private String password = null;
 	private DataSource dataSource = null;
-	private boolean printSQLBeforeExecuting;
+	private boolean printSQLBeforeExecuting = false;
 	private boolean isInATransaction = false;
 	private DBTransactionStatement transactionStatement;
 	private DBDefinition definition = null;
@@ -1074,7 +1074,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * The worst idea EVAH.
 	 *
 	 * <p>
-	 * Do Not Use This.
+	 * Do NOT Use This.
 	 *
 	 * @param doIt
 	 * @throws Exception
