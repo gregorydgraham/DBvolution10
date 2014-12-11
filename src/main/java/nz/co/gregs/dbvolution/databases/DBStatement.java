@@ -76,7 +76,7 @@ public class DBStatement implements Statement {
 	public ResultSet executeQuery(String string) throws SQLException {
 		final String logSQL = "EXECUTING QUERY: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.info(logSQL);
+		log.debug(logSQL);
 		return getInternalStatement().executeQuery(string);
 	}
 
@@ -308,7 +308,7 @@ public class DBStatement implements Statement {
 	public boolean execute(String string) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.info(logSQL);
+		log.debug(logSQL);
 		return getInternalStatement().execute(string);
 	}
 
@@ -630,7 +630,7 @@ public class DBStatement implements Statement {
 	public int executeUpdate(String string, String[] strings) throws SQLException {
 		final String logSQL = "EXECUTING UPDATE: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.info(logSQL);
+		log.debug(logSQL);
 		return getInternalStatement().executeUpdate(string, strings);
 	}
 
@@ -662,7 +662,7 @@ public class DBStatement implements Statement {
 	public boolean execute(String string, int i) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.info(logSQL);
+		log.debug(logSQL);
 		return getInternalStatement().execute(string, i);
 	}
 
@@ -696,7 +696,7 @@ public class DBStatement implements Statement {
 	public boolean execute(String string, int[] ints) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.info(logSQL);
+		log.debug(logSQL);
 		return getInternalStatement().execute(string, ints);
 	}
 
@@ -730,7 +730,7 @@ public class DBStatement implements Statement {
 	public boolean execute(String string, String[] strings) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.info(logSQL);
+		log.debug(logSQL);
 		return getInternalStatement().execute(string, strings);
 	}
 

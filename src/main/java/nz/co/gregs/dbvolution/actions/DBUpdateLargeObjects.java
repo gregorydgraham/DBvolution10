@@ -108,7 +108,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ row.getPrimaryKey().toSQLString(db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.info(sqlString);
+		log.debug(sqlString);
 		statement.execute(sqlString);
 	}
 
@@ -125,7 +125,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ row.getPrimaryKey().toSQLString(db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.info(sqlString);
+		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
 			prep.setBinaryStream(1, largeObject.getInputStream());
@@ -152,7 +152,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ row.getPrimaryKey().toSQLString(db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.info(sqlString);
+		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		prep.setBlob(1, largeObject.getInputStream(), largeObject.getSize());
 		prep.execute();
@@ -171,7 +171,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ row.getPrimaryKey().toSQLString(db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.info(sqlString);
+		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		InputStream inputStream = largeObject.getInputStream();
 
@@ -213,7 +213,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ row.getPrimaryKey().toSQLString(db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.info(sqlString);
+		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
 		prep.execute();
