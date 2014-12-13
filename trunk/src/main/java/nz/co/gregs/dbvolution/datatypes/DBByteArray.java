@@ -90,7 +90,11 @@ public class DBByteArray extends DBLargeObject {
 	 */
 	public void setValue(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
-		byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
+		if (byteArray == null) {
+			byteStream = new BufferedInputStream(new ByteArrayInputStream(new byte[]{}));
+		} else {
+			byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
+		}
 	}
 
 	/**
@@ -489,7 +493,12 @@ public class DBByteArray extends DBLargeObject {
 
 	@Override
 	public int getSize() {
-		return getBytes().length;
+		final byte[] bytes = getBytes();
+		if (bytes != null) {
+			return bytes.length;
+		} else {
+			return 0;
+		}
 	}
 
 	@Override

@@ -23,8 +23,6 @@ import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.*;
-import nz.co.gregs.dbvolution.operators.DBExistsOperator;
-import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.reflections.Reflections;
@@ -1624,25 +1622,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Used internally to avoid infinite loops when using the exists operator.
-	 *
-	 */
-	public void removeExistsOperators() {
-		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
-		for (PropertyWrapper prop : props) {
-			if (prop.isColumn()) {
-				QueryableDatatype qdt = prop.getQueryableDatatype();
-				DBOperator operator = qdt.getOperator();
-				if (operator != null) {
-					if (operator instanceof DBExistsOperator) {
-						qdt.setOperator(null);
-					}
-				}
-			}
-		}
 	}
 
 	void setReturnFieldsBasedOn(DBRow tableRow) {

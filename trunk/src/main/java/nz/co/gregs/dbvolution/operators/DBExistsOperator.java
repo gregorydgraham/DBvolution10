@@ -15,30 +15,27 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import java.util.HashSet;
-import java.util.Set;
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.expressions.ExistsExpression;
+import java.util.*;
+import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
- * This operator exists but is currently unsupported.
+ * This operator is DEPRECATED, change to {@link ExistsExpression} immediately.
  *
  * @author Gregory Graham
  */
+@Deprecated
 public class DBExistsOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
 
-	DBRow innerTable;
-	Object innerField;
+	List<DBRow> innerTables = new ArrayList<DBRow>();
 
 	/**
 	 * Creates an exists operator on the given table row instance and column
@@ -53,20 +50,15 @@ public class DBExistsOperator extends DBOperator {
 	 * </pre>
 	 *
 	 * <p>
-	 * Requires that {@literal qdtOfTheRow} is from theliteralode innerTable}
-	 * instance for this to work.
+	 * Requires that {@literal qdtOfTheRow} is from the innerTable} instance for
+	 * this to work.
 	 *
-	 * @param tableRow
-	 * @param qdtOfTheRow
+	 * @param tableRows
 	 * @throws IncorrectRowProviderInstanceSuppliedException if the
 	 * {@code qdtOfTheRow} is not from the {@code innerTable} instance
 	 */
-	public DBExistsOperator(DBRow tableRow, Object qdtOfTheRow) throws IncorrectRowProviderInstanceSuppliedException {
-		this.innerTable = tableRow;
-		innerField = qdtOfTheRow;
-		if (innerField == null) {
-			throw new IncorrectRowProviderInstanceSuppliedException(tableRow, qdtOfTheRow);
-		}
+	public DBExistsOperator(DBRow... tableRows) throws IncorrectRowProviderInstanceSuppliedException {
+		this.innerTables.addAll(Arrays.asList(tableRows));
 	}
 
 	@Override
@@ -81,60 +73,16 @@ public class DBExistsOperator extends DBOperator {
 			PropertyWrapper outerProp = columnProvider.getColumn().getPropertyWrapper();
 			RowDefinition outerTable = outerProp.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 			if (outerTable instanceof DBRow) {
-				DBRow innerRow = (DBRow) outerTable;
-				Object outerQDT = outerProp.getQueryableDatatype();
-				return new ExistsExpression(innerRow, outerQDT, innerTable, innerField);
+				DBRow outerRow = (DBRow) outerTable;
+				final ExistsExpression existsExpression = new ExistsExpression(outerRow, innerTables);
+				if (this.invertOperator) {
+					return existsExpression.not();
+				} else {
+					return existsExpression;
+				}
 			}
 		}
 		return BooleanExpression.trueExpression();
 	}
 
-	public class ExistsExpression extends BooleanExpression {
-
-		private DBRow outerTable = null;
-		private DBRow innerTable = null;
-
-		public ExistsExpression(DBRow outerTable, Object outerQDT, DBRow innerTable, Object innerQDT) {
-			this.outerTable = outerTable;
-			this.innerTable = DBRow.copyDBRow(innerTable);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			DBRow outerCopy = DBRow.copyDBRow(outerTable);
-			DBRow innerCopy = DBRow.copyDBRow(innerTable);
-			outerCopy.removeExistsOperators();
-			innerCopy.removeExistsOperators();
-			outerCopy.setReturnFields(outerCopy.getPrimaryKey());
-			innerCopy.setReturnFieldsToNone();
-			DBQuery dbQuery = db.getDBQuery(outerCopy, innerCopy);
-			String sql = dbQuery.getSQLForQuery().replaceAll(";", "");
-			return " EXISTS (" + sql + ")";
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public ExistsExpression copy() {
-			ExistsExpression clone;
-			try {
-				clone = (ExistsExpression) this.clone();
-			} catch (CloneNotSupportedException ex) {
-				throw new RuntimeException(ex);
-			}
-			return clone;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return false;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			Set<DBRow> returnSet = new HashSet<DBRow>();
-			returnSet.add(outerTable);
-			returnSet.add(innerTable);
-			return returnSet;
-		}
-	}
 }
