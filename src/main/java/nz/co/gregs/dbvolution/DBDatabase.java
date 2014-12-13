@@ -795,6 +795,20 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
+	 * Creates a new DBQuery object with the examples added as
+	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[]) required} tables.
+	 *
+	 * This is the easiest way to create DBQueries, and indeed queries.
+	 *
+	 * @param examples
+	 * @return a DBQuery with the examples as required tables
+	 */
+	public DBQuery getDBQuery(List<DBRow> examples) {
+		DBRow[] toArray = examples.toArray(new DBRow[]{});
+		return DBQuery.getInstance(this, toArray);
+	}
+
+	/**
 	 * Enables the printing of all SQL to System.out before the SQL is executed.
 	 *
 	 * @param b TRUE to print SQL before execution, FALSE otherwise.
