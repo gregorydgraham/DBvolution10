@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -73,6 +74,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void descendSimpleTree() throws SQLException {
 		Parts aileronID = new Parts();
@@ -85,6 +87,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
 	}
 
+	@Ignore
 	@Test
 	public void ascendSimpleTree() throws SQLException {
 		Parts aileronID = new Parts();
@@ -97,6 +100,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
 	}
 
+	@Ignore
 	@Test
 	public void descendSimpleTreeWithoutTableName() throws SQLException {
 		PartsWithoutTableName aileronID = new PartsWithoutTableName();
@@ -109,6 +113,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
 	}
 
+	@Ignore
 	@Test
 	public void ascendSimpleTreeWithoutTableName() throws SQLException {
 		PartsWithoutTableName aileronID = new PartsWithoutTableName();
@@ -121,6 +126,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
 	}
 
+	@Ignore
 	@Test
 	public void descendTreeFrom2TableQuery() throws SQLException {
 		Parts part = new Parts();
@@ -134,6 +140,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
 	}
 
+	@Ignore
 	@Test
 	public void ascendTreeFrom2TableQuery() throws SQLException {
 		Parts part = new Parts();
@@ -147,6 +154,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
 	}
 
+	@Ignore
 	@Test
 	public void descendTreeFrom2TableQueryToPathsList() throws SQLException {
 		Parts part = new Parts();
@@ -160,6 +168,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
 	}
 
+	@Ignore
 	@Test
 	public void ascendTreeFrom2TableQueryToPathsList() throws SQLException {
 		Parts part = new Parts();
@@ -173,6 +182,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
 	}
 
+	@Ignore
 	@Test
 	public void getPathToRootAsLinkedList() throws SQLException {
 		Parts part = new Parts();

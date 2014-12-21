@@ -15,8 +15,10 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -102,7 +104,17 @@ public class DBBooleanArray extends QueryableDatatype implements BitsResult {
 
 	@Override
 	public String getSQLDatatype() {
-		return "BIT(64)";
+		return "ARRAY";
+	}
+	
+	@Override
+	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException{
+		boolean[] result = new boolean[]{};
+		Object array = resultSet.getArray(fullColumnName).getArray();
+		if(array instanceof boolean[]){
+			result = (boolean[]) array;
+		}
+		return result;
 	}
 
 	@Override
@@ -183,13 +195,13 @@ public class DBBooleanArray extends QueryableDatatype implements BitsResult {
 		return false;
 	}
 
-	@Override
-	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-		byte[] dbValue = resultSet.getBytes(fullColumnName);
-		if (resultSet.wasNull()) {
-			dbValue = null;
-		}
-		return dbValue;
-	}
+//	@Override
+//	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+//		byte[] dbValue = resultSet.getBytes(fullColumnName);
+//		if (resultSet.wasNull()) {
+//			dbValue = null;
+//		}
+//		return dbValue;
+//	}
 
 }
