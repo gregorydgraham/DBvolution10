@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBBits;
+import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
@@ -36,7 +36,7 @@ public class BitsExpression implements BitsResult {
 	 * Default Constructor.
 	 */
 	protected BitsExpression() {
-		this.innerBitsResult = new DBBits();
+		this.innerBitsResult = new DBBooleanArray();
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class BitsExpression implements BitsResult {
 
 	@Override
 	public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-		return new DBBits();
+		return new DBBooleanArray();
 	}
 
 	@Override

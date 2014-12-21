@@ -25,7 +25,6 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BitsResult;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
  * Encapsulates database values that are BIT arrays of up to 64 bits.
@@ -34,8 +33,8 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Use DBBoolean when the column is a {@code bool} or {@code bit(1)} datatype.
  *
  * <p>
- * Generally DBBits is declared inside your DBRow sub-class as:
- * {@code @DBColumn public DBBits myBoolColumn = new DBBits();}
+ Generally DBBooleanArray is declared inside your DBRow sub-class as:
+ {@code @DBColumn public DBBooleanArray myBoolColumn = new DBBooleanArray();}
  *
  * <p>
  * Yes/No Strings and 0/1 integer columns will need to use {@link DBString} and
@@ -45,7 +44,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @author Gregory Graham
  */
-public class DBBits extends QueryableDatatype implements BitsResult {
+public class DBBooleanArray extends QueryableDatatype implements BitsResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,7 +55,7 @@ public class DBBits extends QueryableDatatype implements BitsResult {
 	 * Creates an unset undefined DBBits object.
 	 *
 	 */
-	public DBBits() {
+	public DBBooleanArray() {
 	}
 
 	/**
@@ -68,7 +67,7 @@ public class DBBits extends QueryableDatatype implements BitsResult {
 	 *
 	 * @param bits
 	 */
-	public DBBits(byte[] bits) {
+	public DBBooleanArray(boolean[] bits) {
 		super(bits);
 	}
 
@@ -82,7 +81,7 @@ public class DBBits extends QueryableDatatype implements BitsResult {
 	 *
 	 * @param bits
 	 */
-	public DBBits(BitsResult bits) {
+	public DBBooleanArray(BitsResult bits) {
 		super(bits);
 	}
 
@@ -94,8 +93,8 @@ public class DBBits extends QueryableDatatype implements BitsResult {
 	 */
 	@Override
 	public boolean equals(QueryableDatatype other) {
-		if (other instanceof DBBits) {
-			DBBits otherDBBits = (DBBits) other;
+		if (other instanceof DBBooleanArray) {
+			DBBooleanArray otherDBBits = (DBBooleanArray) other;
 			return Arrays.equals(getValue(), otherDBBits.getValue());
 		}
 		return false;
@@ -108,21 +107,21 @@ public class DBBits extends QueryableDatatype implements BitsResult {
 
 	@Override
 	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof byte[]) {
-			setValue((Byte[]) newLiteralValue);
-		} else if (newLiteralValue instanceof DBBits) {
-			setValue(((QueryableDatatype) newLiteralValue).getValue());
+		if (newLiteralValue instanceof boolean[]) {
+			setValue((boolean[]) newLiteralValue);
+		} else if (newLiteralValue instanceof DBBooleanArray) {
+			setValue(((DBBooleanArray) newLiteralValue).booleanArrayValue());
 		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Byte[]: Use only Byte[1-64] with this class");
+			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-boolean[]: Use only boolean[1-64] with this class");
 		}
 	}
 
 	/**
-	 * Sets the value of this DBBits to the value provided.
+	 * Sets the value of this DBBooleanArray to the value provided.
 	 *
 	 * @param newLiteralValue
 	 */
-	public void setValue(Byte[] newLiteralValue) {
+	public void setValue(boolean[] newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 
@@ -130,39 +129,38 @@ public class DBBits extends QueryableDatatype implements BitsResult {
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
 		if (getLiteralValue() != null) {
-			byte[] bitsArray = (byte[]) getLiteralValue();
-			return defn.doBitsValueTransform(bitsArray);
-//			return defn.beginNumberValue() + (boolValue ? 1 : 0) + defn.endNumberValue();
+			boolean[] boolArray = (boolean[]) getLiteralValue();
+			return defn.doBitsValueTransform(boolArray);
 		}
 		return defn.getNull();
 	}
 
 	/**
-	 * Returns the defined or set value of this DBBits as an actual byte[].
+	 * Returns the defined or set value of this DBBooleanArray as an actual boolean[].
 	 *
 	 * @return the value of this QDT as a boolean.
 	 */
-	public byte[] byteArrayValue() {
+	public boolean[] booleanArrayValue() {
 		if (this.getLiteralValue() != null) {
-			return (byte[]) this.getLiteralValue();
+			return (boolean[]) this.getLiteralValue();
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public DBBits copy() {
-		return (DBBits) (BitsResult) super.copy();
+	public DBBooleanArray copy() {
+		return (DBBooleanArray) (BitsResult) super.copy();
 	}
 
 	@Override
-	public byte[] getValue() {
-		return byteArrayValue();
+	public boolean[] getValue() {
+		return booleanArrayValue();
 	}
 
 	@Override
-	public DBBits getQueryableDatatypeForExpressionValue() {
-		return new DBBits();
+	public DBBooleanArray getQueryableDatatypeForExpressionValue() {
+		return new DBBooleanArray();
 	}
 
 	@Override
@@ -176,7 +174,7 @@ public class DBBits extends QueryableDatatype implements BitsResult {
 	}
 
 	/**
-	 * Indicates whether this DBBits needs support for returning NULLs.
+	 * Indicates whether this DBBooleanArray needs support for returning NULLs.
 	 *
 	 * @return FALSE.
 	 */

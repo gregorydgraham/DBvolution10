@@ -1421,4 +1421,8 @@ public abstract class DBDatabase implements Cloneable {
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return true;
 	}
+
+	boolean supportsRecursiveQueriesNatively() {
+		return true;
+	}
 }

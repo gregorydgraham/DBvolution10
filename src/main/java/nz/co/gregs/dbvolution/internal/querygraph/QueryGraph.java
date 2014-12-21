@@ -37,9 +37,9 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  */
 public class QueryGraph {
 
-	final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<Class<? extends DBRow>, QueryGraphNode>();
-	final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
-	edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> jungGraph = new SparseMultigraph<QueryGraphNode, DBExpression>();
+	private final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<Class<? extends DBRow>, QueryGraphNode>();
+	private final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
+	private edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> jungGraph = new SparseMultigraph<QueryGraphNode, DBExpression>();
 
 	public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, List<BooleanExpression> expressions, QueryOptions options) {
 		addAndConnectToRelevant(database, allQueryTables, expressions, options);

@@ -79,7 +79,7 @@ public class TableHandlerTest {
     @Test
     public void tableNameInheritedGivenNonAnnotatedSubclassOfNonAnnotatedDBRowClass() {
         TableHandler handler = new TableHandler(NonAnnotatedSubclassOfNonAnnotatedDBRow.class);
-        assertThat(handler.getTableName(), is("NonAnnotatedSubclassOfNonAnnotatedDBRow"));
+        assertThat(handler.getTableName(), is("MyNonAnnotatedDBRow"));
     }
 
     @Test

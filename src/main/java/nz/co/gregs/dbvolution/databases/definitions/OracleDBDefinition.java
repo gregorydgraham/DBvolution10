@@ -87,8 +87,8 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getTableAlias(RowDefinition tabRow) {
-		return "\"" + super.getTableAlias(tabRow) + "\"";
+	public String formatTableAlias(String suggestedTableAlias) {
+		return "\"" + suggestedTableAlias.replaceAll("-", "_") + "\"";
 	}
 
 	@Override

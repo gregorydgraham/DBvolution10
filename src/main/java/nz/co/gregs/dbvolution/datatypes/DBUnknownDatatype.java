@@ -75,7 +75,7 @@ public class DBUnknownDatatype extends QueryableDatatype {
 
 //	@Override
 //	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
-//		blankQuery();
+//		removeConstraints();
 //		if (resultSet == null || resultSetColumnName == null) {
 //			this.setToNull();
 //		} else {

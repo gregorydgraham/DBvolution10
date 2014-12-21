@@ -836,7 +836,7 @@ public class DBTable<E extends DBRow> {
 		return returnList;
 	}
 
-	public void mustIntersectWith(DBQuery dbQuery) {
-		this.query.mustIntersectWith(dbQuery);
-	}
+//	public void mustIntersectWith(DBQuery dbQuery) {
+//		this.query.mustIntersectWith(dbQuery);
+//	}
 }

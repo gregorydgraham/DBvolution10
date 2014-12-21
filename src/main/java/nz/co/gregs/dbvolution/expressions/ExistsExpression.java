@@ -15,13 +15,13 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.query.QueryDetails;
 
 /**
  *
@@ -29,45 +29,75 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public class ExistsExpression extends BooleanExpression {
 
-	List<DBRow> outerTables = new ArrayList<DBRow>();
-	List<DBRow> innerTables = new ArrayList<DBRow>();
+	QueryDetails outerQuery = new QueryDetails();
+	QueryDetails innerQuery = new QueryDetails();
 
 	public ExistsExpression(List<DBRow> outerTables, List<DBRow> innerTables) {
 		for (DBRow outerTable : outerTables) {
 			final DBRow newOuter = DBRow.copyDBRow(outerTable);
 			newOuter.setReturnFieldsToNone();
-			this.outerTables.add(newOuter);
+			this.outerQuery.getRequiredQueryTables().add(newOuter);
+			this.outerQuery.getAllQueryTables().add(newOuter);
 		}
 		for (DBRow innerTable : innerTables) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
 			newInner.setReturnFields(newInner.getPrimaryKey());
-			this.innerTables.add(newInner);
+			this.innerQuery.getRequiredQueryTables().add(newInner);
 		}
 	}
 
 	public ExistsExpression(DBRow outerTable, List<DBRow> innerTables) {
 		final DBRow newOuter = DBRow.copyDBRow(outerTable);
 		newOuter.setReturnFieldsToNone();
-		this.outerTables.add(newOuter);
+		this.outerQuery.getRequiredQueryTables().add(newOuter);
+		this.outerQuery.getAllQueryTables().add(newOuter);
 		for (DBRow innerTable : innerTables) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
 			newInner.setReturnFields(newInner.getPrimaryKey());
-			this.innerTables.add(newInner);
+			this.innerQuery.getRequiredQueryTables().add(newInner);
+			this.innerQuery.getAllQueryTables().add(newInner);
+		}
+	}
+
+	public ExistsExpression(DBQuery outerQuery, DBQuery innerQuery) {
+		for (DBRow outerTable : outerQuery.getAllTables()) {
+			final DBRow newOuter = DBRow.copyDBRow(outerTable);
+			newOuter.setReturnFieldsToNone();
+			this.outerQuery.getRequiredQueryTables().add(newOuter);
+			this.outerQuery.getAllQueryTables().add(newOuter);
+		}
+		for (DBRow innerTable : innerQuery.getRequiredTables()) {
+			final DBRow newInner = DBRow.copyDBRow(innerTable);
+			newInner.setReturnFields(newInner.getPrimaryKey());
+			this.innerQuery.getRequiredQueryTables().add(newInner);
+			this.innerQuery.getAllQueryTables().add(newInner);
+		}
+		for (DBRow innerTable : innerQuery.getOptionalTables()) {
+			final DBRow newInner = DBRow.copyDBRow(innerTable);
+			newInner.setReturnFields(newInner.getPrimaryKey());
+			this.innerQuery.getOptionalQueryTables().add(newInner);
+			this.innerQuery.getAllQueryTables().add(newInner);
 		}
 	}
 
 	public ExistsExpression(DBRow outerTable, DBRow innerTable) {
 		final DBRow newOuter = DBRow.copyDBRow(outerTable);
 		newOuter.setReturnFieldsToNone();
-		this.outerTables.add(newOuter);
+		this.outerQuery.getRequiredQueryTables().add(newOuter);
+		this.outerQuery.getAllQueryTables().add(newOuter);
 		final DBRow newInner = DBRow.copyDBRow(innerTable);
 		newInner.setReturnFields(newInner.getPrimaryKey());
-		this.innerTables.add(newInner);
+		this.innerQuery.getRequiredQueryTables().add(newInner);
+			this.innerQuery.getAllQueryTables().add(newInner);
 	}
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		DBQuery dbQuery = db.getDBQuery(innerTables).addAssumedTables(outerTables);
+		final List<DBRow> allQueryTables = outerQuery.getAllQueryTables();
+		DBQuery dbQuery = db
+				.getDBQuery(innerQuery.getRequiredQueryTables())
+				.addOptional(innerQuery.getOptionalQueryTables())
+				.addAssumedTables(allQueryTables);
 		String sql = dbQuery.getSQLForQuery().replaceAll(";", "");
 		return " EXISTS (" + sql + ")";
 	}
@@ -91,9 +121,9 @@ public class ExistsExpression extends BooleanExpression {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		Set<DBRow> returnSet = new HashSet<DBRow>();
-		returnSet.addAll(outerTables);
-		return returnSet;
+		final HashSet<DBRow> hashSet = new HashSet<DBRow>();
+		hashSet.addAll(outerQuery.getAllQueryTables());
+		return hashSet;
 	}
 
 }

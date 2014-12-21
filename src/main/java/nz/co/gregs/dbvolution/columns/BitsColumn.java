@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.columns;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBBits;
+import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.expressions.BitsExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -62,7 +62,7 @@ public class BitsColumn extends BitsExpression implements ColumnProvider {
 	 * @param row
 	 * @param field
 	 */
-	public BitsColumn(RowDefinition row, DBBits field) {
+	public BitsColumn(RowDefinition row, DBBooleanArray field) {
 		this.column = new AbstractColumn(row, field);
 	}
 

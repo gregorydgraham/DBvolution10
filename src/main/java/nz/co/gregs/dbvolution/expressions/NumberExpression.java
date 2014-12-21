@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBBits;
+import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -2138,8 +2138,8 @@ public class NumberExpression implements NumberResult {
 		}
 
 		@Override
-		public DBBits getQueryableDatatypeForExpressionValue() {
-			return new DBBits();
+		public DBBooleanArray getQueryableDatatypeForExpressionValue() {
+			return new DBBooleanArray();
 		}
 
 		abstract String getFunctionName(DBDatabase db);

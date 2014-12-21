@@ -786,6 +786,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param otherTable
 	 * @param otherTableField
 	 */
+	@Deprecated
 	public void addRelationship(DBBoolean thisTableField, DBRow otherTable, DBBoolean otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
@@ -814,7 +815,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param thisTableField
 	 * @param otherTable
 	 * @param otherTableField
-	 */
+	 */@Deprecated
 	public void addRelationship(DBDate thisTableField, DBRow otherTable, DBDate otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
@@ -844,6 +845,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param otherTable
 	 * @param otherTableField
 	 */
+	@Deprecated
 	public void addRelationship(DBInteger thisTableField, DBRow otherTable, DBInteger otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
@@ -873,6 +875,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param otherTable
 	 * @param otherTableField
 	 */
+	@Deprecated
 	public void addRelationship(DBNumber thisTableField, DBRow otherTable, DBNumber otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
@@ -902,6 +905,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param otherTable
 	 * @param otherTableField
 	 */
+	@Deprecated
 	public void addRelationship(DBString thisTableField, DBRow otherTable, DBString otherTableField) {
 		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
 	}
@@ -920,6 +924,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBString,
 	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBString)
 	 */
+	@Deprecated
 	public void clearRelationships() {
 		this.getAdHocRelationships().clear();
 	}
@@ -1056,6 +1061,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the adHocRelationships
 	 */
+	@Deprecated
 	protected List<BooleanExpression> getAdHocRelationships() {
 		return adHocRelationships;
 	}
@@ -1646,6 +1652,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 		}
 		return resultList;
+	}
+
+	void removeConstraints() {
+		RowDefinitionInstanceWrapper wrapper = getWrapper();
+		List<PropertyWrapper> propertyWrappers = wrapper.getPropertyWrappers();
+		for (PropertyWrapper propertyWrapper : propertyWrappers) {
+			propertyWrapper.getQueryableDatatype().removeConstraints();
+		}
 	}
 
 	/**
