@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -962,17 +963,18 @@ public abstract class DBDefinition {
 	 * @return the table alias.
 	 */
 	public String getTableAlias(RowDefinition tabRow) {
-		return formatTableAlias(""+tabRow.getClass().getSimpleName().hashCode());
+		return formatTableAlias("" + tabRow.getClass().getSimpleName().hashCode());
 	}
 
 	/**
-	 * Formats the suggested table alias provided by DBvolution for the particular database..
+	 * Formats the suggested table alias provided by DBvolution for the
+	 * particular database..
 	 *
-	 * @param suggestedTableAlias 
+	 * @param suggestedTableAlias
 	 * @return the table alias.
 	 */
 	public String formatTableAlias(String suggestedTableAlias) {
-		return "_"+suggestedTableAlias.replaceAll("-", "_");
+		return "_" + suggestedTableAlias.replaceAll("-", "_");
 	}
 
 	/**
@@ -2201,11 +2203,24 @@ public abstract class DBDefinition {
 	/**
 	 * Convert the boolean array of bit values into the SQL equivalent.
 	 *
-	 * @param booleanArray 
+	 * @param booleanArray
 	 * @return SQL snippet.
 	 */
 	public String doBitsValueTransform(boolean[] booleanArray) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		String result = "";
+		String separator = "ARRAY(";
+		for (boolean c : booleanArray) {
+			if (c) {
+				result += separator + "true";
+			} else {
+				result += separator + "false";
+			}
+			separator = ",";
+		}
+		if (!separator.equals("(")) {
+			result += ")";
+		}
+		return result;
 	}
 
 	/**
