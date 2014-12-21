@@ -816,7 +816,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 
 //	@Override
 //	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
-//		blankQuery();
+//		removeConstraints();
 //		if (resultSet == null || resultSetColumnName == null) {
 //			this.setToNull();
 //		} else {

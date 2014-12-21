@@ -47,15 +47,17 @@ public class QueryGraphEdgeStrokeTransformer implements Transformer<DBExpression
 			}
 		}
 		if (optionalExpr) {
-			return new BasicStroke(1.0f,
-					BasicStroke.CAP_BUTT,
-					BasicStroke.JOIN_MITER,
-					2.0f, new float[]{2.0f}, 0.0f);
+			return STROKE_FOR_OPTIONAL_EXPRESSION;
 		} else {
-			return new BasicStroke(1.0f,
-					BasicStroke.CAP_BUTT,
-					BasicStroke.JOIN_MITER);
+			return STROKE_FOR_REQUIRED_EXPRESSION;
 		}
 	}
+	public static final BasicStroke STROKE_FOR_OPTIONAL_EXPRESSION = new BasicStroke(1.0f,
+			BasicStroke.CAP_BUTT,
+			BasicStroke.JOIN_MITER,
+			2.0f, new float[]{2.0f}, 0.0f);
+	public static final BasicStroke STROKE_FOR_REQUIRED_EXPRESSION = new BasicStroke(1.0f,
+			BasicStroke.CAP_BUTT,
+			BasicStroke.JOIN_MITER);
 
 }

@@ -37,7 +37,6 @@ import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringResult;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
@@ -257,6 +256,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	/**
 	 * Remove the conditions, criteria, and operators applied to this QDT.
+	 * 
+	 * Deprecated as confusingly named.  Use {@link #removeConstraints() } instead.
 	 *
 	 * <p>
 	 * After calling this method, this object will not cause a where clause to be
@@ -264,7 +265,21 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * @return this instance.
 	 */
+	@Deprecated
 	protected QueryableDatatype blankQuery() {
+		return removeConstraints();
+	}
+
+	/**
+	 * Remove the conditions, criteria, and operators applied to this QDT.
+	 *
+	 * <p>
+	 * After calling this method, this object will not cause a where clause to be
+	 * generated in any subsequent queries.
+	 *
+	 * @return this instance.
+	 */
+	public QueryableDatatype removeConstraints() {
 		isDBNull = false;
 		this.operator = null;
 		return this;
@@ -468,7 +483,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		if (this.isDBNull || getLiteralValue() == null) {
 			return def.getNull();
 		} else if (getLiteralValue() instanceof DBExpression) {
-			return "("+((DBExpression) getLiteralValue()).toSQLString(db)+")";
+			return "(" + ((DBExpression) getLiteralValue()).toSQLString(db) + ")";
 		} else {
 			return formatValueForSQLStatement(db);
 		}
@@ -509,7 +524,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @param operator the operator to set
 	 */
 	public void setOperator(DBOperator operator) {
-		blankQuery();
+		removeConstraints();
 		this.operator = operator;
 		if (undefined) {
 			undefined = false;
@@ -550,7 +565,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @throws SQLException
 	 */
 	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
-		blankQuery();
+		removeConstraints();
 		if (resultSet == null || resultSetColumnName == null) {
 			this.setToNull();
 		} else {
@@ -687,12 +702,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * generated in any subsequent queries.
 	 *
 	 * <p>
-	 * Synonym for {@link #blankQuery() }.
+	 * Synonym for {@link #removeConstraints() }.
 	 *
 	 * @return this instance
 	 */
 	public QueryableDatatype clear() {
-		return blankQuery();
+		return removeConstraints();
 	}
 
 	/**

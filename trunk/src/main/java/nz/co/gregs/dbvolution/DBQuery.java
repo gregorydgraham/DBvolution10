@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.internal.querygraph.*;
 import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.*;
@@ -28,22 +27,18 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
-import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.*;
+import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.query.*;
+import nz.co.gregs.dbvolution.internal.querygraph.*;
+import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
-import nz.co.gregs.dbvolution.query.QueryOptions;
-import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
-import nz.co.gregs.dbvolution.internal.querygraph.QueryGraphNode;
-import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * The Definition of a Query on a Database
@@ -87,22 +82,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class DBQuery {
 
-	private static final int COUNT_QUERY = 1;
-	private static final int SELECT_QUERY = 0;
-
 	private final DBDatabase database;
-	private final List<DBRow> allQueryTables;
-	private final List<DBRow> requiredQueryTables;
-	private final List<DBRow> optionalQueryTables;
-	private final List<DBRow> assumedQueryTables;
-	private final List<DBQuery> intersectingQueries;
-	private final QueryOptions options = new QueryOptions();
-	private final List<DBRow> extraExamples = new ArrayList<DBRow>();
-	private final List<BooleanExpression> conditions = new ArrayList<BooleanExpression>();
-	private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
-	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<Object, DBExpression>();
-	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
-
+	private final QueryDetails details = new QueryDetails();
 	private String resultSQL;
 	private QueryGraph queryGraph;
 	private List<DBQueryRow> results;
@@ -113,12 +94,17 @@ public class DBQuery {
 	private ColumnProvider[] sortOrderColumns;
 	private List<PropertyWrapper> sortOrder = null;
 
+	private static enum RecursiveSQLDirection {
+
+		ASCEND, DESCEND
+	};
+
+	private static enum QueryType {
+
+		COUNT, SELECT
+	};
+
 	private DBQuery(DBDatabase database) {
-		this.requiredQueryTables = new ArrayList<DBRow>();
-		this.optionalQueryTables = new ArrayList<DBRow>();
-		this.assumedQueryTables = new ArrayList<DBRow>();
-		this.allQueryTables = new ArrayList<DBRow>();
-		this.intersectingQueries = new ArrayList<DBQuery>();
 		this.database = database;
 		blankResults();
 	}
@@ -143,14 +129,14 @@ public class DBQuery {
 	 * automatically included in the query and an instance of this DBRow class
 	 * will be created for each DBQueryRow returned.
 	 *
-	 * @param tables a list of DBRow objects that defines required tables and
+	 * @param examples a list of DBRow objects that defines required tables and
 	 * criteria
 	 * @return this DBQuery instance
 	 */
-	public DBQuery add(DBRow... tables) {
-		for (DBRow table : tables) {
-			requiredQueryTables.add(table);
-			allQueryTables.add(table);
+	public DBQuery add(DBRow... examples) {
+		for (DBRow table : examples) {
+			details.getRequiredQueryTables().add(table);
+			details.getAllQueryTables().add(table);
 			blankResults();
 		}
 		return this;
@@ -168,14 +154,14 @@ public class DBQuery {
 	 * automatically included in the query and an instance of this DBRow class
 	 * will be created for each DBQueryRow returned.
 	 *
-	 * @param tables a list of DBRow objects that defines required tables and
+	 * @param examples a list of DBRow objects that defines required tables and
 	 * criteria
 	 * @return this DBQuery instance
 	 */
-	public DBQuery add(List<DBRow> tables) {
-		for (DBRow table : tables) {
-			requiredQueryTables.add(table);
-			allQueryTables.add(table);
+	public DBQuery add(List<DBRow> examples) {
+		for (DBRow table : examples) {
+			details.getRequiredQueryTables().add(table);
+			details.getAllQueryTables().add(table);
 			blankResults();
 		}
 		return this;
@@ -195,15 +181,15 @@ public class DBQuery {
 	 * Criteria (permitted and excluded values) specified in the supplied instance
 	 * will be added to the query.
 	 *
-	 * @param tables a list of DBRow objects that defines optional tables and
+	 * @param examples a list of DBRow objects that defines optional tables and
 	 * criteria
 	 *
 	 * @return this DBQuery instance
 	 */
-	public DBQuery addOptional(DBRow... tables) {
-		for (DBRow table : tables) {
-			optionalQueryTables.add(table);
-			allQueryTables.add(table);
+	public DBQuery addOptional(DBRow... examples) {
+		for (DBRow table : examples) {
+			details.getOptionalQueryTables().add(table);
+			details.getAllQueryTables().add(table);
 			blankResults();
 		}
 		return this;
@@ -219,18 +205,18 @@ public class DBQuery {
 	 * Previous results and SQL are discarded, and the query is set ready to be
 	 * re-run.
 	 *
-	 * @param tables a list of DBRow instances to remove from the query
+	 * @param examples a list of DBRow instances to remove from the query
 	 * @return this DBQuery instance
 	 */
-	public DBQuery remove(DBRow... tables) {
-		for (DBRow table : tables) {
-			Iterator<DBRow> iterator = allQueryTables.iterator();
+	public DBQuery remove(DBRow... examples) {
+		for (DBRow table : examples) {
+			Iterator<DBRow> iterator = details.getAllQueryTables().iterator();
 			while (iterator.hasNext()) {
 				DBRow qtab = iterator.next();
 				if (qtab.isPeerOf(table)) {
-					requiredQueryTables.remove(qtab);
-					optionalQueryTables.remove(qtab);
-					assumedQueryTables.remove(qtab);
+					details.getRequiredQueryTables().remove(qtab);
+					details.getOptionalQueryTables().remove(qtab);
+					details.getAssumedQueryTables().remove(qtab);
 					iterator.remove();
 				}
 			}
@@ -256,7 +242,7 @@ public class DBQuery {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return getSQLForQuery(SELECT_QUERY);
+		return getSQLForQuery(QueryType.SELECT);
 	}
 
 	String getANSIJoinClause(DBDatabase database, QueryState queryState, DBRow newTable, List<DBRow> previousTables) {
@@ -269,22 +255,22 @@ public class DBQuery {
 
 		final ArrayList<DBRow> preExistingTables = new ArrayList<DBRow>();
 		preExistingTables.addAll(previousTables);
-		preExistingTables.addAll(assumedQueryTables);
+		preExistingTables.addAll(details.getAssumedQueryTables());
 
-		if (requiredQueryTables.isEmpty() && optionalQueryTables.size() == allQueryTables.size()) {
+		if (details.getRequiredQueryTables().isEmpty() && details.getOptionalQueryTables().size() == details.getAllQueryTables().size()) {
 			isFullOuterJoin = true;
-		} else if (optionalQueryTables.contains(newTable)) {
+		} else if (details.getOptionalQueryTables().contains(newTable)) {
 			isLeftOuterJoin = true;
 		}
 
 		//Store the expressions from the new table in the QueryState
 		for (DBRow otherTable : preExistingTables) {
-			queryState.remainingExpressions.addAll(newTable.getRelationshipsAsBooleanExpressions(database, otherTable, options));
+			queryState.remainingExpressions.addAll(newTable.getRelationshipsAsBooleanExpressions(database, otherTable, details.getOptions()));
 		}
 
 		// Add new table's conditions
 		List<String> newTableConditions = newTable.getWhereClausesWithAliases(database);
-		if (requiredQueryTables.contains(newTable)) {
+		if (details.getRequiredQueryTables().contains(newTable)) {
 			queryState.addRequiredConditions(newTableConditions);
 		} else {
 			conditionClauses.addAll(newTableConditions);
@@ -293,7 +279,7 @@ public class DBQuery {
 		// Since the first table can not have a ON clause we need to add it's ON clause to the second table's.
 		if (previousTables.size() == 1) {
 			final DBRow firstTable = previousTables.get(0);
-			if (!requiredQueryTables.contains(firstTable)) {
+			if (!details.getRequiredQueryTables().contains(firstTable)) {
 				List<String> firstTableConditions = firstTable.getWhereClausesWithAliases(database);
 				conditionClauses.addAll(firstTableConditions);
 			}
@@ -311,7 +297,7 @@ public class DBQuery {
 						if (expr.isRelationship()) {
 							joinClauses.add(expr.toSQLString(database));
 						} else {
-							if (requiredQueryTables.containsAll(tablesInvolved)) {
+							if (details.getRequiredQueryTables().containsAll(tablesInvolved)) {
 								queryState.addRequiredCondition(expr.toSQLString(database));
 							} else {
 								conditionClauses.add(expr.toSQLString(database));
@@ -349,14 +335,14 @@ public class DBQuery {
 				String separator = "";
 				for (String join : joinClauses) {
 					sqlToReturn += separator + join;
-					separator = defn.beginJoinClauseLine(options);
+					separator = defn.beginJoinClauseLine(details.getOptions());
 				}
 				if (!conditionClauses.isEmpty()) {
 					sqlToReturn += ")";
 				}
 			}
 			if (conditionClauses.isEmpty() && joinClauses.isEmpty()) {
-				sqlToReturn += defn.getWhereClauseBeginningCondition(options);
+				sqlToReturn += defn.getWhereClauseBeginningCondition(details.getOptions());
 			}
 			sqlToReturn += defn.endOnClause();
 		}
@@ -368,15 +354,16 @@ public class DBQuery {
 		String sqlToReturn = "";
 		for (String cond : conditionClauses) {
 			sqlToReturn += separator + cond;
-			separator = defn.beginConditionClauseLine(options);
+			separator = defn.beginConditionClauseLine(details.getOptions());
 		}
 		return sqlToReturn;
 	}
 
-	private String getSQLForQuery(int queryType) {
+	private String getSQLForQuery(QueryType queryType) {
 		String sqlString = "";
+		final QueryOptions options = details.getOptions();
 
-		if (allQueryTables.size() > 0) {
+		if (details.getAllQueryTables().size() > 0) {
 			QueryState queryState = new QueryState(this, getDatabase());
 
 			initialiseQueryGraph();
@@ -400,7 +387,7 @@ public class DBQuery {
 					? queryGraph.toListIncludingCartesian()
 					: queryGraph.toList();
 
-			if (this.options.getRowLimit() > 0) {
+			if (options.getRowLimit() > 0) {
 				selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
 			}
 
@@ -449,7 +436,7 @@ public class DBQuery {
 				whereClause.append(defn.beginConditionClauseLine(options)).append(conditionsAsSQLClause);
 			}
 
-			for (DBRow extra : extraExamples) {
+			for (DBRow extra : details.getExtraExamples()) {
 				List<String> extraCriteria = extra.getWhereClausesWithAliases(getDatabase());
 				if (extraCriteria != null && !extraCriteria.isEmpty()) {
 					for (String clause : extraCriteria) {
@@ -463,7 +450,7 @@ public class DBQuery {
 				queryState.consumeExpression(expression);
 			}
 
-			for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
+			for (Map.Entry<Object, DBExpression> entry : details.getExpressionColumns().entrySet()) {
 				final Object key = entry.getKey();
 				final DBExpression expression = entry.getValue();
 				selectClause.append(colSep).append(expression.toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
@@ -476,7 +463,7 @@ public class DBQuery {
 				columnIndex++;
 			}
 
-			for (Map.Entry<Object, DBExpression> entry : dbReportGroupByColumns.entrySet()) {
+			for (Map.Entry<Object, DBExpression> entry : details.getDbReportGroupByColumns().entrySet()) {
 				groupByClause.append(groupByColSep).append(entry.getValue().toSQLString(getDatabase()));
 				groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 			}
@@ -491,9 +478,9 @@ public class DBQuery {
 				whereClause = new StringBuilder("");
 			}
 
-			if (queryType == SELECT_QUERY) {
+			if (queryType == QueryType.SELECT) {
 				// Clean up the formatting of the optional clauses
-				String groupByClauseFinal = (dbReportGroupByColumns.size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
+				String groupByClauseFinal = (details.getDbReportGroupByColumns().size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
 				String orderByClauseFinal = getOrderByClause(indexesOfSelectedColumns, indexesOfSelectedExpressions);
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
@@ -507,7 +494,7 @@ public class DBQuery {
 						.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(options) : "")
 						.append(defn.endSQLStatement())
 						.toString();
-			} else if (queryType == COUNT_QUERY) {
+			} else if (queryType == QueryType.COUNT) {
 				sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClauseFinal + lineSep + defn.endSQLStatement();
 			}
 		}
@@ -515,6 +502,7 @@ public class DBQuery {
 	}
 
 	private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep) {
+		final QueryOptions options = details.getOptions();
 		for (DBExpression rel : tabRow.getAdHocRelationships()) {
 			whereClause.append(defn.beginConditionClauseLine(options)).append("(").append(rel.toSQLString(getDatabase())).append(")");
 		}
@@ -555,7 +543,7 @@ public class DBQuery {
 	 * returned by this query
 	 */
 	public String getSQLForCount() {
-		return getSQLForQuery(DBQuery.COUNT_QUERY);
+		return getSQLForQuery(QueryType.COUNT);
 	}
 
 	/**
@@ -596,15 +584,16 @@ public class DBQuery {
 	public List<DBQueryRow> getAllRows() throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		prepareForQuery();
 
-		if (requiredQueryTables.isEmpty() && optionalQueryTables.isEmpty()) {
+		if (details.getRequiredQueryTables().isEmpty() && details.getOptionalQueryTables().isEmpty()) {
 			throw new AccidentalBlankQueryException();
 		}
+		final QueryOptions options = details.getOptions();
 
 		if (!options.isBlankQueryAllowed() && willCreateBlankQuery() && rawSQLClause.isEmpty()) {
 			throw new AccidentalBlankQueryException();
 		}
 
-		if (!options.isCartesianJoinAllowed() && (requiredQueryTables.size() + optionalQueryTables.size()) > 1 && queryGraph.willCreateCartesianJoin()) {
+		if (!options.isCartesianJoinAllowed() && (details.getRequiredQueryTables().size() + details.getOptionalQueryTables().size()) > 1 && queryGraph.willCreateCartesianJoin()) {
 			throw new AccidentalCartesianJoinException(resultSQL);
 		}
 
@@ -612,7 +601,7 @@ public class DBQuery {
 
 		DBStatement dbStatement = getDatabase().getDBStatement();
 		try {
-			ResultSet resultSet = getResultSetForSQL(dbStatement);
+			ResultSet resultSet = getResultSetForSQL(dbStatement, resultSQL);
 			try {
 				while (resultSet.next()) {
 //						&& ((getDatabase().getDefinition().supportsPagingNatively(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
@@ -622,7 +611,7 @@ public class DBQuery {
 
 					setExpressionColumns(resultSet, queryRow);
 
-					setQueryRowFromResultSet(resultSet, queryRow, dbReportGroupByColumns.size() > 0);
+					setQueryRowFromResultSet(resultSet, queryRow, details.getDbReportGroupByColumns().size() > 0);
 					results.add(queryRow);
 				}
 			} finally {
@@ -638,11 +627,12 @@ public class DBQuery {
 	 * Executes the query using the statement provided and returns the ResultSet
 	 *
 	 * @param dbStatement
+	 * @param sql
 	 * @return the ResultSet returned from the actual database.
 	 * @throws SQLException
 	 */
-	protected ResultSet getResultSetForSQL(DBStatement dbStatement) throws SQLException {
-		return dbStatement.executeQuery(resultSQL);
+	protected ResultSet getResultSetForSQL(DBStatement dbStatement, String sql) throws SQLException {
+		return dbStatement.executeQuery(sql);
 	}
 
 	/**
@@ -656,7 +646,7 @@ public class DBQuery {
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
 	protected void setQueryRowFromResultSet(ResultSet resultSet, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException, UnableToInstantiateDBRowSubclassException {
-		for (DBRow tableRow : allQueryTables) {
+		for (DBRow tableRow : details.getAllQueryTables()) {
 			DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
 			setFieldsFromColumns(tableRow, newInstance, resultSet);
@@ -664,7 +654,7 @@ public class DBQuery {
 
 			newInstance.setDefined(); // Actually came from the database so it is a defined row.
 
-			Map<String, DBRow> existingInstancesOfThisTableRow = existingInstances.get(tableRow.getClass());
+			Map<String, DBRow> existingInstancesOfThisTableRow = details.getExistingInstances().get(tableRow.getClass());
 			existingInstancesOfThisTableRow = setExistingInstancesForTable(existingInstancesOfThisTableRow, newInstance);
 
 			if (newInstance.isEmptyRow()) {
@@ -725,7 +715,7 @@ public class DBQuery {
 		if (hashMap == null) {
 			hashMap = new HashMap<String, DBRow>();
 		}
-		existingInstances.put(newInstance.getClass(), hashMap);
+		details.getExistingInstances().put(newInstance.getClass(), hashMap);
 		return hashMap;
 	}
 
@@ -773,7 +763,7 @@ public class DBQuery {
 	 * @throws SQLException
 	 */
 	protected void setExpressionColumns(ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
-		for (Map.Entry<Object, DBExpression> entry : expressionColumns.entrySet()) {
+		for (Map.Entry<Object, DBExpression> entry : details.getExpressionColumns().entrySet()) {
 			String expressionAlias = getDatabase().getDefinition().formatExpressionAlias(entry.getKey());
 			QueryableDatatype expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
 			expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
@@ -783,6 +773,7 @@ public class DBQuery {
 
 	private void prepareForQuery() throws SQLException {
 		results = new ArrayList<DBQueryRow>();
+		final QueryOptions options = details.getOptions();
 		resultsRowLimit = options.getRowLimit();
 		resultsPageIndex = options.getPageIndex();
 		resultSQL = this.getSQLForQuery();
@@ -856,6 +847,7 @@ public class DBQuery {
 	}
 
 	private boolean needsResults() {
+		final QueryOptions options = details.getOptions();
 		return results == null
 				|| results.isEmpty()
 				|| resultSQL == null
@@ -923,7 +915,7 @@ public class DBQuery {
 
 		for (DBQueryRow row : this.results) {
 			String tableSeparator = "";
-			for (DBRow tab : this.allQueryTables) {
+			for (DBRow tab : details.getAllQueryTables()) {
 				ps.print(tableSeparator);
 				DBRow rowPart = row.get(tab);
 				if (rowPart != null) {
@@ -959,7 +951,7 @@ public class DBQuery {
 		}
 
 		for (DBQueryRow row : this.results) {
-			for (DBRow tab : this.allQueryTables) {
+			for (DBRow tab : this.details.getAllQueryTables()) {
 				DBRow rowPart = row.get(tab);
 				if (rowPart != null) {
 					String rowPartStr = rowPart.toString();
@@ -989,7 +981,7 @@ public class DBQuery {
 		}
 
 		for (DBQueryRow row : this.results) {
-			for (DBRow tab : this.allQueryTables) {
+			for (DBRow tab : this.details.getAllQueryTables()) {
 				DBRow rowPart = row.get(tab);
 				if (rowPart != null) {
 					final QueryableDatatype primaryKey = rowPart.getPrimaryKey();
@@ -1013,11 +1005,11 @@ public class DBQuery {
 	 * @return this DBQuery instance.
 	 */
 	public DBQuery clear() {
-		this.requiredQueryTables.clear();
-		this.optionalQueryTables.clear();
-		this.allQueryTables.clear();
-		this.conditions.clear();
-		this.extraExamples.clear();
+		this.details.getRequiredQueryTables().clear();
+		this.details.getOptionalQueryTables().clear();
+		this.details.getAllQueryTables().clear();
+		this.details.getConditions().clear();
+		this.details.getExtraExamples().clear();
 		blankResults();
 		return this;
 	}
@@ -1079,13 +1071,13 @@ public class DBQuery {
 	 */
 	public boolean willCreateBlankQuery() {
 		boolean willCreateBlankQuery = true;
-		for (DBRow table : allQueryTables) {
+		for (DBRow table : details.getAllQueryTables()) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.getDatabase());
 		}
-		for (DBRow table : extraExamples) {
+		for (DBRow table : details.getExtraExamples()) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.getDatabase());
 		}
-		return willCreateBlankQuery && (conditions.isEmpty());
+		return willCreateBlankQuery && (details.getConditions().isEmpty());
 	}
 
 	/**
@@ -1114,7 +1106,7 @@ public class DBQuery {
 			limit = 0;
 		}
 
-		options.setRowLimit(limit);
+		details.getOptions().setRowLimit(limit);
 		blankResults();
 
 		return this;
@@ -1130,7 +1122,7 @@ public class DBQuery {
 	 * @see #setRowLimit(int)
 	 */
 	public DBQuery clearRowLimit() {
-		options.setRowLimit(-1);
+		details.getOptions().setRowLimit(-1);
 		blankResults();
 
 		return this;
@@ -1319,7 +1311,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setBlankQueryAllowed(boolean allow) {
-		this.options.setBlankQueryAllowed(allow);
+		this.details.getOptions().setBlankQueryAllowed(allow);
 
 		return this;
 	}
@@ -1345,7 +1337,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setCartesianJoinsAllowed(boolean allow) {
-		this.options.setCartesianJoinAllowed(allow);
+		this.details.getOptions().setCartesianJoinAllowed(allow);
 
 		return this;
 	}
@@ -1411,7 +1403,7 @@ public class DBQuery {
 	 * @return the useANSISyntax flag
 	 */
 	public boolean isUseANSISyntax() {
-		return options.isUseANSISyntax();
+		return details.getOptions().isUseANSISyntax();
 	}
 
 	/**
@@ -1436,7 +1428,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setUseANSISyntax(boolean useANSISyntax) {
-		this.options.setUseANSISyntax(useANSISyntax);
+		this.details.getOptions().setUseANSISyntax(useANSISyntax);
 
 		return this;
 	}
@@ -1464,7 +1456,7 @@ public class DBQuery {
 		resultClasses = new TreeSet<Class<? extends DBRow>>(new DBRowClassNameComparator());
 
 		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRowNameComparator());
-		for (DBRow table : allQueryTables) {
+		for (DBRow table : details.getAllQueryTables()) {
 			SortedSet<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
 				try {
@@ -1504,7 +1496,7 @@ public class DBQuery {
 	@SuppressWarnings("unchecked")
 	public SortedSet<DBRow> getReferencedTables() {
 		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRowNameComparator());
-		for (DBRow table : allQueryTables) {
+		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getReferencedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
 				try {
@@ -1531,7 +1523,7 @@ public class DBQuery {
 	 *
 	 */
 	protected List<DBRow> getAllQueryTables() {
-		return allQueryTables;
+		return details.getAllQueryTables();
 	}
 
 	/**
@@ -1582,7 +1574,7 @@ public class DBQuery {
 	 */
 	public DBQuery addAllConnectedTables() throws InstantiationException, IllegalAccessException {
 		List<DBRow> tablesToAdd = new ArrayList<DBRow>();
-		for (DBRow table : allQueryTables) {
+		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> ConnectedTable : allConnectedTables) {
 				tablesToAdd.add(ConnectedTable.newInstance());
@@ -1615,12 +1607,12 @@ public class DBQuery {
 	public DBQuery addAllConnectedTablesAsOptional() throws InstantiationException, IllegalAccessException {
 		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
 		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
-		for (DBRow table : allQueryTables) {
+		for (DBRow table : details.getAllQueryTables()) {
 			@SuppressWarnings("unchecked")
 			Class<DBRow> aClass = (Class<DBRow>) table.getClass();
 			alreadyAddedClasses.add(aClass);
 		}
-		for (DBRow table : allQueryTables) {
+		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
 				DBRow newInstance = relatedTable.newInstance();
@@ -1656,6 +1648,7 @@ public class DBQuery {
 	public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws InstantiationException, IllegalAccessException {
 		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
 		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
+		final List<DBRow> allQueryTables = details.getAllQueryTables();
 		DBRow[] originalTables = allQueryTables.toArray(new DBRow[]{});
 
 		for (DBRow table : allQueryTables) {
@@ -1748,9 +1741,10 @@ public class DBQuery {
 	 * @throws SQLException
 	 */
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
+		final QueryOptions options = details.getOptions();
 
 		if (database.supportsPaging(options)) {
-			this.options.setPageIndex(pageNumber);
+			options.setPageIndex(pageNumber);
 			if (this.needsResults()) {
 				getAllRows();
 			}
@@ -1759,7 +1753,7 @@ public class DBQuery {
 			if (this.needsResults()) {
 				getAllRows();
 			}
-			int rowLimit = this.options.getRowLimit();
+			int rowLimit = options.getRowLimit();
 			int startIndex = rowLimit * pageNumber;
 			startIndex = (startIndex < 0 ? 0 : startIndex);
 			int stopIndex = rowLimit * (pageNumber + 1) - 1;
@@ -1806,7 +1800,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addCondition(BooleanExpression condition) {
-		conditions.add(condition);
+		details.getConditions().add(condition);
 		blankResults();
 		return this;
 	}
@@ -1818,7 +1812,7 @@ public class DBQuery {
 	 * @return this DBQuery object
 	 */
 	public DBQuery clearConditions() {
-		conditions.clear();
+		details.getConditions().clear();
 		blankResults();
 		return this;
 	}
@@ -1836,7 +1830,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAnyCondition() {
-		options.setMatchAnyConditions();
+		details.getOptions().setMatchAnyConditions();
 		blankResults();
 		return this;
 	}
@@ -1855,7 +1849,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAnyRelationship() {
-		options.setMatchAnyRelationship();
+		details.getOptions().setMatchAnyRelationship();
 		blankResults();
 		return this;
 	}
@@ -1874,7 +1868,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAllRelationships() {
-		options.setMatchAllRelationships();
+		details.getOptions().setMatchAllRelationships();
 		blankResults();
 		return this;
 	}
@@ -1892,7 +1886,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAllConditions() {
-		options.setMatchAllConditions();
+		details.getOptions().setMatchAllConditions();
 		blankResults();
 		return this;
 	}
@@ -1963,7 +1957,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd) {
-		expressionColumns.put(identifyingObject, expressionToAdd);
+		details.getExpressionColumns().put(identifyingObject, expressionToAdd);
 		blankResults();
 		return this;
 	}
@@ -1976,7 +1970,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	protected DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
-		dbReportGroupByColumns.put(identifyingObject, expressionToAdd);
+		details.getDbReportGroupByColumns().put(identifyingObject, expressionToAdd);
 		return this;
 	}
 
@@ -2014,7 +2008,7 @@ public class DBQuery {
 	 * @param extraExamples
 	 */
 	void addExtraExamples(DBRow... extraExamples) {
-		this.extraExamples.addAll(Arrays.asList(extraExamples));
+		this.details.getExtraExamples().addAll(Arrays.asList(extraExamples));
 		blankResults();
 	}
 
@@ -2074,13 +2068,14 @@ public class DBQuery {
 	}
 
 	private void initialiseQueryGraph() {
+			final QueryOptions options = details.getOptions();
 		if (queryGraph == null) {
-			queryGraph = new QueryGraph(getDatabase(), requiredQueryTables, getConditions(), options);
-			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), optionalQueryTables, getConditions(), options);
+			queryGraph = new QueryGraph(getDatabase(), details.getRequiredQueryTables(), getConditions(), options);
+			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), details.getOptionalQueryTables(), getConditions(), options);
 		} else {
 			queryGraph.clear();
-			queryGraph.addAndConnectToRelevant(getDatabase(), requiredQueryTables, getConditions(), options);
-			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), optionalQueryTables, getConditions(), options);
+			queryGraph.addAndConnectToRelevant(getDatabase(), details.getRequiredQueryTables(), getConditions(), options);
+			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), details.getOptionalQueryTables(), getConditions(), options);
 		}
 	}
 
@@ -2106,7 +2101,7 @@ public class DBQuery {
 	 * @return the conditions
 	 */
 	protected List<BooleanExpression> getConditions() {
-		return conditions;
+		return details.getConditions();
 	}
 
 	/**
@@ -2131,12 +2126,12 @@ public class DBQuery {
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
 
 		DBQuery distinctQuery = getDatabase().getDBQuery();
-		for (DBRow row : requiredQueryTables) {
+		for (DBRow row : details.getRequiredQueryTables()) {
 			final DBRow copyDBRow = DBRow.copyDBRow(row);
 			copyDBRow.removeAllFieldsFromResults();
 			distinctQuery.add(copyDBRow);
 		}
-		for (DBRow row : optionalQueryTables) {
+		for (DBRow row : details.getOptionalQueryTables()) {
 			final DBRow copyDBRow = DBRow.copyDBRow(row);
 			copyDBRow.removeAllFieldsFromResults();
 			distinctQuery.add(copyDBRow);
@@ -2144,7 +2139,7 @@ public class DBQuery {
 
 		for (Object fieldOfProvidedRow : fieldsOfProvidedRows) {
 			PropertyWrapper fieldProp = null;
-			for (DBRow row : allQueryTables) {
+			for (DBRow row : details.getAllQueryTables()) {
 				fieldProp = row.getPropertyWrapperOf(fieldOfProvidedRow);
 				if (fieldProp != null) {
 					break;
@@ -2156,7 +2151,7 @@ public class DBQuery {
 				final PropertyWrapperDefinition fieldDefn = fieldProp.getDefinition();
 				DBRow fieldRow = null;
 				Object thisQDT = null;
-				for (DBRow row : distinctQuery.allQueryTables) {
+				for (DBRow row : distinctQuery.details.getAllQueryTables()) {
 					try {
 						thisQDT = fieldDefn.rawJavaValue(row);
 					} catch (FailedToSetPropertyValueOnRowDefinition ex) {
@@ -2182,8 +2177,33 @@ public class DBQuery {
 		return returnList;
 	}
 
+	public List<DBRow> getAllTables() {
+		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		arrayList.addAll(details.getAllQueryTables());
+		return arrayList;
+	}
+
+	public List<DBRow> getRequiredTables() {
+		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		arrayList.addAll(details.getRequiredQueryTables());
+		return arrayList;
+	}
+
+	public List<DBRow> getOptionalTables() {
+		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		arrayList.addAll(details.getOptionalQueryTables());
+		return arrayList;
+	}
+
 	/**
-	 * @return the database
+	 * DBQuery and DBtable are 2 of the few classes that rely on knowing the
+	 * database they work on.
+	 *
+	 * <p>
+	 * This method allows you to retrieve the database used when you execute this
+	 * query.
+	 *
+	 * @return the database used during execution of this query.
 	 */
 	public DBDatabase getDatabase() {
 		try {
@@ -2193,25 +2213,321 @@ public class DBQuery {
 		}
 	}
 
-	public List<DBRow> getOptionalTables() {
-		return new ArrayList<DBRow>(this.optionalQueryTables);
-	}
-
+	/**
+	 * Add tables that will be used in the query but are already part of an outer
+	 * query and need not be explicitly added to the SQL.
+	 *
+	 * <p>
+	 * Used during recursive queries. If you are not manually constructing a
+	 * recursive query do NOT use this method.
+	 *
+	 * @param tables
+	 * @return this DBQuery object.
+	 */
 	public DBQuery addAssumedTables(List<DBRow> tables) {
 		return addAssumedTables(tables.toArray(new DBRow[]{}));
 	}
 
 	public DBQuery addAssumedTables(DBRow... tables) {
 		for (DBRow table : tables) {
-			assumedQueryTables.add(table);
-			allQueryTables.add(table);
+			details.getAssumedQueryTables().add(table);
+			details.getAllQueryTables().add(table);
 			blankResults();
 		}
 		return this;
 	}
 
-	void mustIntersectWith(DBQuery dbQuery) {
-		this.intersectingQueries.add(dbQuery);
+	/**
+	 * Used to add an EXISTS clause to the query.
+	 *
+	 * @param dbQuery
+	 */
+//	void mustIntersectWith(DBQuery dbQuery) {
+//		this.intersectingQueries.add(dbQuery);
+//	}
+	/**
+	 * Creates a recursive query that traverses a tree structure from the nodes
+	 * provided by this query to the root of the tree.
+	 *
+	 * <p>
+	 * Tree structures are stored in databases as a table with a foreign key to
+	 * itself. This method provides a convenient way to find the path from a leaf
+	 * node to the root of the tree.
+	 *
+	 * <p>
+	 * These structures are recursive in that the table is self-referential and
+	 * thus has similar properties to a recursive procedure. As such the queries
+	 * used to traverse the structures are also called recursive queries.
+	 *
+	 * <p>
+	 * This method creates a recursive query based on the current query and the
+	 * foreign key provided to the traverse "down" the tree from the results of
+	 * the current query thru all the rows that reference the current rows.
+	 *
+	 * @param foreignKeyToFollow
+	 * @return A linked List
+	 */
+	public List<DBQueryRow> getDescendants(ColumnProvider foreignKeyToFollow) throws SQLException {
+		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		if (this.database.supportsRecursiveQueriesNatively()) {
+			DBStatement dbStatement = getDatabase().getDBStatement();
+			try {
+				String descendingQuery = getRecursiveSQL(foreignKeyToFollow, RecursiveSQLDirection.DESCEND);
+				System.err.println(descendingQuery);
+				ResultSet resultSet = getResultSetForSQL(dbStatement, descendingQuery);
+				try {
+					while (resultSet.next()) {
+						DBQueryRow queryRow = new DBQueryRow(this);
+
+						setExpressionColumns(resultSet, queryRow);
+
+						setQueryRowFromResultSet(resultSet, queryRow, details.getDbReportGroupByColumns().size() > 0);
+						returnList.add(queryRow);
+					}
+				} finally {
+					resultSet.close();
+				}
+			} finally {
+				dbStatement.close();
+			}
+			return returnList;
+
+		} else {
+
+		}
+		return returnList;
+	}
+
+	private String getRecursiveSQL(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
+		final Class<? extends DBRow> referencedClass = foreignKeyToFollow.getColumn().getPropertyWrapper().referencedClass();
+		try {
+			final DBRow newInstance = referencedClass.newInstance();
+			final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
+			String descendingQuery
+					= "WITH RECURSIVE " + recursiveTableAlias + " \n"
+					+ " AS (" + removeTrailingSemicolon(this.getPrimingSubQueryForRecursiveQuery(foreignKeyToFollow)) + " \n"
+					+ " UNION " + removeTrailingSemicolon(this.getRecursiveSubQuery(foreignKeyToFollow, direction)) + " \n"
+					+ ")" + " \n"
+					+ "SELECT * FROM " + recursiveTableAlias + ";";
+			return descendingQuery;
+		} catch (InstantiationException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
+		} catch (IllegalAccessException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
+		}
+	}
+
+	private String removeTrailingSemicolon(String sql) {
+		return sql.replaceAll("[ \\t\\r\\n]*;[ \\t\\r\\n]*$", System.getProperty("line.separator"));
+	}
+
+	private String getPrimingSubQueryForRecursiveQuery(ColumnProvider foreignKeyToFollow) {
+		DBQuery newQuery = this.database.getDBQuery();
+
+		final Class<?> originatingClass = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper().adapteeRowDefinitionClass();
+
+		List<DBRow> tables = details.getRequiredQueryTables();
+		for (DBRow table : tables) {
+			DBRow copied = DBRow.copyDBRow(table);
+			if (!originatingClass.equals(table.getClass())) {
+				copied.setReturnFieldsToNone();
+			}
+			newQuery.add(copied);
+		}
+		tables = details.getOptionalQueryTables();
+		for (DBRow table : tables) {
+			DBRow copied = DBRow.copyDBRow(table);
+			if (!originatingClass.equals(table.getClass())) {
+				copied.setReturnFieldsToNone();
+			}
+			newQuery.addOptional(copied);
+		}
+		tables = details.getAssumedQueryTables();
+		for (DBRow table : tables) {
+			DBRow copied = DBRow.copyDBRow(table);
+			if (!originatingClass.equals(table.getClass())) {
+				copied.setReturnFieldsToNone();
+			}
+			newQuery.addAssumedTables(copied);
+		}
+		return newQuery.getSQLForQuery();
+	}
+
+	private String getRecursiveSubQuery(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
+		DBQuery newQuery = this.database.getDBQuery();
+		@SuppressWarnings("unchecked")
+
+		final Class<? extends DBRow> originatingClass = (Class<? extends DBRow>) foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper().adapteeRowDefinitionClass();
+		final DBRow dbRow = DBRow.getDBRow(originatingClass);
+		if (direction == RecursiveSQLDirection.ASCEND) {
+			dbRow.setReturnFieldsToNone();
+		}
+		newQuery.add(dbRow);
+
+		final Class<? extends DBRow> referencedClass = foreignKeyToFollow.getColumn().getPropertyWrapper().referencedClass();
+		try {
+			final DBRow newInstance = referencedClass.newInstance();
+			if (direction == RecursiveSQLDirection.DESCEND) {
+				newInstance.setReturnFieldsToNone();
+			}
+			newQuery.add(newInstance);
+		} catch (InstantiationException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
+		} catch (IllegalAccessException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
+		}
+
+		return newQuery.getSQLForQuery();
+	}
+
+	public DBQuery addOptional(List<DBRow> optionalQueryTables) {
+		for (DBRow optionalQueryTable : optionalQueryTables) {
+			this.addOptional(optionalQueryTable);
+		}
+		return this;
+	}
+
+	public DBQuery ignoreForeignKey(ColumnProvider foreignKeyToFollow) {
+		Set<DBRow> tablesInvolved = foreignKeyToFollow.getColumn().getTablesInvolved();
+		for (DBRow fkTable : tablesInvolved) {
+			for (DBRow table : details.getAllQueryTables()) {
+				if (fkTable.getClass().equals(table.getClass())) {
+					table.ignoreForeignKey(foreignKeyToFollow);
+				}
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Creates a recursive query that traverses a tree structure from the nodes
+	 * provided by this query to the root of the tree.
+	 *
+	 * <p>
+	 * Tree structures are stored in databases as a table with a foreign key to
+	 * itself. This method provides a convenient way to find the path from a leaf
+	 * node to the root of the tree.
+	 *
+	 * <p>
+	 * These structures are recursive in that the table is self-referential and
+	 * thus has similar properties to a recursive procedure. As such the queries
+	 * used to traverse the structures are also called recursive queries.
+	 *
+	 * <p>
+	 * This method creates a recursive query based on the current query and the
+	 * foreign key provided to the traverse "down" the tree from the results of
+	 * the current query thru all the rows that reference the current rows.
+	 *
+	 * @param foreignKeyToFollow
+	 * @return A linked List
+	 */
+	/**
+	 * Creates a recursive query that traverses a tree structure from the nodes
+	 * provided by this query to the root of the tree.<p>
+	 * Tree structures are stored in databases as a table with a foreign key to
+	 * itself. This method provides a convenient way to find the path from a leaf
+	 * node to the root of the tree.
+	 *
+	 * <p>
+	 * These structures are recursive in that the table is self-referential and
+	 * thus has similar properties to a recursive procedure. As such the queries
+	 * used to traverse the structures are also called recursive queries.
+	 *
+	 * <p>
+	 * This method creates a recursive query based on the current query and the
+	 * foreign key provided to the traverse "down" the tree from the results of
+	 * the current query thru all the rows that reference the current rows.
+	 *
+	 * @param foreignKeyToFollow
+	 * @return A linked List
+	 * @throws java.sql.SQLException
+	 */
+	public List<DBQueryRow> getAncestors(ColumnProvider foreignKeyToFollow) throws SQLException {
+		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		String ascendingQuery = getRecursiveSQL(foreignKeyToFollow, RecursiveSQLDirection.ASCEND);
+		System.err.println(ascendingQuery);
+		if (this.database.supportsRecursiveQueriesNatively()) {
+			DBStatement dbStatement = getDatabase().getDBStatement();
+			try {
+				ResultSet resultSet = getResultSetForSQL(dbStatement, ascendingQuery);
+				try {
+					while (resultSet.next()) {
+						DBQueryRow queryRow = new DBQueryRow(this);
+
+						setExpressionColumns(resultSet, queryRow);
+
+						setQueryRowFromResultSet(resultSet, queryRow, details.getDbReportGroupByColumns().size() > 0);
+						returnList.add(queryRow);
+					}
+				} finally {
+					resultSet.close();
+				}
+			} finally {
+				dbStatement.close();
+			}
+			return returnList;
+
+		} else {
+
+		}
+		return returnList;
+	}
+
+	public <T extends DBRow> List<T> getDescendants(T example, ColumnProvider column) throws SQLException {
+		List<T> resultsList = new ArrayList<T>();
+		List<DBQueryRow> descendants = this.getDescendants(column);
+		for (DBQueryRow descendant : descendants) {
+			resultsList.add(descendant.get(example));
+		}
+		return resultsList;
+	}
+
+	public <T extends DBRow> List<T> getAncestors(T example, ColumnProvider column) throws SQLException {
+		List<T> resultsList = new ArrayList<T>();
+		List<DBQueryRow> ancestors = this.getAncestors(column);
+		for (DBQueryRow ancestor : ancestors) {
+			resultsList.add(ancestor.get(example));
+		}
+		return resultsList;
+	}
+
+	/**
+	 * Creates a LinkedList from the rows returned by this query to a root node of
+	 * the example table by repeatedly following the recursive foreign key
+	 * provided.
+	 *
+	 * <p>
+	 * Tree structures are stored in databases using a table with a foreign key to
+	 * the same table (the aforementioned "recursive foreign key"). This method
+	 * provides a simple means of the traversing the stored tree structure to find
+	 * the path to the root node.
+	 *
+	 * <p>
+	 * Where possible DBvolution uses recursive queries to traverse the tree.
+	 *
+	 * <p>
+	 * Recursive queries are only possible on tables that are part of this query,
+	 * and have a foreign key that directly references rows within the table
+	 * itself.
+	 *
+	 * <p>
+	 * In DBvolution it is common to reference a subclass of the table to add
+	 * semantic information and help complex query creation. As such sub-classed
+	 * foreign keys are fully supported.
+	 *
+	 * @param <R>
+	 * @param example
+	 * @param column
+	 * @return
+	 * @throws SQLException
+	 */
+	public <R extends DBRow> LinkedList<R> getPathToRoot(R example, ColumnProvider column) throws SQLException {
+		List<R> ancestors = getAncestors(example, column);
+		LinkedList<R> linkedList = new LinkedList<R>();
+		for (R ancestor : ancestors) {
+			linkedList.addFirst(ancestor);
+		}
+		return linkedList;
 	}
 
 	/**

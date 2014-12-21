@@ -28,7 +28,6 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.expressions.StringResult;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -963,7 +962,17 @@ public abstract class DBDefinition {
 	 * @return the table alias.
 	 */
 	public String getTableAlias(RowDefinition tabRow) {
-		return ("_" + tabRow.getClass().getSimpleName().hashCode()).replaceAll("-", "_");
+		return formatTableAlias(""+tabRow.getClass().getSimpleName().hashCode());
+	}
+
+	/**
+	 * Formats the suggested table alias provided by DBvolution for the particular database..
+	 *
+	 * @param suggestedTableAlias 
+	 * @return the table alias.
+	 */
+	public String formatTableAlias(String suggestedTableAlias) {
+		return "_"+suggestedTableAlias.replaceAll("-", "_");
 	}
 
 	/**
@@ -2190,12 +2199,12 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Convert the byte array of bit values into the SQL equivalent.
+	 * Convert the boolean array of bit values into the SQL equivalent.
 	 *
-	 * @param byteArray
+	 * @param booleanArray 
 	 * @return SQL snippet.
 	 */
-	public String doBitsValueTransform(byte[] byteArray) {
+	public String doBitsValueTransform(boolean[] booleanArray) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

@@ -83,7 +83,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 
 //	@Override
 //	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-//		blankQuery();
+//		removeConstraints();
 //		DBDefinition defn = database.getDefinition();
 //		if (resultSet == null || fullColumnName == null) {
 //			this.setToNull();

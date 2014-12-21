@@ -30,8 +30,9 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link PostgresDB} and {@link PostgresDBOverSSL} instances, and
- * you should not need to use it directly.
+ * This DBDefinition is automatically included in {@link PostgresDB} and
+ * {@link PostgresDBOverSSL} instances, and you should not need to use it
+ * directly.
  *
  * @author Gregory Graham
  */
@@ -67,6 +68,7 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " DESC NULLS LAST ";
 		}
 	}
+
 	@Override
 	public String doTruncTransform(String firstString, String secondString) {
 		return getTruncFunctionName() + "((" + firstString + ")::numeric, " + secondString + ")";
@@ -80,6 +82,19 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doIntegerToBitTransform(String columnName) {
 		return columnName + "::bit";
+	}
+
+	@Override
+	public String doBitsValueTransform(boolean[] boolArray) {
+		String boolStr = "";
+		for (boolean c : boolArray) {
+			if (c) {
+				boolStr += "1";
+			} else {
+				boolStr += "0";
+			}
+		}
+		return "B'" + boolStr + "'";
 	}
 
 	@Override
@@ -104,37 +119,37 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
-		return "("+dateValue+"+ ("+numberOfSeconds+"*INTERVAL '1 SECOND' ))";
+		return "(" + dateValue + "+ (" + numberOfSeconds + "*INTERVAL '1 SECOND' ))";
 	}
 
 	@Override
 	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
-		return "("+dateValue+"+ ("+numberOfMinutes+"*INTERVAL '1 MINUTE' ))";
+		return "(" + dateValue + "+ (" + numberOfMinutes + "*INTERVAL '1 MINUTE' ))";
 	}
 
 	@Override
 	public String doAddDaysTransform(String dateValue, String numberOfDays) {
-		return "("+dateValue+"+ ("+numberOfDays+"*INTERVAL '1 DAY' ))";
+		return "(" + dateValue + "+ (" + numberOfDays + "*INTERVAL '1 DAY' ))";
 	}
 
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
-		return "("+dateValue+"+ ("+numberOfHours+"*INTERVAL '1 HOUR' ))";
+		return "(" + dateValue + "+ (" + numberOfHours + "*INTERVAL '1 HOUR' ))";
 	}
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "("+dateValue+"+ ("+numberOfWeeks+"*INTERVAL '1 WEEK' ))";
+		return "(" + dateValue + "+ (" + numberOfWeeks + "*INTERVAL '1 WEEK' ))";
 	}
 
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfWeeks) {
-		return "("+dateValue+"+ ("+numberOfWeeks+"*INTERVAL '1 MONTH' ))";
+		return "(" + dateValue + "+ (" + numberOfWeeks + "*INTERVAL '1 MONTH' ))";
 	}
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfWeeks) {
-		return "("+dateValue+"+ ("+numberOfWeeks+"*INTERVAL '1 YEAR' ))";
+		return "(" + dateValue + "+ (" + numberOfWeeks + "*INTERVAL '1 YEAR' ))";
 	}
 
 	@Override
@@ -149,41 +164,41 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(DAY from ("+otherDateValue+")-("+dateValue+")))"; 
+		return "(EXTRACT(DAY from (" + otherDateValue + ")-(" + dateValue + ")))";
 	}
 
 	@Override
 	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
+		return "ROUND(" + doDayDifferenceTransform(dateValue, otherDateValue) + "/7)";
 	}
 
-	private String doAgeTransformation(String dateValue, String otherDateValue){
-		return "age(("+dateValue+"), ("+otherDateValue+"))";
+	private String doAgeTransformation(String dateValue, String otherDateValue) {
+		return "age((" + dateValue + "), (" + otherDateValue + "))";
 	}
-	
+
 	@Override
 	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND(EXTRACT(YEAR FROM "+doAgeTransformation(dateValue, otherDateValue)+") * 12 + EXTRACT(MONTH FROM "+doAgeTransformation(dateValue, otherDateValue)+")*-1)"; 
+		return "ROUND(EXTRACT(YEAR FROM " + doAgeTransformation(dateValue, otherDateValue) + ") * 12 + EXTRACT(MONTH FROM " + doAgeTransformation(dateValue, otherDateValue) + ")*-1)";
 	}
 
 	@Override
 	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
-		return "round(EXTRACT(YEAR FROM "+doAgeTransformation(dateValue, otherDateValue)+")*-1)"; 
+		return "round(EXTRACT(YEAR FROM " + doAgeTransformation(dateValue, otherDateValue) + ")*-1)";
 	}
 
 	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
-		return "round(EXTRACT(EPOCH FROM ("+dateValue+") - ("+otherDateValue+")) / -3600)"; 
+		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + ")) / -3600)";
 	}
 
 	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
-		return "round(EXTRACT(EPOCH FROM ("+dateValue+") - ("+otherDateValue+")) / -60)"; 
+		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + ")) / -60)";
 	}
 
 	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "round(EXTRACT(EPOCH FROM ("+dateValue+") - ("+otherDateValue+"))*-1)"; 
+		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1)";
 	}
 
 }

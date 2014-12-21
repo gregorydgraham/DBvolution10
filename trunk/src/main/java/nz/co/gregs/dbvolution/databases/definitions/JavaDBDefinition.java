@@ -92,8 +92,8 @@ public class JavaDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getTableAlias(RowDefinition tabRow) {
-		return "\"" + super.getTableAlias(tabRow) + "\"";
+	public String formatTableAlias(String tabRow) {
+		return "\"" + tabRow.replaceAll("-","_") + "\"";
 	}
 
 	@Override

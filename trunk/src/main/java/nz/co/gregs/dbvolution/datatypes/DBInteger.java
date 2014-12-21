@@ -122,7 +122,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 
 //	@Override
 //	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
-//		blankQuery();
+//		removeConstraints();
 //		if (resultSet == null || fullColumnName == null) {
 //			this.setToNull();
 //		} else {

@@ -39,11 +39,6 @@ public class QueryGraphNode {
 		requiredNode = requiredTable;
 	}
 
-	private QueryGraphNode(QueryGraphNode value) {
-		this.table = value.table;
-		this.connectedTables.addAll(value.connectedTables);
-	}
-
 	public Set<Class<? extends DBRow>> getConnectedTables() {
 		return connectedTables;
 	}

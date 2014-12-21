@@ -972,7 +972,7 @@ public class RowDefinition implements Serializable {
 	 * @return a list of field names.
 	 * @throws SecurityException
 	 */
-	public Collection<? extends String> getFieldNames() {
+	public List<String> getFieldNames() {
 		List<String> returnList = new ArrayList<String>();
 		List<PropertyWrapperDefinition> fieldDefns = this.getReturnColumns();
 		for (PropertyWrapperDefinition prop : fieldDefns) {
