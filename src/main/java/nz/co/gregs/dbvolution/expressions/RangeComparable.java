@@ -16,9 +16,14 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
+ * Indicates that the class can be compared to other instances of this class as if the instances were part of a range.
+ * 
+ * <p>
+ * Methods appropriate to a range include Greater Than, Less Than, and Equals.
  *
  * @author Gregory Graham
+ * @param <A>
  */
-public interface RangeComparable extends EqualComparable {
+public interface RangeComparable<A> extends EqualComparable<A> {
 	
 }

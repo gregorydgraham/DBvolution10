@@ -21,16 +21,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBReport;
-import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.*;
+import nz.co.gregs.dbvolution.columns.AbstractColumn;
+import nz.co.gregs.dbvolution.datatypes.*;
 
 /**
  * NumberExpression implements standard functions that produce a numeric result,
@@ -51,7 +46,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public class NumberExpression implements NumberResult {
+public class NumberExpression implements NumberResult, RangeComparable<NumberResult> {
 
 	private NumberResult innerNumberResult;
 	private boolean nullProtectionRequired;
@@ -67,8 +62,7 @@ public class NumberExpression implements NumberResult {
 	 * Create a NumberExpression based on an existing Number.
 	 *
 	 * <p>
-	 * This performs a similar function to
-	 * {@code NumberExpression(NumberResult)}.
+	 * This performs a similar function to {@code NumberExpression(NumberResult)}.
 	 *
 	 * @param value
 	 */
@@ -117,10 +111,9 @@ public class NumberExpression implements NumberResult {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -129,8 +122,8 @@ public class NumberExpression implements NumberResult {
 	 * </ul>
 	 *
 	 * @param object
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static NumberExpression value(Number object) {
 		final NumberExpression numberExpression = new NumberExpression(object);
@@ -165,8 +158,7 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Converts the number expression to a string and appends the supplied
-	 * String.
+	 * Converts the number expression to a string and appends the supplied String.
 	 *
 	 * @param string
 	 * @return a StringExpression
@@ -282,8 +274,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -310,8 +302,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -338,8 +330,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -366,8 +358,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -624,8 +616,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Tests the NumberExpression against the number and returns TRUE if the
-	 * value is less than number.
+	 * Tests the NumberExpression against the number and returns TRUE if the value
+	 * is less than number.
 	 *
 	 * @param number
 	 * @return a BooleanExpression for use in
@@ -658,8 +650,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Tests the NumberExpression against the number and returns TRUE if the
-	 * value is less than or equal to number.
+	 * Tests the NumberExpression against the number and returns TRUE if the value
+	 * is less than or equal to number.
 	 *
 	 * @param number
 	 * @return a BooleanExpression for use in
@@ -670,8 +662,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Tests the NumberExpression against the number and returns TRUE if the
-	 * value is less than or equal to numberExpression.
+	 * Tests the NumberExpression against the number and returns TRUE if the value
+	 * is less than or equal to numberExpression.
 	 *
 	 * @param numberExpression
 	 * @return a BooleanExpression for use in
@@ -692,8 +684,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Tests the NumberExpression against the number and returns TRUE if the
-	 * value is greater than number.
+	 * Tests the NumberExpression against the number and returns TRUE if the value
+	 * is greater than number.
 	 *
 	 * @param number
 	 * @return a BooleanExpression for use in
@@ -704,8 +696,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Tests the NumberExpression against the number and returns TRUE if the
-	 * value is greater than number.
+	 * Tests the NumberExpression against the number and returns TRUE if the value
+	 * is greater than number.
 	 *
 	 * @param number
 	 * @return a BooleanExpression for use in
@@ -726,8 +718,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Tests the NumberExpression against the number and returns TRUE if the
-	 * value is greater than or equal to number.
+	 * Tests the NumberExpression against the number and returns TRUE if the value
+	 * is greater than or equal to number.
 	 *
 	 * @param number
 	 * @return a BooleanExpression for use in
@@ -738,8 +730,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Tests the NumberExpression against the number and returns TRUE if the
-	 * value is greater than or equal to number.
+	 * Tests the NumberExpression against the number and returns TRUE if the value
+	 * is greater than or equal to number.
 	 *
 	 * @param number
 	 * @return a BooleanExpression for use in
@@ -965,8 +957,8 @@ public class NumberExpression implements NumberResult {
 	 * Retrieves the next value from the given sequence.
 	 *
 	 * @param sequenceName
-	 * @return a NumberExpression representing the database operation required
-	 * to retrieve the names sequence's value.
+	 * @return a NumberExpression representing the database operation required to
+	 * retrieve the names sequence's value.
 	 */
 	public static NumberExpression getNextSequenceValue(String sequenceName) {
 		return getNextSequenceValue(null, sequenceName);
@@ -977,8 +969,8 @@ public class NumberExpression implements NumberResult {
 	 *
 	 * @param schemaName
 	 * @param sequenceName
-	 * @return a NumberExpression representing the database operation required
-	 * to retrieve the names sequence's value.
+	 * @return a NumberExpression representing the database operation required to
+	 * retrieve the names sequence's value.
 	 */
 	public static NumberExpression getNextSequenceValue(String schemaName, String sequenceName) {
 		if (schemaName != null) {
@@ -1001,8 +993,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Provides a default option when the NumberExpression resolves to NULL
-	 * within the query.
+	 * Provides a default option when the NumberExpression resolves to NULL within
+	 * the query.
 	 *
 	 * @param alternative
 	 * @return a NumberExpression that will substitute the given value when the
@@ -1013,8 +1005,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Provides a default option when the NumberExpression resolves to NULL
-	 * within the query.
+	 * Provides a default option when the NumberExpression resolves to NULL within
+	 * the query.
 	 *
 	 * @param alternative
 	 * @return a NumberExpression that will substitute the given value when the
@@ -1126,8 +1118,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Provides access to the database's hyperbolic sine function.
 	 *
-	 * @return a NumberExpression representing the hyperbolic sine of the
-	 * current number expression.
+	 * @return a NumberExpression representing the hyperbolic sine of the current
+	 * number expression.
 	 */
 	public NumberExpression sinh() {
 		return new NumberExpression(new DBUnaryFunction(this) {
@@ -1216,8 +1208,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Provides access to the database's inverse tangent function.
 	 *
-	 * @return a NumberExpression representing the inverse tangent of the
-	 * current number expression.
+	 * @return a NumberExpression representing the inverse tangent of the current
+	 * number expression.
 	 */
 	public NumberExpression arctan() {
 		return new NumberExpression(new DBUnaryFunction(this) {
@@ -1233,18 +1225,18 @@ public class NumberExpression implements NumberResult {
 	 * arguments.
 	 *
 	 * <p>
-	 * In a variety of computer languages, the function arctan2 is the
-	 * arctangent function with two arguments. The purpose of using two
-	 * arguments instead of one is to gather information on the signs of the
-	 * inputs in order to return the appropriate quadrant of the computed angle,
-	 * which is not possible for the single-argument arctangent function.
+	 * In a variety of computer languages, the function arctan2 is the arctangent
+	 * function with two arguments. The purpose of using two arguments instead of
+	 * one is to gather information on the signs of the inputs in order to return
+	 * the appropriate quadrant of the computed angle, which is not possible for
+	 * the single-argument arctangent function.
 	 *
 	 * <p>
-	 * For any real number (e.g., floating point) arguments x and y not both
-	 * equal to zero, arctan2(y, x) is the angle in radians between the positive
-	 * x-axis of a plane and the point given by the coordinates (x, y) on it.
-	 * The angle is positive for counter-clockwise angles (upper half-plane, y >
-	 * 0), and negative for clockwise angles (lower half-plane, y < 0).
+	 * For any real number (e.g., floating point) arguments x and y not both equal
+	 * to zero, arctan2(y, x) is the angle in radians between the positive x-axis
+	 * of a plane and the point given by the coordinates (x, y) on it. The angle
+	 * is positive for counter-clockwise angles (upper half-plane, y > 0), and
+	 * negative for clockwise angles (lower half-plane, y < 0).
 	 *
 	 * @param number
 	 * @return a NumberExpression representing the cosine of the current number
@@ -1262,8 +1254,8 @@ public class NumberExpression implements NumberResult {
 	/**
 	 * Provides access to the database's cotangent function.
 	 *
-	 * @return a NumberExpression representing the cotangent of the current
-	 * number expression.
+	 * @return a NumberExpression representing the cotangent of the current number
+	 * expression.
 	 */
 	public NumberExpression cotangent() {
 		return new NumberExpression(new DBUnaryFunction(this) {
@@ -1280,8 +1272,8 @@ public class NumberExpression implements NumberResult {
 	 * <p>
 	 * Converts radians to degrees.
 	 *
-	 * @return a NumberExpression representing the inverse tangent of the
-	 * current number expression.
+	 * @return a NumberExpression representing the inverse tangent of the current
+	 * number expression.
 	 */
 	public NumberExpression degrees() {
 		return new NumberExpression(new DBUnaryFunction(this) {
@@ -1308,8 +1300,8 @@ public class NumberExpression implements NumberResult {
 	 * <p>
 	 * Converts degrees to radians.
 	 *
-	 * @return a NumberExpression representing the inverse tangent of the
-	 * current number expression.
+	 * @return a NumberExpression representing the inverse tangent of the current
+	 * number expression.
 	 */
 	public NumberExpression radians() {
 		return new NumberExpression(new DBUnaryFunction(this) {
@@ -1394,8 +1386,8 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Returns the sign of the argument as -1, 0, or 1, depending on whether X
-	 * is negative, zero, or positive.
+	 * Returns the sign of the argument as -1, 0, or 1, depending on whether X is
+	 * negative, zero, or positive.
 	 *
 	 * @return a NumberExpression
 	 */
@@ -1513,13 +1505,12 @@ public class NumberExpression implements NumberResult {
 	}
 
 	/**
-	 * Translates the number into a Bit expression as the database understands
-	 * it.
+	 * Translates the number into a Bit expression as the database understands it.
 	 *
 	 * @return a NumberExpression of the NumberExpression changed to a BIT type.
 	 */
-	public BitsExpression convertToBits() {
-		return new BitsExpression(new DBUnaryBitsFunction(this) {
+	public BooleanArrayExpression convertToBits() {
+		return new BooleanArrayExpression(new DBUnaryBitsFunction(this) {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
@@ -1655,12 +1646,12 @@ public class NumberExpression implements NumberResult {
 	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the
-	 * function are evaluated before MOD is applied.
+	 * DBvolution implements mod as a function. The two arguments to the function
+	 * are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and
-	 * is considered equivalent to "*" and "/". However databases vary in their
+	 * This differs from some implementations where MOD is the "%" operator and is
+	 * considered equivalent to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
@@ -1677,12 +1668,12 @@ public class NumberExpression implements NumberResult {
 	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the
-	 * function are evaluated before MOD is applied.
+	 * DBvolution implements mod as a function. The two arguments to the function
+	 * are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and
-	 * is considered analogous to "*" and "/". However databases vary in their
+	 * This differs from some implementations where MOD is the "%" operator and is
+	 * considered analogous to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
@@ -1714,8 +1705,8 @@ public class NumberExpression implements NumberResult {
 	 * Provides access to the modulus/remainder function of the database.
 	 *
 	 * <p>
-	 * The modulus function is the remainder of the integer division operation
-	 * of x/y.
+	 * The modulus function is the remainder of the integer division operation of
+	 * x/y.
 	 *
 	 * <p>
 	 * For the NumberExpression x: x.mod(y) => mod(x.y)
@@ -1827,9 +1818,9 @@ public class NumberExpression implements NumberResult {
 	 *
 	 * <p>
 	 * Similar to
-	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)}
-	 * but this aggregates the column or expression provided, rather than
-	 * scanning a list.
+	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)} but
+	 * this aggregates the column or expression provided, rather than scanning a
+	 * list.
 	 *
 	 * @return the greatest/largest value from the column.
 	 */
@@ -1932,7 +1923,7 @@ public class NumberExpression implements NumberResult {
 		return nullProtectionRequired;
 	}
 
-	private static abstract class DBBinaryArithmetic implements NumberResult {
+	private static abstract class DBBinaryArithmetic extends NumberExpression {
 
 		public NumberResult first;
 		public NumberResult second;
@@ -1962,9 +1953,9 @@ public class NumberExpression implements NumberResult {
 			DBBinaryArithmetic newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
 			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			} catch (InstantiationException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -1997,7 +1988,7 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
-	private static abstract class DBNonaryFunction implements NumberResult {
+	private static abstract class DBNonaryFunction extends NumberExpression {
 
 		DBNonaryFunction() {
 		}
@@ -2030,11 +2021,10 @@ public class NumberExpression implements NumberResult {
 			return newInstance;
 		}
 
-		@Override
-		public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
-
+//		@Override
+//		public QueryableDatatype getQueryableDatatypeForExpressionValue() {
+//			return new DBNumber();
+//		}
 		@Override
 		public boolean isAggregator() {
 			return false;
@@ -2051,7 +2041,7 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
-	private static abstract class DBUnaryFunction implements NumberResult {
+	private static abstract class DBUnaryFunction extends NumberExpression {
 
 		protected DBExpression only;
 
@@ -2121,7 +2111,7 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
-	private static abstract class DBUnaryBitsFunction implements BitsResult {
+	private static abstract class DBUnaryBitsFunction implements BooleanArrayResult {
 
 		protected DBExpression only;
 
@@ -2191,7 +2181,7 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
-	private static abstract class DBBinaryFunction implements NumberResult {
+	private static abstract class DBBinaryFunction extends NumberExpression {
 
 		private DBExpression first;
 		private DBExpression second;
@@ -2404,7 +2394,7 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
-	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
 		private NumberExpression first;
 		private NumberResult second;
@@ -2472,7 +2462,7 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
-	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
+	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
 
 		private NumberExpression column;
 		private final List<NumberResult> values = new ArrayList<NumberResult>();
@@ -2575,7 +2565,6 @@ public class NumberExpression implements NumberResult {
 //		public void setIncludesNull(boolean nullsAreIncluded) {
 //			this.nullProtectionRequired = nullsAreIncluded;
 //		}
-
 		/**
 		 * @return the column
 		 */
@@ -2591,7 +2580,7 @@ public class NumberExpression implements NumberResult {
 		}
 	}
 
-	private static abstract class DBNnaryNumberFunction implements NumberResult {
+	private static abstract class DBNnaryNumberFunction extends NumberExpression {
 
 		protected NumberExpression column;
 		protected final List<NumberResult> values = new ArrayList<NumberResult>();
@@ -2694,7 +2683,7 @@ public class NumberExpression implements NumberResult {
 //		}
 	}
 
-	private static abstract class DBUnaryStringFunction implements StringResult {
+	private static abstract class DBUnaryStringFunction extends StringExpression {
 
 		protected NumberExpression only;
 

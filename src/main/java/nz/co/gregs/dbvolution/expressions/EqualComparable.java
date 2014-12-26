@@ -16,9 +16,17 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
+ * Indicates that the class can be compared to other instances of this class as
+ * if the instances were equivalent.
+ *
+ * <p>
+ * EqualsComparable expressions must have an equivalent to the EQUALS (=)
+ * operation.
  *
  * @author Gregory Graham
+ * @param <A>
  */
-interface EqualComparable {
-	
+public interface EqualComparable<A> {
+
+	public BooleanExpression is(A anotherInstance);
 }

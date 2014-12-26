@@ -25,14 +25,14 @@ package nz.co.gregs.dbvolution.expressions;
  * actual bit type.
  *
  * <p>
- * Add {@code implements BitsResult} to your class and override the copy
+ * Add {@code implements BooleanArrayResult} to your class and override the copy
  * method so that it returns your class type.
  *
  * @author Gregory Graham
  * @see DBExpression
  */
-public interface BitsResult extends DBExpression, ExpressionCanHaveNullValues{
+public interface BooleanArrayResult extends DBExpression, ExpressionCanHaveNullValues{
     
     @Override
-    public BitsResult copy();
+    public BooleanArrayResult copy();
 }

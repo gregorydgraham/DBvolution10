@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.expressions.BitsResult;
+import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
 
 /**
  * Encapsulates database values that are BIT arrays of up to 64 bits.
@@ -46,7 +46,7 @@ import nz.co.gregs.dbvolution.expressions.BitsResult;
  *
  * @author Gregory Graham
  */
-public class DBBooleanArray extends QueryableDatatype implements BitsResult {
+public class DBBooleanArray extends QueryableDatatype implements BooleanArrayResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -83,7 +83,7 @@ public class DBBooleanArray extends QueryableDatatype implements BitsResult {
 	 *
 	 * @param bits
 	 */
-	public DBBooleanArray(BitsResult bits) {
+	public DBBooleanArray(BooleanArrayResult bits) {
 		super(bits);
 	}
 
@@ -162,7 +162,7 @@ public class DBBooleanArray extends QueryableDatatype implements BitsResult {
 
 	@Override
 	public DBBooleanArray copy() {
-		return (DBBooleanArray) (BitsResult) super.copy();
+		return (DBBooleanArray) (BooleanArrayResult) super.copy();
 	}
 
 	@Override
