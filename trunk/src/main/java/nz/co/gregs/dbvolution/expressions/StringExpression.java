@@ -48,7 +48,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public class StringExpression implements StringResult {
+public class StringExpression implements StringResult, RangeComparable<StringExpression> {
 
 	private StringResult string1;
 	private boolean nullProtectionRequired;
@@ -465,6 +465,20 @@ public class StringExpression implements StringResult {
 	 */
 	public BooleanExpression is(Number number) {
 		return is(NumberExpression.value(number).stringResult());
+	}
+
+	/**
+	 * Creates a query comparison using the EQUALS operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param equivalentString
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression is(StringExpression equivalentString) {
+		return is((StringResult)equivalentString);
 	}
 
 	/**
@@ -1724,7 +1738,7 @@ public class StringExpression implements StringResult {
 		}
 	}
 
-	private static abstract class DBBinaryStringArithmetic implements StringResult {
+	private static abstract class DBBinaryStringArithmetic extends StringExpression {
 
 		private StringResult first;
 		private StringResult second;
@@ -1790,7 +1804,7 @@ public class StringExpression implements StringResult {
 //		}
 	}
 
-	private static abstract class DBNonaryStringFunction implements StringResult {
+	private static abstract class DBNonaryStringFunction extends StringExpression {
 
 		DBNonaryStringFunction() {
 		}
@@ -1850,7 +1864,7 @@ public class StringExpression implements StringResult {
 //		}
 	}
 
-	private static abstract class DBUnaryStringFunction implements StringResult {
+	private static abstract class DBUnaryStringFunction extends StringExpression {
 
 		protected StringExpression only;
 
@@ -1991,7 +2005,7 @@ public class StringExpression implements StringResult {
 //			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
 //		}
 //	}
-	private static abstract class DBUnaryNumberFunction implements NumberResult {
+	private static abstract class DBUnaryNumberFunction extends NumberExpression {
 
 		protected StringExpression only;
 
@@ -2057,7 +2071,7 @@ public class StringExpression implements StringResult {
 		}
 	}
 
-	private static abstract class DBTrinaryStringFunction implements StringResult {
+	private static abstract class DBTrinaryStringFunction extends StringExpression {
 
 		private DBExpression first;
 		private DBExpression second;
@@ -2165,7 +2179,7 @@ public class StringExpression implements StringResult {
 		}
 	}
 
-	private static abstract class DBBinaryStringFunction implements StringResult {
+	private static abstract class DBBinaryStringFunction extends StringExpression {
 
 		private StringResult first;
 		private StringResult second;
@@ -2253,7 +2267,7 @@ public class StringExpression implements StringResult {
 		}
 	}
 
-	private static abstract class BinaryComplicatedNumberFunction implements NumberResult {
+	private static abstract class BinaryComplicatedNumberFunction extends NumberExpression {
 
 		protected StringExpression first;
 		protected StringExpression second;
@@ -2386,7 +2400,7 @@ public class StringExpression implements StringResult {
 //		}
 	}
 
-	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
 		private StringResult first;
 		private StringResult second;
@@ -2396,10 +2410,10 @@ public class StringExpression implements StringResult {
 			this.second = second;
 		}
 
-		@Override
-		public DBString getQueryableDatatypeForExpressionValue() {
-			return new DBString();
-		}
+//		@Override
+//		public DBString getQueryableDatatypeForExpressionValue() {
+//			return new DBString();
+//		}
 
 		@Override
 		public String toSQLString(DBDatabase db) {
@@ -2441,7 +2455,7 @@ public class StringExpression implements StringResult {
 		}
 	}
 
-	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
+	private static abstract class DBNnaryBooleanFunction extends BooleanExpression{
 
 		protected StringExpression column;
 		protected List<StringResult> values = new ArrayList<StringResult>();
@@ -2464,10 +2478,10 @@ public class StringExpression implements StringResult {
 			}
 		}
 
-		@Override
-		public DBString getQueryableDatatypeForExpressionValue() {
-			return new DBString();
-		}
+//		@Override
+//		public DBString getQueryableDatatypeForExpressionValue() {
+//			return new DBString();
+//		}
 
 		abstract String getFunctionName(DBDatabase db);
 

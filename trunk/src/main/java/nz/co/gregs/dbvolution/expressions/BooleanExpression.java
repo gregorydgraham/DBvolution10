@@ -63,7 +63,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public class BooleanExpression implements BooleanResult {
+public class BooleanExpression implements BooleanResult, EqualComparable<BooleanExpression> {
 
 	private final BooleanResult onlyBool;
 	private boolean includeNulls;
@@ -167,6 +167,21 @@ public class BooleanExpression implements BooleanResult {
 		return is(new BooleanExpression(bool));
 	}
 
+	/**
+	 * Compare this BooleanExpression and the given {@link BooleanResult} using
+	 * the equality operator, that is "=" or similar.
+	 *
+	 * <p>
+	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
+	 *
+	 * @param bool
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
+	 */
+	public BooleanExpression is(BooleanExpression bool) {
+		return is((BooleanResult)bool);
+	}
+	
 	/**
 	 * Compare this BooleanExpression and the given {@link BooleanResult} using
 	 * the equality operator, that is "=" or similar.
@@ -568,7 +583,7 @@ public class BooleanExpression implements BooleanResult {
 		return includeNulls || onlyBool.getIncludesNull();
 	}
 
-	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
+	private static abstract class DBUnaryBooleanArithmetic extends BooleanExpression {
 
 		private DBExpression onlyBool;
 
@@ -615,7 +630,7 @@ public class BooleanExpression implements BooleanResult {
 		protected abstract String getEquationOperator(DBDatabase db);
 	}
 
-	private static abstract class DBNnaryBooleanArithmetic implements BooleanResult {
+	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression{
 
 		private BooleanResult[] bools;
 		private boolean includeNulls;
@@ -689,7 +704,7 @@ public class BooleanExpression implements BooleanResult {
 //		}
 	}
 
-	private static abstract class DBUnaryNumberFunction implements NumberResult {
+	private static abstract class DBUnaryNumberFunction extends NumberExpression {
 
 		protected BooleanExpression onlyBool;
 
@@ -751,7 +766,7 @@ public class BooleanExpression implements BooleanResult {
 		}
 	}
 
-	private static abstract class DBUnaryBinaryFunction implements BooleanResult {
+	private static abstract class DBUnaryBinaryFunction extends BooleanExpression {
 
 		protected BooleanExpression onlyBool;
 		private boolean includeNulls;
@@ -764,10 +779,10 @@ public class BooleanExpression implements BooleanResult {
 			this.onlyBool = only;
 		}
 
-		@Override
-		public DBNumber getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
+//		@Override
+//		public DBNumber getQueryableDatatypeForExpressionValue() {
+//			return new DBNumber();
+//		}
 
 		abstract String getFunctionName(DBDatabase db);
 
@@ -819,7 +834,7 @@ public class BooleanExpression implements BooleanResult {
 //		}
 	}
 
-	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
 		private BooleanExpression first;
 		private BooleanExpression second;

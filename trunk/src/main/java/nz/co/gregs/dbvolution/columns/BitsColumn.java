@@ -19,7 +19,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
-import nz.co.gregs.dbvolution.expressions.BitsExpression;
+import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -33,16 +33,16 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * byte[].
  *
  * <p>
- * Internally the class uses an AbsractColumn to store the column and overrides
- * methods in BitsExpression to insert the column into the expression.
+ Internally the class uses an AbsractColumn to store the column and overrides
+ methods in BooleanArrayExpression to insert the column into the expression.
  *
  *
  * @author Gregory Graham
  * @see RowDefinition
  * @see AbstractColumn
- * @see BitsExpression
+ * @see BooleanArrayExpression
  */
-public class BitsColumn extends BitsExpression implements ColumnProvider {
+public class BitsColumn extends BooleanArrayExpression implements ColumnProvider {
 
 	private final AbstractColumn column;
 

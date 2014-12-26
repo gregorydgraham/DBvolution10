@@ -29,12 +29,14 @@ import java.util.*;
 import javax.swing.JFrame;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.query.*;
 import nz.co.gregs.dbvolution.internal.querygraph.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
@@ -94,9 +96,9 @@ public class DBQuery {
 	private ColumnProvider[] sortOrderColumns;
 	private List<PropertyWrapper> sortOrder = null;
 
-	private static enum RecursiveSQLDirection {
+	static enum RecursiveSQLDirection {
 
-		ASCEND, DESCEND
+		TOWARDS_ROOT, TOWARDS_LEAVES
 	};
 
 	private static enum QueryType {
@@ -311,7 +313,7 @@ public class DBQuery {
 
 		String sqlToReturn;
 		if (previousTables.isEmpty()) {
-			sqlToReturn = " " + defn.formatTableName(newTable) + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
+			sqlToReturn = " " + defn.getFromClause(newTable);
 		} else {
 			if (isFullOuterJoin) {
 				sqlToReturn = lineSep + defn.beginFullOuterJoin();
@@ -320,7 +322,7 @@ public class DBQuery {
 			} else {
 				sqlToReturn = lineSep + defn.beginInnerJoin();
 			}
-			sqlToReturn += defn.formatTableName(newTable) + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
+			sqlToReturn += defn.getFromClause(newTable);//defn.formatTableName(newTable) + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
 			sqlToReturn += defn.beginOnClause();
 			if (!conditionClauses.isEmpty()) {
 				if (!joinClauses.isEmpty()) {
@@ -2068,7 +2070,7 @@ public class DBQuery {
 	}
 
 	private void initialiseQueryGraph() {
-			final QueryOptions options = details.getOptions();
+		final QueryOptions options = details.getOptions();
 		if (queryGraph == null) {
 			queryGraph = new QueryGraph(getDatabase(), details.getRequiredQueryTables(), getConditions(), options);
 			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), details.getOptionalQueryTables(), getConditions(), options);
@@ -2265,15 +2267,16 @@ public class DBQuery {
 	 * the current query thru all the rows that reference the current rows.
 	 *
 	 * @param foreignKeyToFollow
+	 * @param direction
 	 * @return A linked List
+	 * @throws java.sql.SQLException
 	 */
-	public List<DBQueryRow> getDescendants(ColumnProvider foreignKeyToFollow) throws SQLException {
+	public List<DBQueryRow> getRowsFromRecursiveQuery(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) throws SQLException {
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
 		if (this.database.supportsRecursiveQueriesNatively()) {
 			DBStatement dbStatement = getDatabase().getDBStatement();
 			try {
-				String descendingQuery = getRecursiveSQL(foreignKeyToFollow, RecursiveSQLDirection.DESCEND);
-				System.err.println(descendingQuery);
+				String descendingQuery = getRecursiveSQL(foreignKeyToFollow, direction);
 				ResultSet resultSet = getResultSetForSQL(dbStatement, descendingQuery);
 				try {
 					while (resultSet.next()) {
@@ -2297,19 +2300,70 @@ public class DBQuery {
 		}
 		return returnList;
 	}
+	
+//	public List<DBQueryRow> getAncestors(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) throws SQLException {
+//		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+//		String ascendingQuery = getRecursiveSQL(foreignKeyToFollow, direction);
+//		System.err.println(ascendingQuery);
+//		if (this.database.supportsRecursiveQueriesNatively()) {
+//			DBStatement dbStatement = getDatabase().getDBStatement();
+//			try {
+//				ResultSet resultSet = getResultSetForSQL(dbStatement, ascendingQuery);
+//				try {
+//					while (resultSet.next()) {
+//						DBQueryRow queryRow = new DBQueryRow(this);
+//
+//						setExpressionColumns(resultSet, queryRow);
+//
+//						setQueryRowFromResultSet(resultSet, queryRow, details.getDbReportGroupByColumns().size() > 0);
+//						returnList.add(queryRow);
+//					}
+//				} finally {
+//					resultSet.close();
+//				}
+//			} finally {
+//				dbStatement.close();
+//			}
+//			return returnList;
+//
+//		} else {
+//
+//		}
+//		return returnList;
+//	}
 
 	private String getRecursiveSQL(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
 		final Class<? extends DBRow> referencedClass = foreignKeyToFollow.getColumn().getPropertyWrapper().referencedClass();
 		try {
+			DBDefinition defn = this.database.getDefinition();
 			final DBRow newInstance = referencedClass.newInstance();
 			final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
-			String descendingQuery
-					= "WITH RECURSIVE " + recursiveTableAlias + " \n"
-					+ " AS (" + removeTrailingSemicolon(this.getPrimingSubQueryForRecursiveQuery(foreignKeyToFollow)) + " \n"
-					+ " UNION " + removeTrailingSemicolon(this.getRecursiveSubQuery(foreignKeyToFollow, direction)) + " \n"
-					+ ")" + " \n"
-					+ "SELECT * FROM " + recursiveTableAlias + ";";
-			return descendingQuery;
+			String recursiveColumnNames = "";// "part_id, subPartOf, name";
+			String recursiveAliases = "";//part_id DB338424460 , subPartOf DB128757743, name DB_1562994938";
+			final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
+			RowDefinition adapteeRowDefinition = rowDefinitionInstanceWrapper.adapteeRowDefinition();
+			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getPropertyWrappers();
+			String separator = "";
+			for (PropertyWrapper propertyWrapper : propertyWrappers) {
+				final String columnName = defn.formatColumnName(propertyWrapper.getDefinition().getColumnName());
+				recursiveColumnNames += separator + columnName;
+				recursiveAliases += separator + columnName + " " + propertyWrapper.getColumnAlias(database);
+				separator = ", ";
+			}
+
+			final DBQuery primingSubQueryForRecursiveQuery = this.getPrimingSubQueryForRecursiveQuery(foreignKeyToFollow);
+			final DBQuery recursiveSubQuery = this.getRecursiveSubQuery(recursiveTableAlias, foreignKeyToFollow, direction);
+//String recursiveAliases = " * ";			
+			String recursiveQuery
+					= defn.beginWithClause() + defn.formatWithClauseTableDefinition(recursiveTableAlias, recursiveColumnNames)
+					+ defn.beginWithClausePrimingQuery()
+					+ removeTrailingSemicolon(primingSubQueryForRecursiveQuery.getSQLForQuery())
+					+ defn.endWithClausePrimingQuery()
+					+ defn.beginWithClauseRecursiveQuery()
+					+ removeTrailingSemicolon(recursiveSubQuery.getSQLForQuery())
+					+ defn.endWithClauseRecursiveQuery()
+					+ defn.doSelectFromRecursiveTable(recursiveTableAlias, recursiveAliases);
+			return recursiveQuery;
 		} catch (InstantiationException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
 		} catch (IllegalAccessException ex) {
@@ -2321,10 +2375,10 @@ public class DBQuery {
 		return sql.replaceAll("[ \\t\\r\\n]*;[ \\t\\r\\n]*$", System.getProperty("line.separator"));
 	}
 
-	private String getPrimingSubQueryForRecursiveQuery(ColumnProvider foreignKeyToFollow) {
+	private DBQuery getPrimingSubQueryForRecursiveQuery(ColumnProvider foreignKeyToFollow) {
 		DBQuery newQuery = this.database.getDBQuery();
-
-		final Class<?> originatingClass = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper().adapteeRowDefinitionClass();
+		final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
+		final Class<?> originatingClass = rowDefinitionInstanceWrapper.adapteeRowDefinitionClass();
 
 		List<DBRow> tables = details.getRequiredQueryTables();
 		for (DBRow table : tables) {
@@ -2350,34 +2404,49 @@ public class DBQuery {
 			}
 			newQuery.addAssumedTables(copied);
 		}
-		return newQuery.getSQLForQuery();
+		return newQuery;
 	}
 
-	private String getRecursiveSubQuery(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
+	@SuppressWarnings("unchecked")
+	private DBQuery getRecursiveSubQuery(String recursiveTableAlias, ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
+		Class<? extends DBRow> referencedClass = DBRow.class;
 		DBQuery newQuery = this.database.getDBQuery();
-		@SuppressWarnings("unchecked")
-
-		final Class<? extends DBRow> originatingClass = (Class<? extends DBRow>) foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper().adapteeRowDefinitionClass();
-		final DBRow dbRow = DBRow.getDBRow(originatingClass);
-		if (direction == RecursiveSQLDirection.ASCEND) {
-			dbRow.setReturnFieldsToNone();
-		}
-		newQuery.add(dbRow);
-
-		final Class<? extends DBRow> referencedClass = foreignKeyToFollow.getColumn().getPropertyWrapper().referencedClass();
 		try {
-			final DBRow newInstance = referencedClass.newInstance();
-			if (direction == RecursiveSQLDirection.DESCEND) {
-				newInstance.setReturnFieldsToNone();
+
+			final Class<? extends DBRow> originatingClass;
+			final AbstractColumn fkColumn = foreignKeyToFollow.getColumn();
+			originatingClass = (Class<? extends DBRow>) fkColumn.getPropertyWrapper().getRowDefinitionInstanceWrapper().adapteeRowDefinitionClass();
+			referencedClass = foreignKeyToFollow.getColumn().getPropertyWrapper().referencedClass();
+
+			final DBRow originatingRow = DBRow.getDBRow(originatingClass);
+			final DBRow referencedRow = referencedClass.newInstance();
+			referencedRow.setReturnFieldsToNone();
+			if (database.getDefinition().requiresRecursiveTableAlias()) {
+				referencedRow.setRecursiveTableAlias(recursiveTableAlias);
 			}
-			newQuery.add(newInstance);
+			if(direction==RecursiveSQLDirection.TOWARDS_ROOT){
+				originatingRow.ignoreAllForeignKeys();
+				referencedRow.ignoreAllForeignKeys();
+			}
+			newQuery.add(originatingRow);
+			newQuery.add(referencedRow);
+			if(direction==RecursiveSQLDirection.TOWARDS_ROOT){
+				final ColumnProvider pkColumn = originatingRow.column(originatingRow.getPrimaryKey());
+				// TODO Need to find the FK field on the other table
+				DBInteger fkValue = (DBInteger)foreignKeyToFollow.getColumn().getPropertyWrapper().getDefinition().getQueryableDatatype(referencedRow);
+				IntegerColumn newFKColumn = referencedRow.column(fkValue);
+//				final NumberExpression fkExpr = (NumberExpression)foreignKeyToFollow;
+				newQuery.addCondition(
+						((NumberExpression)pkColumn)
+								.is(newFKColumn));
+			}
 		} catch (InstantiationException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
 		} catch (IllegalAccessException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
 		}
 
-		return newQuery.getSQLForQuery();
+		return newQuery;
 	}
 
 	public DBQuery addOptional(List<DBRow> optionalQueryTables) {
@@ -2399,96 +2468,22 @@ public class DBQuery {
 		return this;
 	}
 
-	/**
-	 * Creates a recursive query that traverses a tree structure from the nodes
-	 * provided by this query to the root of the tree.
-	 *
-	 * <p>
-	 * Tree structures are stored in databases as a table with a foreign key to
-	 * itself. This method provides a convenient way to find the path from a leaf
-	 * node to the root of the tree.
-	 *
-	 * <p>
-	 * These structures are recursive in that the table is self-referential and
-	 * thus has similar properties to a recursive procedure. As such the queries
-	 * used to traverse the structures are also called recursive queries.
-	 *
-	 * <p>
-	 * This method creates a recursive query based on the current query and the
-	 * foreign key provided to the traverse "down" the tree from the results of
-	 * the current query thru all the rows that reference the current rows.
-	 *
-	 * @param foreignKeyToFollow
-	 * @return A linked List
-	 */
-	/**
-	 * Creates a recursive query that traverses a tree structure from the nodes
-	 * provided by this query to the root of the tree.<p>
-	 * Tree structures are stored in databases as a table with a foreign key to
-	 * itself. This method provides a convenient way to find the path from a leaf
-	 * node to the root of the tree.
-	 *
-	 * <p>
-	 * These structures are recursive in that the table is self-referential and
-	 * thus has similar properties to a recursive procedure. As such the queries
-	 * used to traverse the structures are also called recursive queries.
-	 *
-	 * <p>
-	 * This method creates a recursive query based on the current query and the
-	 * foreign key provided to the traverse "down" the tree from the results of
-	 * the current query thru all the rows that reference the current rows.
-	 *
-	 * @param foreignKeyToFollow
-	 * @return A linked List
-	 * @throws java.sql.SQLException
-	 */
-	public List<DBQueryRow> getAncestors(ColumnProvider foreignKeyToFollow) throws SQLException {
-		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
-		String ascendingQuery = getRecursiveSQL(foreignKeyToFollow, RecursiveSQLDirection.ASCEND);
-		System.err.println(ascendingQuery);
-		if (this.database.supportsRecursiveQueriesNatively()) {
-			DBStatement dbStatement = getDatabase().getDBStatement();
-			try {
-				ResultSet resultSet = getResultSetForSQL(dbStatement, ascendingQuery);
-				try {
-					while (resultSet.next()) {
-						DBQueryRow queryRow = new DBQueryRow(this);
-
-						setExpressionColumns(resultSet, queryRow);
-
-						setQueryRowFromResultSet(resultSet, queryRow, details.getDbReportGroupByColumns().size() > 0);
-						returnList.add(queryRow);
-					}
-				} finally {
-					resultSet.close();
-				}
-			} finally {
-				dbStatement.close();
-			}
-			return returnList;
-
-		} else {
-
-		}
-		return returnList;
-	}
-
 	public <T extends DBRow> List<T> getDescendants(T example, ColumnProvider column) throws SQLException {
-		List<T> resultsList = new ArrayList<T>();
-		List<DBQueryRow> descendants = this.getDescendants(column);
+		Set<T> resultsList = new HashSet<T>();
+		List<DBQueryRow> descendants = this.getRowsFromRecursiveQuery(column, RecursiveSQLDirection.TOWARDS_LEAVES);
 		for (DBQueryRow descendant : descendants) {
 			resultsList.add(descendant.get(example));
 		}
-		return resultsList;
+		return new ArrayList<T>(resultsList);
 	}
 
 	public <T extends DBRow> List<T> getAncestors(T example, ColumnProvider column) throws SQLException {
-		List<T> resultsList = new ArrayList<T>();
-		List<DBQueryRow> ancestors = this.getAncestors(column);
+		Set<T> resultsList = new HashSet<T>();
+		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(column, RecursiveSQLDirection.TOWARDS_ROOT);
 		for (DBQueryRow ancestor : ancestors) {
 			resultsList.add(ancestor.get(example));
 		}
-		return resultsList;
+		return new ArrayList<T>(resultsList);
 	}
 
 	/**
@@ -2521,13 +2516,9 @@ public class DBQuery {
 	 * @return
 	 * @throws SQLException
 	 */
-	public <R extends DBRow> LinkedList<R> getPathToRoot(R example, ColumnProvider column) throws SQLException {
+	public <R extends DBRow> List<R> getPathToRoot(R example, ColumnProvider column) throws SQLException {
 		List<R> ancestors = getAncestors(example, column);
-		LinkedList<R> linkedList = new LinkedList<R>();
-		for (R ancestor : ancestors) {
-			linkedList.addFirst(ancestor);
-		}
-		return linkedList;
+		return ancestors;
 	}
 
 	/**

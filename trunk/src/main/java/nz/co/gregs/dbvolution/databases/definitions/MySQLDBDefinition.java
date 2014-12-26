@@ -71,7 +71,6 @@ public class MySQLDBDefinition extends DBDefinition {
 //	public String getDropDatabase(String databaseName) {
 //		return "DROP DATABASE IF EXISTS " + databaseName + ";";
 //	}
-
 	@Override
 	public String doConcatTransform(String firstString, String secondString) {
 		return " CONCAT(" + firstString + ", " + secondString + ") ";
@@ -94,41 +93,41 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doModulusTransform(String firstNumber, String secondNumber) {
-		return getTruncFunctionName()+"("+super.doModulusTransform(firstNumber, secondNumber)+",0)"; 
+		return getTruncFunctionName() + "(" + super.doModulusTransform(firstNumber, secondNumber) + ",0)";
 	}
 
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
-		return "TIMESTAMPDIFF(DAY, "+dateValue+","+otherDateValue+")"; 
+		return "TIMESTAMPDIFF(DAY, " + dateValue + "," + otherDateValue + ")";
 	}
 
 	@Override
 	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
-		return "TIMESTAMPDIFF(WEEK, "+dateValue+","+otherDateValue+")"; 
+		return "TIMESTAMPDIFF(WEEK, " + dateValue + "," + otherDateValue + ")";
 	}
 
 	@Override
 	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
-		return "TIMESTAMPDIFF(MONTH, "+dateValue+","+otherDateValue+")"; 
+		return "TIMESTAMPDIFF(MONTH, " + dateValue + "," + otherDateValue + ")";
 	}
 
 	@Override
 	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
-		return "TIMESTAMPDIFF(YEAR, "+dateValue+","+otherDateValue+")"; 
+		return "TIMESTAMPDIFF(YEAR, " + dateValue + "," + otherDateValue + ")";
 	}
 
 	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
-		return "TIMESTAMPDIFF(HOUR, "+dateValue+","+otherDateValue+")"; 
+		return "TIMESTAMPDIFF(HOUR, " + dateValue + "," + otherDateValue + ")";
 	}
 
 	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
-		return "TIMESTAMPDIFF(MINUTE, "+dateValue+","+otherDateValue+")"; 
+		return "TIMESTAMPDIFF(MINUTE, " + dateValue + "," + otherDateValue + ")";
 	}
 
 	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "TIMESTAMPDIFF(SECOND, "+dateValue+","+otherDateValue+")"; 
+		return "TIMESTAMPDIFF(SECOND, " + dateValue + "," + otherDateValue + ")";
 	}
 }

@@ -31,7 +31,7 @@ package nz.co.gregs.dbvolution.expressions;
  * @author greg
  * @see DBExpression
  */
-public interface NumberResult extends DBExpression, RangeComparable, ExpressionCanHaveNullValues{
+public interface NumberResult extends DBExpression, ExpressionCanHaveNullValues{
     
     @Override
     public NumberResult copy();

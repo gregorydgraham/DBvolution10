@@ -31,7 +31,7 @@ package nz.co.gregs.dbvolution.expressions;
  * @author Gregory Graham
  * @see DBExpression
  */
-public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues, EqualComparable {
+public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues {
 
     @Override
     public BooleanResult copy();

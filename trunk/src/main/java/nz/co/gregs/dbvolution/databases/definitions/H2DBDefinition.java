@@ -43,7 +43,7 @@ public class H2DBDefinition extends DBDefinition {
 		}
 		return "PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "')";
 	}
-	
+
 	@Override
 	public String formatTableName(DBRow table) {
 		return table.getTableName().toUpperCase();
@@ -56,43 +56,44 @@ public class H2DBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddDaysTransform(String dayValue, String numberOfDays) {
-		return "DATEADD('day',"+numberOfDays+", "+dayValue+")";
+		return "DATEADD('day'," + numberOfDays + ", " + dayValue + ")";
 	}
 
 	@Override
 	public String doAddSecondsTransform(String secondValue, String numberOfSeconds) {
-		return "DATEADD('second',"+numberOfSeconds+","+secondValue+")";
+		return "DATEADD('second'," + numberOfSeconds + "," + secondValue + ")";
 	}
 
 	@Override
 	public String doAddMinutesTransform(String secondValue, String numberOfMinutes) {
-		return "DATEADD('minute',"+numberOfMinutes+","+secondValue+")";
+		return "DATEADD('minute'," + numberOfMinutes + "," + secondValue + ")";
 	}
 
 	@Override
 	public String doAddHoursTransform(String hourValue, String numberOfSeconds) {
-		return "DATEADD('hour',"+numberOfSeconds+","+hourValue+")";
+		return "DATEADD('hour'," + numberOfSeconds + "," + hourValue + ")";
 	}
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "DATEADD('WEEK',"+numberOfWeeks+","+dateValue+")";
+		return "DATEADD('WEEK'," + numberOfWeeks + "," + dateValue + ")";
 	}
 
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
-		return "DATEADD('month',"+numberOfMonths+","+dateValue+")";
+		return "DATEADD('month'," + numberOfMonths + "," + dateValue + ")";
 	}
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
-		return "DATEADD('year',"+numberOfYears+","+dateValue+")";
+		return "DATEADD('year'," + numberOfYears + "," + dateValue + ")";
 	}
 
 	/**
 	 * Defines the function used to get the current timestamp from the database.
 	 *
-	 * @return the H@ implementation subtracts the time zone from the current timestamp
+	 * @return the H@ implementation subtracts the time zone from the current
+	 * timestamp
 	 */
 	@Override
 	protected String getCurrentDateTimeFunction() {
@@ -101,5 +102,16 @@ public class H2DBDefinition extends DBDefinition {
 //		long timezone = rawTimezone/100+((rawTimezone%100)*(100/60));
 //		return " DATEADD('hour',-1* "+timezone+",CURRENT_TIMESTAMP )";
 		return " CURRENT_TIMESTAMP ";
+	}
+
+
+	@Override
+	public String endWithClausePrimingQuery() {
+		return " \n UNION ALL ";
+	}
+
+	@Override
+	public boolean requiresRecursiveTableAlias() {
+		return true;
 	}
 }

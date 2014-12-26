@@ -28,14 +28,15 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author gregory.graham
  */
-public class BitsExpression implements BitsResult {
+// TODO imlement EqualsComparable<BooleanArrayExpression>
+public class BooleanArrayExpression implements BooleanArrayResult {
 
-	private final BitsResult innerBitsResult;
+	private final BooleanArrayResult innerBitsResult;
 
 	/**
 	 * Default Constructor.
 	 */
-	protected BitsExpression() {
+	protected BooleanArrayExpression() {
 		this.innerBitsResult = new DBBooleanArray();
 	}
 
@@ -44,17 +45,17 @@ public class BitsExpression implements BitsResult {
 	 *
 	 * @param bitResult
 	 */
-	public BitsExpression(BitsResult bitResult) {
+	public BooleanArrayExpression(BooleanArrayResult bitResult) {
 		this.innerBitsResult = bitResult;
 	}
 
 	@Override
-	public BitsExpression copy() {
-		return new BitsExpression(this.getInnerBitsResult());
+	public BooleanArrayExpression copy() {
+		return new BooleanArrayExpression(this.getInnerBitsResult());
 	}
 
 	/**
-	 * Create An Appropriate BitsExpression Object For This Object.
+	 * Create An Appropriate BooleanArrayExpression Object For This Object.
 	 *
 	 * <p>
 	 * The expression framework requires an Expression to work with. The easiest
@@ -75,16 +76,16 @@ public class BitsExpression implements BitsResult {
 	 * <li>The implementation should be {@code static}</li>
 	 * </ul>
 	 *
-	 * @param number integer to base the BitsExpression on.
+	 * @param number integer to base the BooleanArrayExpression on.
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public static BitsExpression value(int number) {
+	public static BooleanArrayExpression value(int number) {
 		return NumberExpression.value(number).convertToBits();
 	}
 
 	/**
-	 * Create An Appropriate BitsExpression Object For This Object.
+	 * Create An Appropriate BooleanArrayExpression Object For This Object.
 	 *
 	 * <p>
 	 * The expression framework requires an Expression to work with. The easiest
@@ -105,16 +106,16 @@ public class BitsExpression implements BitsResult {
 	 * <li>The implementation should be {@code static}</li>
 	 * </ul>
 	 *
-	 * @param number integer to base the BitsExpression on.
+	 * @param number integer to base the BooleanArrayExpression on.
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public static BitsExpression value(long number) {
+	public static BooleanArrayExpression value(long number) {
 		return NumberExpression.value(number).convertToBits();
 	}
 
 	/**
-	 * Create An Appropriate BitsExpression Object For This Object.
+	 * Create An Appropriate BooleanArrayExpression Object For This Object.
 	 *
 	 * <p>
 	 * The expression framework requires an Expression to work with. The easiest
@@ -135,16 +136,16 @@ public class BitsExpression implements BitsResult {
 	 * <li>The implementation should be {@code static}</li>
 	 * </ul>
 	 *
-	 * @param number integer to base the BitsExpression on.
+	 * @param number integer to base the BooleanArrayExpression on.
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public static BitsExpression value(double number) {
+	public static BooleanArrayExpression value(double number) {
 		return NumberExpression.value(number).convertToBits();
 	}
 
 	/**
-	 * Create An Appropriate BitsExpression Object For This Object.
+	 * Create An Appropriate BooleanArrayExpression Object For This Object.
 	 *
 	 * <p>
 	 * The expression framework requires an Expression to work with. The easiest
@@ -165,11 +166,11 @@ public class BitsExpression implements BitsResult {
 	 * <li>The implementation should be {@code static}</li>
 	 * </ul>
 	 *
-	 * @param number integer to base the BitsExpression on.
+	 * @param number integer to base the BooleanArrayExpression on.
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public static BitsExpression value(Number number) {
+	public static BooleanArrayExpression value(Number number) {
 		return NumberExpression.value(number).convertToBits();
 	}
 
@@ -215,17 +216,17 @@ public class BitsExpression implements BitsResult {
 	}
 
 	/**
-	 * Return the BitsResult held internally in this class.
+	 * Return the BooleanArrayResult held internally in this class.
 	 *
-	 * @return The BitsResult used internally.
+	 * @return The BooleanArrayResult used internally.
 	 */
-	protected BitsResult getInnerBitsResult() {
+	protected BooleanArrayResult getInnerBitsResult() {
 		return innerBitsResult;
 	}
 
 	/**
 	 * Create a BooleanExpression that will compare the integer provided to this
-	 * BitsExpression using the equivalent of the EQUALS operator.
+ BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
 	 * @param i
 	 * @return a BooleanExpresson of the Bit comparison of the integer and this expression.
@@ -241,7 +242,7 @@ public class BitsExpression implements BitsResult {
 
 	/**
 	 * Create a BooleanExpression that will compare the long provided to this
-	 * BitsExpression using the equivalent of the EQUALS operator.
+ BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
 	 * @param i
 	 * @return a BooleanExpresson of the Bit comparison of the long and this expression.
@@ -257,7 +258,7 @@ public class BitsExpression implements BitsResult {
 
 	/**
 	 * Create a BooleanExpression that will compare the number provided to this
-	 * BitsExpression using the equivalent of the EQUALS operator.
+ BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
 	 * @param i
 	 * @return a BooleanExpresson of the Bit comparison of the number and this expression.
@@ -271,13 +272,13 @@ public class BitsExpression implements BitsResult {
 		});
 	}
 
-	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
-		private BitsExpression first;
-		private BitsResult second;
+		private BooleanArrayExpression first;
+		private BooleanArrayResult second;
 		private boolean requiresNullProtection;
 
-		DBBinaryBooleanArithmetic(BitsExpression first, BitsResult second) {
+		DBBinaryBooleanArithmetic(BooleanArrayExpression first, BooleanArrayResult second) {
 			this.first = first;
 			this.second = second;
 			if (this.second == null || this.second.getIncludesNull()) {

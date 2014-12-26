@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.*;
@@ -30,6 +29,7 @@ import org.junit.Test;
  *
  * @author gregorygraham
  */
+@Ignore
 public class HeirarchicalQueryTest extends AbstractTest {
 
 	final Parts wing = new Parts(null, "wing");
@@ -71,62 +71,71 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		database.dropTableNoExceptions(new CompletePart());
 		database.createTable(new CompletePart());
 		database.insert(new CompletePart(aileron.partID.intValue(), "Aileron"));
-
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void descendSimpleTree() throws SQLException {
 		Parts aileronID = new Parts();
 		aileronID.partID.permittedValues(aileron.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getDescendants(aileronID.column(aileronID.subPartOf)
+				= findTheAileronQuery.getRowsFromRecursiveQuery(aileronID.column(aileronID.subPartOf), 
+						DBQuery.RecursiveSQLDirection.TOWARDS_LEAVES
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
+		final DBQueryRow firstRow = componentsOfTheAileron.get(0);
+		final Parts firstPart = firstRow.get(aileronID);
+		final DBString firstName = firstPart.name;
+		Assert.assertThat(firstName.stringValue(),
+				anyOf(is("aileron"), is("lever"), is("screw"))
+		);
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void ascendSimpleTree() throws SQLException {
 		Parts aileronID = new Parts();
 		aileronID.partID.permittedValues(aileron.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getAncestors(aileronID.column(aileronID.subPartOf)
+				= findTheAileronQuery.getRowsFromRecursiveQuery(aileronID.column(aileronID.subPartOf), 
+						DBQuery.RecursiveSQLDirection.TOWARDS_ROOT
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void descendSimpleTreeWithoutTableName() throws SQLException {
 		PartsWithoutTableName aileronID = new PartsWithoutTableName();
 		aileronID.partID.permittedValues(aileronWithout.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getDescendants(aileronID.column(aileronID.subPartOf)
+				= findTheAileronQuery.getRowsFromRecursiveQuery(aileronID.column(aileronID.subPartOf), 
+						DBQuery.RecursiveSQLDirection.TOWARDS_LEAVES
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void ascendSimpleTreeWithoutTableName() throws SQLException {
 		PartsWithoutTableName aileronID = new PartsWithoutTableName();
 		aileronID.partID.permittedValues(aileronWithout.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getAncestors(aileronID.column(aileronID.subPartOf)
+				= findTheAileronQuery.getRowsFromRecursiveQuery(aileronID.column(aileronID.subPartOf), 
+						DBQuery.RecursiveSQLDirection.TOWARDS_ROOT
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void descendTreeFrom2TableQuery() throws SQLException {
 		Parts part = new Parts();
@@ -134,13 +143,14 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		aileronID.name.permittedValues("Aileron");
 		final DBQuery findTheAileronQuery = database.getDBQuery(new Parts(), aileronID);
 		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getDescendants(part.column(part.subPartOf)
+				= findTheAileronQuery.getRowsFromRecursiveQuery(part.column(part.subPartOf), 
+						DBQuery.RecursiveSQLDirection.TOWARDS_LEAVES
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void ascendTreeFrom2TableQuery() throws SQLException {
 		Parts part = new Parts();
@@ -148,13 +158,14 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		aileronID.name.permittedValues("Aileron");
 		final DBQuery findTheAileronQuery = database.getDBQuery(new Parts(), aileronID);
 		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getAncestors(part.column(part.subPartOf)
+				= findTheAileronQuery.getRowsFromRecursiveQuery(part.column(part.subPartOf), 
+						DBQuery.RecursiveSQLDirection.TOWARDS_ROOT
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void descendTreeFrom2TableQueryToPathsList() throws SQLException {
 		Parts part = new Parts();
@@ -168,7 +179,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	public void ascendTreeFrom2TableQueryToPathsList() throws SQLException {
 		Parts part = new Parts();
@@ -182,18 +193,19 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
 	}
 
-	@Ignore
+//	@Ignore
+	//TODO add depth column to sort the results by
 	@Test
-	public void getPathToRootAsLinkedList() throws SQLException {
+	public void getPathToRootAsList() throws SQLException {
 		Parts part = new Parts();
 		CompletePart aileronID = new CompletePart();
 		aileronID.name.permittedValues("Aileron");
 		final DBQuery findTheAileronQuery = database.getDBQuery(new Parts(), aileronID);
-		LinkedList<Parts> pathToTheWing
+		List<Parts> pathToTheWing
 				= findTheAileronQuery.getPathToRoot(part, part.column(part.subPartOf));
 		database.print(pathToTheWing);
 		Assert.assertThat(pathToTheWing.size(), is(2));
-		Assert.assertThat(pathToTheWing.getFirst().name.stringValue(), is("aileron"));
+		Assert.assertThat(pathToTheWing.get(0).name.stringValue(), is("aileron"));
 		Assert.assertThat(pathToTheWing.get(1).name.stringValue(), is("wing"));
 	}
 
@@ -235,7 +247,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 	@DBTableName("complete_parts")
 	public static class CompletePart extends DBRow {
 
-		@DBColumn("complete_part_id")
+		@DBColumn//("complete_part_id")
 		@DBPrimaryKey
 		@DBAutoIncrement
 		public DBInteger completePartID = new DBInteger();
@@ -262,7 +274,7 @@ public class HeirarchicalQueryTest extends AbstractTest {
 	// TODO Investigate need for "part_id"
 	public static class PartsWithoutTableName extends DBRow {
 
-		@DBColumn("part_id")
+		@DBColumn//("part_id")
 		@DBPrimaryKey
 		@DBAutoIncrement
 		public DBInteger partID = new DBInteger();

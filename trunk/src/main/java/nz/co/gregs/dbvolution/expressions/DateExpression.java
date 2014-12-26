@@ -60,7 +60,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public class DateExpression implements DateResult {
+public class DateExpression implements DateResult, RangeComparable<DateResult> {
 
 	private DateResult date1;
 	private boolean needsNullProtection = false;
@@ -1767,7 +1767,7 @@ public class DateExpression implements DateResult {
 				});
 	}
 
-	private static abstract class DBNonaryFunction implements DateResult {
+	private static abstract class DBNonaryFunction extends DateExpression{
 
 		DBNonaryFunction() {
 		}
@@ -1821,7 +1821,7 @@ public class DateExpression implements DateResult {
 		}
 	}
 
-	private static abstract class UnaryComplicatedNumberFunction implements NumberResult {
+	private static abstract class UnaryComplicatedNumberFunction extends NumberExpression{
 
 		protected DateExpression only;
 
@@ -1875,7 +1875,7 @@ public class DateExpression implements DateResult {
 		}
 	}
 
-	private static abstract class DBBinaryBooleanArithmetic implements BooleanResult {
+	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
 		private DateExpression first;
 		private DateResult second;
@@ -2012,7 +2012,7 @@ public class DateExpression implements DateResult {
 		}
 	}
 
-	private static abstract class DBNnaryBooleanFunction implements BooleanResult {
+	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
 
 		private DateExpression column;
 		private List<DateResult> values = new ArrayList<DateResult>();
@@ -2127,7 +2127,7 @@ public class DateExpression implements DateResult {
 		}
 	}
 
-	private static abstract class DBBinaryFunction implements DateResult {
+	private static abstract class DBBinaryFunction extends DateExpression {
 
 		private DateExpression first;
 		private DateResult second;
@@ -2142,10 +2142,10 @@ public class DateExpression implements DateResult {
 			this.second = second;
 		}
 
-		@Override
-		public DBNumber getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
+//		@Override
+//		public DBNumber getQueryableDatatypeForExpressionValue() {
+//			return new DBNumber();
+//		}
 
 		@Override
 		public String toSQLString(DBDatabase db) {
@@ -2213,7 +2213,7 @@ public class DateExpression implements DateResult {
 		}
 	}
 
-	private static abstract class DBUnaryNumberFunction implements NumberResult {
+	private static abstract class DBUnaryNumberFunction extends NumberExpression {
 
 		protected DateExpression only;
 
@@ -2275,7 +2275,7 @@ public class DateExpression implements DateResult {
 		}
 	}
 
-	private static abstract class DBUnaryDateFunction implements DateResult {
+	private static abstract class DBUnaryDateFunction extends DateExpression {
 
 		protected DateExpression only;
 
@@ -2287,10 +2287,10 @@ public class DateExpression implements DateResult {
 			this.only = only;
 		}
 
-		@Override
-		public DBString getQueryableDatatypeForExpressionValue() {
-			return new DBString();
-		}
+//		@Override
+//		public DBString getQueryableDatatypeForExpressionValue() {
+//			return new DBString();
+//		}
 
 		abstract String getFunctionName(DBDatabase db);
 
@@ -2332,7 +2332,7 @@ public class DateExpression implements DateResult {
 		}
 	}
 
-	private static abstract class DBBinaryDateNumberFunctionWithDateResult implements DateResult {
+	private static abstract class DBBinaryDateNumberFunctionWithDateResult extends DateExpression {
 
 		protected DateExpression first;
 		protected NumberExpression second;
@@ -2347,10 +2347,10 @@ public class DateExpression implements DateResult {
 			this.second = numbExp;
 		}
 
-		@Override
-		public DBString getQueryableDatatypeForExpressionValue() {
-			return new DBString();
-		}
+//		@Override
+//		public DBString getQueryableDatatypeForExpressionValue() {
+//			return new DBString();
+//		}
 
 //		abstract String getFunctionName(DBDatabase db);
 //
@@ -2394,7 +2394,7 @@ public class DateExpression implements DateResult {
 		}
 	}
 
-	private static abstract class DBBinaryDateFunctionWithNumberResult implements NumberResult {
+	private static abstract class DBBinaryDateFunctionWithNumberResult extends NumberExpression {
 
 		protected DateExpression first;
 		protected DateExpression second;
@@ -2409,10 +2409,10 @@ public class DateExpression implements DateResult {
 			this.second = otherDateExp;
 		}
 
-		@Override
-		public DBString getQueryableDatatypeForExpressionValue() {
-			return new DBString();
-		}
+//		@Override
+//		public DBString getQueryableDatatypeForExpressionValue() {
+//			return new DBString();
+//		}
 
 		@Override
 		abstract public String toSQLString(DBDatabase db);
