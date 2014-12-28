@@ -34,7 +34,7 @@ public class RowDefinitionWrapperFactory {
      * @param clazz
      * @return the class adaptor
      */
-    public RowDefinitionClassWrapper classWrapperFor(Class<?> clazz) {
+    public RowDefinitionClassWrapper classWrapperFor(Class<? extends RowDefinition> clazz) {
         synchronized (classWrappersByClass) {
             RowDefinitionClassWrapper wrapper = classWrappersByClass.get(clazz);
             if (wrapper == null) {

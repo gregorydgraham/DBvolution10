@@ -34,23 +34,23 @@ public class OuterJoinTest extends AbstractTest {
 		super(testIterationName, db);
 	}
 
-	@Test
-	public void testANSIJoinClauseCreation() throws Exception {
-		String lineSep = System.getProperty("line.separator");
-		Marque mrq = new Marque();
-
-		CarCompany carCo = new CarCompany();
-		QueryOptions opts = new QueryOptions();
-
-		System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo, opts));
-		System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq, opts));
-
-		String expectedString = "__1997432637.fk_carcompany = __78874071.uid_carcompany";
-		Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo, opts)), is(testableSQL(expectedString)));
-		expectedString = "__78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY";
-		Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq, opts)), is(testableSQL(expectedString)));
-
-	}
+//	@Test
+//	public void testANSIJoinClauseCreation() throws Exception {
+//		String lineSep = System.getProperty("line.separator");
+//		Marque mrq = new Marque();
+//
+//		CarCompany carCo = new CarCompany();
+//		QueryOptions opts = new QueryOptions();
+//
+//		System.out.println("" + mrq.getRelationshipsAsSQL(database, carCo, opts));
+//		System.out.println("" + carCo.getRelationshipsAsSQL(database, mrq, opts));
+//
+//		String expectedString = "__1997432637.fk_carcompany = __78874071.uid_carcompany";
+//		Assert.assertThat(testableSQL(mrq.getRelationshipsAsSQL(database, carCo, opts)), is(testableSQL(expectedString)));
+//		expectedString = "__78874071.UID_CARCOMPANY = __1997432637.FK_CARCOMPANY";
+//		Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq, opts)), is(testableSQL(expectedString)));
+//
+//	}
 
 	@Test
 	public void testANSIInnerJoinQueryCreation() throws Exception {

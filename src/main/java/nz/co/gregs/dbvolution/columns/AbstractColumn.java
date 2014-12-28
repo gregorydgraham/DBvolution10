@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -158,6 +159,37 @@ public class AbstractColumn implements DBExpression {
 	}
 
 	/**
+	 * Gets the DBvolution-centric value of the column for the instance of
+	 * RowDefinition (DBRow/DBreport) supplied.
+	 *
+	 * <p>
+	 * The value returned may have undergone type conversion from the target
+	 * object's actual property type, if a type adaptor is present.
+	 *
+	 * @param row
+	 * @return the QDT version of the field on the DBRow
+	 */
+	public QueryableDatatype getAppropriateQDTFromRow(RowDefinition row) {
+		return this.getPropertyWrapper().getDefinition().getQueryableDatatype(row);
+	}
+
+	/**
+	 * Gets the value of the declared column in the RowDefinition/DBRow/DBReport
+	 * supplied, prior to type conversion to the DBvolution-centric type.
+	 *
+	 * <p>
+	 * you should probably be using {@link #getAppropriateQDTFromRow(nz.co.gregs.dbvolution.query.RowDefinition)
+	 * }
+	 * @
+	 *
+	 * param row
+	 * @return the actual field on the DBRow object referenced by this column.
+	 */
+	public Object getAppropriateFieldFromRow(RowDefinition row) {
+		return this.getPropertyWrapper().getDefinition().rawJavaValue(row);
+	}
+
+	/**
 	 * @return the useTableAlias
 	 */
 	protected boolean isUseTableAlias() {
@@ -169,5 +201,17 @@ public class AbstractColumn implements DBExpression {
 	 */
 	protected void setUseTableAlias(boolean useTableAlias) {
 		this.useTableAlias = useTableAlias;
+	}
+
+	@SuppressWarnings("unchecked")
+	public DBRow getInstanceOfRow() {
+		final Class<? extends DBRow> originatingClass;
+		originatingClass = (Class<? extends DBRow>) this.getPropertyWrapper().getRowDefinitionInstanceWrapper().adapteeRowDefinitionClass();
+		final DBRow originatingRow = DBRow.getDBRow(originatingClass);
+		return originatingRow;
+	}
+
+	public Class<? extends DBRow> getClassReferenceByForeignKey() {
+		return this.getPropertyWrapper().referencedClass();
 	}
 }

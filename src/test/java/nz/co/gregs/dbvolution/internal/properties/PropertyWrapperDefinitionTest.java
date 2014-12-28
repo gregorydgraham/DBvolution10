@@ -8,6 +8,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 import org.junit.Test;
 
@@ -66,12 +67,12 @@ public class PropertyWrapperDefinitionTest {
 		assertThat(property.tableName(), is("Customer"));
 	}
 	
-    private PropertyWrapperDefinition propertyDefinitionOf(Object target, String javaPropertyName) {
+    private PropertyWrapperDefinition propertyDefinitionOf(RowDefinition target, String javaPropertyName) {
         return propertyDefinitionOf(target.getClass(), javaPropertyName);
     }
 
     // note: intentionally doesn't use a wrapper factory for tests on equals() methods
-    private PropertyWrapperDefinition propertyDefinitionOf(Class<?> clazz, String javaPropertyName) {
+    private PropertyWrapperDefinition propertyDefinitionOf(Class<? extends RowDefinition> clazz, String javaPropertyName) {
         RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(clazz);
         return classWrapper.getPropertyDefinitionByName(javaPropertyName);
     }

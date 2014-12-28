@@ -35,12 +35,12 @@ import org.junit.Ignore;
  *
  * @author gregorygraham
  */
-public class DBBooleanArrayTest extends AbstractTest{
-	
+public class DBBooleanArrayTest extends AbstractTest {
+
 	@BeforeClass
 	public static void setUpClass() {
 	}
-	
+
 	@AfterClass
 	public static void tearDownClass() {
 	}
@@ -48,11 +48,11 @@ public class DBBooleanArrayTest extends AbstractTest{
 	public DBBooleanArrayTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@Before
 	public void setUp() {
 	}
-	
+
 	@After
 	public void tearDown() {
 	}
@@ -63,9 +63,9 @@ public class DBBooleanArrayTest extends AbstractTest{
 	@Test
 	public void testEquals() {
 		System.out.println("equals");
-		final boolean[] trueFalseTrueArray = new boolean[]{true,false,true};
+		final boolean[] trueFalseTrueArray = new boolean[]{true, false, true};
 		QueryableDatatype other = new DBBooleanArray(trueFalseTrueArray);
-		final boolean[] allTrueArray = new boolean[]{true,true,true};
+		final boolean[] allTrueArray = new boolean[]{true, true, true};
 		DBBooleanArray instance = new DBBooleanArray(allTrueArray);
 		boolean expResult = false;
 		boolean result = instance.equals(other);
@@ -95,17 +95,18 @@ public class DBBooleanArrayTest extends AbstractTest{
 	@Test
 	public void testSetValue_Object() {
 		System.out.println("setValue");
-		Object newLiteralValue = new boolean[]{true,false,true};
+		Object newLiteralValue = new boolean[]{true, false, true};
 		DBBooleanArray instance = new DBBooleanArray();
 		instance.setValue(newLiteralValue);
 		Assert.assertThat(instance.booleanArrayValue(), is(newLiteralValue));
 	}
+
 	/**
 	 * Test of setValue method, of class DBBooleanArray.
 	 */
 	@Test(expected = ClassCastException.class)
 	public void testSetValue_BadObject() {
-		
+
 		Object newLiteralValue = 5;
 		DBBooleanArray instance = new DBBooleanArray();
 		instance.setValue(newLiteralValue);
@@ -165,7 +166,8 @@ public class DBBooleanArrayTest extends AbstractTest{
 	}
 
 	/**
-	 * Test of getQueryableDatatypeForExpressionValue method, of class DBBooleanArray.
+	 * Test of getQueryableDatatypeForExpressionValue method, of class
+	 * DBBooleanArray.
 	 */
 	@Test
 	public void testGetQueryableDatatypeForExpressionValue() {
@@ -221,21 +223,23 @@ public class DBBooleanArrayTest extends AbstractTest{
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(bitsTable);
 		database.createTable(bitsTable);
-		final boolean[] theValue = new boolean[]{true,false,true};
+		final boolean[] theValue = new boolean[]{true, false, true};
 		bitsTable.bitsColumn.setValue(theValue);
 		database.insert(bitsTable);
 		BitsTable bitsRow = database.getDBQuery(bitsTable).getOnlyInstanceOf(bitsTable);
 		Assert.assertThat(bitsRow.bitsColumn.booleanArrayValue(), is(theValue));
 	}
-	
-	public static class BitsTable extends DBRow{
+
+	public static class BitsTable extends DBRow {
+
+		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
 		@DBAutoIncrement
 		DBInteger pk = new DBInteger();
-		
+
 		@DBColumn
 		DBBooleanArray bitsColumn = new DBBooleanArray();
 	}
-	
+
 }

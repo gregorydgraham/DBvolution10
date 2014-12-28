@@ -29,7 +29,7 @@ import org.junit.Test;
  *
  * @author gregorygraham
  */
-@Ignore
+//@Ignore
 public class HeirarchicalQueryTest extends AbstractTest {
 
 	final Parts wing = new Parts(null, "wing");

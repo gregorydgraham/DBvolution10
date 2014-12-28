@@ -36,7 +36,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class RowDefinitionClassWrapper {
 
-	private final Class<?> adapteeClass;
+	private final Class<? extends RowDefinition> adapteeClass;
 	private final boolean identityOnly;
 	private final TableHandler tableHandler;
 	/**
@@ -89,7 +89,7 @@ public class RowDefinitionClassWrapper {
 	 * @param clazz the {@code DBRow} class to wrap
 	 * @throws DBPebkacException on any validation errors
 	 */
-	public RowDefinitionClassWrapper(Class<?> clazz) {
+	public RowDefinitionClassWrapper(Class<? extends RowDefinition> clazz) {
 		this(clazz, false);
 	}
 
@@ -107,7 +107,7 @@ public class RowDefinitionClassWrapper {
 	 * valid, but to exclude all other validations on non-primary key columns
 	 * and types etc.
 	 */
-	RowDefinitionClassWrapper(Class<?> clazz, boolean processIdentityOnly) {
+	RowDefinitionClassWrapper(Class<? extends RowDefinition> clazz, boolean processIdentityOnly) {
 		adapteeClass = clazz;
 		identityOnly = processIdentityOnly;
 
@@ -300,7 +300,7 @@ public class RowDefinitionClassWrapper {
 	 *
 	 * @return the DBRow or Object wrapped by this instance.
 	 */
-	public Class<?> adapteeClass() {
+	public Class<? extends RowDefinition> adapteeClass() {
 		return adapteeClass;
 	}
 

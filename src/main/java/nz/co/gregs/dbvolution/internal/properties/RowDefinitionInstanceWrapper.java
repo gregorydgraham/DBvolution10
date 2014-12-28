@@ -148,7 +148,7 @@ public class RowDefinitionInstanceWrapper {
      *
      * @return the class of the wrapped instance
      */
-    public Class<?> adapteeRowDefinitionClass() {
+    public Class<? extends RowDefinition> adapteeRowDefinitionClass() {
         return classWrapper.adapteeClass();
     }
 

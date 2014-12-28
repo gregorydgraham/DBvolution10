@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.query;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -198,8 +199,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((Number) fieldOfThisInstance);
 		} else if (String.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((String) fieldOfThisInstance);
-		} else{
-			throw new UnsupportedOperationException("Object class not supported: "+fieldOfThisInstance.getClass().getName());
+		} else {
+			throw new UnsupportedOperationException("Object class not supported: " + fieldOfThisInstance.getClass().getName());
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);
@@ -875,7 +876,7 @@ public class RowDefinition implements Serializable {
 		}
 		return string.toString();
 	}
-	
+
 	public String toSeparatedLine(String separatorToUse) {
 		StringBuilder string = new StringBuilder();
 		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
@@ -890,7 +891,7 @@ public class RowDefinition implements Serializable {
 		}
 		return string.toString();
 	}
-	
+
 	public String toSeparatedHeader(String separatorToUse) {
 		StringBuilder string = new StringBuilder();
 		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
@@ -993,13 +994,25 @@ public class RowDefinition implements Serializable {
 	 * DBRow. You should probably be using the fields and methods of the DBRow
 	 * class.
 	 *
+	 * @param dateFormat
 	 * @return a list of field names.
 	 * @throws SecurityException
 	 */
-	public Collection<? extends String> getFieldValues() {
+	public Collection<? extends String> getFieldValues(SimpleDateFormat dateFormat) {
 		List<String> returnList = new ArrayList<String>();
 		for (PropertyWrapperDefinition prop : this.getReturnColumns()) {
-			returnList.add(prop.getQueryableDatatype(this).stringValue());
+			QueryableDatatype qdt = prop.getQueryableDatatype(this);
+			if (dateFormat != null && DBDate.class.isAssignableFrom(qdt.getClass())) {
+				DBDate dBDate = (DBDate) qdt;
+				Date dateValue = dBDate.dateValue();
+				if (dateValue != null) {
+					returnList.add(dateFormat.format(dateValue));
+				} else {
+					returnList.add(qdt.stringValue());
+				}
+			} else {
+				returnList.add(qdt.stringValue());
+			}
 		}
 		return returnList;
 	}
@@ -1010,7 +1023,7 @@ public class RowDefinition implements Serializable {
 		}
 		return returnColumns;
 	}
-	
+
 	protected void setReturnColumns(List<PropertyWrapperDefinition> returnColumns) {
 		this.returnColumns = returnColumns;
 	}
