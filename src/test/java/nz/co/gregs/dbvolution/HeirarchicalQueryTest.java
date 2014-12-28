@@ -79,14 +79,12 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Parts aileronID = new Parts();
 		aileronID.partID.permittedValues(aileron.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
-		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getRowsFromRecursiveQuery(aileronID.column(aileronID.subPartOf), 
-						DBQuery.RecursiveSQLDirection.TOWARDS_LEAVES
+		List<Parts> componentsOfTheAileron
+				= findTheAileronQuery.getDescendants(aileronID, aileronID.column(aileronID.subPartOf)
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
-		final DBQueryRow firstRow = componentsOfTheAileron.get(0);
-		final Parts firstPart = firstRow.get(aileronID);
+		final Parts firstPart = componentsOfTheAileron.get(0);
 		final DBString firstName = firstPart.name;
 		Assert.assertThat(firstName.stringValue(),
 				anyOf(is("aileron"), is("lever"), is("screw"))
@@ -99,9 +97,8 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		Parts aileronID = new Parts();
 		aileronID.partID.permittedValues(aileron.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
-		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getRowsFromRecursiveQuery(aileronID.column(aileronID.subPartOf), 
-						DBQuery.RecursiveSQLDirection.TOWARDS_ROOT
+		List<Parts> componentsOfTheAileron
+				= findTheAileronQuery.getAncestors(aileronID, aileronID.column(aileronID.subPartOf)
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
@@ -113,9 +110,8 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		PartsWithoutTableName aileronID = new PartsWithoutTableName();
 		aileronID.partID.permittedValues(aileronWithout.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
-		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getRowsFromRecursiveQuery(aileronID.column(aileronID.subPartOf), 
-						DBQuery.RecursiveSQLDirection.TOWARDS_LEAVES
+		List<PartsWithoutTableName> componentsOfTheAileron
+				= findTheAileronQuery.getDescendants(aileronID, aileronID.column(aileronID.subPartOf)
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
@@ -127,9 +123,8 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		PartsWithoutTableName aileronID = new PartsWithoutTableName();
 		aileronID.partID.permittedValues(aileronWithout.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
-		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getRowsFromRecursiveQuery(aileronID.column(aileronID.subPartOf), 
-						DBQuery.RecursiveSQLDirection.TOWARDS_ROOT
+		List<PartsWithoutTableName> componentsOfTheAileron
+				= findTheAileronQuery.getAncestors(aileronID, aileronID.column(aileronID.subPartOf)
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
@@ -142,9 +137,8 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		CompletePart aileronID = new CompletePart();
 		aileronID.name.permittedValues("Aileron");
 		final DBQuery findTheAileronQuery = database.getDBQuery(new Parts(), aileronID);
-		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getRowsFromRecursiveQuery(part.column(part.subPartOf), 
-						DBQuery.RecursiveSQLDirection.TOWARDS_LEAVES
+		List<Parts> componentsOfTheAileron
+				= findTheAileronQuery.getDescendants(part, part.column(part.subPartOf)
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
@@ -157,9 +151,8 @@ public class HeirarchicalQueryTest extends AbstractTest {
 		CompletePart aileronID = new CompletePart();
 		aileronID.name.permittedValues("Aileron");
 		final DBQuery findTheAileronQuery = database.getDBQuery(new Parts(), aileronID);
-		List<DBQueryRow> componentsOfTheAileron
-				= findTheAileronQuery.getRowsFromRecursiveQuery(part.column(part.subPartOf), 
-						DBQuery.RecursiveSQLDirection.TOWARDS_ROOT
+		List<Parts> componentsOfTheAileron
+				= findTheAileronQuery.getAncestors(part, part.column(part.subPartOf)
 				);
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));

@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2404,10 +2403,14 @@ public abstract class DBDefinition {
 	}
 
 	public String doSelectFromRecursiveTable(String recursiveTableAlias, String recursiveAliases) {
-		return "SELECT " + recursiveAliases + " FROM " + recursiveTableAlias + ";";
+		return " SELECT " + recursiveAliases +", "+getRecursiveQueryDepthColumnName()+ " FROM " + recursiveTableAlias + " ORDER BY "+getRecursiveQueryDepthColumnName()+" ASC; ";
 	}
 
 	public boolean requiresRecursiveTableAlias() {
 		return true;
+	}
+
+	public String getRecursiveQueryDepthColumnName() {
+		return " DBDEPTHCOLUMN ";
 	}
 }
