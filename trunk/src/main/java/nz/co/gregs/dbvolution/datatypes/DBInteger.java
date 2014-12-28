@@ -50,16 +50,6 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates a DBInteger of an arbitrary object by attempting to parse it as a
-	 * Long.
-	 *
-	 * @param someNumber
-	 */
-	public DBInteger(Object someNumber) {
-		this(Long.parseLong(someNumber.toString()));
-	}
-
-	/**
 	 * Create a DBInteger with the value set to the value provided..
 	 *
 	 * @param value

@@ -105,15 +105,14 @@ public class DBReport extends RowDefinition {
 	 * @throws SQLException
 	 */
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
-		DBQuery query = setUpQuery(database, exampleReport, new DBRow[]{});
-		List<A> reportRows = new ArrayList<A>();
+		DBQuery query = getDBQuery(database, exampleReport, new DBRow[]{});
+		List<A> reportRows;
 		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		for (DBQueryRow row : allRows) {
-			reportRows.add(DBReport.getReportInstance(exampleReport, row));
-		}
+		reportRows = getReportsFromQueryResults(allRows, exampleReport);
 		return reportRows;
 	}
+	private final List<DBRow> optionalTables = new ArrayList<DBRow>();
 
 	@Override
 	public String toString() {
@@ -130,8 +129,8 @@ public class DBReport extends RowDefinition {
 					}
 				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
 					if ((value instanceof QueryableDatatype)) {
-						QueryableDatatype qdt = (QueryableDatatype)value;
-						str.append(field.getName()+": "+qdt.toString()+" ");
+						QueryableDatatype qdt = (QueryableDatatype) value;
+						str.append(field.getName() + ": " + qdt.toString() + " ");
 					}
 				}
 			} catch (IllegalArgumentException ex) {
@@ -169,9 +168,15 @@ public class DBReport extends RowDefinition {
 	 * @throws SQLException
 	 */
 	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
-		DBQuery query = setUpQuery(database, exampleReport, rows);
-		List<A> reportRows = new ArrayList<A>();
+		DBQuery query = getDBQuery(database, exampleReport, rows);
+		List<A> reportRows;
 		List<DBQueryRow> allRows = query.getAllRows();
+		reportRows = getReportsFromQueryResults(allRows,exampleReport);
+		return reportRows;
+	}
+
+	public static <A extends DBReport> List<A> getReportsFromQueryResults(List<DBQueryRow> allRows, A exampleReport) {
+		 List<A> reportRows = new ArrayList<A>();
 		for (DBQueryRow row : allRows) {
 			reportRows.add(DBReport.getReportInstance(exampleReport, row));
 		}
@@ -203,7 +208,7 @@ public class DBReport extends RowDefinition {
 	 * @throws SQLException
 	 */
 	public static <A extends DBReport> String getSQLForQuery(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
-		DBQuery query = setUpQuery(database, exampleReport, rows);
+		DBQuery query = getDBQuery(database, exampleReport, rows);
 		return query.getSQLForQuery();
 	}
 
@@ -223,7 +228,7 @@ public class DBReport extends RowDefinition {
 	 * @throws SQLException
 	 */
 	public static String getSQLForCount(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException {
-		DBQuery query = setUpQuery(database, exampleReport, rows);
+		DBQuery query = getDBQuery(database, exampleReport, rows);
 		return query.getSQLForCount();
 	}
 
@@ -245,7 +250,7 @@ public class DBReport extends RowDefinition {
 	 * @throws SQLException
 	 */
 	public static Long count(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException {
-		DBQuery setUpQuery = setUpQuery(database, exampleReport, rows);
+		DBQuery setUpQuery = getDBQuery(database, exampleReport, rows);
 		return setUpQuery.count();
 	}
 
@@ -295,15 +300,21 @@ public class DBReport extends RowDefinition {
 		return this;
 	}
 
-	private static <A extends DBReport> DBQuery setUpQuery(DBDatabase database, A exampleReport, DBRow[] rows) {
+	public void addAsOptionalTables(DBRow... tables) {
+		for (DBRow table : tables) {
+			optionalTables.add(table);
+		}
+	}
+
+	public static <A extends DBReport> DBQuery getDBQuery(DBDatabase database, A exampleReport, DBRow... rows) {
 		DBQuery query = database.getDBQuery();
-		addTablesAndExpressions(query, exampleReport);
+		exampleReport.addTablesAndExpressions(query, exampleReport);
 		query.addExtraExamples(rows);
 		query.setSortOrder(exampleReport.getSortColumns());
 		return query;
 	}
 
-	private static <A extends DBReport> void addTablesAndExpressions(DBQuery query, A exampleReport) {
+	<A extends DBReport> void addTablesAndExpressions(DBQuery query, A exampleReport) {
 		Field[] fields = exampleReport.getClass().getFields();
 		if (fields.length == 0) {
 			throw new UnableToAccessDBReportFieldException(exampleReport, null, null);
@@ -316,7 +327,11 @@ public class DBReport extends RowDefinition {
 					if (value instanceof DBRow) {
 						final DBRow dbRow = (DBRow) value;
 						dbRow.removeAllFieldsFromResults();
-						query.add(dbRow);
+						if (optionalTables.contains(dbRow)) {
+							query.addOptional(dbRow);
+						} else {
+							query.add(dbRow);
+						}
 					}
 				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
 					if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {

@@ -68,13 +68,13 @@ public class PrimaryKeylessTableTest extends AbstractTest {
         }
     }
 
-    @Test
-    public void testAdHocRelations() throws SQLException, Exception {
-        final CompanyLogo companyLogo = new CompanyLogo();
-        Marque myMarqueRow = new Marque();
-        myMarqueRow.addRelationship(myMarqueRow.carCompany, companyLogo,companyLogo.carCompany);
-        DBQuery dbQuery = database.getDBQuery(myMarqueRow, companyLogo);
-        dbQuery.setBlankQueryAllowed(true);
-        dbQuery.print();
-    }
+//    @Test
+//    public void testAdHocRelations() throws SQLException, Exception {
+//        final CompanyLogo companyLogo = new CompanyLogo();
+//        Marque myMarqueRow = new Marque();
+//        myMarqueRow.addRelationship(myMarqueRow.carCompany, companyLogo,companyLogo.carCompany);
+//        DBQuery dbQuery = database.getDBQuery(myMarqueRow, companyLogo);
+//        dbQuery.setBlankQueryAllowed(true);
+//        dbQuery.print();
+//    }
 }

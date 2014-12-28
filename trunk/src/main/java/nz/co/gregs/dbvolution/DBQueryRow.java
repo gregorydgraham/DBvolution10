@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -157,13 +158,13 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * @return a list of field names.
 	 * @throws SecurityException
 	 */
-	public List<String> getFieldValues() {
+	public List<String> getFieldValues(SimpleDateFormat dateFormat) {
 		List<String> returnList = new ArrayList<String>();
 
 		for (DBRow tab : baseQuery.getAllQueryTables()) {
 			DBRow actualRow = this.get(tab);
 			if (actualRow != null) {
-				returnList.addAll(actualRow.getFieldValues());
+				returnList.addAll(actualRow.getFieldValues(dateFormat));
 			} else {
 				for (String returnList1 : tab.getFieldNames()) {
 					returnList.add("");
@@ -209,9 +210,25 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * CSV file
 	 */
 	public String toSeparatedLine(String separatorToUseBetweenValues) {
+		return toSeparatedLine(separatorToUseBetweenValues, null);
+	}
+
+	/**
+	 * Convenience method to convert this DBQueryRow into a CSV or TSV type
+	 * line.
+	 *
+	 * <p>
+	 * The line separator is not included in the results, to allow for
+	 * portability and post-processing.
+	 *
+	 * @param separatorToUseBetweenValues
+	 * @return a list of all the values in the DBQueryRow formatted for a TSV or
+	 * CSV file
+	 */
+	public String toSeparatedLine(String separatorToUseBetweenValues, SimpleDateFormat dateFormat) {
 		StringBuilder returnStr = new StringBuilder();
 		String separator = "";
-		List<String> fieldValues = this.getFieldValues();
+		List<String> fieldValues = this.getFieldValues(dateFormat);
 		for (String fieldValue : fieldValues) {
 			returnStr.append(separator).append("\"").append(fieldValue.replaceAll("\"", "\"\"")).append("\"");
 			separator = separatorToUseBetweenValues;
@@ -242,10 +259,24 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 *
 	 * @return a list of all the values in the DBQueryRow formatted for a CSV
 	 * file
-	 * @throws java.lang.IllegalAccessException
 	 */
 	public String toCSVLine() {
 		return toSeparatedLine(",");
+	}
+
+	/**
+	 * Convenience method to convert this DBQueryRow into a CSV line.
+	 *
+	 * <p>
+	 * The line separator is not included in the results, to allow for
+	 * portability and post-processing.
+	 *
+	 * @param dateFormat
+	 * @return a list of all the values in the DBQueryRow formatted for a CSV
+	 * file
+	 */
+	public String toCSVLine(SimpleDateFormat dateFormat) {
+		return toSeparatedLine(",", dateFormat);
 	}
 
 	/**
