@@ -311,4 +311,14 @@ public class OracleDBDefinition extends DBDefinition {
 			return " DESC NULLS LAST";
 		}
 	}
+
+	@Override
+	public String beginWithClause() {
+		return " WITH ";
+	}
+
+	@Override
+	public String doSelectFromRecursiveTable(String recursiveTableAlias, String recursiveAliases) {
+		return " SELECT " + recursiveAliases +", "+getRecursiveQueryDepthColumnName()+ " FROM " + recursiveTableAlias + " ORDER BY "+getRecursiveQueryDepthColumnName()+" ASC ";
+	}
 }
