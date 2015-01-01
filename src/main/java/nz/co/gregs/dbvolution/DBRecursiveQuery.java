@@ -272,6 +272,8 @@ public class DBRecursiveQuery<T extends DBRow> {
 			newQuery.addCondition(
 					((EqualComparable<DateResult>) pkColumn)
 					.is(newFKColumn));
+		}else{
+			throw new nz.co.gregs.dbvolution.exceptions.UnableToCreateAscendingExpressionForRecursiveQuery(keyToFollow, originatingRow);
 		}
 	}
 
