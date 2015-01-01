@@ -211,7 +211,7 @@ public class AbstractColumn implements DBExpression {
 		return originatingRow;
 	}
 
-	public Class<? extends DBRow> getClassReferenceByForeignKey() {
+	public Class<? extends DBRow> getClassReferencedByForeignKey() {
 		return this.getPropertyWrapper().referencedClass();
 	}
 }
