@@ -18,62 +18,77 @@ package nz.co.gregs.dbvolution.query;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author gregory.graham
- * @param <T>
- */
 public class TreeNode<T> {
-
+	
 	private final List<TreeNode<T>> children = new ArrayList<TreeNode<T>>();
+	private final List<T> childrenData = new ArrayList<T>();
 	private TreeNode<T> parent = null;
 	private T data = null;
-
+	
 	public TreeNode(T data) {
 		this.data = data;
 	}
-
+	
 	public TreeNode(T data, TreeNode<T> parent) {
 		this.data = data;
 		this.parent = parent;
 	}
-
+	
 	public List<TreeNode<T>> getChildren() {
 		return children;
 	}
-
-	public void setParent(TreeNode<T> parent) {
+	
+	private void setParent(TreeNode<T> parent) {
 		this.parent = parent;
 	}
-
+	
 	public void addChild(T data) {
 		TreeNode<T> child = new TreeNode<T>(data);
 		child.setParent(this);
-		this.children.add(child);
+		if (notAlreadyIncluded(child)) {
+			this.children.add(child);
+			this.childrenData.add(data);
+		}
 	}
-
+	
 	public void addChild(TreeNode<T> child) {
 		child.setParent(this);
-		this.children.add(child);
+		if (notAlreadyIncluded(child)) {
+			this.children.add(child);
+			this.childrenData.add(child.getData());
+		}
 	}
-
+	
+	private boolean notAlreadyIncluded(TreeNode<T> child) {
+		return !this.children.contains(child) && !childrenData.contains(child.getData());
+	}
+	
 	public T getData() {
 		return this.data;
 	}
-
+	
 	public void setData(T data) {
 		this.data = data;
 	}
-
+	
 	public boolean isRoot() {
 		return (this.parent == null);
 	}
-
+	
 	public boolean isLeaf() {
 		return this.children.isEmpty();
 	}
-
+	
 	public void removeParent() {
 		this.parent = null;
+	}
+	
+	public TreeNode<T> getParent() {
+		return this.parent;
+	}
+
+	@Override
+	public String toString() {
+		return this.getData().toString();
 	}
 }

@@ -15,9 +15,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import nz.co.gregs.dbvolution.internal.query.DBRowNameComparator;
-import nz.co.gregs.dbvolution.internal.query.RecursiveQueryDepthIncreaseExpression;
-import nz.co.gregs.dbvolution.internal.query.DBRowClassNameComparator;
 import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.*;
@@ -32,18 +29,16 @@ import java.util.*;
 import javax.swing.JFrame;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
-import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.query.*;
 import nz.co.gregs.dbvolution.internal.querygraph.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.internal.query.*;
 
 /**
  * The Definition of a Query on a Database

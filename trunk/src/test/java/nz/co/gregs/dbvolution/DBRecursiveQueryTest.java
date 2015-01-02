@@ -23,6 +23,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.query.TreeNode;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -78,6 +79,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		database.dropTableNoExceptions(new CompletePart());
 		database.createTable(new CompletePart());
 		database.insert(new CompletePart(aileron.partID.intValue(), "Aileron"));
+		database.insert(new CompletePart(wing.partID.intValue(), "Wing"));
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new PartsStringKey());
@@ -222,20 +224,90 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 //	@Ignore
 	@Test
-	public void getPathToRootAsList() throws SQLException {
+	public void getPathToRoot() throws SQLException {
 		Parts part = new Parts();
 		CompletePart aileronID = new CompletePart();
 		aileronID.name.permittedValues("Aileron");
 		final DBQuery findTheAileronQuery = database.getDBQuery(new Parts(), aileronID);
 
 		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, part.column(part.subPartOf));
-		List<Parts> pathToTheWing
-				= recursive.getPathToRoot();
+		TreeNode<Parts> pathToTheWing
+				= recursive.getPathsToRoot().get(0);
 
-		database.print(pathToTheWing);
-		Assert.assertThat(pathToTheWing.size(), is(2));
-		Assert.assertThat(pathToTheWing.get(0).name.stringValue(), is("aileron"));
-		Assert.assertThat(pathToTheWing.get(1).name.stringValue(), is("wing"));
+		Assert.assertThat(pathToTheWing.getData().name.stringValue(), is("aileron"));
+		Assert.assertThat(pathToTheWing.getParent().getData().name.stringValue(), is("wing"));
+	}
+
+//	@Ignore
+	@Test
+	public void getPathsToRoot() throws SQLException {
+		Parts part = new Parts();
+		part.name.permittedValues("lever", "screw");
+		final DBQuery findTheAileronQuery = database.getDBQuery(part);
+
+		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, part.column(part.subPartOf));
+		List<TreeNode<Parts>> pathToTheWing
+				= recursive.getPathsToRoot();
+
+		Assert.assertThat(pathToTheWing.get(0).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
+		Assert.assertThat(pathToTheWing.get(1).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
+		Assert.assertThat(pathToTheWing.get(0).getParent().getData().name.stringValue(), is("aileron"));
+		Assert.assertThat(pathToTheWing.get(1).getParent().getData().name.stringValue(), is("aileron"));
+		Assert.assertThat(pathToTheWing.get(0).getParent().getParent().getData().name.stringValue(), is("wing"));
+	}
+
+//	@Ignore
+	@Test
+	public void getTreeFromRoot() throws SQLException {
+		Parts part = new Parts();
+		CompletePart wingID = new CompletePart();
+		wingID.name.permittedValues("Wing");
+		final DBQuery findTheAileronQuery = database.getDBQuery(new Parts(), wingID);
+
+		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, part.column(part.subPartOf));
+		TreeNode<Parts> treeFromWing
+				= recursive.getTrees().get(0);
+
+		Assert.assertThat(treeFromWing.getData().name.stringValue(), is("wing"));
+		final TreeNode<Parts> aileronProbably = treeFromWing.getChildren().get(0);
+		Assert.assertThat(aileronProbably.getData().name.stringValue(), is("aileron"));
+		Assert.assertThat(aileronProbably.getChildren().get(0).getData().name.stringValue(), is("lever"));
+		Assert.assertThat(aileronProbably.getChildren().get(1).getData().name.stringValue(), is("screw"));
+	}
+
+//	@Ignore
+	@Test
+	public void getTreesFromRoot() throws SQLException {
+		Parts part = new Parts();
+		part.name.permittedValues("lever", "screw");
+		DBQuery baseQuery = database.getDBQuery(part);
+
+		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(baseQuery, part.column(part.subPartOf));
+		List<TreeNode<Parts>> trees
+				= recursive.getTrees();
+
+		Assert.assertThat(trees.get(0).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
+		Assert.assertThat(trees.get(1).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
+		Assert.assertThat(trees.get(0).getChildren().size(), is(0));
+		Assert.assertThat(trees.get(1).getChildren().size(), is(0));
+
+		part.name.permittedValues("lever", "screw", "wing");
+		baseQuery = database.getDBQuery(part);
+
+		recursive = new DBRecursiveQuery<Parts>(baseQuery, part.column(part.subPartOf));
+		trees = recursive.getTrees();
+		
+		Assert.assertThat(trees.size(), is(1));
+		final TreeNode<Parts> wingProbably = trees.get(0);
+		Assert.assertThat(wingProbably.getData().name.stringValue(), is("wing"));
+		final List<TreeNode<Parts>> wingChildren = trees.get(0).getChildren();
+		Assert.assertThat(wingChildren.size(), is(1));
+		final TreeNode<Parts> aileronProbably = wingChildren.get(0);
+		Assert.assertThat(aileronProbably.getData().name.stringValue(), is("aileron"));
+		final List<TreeNode<Parts>> aileronChildren = aileronProbably.getChildren();
+		Assert.assertThat(aileronChildren.size(), is(2));
+		Assert.assertThat(aileronChildren.get(0).getData().name.stringValue(), anyOf(is("lever"),is("screw")));
+		Assert.assertThat(aileronChildren.get(1).getData().name.stringValue(), anyOf(is("lever"),is("screw")));
 	}
 
 //	@Ignore
@@ -247,7 +319,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 		DBRecursiveQuery<PartsStringKey> recursive = new DBRecursiveQuery<PartsStringKey>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
 		List<PartsStringKey> pathToTheWing
-				= recursive.getPathToRoot();
+				= recursive.getAncestors();
 
 		database.print(pathToTheWing);
 		Assert.assertThat(pathToTheWing.size(), is(2));
@@ -257,7 +329,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 	@Test(expected = ForeignKeyDoesNotReferenceATableInTheQuery.class)
 	public void checkForeignKeyInvolvesQueryTablesException() throws SQLException {
-		Parts part  = new Parts();
+		Parts part = new Parts();
 		PartsStringKey aileronID = new PartsStringKey();
 		aileronID.name.permittedValues("aileron");
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
@@ -335,11 +407,10 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 		@DBColumn
 		public DBString name = new DBString();
-		
+
 		@DBColumn
 		@DBForeignKey(Parts.class)
 		public DBInteger fkToParts = new DBInteger();
-
 
 		public PartsStringKey() {
 			super();

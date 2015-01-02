@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.example.Marque;
  */
 public class QueryGraphVisualisationTest {
 
-	private DBDatabase database;
+//	private DBDatabase database;
 
 	/**
 	 * The QueryGraph can not be tested automatically so this class and method allows it to be tested easily.
