@@ -40,11 +40,11 @@ public class DBRecursiveQuery<T extends DBRow> {
 		TOWARDS_ROOT, TOWARDS_LEAVES
 	};
 
-	public DBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow)throws ColumnProvidedMustBeAForeignKey{
+	public DBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow) throws ColumnProvidedMustBeAForeignKey {
 		this.originalQuery = query;
 		this.keyToFollow = keyToFollow;
 		final Class<? extends DBRow> classReferencedByForeignKey = keyToFollow.getColumn().getClassReferencedByForeignKey();
-		if (classReferencedByForeignKey==null){
+		if (classReferencedByForeignKey == null) {
 			throw new ColumnProvidedMustBeAForeignKey(keyToFollow);
 		}
 		List<DBRow> allTables = query.getAllTables();
@@ -52,16 +52,13 @@ public class DBRecursiveQuery<T extends DBRow> {
 		for (DBRow tab : allTables) {
 			found = found || (tab.getClass().isAssignableFrom(classReferencedByForeignKey));
 		}
-		if (! found ){
+		if (!found) {
 			throw new ForeignKeyDoesNotReferenceATableInTheQuery(keyToFollow);
 		}
 		DBRow instanceOfRow = keyToFollow.getColumn().getInstanceOfRow();
-		if (!
-				(classReferencedByForeignKey.isAssignableFrom(instanceOfRow.getClass())
-				||
-				instanceOfRow.getClass().isAssignableFrom(classReferencedByForeignKey))
-				)
-		{throw new ForeignKeyIsNotRecursiveException(keyToFollow);
+		if (!(classReferencedByForeignKey.isAssignableFrom(instanceOfRow.getClass())
+				|| instanceOfRow.getClass().isAssignableFrom(classReferencedByForeignKey))) {
+			throw new ForeignKeyIsNotRecursiveException(keyToFollow);
 		}
 	}
 
@@ -272,7 +269,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			newQuery.addCondition(
 					((EqualComparable<DateResult>) pkColumn)
 					.is(newFKColumn));
-		}else{
+		} else {
 			throw new nz.co.gregs.dbvolution.exceptions.UnableToCreateAscendingExpressionForRecursiveQuery(keyToFollow, originatingRow);
 		}
 	}
@@ -310,8 +307,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	/**
-	 * Creates a List from the rows returned by this query to a root node of the
-	 * example table by repeatedly following the recursive foreign key provided.
+	 * Creates a List of paths (actually non-branching trees) from the rows
+	 * returned by this query to a root node of the example table by repeatedly
+	 * following the recursive foreign key provided.
 	 *
 	 * <p>
 	 * Tree structures are stored in databases using a table with a foreign key to
@@ -335,10 +333,108 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @return a list of the ancestors of the results from this query.
 	 * @throws SQLException
 	 */
-	public List<T> getPathToRoot() throws SQLException {
+	public List<TreeNode<T>> getPathsToRoot() throws SQLException {
 		List<T> ancestors = getAncestors();
-		return ancestors;
+		List<TreeNode<T>> paths = new ArrayList<TreeNode<T>>();
+		Map<String, TreeNode<T>> parentMap = new HashMap<String, TreeNode<T>>();
+		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<String, List< TreeNode<T>>>();
+		for (T currentRow : ancestors) {
+			TreeNode<T> currentNode = new TreeNode<T>(currentRow);
+			final String parentPKValue = keyToFollow.getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
+			TreeNode<T> parent = parentMap.get(parentPKValue);
+			if (parent != null) {
+				parent.addChild(currentNode);
+			} else {
+				List<TreeNode<T>> listOfChildren = childrenMap.get(parentPKValue);
+				if (listOfChildren == null) {
+					listOfChildren = new ArrayList<TreeNode<T>>();
+					childrenMap.put(parentPKValue, listOfChildren);
+				}
+				listOfChildren.add(currentNode);
+			}
+			String pkValue = currentRow.getPrimaryKey().stringValue();
+			List<TreeNode<T>> children = childrenMap.get(pkValue);
+			if (children != null) {
+				for (TreeNode<T> child : children) {
+					currentNode.addChild(child);
+				}
+				childrenMap.remove(pkValue);
+			}
+			parentMap.put(pkValue, currentNode);
+			parent = currentNode.getParent();
+			if (parent != null) {
+				paths.remove(parent);
+			}
+			if (currentNode.getChildren().isEmpty()) {
+				paths.add(currentNode);
+			}
+		}
+		return paths;
 	}
 
+	/**
+	 * Creates a list of trees from the rows returned by this query to to the leaf nodes
+	 * of the example table by repeatedly following the recursive foreign key
+	 * provided.
+	 *
+	 * <p>
+	 * Tree structures are stored in databases using a table with a foreign key to
+	 * the same table (the aforementioned "recursive foreign key"). This method
+	 * provides a simple means of the traversing the stored tree structure to find
+	 * the path to the leaves.
+	 *
+	 * <p>
+	 * Where possible DBvolution uses recursive queries to traverse the tree.
+	 *
+	 * <p>
+	 * Recursive queries are only possible on tables that are part of this query,
+	 * and have a foreign key that directly references rows within the table
+	 * itself.
+	 *
+	 * <p>
+	 * In DBvolution it is common to reference a subclass of the table to add
+	 * semantic information and help complex query creation. As such sub-classed
+	 * foreign keys are fully supported.
+	 *
+	 * @return a list of trees of the descendants of the results from this query.
+	 * @throws SQLException
+	 */
+	public List<TreeNode<T>> getTrees() throws SQLException {
+		List<T> descendants = getDescendants();
+		originalQuery.getDatabase().print(descendants);
+		List<TreeNode<T>> trees = new ArrayList<TreeNode<T>>();
+		Map<String, TreeNode<T>> parentMap = new HashMap<String, TreeNode<T>>();
+		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<String, List< TreeNode<T>>>();
+		for (T currentRow : descendants) {
+			String parentPKValue = keyToFollow.getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
+			String pkValue = currentRow.getPrimaryKey().stringValue();
+			TreeNode<T> currentNode = new TreeNode<T>(currentRow);
+			List<TreeNode<T>> children = childrenMap.get(pkValue);
+			if (children != null) {
+				for (TreeNode<T> child : children) {
+					currentNode.addChild(child);
+					trees.remove(child);
+				}
+			}
+			parentMap.put(pkValue, currentNode);
+			TreeNode<T> parent = parentMap.get(parentPKValue);
+			if (parent != null) {
+				parent.addChild(currentNode);
+			} else {
+				List<TreeNode<T>> listOfChildren = childrenMap.get(parentPKValue);
+				if (listOfChildren == null) {
+					listOfChildren = new ArrayList<TreeNode<T>>();
+					childrenMap.put(parentPKValue, listOfChildren);
+				}
+				listOfChildren.add(currentNode);
+			}
+			if (currentNode.getParent() == null) {
+				trees.add(currentNode);
+			} else {
+				trees.remove(currentNode);
+			}
+		}
+		return trees;
+	}
 
 }
