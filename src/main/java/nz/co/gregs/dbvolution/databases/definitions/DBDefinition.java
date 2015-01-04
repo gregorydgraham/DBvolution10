@@ -1553,11 +1553,20 @@ public abstract class DBDefinition {
 			if (propertyWrapperConformsToAutoIncrementType(field)) {
 				if (hasSpecialAutoIncrementType()) {
 					return getSpecialAutoIncrementType();
+				} else if (hasSpecialPrimaryKeyTypeForDBDatatype(field)) {
+					return getSpecialPrimaryKeyTypeOfDBDatatype(field) + getColumnAutoIncrementSuffix();
 				} else {
 					return getSQLTypeOfDBDatatype(field) + getColumnAutoIncrementSuffix();
 				}
 			} else {
 				throw new AutoIncrementFieldClassAndDatatypeMismatch(field);
+			}
+		}
+		if (field.isPrimaryKey()) {
+			if (hasSpecialPrimaryKeyTypeForDBDatatype(field)) {
+				return getSpecialPrimaryKeyTypeOfDBDatatype(field);
+			} else {
+				return getSQLTypeOfDBDatatype(field);
 			}
 		} else {
 			return getSQLTypeOfDBDatatype(field);
@@ -2403,7 +2412,7 @@ public abstract class DBDefinition {
 	}
 
 	public String doSelectFromRecursiveTable(String recursiveTableAlias, String recursiveAliases) {
-		return " SELECT " + recursiveAliases +", "+getRecursiveQueryDepthColumnName()+ " FROM " + recursiveTableAlias + " ORDER BY "+getRecursiveQueryDepthColumnName()+" ASC; ";
+		return " SELECT " + recursiveAliases + ", " + getRecursiveQueryDepthColumnName() + " FROM " + recursiveTableAlias + " ORDER BY " + getRecursiveQueryDepthColumnName() + " ASC; ";
 	}
 
 	public boolean requiresRecursiveTableAlias() {
@@ -2412,5 +2421,13 @@ public abstract class DBDefinition {
 
 	public String getRecursiveQueryDepthColumnName() {
 		return " DBDEPTHCOLUMN ";
+	}
+
+	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper field) {
+		return false;
+	}
+
+	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper field) {
+		return getSQLTypeOfDBDatatype(field);
 	}
 }

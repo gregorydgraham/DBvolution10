@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -180,9 +179,8 @@ public class AbstractColumn implements DBExpression {
 	 * <p>
 	 * you should probably be using {@link #getAppropriateQDTFromRow(nz.co.gregs.dbvolution.query.RowDefinition)
 	 * }
-	 * @
 	 *
-	 * param row
+	 * @param row
 	 * @return the actual field on the DBRow object referenced by this column.
 	 */
 	public Object getAppropriateFieldFromRow(RowDefinition row) {

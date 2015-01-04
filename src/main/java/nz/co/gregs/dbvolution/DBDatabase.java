@@ -1422,7 +1422,7 @@ public abstract class DBDatabase implements Cloneable {
 		return true;
 	}
 
-	boolean supportsRecursiveQueriesNatively() {
+	public boolean supportsRecursiveQueriesNatively() {
 		return true;
 	}
 }

@@ -39,11 +39,12 @@ public class DBPermittedValuesOperator extends DBMetaOperator {
 				} else if (obj instanceof Collection) {
 					Collection<Object> myList = (Collection) obj;
 					for (Object obj1 : myList) {
-						if (obj == null) {
+						if (obj1 == null) {
 							this.includeNulls = true;
+						} else {
+							expressions.add(getQueryableDatatypeForObject(obj1));
+							objectCount++;
 						}
-						expressions.add(getQueryableDatatypeForObject(obj1));
-						objectCount++;
 					}
 				} else {
 					expressions.add(getQueryableDatatypeForObject(obj));

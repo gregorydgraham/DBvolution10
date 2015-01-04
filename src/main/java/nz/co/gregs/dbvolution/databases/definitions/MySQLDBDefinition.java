@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  * Defines the features of the MySQL database that differ from the standard
@@ -129,5 +130,23 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "TIMESTAMPDIFF(SECOND, " + dateValue + "," + otherDateValue + ")";
+	}
+
+	@Override
+	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper field) {
+		if (field.getQueryableDatatype() instanceof DBString) {
+			return true;
+		} else {
+			return super.hasSpecialPrimaryKeyTypeForDBDatatype(field);
+		}
+	}
+
+	@Override
+	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper field) {
+		if (field.getQueryableDatatype() instanceof DBString) {
+			return " VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin ";
+		} else {
+			return super.getSpecialPrimaryKeyTypeOfDBDatatype(field);
+		}
 	}
 }

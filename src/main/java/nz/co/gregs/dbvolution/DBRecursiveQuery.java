@@ -40,7 +40,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		TOWARDS_ROOT, TOWARDS_LEAVES
 	};
 
-	public DBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow) throws ColumnProvidedMustBeAForeignKey {
+	public DBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow) throws ColumnProvidedMustBeAForeignKey, ForeignKeyDoesNotReferenceATableInTheQuery, ForeignKeyIsNotRecursiveException {
 		this.originalQuery = query;
 		this.keyToFollow = keyToFollow;
 		final Class<? extends DBRow> classReferencedByForeignKey = keyToFollow.getColumn().getClassReferencedByForeignKey();
@@ -86,32 +86,35 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @return A linked List
 	 * @throws java.sql.SQLException
 	 */
-	private List<DBQueryRow> getRowsFromRecursiveQuery(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) throws SQLException {
+	private List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveSQLDirection direction) throws SQLException {
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
 		if (originalQuery.getDatabase().supportsRecursiveQueriesNatively()) {
-			DBStatement dbStatement = originalQuery.getDatabase().getDBStatement();
+			returnList = performNativeRecursiveQuery(direction, returnList);
+		} else {
+			returnList = performRecursiveQueryEmulation(direction);
+		}
+		return returnList;
+	}
+
+	private List<DBQueryRow> performNativeRecursiveQuery(RecursiveSQLDirection direction, List<DBQueryRow> returnList) throws SQLException, UnableToInstantiateDBRowSubclassException {
+		DBStatement dbStatement = originalQuery.getDatabase().getDBStatement();
+		try {
+			String descendingQuery = getRecursiveSQL(this.keyToFollow, direction);
+			ResultSet resultSet = originalQuery.getResultSetForSQL(dbStatement, descendingQuery);
 			try {
-				String descendingQuery = getRecursiveSQL(foreignKeyToFollow, direction);
-				ResultSet resultSet = originalQuery.getResultSetForSQL(dbStatement, descendingQuery);
-				try {
-					while (resultSet.next()) {
-						DBQueryRow queryRow = new DBQueryRow(originalQuery);
+				while (resultSet.next()) {
+					DBQueryRow queryRow = new DBQueryRow(originalQuery);
 
-						originalQuery.setExpressionColumns(resultSet, queryRow);
+					originalQuery.setExpressionColumns(resultSet, queryRow);
 
-						originalQuery.setQueryRowFromResultSet(resultSet, queryRow, originalQuery.getQueryDetails().getDbReportGroupByColumns().size() > 0);
-						returnList.add(queryRow);
-					}
-				} finally {
-					resultSet.close();
+					originalQuery.setQueryRowFromResultSet(resultSet, queryRow, originalQuery.getQueryDetails().getDbReportGroupByColumns().size() > 0);
+					returnList.add(queryRow);
 				}
 			} finally {
-				dbStatement.close();
+				resultSet.close();
 			}
-			return returnList;
-
-		} else {
-
+		} finally {
+			dbStatement.close();
 		}
 		return returnList;
 	}
@@ -276,7 +279,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 
 	public List<T> getDescendants() throws SQLException {
 		List<T> resultsList = new ArrayList<T>();
-		List<DBQueryRow> descendants = this.getRowsFromRecursiveQuery(this.keyToFollow, RecursiveSQLDirection.TOWARDS_LEAVES);
+		List<DBQueryRow> descendants = this.getRowsFromRecursiveQuery(RecursiveSQLDirection.TOWARDS_LEAVES);
 		for (DBQueryRow descendant : descendants) {
 			resultsList.add(descendant.get(getReturnType()));
 		}
@@ -285,7 +288,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 
 	public List<T> getAncestors() throws SQLException {
 		List<T> resultsList = new ArrayList<T>();
-		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(this.keyToFollow, RecursiveSQLDirection.TOWARDS_ROOT);
+		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(RecursiveSQLDirection.TOWARDS_ROOT);
 		for (DBQueryRow ancestor : ancestors) {
 			resultsList.add(ancestor.get(getReturnType()));
 		}
@@ -373,9 +376,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	/**
-	 * Creates a list of trees from the rows returned by this query to to the leaf nodes
-	 * of the example table by repeatedly following the recursive foreign key
-	 * provided.
+	 * Creates a list of trees from the rows returned by this query to to the leaf
+	 * nodes of the example table by repeatedly following the recursive foreign
+	 * key provided.
 	 *
 	 * <p>
 	 * Tree structures are stored in databases using a table with a foreign key to
@@ -435,6 +438,85 @@ public class DBRecursiveQuery<T extends DBRow> {
 			}
 		}
 		return trees;
+	}
+
+	private List<DBQueryRow> performRecursiveQueryEmulation(RecursiveSQLDirection direction) throws SQLException {
+		
+		final T returnType = getReturnType();
+		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		List<DBQueryRow> primingRows = this.originalQuery.getAllRows();
+		this.originalQuery.getDatabase().print(primingRows);
+		List<String> values = new ArrayList<String>();
+
+		for (DBQueryRow row : primingRows) {
+			final T tab = row.get(returnType);
+			QueryableDatatype qdt = tab.getPrimaryKey();
+			if (!qdt.isNull()) {
+				String stringValue = qdt.stringValue();
+				values.add(stringValue);
+			}
+		}
+		DBRow instanceOfRow = this.keyToFollow.getColumn().getInstanceOfRow();
+		setQDTPermittedValues(instanceOfRow.getPrimaryKey(), values);
+		List<DBQueryRow> allRows = this.originalQuery.getDatabase().getDBQuery(instanceOfRow).getAllRows();
+		this.originalQuery.getDatabase().print(allRows);
+		while (allRows.size() > 0) {
+			values.clear();
+			returnList.addAll(allRows);
+			for (DBQueryRow row : allRows) {
+				final T tab = row.get(getReturnType());
+				QueryableDatatype qdt;
+				if (direction.equals(RecursiveSQLDirection.TOWARDS_ROOT)) {
+					qdt = this.keyToFollow.getColumn().getAppropriateQDTFromRow(tab);
+				} else {
+					qdt = tab.getPrimaryKey();
+				}
+				if (!qdt.isNull()) {
+					String intValue = qdt.stringValue();
+					values.add(intValue);
+				}
+			}
+
+			if (values.isEmpty()) {
+				allRows.clear();
+			} else {
+				instanceOfRow = this.keyToFollow.getColumn().getInstanceOfRow();
+				QueryableDatatype qdt;
+				if (direction.equals(RecursiveSQLDirection.TOWARDS_ROOT)) {
+					qdt = instanceOfRow.getPrimaryKey();
+				} else {
+					qdt = this.keyToFollow.getColumn().getAppropriateQDTFromRow(instanceOfRow);
+				}
+				setQDTPermittedValues(qdt, values);
+				allRows = this.originalQuery.getDatabase().getDBQuery(instanceOfRow).getAllRows();
+				this.originalQuery.getDatabase().print(allRows);
+			}
+		}
+
+		return returnList;
+	}
+
+	private void setQDTPermittedValues(QueryableDatatype primaryKey, List<String> values) {
+		if (primaryKey instanceof DBInteger) {
+			DBInteger qdt = (DBInteger) primaryKey;
+			List<Long> longs = new ArrayList<Long>();
+			for (String value : values) {
+				longs.add(Long.parseLong(value));
+			}
+			qdt.permittedValues(longs);
+		} else if (primaryKey instanceof DBNumber) {
+			DBNumber qdt = (DBNumber) primaryKey;
+			List<Number> longs = new ArrayList<Number>();
+			for (String value : values) {
+				longs.add(Double.parseDouble(value));
+			}
+			qdt.permittedValues(longs);
+		} else if (primaryKey instanceof DBString) {
+			DBString qdt = (DBString) primaryKey;
+			qdt.permittedValues(values);
+		} else {
+			throw new UnsupportedOperationException("Only Integer, Number, and String Primary Keys are supported.");
+		}
 	}
 
 }
