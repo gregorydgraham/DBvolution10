@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.query.TreeNode;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -106,11 +107,9 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
-		final Parts firstPart = componentsOfTheAileron.get(0);
-		final DBString firstName = firstPart.name;
-		Assert.assertThat(firstName.stringValue(),
-				anyOf(is("aileron"), is("lever"), is("screw"))
-		);
+		Assert.assertThat(componentsOfTheAileron.get(0).name.stringValue(), is("aileron"));
+		Assert.assertThat(componentsOfTheAileron.get(1).name.stringValue(), anyOf(is("screw"), is("lever")));
+		Assert.assertThat(componentsOfTheAileron.get(2).name.stringValue(), anyOf(is("screw"), is("lever")));
 	}
 
 //	@Ignore
@@ -126,6 +125,8 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(2));
+		Assert.assertThat(componentsOfTheAileron.get(0).name.stringValue(), is("aileron"));
+		Assert.assertThat(componentsOfTheAileron.get(1).name.stringValue(), is("wing"));
 	}
 
 //	@Ignore
@@ -142,6 +143,11 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
+		for (PartsWithoutTableName component : componentsOfTheAileron) {
+			final DBString firstName = component.name;
+			Assert.assertThat(firstName.stringValue(),
+					anyOf(is("aileron"), is("lever"), is("screw")));
+		}
 	}
 
 //	@Ignore
@@ -174,6 +180,9 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
+		Assert.assertThat(componentsOfTheAileron.get(0).name.stringValue(), is("aileron"));
+		Assert.assertThat(componentsOfTheAileron.get(1).name.stringValue(), anyOf(is("screw"), is("lever")));
+		Assert.assertThat(componentsOfTheAileron.get(2).name.stringValue(), anyOf(is("screw"), is("lever")));
 	}
 
 //	@Ignore
@@ -204,6 +213,9 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		List<Parts> componentsOfTheAileron = recursive.getDescendants();
 		database.print(componentsOfTheAileron);
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
+		Assert.assertThat(componentsOfTheAileron.get(0).name.stringValue(), is("aileron"));
+		Assert.assertThat(componentsOfTheAileron.get(1).name.stringValue(), anyOf(is("screw"), is("lever")));
+		Assert.assertThat(componentsOfTheAileron.get(2).name.stringValue(), anyOf(is("screw"), is("lever")));
 	}
 
 //	@Ignore
@@ -291,12 +303,17 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		Assert.assertThat(trees.get(0).getChildren().size(), is(0));
 		Assert.assertThat(trees.get(1).getChildren().size(), is(0));
 
+		part = new Parts();
 		part.name.permittedValues("lever", "screw", "wing");
 		baseQuery = database.getDBQuery(part);
 
 		recursive = new DBRecursiveQuery<Parts>(baseQuery, part.column(part.subPartOf));
 		trees = recursive.getTrees();
-		
+
+		for (TreeNode<Parts> tree : trees) {
+			System.out.println("TREE; " + tree);
+		}
+
 		Assert.assertThat(trees.size(), is(1));
 		final TreeNode<Parts> wingProbably = trees.get(0);
 		Assert.assertThat(wingProbably.getData().name.stringValue(), is("wing"));
@@ -305,9 +322,13 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		final TreeNode<Parts> aileronProbably = wingChildren.get(0);
 		Assert.assertThat(aileronProbably.getData().name.stringValue(), is("aileron"));
 		final List<TreeNode<Parts>> aileronChildren = aileronProbably.getChildren();
+
+		for (TreeNode<Parts> tree : aileronChildren) {
+			System.out.println("TREE; " + tree);
+		}
 		Assert.assertThat(aileronChildren.size(), is(2));
-		Assert.assertThat(aileronChildren.get(0).getData().name.stringValue(), anyOf(is("lever"),is("screw")));
-		Assert.assertThat(aileronChildren.get(1).getData().name.stringValue(), anyOf(is("lever"),is("screw")));
+		Assert.assertThat(aileronChildren.get(0).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
+		Assert.assertThat(aileronChildren.get(1).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
 	}
 
 //	@Ignore
@@ -363,6 +384,8 @@ public class DBRecursiveQueryTest extends AbstractTest {
 	@DBTableName("parts")
 	public static class Parts extends DBRow {
 
+		private static final long serialVersionUID = 1L;
+
 		@DBColumn("part_id")
 		@DBPrimaryKey
 		@DBAutoIncrement
@@ -387,6 +410,8 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 		public static class ParentPart extends Parts {
 
+			private static final long serialVersionUID = 1L;
+
 			public ParentPart() {
 				super();
 			}
@@ -395,6 +420,8 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 	@DBTableName("parts_string_key")
 	public static class PartsStringKey extends DBRow {
+
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn("part_id")
 		@DBPrimaryKey
@@ -425,6 +452,8 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 		public static class ParentPart extends PartsStringKey {
 
+			private static final long serialVersionUID = 1L;
+
 			public ParentPart() {
 				super();
 			}
@@ -433,6 +462,8 @@ public class DBRecursiveQueryTest extends AbstractTest {
 
 	@DBTableName("complete_parts")
 	public static class CompletePart extends DBRow {
+
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn//("complete_part_id")
 		@DBPrimaryKey
@@ -461,6 +492,8 @@ public class DBRecursiveQueryTest extends AbstractTest {
 	// TODO Investigate need for "part_id"
 	public static class PartsWithoutTableName extends DBRow {
 
+		private static final long serialVersionUID = 1L;
+
 		@DBColumn("part_id")
 		@DBPrimaryKey
 		@DBAutoIncrement
@@ -484,6 +517,8 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		}
 
 		public static class ParentPart extends PartsWithoutTableName {
+
+			private static final long serialVersionUID = 1L;
 
 			public ParentPart() {
 				super();

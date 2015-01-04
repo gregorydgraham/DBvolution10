@@ -57,6 +57,10 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		baseQuery = queryThatThisRowWasGeneratedFor;
 	}
 
+	DBQueryRow() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 	/**
 	 * Returns the instance of exemplar contained within this DBQueryRow.
 	 *

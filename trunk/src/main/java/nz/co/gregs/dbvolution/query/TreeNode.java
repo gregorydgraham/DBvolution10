@@ -17,11 +17,12 @@ package nz.co.gregs.dbvolution.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBRow;
 
-public class TreeNode<T> {
+public class TreeNode<T extends DBRow> {
 	
 	private final List<TreeNode<T>> children = new ArrayList<TreeNode<T>>();
-	private final List<T> childrenData = new ArrayList<T>();
+	private final List<String> childrenData = new ArrayList<String>();
 	private TreeNode<T> parent = null;
 	private T data = null;
 	
@@ -47,7 +48,7 @@ public class TreeNode<T> {
 		child.setParent(this);
 		if (notAlreadyIncluded(child)) {
 			this.children.add(child);
-			this.childrenData.add(data);
+			this.childrenData.add(data.getPrimaryKey().stringValue());
 		}
 	}
 	
@@ -55,12 +56,12 @@ public class TreeNode<T> {
 		child.setParent(this);
 		if (notAlreadyIncluded(child)) {
 			this.children.add(child);
-			this.childrenData.add(child.getData());
+			this.childrenData.add(child.getData().getPrimaryKey().stringValue());
 		}
 	}
 	
 	private boolean notAlreadyIncluded(TreeNode<T> child) {
-		return !this.children.contains(child) && !childrenData.contains(child.getData());
+		return !this.children.contains(child) && !childrenData.contains(child.getData().getPrimaryKey().stringValue());
 	}
 	
 	public T getData() {

@@ -165,6 +165,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		} else {
 			if (o instanceof Integer) {
 				qdt = new DBInteger();
+			} else if (o instanceof Long) {
+				qdt = new DBInteger();
 			} else if (o instanceof Number) {
 				qdt = new DBNumber();
 			} else if (o instanceof String) {

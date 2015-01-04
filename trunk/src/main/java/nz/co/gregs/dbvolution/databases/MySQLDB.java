@@ -79,4 +79,9 @@ public class MySQLDB extends DBDatabase {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
+	public boolean supportsRecursiveQueriesNatively() {
+		return false;
+	}
+
 }
