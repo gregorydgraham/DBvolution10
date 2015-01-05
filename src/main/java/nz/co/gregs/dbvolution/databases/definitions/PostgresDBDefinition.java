@@ -17,7 +17,9 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -40,6 +42,19 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
+	private static final String[] reservedWordsArray = new String[]{"LIMIT", "END"};
+	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
+
+
+	@Override
+	protected String formatNameForDatabase(final String sqlObjectName) {
+		if (!(reservedWords.contains(sqlObjectName.toUpperCase()))) {
+			return super.formatNameForDatabase(sqlObjectName);
+		} else {
+			return formatNameForDatabase("p" + super.formatNameForDatabase(sqlObjectName));
+		}
+	}
+	
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		return "'" + DATETIME_FORMAT.format(date) + "'";

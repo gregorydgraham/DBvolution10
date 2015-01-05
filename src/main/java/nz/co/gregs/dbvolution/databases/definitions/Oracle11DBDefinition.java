@@ -35,7 +35,7 @@ public class Oracle11DBDefinition extends OracleDBDefinition {
 
 	@Override
 	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-		return "/*+ FIRST_ROWS(" + options.getRowLimit() + ") */";
+		return " /*+ FIRST_ROWS(" + options.getRowLimit() + ") */ ";
 	}
 
 	@Override

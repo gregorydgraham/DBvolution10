@@ -901,4 +901,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	protected void setColumnExpression(DBExpression columnExpression) {
 		this.columnExpression = columnExpression;
 	}
+
+	public void setValueToNull() {
+		this.setLiteralValue(null);
+	}
 }

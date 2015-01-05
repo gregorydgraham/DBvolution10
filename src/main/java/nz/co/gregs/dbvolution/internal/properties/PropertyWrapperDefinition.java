@@ -63,6 +63,7 @@ public class PropertyWrapperDefinition {
 	private final EnumTypeHandler enumTypeHandler;
 	private boolean checkedForColumnExpression = false;
 	private Integer columnIndex = null;
+	private DBExpression columnExpression = null; // null if not present on propertyf
 
 	PropertyWrapperDefinition(RowDefinitionClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
@@ -106,6 +107,7 @@ public class PropertyWrapperDefinition {
 	/**
 	 * Generates a hash-code of this property wrapper definition, based entirely
 	 * on the java property it wraps.
+	 *
 	 * @return a hash-code.
 	 */
 	@Override
@@ -121,7 +123,9 @@ public class PropertyWrapperDefinition {
 	 * it wraps in a specific class. Two instances are identical if they wrap
 	 * the same java property (field or bean-property) in the same class and the
 	 * same class-loader.
-	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
+	 *
+	 * @return {@code true} if the two objects are equal, {@code false}
+	 * otherwise.
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -492,17 +496,20 @@ public class PropertyWrapperDefinition {
 	public RowDefinitionClassWrapper getRowDefinitionClassWrapper() {
 		return classWrapper;
 	}
-	
-	private void setColumnExpression(DBExpression expression) {
-		columnHandler.setColumnExpression(expression);
-	}
 
-	DBExpression getColumnExpression() {
-		return columnHandler.getColumnExpression();
-	}
+    /**
+     * @return the columnExpression
+     */
+    public DBExpression getColumnExpression() {
+        return columnExpression;
+    }
+
+    void setColumnExpression(DBExpression expression) {
+        columnExpression = expression;
+    }
 
 	boolean hasColumnExpression() {
-		return columnHandler.getColumnExpression() != null;
+		return getColumnExpression() != null;
 	}
 
 	String getSelectableName(DBDatabase db, RowDefinition actualRow) {
@@ -538,9 +545,9 @@ public class PropertyWrapperDefinition {
 		}
 	}
 
-    boolean isForeignKeyTo(DBRow table) {
-        return foreignKeyHandler.isForeignKeyTo(table.getClass());
-    }
+	boolean isForeignKeyTo(DBRow table) {
+		return foreignKeyHandler.isForeignKeyTo(table.getClass());
+	}
 
 	void setColumnIndex(int columnIndex) {
 		this.columnIndex = columnIndex;
