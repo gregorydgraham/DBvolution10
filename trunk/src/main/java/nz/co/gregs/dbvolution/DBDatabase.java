@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.io.File;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
@@ -793,7 +794,7 @@ public abstract class DBDatabase implements Cloneable {
 	public DBQuery getDBQuery(DBRow... examples) {
 		return DBQuery.getInstance(this, examples);
 	}
-
+	
 	/**
 	 * Creates a new DBQuery object with the examples added as
 	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[]) required} tables.
@@ -904,7 +905,7 @@ public abstract class DBDatabase implements Cloneable {
 		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
 		List<String> fkClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
-			if (field.isColumn()) {
+			if (field.isColumn()&& !field.getQueryableDatatype().hasColumnExpression()) {
 				String colName = field.columnName();
 				sqlScript
 						.append(sep)

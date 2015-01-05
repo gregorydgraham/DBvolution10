@@ -535,7 +535,7 @@ public class PropertyWrapper {
      * otherwise FALSE.
      */
     public boolean hasColumnExpression() {
-        return getDefinition().hasColumnExpression();
+		return this.getQueryableDatatype().hasColumnExpression();
     }
 
     /**
@@ -545,7 +545,7 @@ public class PropertyWrapper {
      * @throws ClassCastException
      */
     public DBExpression getColumnExpression() throws ClassCastException {
-        return getDefinition().getColumnExpression();
+        return this.getQueryableDatatype().getColumnExpression();
     }
 
     /**

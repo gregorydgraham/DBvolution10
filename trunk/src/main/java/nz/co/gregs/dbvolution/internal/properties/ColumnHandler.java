@@ -21,7 +21,6 @@ class ColumnHandler {
 	private final DBColumn columnAnnotation; // null if not present on property
 	private final DBPrimaryKey primaryKeyAnnotation; // null if not present on property
 	private final DBAutoIncrement autoIncrementAnnotation; // null if not present on property
-    private DBExpression columnExpression; // null if not present on property
 	
 	ColumnHandler(JavaProperty adaptee) {
 		this.columnAnnotation = adaptee.getAnnotation(DBColumn.class);
@@ -35,16 +34,6 @@ class ColumnHandler {
 			this.columnName = (name == null || name.trim().isEmpty()) ? adaptee.name() : name;
 		} else {
 			this.columnName = null;
-		}
-        if(QueryableDatatype.class.isAssignableFrom(adaptee.getClass())){
-            QueryableDatatype qdt = (QueryableDatatype)adaptee;
-            if (qdt.hasColumnExpression()){
-                this.columnExpression = qdt.getColumnExpression();
-            }else {
-							this.columnExpression = null;
-						}
-        }else {
-					this.columnExpression = null;
 		}
 	}
 
@@ -84,17 +73,6 @@ class ColumnHandler {
 	public DBColumn getDBColumnAnnotation() {
 		return columnAnnotation;
 	}
-
-    /**
-     * @return the columnExpression
-     */
-    public DBExpression getColumnExpression() {
-        return columnExpression;
-    }
-
-    void setColumnExpression(DBExpression expression) {
-        columnExpression = expression;
-    }
 
 	boolean isAutoIncrement() {
 		return this.autoIncrementAnnotation != null;

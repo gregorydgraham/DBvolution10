@@ -57,28 +57,29 @@ public class OracleDBDefinition extends DBDefinition {
 		//return "'"+strToDateFormat.format(date)+"'";
 	}
 
-	@Override
-	public String formatTableName(DBRow table) {
-		final String sqlObjectName = table.getTableName();
-		return formatNameForOracle(sqlObjectName);
-	}
+//	@Override
+//	public String formatTableName(DBRow table) {
+//		final String sqlObjectName = table.getTableName();
+//		return formatNameForOracle(sqlObjectName);
+//	}
+//
+//	@Override
+//	public String getPrimaryKeySequenceName(String table, String column) {
+//		return formatNameForOracle(super.getPrimaryKeySequenceName(table, column));
+//	}
+//
+//	@Override
+//	public String getPrimaryKeyTriggerName(String table, String column) {
+//		return formatNameForOracle(super.getPrimaryKeyTriggerName(table, column));
+//	}
+//
+//	@Override
+//	public String formatColumnName(String column) {
+//		return formatNameForOracle(super.formatColumnName(column));
+//	}
 
 	@Override
-	public String getPrimaryKeySequenceName(String table, String column) {
-		return formatNameForOracle(super.getPrimaryKeySequenceName(table, column));
-	}
-
-	@Override
-	public String getPrimaryKeyTriggerName(String table, String column) {
-		return formatNameForOracle(super.getPrimaryKeyTriggerName(table, column));
-	}
-
-	@Override
-	public String formatColumnName(String column) {
-		return formatNameForOracle(super.formatColumnName(column));
-	}
-
-	private static String formatNameForOracle(final String sqlObjectName) {
+	protected String formatNameForDatabase(final String sqlObjectName) {
 		if (sqlObjectName.length() < 30 && !(reservedWords.contains(sqlObjectName.toUpperCase()))) {
 			return sqlObjectName.replaceAll("^[_-]", "O").replaceAll("-", "_");
 		} else {

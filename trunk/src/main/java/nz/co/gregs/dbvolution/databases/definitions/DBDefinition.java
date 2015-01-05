@@ -40,8 +40,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 public abstract class DBDefinition {
 
 	/**
-	 * Transforms the Date instance into a SQL snippet that can be used as a date
-	 * in a query.
+	 * Transforms the Date instance into a SQL snippet that can be used as a
+	 * date in a query.
 	 *
 	 * <p>
 	 * For instance the date might be transformed into a string like "
@@ -63,7 +63,7 @@ public abstract class DBDefinition {
 	 * @return the column name formatted for the database.
 	 */
 	public String formatColumnName(String columnName) {
-		return columnName;
+		return formatNameForDatabase(columnName);
 	}
 
 	/**
@@ -119,8 +119,8 @@ public abstract class DBDefinition {
 	 * Formats the table and column name pair correctly for this database.
 	 *
 	 * <p>
-	 * This should only be used for column names in the select query when aliases
-	 * are not being used. Which is probably never.
+	 * This should only be used for column names in the select query when
+	 * aliases are not being used. Which is probably never.
 	 * <p>
 	 * e.g table, column => TABLE.COLUMN
 	 *
@@ -177,7 +177,7 @@ public abstract class DBDefinition {
 	 * @return a string of the table name formatted for this database definition
 	 */
 	public String formatTableName(DBRow table) {
-		return table.getTableName();
+		return formatNameForDatabase(table.getTableName());
 	}
 
 	/**
@@ -206,12 +206,16 @@ public abstract class DBDefinition {
 	 */
 	public String formatForColumnAlias(final String actualName) {
 		String formattedName = actualName.replaceAll("\\.", "__");
-		return ("DB" + formattedName.hashCode()).replaceAll("-", "_");
+		return formatNameForDatabase("DB" + formattedName.hashCode()).replaceAll("-", "_");
+	}
+
+	protected String formatNameForDatabase(final String sqlObjectName) {
+		return sqlObjectName;
 	}
 
 	/**
-	 * Apply standard formatting of the expression alias to avoid issues with the
-	 * database's alias naming issues.
+	 * Apply standard formatting of the expression alias to avoid issues with
+	 * the database's alias naming issues.
 	 *
 	 * @param key
 	 * @return the alias of the key formatted correctly.
@@ -221,8 +225,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Apply necessary transformations on the string to avoid it being used for an
-	 * SQL injection attack.
+	 * Apply necessary transformations on the string to avoid it being used for
+	 * an SQL injection attack.
 	 *
 	 * <p>
 	 * The default method changes every single quote (') into 2 single quotes
@@ -237,8 +241,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -250,8 +254,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -268,8 +272,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause for
-	 * joins.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause
+	 * for joins.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -285,11 +289,12 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database does not accept named GROUP BY columns and the
-	 * query generator should create the GROUP BY clause using indexes instead.
+	 * Indicates that the database does not accept named GROUP BY columns and
+	 * the query generator should create the GROUP BY clause using indexes
+	 * instead.
 	 *
-	 * @return TRUE if the database needs indexes for the group by columns, FALSE
-	 * otherwise.
+	 * @return TRUE if the database needs indexes for the group by columns,
+	 * FALSE otherwise.
 	 */
 	public boolean prefersIndexBasedGroupByClause() {
 		return false;
@@ -323,7 +328,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the start of the PRIMARY KEY clause of the CREATE TABLE statement.
+	 * Returns the start of the PRIMARY KEY clause of the CREATE TABLE
+	 * statement.
 	 *
 	 * <p>
 	 * This is the clause within the column definition clause after the columns
@@ -336,8 +342,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the separator between the columns in the PRIMARY KEY clause of the
-	 * CREATE TABLE statement.
+	 * Returns the separator between the columns in the PRIMARY KEY clause of
+	 * the CREATE TABLE statement.
 	 *
 	 * <p>
 	 * This is the clause within the column definition clause after the columns
@@ -386,8 +392,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the separator between column definitions in the column list of the
-	 * CREATE TABLE statement.
+	 * Returns the separator between column definitions in the column list of
+	 * the CREATE TABLE statement.
 	 *
 	 * <p>
 	 * This is the clause within the CREATE TABLE that defines the columns
@@ -550,8 +556,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the subsequent separator of a SET sub-clause of an UPDATE statement
-	 * for this database.
+	 * Returns the subsequent separator of a SET sub-clause of an UPDATE
+	 * statement for this database.
 	 *
 	 * @return "," or equivalent.
 	 */
@@ -580,8 +586,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the initial clause of a WHERE clause of a SELECT statement for this
-	 * database.
+	 * Returns the initial clause of a WHERE clause of a SELECT statement for
+	 * this database.
 	 *
 	 * <p>
 	 * DBvolution inserts a constant operation to every WHERE clause to simplify
@@ -596,8 +602,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the initial clause of a WHERE clause of a SELECT statement for this
-	 * database.
+	 * Returns the initial clause of a WHERE clause of a SELECT statement for
+	 * this database.
 	 *
 	 * <p>
 	 * DBvolution inserts a constant operation to every WHERE clause to simplify
@@ -684,8 +690,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the subsequent separator of the column list sub-clause of a SELECT
-	 * statement for this database.
+	 * Returns the subsequent separator of the column list sub-clause of a
+	 * SELECT statement for this database.
 	 *
 	 * @return "," or equivalent.
 	 */
@@ -723,8 +729,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the beginning of the ORDER BY clause of a SELECT statement for this
-	 * database.
+	 * Returns the beginning of the ORDER BY clause of a SELECT statement for
+	 * this database.
 	 *
 	 * @return " ORDER BY " or equivalent.
 	 */
@@ -790,8 +796,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Used during the creation of an ANSI join to add the criteria of an optional
-	 * table using an ON clause.
+	 * Used during the creation of an ANSI join to add the criteria of an
+	 * optional table using an ON clause.
 	 *
 	 * @return the default implementation returns " ON( ".
 	 */
@@ -832,8 +838,8 @@ public abstract class DBDefinition {
 	 *
 	 * for example MySQL/MariaDB use SELECT ... FROM ... WHERE ... LIMIT 10 ;
 	 *
-	 * Based on the example for MySQL/MariaDB this method should return " LIMIT 10
-	 * "
+	 * Based on the example for MySQL/MariaDB this method should return " LIMIT
+	 * 10 "
 	 *
 	 * If the database does not support row limiting this method should throw an
 	 * exception when rowLimit is not null
@@ -857,8 +863,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * The place holder for variables inserted into a prepared statement, usually
-	 * " ? "
+	 * The place holder for variables inserted into a prepared statement,
+	 * usually " ? "
 	 *
 	 * @return the place holder for variables as a string
 	 */
@@ -915,8 +921,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Used within DBInsert to separate the values within the VALUES clause of the
-	 * INSERT statement.
+	 * Used within DBInsert to separate the values within the VALUES clause of
+	 * the INSERT statement.
 	 *
 	 * @return the default implementation returns ",".
 	 */
@@ -964,8 +970,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Formats the suggested table alias provided by DBvolution for the particular
-	 * database..
+	 * Formats the suggested table alias provided by DBvolution for the
+	 * particular database..
 	 *
 	 * @param suggestedTableAlias
 	 * @return the table alias.
@@ -975,8 +981,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Defines the function used to get the current date (excluding time) from the
-	 * database.
+	 * Defines the function used to get the current date (excluding time) from
+	 * the database.
 	 *
 	 * @return the default implementation returns " CURRENT_DATE "
 	 */
@@ -1043,8 +1049,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Wraps the provided SQL snippet in a statement that changes the value of the
-	 * snippet to lowercase characters.
+	 * Wraps the provided SQL snippet in a statement that changes the value of
+	 * the snippet to lowercase characters.
 	 *
 	 * @param enclosedValue
 	 * @return SQL snippet
@@ -1065,8 +1071,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Wraps the provided SQL snippet in a statement that the length of the value
-	 * of the snippet.
+	 * Wraps the provided SQL snippet in a statement that the length of the
+	 * value of the snippet.
 	 *
 	 * @param enclosedValue
 	 * @return SQL snippet
@@ -1098,8 +1104,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Wraps the provided SQL snippets in a statement that joins the two snippets
-	 * into one SQL snippet.
+	 * Wraps the provided SQL snippets in a statement that joins the two
+	 * snippets into one SQL snippet.
 	 *
 	 * @param firstString
 	 * @param secondString
@@ -1116,8 +1122,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the function name of the function used to return the next value of
-	 * a sequence.
+	 * Returns the function name of the function used to return the next value
+	 * of a sequence.
 	 *
 	 * @return "NEXTVAL"
 	 * @see NumberExpression#getNextSequenceValue(java.lang.String)
@@ -1144,8 +1150,8 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Usually databases only support lower and upper case functions for ASCII
-	 * characters. Support for change the case of unicode characters is dependent
-	 * on the underlying database.
+	 * characters. Support for change the case of unicode characters is
+	 * dependent on the underlying database.
 	 *
 	 * @return "LOWER"
 	 */
@@ -1159,8 +1165,8 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Usually databases only support lower and upper case functions for ASCII
-	 * characters. Support for change the case of unicode characters is dependent
-	 * on the underlying database.
+	 * characters. Support for change the case of unicode characters is
+	 * dependent on the underlying database.
 	 *
 	 * @return "UPPER"
 	 */
@@ -1173,8 +1179,8 @@ public abstract class DBDefinition {
 	 * characters in the value.
 	 *
 	 * <p>
-	 * DBvolution tries to ensure that the character length of a value is equal to
-	 * the character length of an equivalent Java String.
+	 * DBvolution tries to ensure that the character length of a value is equal
+	 * to the character length of an equivalent Java String.
 	 *
 	 * <p>
 	 * That is to say: DBV.charlength() === java.lang.String.length()
@@ -1190,8 +1196,8 @@ public abstract class DBDefinition {
 	 * logged into the database.
 	 *
 	 * <p>
-	 * Usually this is the same username supplied when you created the DBDatabase
-	 * instance.
+	 * Usually this is the same username supplied when you created the
+	 * DBDatabase instance.
 	 *
 	 * @return "CURRENT_USER'
 	 */
@@ -1226,8 +1232,8 @@ public abstract class DBDefinition {
 	 * that provides the day part of the date.
 	 *
 	 * <p>
-	 * Day in this sense is the number of the day within the month: that is the 23
-	 * part of Monday 25th of August 2014
+	 * Day in this sense is the number of the day within the month: that is the
+	 * 23 part of Monday 25th of August 2014
 	 *
 	 * @param dateExpression
 	 * @return a SQL snippet that will produce the day of the supplied date.
@@ -1332,8 +1338,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the count of items in a
-	 * selection.
+	 * Provides the function of the function that provides the count of items in
+	 * a selection.
 	 *
 	 * @return "COUNT"
 	 */
@@ -1342,8 +1348,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the maximum value in a
-	 * selection.
+	 * Provides the function of the function that provides the maximum value in
+	 * a selection.
 	 *
 	 * @return "MAX"
 	 */
@@ -1352,8 +1358,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the minimum value in a
-	 * selection.
+	 * Provides the function of the function that provides the minimum value in
+	 * a selection.
 	 *
 	 * @return "MIN"
 	 */
@@ -1362,7 +1368,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the sum of a selection.
+	 * Provides the function of the function that provides the sum of a
+	 * selection.
 	 *
 	 * @return "SUM"
 	 */
@@ -1371,8 +1378,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the standard deviation
-	 * of a selection.
+	 * Provides the function of the function that provides the standard
+	 * deviation of a selection.
 	 *
 	 * @return "stddev"
 	 */
@@ -1381,8 +1388,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether the database prefers (probably exclusively) the ORDER BY
-	 * clause to use column indexes rather than column names.
+	 * Indicates whether the database prefers (probably exclusively) the ORDER
+	 * BY clause to use column indexes rather than column names.
 	 *
 	 * @return the default implementation returns FALSE.
 	 */
@@ -1395,10 +1402,10 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Databases that don't support paging will have paging handled by the java
-	 * side. Unfortunately this causes some problems as the entire dataset will be
-	 * retrieved with the first call, making the first call expensive in time and
-	 * memory. Subsequent calls will be more efficient but that probably won't
-	 * help your developers.
+	 * side. Unfortunately this causes some problems as the entire dataset will
+	 * be retrieved with the first call, making the first call expensive in time
+	 * and memory. Subsequent calls will be more efficient but that probably
+	 * won't help your developers.
 	 *
 	 * @param options
 	 * @return the default implementation returns TRUE.
@@ -1441,8 +1448,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Transforms 2 SQL snippets that represent a real number and a integer into a
-	 * real number with the decimal places reduced to the integer.
+	 * Transforms 2 SQL snippets that represent a real number and a integer into
+	 * a real number with the decimal places reduced to the integer.
 	 *
 	 * <p>
 	 * 0 decimal places transforms the real number into an integer.
@@ -1582,7 +1589,7 @@ public abstract class DBDefinition {
 	 * @return the name of the primary key sequence to be created.
 	 */
 	public String getPrimaryKeySequenceName(String table, String column) {
-		return table + "_" + column + "dsq";
+		return formatNameForDatabase(table + "_" + column + "dsq");
 	}
 
 	/**
@@ -1594,12 +1601,12 @@ public abstract class DBDefinition {
 	 * @return the name of the trigger to be created.
 	 */
 	public String getPrimaryKeyTriggerName(String table, String column) {
-		return table + "_" + column + "dtg";
+		return formatNameForDatabase(table + "_" + column + "dtg");
 	}
 
 	/**
-	 * Indicates whether the database uses a special type for it's auto-increment
-	 * columns.
+	 * Indicates whether the database uses a special type for it's
+	 * auto-increment columns.
 	 *
 	 * @return the default implementation returns FALSE.
 	 */
@@ -1608,8 +1615,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether field provided can be used as a auto-incrementing column
-	 * in this database
+	 * Indicates whether field provided can be used as a auto-incrementing
+	 * column in this database
 	 *
 	 * @param field
 	 * @return
@@ -1642,8 +1649,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether the database prefers the primary key to be defined at the
-	 * end of the CREATE TABLE statement.
+	 * Indicates whether the database prefers the primary key to be defined at
+	 * the end of the CREATE TABLE statement.
 	 *
 	 * @return the default implementation returns TRUE.
 	 */
@@ -1711,8 +1718,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database prefers Large Object values to be set using the
-	 * setCharacterStream method.
+	 * Indicates that the database prefers Large Object values to be set using
+	 * the setCharacterStream method.
 	 *
 	 * <p>
 	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
@@ -1726,8 +1733,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database prefers Large Object values to be set using the
-	 * setBLOB method.
+	 * Indicates that the database prefers Large Object values to be set using
+	 * the setBLOB method.
 	 *
 	 * <p>
 	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
@@ -1741,8 +1748,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database prefers Large Object values to be set using the
-	 * setCharacterStream method.
+	 * Indicates that the database prefers Large Object values to be set using
+	 * the setCharacterStream method.
 	 *
 	 * <p>
 	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
@@ -1756,8 +1763,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the name of the function that will choose the largest value from a
-	 * list of options.
+	 * Provides the name of the function that will choose the largest value from
+	 * a list of options.
 	 *
 	 * @return " GREATEST "
 	 */
@@ -1766,8 +1773,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the name of the function that will choose the smallest value from
-	 * a list of options.
+	 * Provides the name of the function that will choose the smallest value
+	 * from a list of options.
 	 *
 	 * @return " LEAST "
 	 */
@@ -1802,8 +1809,8 @@ public abstract class DBDefinition {
 	 * returns the date format used when reading dates as strings.
 	 *
 	 * <p>
-	 * Normally dates are read as dates but this method allows DBvolution to read
-	 * them using a text mode.
+	 * Normally dates are read as dates but this method allows DBvolution to
+	 * read them using a text mode.
 	 *
 	 * @return the date format required to interpret strings as dates.
 	 * @see #prefersDatesReadAsStrings()
@@ -1813,8 +1820,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides an opportunity to tweak the generated DBTableField before creating
-	 * the Java classes
+	 * Provides an opportunity to tweak the generated DBTableField before
+	 * creating the Java classes
 	 *
 	 * @param dbTableField the current field being processed by
 	 * DBTableClassGenerator
@@ -1825,18 +1832,20 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether this DBDefinition supports retrieving the primary key of
-	 * the last inserted row using SQL.
+	 * Indicates whether this DBDefinition supports retrieving the primary key
+	 * of the last inserted row using SQL.
 	 *
 	 * <p>
 	 * Preferably the database should support
-	 * {@link #supportsGeneratedKeys() generated keys} but if it doesn't this and {@link #getRetrieveLastInsertedRowSQL()
+	 * {@link #supportsGeneratedKeys() generated keys} but if it doesn't this
+	 * and {@link #getRetrieveLastInsertedRowSQL()
 	 * }
 	 * allow the DBDefinition to provide raw SQL for retrieving the last created
 	 * primary key.
 	 *
 	 * <p>
-	 * The database should support either generated keys or last inserted row SQL.
+	 * The database should support either generated keys or last inserted row
+	 * SQL.
 	 *
 	 * <p>
 	 * If both {@link #supportsGeneratedKeys()
@@ -1879,9 +1888,9 @@ public abstract class DBDefinition {
 	 * The default implementation returns TRUE.
 	 *
 	 * <p>
-	 * If the database does not support the standard function then the definition
-	 * may override {@link #doDegreesTransform(java.lang.String) } to implement
-	 * the required functionality.
+	 * If the database does not support the standard function then the
+	 * definition may override {@link #doDegreesTransform(java.lang.String) } to
+	 * implement the required functionality.
 	 *
 	 * @return TRUE if the database supports the standard DEGREES function,
 	 * otherwise FALSE.
@@ -1897,9 +1906,9 @@ public abstract class DBDefinition {
 	 * The default implementation returns TRUE.
 	 *
 	 * <p>
-	 * If the database does not support the standard function then the definition
-	 * may override {@link #doRadiansTransform(java.lang.String) } to implement
-	 * the required functionality.
+	 * If the database does not support the standard function then the
+	 * definition may override {@link #doRadiansTransform(java.lang.String) } to
+	 * implement the required functionality.
 	 *
 	 * @return TRUE if the database supports the standard RADIANS function,
 	 * otherwise FALSE.
@@ -1912,8 +1921,8 @@ public abstract class DBDefinition {
 	 * Implements the degrees to radians transformation using simple maths.
 	 *
 	 * <p>
-	 * If the database does not support the standard RADIANS function this method
-	 * provides another method of providing the function.
+	 * If the database does not support the standard RADIANS function this
+	 * method provides another method of providing the function.
 	 *
 	 * @param degreesSQL
 	 * @return the degrees expression transformed into a radians expression
@@ -1926,8 +1935,8 @@ public abstract class DBDefinition {
 	 * Implements the radians to degrees transformation using simple maths.
 	 *
 	 * <p>
-	 * If the database does not support the standard DEGREES function this method
-	 * provides another method of providing the function.
+	 * If the database does not support the standard DEGREES function this
+	 * method provides another method of providing the function.
 	 *
 	 * @param radiansSQL
 	 * @return the radians expression transformed into a degrees expression
@@ -2103,8 +2112,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether the database supports use of the "^" operator to perform
-	 * boolean XOR.
+	 * Indicates whether the database supports use of the "^" operator to
+	 * perform boolean XOR.
 	 *
 	 * @return TRUE if the database supports "^" as XOR, FALSE otherwise.
 	 */
@@ -2123,8 +2132,8 @@ public abstract class DBDefinition {
 	 * Not to be confused with the MIN aggregate function.
 	 *
 	 * @param strs
-	 * @return a String of the SQL required to find the smallest value in the list
-	 * provided.
+	 * @return a String of the SQL required to find the smallest value in the
+	 * list provided.
 	 */
 	public String doLeastOfTransformation(List<String> strs) {
 		StringBuilder sql = new StringBuilder(getLeastOfFunctionName() + "(");
@@ -2137,11 +2146,12 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Transform a set of SQL snippets into the database's version of the GREATEST
-	 * function.
+	 * Transform a set of SQL snippets into the database's version of the
+	 * GREATEST function.
 	 *
 	 * <p>
-	 * The GREATEST function takes a list of values and returns the largest value.
+	 * The GREATEST function takes a list of values and returns the largest
+	 * value.
 	 *
 	 * <p>
 	 * Not to be confused with the MAX aggregate function.
@@ -2183,12 +2193,12 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Transforms a SQL snippet of a number expression into a character expression
-	 * for this database.
+	 * Transforms a SQL snippet of a number expression into a character
+	 * expression for this database.
 	 *
 	 * @param numberExpression
-	 * @return a String of the SQL required to transform the number supplied into
-	 * a character or String type.
+	 * @return a String of the SQL required to transform the number supplied
+	 * into a character or String type.
 	 */
 	public String doNumberToStringTransform(String numberExpression) {
 		return doConcatTransform(getEmptyString(), numberExpression);
@@ -2319,7 +2329,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Produce SQL that will provide return the second value if the first is NULL.
+	 * Produce SQL that will provide return the second value if the first is
+	 * NULL.
 	 *
 	 * @param possiblyNullValue
 	 * @param alternativeIfNull
@@ -2333,7 +2344,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Produce SQL that will provide return the second value if the first is NULL.
+	 * Produce SQL that will provide return the second value if the first is
+	 * NULL.
 	 *
 	 * @param possiblyNullValue
 	 * @param alternativeIfNull
@@ -2344,7 +2356,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Produce SQL that will provide return the second value if the first is NULL.
+	 * Produce SQL that will provide return the second value if the first is
+	 * NULL.
 	 *
 	 * @param possiblyNullValue
 	 * @param alternativeIfNull
@@ -2355,8 +2368,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Produce SQL that will compare the first value to all the other values using
-	 * the IN operator.
+	 * Produce SQL that will compare the first value to all the other values
+	 * using the IN operator.
 	 *
 	 * @param comparableValue
 	 * @param values
