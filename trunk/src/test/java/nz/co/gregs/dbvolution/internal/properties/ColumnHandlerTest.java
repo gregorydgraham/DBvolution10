@@ -15,7 +15,7 @@ import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 import org.junit.Test;
 
 public class ColumnHandlerTest {
-	private JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
+	private final JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
 			Visibility.PRIVATE, Visibility.PUBLIC, null, (PropertyType[])null);
 
 	@Test
