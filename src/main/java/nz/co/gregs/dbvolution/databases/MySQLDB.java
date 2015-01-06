@@ -28,16 +28,15 @@ public class MySQLDB extends DBDatabase {
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 
-
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
 	 * @param ds
 	 */
 	public MySQLDB(DataSource ds) {
-        super(new MySQLDBDefinition(), ds);
-    }
-	
+		super(new MySQLDBDefinition(), ds);
+	}
+
 	/**
 	 * Creates DBDatabase suitable for use with MySQL attached to the supplied
 	 * JDBC URL, username, and password.

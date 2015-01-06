@@ -17,37 +17,13 @@ package nz.co.gregs.dbvolution.query;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.columns.BooleanColumn;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.columns.DateColumn;
-import nz.co.gregs.dbvolution.columns.IntegerColumn;
-import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
-import nz.co.gregs.dbvolution.columns.NumberColumn;
-import nz.co.gregs.dbvolution.columns.StringColumn;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.columns.*;
+import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.NumberExpression;
-import nz.co.gregs.dbvolution.expressions.NumberResult;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.expressions.StringResult;
-import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
-import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
+import nz.co.gregs.dbvolution.expressions.*;
+import nz.co.gregs.dbvolution.internal.properties.*;
 
 /**
  * Encapsulates the concept of a row that has fields/columns and is part of a
@@ -68,8 +44,8 @@ public class RowDefinition implements Serializable {
 	 * property's object reference.
 	 *
 	 * <p>
-	 * For example the following code snippet will get a property wrapper for
-	 * the {@literal name} field:
+	 * For example the following code snippet will get a property wrapper for the
+	 * {@literal name} field:
 	 * <pre>
 	 * Customer customer = ...;
 	 * getPropertyWrapperOf(customer.name);
@@ -346,8 +322,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for
-	 * NULL entries.
+	 * Creates a new StringExpression for the field with a default value for NULL
+	 * entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -368,8 +344,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for
-	 * NULL entries.
+	 * Creates a new StringExpression for the field with a default value for NULL
+	 * entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -390,8 +366,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for
-	 * NULL entries.
+	 * Creates a new StringExpression for the field with a default value for NULL
+	 * entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -412,8 +388,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for
-	 * NULL entries.
+	 * Creates a new StringExpression for the field with a default value for NULL
+	 * entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -911,7 +887,7 @@ public class RowDefinition implements Serializable {
 		return toSeparatedHeader(",");
 	}
 
-	public String toCSVLine() throws IllegalArgumentException, IllegalAccessException {
+	public String toCSVLine() {
 		return toSeparatedLine(",");
 	}
 
