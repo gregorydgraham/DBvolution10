@@ -59,7 +59,7 @@ public interface DBExpression {
      * provided to supply context and the DBDefinition object so your SQL can
      * used on multiple database engines.
      *
-     * @param db
+     * @param db the target database
      * @return the DBValue formatted as a SQL snippet
      */
     public String toSQLString(DBDatabase db);

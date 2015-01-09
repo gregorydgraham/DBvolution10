@@ -70,7 +70,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param numberExpression
+	 * @param numberExpression	 numberExpression	
 	 */
 	public DBNumber(NumberResult numberExpression) {
 		super(numberExpression);
@@ -79,7 +79,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Creates a new DBNumber with the value set to the number provided.
 	 *
-	 * @param aNumber
+	 * @param aNumber	 aNumber	
 	 */
 	public DBNumber(Number aNumber) {
 		super(aNumber);
@@ -87,7 +87,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * @param aNumber
+	 * @param aNumber	 aNumber	
 	 */
 	public DBNumber(Long aNumber) {
 		super(aNumber);
@@ -105,7 +105,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * You probably want {@link #setValue(java.lang.Number)} or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)
 	 * }
 	 *
-	 * @param newLiteralValue
+	 
 	 */
 	@Override
 	void setValue(Object newLiteralValue) {
@@ -125,7 +125,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * This allows DBNumbers to be treated somewhat like normal numbers. However {@link #setValue(java.lang.Number)
 	 * } may be more useful in normal usage.
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue	 newLiteralValue	
 	 */
 	public void setValue(DBNumber newLiteralValue) {
 		setValue((newLiteralValue).getValue());
@@ -151,7 +151,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * } to make the changes permanent.</li>
 	 * </ul>
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue	 newLiteralValue	
 	 */
 	public void setValue(Number newLiteralValue) {
 		if (newLiteralValue == null) {
@@ -184,7 +184,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * @param db
+	 * @param db	 db	
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override
@@ -298,7 +298,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Number... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -309,7 +309,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Collection<Number> permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -320,7 +320,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(NumberResult... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -331,7 +331,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(Number... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -343,7 +343,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(Collection<Number> excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -355,7 +355,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(NumberResult... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -379,8 +379,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -403,8 +403,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -427,8 +427,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -451,8 +451,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -475,8 +475,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -499,8 +499,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -523,8 +523,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -548,8 +548,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -573,8 +573,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -598,8 +598,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -623,8 +623,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(Number lowerBound, Number upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -648,8 +648,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(NumberResult lowerBound, NumberResult upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));

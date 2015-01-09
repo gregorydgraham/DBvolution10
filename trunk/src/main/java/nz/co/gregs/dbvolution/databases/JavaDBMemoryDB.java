@@ -29,12 +29,12 @@ public class JavaDBMemoryDB extends JavaDB {
 	/**
 	 * Creates or connects to a JavaDB in-memory instance.
 	 *
-	 * @param host
-	 * @param port
-	 * @param database
-	 * @param username
-	 * @param password
-	 * @throws java.sql.SQLException
+	 * @param host host
+	 * @param username username
+	 * @param port port
+	 * @param database database
+	 * @param password password
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException {
 		super("jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);

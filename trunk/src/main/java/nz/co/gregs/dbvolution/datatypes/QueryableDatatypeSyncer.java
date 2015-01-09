@@ -48,10 +48,15 @@ public class QueryableDatatypeSyncer {
 	/**
 	 *
 	 * @param propertyName used in error messages
-	 * @param internalQdtType
-	 * @param internalQdtLiteralType
-	 * @param externalSimpleType
-	 * @param typeAdaptor
+	 * @param internalQdtType internalQdtType
+	 * @param internalQdtLiteralType internalQdtLiteralType
+	 * @param externalSimpleType externalSimpleType
+	 * @param typeAdaptor typeAdaptor
+	 typeAdaptor
+	
+	 
+	 
+	 
 	 */
 	public QueryableDatatypeSyncer(
 			String propertyName,
@@ -97,7 +102,7 @@ public class QueryableDatatypeSyncer {
 	 * Replaces the internal QDT with the one provided. Validates that the
 	 * provided QDT is of the correct type.
 	 *
-	 * @param internalQdt
+	 * @param internalQdt	 internalQdt	
 	 */
 	public void setInternalQueryableDatatype(QueryableDatatype internalQdt) {
 		if (internalQdt != null && !internalQdt.getClass().equals(internalQdtType)) {
@@ -129,7 +134,7 @@ public class QueryableDatatypeSyncer {
 	 * Sets the provided external QDT from the internal QDT and returns the
 	 * updated external QDT.
 	 *
-	 * @param externalQdt
+	 * @param externalQdt	 externalQdt	
 	 * @return the updated external QDT or null if the internal QDT is null
 	 */
 	public QueryableDatatype setExternalFromInternalQDT(QueryableDatatype externalQdt) {
@@ -208,8 +213,8 @@ public class QueryableDatatypeSyncer {
 		/**
 		 * Constructor
 		 *
-		 * @param targetQdtType
-		 * @param typeAdaptor
+		 * @param targetQdtType targetQdtType
+		 * @param typeAdaptor typeAdaptor
 		 */
 		public DBSafeInternalQDTAdaptor(
 				Class<? extends QueryableDatatype> targetQdtType,

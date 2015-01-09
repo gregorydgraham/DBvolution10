@@ -54,8 +54,8 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field defining the column
 	 */
     public IntegerColumn(RowDefinition row, Long field) {
         this.column = new AbstractColumn(row, field);
@@ -64,8 +64,8 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field defining the column
 	 */
     public IntegerColumn(RowDefinition row, Integer field) {
         this.column = new AbstractColumn(row, field);
@@ -74,8 +74,8 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field defining the column
 	 */
     public IntegerColumn(RowDefinition row, DBInteger field) {
         this.column = new AbstractColumn(row, field);
@@ -84,8 +84,8 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field defining the column
 	 */
     public IntegerColumn(RowDefinition row, DBIntegerEnum<?> field) {
         this.column = new AbstractColumn(row, field);

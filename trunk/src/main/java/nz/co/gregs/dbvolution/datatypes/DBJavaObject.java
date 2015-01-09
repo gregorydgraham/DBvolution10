@@ -281,7 +281,8 @@ public class DBJavaObject<O> extends DBLargeObject {
 	 * DBByteArray.
 	 *
 	 * @return the byte[] value of this DBByteArray.
-	 * @throws java.io.IOException
+	 * @throws java.io.IOException java.io.IOException
+	 
 	 */
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

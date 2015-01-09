@@ -101,7 +101,7 @@ public class RowDefinitionClassWrapper {
 	 * When processing identity only, only the primary key properties are
 	 * identified.
 	 *
-	 * @param clazz
+	 
 	 * @param processIdentityOnly pass {@code true} to only process the set of
 	 * columns and primary keys, and to ensure that the primary key columns are
 	 * valid, but to exclude all other validations on non-primary key columns
@@ -258,7 +258,7 @@ public class RowDefinitionClassWrapper {
 
 	/**
 	 * Two {@code RowDefinitionClassWrappers} are equal if they wrap the same classes.
-	 * @param obj
+	 * @param obj	 obj	
 	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
 	 */
 	@Override
@@ -381,7 +381,9 @@ public class RowDefinitionClassWrapper {
 	 * names.
 	 *
 	 * @param database active database
-	 * @param columnName
+	 * @param columnName columnName
+	 columnName
+	
 	 * @return the PropertyWrapperDefinition for the column name supplied.
 	 *         Null if no such column is found.
 	 * @throws AssertionError if called when in {@code identityOnly} mode.
@@ -407,7 +409,7 @@ public class RowDefinitionClassWrapper {
 	 * <p>
 	 * Assumes working in "identity-only" mode.
 	 *
-	 * @param columnName
+	 
 	 * @return the non-null list of matching property definitions, with only
 	 * identity information available, empty if no such properties found
 	 */
@@ -434,7 +436,7 @@ public class RowDefinitionClassWrapper {
 	 * both be annotated, but for different columns. This method doesn't handle
 	 * that well and returns only the first one it sees.
 	 *
-	 * @param propertyName
+	 * @param propertyName	 propertyName	
 	 * @return the PropertyWrapperDefinition for the named object property
 	 *         Null if no such property is found.
 	 * @throws AssertionError if called when in {@code identityOnly} mode.

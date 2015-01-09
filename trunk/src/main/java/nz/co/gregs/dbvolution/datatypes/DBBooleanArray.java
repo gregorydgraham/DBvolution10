@@ -67,7 +67,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 * The resulting DBBits will be set as having the value provided but will
 	 * not be defined in the database.
 	 *
-	 * @param bits
+	 * @param bits	 bits	
 	 */
 	public DBBooleanArray(boolean[] bits) {
 		super(bits);
@@ -81,7 +81,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param bits
+	 * @param bits	 bits	
 	 */
 	public DBBooleanArray(BooleanArrayResult bits) {
 		super(bits);
@@ -90,7 +90,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	/**
 	 * Implements the standard Java equals method.
 	 *
-	 * @param other
+	 * @param other	 other	
 	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
@@ -131,7 +131,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	/**
 	 * Sets the value of this DBBooleanArray to the value provided.
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue	 newLiteralValue	
 	 */
 	public void setValue(boolean[] newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);

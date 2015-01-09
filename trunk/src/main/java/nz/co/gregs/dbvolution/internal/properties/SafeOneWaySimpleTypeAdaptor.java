@@ -86,11 +86,11 @@ public class SafeOneWaySimpleTypeAdaptor {
      * {@link #convert(Object)}. {@code targetType} must be compatible with the
      * target type inherent in the declaration of the type adaptor itself.
      *
-     * @param propertyName
-     * @param typeAdaptor
-     * @param direction
+	 * @param propertyName propertyName
      * @param sourceType type of variable from which input value is retrieved,
      * optional
+	 * @param direction direction
+	 * @param typeAdaptor typeAdaptor
      * @param targetType type of variable to which output value is to be
      * assigned, optional
      */
@@ -218,7 +218,7 @@ public class SafeOneWaySimpleTypeAdaptor {
     /**
      * Uses the type adaptor to convert in the configured direction.
      *
-     * @param value
+	 * @param value value
      * @return the value supplied converted by the type adaptor
      * @throws ClassCastException on type conversion failure
      * @throws DBThrownByEndUserCodeException if the type adaptor throws an

@@ -39,7 +39,7 @@ public class AccidentalCartesianJoinException extends RuntimeException {
 	 * 
 	 * <p>
 	 * Cartesian joins are generally a mistake.
-	 * @param sqlString
+	 * @param sqlString	 sqlString	
 	 */
 	public AccidentalCartesianJoinException(String sqlString) {
 		super("Accidental Cartesian Join Aborted: ensure you have added all the required tables, defined all primary and foreign keys, and are using the correct allowCartesianJoin() setting. SQL => " + sqlString);

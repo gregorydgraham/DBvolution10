@@ -124,6 +124,7 @@ public class PropertyWrapperDefinition {
 	 * the same java property (field or bean-property) in the same class and the
 	 * same class-loader.
 	 *
+	 * @param obj the other object to compare to.
 	 * @return {@code true} if the two objects are equal, {@code false}
 	 * otherwise.
 	 */
@@ -210,7 +211,7 @@ public class PropertyWrapperDefinition {
 	 * Convenience method for testing the type. Equivalent to
 	 * {@code refType.isAssignableFrom(this.type())}.
 	 *
-	 * @param refType
+	 * @param refType	 refType	
 	 * @return TRUE if the supplied type is assignable from the internal
 	 * QueryableDatatype, FALSE otherwise.
 	 */
@@ -410,7 +411,9 @@ public class PropertyWrapperDefinition {
 	 * modified.
 	 *
 	 * @param target object instance containing this property
-	 * @param value
+	 * @param value value
+	 value
+	
 	 * @throws IllegalStateException if not writable (you should have called
 	 * isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an

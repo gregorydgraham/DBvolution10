@@ -44,7 +44,7 @@ public class LargeObjectExpression implements LargeObjectResult {
 	 * Wraps the LargeObjectResult with a LargeObjectExpression to allow further
 	 * processing.
 	 *
-	 * @param originalBlob
+	 * @param originalBlob	 originalBlob	
 	 */
 	public LargeObjectExpression(LargeObjectResult originalBlob) {
 		blobResult = originalBlob;

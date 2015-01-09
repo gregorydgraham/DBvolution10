@@ -35,7 +35,7 @@ public class InvalidDeclaredTypeException extends RuntimeException {
 	 * Thrown when a type is encountered that is not valid in the context in
 	 * which it is found.
 	 *
-	 * @param string
+	 * @param string	 string	
 	 */
 	public InvalidDeclaredTypeException(String string) {
 		super(string);
@@ -45,7 +45,7 @@ public class InvalidDeclaredTypeException extends RuntimeException {
 	 * Thrown when a type is encountered that is not valid in the context in
 	 * which it is found.
 	 *
-	 * @param cause
+	 * @param cause	 cause	
 	 */
 	public InvalidDeclaredTypeException(Throwable cause) {
 		super(cause);
@@ -55,8 +55,8 @@ public class InvalidDeclaredTypeException extends RuntimeException {
 	 * Thrown when a type is encountered that is not valid in the context in
 	 * which it is found.
 	 *
-	 * @param message
-	 * @param cause
+	 * @param message message
+	 * @param cause cause
 	 */
 	public InvalidDeclaredTypeException(String message, Throwable cause) {
 		super(message, cause);

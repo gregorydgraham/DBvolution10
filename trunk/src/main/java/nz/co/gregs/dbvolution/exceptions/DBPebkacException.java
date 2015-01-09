@@ -20,7 +20,7 @@ public class DBPebkacException extends RuntimeException {
 	/**
 	 * Please use another Exception as this one is too generic.
 	 *
-	 * @param message
+	 * @param message	 message	
 	 */
 	public DBPebkacException(String message) {
 		super(message);
@@ -29,7 +29,7 @@ public class DBPebkacException extends RuntimeException {
 	/**
 	 * Please use another Exception as this one is too generic.
 	 *
-	 * @param cause
+	 * @param cause	 cause	
 	 */
 	public DBPebkacException(Throwable cause) {
 		super(cause);
@@ -38,8 +38,8 @@ public class DBPebkacException extends RuntimeException {
 	/**
 	 * Please use another Exception as this one is too generic.
 	 *
-	 * @param message
-	 * @param cause
+	 * @param message message
+	 * @param cause cause
 	 */
 	public DBPebkacException(String message, Throwable cause) {
 		super(message, cause);

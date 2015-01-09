@@ -25,9 +25,9 @@ import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
 public class UIDBasedPKRecognisor extends PrimaryKeyRecognisor {
 /**
  * Returns TRUE if the column starts with "uid_".
- * 
- * @param tableName
- * @param columnName
+ *
+	 * @param tableName tableName
+	 * @param columnName columnName
  * @return TRUE if the column looks like a primary key.
  */
 	@Override

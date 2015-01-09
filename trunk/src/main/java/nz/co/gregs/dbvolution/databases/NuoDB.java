@@ -41,7 +41,7 @@ public class NuoDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds
+	 * @param ds	 ds	
 	 */
 	public NuoDB(DataSource ds) {
         super(new NuoDBDefinition(), ds);
@@ -51,11 +51,11 @@ public class NuoDB extends DBDatabase {
 	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
 	 * on the default port for NuoDB.
 	 *
-	 * @param brokers
-	 * @param databaseName
-	 * @param schema
-	 * @param username
-	 * @param password
+	 * @param brokers brokers
+	 * @param schema schema
+	 * @param databaseName databaseName
+	 * @param password password
+	 * @param username username
 	 */
 	public NuoDB(List<String> brokers, String databaseName, String schema, String username, String password) {
 		String hosts = "";

@@ -22,7 +22,7 @@ package nz.co.gregs.dbvolution.expressions;
  * Methods appropriate to a range include Greater Than, Less Than, and Equals.
  *
  * @author Gregory Graham
- * @param <A>
+ * @param <A> the class that can be compared
  */
 public interface RangeComparable<A> extends EqualComparable<A> {
 	

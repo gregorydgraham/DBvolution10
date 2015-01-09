@@ -49,8 +49,8 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	/**
 	 * Create a BooleanColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row that the field belongs to
+	 * @param field the field that represents the column
 	 */
 	public BooleanColumn(RowDefinition row, Boolean field) {
 		this.column = new AbstractColumn(row, field);
@@ -59,8 +59,8 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	/**
 	 * Create a BooleanColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row that the field belongs to
+	 * @param field the field that represents the column
 	 */
 	public BooleanColumn(RowDefinition row, DBBoolean field) {
 		this.column = new AbstractColumn(row, field);

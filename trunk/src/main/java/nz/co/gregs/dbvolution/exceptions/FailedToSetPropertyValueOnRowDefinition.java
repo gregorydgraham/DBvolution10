@@ -31,9 +31,9 @@ public class FailedToSetPropertyValueOnRowDefinition extends DBRuntimeException 
 	 * <p>
 	 * Apparently this should never happen.
 	 *
-	 * @param qualifiedName
-	 * @param className
-	 * @param cause
+	 * @param qualifiedName qualifiedName
+	 * @param cause cause
+	 * @param className className
 	 */
 	public FailedToSetPropertyValueOnRowDefinition(String qualifiedName, String className, Throwable cause) {
 		super("Internal error reading field "

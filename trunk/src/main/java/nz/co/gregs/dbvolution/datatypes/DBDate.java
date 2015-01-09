@@ -71,7 +71,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * The resulting DBDate will be set as having the value provided but will
 	 * not be defined in the database.
 	 *
-	 * @param date
+	 * @param date	 date	
 	 */
 	public DBDate(Date date) {
 		super(date);
@@ -85,7 +85,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param dateExpression
+	 * @param dateExpression	 dateExpression	
 	 */
 	public DBDate(DateResult dateExpression) {
 		super(dateExpression);
@@ -98,7 +98,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * The resulting DBDate will be set as having the value provided but will
 	 * not be defined in the database.
 	 *
-	 * @param timestamp
+	 
 	 */
 	DBDate(Timestamp timestamp) {
 		super(timestamp);
@@ -122,7 +122,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * The string is parsed using {@link Date#parse(java.lang.String) } so
 	 * please ensure your string matches the requirements of that method.
 	 *
-	 * @param dateAsAString
+	 
 	 */
 	@SuppressWarnings("deprecation")
 	DBDate(String dateAsAString) {
@@ -159,7 +159,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Sets the value of this QDT to the Java Date provided.
 	 *
-	 * @param date
+	 * @param date	 date	
 	 */
 	public void setValue(Date date) {
 		super.setLiteralValue(date);
@@ -172,7 +172,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * The date String will be parsed by {@link Date#parse(java.lang.String) }
 	 * so please confirms to the requirements of that method.
 	 *
-	 * @param dateStr
+	 * @param dateStr	 dateStr	
 	 */
 	@SuppressWarnings("deprecation")
 	public void setValue(String dateStr) {
@@ -287,7 +287,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Date... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -298,7 +298,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(Date... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -324,8 +324,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Date lowerBound, Date upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -350,8 +350,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(Date lowerBound, Date upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -376,8 +376,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1,...
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(Date lowerBound, Date upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -402,8 +402,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e excludedRange(null, 5) will return 5, 6, 7, 8 etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Date lowerBound, Date upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -429,8 +429,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will return 6, 7, 8, 9,... etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(Date lowerBound, Date upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -456,8 +456,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will return 5,6,7,8...
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(Date lowerBound, Date upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -469,7 +469,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(DateExpression... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -480,7 +480,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(DateExpression... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -506,8 +506,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(DateExpression lowerBound, DateExpression upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -532,8 +532,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(DateExpression lowerBound, DateExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -558,8 +558,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(DateExpression lowerBound, DateExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -584,8 +584,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e excludedRange(null, 5) will return 5, 6, 7, 8, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(DateExpression lowerBound, DateExpression upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -611,8 +611,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will return 6, 7, 8, 9, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(DateExpression lowerBound, DateExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -638,8 +638,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will return 5, 6, 7, 8,, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(DateExpression lowerBound, DateExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));

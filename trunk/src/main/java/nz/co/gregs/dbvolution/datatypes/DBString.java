@@ -65,7 +65,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Utility function to return the values of a list of DBStrings in a list of
 	 * Strings.
 	 *
-	 * @param dbStrings
+	 * @param dbStrings	 dbStrings	
 	 * @return the defined values of all the DBStrings.
 	 */
 	public static List<String> toStringList(List<DBString> dbStrings) {
@@ -94,7 +94,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * The resulting DBString will be set as having the value provided but will
 	 * not be defined in the database.
 	 *
-	 * @param string
+	 * @param string	 string	
 	 */
 	public DBString(String string) {
 		super(string);
@@ -108,7 +108,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param stringExpression
+	 * @param stringExpression	 stringExpression	
 	 */
 	public DBString(StringResult stringExpression) {
 		super(stringExpression);
@@ -126,7 +126,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Sets the value of this DBString to the value provided.
 	 *
-	 * @param str
+	 * @param str	 str	
 	 */
 	public void setValue(String str) {
 		super.setLiteralValue(str);
@@ -188,7 +188,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(String... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -199,7 +199,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Object... permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -210,7 +210,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Collection<String> permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -221,7 +221,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesIgnoreCase(String... permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -232,7 +232,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesIgnoreCase(StringExpression... permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -243,7 +243,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesIgnoreCase(List<String> permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -254,7 +254,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesIgnoreCase(Set<String> permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -264,7 +264,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(String... excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -275,7 +275,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(StringExpression... excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -286,7 +286,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(Collection<String> excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -295,7 +295,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * @param excluded
+	 
 	 */
 //	public void excludedValuesIgnoreCase(Set<String> excluded) {
 //		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -306,7 +306,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(String... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -318,7 +318,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(Collection<String> excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -342,8 +342,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -366,8 +366,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -390,8 +390,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -414,8 +414,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -439,8 +439,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -464,8 +464,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -484,7 +484,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void permittedPattern(String pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -502,7 +502,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void excludedPattern(String pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -521,7 +521,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void permittedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -539,7 +539,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void excludedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -551,7 +551,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * reduces the rows to only the object, Set, List, Array, or vararg of
 	 * objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(StringExpression... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -562,7 +562,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(StringExpression... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -586,8 +586,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -610,8 +610,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -634,8 +634,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -658,8 +658,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -683,8 +683,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -708,8 +708,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(StringExpression lowerBound, StringExpression upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -767,7 +767,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void permittedPatternIgnoreCase(String pattern) {
 		this.setOperator(new DBPermittedPatternIgnoreCaseOperator(pattern));

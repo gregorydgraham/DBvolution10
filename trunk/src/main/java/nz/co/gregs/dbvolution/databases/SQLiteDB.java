@@ -39,7 +39,7 @@ public class SQLiteDB extends DBDatabase {
 	 * Creates a DBDatabase tweaked for a SQLite database on the DataSource
 	 * provided.
 	 *
-	 * @param ds
+	 * @param ds	 ds	
 	 */
 	public SQLiteDB(DataSource ds) {
 		super(new SQLiteDefinition(), ds);
@@ -49,9 +49,9 @@ public class SQLiteDB extends DBDatabase {
 	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
 	 * provided.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
@@ -126,7 +126,7 @@ public class SQLiteDB extends DBDatabase {
 		/**
 		 * Performed for each row during the aggregation process
 		 *
-		 * @throws SQLException
+		  1 Database exceptions may be thrown
 		 */
 		@Override
 		protected void xStep() throws SQLException {
@@ -137,7 +137,7 @@ public class SQLiteDB extends DBDatabase {
 		/**
 		 * Produces the final result from the aggregation process.
 		 * 
-		 * @throws SQLException 
+		  1 Database exceptions may be thrown
 		 */
 		@Override
 		protected void xFinal() throws SQLException {

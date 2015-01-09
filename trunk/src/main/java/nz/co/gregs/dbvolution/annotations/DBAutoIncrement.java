@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
  * }<br>
  * <br>
  * </code>
- * <p>DBAutoIncrement has no effect unless the field is also a DBColumn and a DBPrimaryKey.  It should also be a DBNumber or DBinteger as shown above.<p>
+ * <p>DBAutoIncrement has no effect unless the field is also a DBColumn and a DBPrimaryKey.  It should also be a DBNumber or DBinteger as shown above.</p>
  * 
  * <p>DBAutoIncrement is generated automatically by DBTableClassGenerator.</p>
  *

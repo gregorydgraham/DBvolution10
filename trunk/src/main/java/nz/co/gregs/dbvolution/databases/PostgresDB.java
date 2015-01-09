@@ -31,7 +31,7 @@ public class PostgresDB extends DBDatabase {
 	/**
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
-	 * @param ds
+	 * @param ds	 ds	
 	 */
 	public PostgresDB(DataSource ds) {
 		super(new PostgresDBDefinition(), ds);
@@ -40,9 +40,9 @@ public class PostgresDB extends DBDatabase {
 	/**
 	 * Creates a PostgreSQL connection for the JDBC URL, username, and password.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
 	public PostgresDB(String jdbcURL, String username, String password) {
 		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
@@ -52,11 +52,11 @@ public class PostgresDB extends DBDatabase {
 	 * Creates a PostgreSQL connection to the server on the port supplied, using
 	 * the username and password supplied.
 	 *
-	 * @param hostname
-	 * @param port
-	 * @param databaseName
-	 * @param username
-	 * @param password
+	 * @param hostname hostname
+	 * @param port port
+	 * @param databaseName databaseName
+	 * @param username username
+	 * @param password password
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password) {
 		this(hostname, port, databaseName, username, password, null);
@@ -70,12 +70,12 @@ public class PostgresDB extends DBDatabase {
 	 * Extra parameters to be added to the JDBC URL can be included in the
 	 * urlExtras parameter.
 	 *
-	 * @param hostname
-	 * @param port
-	 * @param databaseName
-	 * @param username
-	 * @param password
-	 * @param urlExtras
+	 * @param hostname hostname
+	 * @param password password
+	 * @param databaseName databaseName
+	 * @param port port
+	 * @param username username
+	 * @param urlExtras urlExtras
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
 		super(new PostgresDBDefinition(),
@@ -92,10 +92,10 @@ public class PostgresDB extends DBDatabase {
 	 * Extra parameters to be added to the JDBC URL can be included in the
 	 * urlExtras parameter.
 	 *
-	 * @param databaseName
-	 * @param username
-	 * @param password
-	 * @param urlExtras
+	 * @param databaseName databaseName
+	 * @param username username
+	 * @param password password
+	 * @param urlExtras urlExtras
 	 */
 	public PostgresDB(String databaseName, String username, String password, String urlExtras) {
 		this("localhost", 5432, databaseName, username, password, urlExtras);

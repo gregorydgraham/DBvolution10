@@ -345,7 +345,7 @@ class PropertyTypeHandler {
      * <p>
      * Make sure to keep this in sync with {@link #literalTypeOf}.
      *
-     * @param simpleType
+     
      * @return
      */
     // FIXME: change to require exact matches, rather than 'instance of'
@@ -377,7 +377,7 @@ class PropertyTypeHandler {
      * Make sure to keep this in sync with
      * {@link #inferredQDTTypeForSimpleType}.
      *
-     * @param qdtType
+     
      * @return
      */
     private static Class<?> literalTypeOf(Class<? extends QueryableDatatype> qdtType) {
@@ -408,8 +408,8 @@ class PropertyTypeHandler {
      * given QDT-type (eg: DBSpecialDate).
      * </ul>
      *
-     * @param simpleType
-     * @param qdtType
+     
+     
      * @return
      */
     private static boolean isSimpleTypeSupportedByQDT(Class<?> simpleType,
@@ -426,7 +426,7 @@ class PropertyTypeHandler {
     /**
      * Internal helper to support the way annotation attribute defaulting works.
      *
-     * @param annotation
+     
      * @return
      */
     private static Class<? extends QueryableDatatype> explicitTypeOrNullOf(DBAdaptType annotation) {
@@ -519,7 +519,7 @@ class PropertyTypeHandler {
      * {@link DBAdaptType} annotation is present.
      *
      * @param target object containing the property
-     * @param dbvValue
+     
      * @throws DBThrownByEndUserCodeException if any user code throws an
      * exception
      * @throws IllegalStateException if the underlying java property is not
@@ -563,8 +563,8 @@ class PropertyTypeHandler {
      * annotation instance. Handles all exceptions and throws them as the
      * appropriate runtime exceptions
      *
-     * @param property
-     * @param annotation
+     
+     
      * @return
      * @throws DBRuntimeException on unexpected internal errors, and
      * @throws InvalidDeclaredTypeException on errors with the end-user supplied

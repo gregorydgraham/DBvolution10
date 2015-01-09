@@ -24,7 +24,8 @@ package nz.co.gregs.dbvolution.expressions;
  * operation.
  *
  * @author Gregory Graham
- * @param <A>
+ * @param <A> the class that can be compared using the "=" operator
+
  */
 public interface EqualComparable<A> {
 

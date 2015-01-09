@@ -35,11 +35,16 @@ public class InformixDB extends DBDatabase {
 	 * <p>
 	 * Remember to include the Informix JDBC driver in your classpath.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	 
+	 
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
+	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
         super(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
@@ -52,9 +57,12 @@ public class InformixDB extends DBDatabase {
 	 * <p>
 	 * Remember to include the Informix JDBC driver in your classpath.
 	 *
-	 * @param dataSource
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param dataSource dataSource
+	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public InformixDB(DataSource dataSource) throws ClassNotFoundException, SQLException {
         super(new InformixDBDefinition(), dataSource);

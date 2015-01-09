@@ -21,7 +21,7 @@ interface JavaPropertyFilter {
 	
 	/**
 	 * Indicates whether the specified field is accepted by the filter.
-	 * @param field
+	 
 	 * @return
 	 */
 	public boolean acceptField(Field field);
@@ -29,8 +29,8 @@ interface JavaPropertyFilter {
 	/**
 	 * Indicates whether the specified getter/setter pair are accepted
 	 * by the filter.
-	 * @param getter
-	 * @param setter
+	 
+	 
 	 * @return
 	 */
 	public boolean acceptBeanProperty(Method getter, Method setter);

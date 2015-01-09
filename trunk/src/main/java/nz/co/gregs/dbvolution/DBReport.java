@@ -97,12 +97,13 @@ public class DBReport extends RowDefinition {
 	 * results to a subset, use the
 	 * {@link DBReport#getRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) getRows method}.
 	 *
-	 * @param <A>
-	 * @param database
-	 * @param exampleReport
+	 * @param <A> DBReport type
+	 * @param database database
+	 * @param exampleReport exampleReport
 	 * @return a list of DBReport instances representing the results of the
 	 * report query.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, new DBRow[]{});
@@ -159,13 +160,14 @@ public class DBReport extends RowDefinition {
 	 * limitations such as date ranges, department name, and other highly
 	 * variable parameters.
 	 *
-	 * @param <A>
-	 * @param database
-	 * @param exampleReport
-	 * @param rows
+	 * @param <A> DBReport type
+	 * @param database database
+	 * @param exampleReport exampleReport
+	 * @param rows rows
 	 * @return a list of DBReport instances representing the results of the
 	 * report query.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
@@ -205,7 +207,8 @@ public class DBReport extends RowDefinition {
 	 * @param exampleReport the report required.
 	 * @param rows additional conditions to apply to the report.
 	 * @return a String of the SQL that will be used by this DBQuery.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static <A extends DBReport> String getSQLForQuery(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
@@ -225,7 +228,8 @@ public class DBReport extends RowDefinition {
 	 * @param rows additional conditions to be applied.
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this report
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static String getSQLForCount(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
@@ -247,7 +251,8 @@ public class DBReport extends RowDefinition {
 	 * @param exampleReport the report required.
 	 * @param rows additional conditions for the query.
 	 * @return the number of rows that have or will be retrieved.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static Long count(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException {
 		DBQuery setUpQuery = getDBQuery(database, exampleReport, rows);

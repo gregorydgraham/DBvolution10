@@ -50,8 +50,8 @@ public class IncorrectRowProviderInstanceSuppliedException extends RuntimeExcept
 	 * Thrown when the current object needs the supplied variable to be a field
 	 * of the object, but it isn't.
 	 *
-	 * @param row
-	 * @param qdt
+	 * @param row row
+	 * @param qdt qdt
 	 */
 	public IncorrectRowProviderInstanceSuppliedException(RowDefinition row, Object qdt) {
 		super(constructMessage(row, qdt));
@@ -61,7 +61,7 @@ public class IncorrectRowProviderInstanceSuppliedException extends RuntimeExcept
 	 * Thrown when the current object needs the supplied variable to be a field
 	 * of the object, but it isn't.
 	 *
-	 * @param qdt
+	 * @param qdt	 qdt	
 	 * @return an IncorrectRowProviderInstanceSuppliedException
 	 */
 	public static IncorrectRowProviderInstanceSuppliedException newMultiRowInstance(Object qdt) {
@@ -81,7 +81,7 @@ public class IncorrectRowProviderInstanceSuppliedException extends RuntimeExcept
 	 * Thrown when the current object needs the supplied variable to be a field
 	 * of the object, but it isn't.
 	 *
-	 * @param message
+	 * @param message	 message	
 	 */
 	public IncorrectRowProviderInstanceSuppliedException(String message) {
 		super(message);

@@ -31,7 +31,7 @@ public class RowDefinitionWrapperFactory {
      * class has not yet been created, one will be created and added to the
      * internal cache.
      *
-     * @param clazz
+	 * @param clazz clazz
      * @return the class adaptor
      */
     public RowDefinitionClassWrapper classWrapperFor(Class<? extends RowDefinition> clazz) {
@@ -50,7 +50,7 @@ public class RowDefinitionWrapperFactory {
      * the given class has not yet been created, one will be created and added
      * to the internal cache.
      *
-     * @param object
+	 * @param object object
      * @return the class adaptor
      */
     public RowDefinitionClassWrapper classWrapperFor(Object object) {

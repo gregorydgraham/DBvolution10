@@ -28,7 +28,7 @@ public class QueryableDatatypeEditor extends PropertyEditorSupport {
 	/**
 	 * Only "upperCase" is supported.
 	 *
-	 * @param format
+	 * @param format	 format	
 	 */
 	public void setFormat(String format) {
         this.format = format;

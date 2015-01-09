@@ -41,8 +41,8 @@ public class DBDeleteByExample extends DBDelete {
 	 * Creates a DBDeleteByExample action for the supplied example DBRow on the supplied
 	 * database.
 	 *
-	 * @param <R>
-	 * @param row
+	 * @param <R> the table affected
+	 * @param row the example to be deleted
 	 */
 	protected <R extends DBRow> DBDeleteByExample(R row) {
 		super(row);
@@ -117,10 +117,10 @@ public class DBDeleteByExample extends DBDelete {
 	 * While it is unlikely that more than one action is required to delete, all
 	 * actions return a list to allow for complex actions.
 	 *
-	 * @param db
-	 * @param row
+	 * @param db the target database
+	 * @param row the row to be deleted
+	 * @throws SQLException Database actions can throw SQLException
 	 * @return the list of actions required to delete all the rows.
-	 * @throws SQLException
 	 */
 	@Override
 	protected DBActionList getActions(DBDatabase db, DBRow row) throws SQLException {

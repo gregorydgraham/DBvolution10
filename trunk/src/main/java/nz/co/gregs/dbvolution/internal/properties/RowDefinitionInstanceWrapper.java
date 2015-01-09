@@ -41,7 +41,7 @@ public class RowDefinitionInstanceWrapper {
      * Called by
      * {@link DBRowClassWrapper#instanceAdaptorFor(DBDefinition, Object)}.
      *
-     * @param classWrapper
+     
      * @param rowDefinition the target object of the same type as analyzed by {@code classWrapper}
      */
     RowDefinitionInstanceWrapper(RowDefinitionClassWrapper classWrapper, RowDefinition rowDefinition) {
@@ -89,6 +89,7 @@ public class RowDefinitionInstanceWrapper {
 	/**
 	 * Two {@code RowDefinitionInstanceWrappers} are equal if they wrap two {@code RowDefinition} instances
 	 * that are themselves equal, and are instances of the same class.
+	 * @param obj the other object to compare to.
 	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
 	 */
 	@Override
@@ -243,8 +244,8 @@ public class RowDefinitionInstanceWrapper {
      * Assumes validation is applied elsewhere to prohibit duplication of column
      * names.
      *
-     * @param database
-     * @param columnName
+	 * @param database database
+	 * @param columnName columnName
      * @return the Java property associated with the column name supplied.
 	 *         Null if no such column is found.
      */
@@ -258,7 +259,7 @@ public class RowDefinitionInstanceWrapper {
      * <p>
      * Only provides access to properties annotated with {@code DBColumn}.
      *
-     * @param propertyName
+	 * @param propertyName propertyName
      * @return property of the wrapped {@link RowDefinition} associated with the java field name supplied.
 	 *         Null if no such property is found.
      */

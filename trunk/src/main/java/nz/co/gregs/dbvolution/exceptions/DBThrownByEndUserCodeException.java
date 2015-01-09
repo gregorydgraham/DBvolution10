@@ -25,7 +25,7 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	 * example, this exception will be thrown when property accessor methods
 	 * throw exceptions.
 	 *
-	 * @param message
+	 * @param message	 message	
 	 */
 	public DBThrownByEndUserCodeException(String message) {
 		super(message);
@@ -36,7 +36,7 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	 * example, this exception will be thrown when property accessor methods
 	 * throw exceptions.
 	 *
-	 * @param cause
+	 * @param cause	 cause	
 	 */
 	public DBThrownByEndUserCodeException(Throwable cause) {
 		super("An exception was thrown by user code: " + cause.toString(), cause);
@@ -47,8 +47,8 @@ public class DBThrownByEndUserCodeException extends DBRuntimeException {
 	 * example, this exception will be thrown when property accessor methods
 	 * throw exceptions.
 	 *
-	 * @param message
-	 * @param cause
+	 * @param message message
+	 * @param cause cause
 	 */
 	public DBThrownByEndUserCodeException(String message, Throwable cause) {
 		super(message, cause);

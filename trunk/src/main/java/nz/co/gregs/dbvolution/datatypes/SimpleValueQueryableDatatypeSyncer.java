@@ -25,10 +25,15 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	/**
 	 *
 	 * @param propertyName used in error messages
-	 * @param internalQdtType
-	 * @param internalQdtLiteralType
-	 * @param externalSimpleType
-	 * @param typeAdaptor
+	 * @param internalQdtType internalQdtType
+	 * @param internalQdtLiteralType internalQdtLiteralType
+	 * @param typeAdaptor typeAdaptor
+	 * @param externalSimpleType externalSimpleType
+	 externalSimpleType
+	
+	 
+	 
+	 
 	 */
 	public SimpleValueQueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype> internalQdtType,
 			Class<?> internalQdtLiteralType, Class<?> externalSimpleType, DBTypeAdaptor<Object, Object> typeAdaptor) {

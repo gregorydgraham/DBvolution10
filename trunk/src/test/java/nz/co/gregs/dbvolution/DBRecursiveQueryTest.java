@@ -101,7 +101,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		aileronID.partID.permittedValues(aileron.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 
-		DBRecursiveQuery recursive = new DBRecursiveQuery(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
+		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
 		@SuppressWarnings("unchecked")
 		List<Parts> componentsOfTheAileron = recursive.getDescendants();
 
@@ -119,7 +119,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		aileronID.partID.permittedValues(aileron.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 
-		DBRecursiveQuery recursive = new DBRecursiveQuery(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
+		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
 		@SuppressWarnings("unchecked")
 		List<Parts> componentsOfTheAileron = recursive.getAncestors();
 
@@ -136,7 +136,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		aileronID.partID.permittedValues(aileronWithout.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 
-		DBRecursiveQuery recursive = new DBRecursiveQuery(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
+		DBRecursiveQuery<PartsWithoutTableName> recursive = new DBRecursiveQuery<PartsWithoutTableName>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
 		@SuppressWarnings("unchecked")
 		List<PartsWithoutTableName> componentsOfTheAileron
 				= recursive.getDescendants();
@@ -157,7 +157,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		aileronID.partID.permittedValues(aileronWithout.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 
-		DBRecursiveQuery recursive = new DBRecursiveQuery(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
+		DBRecursiveQuery<PartsWithoutTableName> recursive = new DBRecursiveQuery<PartsWithoutTableName>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
 		@SuppressWarnings("unchecked")
 		List<PartsWithoutTableName> componentsOfTheAileron
 				= recursive.getAncestors();

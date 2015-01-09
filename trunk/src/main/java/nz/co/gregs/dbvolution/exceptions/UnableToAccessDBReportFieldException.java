@@ -37,9 +37,9 @@ public class UnableToAccessDBReportFieldException extends RuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @param badReport
-	 * @param field
-	 * @param ex
+	 * @param badReport badReport
+	 * @param field field
+	 * @param ex ex
 	 */
 	public UnableToAccessDBReportFieldException(Object badReport, Field field, Exception ex) {
 		super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null: Especially field: " + field.getName(), ex);
@@ -52,8 +52,8 @@ public class UnableToAccessDBReportFieldException extends RuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @param badReport
-	 * @param ex
+	 * @param badReport badReport
+	 * @param ex ex
 	 */
 	public UnableToAccessDBReportFieldException(Object badReport, Exception ex) {
 		super("Unable To Access DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " are Public and Non-Null.", ex);

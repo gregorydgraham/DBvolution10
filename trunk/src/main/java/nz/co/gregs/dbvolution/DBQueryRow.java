@@ -78,8 +78,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * <p>
 	 * For example: Marque thisMarque = myQueryRow.get(new Marque());
 	 *
-	 * @param <E>
-	 * @param exemplar
+	 * @param <E> DBRow type
+	 * @param exemplar exemplar
 	 * @return the instance of exemplar that is in the DBQueryRow instance
 	 */
 	@SuppressWarnings("unchecked")
@@ -90,8 +90,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Print the specified columns to the specified PrintStream as one line.
 	 *
-	 * @param ps
-	 * @param columns
+	 * @param ps ps
+	 * @param columns columns
 	 */
 	public void print(PrintStream ps, QueryableDatatype... columns) {
 		for (QueryableDatatype qdt : columns) {
@@ -103,7 +103,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Print the all columns to the specified PrintStream as one line.
 	 *
-	 * @param ps
+	 * @param ps	 ps	
 	 */
 	public void print(PrintStream ps) {
 		for (DBRow row : values()) {
@@ -159,8 +159,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * DBQueryRow. You should probably be using {@link DBQueryRow#get(nz.co.gregs.dbvolution.DBRow)
 	 * } and using the fields and methods of the individual DBRow classes.
 	 *
+	 * @param dateFormat format that date should be formatted to.
 	 * @return a list of field names.
-	 * @throws SecurityException
+	 
 	 */
 	public List<String> getFieldValues(SimpleDateFormat dateFormat) {
 		List<String> returnList = new ArrayList<String>();
@@ -186,7 +187,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
 	 *
-	 * @param separatorToUseBetweenValues
+	 * @param separatorToUseBetweenValues	 separatorToUseBetweenValues	
 	 * @return a list of all the fields in the DBQueryRow separated by the
 	 * supplied value
 	 */
@@ -209,7 +210,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
 	 *
-	 * @param separatorToUseBetweenValues
+	 * @param separatorToUseBetweenValues	 separatorToUseBetweenValues	
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV or
 	 * CSV file
 	 */
@@ -225,7 +226,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
 	 *
-	 * @param separatorToUseBetweenValues
+	 * @param separatorToUseBetweenValues	 separatorToUseBetweenValues	
+	 * @param dateFormat format that dates should be formatted to.
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV or
 	 * CSV file
 	 */
@@ -275,7 +277,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * The line separator is not included in the results, to allow for
 	 * portability and post-processing.
 	 *
-	 * @param dateFormat
+	 * @param dateFormat	 dateFormat	
 	 * @return a list of all the values in the DBQueryRow formatted for a CSV
 	 * file
 	 */
@@ -307,7 +309,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 *
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV
 	 * file
-	 * @throws java.lang.IllegalAccessException
+	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
+	 
 	 */
 	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
 		return toSeparatedLine("\t");

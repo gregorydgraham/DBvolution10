@@ -51,7 +51,7 @@ public class RowDefinition implements Serializable {
 	 * getPropertyWrapperOf(customer.name);
 	 * </pre>
 	 *
-	 * @param qdt
+	 * @param qdt	 qdt	
 	 * @return the PropertyWrapper associated with the Object suppled or NULL.
 	 */
 	public PropertyWrapper getPropertyWrapperOf(Object qdt) {
@@ -97,7 +97,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A LargeObjectColumn representing the supplied field
 	 */
 	public LargeObjectColumn column(DBLargeObject fieldOfThisInstance) {
@@ -117,7 +117,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A ColumnProvider representing the supplied field
 	 */
 	public ColumnProvider column(QueryableDatatype fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
@@ -158,7 +158,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A ColumnProvider representing the supplied field
 	 */
 	public ColumnProvider column(Object fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
@@ -197,7 +197,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A DBExpression representing the supplied field
 	 */
 	public DBExpression getDBExpression(QueryableDatatype fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
@@ -234,7 +234,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A LargeObjectColumn representing the supplied field
 	 */
 	public BooleanColumn column(DBBoolean fieldOfThisInstance) {
@@ -254,7 +254,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public BooleanColumn column(Boolean fieldOfThisInstance) {
@@ -274,7 +274,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public StringColumn column(DBStringEnum<?> fieldOfThisInstance) {
@@ -294,7 +294,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public StringColumn column(DBString fieldOfThisInstance) {
@@ -314,7 +314,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public StringColumn column(String fieldOfThisInstance) {
@@ -334,8 +334,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A StringExpression representing the supplied field with a default
 	 * value for NULLs
 	 */
@@ -356,8 +356,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A StringExpression representing the supplied field with a default
 	 * value for NULLs
 	 */
@@ -378,8 +378,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A StringExpression representing the supplied field with a default
 	 * value for NULLs
 	 */
@@ -400,8 +400,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A StringExpression representing the supplied field with a default
 	 * value for NULLs
 	 */
@@ -422,7 +422,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public NumberColumn column(DBNumber fieldOfThisInstance) {
@@ -442,7 +442,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public NumberColumn column(Number fieldOfThisInstance) {
@@ -462,8 +462,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -484,8 +484,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -506,8 +506,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -528,7 +528,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public IntegerColumn column(DBInteger fieldOfThisInstance) {
@@ -548,7 +548,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public IntegerColumn column(DBIntegerEnum<?> fieldOfThisInstance) {
@@ -568,7 +568,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public IntegerColumn column(Long fieldOfThisInstance) {
@@ -588,7 +588,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public IntegerColumn column(Integer fieldOfThisInstance) {
@@ -608,8 +608,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -630,8 +630,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -652,8 +652,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -674,8 +674,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -696,8 +696,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -718,8 +718,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -740,8 +740,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -762,8 +762,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -784,8 +784,8 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
-	 * @param valueToUseIfDBNull
+	 * @param fieldOfThisInstance fieldOfThisInstance
+	 * @param valueToUseIfDBNull valueToUseIfDBNull
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -806,7 +806,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public DateColumn column(DBDate fieldOfThisInstance) {
@@ -826,7 +826,7 @@ public class RowDefinition implements Serializable {
 	 * For use with the
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
-	 * @param fieldOfThisInstance
+	 * @param fieldOfThisInstance	 fieldOfThisInstance	
 	 * @return A Column representing the supplied field
 	 */
 	public DateColumn column(Date fieldOfThisInstance) {
@@ -947,7 +947,7 @@ public class RowDefinition implements Serializable {
 	 * DBRow class.
 	 *
 	 * @return a list of field names.
-	 * @throws SecurityException
+	 
 	 */
 	public List<String> getFieldNames() {
 		List<String> returnList = new ArrayList<String>();
@@ -970,9 +970,9 @@ public class RowDefinition implements Serializable {
 	 * DBRow. You should probably be using the fields and methods of the DBRow
 	 * class.
 	 *
-	 * @param dateFormat
+	 * @param dateFormat	 dateFormat	
 	 * @return a list of field names.
-	 * @throws SecurityException
+	 
 	 */
 	public Collection<? extends String> getFieldValues(SimpleDateFormat dateFormat) {
 		List<String> returnList = new ArrayList<String>();

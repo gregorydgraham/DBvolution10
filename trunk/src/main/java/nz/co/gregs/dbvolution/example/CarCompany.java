@@ -84,8 +84,8 @@ public class CarCompany extends DBRow {
 	/**
 	 * Simple convenience constructor.
 	 *
-	 * @param name
-	 * @param id
+	 * @param name name
+	 * @param id id
 	 */
 	public CarCompany(String name, int id) {
 		this.name.setValue(name);

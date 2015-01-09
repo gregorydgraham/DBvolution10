@@ -39,11 +39,11 @@ public abstract class OracleDB extends DBDatabase {
 	 * } or
 	 * {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)}
 	 *
-	 * @param definition
-	 * @param driverName
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param definition definition
+	 * @param password password
+	 * @param jdbcURL jdbcURL
+	 * @param driverName driverName
+	 * @param username username
 	 */
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		super(definition, driverName, jdbcURL, username, password);

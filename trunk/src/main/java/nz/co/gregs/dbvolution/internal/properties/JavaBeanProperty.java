@@ -40,7 +40,7 @@ public class JavaBeanProperty implements JavaProperty {
 	/**
 	 * Create a new JavaBeanProperty from the supplied descriptor.
 	 *
-	 * @param descriptor
+	 * @param descriptor	 descriptor	
 	 */
 	public JavaBeanProperty(PropertyDescriptor descriptor) {
 		this.name = descriptor.getName();
@@ -84,6 +84,7 @@ public class JavaBeanProperty implements JavaProperty {
 	/**
 	 * Tests for equality, based on the underlying java getter and setter
 	 * methods.
+	 * @param obj the other object to compare to.
 	 * @return TRUE if the two objects are the same, otherwise FALSE
 	 */
 	@Override
@@ -249,9 +250,9 @@ public class JavaBeanProperty implements JavaProperty {
 	/**
 	 * Tests whether two annotations are semantically identical.
 	 *
-	 * @param <A>
-	 * @param ann1
-	 * @param ann2
+	 * @param <A> the annotation type
+	 * @param ann1 ann1
+	 * @param ann2 ann2
 	 * @return TRUE if the annotations are semantically identical, otherwise
 	 * FALSE.
 	 */
@@ -264,8 +265,8 @@ public class JavaBeanProperty implements JavaProperty {
 	/**
 	 * Gets the attribute values of the annotation.
 	 *
-	 * @param <A>
-	 * @param annotation
+	 * @param <A> the annotation type
+	 * @param annotation annotation
 	 * @return a list of the values associated with the annotation.
 	 */
 	protected static <A extends Annotation> List<Object> getAnnotationValues(A annotation) {

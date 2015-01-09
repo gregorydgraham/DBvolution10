@@ -49,8 +49,8 @@ public class BitsColumn extends BooleanArrayExpression implements ColumnProvider
 	/**
 	 * Create a BooleanColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field representing the column
 	 */
 	public BitsColumn(RowDefinition row, byte[] field) {
 		this.column = new AbstractColumn(row, field);
@@ -59,8 +59,8 @@ public class BitsColumn extends BooleanArrayExpression implements ColumnProvider
 	/**
 	 * Create a BooleanColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field representing the column
 	 */
 	public BitsColumn(RowDefinition row, DBBooleanArray field) {
 		this.column = new AbstractColumn(row, field);

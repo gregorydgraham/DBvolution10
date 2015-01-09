@@ -55,8 +55,8 @@ public class InformixDBDefinition extends DBDefinition {
 
 	/**
 	 *
-	 * @param table
-	 * @param columnName
+	 * @param table table
+	 * @param columnName columnName
 	 * @return a string of the table and column name for the select clause
 	 */
 	@Override

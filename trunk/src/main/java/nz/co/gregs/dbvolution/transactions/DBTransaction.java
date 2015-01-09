@@ -20,7 +20,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 /**
  *
  * @author Gregory Graham
- * @param <V>
+ * @param <V> The return type of the transaction
+
  */
 public interface DBTransaction<V> {
 
@@ -28,10 +29,11 @@ public interface DBTransaction<V> {
 	 * Perform the transaction on the database, returning TRUE if the
 	 * transaction succeeded, or FALSE if it did not.
 	 *
-	 * @param dbDatabase
+	 * @param dbDatabase	 dbDatabase	
 	 * @return TRUE if the transaction completed without errors, FALSE
 	 * otherwise.
-	 * @throws Exception
+	 * @throws java.lang.Exception java.lang.Exception
+	 
 	 */
 	V doTransaction(DBDatabase dbDatabase) throws Exception;
 }

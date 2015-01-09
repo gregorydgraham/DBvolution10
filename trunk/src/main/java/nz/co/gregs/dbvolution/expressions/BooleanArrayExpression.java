@@ -43,7 +43,7 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	/**
 	 * Create a BitsExpression from an existing BitResult object.
 	 *
-	 * @param bitResult
+	 * @param bitResult	 bitResult	
 	 */
 	public BooleanArrayExpression(BooleanArrayResult bitResult) {
 		this.innerBitsResult = bitResult;
@@ -228,7 +228,7 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * Create a BooleanExpression that will compare the integer provided to this
  BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
-	 * @param i
+	 * @param i the value to compare this expression to.
 	 * @return a BooleanExpresson of the Bit comparison of the integer and this expression.
 	 */
 	public BooleanExpression is(int i) {
@@ -244,7 +244,7 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * Create a BooleanExpression that will compare the long provided to this
  BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
-	 * @param i
+	 * @param i the value to compare this expression to
 	 * @return a BooleanExpresson of the Bit comparison of the long and this expression.
 	 */
 	public BooleanExpression is(long i) {
@@ -260,7 +260,7 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * Create a BooleanExpression that will compare the number provided to this
  BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
-	 * @param i
+	 * @param i the value to compare this expression to
 	 * @return a BooleanExpresson of the Bit comparison of the number and this expression.
 	 */
 	public BooleanExpression is(Number i) {

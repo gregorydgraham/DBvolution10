@@ -48,8 +48,8 @@ public class UndefinedPrimaryKeyException extends RuntimeException {
 	 * Indicate the Primary Key of a table by adding the
 	 * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
 	 *
-	 * @param <E>
-	 * @param thisClass
+	 * @param <E> a DBRow type
+	 * @param thisClass thisClass
 	 */
 	public <E extends DBRow> UndefinedPrimaryKeyException(Class<E> thisClass) {
 		super("Primary Key Field Not Defined: Please define the primary key field of " + thisClass.getSimpleName() + " using the @" + DBPrimaryKey.class.getSimpleName() + " annotation.");
@@ -61,9 +61,9 @@ public class UndefinedPrimaryKeyException extends RuntimeException {
 	 * <p>
 	 * Indicate the Primary Key of a table by adding the
 	 * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
-	 *	 
-	 * @param <E>
-	 * @param thisRow
+	 *
+	 * @param <E> A DBRow type
+	 * @param thisRow thisRow
 	 */
 	public <E extends DBRow> UndefinedPrimaryKeyException(E thisRow) {
 		this(thisRow.getClass());

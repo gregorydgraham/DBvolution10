@@ -30,9 +30,9 @@ public class UnableToCreateDatabaseConnectionException extends DBRuntimeExceptio
 	/**
 	 * Thrown when the database is inaccessible due to a myriad of reasons.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param noConnection
+	 * @param jdbcURL jdbcURL
+	 * @param noConnection noConnection
+	 * @param username username
 	 */
 	public UnableToCreateDatabaseConnectionException(String jdbcURL, String username, SQLException noConnection) {
 		super("Unable to create a Database Connection: please check the database URL, username, and password, and that the appropriate libaries have been supplied: URL=" + jdbcURL + " USERNAME=" + username, noConnection);
@@ -41,8 +41,8 @@ public class UnableToCreateDatabaseConnectionException extends DBRuntimeExceptio
 	/**
 	 * Thrown when the database is inaccessible due to a myriad of reasons.
 	 *
-	 * @param dataSource
-	 * @param noConnection
+	 * @param dataSource dataSource
+	 * @param noConnection noConnection
 	 */
 	public UnableToCreateDatabaseConnectionException(DataSource dataSource, SQLException noConnection) {
 		super("Unable to create a Database Connection: please check the database URL, username, and password, and that the appropriate libaries have been supplied: DATASOURCE=" + dataSource.toString(), noConnection);

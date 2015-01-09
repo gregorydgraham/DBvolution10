@@ -51,8 +51,8 @@ public abstract class DBAction {
 	 * <p>
 	 * Saves a copy of the row to ensure immutability.</p>
 	 *
-	 * @param <R>
-	 * @param row
+	 * @param <R> the table that this action applies to.
+	 * @param row the row or example that this action applies to.
 	 */
 	public <R extends DBRow> DBAction(R row) {
 		super();
@@ -96,7 +96,7 @@ public abstract class DBAction {
 	 * actually happen, use this method to get a complete list of all the SQL
 	 * required.
 	 *
-	 * @param db
+	 * @param db the database that the SQL must be appropriate for.
 	 * @return the list of SQL strings that equates to this action.
 	 */
 	public abstract List<String> getSQLStatements(DBDatabase db);
@@ -110,10 +110,10 @@ public abstract class DBAction {
 	 * however the Action will contain an unchanged and unchangeable copy of the
 	 * row for internal use.
 	 *
-	 * @param db
+	 * @param db the target database.
 	 * @return The complete list of all actions performed to complete this
 	 * action on the database
-	 * @throws SQLException
+	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
 	protected abstract DBActionList execute(DBDatabase db) throws SQLException;
 

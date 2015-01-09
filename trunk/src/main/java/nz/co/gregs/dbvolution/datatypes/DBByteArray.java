@@ -86,7 +86,7 @@ public class DBByteArray extends DBLargeObject {
 	/**
 	 * Sets the value of this DBByteArray to the byte array supplied.
 	 *
-	 * @param byteArray
+	 * @param byteArray	 byteArray	
 	 */
 	public void setValue(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
@@ -104,7 +104,7 @@ public class DBByteArray extends DBLargeObject {
 	 * The input stream will not be read until the containing DBRow is
 	 * saved/inserted.
 	 *
-	 * @param inputViaStream
+	 * @param inputViaStream	 inputViaStream	
 	 */
 	public void setValue(InputStream inputViaStream) {
 		super.setLiteralValue(inputViaStream);
@@ -119,8 +119,8 @@ public class DBByteArray extends DBLargeObject {
 	 * file is read immediately and stored internally. If you would prefer to
 	 * delay the reading of the file, wrap the file in a {@link FileInputStream}.
 	 *
-	 * @param fileToRead
-	 * @throws IOException
+	 * @param fileToRead fileToRead
+	 * @throws java.io.IOException java.io.IOException
 	 */
 	public void setValue(File fileToRead) throws IOException {
 		setValue(setFromFileSystem(fileToRead));
@@ -129,7 +129,7 @@ public class DBByteArray extends DBLargeObject {
 	/**
 	 * Set the value of the DBByteArray to the String provided.
 	 *
-	 * @param string
+	 * @param string	 string	
 	 */
 	public void setValue(String string) {
 		setValue(string.getBytes());
@@ -336,10 +336,12 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
-	 * @param originalFile
+	 * @param originalFile	 originalFile	
 	 * @return the byte[] of the contents of the file.
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
+	 * @throws java.io.IOException java.io.IOException
+	 
+	 
 	 */
 	public byte[] setFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile);
@@ -352,10 +354,12 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
-	 * @param originalFile
+	 * @param originalFile	 originalFile	
 	 * @return the byte[] of the contents of the file.
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
+	 * @throws java.io.IOException java.io.IOException
+	 
+	 
 	 */
 	public byte[] setFromFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile.stringValue());
@@ -365,10 +369,12 @@ public class DBByteArray extends DBLargeObject {
 	/**
 	 * Tries to set the DBDyteArray to the contents of the supplied file.
 	 *
-	 * @param originalFile
+	 * @param originalFile	 originalFile	
 	 * @return the byte[] of the contents of the file.
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
+	 * @throws java.io.IOException java.io.IOException
+	 
+	 
 	 */
 	public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
 //		System.out.println("FILE: " + originalFile.getAbsolutePath());
@@ -405,9 +411,9 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
 	 *
-	 * @param originalFile
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @param originalFile originalFile
+	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
+	 * @throws java.io.IOException java.io.IOException
 	 */
 	public void writeToFileSystem(String originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile);
@@ -420,9 +426,9 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
 	 *
-	 * @param originalFile
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @param originalFile originalFile
+	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
+	 * @throws java.io.IOException java.io.IOException
 	 */
 	public void writeToFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
 		writeToFileSystem(originalFile.toString());
@@ -434,9 +440,9 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
 	 *
-	 * @param originalFile
-	 * @throws FileNotFoundException
-	 * @throws IOException
+	 * @param originalFile originalFile
+	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
+	 * @throws java.io.IOException java.io.IOException
 	 */
 	public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
 		if (getLiteralValue() != null && originalFile != null) {

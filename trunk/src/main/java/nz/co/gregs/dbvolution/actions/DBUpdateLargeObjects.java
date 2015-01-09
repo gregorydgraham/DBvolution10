@@ -54,7 +54,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	/**
 	 * Creates a DBUpdateLargeObjects action for the supplied row.
 	 *
-	 * @param row
+	 * @param row the row to be updated
 	 */
 	protected DBUpdateLargeObjects(DBRow row) {
 		super(row);
@@ -230,7 +230,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	/**
 	 * Finds all the DBLargeObject fields that this action will need to update.
 	 *
-	 * @param row
+	 * @param row the row to be updated 
 	 * @return a list of the interesting DBLargeObjects.
 	 */
 	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {

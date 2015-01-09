@@ -54,8 +54,8 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	/**
 	 * Create a StringColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field defining the column
 	 */
 	public StringColumn(RowDefinition row, String field) {
 		this.column = new AbstractColumn(row, field);
@@ -64,8 +64,8 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	/**
 	 * Create a StringColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field defining the column
 	 */
 	public StringColumn(RowDefinition row, DBString field) {
 		this.column = new AbstractColumn(row, field);
@@ -74,8 +74,8 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	/**
 	 * Create a StringColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field defining the column
 	 */
 	public StringColumn(RowDefinition row, DBStringEnum<?> field) {
 		this.column = new AbstractColumn(row, field);
