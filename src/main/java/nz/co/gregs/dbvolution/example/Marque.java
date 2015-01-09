@@ -256,18 +256,18 @@ public class Marque extends DBRow {
 	/**
 	 * Convenience Constructor.
 	 *
-	 * @param uidMarque
-	 * @param isUsedForTAFROs
-	 * @param statusClass
-	 * @param intIndividualAllocationsAllowed
-	 * @param updateCount
-	 * @param autoCreated
-	 * @param name
-	 * @param pricingCodePrefix
-	 * @param reservationsAllowed
-	 * @param creationDate
-	 * @param carCompany
-	 * @param enabled
+	 * @param uidMarque uidMarque
+	 * @param isUsedForTAFROs isUsedForTAFROs
+	 * @param statusClass statusClass
+	 * @param carCompany carCompany
+	 * @param intIndividualAllocationsAllowed intIndividualAllocationsAllowed
+	 * @param pricingCodePrefix pricingCodePrefix
+	 * @param updateCount updateCount
+	 * @param name name
+	 * @param reservationsAllowed reservationsAllowed
+	 * @param autoCreated autoCreated
+	 * @param creationDate creationDate
+	 * @param enabled enabled
 	 */
 	public Marque(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, Integer updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
 		this.uidMarque.setValue(uidMarque);

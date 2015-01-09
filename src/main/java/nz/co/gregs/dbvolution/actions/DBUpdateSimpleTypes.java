@@ -76,8 +76,8 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	/**
 	 * Creates the required SET clause of the UPDATE statement.
 	 *
-	 * @param db
-	 * @param row
+	 * @param db the target database
+	 * @param row the row to be updated
 	 * @return The SET clause of the UPDATE statement.
 	 */
 	protected String getSetClause(DBDatabase db, DBRow row) {
@@ -113,8 +113,8 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	/**
 	 * Creates the WHERE clause of the UPDATE statement.
 	 *
-	 * @param db
-	 * @param row
+	 * @param db the target database
+	 * @param row the row to be updated
 	 * @return The WHERE clause of the UPDATE statement.
 	 */
 	protected String getWhereClause(DBDatabase db, DBRow row) {

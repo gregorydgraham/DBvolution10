@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  *
  * <p>
  * Used to provide revert actions for updates.
+ * </p>
  *
  * @author Gregory Graham
  */
@@ -40,8 +41,8 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	/**
 	 * Creates the required SET clause of the UPDATE statement.
 	 *
-	 * @param db
-	 * @param row
+	 * @param db the target database
+	 * @param row the row to be updated
 	 * @return The SET clause of the UPDATE statement.
 	 */
 	@Override
@@ -75,8 +76,8 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	/**
 	 * Creates the WHERE clause of the UPDATE statement.
 	 *
-	 * @param db
-	 * @param row
+	 * @param db the target database
+	 * @param row the row to be updated
 	 * @return The WHERE clause of the UPDATE statement.
 	 */
 	@Override

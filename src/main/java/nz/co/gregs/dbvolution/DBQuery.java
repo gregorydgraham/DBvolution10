@@ -576,7 +576,8 @@ public class DBQuery {
 	 *
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @see DBRow
 	 * @see DBForeignKey
 	 * @see QueryableDatatype
@@ -625,10 +626,11 @@ public class DBQuery {
 	/**
 	 * Executes the query using the statement provided and returns the ResultSet
 	 *
-	 * @param dbStatement
-	 * @param sql
+	 * @param dbStatement dbStatement
+	 * @param sql sql
 	 * @return the ResultSet returned from the actual database.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected ResultSet getResultSetForSQL(DBStatement dbStatement, String sql) throws SQLException {
 		return dbStatement.executeQuery(sql);
@@ -638,11 +640,14 @@ public class DBQuery {
 	 * Using the current ResultSet row, set the values for the DBQueryRow
 	 * provided.
 	 *
-	 * @param resultSet
-	 * @param queryRow
-	 * @param isGroupedQuery
-	 * @throws SQLException
-	 * @throws UnableToInstantiateDBRowSubclassException
+	 
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param resultSet	 resultSet	
+	 * @param queryRow	 queryRow	
+	 * @param isGroupedQuery	 isGroupedQuery	
+	 * @throws java.sql.SQLException the database threw an exception
 	 */
 	protected void setQueryRowFromResultSet(ResultSet resultSet, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException, UnableToInstantiateDBRowSubclassException {
 		for (DBRow tableRow : details.getAllQueryTables()) {
@@ -681,8 +686,8 @@ public class DBQuery {
 	 * If the row is new then this method stores it, and returns it as the
 	 * existing instance.
 	 *
-	 * @param newInstance
-	 * @param existingInstancesOfThisTableRow
+	 * @param newInstance newInstance
+	 * @param existingInstancesOfThisTableRow existingInstancesOfThisTableRow
 	 * @return the exisinting instance of the provided row, or the row itself if
 	 * none exists.
 	 */
@@ -705,8 +710,8 @@ public class DBQuery {
 	/**
 	 * Creates the list of already created rows for the DBRow class supplied.
 	 *
-	 * @param existingInstancesOfThisTableRow
-	 * @param newInstance
+	 * @param existingInstancesOfThisTableRow existingInstancesOfThisTableRow
+	 * @param newInstance newInstance
 	 * @return a list of existing rows.
 	 */
 	protected Map<String, DBRow> setExistingInstancesForTable(Map<String, DBRow> existingInstancesOfThisTableRow, DBRow newInstance) {
@@ -726,10 +731,14 @@ public class DBQuery {
 	 * OldInstance is used to find the selected properties, newInstance is the
 	 * result, and restultSet contains the retrieved data.
 	 *
-	 * @param oldInstance
-	 * @param newInstance
-	 * @param resultSet
-	 * @throws SQLException
+	 
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param oldInstance oldInstance
+	 * @param newInstance newInstance
+	 * @param resultSet resultSet
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected void setFieldsFromColumns(DBRow oldInstance, DBRow newInstance, ResultSet resultSet) throws SQLException {
 		List<PropertyWrapper> selectedProperties = oldInstance.getSelectedProperties();
@@ -758,9 +767,12 @@ public class DBQuery {
 	 * Sets all the expression columns using data from the current ResultSet
 	 * row.
 	 *
-	 * @param resultSet
-	 * @param queryRow
-	 * @throws SQLException
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param resultSet resultSet
+	 * @param queryRow queryRow
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected void setExpressionColumns(ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
 		for (Map.Entry<Object, DBExpression> entry : details.getExpressionColumns().entrySet()) {
@@ -796,8 +808,10 @@ public class DBQuery {
 	 * @param <R> a subclass of DBRow
 	 * @param exemplar an instance of R
 	 * @return the ONLY instance found using this query
-	 * @throws SQLException
-	 * @throws UnexpectedNumberOfRowsException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 
 	 */
 	public <R extends DBRow> R getOnlyInstanceOf(R exemplar) throws SQLException, UnexpectedNumberOfRowsException {
 		List<R> allInstancesFound = getAllInstancesOf(exemplar, 1);
@@ -831,8 +845,10 @@ public class DBQuery {
 	 * @param expected The expected number of rows, an exception will be thrown
 	 * if this expectation is not met.
 	 * @return a list of all the instances of the exemplar found by this query
-	 * @throws SQLException
-	 * @throws UnexpectedNumberOfRowsException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, long expected) throws SQLException, UnexpectedNumberOfRowsException {
 		List<R> allInstancesFound = getAllInstancesOf(exemplar);
@@ -870,7 +886,8 @@ public class DBQuery {
 	 * @param <R> a class that extends DBRow
 	 * @param exemplar an instance of R that has been included in the query
 	 * @return A List of all the instances found of the exemplar.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
 		List<R> arrayList = new ArrayList<R>();
@@ -894,7 +911,7 @@ public class DBQuery {
 	 * Convenience method to print all the rows in the current collection
 	 * Equivalent to: printAll(System.out);
 	 *
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException database exception
 	 */
 	public void print() throws SQLException {
 		print(System.out);
@@ -906,7 +923,8 @@ public class DBQuery {
 	 * myTable.printRows(System.err);
 	 *
 	 * @param ps a printstream to print to.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 
 	 */
 	public void print(PrintStream ps) throws SQLException {
 		if (needsResults()) {
@@ -943,7 +961,8 @@ public class DBQuery {
 	 * Example: myQuery.printAllDataColumns(System.err);
 	 *
 	 * @param printStream a printstream to print to
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 
 	 */
 	public void printAllDataColumns(PrintStream printStream) throws SQLException {
 		if (needsResults()) {
@@ -974,7 +993,8 @@ public class DBQuery {
 	 * Example: myQuery.printAllPrimaryKeys(System.err);
 	 *
 	 * @param ps a PrintStream to print to.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 
 	 */
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
 		if (needsResults()) {
@@ -1025,7 +1045,8 @@ public class DBQuery {
 	 * {@link #getAllRows() getAllRows()} been called.
 	 *
 	 * @return the number of rows that have or will be retrieved.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public Long count() throws SQLException {
 		if (results != null) {
@@ -1379,8 +1400,10 @@ public class DBQuery {
 	 * @param expectedRows - the number of rows expected to be retrieved
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances.
-	 * @throws UnexpectedNumberOfRowsException
-	 * @throws SQLException
+	 
+	  1 Database exceptions may be thrown
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @see #getAllRows()
 	 */
 	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
@@ -1445,7 +1468,7 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * That is to say: where A is a DBRow in this query, returns a List of B
-	 * such that B => A
+	 * such that B =&gt; A
 	 *
 	 * @return a list of classes that have a {@code @DBForeignKey} reference to
 	 * this class
@@ -1487,7 +1510,7 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * That is to say: where A is A DBRow in this class, returns a List of B
-	 * such that A => B
+	 * such that A =&gt; B
 	 *
 	 * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
 	 * @see #getRelatedTables()
@@ -1538,7 +1561,7 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * That is to say: where A is a DBRow in this query, returns a List of B
-	 * such that B => A or A => B
+	 * such that B =&gt; A or A =&gt; B
 	 *
 	 * @return a list of classes that have a {@code @DBForeignKey} reference to
 	 * or from this class
@@ -1570,9 +1593,11 @@ public class DBQuery {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
+	 
+	 
 	 * @return this DBQuery instance
+	 * @throws java.lang.InstantiationException java.lang.InstantiationException
+	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
 	 */
 	public DBQuery addAllConnectedTables() throws InstantiationException, IllegalAccessException {
 		List<DBRow> tablesToAdd = new ArrayList<DBRow>();
@@ -1602,9 +1627,11 @@ public class DBQuery {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
+	 
+	 
 	 * @return this DBQuery instance
+	 * @throws java.lang.InstantiationException java.lang.InstantiationException
+	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
 	 */
 	public DBQuery addAllConnectedTablesAsOptional() throws InstantiationException, IllegalAccessException {
 		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
@@ -1644,8 +1671,10 @@ public class DBQuery {
 	 * to the core tables and had no other relationships.
 	 *
 	 * @return this DBQuery instance
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
+	 * @throws java.lang.InstantiationException java.lang.InstantiationException
+	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
+	 
+	 
 	 */
 	public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws InstantiationException, IllegalAccessException {
 		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
@@ -1690,7 +1719,8 @@ public class DBQuery {
 	 *
 	 * @param instance the DBRow instance you are interested in.
 	 * @return A list of DBQueryRow instances that relate to the exemplar
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException {
 		if (this.needsResults()) {
@@ -1719,9 +1749,10 @@ public class DBQuery {
 	 * <p>
 	 * Convenience method for {@link #getAllRowsForPage(java.lang.Integer) }.
 	 *
-	 * @param pageNumber
+	 * @param pageNumber	 pageNumber	
 	 * @return a list of the DBQueryRows for the selected page.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<DBQueryRow> getPage(Integer pageNumber) throws SQLException {
 		return getAllRowsForPage(pageNumber);
@@ -1738,9 +1769,10 @@ public class DBQuery {
 	 * <p>
 	 * This method is zero-based so the first page is getAllRowsForPage(0).
 	 *
-	 * @param pageNumber
+	 * @param pageNumber	 pageNumber	
 	 * @return a list of the DBQueryRows for the selected page.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
 		final QueryOptions options = details.getOptions();
@@ -1955,8 +1987,8 @@ public class DBQuery {
 	/**
 	 * Used by DBReport to add columns to the SELECT clause
 	 *
-	 * @param identifyingObject
-	 * @param expressionToAdd
+	 * @param identifyingObject identifyingObject
+	 * @param expressionToAdd expressionToAdd
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd) {
@@ -1968,8 +2000,8 @@ public class DBQuery {
 	/**
 	 * Used by DBReport to add columns to the GROUP BY clause.
 	 *
-	 * @param identifyingObject
-	 * @param expressionToAdd
+	 * @param identifyingObject identifyingObject
+	 * @param expressionToAdd expressionToAdd
 	 * @return this DBQuery instance
 	 */
 	protected DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
@@ -2008,7 +2040,7 @@ public class DBQuery {
 	 * They will NOT be added as tables however, for that use
 	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
 	 *
-	 * @param extraExamples
+	 
 	 */
 	void addExtraExamples(DBRow... extraExamples) {
 		for (DBRow extraExample : extraExamples) {
@@ -2124,7 +2156,8 @@ public class DBQuery {
 	 * @param fieldsOfProvidedRows - the field/column that you need data for.
 	 * @return a list of DBQQueryRows with distinct combinations of values used
 	 * in the columns.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings({"unchecked", "empty-statement"})
 	public List<DBQueryRow> getDistinctCombinationsOfColumnValues(Object... fieldsOfProvidedRows) throws AccidentalBlankQueryException, SQLException {
@@ -2226,7 +2259,7 @@ public class DBQuery {
 	 * Used during recursive queries. If you are not manually constructing a
 	 * recursive query do NOT use this method.
 	 *
-	 * @param tables
+	 * @param tables	 tables	
 	 * @return this DBQuery object.
 	 */
 	public DBQuery addAssumedTables(List<DBRow> tables) {
@@ -2301,7 +2334,7 @@ public class DBQuery {
 		/**
 		 * Adds a condition that pertains to a required table.
 		 *
-		 * @param conditionClause
+		 * @param conditionClause		 conditionClause		
 		 */
 		protected void addRequiredCondition(String conditionClause) {
 			requiredConditions.add(conditionClause);
@@ -2323,7 +2356,7 @@ public class DBQuery {
 		/**
 		 * Add conditions that pertain to optional tables.
 		 *
-		 * @param conditionClauses
+		 * @param conditionClauses		 conditionClauses		
 		 */
 		protected void addOptionalConditions(List<String> conditionClauses) {
 			optionalConditions.addAll(conditionClauses);

@@ -49,8 +49,8 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
 	/**
 	 * Create a LargeObjectColumn for the supplied field of the supplied row
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the row containing the field
+	 * @param field the field defining the column
 	 */
 	public LargeObjectColumn(RowDefinition row, DBLargeObject field) {
 		this.column = new AbstractColumn(row, field);

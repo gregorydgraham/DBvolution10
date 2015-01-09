@@ -31,7 +31,7 @@ public class MySQLDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds
+	 * @param ds	 ds	
 	 */
 	public MySQLDB(DataSource ds) {
 		super(new MySQLDBDefinition(), ds);
@@ -41,9 +41,9 @@ public class MySQLDB extends DBDatabase {
 	 * Creates DBDatabase suitable for use with MySQL attached to the supplied
 	 * JDBC URL, username, and password.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param password password
+	 * @param username username
 	 */
 	public MySQLDB(String jdbcURL, String username, String password) {
 		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);

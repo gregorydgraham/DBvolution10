@@ -27,8 +27,8 @@ public class UnableToFindJDBCDriver extends DBRuntimeException {
 	/**
 	 * Please supply a JDBC Driver for your database on the classpath.
 	 *
-	 * @param driverName
-	 * @param noDriver
+	 * @param driverName driverName
+	 * @param noDriver noDriver
 	 */
 	public UnableToFindJDBCDriver(String driverName, ClassNotFoundException noDriver) {
 		super("No Driver Found: please check the driver name is correct and the appropriate libaries have been supplied: DRIVERNAME=" + driverName, noDriver);

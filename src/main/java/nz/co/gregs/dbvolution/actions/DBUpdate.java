@@ -31,8 +31,8 @@ public abstract class DBUpdate extends DBAction {
 	/**
 	 * Creates a DBUpdate action for the row supplied.
 	 *
-	 * @param <R>
-	 * @param row
+	 * @param <R> the table affected
+	 * @param row the row to be updated
 	 */
 	public <R extends DBRow> DBUpdate(R row) {
 		super(row);
@@ -46,10 +46,10 @@ public abstract class DBUpdate extends DBAction {
 	 * Use {@link DBRow#setSimpleTypesToUnchanged() } if you need to ignore the
 	 * changes to the row.
 	 *
-	 * @param db
-	 * @param row
+	 * @param db the target database
+	 * @param row the row to be updated
 	 * @return a DBActionList of updates that have been executed.
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public static DBActionList update(DBDatabase db, DBRow row) throws SQLException {
 		DBActionList updates = getUpdates(row);
@@ -69,9 +69,9 @@ public abstract class DBUpdate extends DBAction {
 	 * <p>
 	 * Synonym for {@link #getUpdates(nz.co.gregs.dbvolution.DBRow...) }
 	 *
-	 * @param rows
+	 * @param rows the rows to be updated
 	 * @return a DBActionList of updates.
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public static DBActionList update(DBRow... rows) throws SQLException {
 		return getUpdates(rows);
@@ -84,9 +84,9 @@ public abstract class DBUpdate extends DBAction {
 	 * The actions created can be applied on a particular database using
 	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
 	 *
-	 * @param rows
+	 * @param rows the rows to be updated
 	 * @return a DBActionList of updates.
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public static DBActionList getUpdates(DBRow... rows) throws SQLException {
 		DBActionList updates = new DBActionList();

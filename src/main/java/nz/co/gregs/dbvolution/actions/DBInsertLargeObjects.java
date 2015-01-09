@@ -31,7 +31,7 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	/**
 	 * Creates a DBInsertLargeObjects action for the row.
 	 *
-	 * @param row
+	 * @param row the row to be inserted
 	 */
 	public DBInsertLargeObjects(DBRow row) {
 		super(row);
@@ -40,7 +40,7 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	/**
 	 * Finds all the DBLargeObject fields that this action will need to update.
 	 *
-	 * @param row
+	 * @param row the row to be inserted
 	 * @return a list of the interesting DBLargeObjects.
 	 */
 	@Override

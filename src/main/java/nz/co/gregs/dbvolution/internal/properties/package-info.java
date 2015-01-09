@@ -5,6 +5,6 @@
  * change.
  * <p>
  * Thanks<br>
- * <b>Gregory Graham<b>
+ * <b>Gregory Graham</b>
  */
 package nz.co.gregs.dbvolution.internal.properties;

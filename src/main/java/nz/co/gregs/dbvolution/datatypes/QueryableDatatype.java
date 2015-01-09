@@ -58,14 +58,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	/**
 	 * Used to indicate the the QDT should be sorted so that the values run from
-	 * A->Z or 0->9 when using the {@link #setSortOrder(java.lang.Boolean) }
+	 * A-&gt;Z or 0-&gt;9 when using the {@link #setSortOrder(java.lang.Boolean) }
 	 * method.
 	 */
 	public final static Boolean SORT_ASCENDING = Boolean.TRUE;
 
 	/**
 	 * Used to indicate the the QDT should be sorted so that the values run from
-	 * Z->A or 9->0 when using the {@link #setSortOrder(java.lang.Boolean) }
+	 * Z-&gt;A or 9-&gt;0 when using the {@link #setSortOrder(java.lang.Boolean) }
 	 * method.
 	 */
 	public final static Boolean SORT_DESCENDING = Boolean.FALSE;
@@ -110,7 +110,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * This is particularly useful for trimming strings or converting between
 	 * types but also allows for complex arithmetic and transformations.
 	 *
-	 * @param columnExpression
+	 * @param columnExpression	 columnExpression	
 	 */
 	protected QueryableDatatype(DBExpression columnExpression) {
 		this.columnExpression = columnExpression.copy();
@@ -124,8 +124,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * This method only provides a new blank instance. To copy the QDT and its
 	 * fields, use {@link #copy() }.
 	 *
-	 * @param <T>
-	 * @param requiredQueryableDatatype
+	 * @param <T> the QDT type
+	 * @param requiredQueryableDatatype requiredQueryableDatatype
 	 * @return a new instance of the supplied QDT class
 	 */
 	public static <T extends QueryableDatatype> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
@@ -154,7 +154,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * NumberResult, StringResult, DateResult, LargeObjectResult, BooleanResult
 	 * and defaults everything else to DBJavaObject.
 	 *
-	 * @param o
+	 * @param o	 o	
 	 * @return a QDT that will provide good results for the provided object.
 	 */
 	static public QueryableDatatype getQueryableDatatypeForObject(Object o) {
@@ -188,7 +188,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			} else if (o instanceof BooleanResult) {
 				qdt = new DBBoolean();
 			} else {
-				qdt = new DBJavaObject();
+				qdt = new DBJavaObject<Object>();
 			}
 			qdt.setLiteralValue(o);
 		}
@@ -289,8 +289,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	/**
 	 *
-	 * @param db
-	 * @param columnName
+	 
+	 
 	 * @return the section of the SQL query between WHERE and ORDER BY
 	 */
 //	public String getWhereClause(DBDatabase db, String columnName) {
@@ -298,8 +298,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 //	}
 	/**
 	 *
-	 * @param db
-	 * @param column
+	 * @param db db
+	 * @param column column
 	 * @return the section of the SQL query between WHERE and ORDER BY
 	 */
 	public String getWhereClause(DBDatabase db, ColumnProvider column) {
@@ -388,7 +388,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * This method is public for internal reasons and you should provide/use
 	 * another more strongly typed version of setValue.
 	 *
-	 * @param newLiteralValue
+	 
 	 */
 	void setValue(Object newLiteralValue) {
 		this.setLiteralValue(newLiteralValue);
@@ -475,9 +475,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * This is used internally to transform the Java object in to SQL format. You
 	 * won't need to use it.
 	 *
-	 * @param db
+	 
 	 * @return the literal value as it would appear in an SQL statement i.e.
-	 * {yada} => 'yada', {1} => 1 and {} => NULL
+	 * {yada} =&gt; 'yada', {1} =&gt; 1 and {} =&gt; NULL
 	 */
 	@Override
 	public final String toSQLString(DBDatabase db) {
@@ -503,13 +503,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * For Example:
 	 *
-	 * DBString{yada} => 'yada'
+	 * DBString{yada} =&gt; 'yada'
 	 *
-	 * DBInteger{1234} => 123
+	 * DBInteger{1234} =&gt; 123
 	 *
-	 * DBDate{1/March/2013} => TO_DATE('20130301', 'YYYYMMDD')
+	 * DBDate{1/March/2013} =&gt; TO_DATE('20130301', 'YYYYMMDD')
 	 *
-	 * @param db
+	 * @param db	 db	
 	 * @return the literal value translated to a String ready to insert into an
 	 * SQL statement
 	 */
@@ -561,10 +561,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * very important as are the calls to {@link #setUnchanged() } and {@link #setDefined(boolean)
 	 * }.
 	 *
-	 * @param database
-	 * @param resultSet
-	 * @param resultSetColumnName
-	 * @throws SQLException
+	 
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param database database
+	 * @param resultSet resultSet
+	 * @param resultSetColumnName resultSetColumnName
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		removeConstraints();
@@ -596,11 +600,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Returns the correct object from the ResultSet for the QueryableDatatype to
 	 * handle.
 	 *
-	 * @param database
-	 * @param resultSet
-	 * @param fullColumnName
+	 * @param database database
+	 * @param resultSet resultSet
+	 * @param fullColumnName fullColumnName
 	 * @return the expected object from the ResultSet.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	abstract protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException;
 
@@ -643,7 +648,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Used by {@link DBActionList} to generate
 	 * {@link DBActionList#getRevertActionList() revert action lists}.
 	 *
-	 * @param db
+	 * @param db	 db	
 	 * @return the previous value of this field as an SQL formatted String
 	 */
 	public String getPreviousSQLValue(DBDatabase db) {
@@ -660,7 +665,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * Use Boolean.TRUE for Ascending Use Boolean.FALSE for Descending
 	 *
-	 * @param order
+	 
 	 * @return this object
 	 */
 	private QueryableDatatype setSortOrder(Boolean order) {
@@ -715,7 +720,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	/**
 	 * Implements the standard Java equals method.
 	 *
-	 * @param other
+	 * @param other	 other	
 	 * @return true if the other QDT is the same as this one.
 	 */
 	public boolean equals(QueryableDatatype other) {
@@ -763,7 +768,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * <i>Thread-safety: relatively safe, as PropertyWrappers are thread-safe and
 	 * interchangeable.</i>
 	 *
-	 * @param propertyWrapper
+	 
 	 */
 	void setPropertyWrapper(PropertyWrapperDefinition propertyWrapper) {
 		this.propertyWrapperDefn = propertyWrapper;
@@ -846,7 +851,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * <p>
 	 * The default implementation just calls {@link #setToNull() }
 	 *
-	 * @param database
+	 * @param database	 database	
 	 * @return the DBOperator that will be used with this QDT
 	 */
 	protected DBOperator setToNull(DBDatabase database) {
@@ -856,7 +861,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	/**
 	 * Used internally.
 	 *
-	 * @param hasChanged
+	 * @param hasChanged	 hasChanged	
 	 */
 	protected void setChanged(boolean hasChanged) {
 		if (hasChanged) {
@@ -878,7 +883,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	/**
 	 * Used internally.
 	 *
-	 * @param queryableDatatype
+	 * @param queryableDatatype	 queryableDatatype	
 	 */
 	protected void setPreviousValue(QueryableDatatype queryableDatatype) {
 		this.previousValueAsQDT = queryableDatatype;

@@ -30,7 +30,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds
+	 * @param ds	 ds	
 	 */
 	public PostgresDBOverSSL(DataSource ds) {
         super(ds);
@@ -39,12 +39,12 @@ public class PostgresDBOverSSL extends PostgresDB {
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
-	 * @param hostname
-	 * @param port
-	 * @param databaseName
-	 * @param username
-	 * @param password
-	 * @param urlExtras
+	 * @param hostname hostname
+	 * @param databaseName databaseName
+	 * @param port port
+	 * @param username username
+	 * @param password password
+	 * @param urlExtras urlExtras
 	 */
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
         super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"+(urlExtras==null||urlExtras.isEmpty()?"":"&"+urlExtras));
@@ -53,11 +53,11 @@ public class PostgresDBOverSSL extends PostgresDB {
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
-	 * @param hostname
-	 * @param port
-	 * @param databaseName
-	 * @param username
-	 * @param password
+	 * @param hostname hostname
+	 * @param password password
+	 * @param databaseName databaseName
+	 * @param port port
+	 * @param username username
 	 */
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) {
         this(hostname, port, databaseName, username, password, "");

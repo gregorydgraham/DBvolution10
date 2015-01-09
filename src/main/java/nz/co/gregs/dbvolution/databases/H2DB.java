@@ -39,10 +39,14 @@ public class H2DB extends DBDatabase {
 	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
-	 * @throws SQLException
+	 
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
@@ -53,11 +57,16 @@ public class H2DB extends DBDatabase {
 	/**
 	 * Creates a DBDatabase for a H2 database in the file supplied.
 	 *
-	 * @param file
-	 * @param username
-	 * @param password
-	 * @throws java.io.IOException
-	 * @throws SQLException
+	 
+	 
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param file file
+	 * @param username username
+	 * @param password password
+	 * @throws java.io.IOException java.io.IOException
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2DB(File file, String username, String password) throws IOException, SQLException {
 		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
@@ -66,8 +75,10 @@ public class H2DB extends DBDatabase {
 	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
-	 * @param dataSource
-	 * @throws SQLException
+	 
+	  1 Database exceptions may be thrown
+	 * @param dataSource dataSource
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2DB(DataSource dataSource) throws SQLException {
 		super(new H2DBDefinition(), dataSource);
@@ -84,7 +95,8 @@ public class H2DB extends DBDatabase {
 	 * Clones the DBDatabase
 	 *
 	 * @return a clone of the database.
-	 * @throws CloneNotSupportedException
+	 * @throws java.lang.CloneNotSupportedException java.lang.CloneNotSupportedException
+	 
 	 */
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {

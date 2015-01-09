@@ -88,8 +88,8 @@ public class NuoDBDefinition extends DBDefinition{
 	 * 
 	 * <p>
 	 * To be removed as soon as NuoDB fixes the bug.
-	 * 
-	 * @param toSQLString
+	 *
+	 * @param toSQLString toSQLString
 	 * @return a hack masquerading as SQL.
 	 * @deprecated 
 	 */

@@ -36,7 +36,7 @@ public class MariaClusterDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds
+	 * @param ds	 ds	
 	 */
 	public MariaClusterDB(DataSource ds) {
 		super(new MariaDBDefinition(), ds);
@@ -47,9 +47,9 @@ public class MariaClusterDB extends DBDatabase {
 	 * URL supplied, logging in with the username and password supplied.
 	 *
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
 	public MariaClusterDB(String jdbcURL, String username, String password) {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
@@ -63,11 +63,11 @@ public class MariaClusterDB extends DBDatabase {
 	 * You should probably be using
 	 * {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)}
 	 *
-	 * @param server
-	 * @param port
-	 * @param databaseName
-	 * @param username
-	 * @param password
+	 * @param server server
+	 * @param port port
+	 * @param password password
+	 * @param username username
+	 * @param databaseName databaseName
 	 */
 	public MariaClusterDB(String server, long port, String databaseName, String username, String password) {
 		super(new MariaDBDefinition(),
@@ -85,11 +85,11 @@ public class MariaClusterDB extends DBDatabase {
 	 * Supply multiple servers with each server's port defined in the equivalent
 	 * entry in ports.
 	 *
-	 * @param servers
-	 * @param ports
-	 * @param databaseName
-	 * @param username
-	 * @param password
+	 * @param servers servers
+	 * @param ports ports
+	 * @param databaseName databaseName
+	 * @param username username
+	 * @param password password
 	 */
 	public MariaClusterDB(List<String> servers, List<Long> ports, String databaseName, String username, String password) {
 		String hosts = "";

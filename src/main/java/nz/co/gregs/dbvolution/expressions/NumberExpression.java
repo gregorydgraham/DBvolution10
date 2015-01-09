@@ -64,7 +64,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * This performs a similar function to {@code NumberExpression(NumberResult)}.
 	 *
-	 * @param value
+	 * @param value a literal value to use in the expression
 	 */
 	public NumberExpression(Number value) {
 		innerNumberResult = new DBNumber(value);
@@ -80,7 +80,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * {@link NumberResult} is generally a NumberExpression but it may also be a
 	 * {@link DBNumber} or {@link DBInteger}.
 	 *
-	 * @param value
+	 * @param value a number expression or QDT
 	 */
 	public NumberExpression(NumberResult value) {
 		innerNumberResult = value;
@@ -121,7 +121,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <li>The implementation should be {@code static}</li>
 	 * </ul>
 	 *
-	 * @param object
+	 * @param object a literal value to use in the expression
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -160,7 +160,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Converts the number expression to a string and appends the supplied String.
 	 *
-	 * @param string
+	 * @param string the string to append
 	 * @return a StringExpression
 	 */
 	public StringExpression append(String string) {
@@ -171,7 +171,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Converts the number expression to a string and appends the supplied
 	 * StringResult.
 	 *
-	 * @param string
+	 * @param string the string to append
 	 * @return a StringExpression
 	 */
 	public StringExpression append(StringResult string) {
@@ -181,7 +181,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Tests the NumberExpression against the supplied number.
 	 *
-	 * @param number
+	 * @param number the expression needs to evaluate to this number
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -192,7 +192,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Tests the NumberExpression against the supplied numberExpression.
 	 *
-	 * @param numberExpression
+	 * @param numberExpression  the expression needs to evaluate to this number
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -251,7 +251,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the number and returns true if the
 	 * Number Expression is not equal to the number.
 	 *
-	 * @param number
+	 * @param number the expression needs to NOT evaluate to this number
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -263,7 +263,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the {@link NumberResult} and returns
 	 * true if the NumberExpression is not equal to the number.
 	 *
-	 * @param number
+	 * @param number the expression needs to NOT evaluate to this number
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -288,8 +288,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(NumberResult lowerBound, NumberResult upperBound) {
@@ -316,8 +316,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(Number lowerBound, NumberResult upperBound) {
@@ -344,8 +344,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(NumberResult lowerBound, Number upperBound) {
@@ -372,8 +372,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(Number lowerBound, Number upperBound) {
@@ -400,8 +400,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, NumberResult upperBound) {
@@ -428,8 +428,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Number lowerBound, NumberResult upperBound) {
@@ -456,8 +456,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, Number upperBound) {
@@ -484,8 +484,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Number lowerBound, Number upperBound) {
@@ -514,8 +514,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, NumberResult upperBound) {
@@ -544,8 +544,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, NumberResult upperBound) {
@@ -574,8 +574,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, Number upperBound) {
@@ -604,8 +604,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, Number upperBound) {
@@ -619,7 +619,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the number and returns TRUE if the value
 	 * is less than number.
 	 *
-	 * @param number
+	 * @param number need to be smaller than this
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -631,7 +631,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the {@link NumberResult} and returns
 	 * TRUE if the value is less than the value supplied.
 	 *
-	 * @param numberExpression
+	 * @param numberExpression needs to be smaller than this
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -653,7 +653,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the number and returns TRUE if the value
 	 * is less than or equal to number.
 	 *
-	 * @param number
+	 * @param number needs to be smaller than this
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -665,7 +665,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the number and returns TRUE if the value
 	 * is less than or equal to numberExpression.
 	 *
-	 * @param numberExpression
+	 * @param numberExpression needs to be smaller than this
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -687,7 +687,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the number and returns TRUE if the value
 	 * is greater than number.
 	 *
-	 * @param number
+	 * @param number needs to be greater than this
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -699,7 +699,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the number and returns TRUE if the value
 	 * is greater than number.
 	 *
-	 * @param number
+	 * @param number needs to be greater than this
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -721,7 +721,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the number and returns TRUE if the value
 	 * is greater than or equal to number.
 	 *
-	 * @param number
+	 * @param number needs to be greater than this
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -733,7 +733,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the number and returns TRUE if the value
 	 * is greater than or equal to number.
 	 *
-	 * @param number
+	 * @param number needs to be greater than this
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -755,7 +755,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Compares the NumberExpression against the list of possible values and
 	 * returns true if the NumberExpression is represented in the list.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be one of these
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -775,7 +775,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Compares the NumberExpression against the list of possible values and
 	 * returns true if the NumberExpression is represented in the list.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be one of these
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -791,7 +791,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Compares the NumberExpression against the list of possible values and
 	 * returns true if the NumberExpression is represented in the list.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be one of these
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -827,7 +827,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Similar to {@link #min() } but this operates on the list provided, rather
 	 * than aggregating a column.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be the least of these
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(Number... possibleValues) {
@@ -845,7 +845,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Similar to {@link #min() } but this operates on the list provided, rather
 	 * than aggregating a column.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be the least of these
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(Collection<? extends Number> possibleValues) {
@@ -863,7 +863,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Similar to {@link #min() } but this operates on the list provided, rather
 	 * than aggregating a column.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be the least of these
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(NumberResult... possibleValues) {
@@ -894,7 +894,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Similar to {@link #max() } but this operates on the list provided, rather
 	 * than aggregating a column.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be the largest of these
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(Number... possibleValues) {
@@ -912,7 +912,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Similar to {@link #max() } but this operates on the list provided, rather
 	 * than aggregating a column.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be the largest of these
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(Collection<? extends Number> possibleValues) {
@@ -930,7 +930,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Similar to {@link #max() } but this operates on the list provided, rather
 	 * than aggregating a column.
 	 *
-	 * @param possibleValues
+	 * @param possibleValues needs to be the largest of these
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(NumberResult... possibleValues) {
@@ -956,7 +956,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Retrieves the next value from the given sequence.
 	 *
-	 * @param sequenceName
+	 * @param sequenceName the name of the sequence
 	 * @return a NumberExpression representing the database operation required to
 	 * retrieve the names sequence's value.
 	 */
@@ -967,8 +967,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Retrieves the next value from the given sequence within the given schema.
 	 *
-	 * @param schemaName
-	 * @param sequenceName
+	 * @param schemaName the name of the schema as the database understands it
+	 * @param sequenceName the name of the sequence
 	 * @return a NumberExpression representing the database operation required to
 	 * retrieve the names sequence's value.
 	 */
@@ -996,7 +996,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides a default option when the NumberExpression resolves to NULL within
 	 * the query.
 	 *
-	 * @param alternative
+	 * @param alternative used if the expression is NULL
 	 * @return a NumberExpression that will substitute the given value when the
 	 * NumberExpression resolves to NULL.
 	 */
@@ -1008,7 +1008,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides a default option when the NumberExpression resolves to NULL within
 	 * the query.
 	 *
-	 * @param alternative
+	 * @param alternative used if the expression is NULL
 	 * @return a NumberExpression that will substitute the given value when the
 	 * NumberExpression resolves to NULL.
 	 */
@@ -1046,7 +1046,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Raises the E (2.718281828) to the power of the current NumberExpression.
 	 *
 	 * <p>
-	 * That is to say, if the number expression equals 2 then 2.exp() => e^2
+	 * That is to say, if the number expression equals 2 then 2.exp() =&gt; e^2
 	 *
 	 * @return a number expression representing the exponential function of the
 	 * current function.
@@ -1235,10 +1235,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For any real number (e.g., floating point) arguments x and y not both equal
 	 * to zero, arctan2(y, x) is the angle in radians between the positive x-axis
 	 * of a plane and the point given by the coordinates (x, y) on it. The angle
-	 * is positive for counter-clockwise angles (upper half-plane, y > 0), and
-	 * negative for clockwise angles (lower half-plane, y < 0).
+	 * is positive for counter-clockwise angles (upper half-plane, y &gt; 0), and
+	 * negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
-	 * @param number
+	 * @param number the ARCTAN2 of this is required
 	 * @return a NumberExpression representing the cosine of the current number
 	 * expression.
 	 */
@@ -1355,9 +1355,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the power (or pow) function of the database.
 	 *
 	 * <p>
-	 * For a NumberExpression x then x.power(n) => x^n.
+	 * For a NumberExpression x then x.power(n) =&gt; x^n.
 	 *
-	 * @param n
+	 * @param n	 n	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression power(NumberExpression n) {
@@ -1528,9 +1528,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the basic arithmetic operation minus.
 	 *
 	 * <p>
-	 * For a NumberExpression x: x.minus(y) => x - y.
+	 * For a NumberExpression x: x.minus(y) =&gt; x - y.
 	 *
-	 * @param number
+	 * @param number	 number	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression minus(NumberExpression number) {
@@ -1541,9 +1541,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the basic arithmetic operation minus.
 	 *
 	 * <p>
-	 * For a NumberExpression x: x.minus(y) => x - y.
+	 * For a NumberExpression x: x.minus(y) =&gt; x - y.
 	 *
-	 * @param num
+	 * @param num	 num	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression minus(Number num) {
@@ -1556,9 +1556,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the basic arithmetic operation plus.
 	 *
 	 * <p>
-	 * For a NumberExpression x: x.plus(y) => x + y.
+	 * For a NumberExpression x: x.plus(y) =&gt; x + y.
 	 *
-	 * @param number
+	 * @param number	 number	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression plus(NumberResult number) {
@@ -1574,9 +1574,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the basic arithmetic operation plus.
 	 *
 	 * <p>
-	 * For a NumberExpression x: x.plus(y) => x + y.
+	 * For a NumberExpression x: x.plus(y) =&gt; x + y.
 	 *
-	 * @param num
+	 * @param num	 num	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression plus(Number num) {
@@ -1592,9 +1592,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the basic arithmetic operation multiply/times.
 	 *
 	 * <p>
-	 * For a NumberExpression x: x.times(y) => x * y.
+	 * For a NumberExpression x: x.times(y) =&gt; x * y.
 	 *
-	 * @param number
+	 * @param number	 number	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression times(NumberResult number) {
@@ -1610,9 +1610,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the basic arithmetic operation multiply/times.
 	 *
 	 * <p>
-	 * For a NumberExpression x: x.times(y) => x * y.
+	 * For a NumberExpression x: x.times(y) =&gt; x * y.
 	 *
-	 * @param num
+	 * @param num	 num	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression times(Number num) {
@@ -1628,9 +1628,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the basic arithmetic operation divide.
 	 *
 	 * <p>
-	 * For a NumberExpression x: x.dividedBy(y) => x / y.
+	 * For a NumberExpression x: x.dividedBy(y) =&gt; x / y.
 	 *
-	 * @param number
+	 * @param number	 number	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression dividedBy(NumberResult number) {
@@ -1657,7 +1657,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * databases and implement it so that mod() will return the same result for
 	 * all databases.
 	 *
-	 * @param num
+	 * @param num	 num	
 	 * @return a NumberExpression of a division operation.
 	 */
 	public NumberExpression dividedBy(Number num) {
@@ -1679,7 +1679,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * databases and implement it so that mod() will return the same result for
 	 * all databases.
 	 *
-	 * @param number
+	 * @param number	 number	
 	 * @return a NumberExpression of a Modulus operation.
 	 */
 	public NumberExpression mod(NumberResult number) {
@@ -1709,9 +1709,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * x/y.
 	 *
 	 * <p>
-	 * For the NumberExpression x: x.mod(y) => mod(x.y)
+	 * For the NumberExpression x: x.mod(y) =&gt; mod(x.y)
 	 *
-	 * @param num
+	 * @param num	 num	
 	 * @return a NumberExpression
 	 */
 	public NumberExpression mod(Number num) {

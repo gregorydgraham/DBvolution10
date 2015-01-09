@@ -66,7 +66,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	/**
 	 * Creates a DBStringEnum with the value provided.
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBStringEnum(String value) {
 		super(value);
@@ -89,7 +89,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * This can also be used to transform an existing column into a DBStringEnum,
 	 * the above warning still applies.
 	 *
-	 * @param stringExpression
+	 * @param stringExpression	 stringExpression	
 	 */
 	public DBStringEnum(StringResult stringExpression) {
 		super(stringExpression);
@@ -99,7 +99,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Creates a DBStringEnum with the value set to the value of the supplied Enum
 	 * object..
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBStringEnum(E value) {
 		super(value);
@@ -153,7 +153,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * } to make the changes permanent.</li>
 	 * </ul>
 	 *
-	 * @param newLiteralValue
+	 
 	 */
 	private void setValue(String newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
@@ -181,7 +181,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <p>
 	 * Provided as a convenience function
 	 *
-	 * @param enumValues
+	 
 	 * @return a String[] of the enums values.
 	 */
 	private String[] convertToLiteralString(E... enumValues) {
@@ -208,7 +208,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	/**
 	 * Convert the enum to its String literal value.
 	 *
-	 * @param enumValue
+	 
 	 * @return the literal value of the enum.
 	 */
 	private String convertToLiteralString(E enumValue) {
@@ -225,7 +225,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Reduces the rows returned from a query to only those matching the provided
 	 * objects.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(String... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -242,7 +242,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Defining case for Unicode characters is complicated and may not work as
 	 * expected.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesIgnoreCase(String... permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -259,7 +259,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Defining case for Unicode characters is complicated and may not work as
 	 * expected.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesIgnoreCase(StringExpression... permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -276,7 +276,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Defining case for Unicode characters is complicated and may not work as
 	 * expected.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesIgnoreCase(Collection<String> permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -293,7 +293,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Defining case for Unicode characters is complicated and may not work as
 	 * expected.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(String... excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -311,7 +311,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Defining case for Unicode characters is complicated and may not work as
 	 * expected.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(StringExpression... excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -329,7 +329,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Defining case for Unicode characters is complicated and may not work as
 	 * expected.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(List<String> excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -347,7 +347,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Defining case for Unicode characters is complicated and may not work as
 	 * expected.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(Set<String> excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -365,7 +365,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Defining case for Unicode characters is complicated and may not work as
 	 * expected.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(String... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -389,8 +389,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -413,8 +413,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -438,8 +438,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -463,8 +463,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -489,8 +489,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -515,8 +515,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(String lowerBound, String upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -535,7 +535,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void permittedPattern(String pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -553,7 +553,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void excludedPattern(String pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -572,7 +572,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void permittedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -590,7 +590,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern
+	 * @param pattern	 pattern	
 	 */
 	public void excludedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -601,7 +601,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(E... permitted) {
 		this.setOperator(new DBPermittedValuesOperator(convertToLiteral(permitted)));
@@ -612,7 +612,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
 	 * ignoring letter case.
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesIgnoreCase(E... permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator((String[]) convertToLiteral(permitted)));
@@ -622,7 +622,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(E... excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(convertToLiteralString(excluded)));
@@ -633,7 +633,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesIgnoreCase(Collection<E> excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(convertToLiteralString(excluded)));
@@ -645,7 +645,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(E... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) convertToLiteralString(excluded)));
@@ -669,8 +669,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
@@ -693,8 +693,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
@@ -717,8 +717,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
@@ -742,8 +742,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
@@ -768,8 +768,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
@@ -794,8 +794,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));

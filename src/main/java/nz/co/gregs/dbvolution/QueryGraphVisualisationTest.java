@@ -34,8 +34,8 @@ public class QueryGraphVisualisationTest {
 	/**
 	 * The QueryGraph can not be tested automatically so this class and method allows it to be tested easily.
 	 *
-	 * @param args
-	 * @throws Exception
+	 * @param args args
+	 * @throws java.lang.Exception java.lang.Exception
 	 */
 	public static void main(String[] args) throws Exception {
 		DBDatabase database;

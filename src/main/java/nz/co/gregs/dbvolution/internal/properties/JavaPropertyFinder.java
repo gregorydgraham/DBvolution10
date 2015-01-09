@@ -93,7 +93,7 @@ class JavaPropertyFinder {
 	
 	/**
 	 * Gets the field-based properties.
-	 * @param clazz
+	 
 	 * @return
 	 */
 	// TODO: this may not be able to handle inheritance of protected/default fields
@@ -142,7 +142,7 @@ class JavaPropertyFinder {
 	
 	/**
 	 * Gets the bean-property-based properties.
-	 * @param clazz
+	 
 	 * @return
 	 */
 	private List<JavaProperty> getBeanProperties(Class<?> clazz) {

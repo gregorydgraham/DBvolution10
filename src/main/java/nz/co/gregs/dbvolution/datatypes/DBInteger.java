@@ -52,7 +52,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Create a DBInteger with the value set to the value provided..
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBInteger(int value) {
 		this(Integer.valueOf(value));
@@ -61,7 +61,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Create a DBInteger with the value set to the value provided..
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBInteger(Integer value) {
 		super(value);
@@ -70,7 +70,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Create a DBInteger with the value set to the value provided..
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBInteger(long value) {
 		this(Long.valueOf(value));
@@ -79,7 +79,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Create a DBInteger with the value set to the value provided..
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBInteger(Long value) {
 		super(value);
@@ -88,7 +88,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Create a DBInteger as a column expression.
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBInteger(NumberResult value) {
 		super(value);
@@ -175,7 +175,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Long... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -185,7 +185,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(NumberResult... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -195,7 +195,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Number... permitted) {
 		List<Long> ints = new ArrayList<Long>();
@@ -210,7 +210,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(DBInteger... permitted) {
 		List<Long> ints = new ArrayList<Long>();
@@ -225,7 +225,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(DBNumber... permitted) {
 		List<Long> ints = new ArrayList<Long>();
@@ -240,7 +240,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Collection<Long> permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -250,7 +250,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValuesInteger(Collection<Integer> permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -260,7 +260,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Integer... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -271,7 +271,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(Long... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -283,7 +283,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(DBInteger... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -295,7 +295,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(Integer... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -307,7 +307,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesLong(List<Long> excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -319,7 +319,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValuesInteger(List<Integer> excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -343,8 +343,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -367,8 +367,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -391,8 +391,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -415,8 +415,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -439,8 +439,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -463,8 +463,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -487,8 +487,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRange(null, 5) will return 5, 6, 7, 8, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -512,8 +512,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRange(null, 5) will return 5, 6, 7, 8, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -537,8 +537,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will return 6, 7, 8, 9, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -562,8 +562,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will return 6, 7, 8, 9, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -587,8 +587,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will return 5, 6, 7, 8, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -612,8 +612,8 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will return 5, 6, 7, 8, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -639,7 +639,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Sets the value of this DBInteger to the value provided.
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue	 newLiteralValue	
 	 */
 	public void setValue(DBNumber newLiteralValue) {
 		setValue(newLiteralValue.getValue());
@@ -648,7 +648,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Sets the value of this DBInteger to the value provided.
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue	 newLiteralValue	
 	 */
 	public void setValue(DBInteger newLiteralValue) {
 		setValue(newLiteralValue.getValue());
@@ -657,7 +657,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Sets the value of this DBInteger to the value provided.
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue	 newLiteralValue	
 	 */
 	public void setValue(Number newLiteralValue) {
 		if (newLiteralValue == null) {
@@ -670,7 +670,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Sets the value of this DBInteger to the value provided.
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue	 newLiteralValue	
 	 */
 	public void setValue(Long newLiteralValue) {
 		if (newLiteralValue == null) {
@@ -683,7 +683,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	/**
 	 * Sets the value of this DBInteger to the value provided.
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue	 newLiteralValue	
 	 */
 	public void setValue(Integer newLiteralValue) {
 		if (newLiteralValue == null) {
@@ -695,7 +695,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * @param db
+	 * @param db	 db	
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override

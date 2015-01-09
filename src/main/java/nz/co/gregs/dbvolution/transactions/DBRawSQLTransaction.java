@@ -30,8 +30,8 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 
 	/**
 	 * Create a DBRawSQLTransaction object for the SQL provided.
-	 * 
-	 * @param rawSQL
+	 *
+	 * @param rawSQL rawSQL
 	 */
 	public DBRawSQLTransaction(String rawSQL) {
         this.sql = rawSQL;
@@ -39,10 +39,11 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 
 	/**
 	 * Perform the SQL on the database within a transaction.
-	 * 
-	 * @param dbDatabase
+	 *
+	 * @param dbDatabase dbDatabase
 	 * @return TRUE if the transaction succeeded, FALSE otherwise.
-	 * @throws Exception 
+	 * @throws java.lang.Exception java.lang.Exception
+	 
 	 */
     @Override
     public Boolean doTransaction(DBDatabase dbDatabase) throws Exception {

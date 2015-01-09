@@ -29,7 +29,7 @@ public class MySQLMXJDB extends MySQLDB {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds
+	 * @param ds	 ds	
 	 */
 	public MySQLMXJDB(DataSource ds) {
         super(ds);
@@ -38,9 +38,9 @@ public class MySQLMXJDB extends MySQLDB {
 	/**
 	 * Creates a DBDatabase tweaked for MySQL MXJ.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
 	public MySQLMXJDB(String jdbcURL, String username, String password) {
 		super(jdbcURL, username, password);

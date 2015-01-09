@@ -31,8 +31,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	/**
 	 * Indicates that the column is a foreign key if the column name starts with "fk_".
 	 *
-	 * @param tableName
-	 * @param columnName
+	 * @param tableName tableName
+	 * @param columnName columnName
 	 * @return TRUE if the column is a foreign key column, FALSE otherwise
 	 */
 	@Override
@@ -43,8 +43,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	/**
 	 * Converts the foreign key to the referenced column name.
 	 *
-	 * @param tableName
-	 * @param columnName
+	 * @param tableName tableName
+	 * @param columnName columnName
 	 * @return The name of the referenced column
 	 */
 	@Override
@@ -63,8 +63,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	/**
 	 * Converts the column name into the name of the referenced table.
 	 *
-	 * @param tableName
-	 * @param columnName
+	 * @param tableName tableName
+	 * @param columnName columnName
 	 * @return the name of the referenced table
 	 */
 	@Override

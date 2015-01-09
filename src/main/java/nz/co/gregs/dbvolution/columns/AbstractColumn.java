@@ -57,9 +57,9 @@ public class AbstractColumn implements DBExpression {
 	 * RowDefinition so that the original association can be rebuilt where the
 	 * expression is converted into SQL.
 	 *
-	 * @param row
-	 * @param field
-	 * @throws IncorrectRowProviderInstanceSuppliedException
+	 * @param row the row which contains the field
+	 * @param field the field of the row that represents the database column
+	 * @throws IncorrectRowProviderInstanceSuppliedException Please note the the field must be a field of the row
 	 */
 	public AbstractColumn(RowDefinition row, Object field) throws IncorrectRowProviderInstanceSuppliedException {
 		this.dbrow = row;
@@ -165,7 +165,7 @@ public class AbstractColumn implements DBExpression {
 	 * The value returned may have undergone type conversion from the target
 	 * object's actual property type, if a type adaptor is present.
 	 *
-	 * @param row
+	 * @param row resolve the column for this row and provide the QueryableDatatype that is appropriate
 	 * @return the QDT version of the field on the DBRow
 	 */
 	public QueryableDatatype getAppropriateQDTFromRow(RowDefinition row) {
@@ -180,7 +180,7 @@ public class AbstractColumn implements DBExpression {
 	 * you should probably be using {@link #getAppropriateQDTFromRow(nz.co.gregs.dbvolution.query.RowDefinition)
 	 * }
 	 *
-	 * @param row
+	 * @param row resolve the column for this row and provide the appropriate Java field (may be a QueryableDatatype)
 	 * @return the actual field on the DBRow object referenced by this column.
 	 */
 	public Object getAppropriateFieldFromRow(RowDefinition row) {

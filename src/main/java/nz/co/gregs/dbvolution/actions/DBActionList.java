@@ -54,7 +54,7 @@ public class DBActionList extends ArrayList<DBAction> {
 	 * Creates a new DBActionList containing the DBactions provided in the order
 	 * specified.
 	 *
-	 * @param actions
+	 * @param actions the list of actions to include in this DBActionList
 	 */
 	public DBActionList(DBAction... actions) {
 		super();
@@ -64,7 +64,7 @@ public class DBActionList extends ArrayList<DBAction> {
 	/**
 	 * Returns the SQL that would be executed on the database provided.
 	 *
-	 * @param db
+	 * @param db the target database.
 	 * @return a List of SQL statements appropriate to the actions of this DBActionList and the database.
 	 */
 	public synchronized List<String> getSQL(DBDatabase db) {
@@ -78,9 +78,9 @@ public class DBActionList extends ArrayList<DBAction> {
 	/**
 	 * Executes every action in this DBActionList on the database provided.
 	 *
-	 * @param database
+	 * @param database the target database.
 	 * @return a new DBActionList containing the DBActions after execution.
-	 * @throws SQLException
+	 * @throws SQLException Database actions may throw SQLException
 	 */
 	public synchronized DBActionList execute(DBDatabase database) throws SQLException {
 		DBActionList executed = new DBActionList();

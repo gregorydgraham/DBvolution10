@@ -87,7 +87,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * Clones the DBDatabase.
 	 *
 	 * @return a clone of the DBDatabase.
-	 * @throws CloneNotSupportedException
+	 * @throws CloneNotSupportedException not likely
 	 */
 	@Override
 	protected DBDatabase clone() throws CloneNotSupportedException {
@@ -344,7 +344,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param listOfRowsToInsert a list of DBRows
 	 * @return a DBActionList of all the actions performed
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList insert(DBRow... listOfRowsToInsert) throws SQLException {
 		DBActionList changes = new DBActionList();
@@ -360,7 +360,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param listOfRowsToInsert a List of DBRows
 	 * @return a DBActionList of all the actions performed
-	 * @throws SQLException
+	 * @throws SQLException  database exceptions
 	 */
 	public final DBActionList insert(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
 		DBActionList changes = new DBActionList();
@@ -378,7 +378,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param rows a list of DBRows
 	 * @return a DBActionList of all the actions performed
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList delete(DBRow... rows) throws SQLException {
 		DBActionList changes = new DBActionList();
@@ -394,7 +394,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param list a list of DBRows
 	 * @return a DBActionList of all the actions performed
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList delete(Collection<? extends DBRow> list) throws SQLException {
 		DBActionList changes = new DBActionList();
@@ -415,7 +415,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param rows a list of DBRows
 	 * @return a DBActionList of the actions performed on the database
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList update(DBRow... rows) throws SQLException {
 		DBActionList actions = new DBActionList();
@@ -434,7 +434,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param listOfRowsToUpdate a List of DBRows
 	 * @return a DBActionList of the actions performed on the database
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList update(Collection<? extends DBRow> listOfRowsToUpdate) throws SQLException {
 		DBActionList actions = new DBActionList();
@@ -455,10 +455,10 @@ public abstract class DBDatabase implements Cloneable {
 	 * See
 	 * {@link nz.co.gregs.dbvolution.DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow)}
 	 *
-	 * @param <R>
-	 * @param exampleRow
+	 * @param <R> the row affected
+	 * @param exampleRow the example
 	 * @return a list of the selected rows
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException {
 		DBTable<R> dbTable = getDBTable(exampleRow);
@@ -474,10 +474,10 @@ public abstract class DBDatabase implements Cloneable {
 	 * See
 	 * {@link nz.co.gregs.dbvolution.DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow)}
 	 *
-	 * @param <R>
-	 * @param exampleRow
+	 * @param <R> the table affected 
+	 * @param exampleRow the example
 	 * @return a list of the selected rows
-	 * @throws SQLException
+	 * @throws SQLException  database exceptions
 	 */
 	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException {
 		return get(exampleRow);
@@ -491,12 +491,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * See {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
 	 *
-	 * @param <R>
-	 * @param expectedNumberOfRows
-	 * @param exampleRow
-	 * @return a list of the selected rows
-	 * @throws SQLException
-	 * @throws UnexpectedNumberOfRowsException
+	 * @param <R> the table affected
+	 * @param expectedNumberOfRows throw an exception and abort if this number is not matched
+	 * @param exampleRow the example
+	 * @return a list of the selected rows 
+	 * @throws SQLException database exceptions
+	 * @throws UnexpectedNumberOfRowsException the exception thrown if the number of rows is wrong
 	 */
 	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
 		if (expectedNumberOfRows == null) {
@@ -514,12 +514,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * See {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
 	 *
-	 * @param <R>
-	 * @param expectedNumberOfRows
-	 * @param exampleRow
+	 * @param <R> the table affected
+	 * @param expectedNumberOfRows the number of rows required
+	 * @param exampleRow the example
 	 * @return a list of the selected rows
-	 * @throws SQLException
-	 * @throws UnexpectedNumberOfRowsException
+	 * @throws SQLException database exceptions
+	 * @throws UnexpectedNumberOfRowsException the exception thrown when the number of rows is not correct
 	 */
 	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
 		return get(expectedNumberOfRows, exampleRow);
@@ -529,9 +529,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * creates a query and fetches the rows automatically, based on the examples
 	 * given
 	 *
-	 * @param rows
+	 * @param rows the examples of the rows required
 	 * @return a list of DBQueryRows relating to the selected rows
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows()
 	 */
@@ -544,9 +544,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * creates a query and fetches the rows automatically, based on the examples
 	 * given
 	 *
-	 * @param rows
+	 * @param rows the example rows for the tables required
 	 * @return a list of DBQueryRows relating to the selected rows
-	 * @throws SQLException
+	 * @throws SQLException  database exceptions
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows()
 	 */
@@ -558,7 +558,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * Convenience method to print the rows from get(DBRow...)
 	 *
-	 * @param rows
+	 * @param rows lists of DBRows,  DBReports, or DBQueryRows
 	 */
 	public void print(List<?> rows) {
 		if (rows != null) {
@@ -577,11 +577,11 @@ public abstract class DBDatabase implements Cloneable {
 	 * found is different from the number expected. See {@link DBQuery#getAllRows(long)
 	 * } for further details.
 	 *
-	 * @param expectedNumberOfRows
-	 * @param rows
+	 * @param expectedNumberOfRows the number of rows required
+	 * @param rows examples of the tables required
 	 * @return a list of DBQueryRows relating to the selected rows
-	 * @throws SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * @throws SQLException database exceptions
+	 * @throws UnexpectedNumberOfRowsException thrown when the retrieved row count is wrong
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows(long)
 	 */
@@ -598,12 +598,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * Convenience method to simplify switching from READONLY to COMMITTED
 	 * transaction
 	 *
-	 * @param <V>
-	 * @param dbTransaction
-	 * @param commit
+	 * @param <V> the return type of the transaction, can be anything
+	 * @param dbTransaction the transaction to execute
+	 * @param commit commit=true or rollback=false.
 	 * @return the object returned by the transaction
-	 * @throws SQLException
-	 * @throws Exception
+	 * @throws SQLException database exceptions
+	 * @throws Exception any exception thrown by the transactions code
 	 * @see DBTransaction
 	 * @see
 	 * DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
@@ -658,11 +658,11 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Otherwise the transaction is committed and changes are made permanent
 	 *
-	 * @param <V>
-	 * @param dbTransaction
+	 * @param <V> the return type of the transaction
+	 * @param dbTransaction the transaction to execute
 	 * @return the object returned by the transaction
-	 * @throws SQLException
-	 * @throws Exception
+	 * @throws SQLException database exceptions
+	 * @throws Exception any other exception thrown by the transaction
 	 * @see DBTransaction
 	 */
 	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
@@ -680,11 +680,11 @@ public abstract class DBDatabase implements Cloneable {
 	 * If no exception occurs, the transaction is still rolled back and no changes
 	 * are made
 	 *
-	 * @param <V>
-	 * @param dbTransaction
+	 * @param <V> the return type of the transaction
+	 * @param dbTransaction the transaction to execute
 	 * @return the object returned by the transaction
-	 * @throws SQLException
-	 * @throws Exception
+	 * @throws SQLException database exceptions
+	 * @throws Exception any other exception
 	 * @see DBTransaction
 	 */
 	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
@@ -696,9 +696,9 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * equivalent to script.implement(this);
 	 *
-	 * @param script
+	 * @param script the script to execute and commit
 	 * @return a DBActionList provided by the script
-	 * @throws Exception
+	 * @throws Exception any exception can be thrown by a DBScript
 	 */
 	public DBActionList implement(DBScript script) throws Exception {
 		return script.implement(this);
@@ -709,9 +709,9 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * equivalent to script.test(this);
 	 *
-	 * @param script
+	 * @param script the script to executed and rollback
 	 * @return a DBActionList provided by the script
-	 * @throws Exception
+	 * @throws Exception DBScripts can throw any exception at any time
 	 */
 	public DBActionList test(DBScript script) throws Exception {
 		return script.test(this);
@@ -729,7 +729,7 @@ public abstract class DBDatabase implements Cloneable {
 	/**
 	 * Sets the name of the JDBC driver class used by this DBDatabase instance.
 	 *
-	 * @param driver
+	 * @param driver the name of the JDBC Drive class for this DBDatabase.
 	 */
 	protected void setDriverName(String driver) {
 		driverName = driver;
@@ -774,8 +774,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow) getRowsByExample}
 	 * to use the criteria on the DBRow.
 	 *
-	 * @param <R>
-	 * @param example
+	 * @param <R> the table affected
+	 * @param example the example row to use in the query
 	 * @return a DBTable instance for the example provided
 	 */
 	public <R extends DBRow> DBTable<R> getDBTable(R example) {
@@ -788,7 +788,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * This is the easiest way to create DBQueries, and indeed queries.
 	 *
-	 * @param examples
+	 * @param examples the example rows that are required in the query
 	 * @return a DBQuery with the examples as required tables
 	 */
 	public DBQuery getDBQuery(DBRow... examples) {
@@ -801,7 +801,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * This is the easiest way to create DBQueries, and indeed queries.
 	 *
-	 * @param examples
+	 * @param examples the example rows that are required in the query
 	 * @return a DBQuery with the examples as required tables
 	 */
 	public DBQuery getDBQuery(List<DBRow> examples) {
@@ -831,7 +831,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * Called by internal methods that are about to execute SQL so the SQL can be
 	 * printed.
 	 *
-	 * @param sqlString
+	 * @param sqlString the raw SQL to print
 	 */
 	public void printSQLIfRequested(String sqlString) {
 		printSQLIfRequested(sqlString, System.out);
@@ -851,9 +851,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * the database using the default data types supplied by the fields of the
 	 * DBRow.
 	 *
-	 * @param newTableRow
-	 * @throws SQLException
-	 * @throws AutoCommitActionDuringTransactionException
+	 * @param newTableRow the table to create
+	 * @throws SQLException database exceptions
+	 * @throws AutoCommitActionDuringTransactionException thrown if this action is used during a DBTransaction or DBScript
 	 */
 	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		createTable(newTableRow, false);
@@ -882,9 +882,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * have been described as the "ambulance at the bottom of the cliff" so you
 	 * might be better off without them.
 	 *
-	 * @param newTableRow
-	 * @throws SQLException
-	 * @throws AutoCommitActionDuringTransactionException
+	 * @param newTableRow table
+	 * @throws SQLException database exceptions
+	 
 	 */
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		createTable(newTableRow, true);
@@ -975,10 +975,10 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Your DBA will murder you.
 	 *
-	 * @param tableRow
-	 * @throws SQLException
-	 * @throws AutoCommitActionDuringTransactionException
-	 * @throws AccidentalDroppingOfTableException
+	 
+	  1 Database exceptions may be thrown
+	 * @param tableRow tableRow
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
 		preventDDLDuringTransaction("DBDatabase.dropTable()");
@@ -1013,8 +1013,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)
 	 * }
-	 * <
-	 * p>In General NEVER USE THIS METHOD.
+	 * <p>
+	 * In General NEVER USE THIS METHOD.
 	 *
 	 * <p>
 	 * Seriously NEVER USE THIS METHOD.
@@ -1022,8 +1022,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Your DBA will murder you.
 	 *
-	 * @param <TR>
-	 * @param tableRow
+	 * @param <TR> DBRow type
+	 * @param tableRow tableRow
 	 */
 	@SuppressWarnings("empty-statement")
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
@@ -1077,7 +1077,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase) willCreateBlankQuery}
 	 * on DBRow.
 	 *
-	 * @param row
+	 * @param row	 row	
 	 * @return TRUE if the specified row has no specified criteria, FALSE
 	 * otherwise
 	 */
@@ -1091,12 +1091,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Do NOT Use This.
 	 *
-	 * @param doIt
-	 * @throws Exception
-	 * @throws UnsupportedOperationException
-	 * @throws AutoCommitActionDuringTransactionException
-	 * @throws AccidentalDroppingOfTableException
-	 * @throws AccidentalDroppingOfDatabaseException
+	 * @param doIt doIt
+	 * @throws java.lang.Exception java.lang.Exception
 	 */
 	public void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
@@ -1130,7 +1126,7 @@ public abstract class DBDatabase implements Cloneable {
 	/**
 	 * Sets the database name.
 	 *
-	 * @param databaseName
+	 * @param databaseName	 databaseName	
 	 */
 	protected void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
@@ -1189,7 +1185,7 @@ public abstract class DBDatabase implements Cloneable {
 
 	/**
 	 *
-	 * @param justLeaveThisAtTrue
+	 * @param justLeaveThisAtTrue	 justLeaveThisAtTrue	
 	 */
 	public void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
 		this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
@@ -1247,11 +1243,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * Retrieves a list of report rows from the database using the constraints
 	 * supplied by the report and the examples supplied.
 	 *
-	 * @param <A>
-	 * @param report
-	 * @param examples
+	 * @param <A> DBReport type
+	 * @param report report
+	 * @param examples examples
 	 * @return A List of instances of the supplied report from the database
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException {
 		return DBReport.getRows(this, report, examples);
@@ -1267,11 +1264,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * Retrieves a list of report rows from the database using the constraints
 	 * supplied by the report and the examples supplied.
 	 *
-	 * @param <A>
-	 * @param report
-	 * @param examples
+	 * @param <A> DBReport type
+	 * @param report report
+	 * @param examples examples
 	 * @return A List of instances of the supplied report from the database
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException {
 		return DBReport.getRows(this, report, examples);
@@ -1287,7 +1285,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * This is used internally for reference counting.
 	 *
-	 * @param connection
+	 * @param connection	 connection	
 	 */
 	public void connectionOpened(Connection connection) {
 		synchronized (getConnectionSynchronizeObject) {
@@ -1301,7 +1299,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * This is used internally for reference counting.
 	 *
-	 * @param connection
+	 * @param connection	 connection	
 	 */
 	public void connectionClosed(Connection connection) {
 		synchronized (getConnectionSynchronizeObject) {
@@ -1317,7 +1315,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * Used by {@link SQLiteDB} in particular.
 	 *
 	 * @return The connection configured ready to use.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
@@ -1348,12 +1347,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * Called after DROP TABLE to allow the DBDatabase to clean up any extra
 	 * objects created with the table.
 	 *
-	 * @param <TR>
-	 * @param tableRow
-	 * @throws java.sql.SQLException
+	 * @param <R> DBRow type
+	 * @param tableRow tableRow
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("empty-statement")
-	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
+	protected <R extends DBRow> void dropAnyAssociatedDatabaseObjects(R tableRow) throws SQLException {
 		;
 	}
 
@@ -1361,8 +1360,10 @@ public abstract class DBDatabase implements Cloneable {
 	 * Used by DBStatement to release the connection back into the connection
 	 * pool.
 	 *
-	 * @param connection
-	 * @throws SQLException
+	 
+	  1 Database exceptions may be thrown
+	 * @param connection connection
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public synchronized void unusedConnection(Connection connection) throws SQLException {
 		if (supportsPooledConnections()) {

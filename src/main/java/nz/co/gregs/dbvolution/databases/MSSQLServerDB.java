@@ -34,7 +34,7 @@ public class MSSQLServerDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
-	 * @param ds
+	 * @param ds	 ds	
 	 */
 	public MSSQLServerDB(DataSource ds) {
         super(new MSSQLServerDBDefinition(), ds);
@@ -43,10 +43,10 @@ public class MSSQLServerDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for MS SQL Server using the driver, JDBC URL, username, and password.
 	 *
-	 * @param driverName
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param driverName driverName
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
     public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
         super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
@@ -58,9 +58,9 @@ public class MSSQLServerDB extends DBDatabase {
 	 * <p>
 	 * The default driver will be used for the connection.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
     public MSSQLServerDB(String jdbcURL, String username, String password) {
         super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);

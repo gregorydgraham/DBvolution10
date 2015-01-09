@@ -30,8 +30,8 @@ package nz.co.gregs.dbvolution.exceptions;
 	 * <p>
 	 * Please ensure all DBReports have a public, argument-less, default constructor.
 	 *
-	 * @param badReport
-	 * @param ex
+	 * @param badReport badReport
+	 * @param ex ex
 	 */
 	public UnableToInstantiateDBReportSubclassException(Object badReport, Exception ex) {
 			super("Unable To Create DBReport Instance: please ensure that your DBReport subclass, " + badReport.getClass().getSimpleName() + ", has a Public, No Parameter Constructor. The class itself may need to be \"public static\" as well.", ex);

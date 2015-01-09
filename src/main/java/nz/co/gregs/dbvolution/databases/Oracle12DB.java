@@ -35,11 +35,11 @@ public class Oracle12DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *
-	 * @param definition
-	 * @param driverName
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 
+	 
+	 
+	 
+	 
 	 */
 //	public Oracle12DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 //		super(definition, driverName, jdbcURL, username, password);
@@ -57,10 +57,10 @@ public class Oracle12DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *
-	 * @param driverName
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param driverName driverName
+	 * @param jdbcURL jdbcURL
+	 * @param password password
+	 * @param username username
 	 */
 	public Oracle12DB(String driverName, String jdbcURL, String username, String password) {
 		super(new Oracle12DBDefinition(), driverName, jdbcURL, username, password);
@@ -69,9 +69,9 @@ public class Oracle12DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
 	public Oracle12DB(String jdbcURL, String username, String password) {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, jdbcURL, username, password);
@@ -80,11 +80,11 @@ public class Oracle12DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *
-	 * @param host
-	 * @param port
-	 * @param serviceName
-	 * @param username
-	 * @param password
+	 * @param host host
+	 * @param port port
+	 * @param serviceName serviceName
+	 * @param username username
+	 * @param password password
 	 */
 	public Oracle12DB(String host, int port, String serviceName, String username, String password) {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);

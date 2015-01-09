@@ -59,8 +59,9 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * DBTableOLD is a quick and easy API for targeted data retrieval, for more complex
  * needs use {@link DBQuery}.
  *
- * @param <E>
+ 
  * @author Gregory Graham
+ * @param <E> DBRow type
  */
 @Deprecated
 public class DBTableOLD<E extends DBRow> {
@@ -82,9 +83,9 @@ public class DBTableOLD<E extends DBRow> {
      * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) } is probably
      * a better option.
      *
-     * @param <E>
-     * @param database
-     * @param example
+	 * @param <E> DBRow type
+	 * @param database database
+	 * @param example example
      * @return an instance of the supplied example
      */
     public static <E extends DBRow> DBTableOLD<E> getInstance(DBDatabase database, E example) {
@@ -95,8 +96,8 @@ public class DBTableOLD<E extends DBRow> {
     /**
      * Constructor
      *
-     * @param myDatabase
-     * @param dummyObject
+     
+     
      */
     private DBTableOLD(DBDatabase myDatabase, E dummyObject) {
         this.database = myDatabase;
@@ -194,7 +195,8 @@ public class DBTableOLD<E extends DBRow> {
      * blank queries with setBlankQueryAllowed(boolean)
      *
      * @return ALL rows of the table from the database
-     * @throws SQLException, AccidentalBlankQueryException
+     * @throws SQLException database exception
+	 * @throws AccidentalBlankQueryException no parameters set on the query
      */
     public DBTableOLD<E> getAllRows() throws SQLException, AccidentalBlankQueryException {
         if (!this.blankQueryAllowed) {
@@ -352,9 +354,10 @@ public class DBTableOLD<E extends DBRow> {
      * The primary key column is identified by the {@code @DBPrimaryKey}
      * annotation in the TableRow subclass.
      *
-     * @param pkValue
+	 * @param pkValue pkValue
      * @return a DBTableOLD instance containing the row(s) for the primary key
-     * @throws SQLException
+      1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
      */
     public DBTableOLD<E> getRowsByPrimaryKey(Object pkValue) throws SQLException {
 
@@ -373,9 +376,10 @@ public class DBTableOLD<E extends DBRow> {
      * The primary key column is identified by the {@code @DBPrimaryKey}
      * annotation in the TableRow subclass.
      *
-     * @param pkValue
+	 * @param pkValue pkValue
      * @return a DBTableOLD instance containing the row(s) for the primary key
-     * @throws SQLException
+      1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
      */
     public DBTableOLD<E> getRowsByPrimaryKey(Number pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
@@ -393,9 +397,10 @@ public class DBTableOLD<E extends DBRow> {
      * The primary key column is identified by the {@code @DBPrimaryKey}
      * annotation in the TableRow subclass.
      *
-     * @param pkValue
+	 * @param pkValue pkValue
      * @return a DBTableOLD instance containing the row(s) for the primary key
-     * @throws SQLException
+      1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
      */
     public DBTableOLD<E> getRowsByPrimaryKey(Date pkValue) throws SQLException {
         DBDefinition defn = database.getDefinition();
@@ -417,9 +422,10 @@ public class DBTableOLD<E extends DBRow> {
      * {@code myTable.getByExample(myExample); }<br>
      * {@code List<MyRow> myRows = myTable.toList();}
      *
-     * @param queryTemplate
+	 * @param queryTemplate queryTemplate
      * @return a DBTableOLD instance containing the rows that match the example
-     * @throws SQLException
+      1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
      * @see QueryableDatatype
      * @see DBRow
      */
@@ -445,11 +451,13 @@ public class DBTableOLD<E extends DBRow> {
      * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
      * {@code (new DBTableOLD<MyTableRow>()).getOnlyRowByExample(myExample);}
      *
-     * @param queryTemplate
+	 * @param queryTemplate queryTemplate
      * @return a DBTableOLD instance containing the rows that match the example
-     * @throws SQLException
-     * @throws UnexpectedNumberOfRowsException
-     * @throws AccidentalBlankQueryException
+      1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+     
+     
      * @see QueryableDatatype
      * @see DBRow
      */
@@ -469,12 +477,14 @@ public class DBTableOLD<E extends DBRow> {
      * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
      * {@code (new DBTableOLD<MyTableRow>()).getRowsByExample(myExample, 10L);}
      *
-     * @param queryTemplate
-     * @param expectedNumberOfRows
+	 * @param queryTemplate queryTemplate
+	 * @param expectedNumberOfRows expectedNumberOfRows
      * @return a DBTableOLD instance containing the rows that match the example
-     * @throws SQLException
-     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-     * @throws AccidentalBlankQueryException
+      1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+     
+     
      * @see QueryableDatatype
      * @see DBRow
      */
@@ -495,7 +505,7 @@ public class DBTableOLD<E extends DBRow> {
      * Returns the WHERE clause used by the getByExample method. Provided to aid
      * understanding and debugging.
      *
-     * @param row
+	 * @param row row
      * @return a String of the WHERE clause used for the specified example
      */
     public String getSQLWhereClauseForExample(E row) throws AccidentalBlankQueryException {
@@ -517,9 +527,9 @@ public class DBTableOLD<E extends DBRow> {
     /**
      * Renamed {@link #getSQLWhereClauseForExample(nz.co.gregs.dbvolution.DBRow) }
      *
-     * @param row
+	 * @param row row
      * @return the where clause
-     * @throws AccidentalBlankQueryException
+     
      * @deprecated
      * @see #getSQLWhereClauseForExample(nz.co.gregs.dbvolution.DBRow) 
      */
@@ -542,9 +552,10 @@ public class DBTableOLD<E extends DBRow> {
      * <p>
      * N.B. the starting AND is optional and avoid trailing semicolons
      *
-     * @param sqlWhereClause
+	 * @param sqlWhereClause sqlWhereClause
      * @return a DBTableOLD of the rows matching the WHERE clause specified
-     * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+     
      */
     public DBTableOLD<E> getRowsByRawSQL(String sqlWhereClause) throws SQLException {
         if (sqlWhereClause.toLowerCase().matches("^\\s*and\\s+.*")) {
@@ -562,7 +573,7 @@ public class DBTableOLD<E extends DBRow> {
      * Convenience method to print all the rows in the current collection
      * Equivalent to: print(System.out)
      *
-     * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException     SQLException
      */
     public void print() throws SQLException, AccidentalBlankQueryException {
         if (resultSet == null) {
@@ -576,8 +587,8 @@ public class DBTableOLD<E extends DBRow> {
      *
      * myTable.printAllRows(System.err);
      *
-     * @param ps
-     * @throws java.sql.SQLException
+	 * @param ps ps
+	 * @throws java.sql.SQLException java.sql.SQLException
      */
     public void print(PrintStream ps) throws SQLException, AccidentalBlankQueryException {
         if (resultSet == null) {
@@ -600,7 +611,8 @@ public class DBTableOLD<E extends DBRow> {
      * } with the initial exemplar will be run.
      *
      * @return the first row in this DBTableOLD instance
-     * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+     
      */
     public E getFirstRow() throws SQLException, AccidentalBlankQueryException {
         if (resultSet == null) {
@@ -626,8 +638,10 @@ public class DBTableOLD<E extends DBRow> {
      * } with the initial exemplar will be run.
      *
      * @return the first row in this DBTableOLD instance
-     * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-     * @throws java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * @throws java.sql.SQLException java.sql.SQLException
+     
+     
      */
     public E getOnlyRow() throws UnexpectedNumberOfRowsException, SQLException {
         if (resultSet == null) {
@@ -642,9 +656,10 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @param newRows
+	 * @param newRows	 newRows	
 	 * @return a DBActionList of all the changes required.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	    public final DBActionList insert(E... newRows) throws SQLException {
         DBActionList actions = new DBActionList();
@@ -656,9 +671,10 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @param newRows
+	 * @param newRows	 newRows	
 	 * @return a DBActionList of all the changes required.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBActionList insert(List<E> newRows) throws SQLException {
         DBActionList changes = new DBActionList();
@@ -670,9 +686,10 @@ public class DBTableOLD<E extends DBRow> {
 	
 	/**
 	 *
-	 * @param oldRows
+	 * @param oldRows	 oldRows	
 	 * @return a DBActionList of all the changes required.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public final DBActionList delete(E... oldRows) throws SQLException {
         DBActionList actions = new DBActionList();
@@ -685,9 +702,10 @@ public class DBTableOLD<E extends DBRow> {
     /**
      * Deletes the rows from the database permanently.
      *
-     * @param oldRows
+	 * @param oldRows oldRows
      * @return a {@link DBActionList} of the delete actions.
-     * @throws SQLException
+      1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
      */
     public DBActionList delete(List<E> oldRows) throws SQLException {
         DBActionList actions = new DBActionList();
@@ -699,9 +717,10 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @param oldRow
+	 * @param oldRow	 oldRow	
 	 * @return a DBActionList of all the changes required.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBActionList update(E oldRow) throws SQLException {
         return DBUpdate.update(database, oldRow);
@@ -709,9 +728,10 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @param oldRows
+	 * @param oldRows	 oldRows	
 	 * @return a DBActionList of all the changes required
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBActionList update(List<E> oldRows) throws SQLException {
         DBActionList changes = new DBActionList();
@@ -726,8 +746,8 @@ public class DBTableOLD<E extends DBRow> {
     /**
      *
      *
-     * @param query
-     * @param sqlWhereClause
+	 * @param query query
+	 * @param sqlWhereClause sqlWhereClause
      * @return a String of the WHERE clause for the specified example and
      * specified SQL clause
      * @see #getRowsByRawSQL(java.lang.String)
@@ -744,7 +764,8 @@ public class DBTableOLD<E extends DBRow> {
      * Extracts the rows from this DBTableOLD instance into a standard List
      *
      * @return a List of the rows in this DBTableOLD instance
-     * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+     
      */
     public List<E> toList() throws SQLException, AccidentalBlankQueryException {
         if (resultSet == null) {
@@ -756,7 +777,8 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @return a list of all the primary keys.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<Long> getPrimaryKeysAsLong() throws SQLException {
         if (resultSet == null) {
@@ -776,7 +798,8 @@ public class DBTableOLD<E extends DBRow> {
 	/**
 	 *
 	 * @return a list of all the primary keys
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<String> getPrimaryKeysAsString() throws SQLException {
         if (resultSet == null) {
@@ -796,7 +819,8 @@ public class DBTableOLD<E extends DBRow> {
      * Should be updated to return the varying rows somehow
      *
      * @param secondTable : a comparable table
-     * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+     
      */
     public void compare(DBTableOLD<E> secondTable) throws SQLException {
         HashMap<String, E> secondMap = new HashMap<String, E>();
@@ -816,7 +840,7 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @param i
+	 * @param i	 i	
 	 * @return this DBTableOLD instance.
 	 */
 	public DBTableOLD<E> setRowLimit(int i) {
@@ -850,9 +874,10 @@ public class DBTableOLD<E extends DBRow> {
      * Requires that all {@literal orderColumns} be from the {@code baseRow}
      * instance to work.
      *
-     * @param baseRow
+     
      *
-     * @param orderColumns
+	 * @param baseRow baseRow
+	 * @param orderColumns orderColumns
      * @return this
      */
     public DBTableOLD<E> setSortOrder(E baseRow, QueryableDatatype... orderColumns) {
@@ -899,7 +924,7 @@ public class DBTableOLD<E extends DBRow> {
 
 	/**
 	 *
-	 * @param allow
+	 * @param allow	 allow	
 	 * @return this DBTableOLD instance.
 	 */
 	public DBTableOLD<E> setBlankQueryAllowed(boolean allow) {

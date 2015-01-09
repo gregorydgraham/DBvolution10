@@ -61,8 +61,8 @@ public class DBInsert extends DBAction {
 	/**
 	 * Creates a DBInsert action for the row.
 	 *
-	 * @param <R>
-	 * @param row
+	 * @param <R> the table affected
+	 * @param row the row to insert
 	 */
 	protected <R extends DBRow> DBInsert(R row) {
 		super(row);
@@ -83,10 +83,10 @@ public class DBInsert extends DBAction {
 	 * <li>then the primary key will be set to the generated key.</li>
 	 * </ul>
 	 *
-	 * @param database
-	 * @param row
+	 * @param database the target database
+	 * @param row the row to be inserted
+	 * @throws SQLException Database actions can throw SQLException
 	 * @return a DBActionList of the actions performed on the database.
-	 * @throws SQLException
 	 */
 	public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
 		DBInsert dbInsert = new DBInsert(row);
@@ -287,9 +287,9 @@ public class DBInsert extends DBAction {
 	 * The actions created can be applied on a particular database using
 	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
 	 *
-	 * @param rows
+	 * @param rows the rows to be inserted
+	 * @throws SQLException Database actions can throw SQLException
 	 * @return a DBActionList of inserts.
-	 * @throws SQLException
 	 */
 	public static DBActionList getInserts(DBRow... rows) throws SQLException {
 		DBActionList inserts = new DBActionList();

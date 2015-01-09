@@ -30,8 +30,8 @@ public abstract class DBDelete extends DBAction {
 	/**
 	 * Creates a DBDelete action for the supplied row.
 	 *
-	 * @param <R>
-	 * @param row
+	 * @param <R> the table affected
+	 * @param row the row to delete
 	 */
 	protected <R extends DBRow> DBDelete(R row) {
 		super(row);
@@ -41,10 +41,10 @@ public abstract class DBDelete extends DBAction {
 	 * Deletes the specified row or example from the database and returns the
 	 * actions performed.
 	 *
-	 * @param database
-	 * @param row
+	 * @param database the target database
+	 * @param row the row to be deleted
 	 * @return the actions executed as a DBActionList
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public static DBActionList delete(DBDatabase database, DBRow row) throws SQLException {
 		DBActionList delete = getDeletes(database, row);
@@ -66,9 +66,9 @@ public abstract class DBDelete extends DBAction {
 	 * include insert statements use the {@link #getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow[])
 	 * } method.
 	 *
-	 * @param rows
+	 * @param rows the rows to be deleted
 	 * @return a DBActionList of deletes.
-	 * @throws SQLException
+	 * @throws SQLException Database actions can throw SQLException
 	 */
 	public static DBActionList getDeletesWithRevertCapability(DBRow... rows) throws SQLException {
 		DBActionList actions = new DBActionList();
@@ -101,10 +101,10 @@ public abstract class DBDelete extends DBAction {
 	 * revert action list.
 	 *
 	 *
-	 * @param db
-	 * @param rows
+	 * @param db the target database
+	 * @param rows the rows to be deleted
 	 * @return a DBActionList of delete actions.
-	 * @throws SQLException
+	 * @throws SQLException Database actions can throw SQLException
 	 */
 	public static DBActionList getDeletes(DBDatabase db, DBRow... rows) throws SQLException {
 		DBActionList actions = new DBActionList();
@@ -137,10 +137,10 @@ public abstract class DBDelete extends DBAction {
 	 * revert action list.
 	 *
 	 *
-	 * @param db
-	 * @param rows
+	 * @param db the target database
+	 * @param rows the rows to be deleted
 	 * @return a DBActionList of delete actions.
-	 * @throws SQLException
+	 * @throws SQLException Database actions can throw SQLException
 	 */
 	public static DBActionList getDeletes(DBDatabase db, Collection<? extends DBRow> rows) throws SQLException {
 		DBActionList actions = new DBActionList();
@@ -169,10 +169,10 @@ public abstract class DBDelete extends DBAction {
 	 * While it is unlikely that more than one action is required to delete, all
 	 * actions return a list to allow for complex actions.
 	 *
-	 * @param db
-	 * @param row
+	 * @param db the target database
+	 * @param row the row to be deleted
+	 * @throws SQLException Database actions can throw SQLException
 	 * @return a DBActionList of the actions required to implement the change.
-	 * @throws SQLException
 	 */
 	protected abstract DBActionList getActions(DBDatabase db, DBRow row) throws SQLException;
 }

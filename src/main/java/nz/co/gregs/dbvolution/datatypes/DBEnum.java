@@ -43,7 +43,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * The resulting DBEnum will be set as having the value provided but will not
 	 * be defined in the database.
 	 *
-	 * @param literalValue
+	 * @param literalValue	 literalValue	
 	 */
 	protected DBEnum(Object literalValue) {
 		super(literalValue);
@@ -71,7 +71,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	/**
 	 * Sets the value based on the given enumeration.
 	 *
-	 * @param enumValue
+	 * @param enumValue	 enumValue	
 	 */
 	@SuppressWarnings("unchecked")
 	public void setValue(E enumValue) {
@@ -122,8 +122,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * Tests whether two objects represent the same value. Handles subtle
 	 * differences in type.
 	 *
-	 * @param o1
-	 * @param o2
+	 
+	 
 	 * @return {@code true} if both null or equivalent on value, {@code false} if
 	 * not equal
 	 * @throws IncompatibleClassChangeError if can't recognise the type
@@ -240,7 +240,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	/**
 	 * Provides the literal values for all the enumeration values provided.
 	 *
-	 * @param enumValues
+	 * @param enumValues	 enumValues	
 	 * @return a list of the literal database values for the enumeration values.
 	 */
 	protected Object[] convertToLiteral(E... enumValues) {
@@ -255,7 +255,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	/**
 	 * Provides the value for the enumeration value provided.
 	 *
-	 * @param enumValue
+	 * @param enumValue	 enumValue	
 	 * @return the literal database value for the enumeration value.
 	 */
 	protected final Object convertToLiteral(E enumValue) {

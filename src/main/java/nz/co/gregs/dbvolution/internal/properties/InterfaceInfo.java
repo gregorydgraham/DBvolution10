@@ -109,8 +109,8 @@ public class InterfaceInfo {
 	 * as specified an the implementation class, or one of its ancestors (supertype or interfaces).
 	 * If the implementation class does not implement the interface (after a recursive search),
 	 * {@code null} is returned.
-	 * @param interfaceClass
-	 * @param implementationClass
+	 * @param interfaceClass interfaceClass
+	 * @param implementationClass implementationClass
 	 * @param argumentValues bound type argument values for each of the type arguments on the implementation class
 	 *        (empty array if none, null if not yet defined)
 	 * @return null if doesn't implement the interface, empty bounds if the interface has no parameters,
@@ -175,7 +175,7 @@ public class InterfaceInfo {
 	/**
 	 * Gets all direct ancestors of the given class, including its supertype and all directly implemented interfaces.
 	 * Excludes ancestors of type {@code Object}.
-	 * @param child
+	 
 	 * @return non-null list, empty if only ancestor is {@code Object}
 	 */
 	private static List<Type> ancestorTypesOf(Class<?> child) {
@@ -200,7 +200,7 @@ public class InterfaceInfo {
 	/**
 	 * Non-recursive: checks on this class only.
 	 * @param ancestorClass a supertype or interface
-	 * @param child
+	 
 	 * @return the actual Type reference to the interface class or null if not implemented/extended
 	 */
 	private static Type ancestorTypeByClass(Class<?> ancestorClass, Class<?> child) {
@@ -253,7 +253,7 @@ public class InterfaceInfo {
 	/**
 	 * Converts the given type into a concise representation
 	 * suitable for inclusion in error messages and logging.
-	 * @param type
+	 * @param type	 type	
 	 * @return a String describing the type succinctly
 	 */
 	protected static String descriptionOf(Type type) {
@@ -269,7 +269,7 @@ public class InterfaceInfo {
 	/**
 	 * Converts the given type array into a concise representation
 	 * suitable for inclusion in error messages and logging.
-	 * @param type
+	 
 	 * @return a String describing the types succinctly.
 	 */
 	static String descriptionOf(Type[] types) {
@@ -504,7 +504,7 @@ public class InterfaceInfo {
 		 * If the given class has bounded type parameters, the returned bounds
 		 * will reflect that.
 		 * If the class has no generic parameters, an empty array is returned.
-		 * @param parameterizedClass
+		 * @param parameterizedClass		 parameterizedClass		
 		 * @return an array of ParameterBounds objects
 		 */
 		public static ParameterBounds[] boundsForParametersOf(Class<?> parameterizedClass) {
@@ -525,7 +525,7 @@ public class InterfaceInfo {
 		 * limited to the use of parameterized type references, and to only
 		 * those type arguments which refer by type variable (ie: excludes
 		 * direct class name references and other type references).
-		 * @param parameterizedType
+		 * @param parameterizedType		 parameterizedType		
 		 * @param paramValuesByTypeVariableName a map from TypeVariable name
 		 * 		  to actual specified bounds; must contain values for all
 		 *        type variable references
@@ -558,7 +558,7 @@ public class InterfaceInfo {
 		
 		/**
 		 * Creates a single bounds instance from the supplied type reference.
-		 * @param type
+		 * @param type		 type		
 		 * @return the single bounds instance created
 		 */
 		public static ParameterBounds getBoundsOf(Type type) {

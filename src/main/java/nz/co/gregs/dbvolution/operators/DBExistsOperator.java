@@ -53,7 +53,7 @@ public class DBExistsOperator extends DBOperator {
 	 * Requires that {@literal qdtOfTheRow} is from the innerTable} instance for
 	 * this to work.
 	 *
-	 * @param tableRows
+	 * @param tableRows	 tableRows	
 	 * @throws IncorrectRowProviderInstanceSuppliedException if the
 	 * {@code qdtOfTheRow} is not from the {@code innerTable} instance
 	 */

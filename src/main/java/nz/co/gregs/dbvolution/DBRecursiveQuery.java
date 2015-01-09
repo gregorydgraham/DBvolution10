@@ -81,10 +81,10 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * foreign key provided to the traverse "down" the tree from the results of
 	 * the current query thru all the rows that reference the current rows.
 	 *
-	 * @param foreignKeyToFollow
-	 * @param direction
+	 
+	 
 	 * @return A linked List
-	 * @throws java.sql.SQLException
+	 
 	 */
 	private List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveSQLDirection direction) throws SQLException {
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
@@ -334,7 +334,8 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * foreign keys are fully supported.
 	 *
 	 * @return a list of the ancestors of the results from this query.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<TreeNode<T>> getPathsToRoot() throws SQLException {
 		List<T> ancestors = getAncestors();
@@ -400,7 +401,8 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * foreign keys are fully supported.
 	 *
 	 * @return a list of trees of the descendants of the results from this query.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<TreeNode<T>> getTrees() throws SQLException {
 		List<T> descendants = getDescendants();

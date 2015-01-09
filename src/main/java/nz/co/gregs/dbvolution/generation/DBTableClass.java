@@ -37,15 +37,15 @@ public class DBTableClass {
 	private final List<DBTableField> fields = new ArrayList<DBTableField>();
 	private final String lineSeparator = System.getProperty("line.separator");
 	private final String conceptBreak = lineSeparator + lineSeparator;
-	
+
 	/**
 	 * Constructor with required information for automatically creating a DBRow class.
 	 *
-	 * @param tableName
-	 * @param packageName
-	 * @param className
+	 * @param tableName tableName
+	 * @param packageName packageName
+	 * @param className className
 	 */
-	public DBTableClass(String tableName, String packageName, String className){
+	public DBTableClass(String tableName, String packageName, String className) {
 		this.tableName = tableName;
 		this.packageName = packageName;
 		this.className = className;
@@ -54,9 +54,8 @@ public class DBTableClass {
 	/**
 	 * Returns the package and class name formatted for use in Java code.
 	 *
-	 * <>
-	 * F
-	 * or a class named AClass in the package com.acme.database {@link #getFullyQualifiedName()
+	 * <p>
+	 * For a class named AClass in the package com.acme.database {@link #getFullyQualifiedName()
 	 * } will return "com.acme.database.AClass".
 	 *
 	 * @return a String of the fully qualified class name.
@@ -66,12 +65,11 @@ public class DBTableClass {
 	}
 
 	/**
-	 * Transforms the information encapsulated within the DBTableClass into valid
-	 * Java source code.
+	 * Transforms the information encapsulated within the DBTableClass into valid Java source code.
 	 *
 	 * <p>
-	 * After all available information has been set for this DBTableClass, this
-	 * method is called to generate the required Java source.
+	 * After all available information has been set for this DBTableClass, this method is called to generate the
+	 * required Java source.
 	 *
 	 * @return a String of the source code of the new DBRow class.
 	 */

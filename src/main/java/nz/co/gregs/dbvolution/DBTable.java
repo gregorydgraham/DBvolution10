@@ -57,8 +57,9 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * DBTable is a quick and easy API for targeted data retrieval; for more complex
  * needs, use {@link DBQuery}.
  *
- * @param <E>
+ 
  * @author Gregory Graham
+ * @param <E> DBRow type
  */
 public class DBTable<E extends DBRow> {
 
@@ -91,9 +92,9 @@ public class DBTable<E extends DBRow> {
 	 * {@link DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) } is probably a
 	 * better option.
 	 *
-	 * @param <E>
-	 * @param database
-	 * @param example
+	 * @param <E> DBRow type
+	 * @param database database
+	 * @param example example
 	 * @return an instance of the supplied example
 	 */
 	public static <E extends DBRow> DBTable<E> getInstance(DBDatabase database, E example) {
@@ -119,7 +120,7 @@ public class DBTable<E extends DBRow> {
 	 * blank queries with setBlankQueryAllowed(boolean)
 	 *
 	 * @return all the appropriate rows of the table from the database;
-	 * @throws SQLException, AccidentalBlankQueryException
+	 * @throws SQLException database exceptions
 	 */
 	public List<E> getAllRows() throws SQLException {
 		query.refreshQuery();
@@ -131,7 +132,8 @@ public class DBTable<E extends DBRow> {
 	 * Synonym for {@link #getAllRows()}
 	 *
 	 * @return all the appropriate rows
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<E> toList() throws SQLException {
 		return getAllRows();
@@ -152,9 +154,10 @@ public class DBTable<E extends DBRow> {
      * {@code myTable.getByExample(myExample); }<br>
 	 * {@code List<MyRow> myRows = myTable.toList();}
 	 *
-	 * @param example
+	 * @param example	 example	
 	 * @return All the rows that match the example
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @see QueryableDatatype
 	 * @see DBRow
 	 */
@@ -175,7 +178,8 @@ public class DBTable<E extends DBRow> {
 	 * Functionally equivalent to {@link #getAllRows()}.get(0).
 	 *
 	 * @return the first appropriate row in this DBTable
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 
 	 */
 	public E getFirstRow() throws SQLException {
 		List<E> allRows = getAllRows();
@@ -194,8 +198,10 @@ public class DBTable<E extends DBRow> {
 	 * {@link #getAllRows() } with the initial exemplar will be run.
 	 *
 	 * @return the first row in this DBTableOLD instance
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 
+	 
 	 */
 	public E getOnlyRow() throws SQLException, UnexpectedNumberOfRowsException {
 		List<E> allRows = getAllRows();
@@ -221,11 +227,13 @@ public class DBTable<E extends DBRow> {
      * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
 	 * {@code MyRow myRow = (new DBTable<MyTableRow>()).getOnlyRowByExample(myExample);}
 	 *
-	 * @param example
+	 * @param example	 example	
 	 * @return A list containing the rows that match the example
-	 * @throws SQLException
-	 * @throws UnexpectedNumberOfRowsException
-	 * @throws AccidentalBlankQueryException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 
+	 
 	 * @see QueryableDatatype
 	 * @see DBRow
 	 */
@@ -245,12 +253,14 @@ public class DBTable<E extends DBRow> {
      * {@code myExample.getLanguage.useLikeComparison("%JAVA%"); }<br>
 	 * {@code List<MyTableRow> rows = (new DBTable<MyTableRow>()).getRowsByExample(myExample, 10L);}
 	 *
-	 * @param example
-	 * @param expectedNumberOfRows
+	 * @param example example
+	 * @param expectedNumberOfRows expectedNumberOfRows
 	 * @return a DBTableOLD instance containing the rows that match the example
-	 * @throws SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * @throws AccidentalBlankQueryException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 
+	 
 	 * @see QueryableDatatype
 	 * @see DBRow
 	 */
@@ -296,9 +306,10 @@ public class DBTable<E extends DBRow> {
 	 * <p>
 	 * This method is zero-based so the first page is getAllRows(0).
 	 *
-	 * @param pageNumber
+	 * @param pageNumber	 pageNumber	
 	 * @return a list of the DBRows for the selected page.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<E> getRowsForPage(Integer pageNumber) throws SQLException {
 		query.refreshQuery();
@@ -319,10 +330,12 @@ public class DBTable<E extends DBRow> {
 	 * The primary key column is identified by the {@code @DBPrimaryKey}
 	 * annotation in the TableRow subclass.
 	 *
-	 * @param pkValue
+	 * @param pkValue	 pkValue	
 	 * @return a List containing the row(s) for the primary key
-	 * @throws SQLException
-	 * @throws java.lang.ClassNotFoundException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
+	 
 	 */
 	public List<E> getRowsByPrimaryKey(Number pkValue) throws SQLException, ClassNotFoundException {
 		return getRowsByPrimaryKeyObject(pkValue);
@@ -336,10 +349,12 @@ public class DBTable<E extends DBRow> {
 	 * The primary key column is identified by the {@code @DBPrimaryKey}
 	 * annotation in the TableRow subclass.
 	 *
-	 * @param pkValue
+	 * @param pkValue	 pkValue	
 	 * @return a List containing the row(s) for the primary key
-	 * @throws SQLException
-	 * @throws java.lang.ClassNotFoundException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
+	 
 	 */
 	public List<E> getRowsByPrimaryKey(String pkValue) throws SQLException, ClassNotFoundException {
 		return getRowsByPrimaryKeyObject(pkValue);
@@ -353,10 +368,12 @@ public class DBTable<E extends DBRow> {
 	 * The primary key column is identified by the {@code @DBPrimaryKey}
 	 * annotation in the TableRow subclass.
 	 *
-	 * @param pkValue
+	 * @param pkValue	 pkValue	
 	 * @return a List containing the row(s) for the primary key
-	 * @throws SQLException
-	 * @throws java.lang.ClassNotFoundException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
+	 
 	 */
 	public List<E> getRowsByPrimaryKey(Date pkValue) throws SQLException, ClassNotFoundException {
 		return getRowsByPrimaryKeyObject(pkValue);
@@ -378,7 +395,8 @@ public class DBTable<E extends DBRow> {
 	 * See also {@link #getSQLForCount() getSQLForCount}
 	 *
 	 * @return a String of the SQL that will be used by {@link #getAllRows() }.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public String getSQLForQuery() throws SQLException {
 		return query.getSQLForQuery();
@@ -393,7 +411,8 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this query
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public String getSQLForCount() throws SQLException {
 		return query.getSQLForCount();
@@ -409,7 +428,8 @@ public class DBTable<E extends DBRow> {
 	 * {@link #getAllRows() getAllRows()} been called.
 	 *
 	 * @return the number of rows that have or will be retrieved.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public Long count() throws SQLException {
 		return query.count();
@@ -419,7 +439,7 @@ public class DBTable<E extends DBRow> {
 	 * Convenience method to print all the rows in the current collection
 	 * Equivalent to: print(System.out)
 	 *
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException SQLException
 	 */
 	public void print() throws SQLException {
 		print(System.out);
@@ -430,8 +450,8 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * myTable.printAllRows(System.err);
 	 *
-	 * @param stream
-	 * @throws java.sql.SQLException
+	 * @param stream stream
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public void print(PrintStream stream) throws SQLException {
 		List<E> allRows = getAllRows();
@@ -443,9 +463,10 @@ public class DBTable<E extends DBRow> {
 	/**
 	 * Inserts DBRows into the database.
 	 *
-	 * @param newRows
+	 * @param newRows	 newRows	
 	 * @return a DBActionList of all the actions performed
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public final DBActionList insert(E... newRows) throws SQLException {
 		DBActionList actions = new DBActionList();
@@ -460,9 +481,10 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * Inserts DBRows into the database
 	 *
-	 * @param newRows
+	 * @param newRows	 newRows	
 	 * @return a DBActionList of all the actions performed
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBActionList insert(Collection<E> newRows) throws SQLException {
 		DBActionList changes = new DBActionList();
@@ -476,9 +498,10 @@ public class DBTable<E extends DBRow> {
 	/**
 	 * Deletes the rows from the database permanently.
 	 *
-	 * @param oldRows
+	 * @param oldRows	 oldRows	
 	 * @return a {@link DBActionList} of the delete actions.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	//@SafeVarargs
 	public final DBActionList delete(E... oldRows) throws SQLException {
@@ -493,9 +516,10 @@ public class DBTable<E extends DBRow> {
 	/**
 	 * Deletes the rows from the database permanently.
 	 *
-	 * @param oldRows
+	 * @param oldRows	 oldRows	
 	 * @return a {@link DBActionList} of the delete actions.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBActionList delete(Collection<E> oldRows) throws SQLException {
 		DBActionList actions = new DBActionList();
@@ -513,9 +537,10 @@ public class DBTable<E extends DBRow> {
 	 * The row will be changed so that future updates will not include the current
 	 * changes.
 	 *
-	 * @param oldRow
+	 * @param oldRow	 oldRow	
 	 * @return a DBActionList of the actions performed on the database
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBActionList update(E oldRow) throws SQLException {
 		query.refreshQuery();
@@ -528,9 +553,10 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * Updates Lists of DBRows on the database
 	 *
-	 * @param oldRows
+	 * @param oldRows	 oldRows	
 	 * @return a DBActionList of the actions performed on the database
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBActionList update(Collection<E> oldRows) throws SQLException {
 		DBActionList changes = new DBActionList();
@@ -552,7 +578,8 @@ public class DBTable<E extends DBRow> {
 	 * Requires the primary key field to be a DBNumber of DBInteger
 	 *
 	 * @return a List of primary keys as Longs.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @see #getPrimaryKeysAsString()
 	 * @see #getAllRows()
 	 */
@@ -574,7 +601,8 @@ public class DBTable<E extends DBRow> {
 	 * as Strings.
 	 *
 	 * @return a List of primary keys as Longs.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @see #getPrimaryKeysAsString()
 	 * @see #getAllRows()
 	 */
@@ -594,7 +622,8 @@ public class DBTable<E extends DBRow> {
 	 * Should be updated to return the varying rows somehow
 	 *
 	 * @param secondTable : a comparable table
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 
 	 */
 	public void compare(DBTable<E> secondTable) throws SQLException {
 		HashMap<String, E> secondMap = new HashMap<String, E>();
@@ -622,7 +651,7 @@ public class DBTable<E extends DBRow> {
 	 * Only the specified number of rows will be returned from the database and
 	 * DBvolution.
 	 *
-	 * @param rowLimit
+	 * @param rowLimit	 rowLimit	
 	 * @return this DBTable instance
 	 */
 	public DBTable<E> setRowLimit(int rowLimit) {
@@ -668,7 +697,7 @@ public class DBTable<E extends DBRow> {
 	 * instance to work.
 	 *
 	 *
-	 * @param sortColumns
+	 * @param sortColumns	 sortColumns	
 	 * @return this
 	 */
 	public DBTable<E> setSortOrder(ColumnProvider... sortColumns) {
@@ -786,9 +815,10 @@ public class DBTable<E extends DBRow> {
 	 * be implemented, rather more awkwardly, as
 	 * {@code  table.setRawSQL("and lower(name) in ('peugeot','hummer')")}.
 	 *
-	 * @param rawQuery
+	 * @param rawQuery	 rawQuery	
 	 * @return this DBtable instance.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBTable<E> setRawSQL(String rawQuery) throws SQLException {
 		query.setRawSQL(rawQuery);
@@ -807,11 +837,12 @@ public class DBTable<E extends DBRow> {
 	 * of the possible values of a foreign key. This method makes it easy to find
 	 * the distinct or unique values that are used.
 	 *
-	 * @param <A>
+	 * @param <A>	 DBRow type
 	 * @param fieldOfProvidedRow - the field/column that you need data for. Must
 	 * be from the exemplar
 	 * @return a list of distinct values used in the column.
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws AccidentalBlankQueryException, IncorrectRowProviderInstanceSuppliedException, SQLException {

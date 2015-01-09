@@ -45,7 +45,7 @@ public class JavaDB extends DBDatabase {
 	/**
 	 * Creates a new JavaDB instance that will connect to the DataSource.
 	 *
-	 * @param dataSource
+	 * @param dataSource	 dataSource	
 	 */
 	public JavaDB(DataSource dataSource) {
 		super(new JavaDBDefinition(), dataSource);
@@ -55,9 +55,9 @@ public class JavaDB extends DBDatabase {
 	 * Creates a new JavaDB instance that will connect to the JDBC URL using the
 	 * username and password supplied..
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
 	public JavaDB(String jdbcURL, String username, String password) {
 		super(new JavaDBDefinition(), driverName, jdbcURL, username, password);
@@ -67,11 +67,11 @@ public class JavaDB extends DBDatabase {
 	 * Creates a new JavaDB instance that will connect to the database on the
 	 * named host on the specified port with the supplied username and password.
 	 *
-	 * @param host
-	 * @param port
-	 * @param database
-	 * @param username
-	 * @param password
+	 * @param host host
+	 * @param port port
+	 * @param database database
+	 * @param password password
+	 * @param username username
 	 */
 	public JavaDB(String host, int port, String database, String username, String password) {
 		super(new JavaDBDefinition(), driverName, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);

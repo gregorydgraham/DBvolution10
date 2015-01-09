@@ -88,7 +88,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * objects and add functionality to them. Use this constructor to wrap an
 	 * existing BooleanExpression.
 	 *
-	 * @param booleanResult
+	 * @param booleanResult	 booleanResult	
 	 */
 	public BooleanExpression(BooleanResult booleanResult) {
 		onlyBool = booleanResult;
@@ -105,7 +105,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * objects and add functionality to them. Use this constructor to wrap a
 	 * known value for use in a BooleanExpression.
 	 *
-	 * @param bool
+	 
 	 */
 	private BooleanExpression(Boolean bool) {
 		onlyBool = new DBBoolean(bool);
@@ -147,7 +147,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <li>The implementation should be {@code static}</li>
 	 * </ul>
 	 *
-	 * @param bool
+	 * @param bool the boolean value to be tested
 	 * @return a DBExpression instance that is appropriate to the subclass and
 	 * the value supplied.
 	 */
@@ -159,7 +159,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Compare this BooleanExpression and the given boolean using the equality
 	 * operator, that is "=" or similar.
 	 *
-	 * @param bool
+	 * @param bool the boolean value to be tested
 	 * @return a BooleanExpression that compares the previous BooleanExpression
 	 * to the Boolean supplied.
 	 */
@@ -174,7 +174,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <p>
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
-	 * @param bool
+	 * @param bool the boolean value to be tested
 	 * @return a BooleanExpression that compares the previous BooleanExpression
 	 * to the Boolean supplied.
 	 */
@@ -189,7 +189,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <p>
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
-	 * @param bool
+	 * @param bool the boolean value to be tested
 	 * @return a BooleanExpression that compares the previous BooleanExpression
 	 * to the Boolean supplied.
 	 */
@@ -209,7 +209,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <p>
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
-	 * @param bool
+	 * @param bool the boolean value to be tested
 	 * @return a BooleanExpression of an XOR operation.
 	 */
 	public BooleanExpression xor(BooleanResult bool) {
@@ -248,7 +248,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * This expression returns true if and only if all the component expressions
 	 * are true
 	 *
-	 * @param booleanExpressions
+	 * @param booleanExpressions  the boolean expressions to be tested
 	 * @return a boolean expression that returns true IFF all the
 	 * booleanExpressions are true.
 	 * @see #anyOf(BooleanExpression...)
@@ -272,7 +272,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <p>
 	 * This expression returns true if any of the component expressions is true
 	 *
-	 * @param booleanExpressions
+	 * @param booleanExpressions  the boolean expressions to be tested
 	 * @return a boolean expression that returns true if any of the
 	 * booleanExpressions is true.
 	 * @see #allOf(BooleanExpression...)
@@ -289,7 +289,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	/**
 	 * Returns true only if all of the conditions are FALSE.
 	 *
-	 * @param booleanExpressions
+	 * @param booleanExpressions  the boolean expressions to be tested
 	 * @return a boolean expression that returns true if all of the
 	 * booleanExpressions evaluate to FALSE.
 	 * @see #allOf(BooleanExpression...)
@@ -413,7 +413,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * {@link NumberExpression}, {@link StringExpression}, {@link DateExpression},
 	 * and {@link LargeObjectExpression}.
 	 *
-	 * @param possibleNullExpression
+	 * @param possibleNullExpression   the expression to be tested
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNotNull(DBExpression possibleNullExpression) {
@@ -438,7 +438,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <p>
 	 * Obtain a {@link ColumnProvider} by using the column method of {@link DBRow}.
 	 *
-	 * @param possibleNullExpression
+	 * @param possibleNullExpression the expression to be tested
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNotNull(ColumnProvider possibleNullExpression) {
@@ -452,7 +452,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <p>
 	 * Obtain a {@link ColumnProvider} by using the column method of {@link DBRow}.
 	 *
-	 * @param possibleNullExpression
+	 * @param possibleNullExpression the expression to be tested
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNull(ColumnProvider possibleNullExpression) {
@@ -470,7 +470,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * {@link NumberExpression}, {@link StringExpression}, {@link DateExpression},
 	 * and {@link LargeObjectExpression}.
 	 *
-	 * @param possibleNullExpression
+	 * @param possibleNullExpression the expression to be tested
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNull(DBExpression possibleNullExpression) {

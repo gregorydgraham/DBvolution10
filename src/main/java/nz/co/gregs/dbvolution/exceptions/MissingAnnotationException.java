@@ -27,7 +27,7 @@ public class MissingAnnotationException extends RuntimeException {
 	/**
 	 * Thrown when a required annotation is missing from a class or property.
 	 *
-	 * @param string
+	 * @param string	 string	
 	 */
 	public MissingAnnotationException(String string) {
 		super(string);

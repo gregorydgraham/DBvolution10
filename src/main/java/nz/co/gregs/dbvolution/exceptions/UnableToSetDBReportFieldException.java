@@ -38,9 +38,9 @@ public class UnableToSetDBReportFieldException extends RuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @param badReport
-	 * @param field
-	 * @param ex
+	 * @param badReport badReport
+	 * @param field field
+	 * @param ex ex
 	 */
 	public UnableToSetDBReportFieldException(Object badReport, Field field, Exception ex) {
 		super("Unable To Set DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " have the correct datatype: Especially field: " + field.getName(), ex);
@@ -53,8 +53,8 @@ public class UnableToSetDBReportFieldException extends RuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @param badReport
-	 * @param ex
+	 * @param badReport badReport
+	 * @param ex ex
 	 */
 	public UnableToSetDBReportFieldException(Object badReport, Exception ex) {
 		super("Unable To Set DBReport Field: please ensure that all DBReport fields on " + badReport.getClass().getSimpleName() + " have the correct datatype.", ex);

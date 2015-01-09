@@ -37,8 +37,8 @@ public class ForeignKeyRecognisor {
     /**
      * Default implementation, returns FALSE.
      *
-     * @param tableName
-     * @param columnName
+	 * @param tableName tableName
+	 * @param columnName columnName
      * @return TRUE if the column is a foreign key reference, FALSE otherwise
      */
     public boolean isForeignKeyColumn(String tableName, String columnName) {
@@ -48,8 +48,8 @@ public class ForeignKeyRecognisor {
     /**
      * Default implementation, returns NULL.
      *
-     * @param tableName
-     * @param columnName
+	 * @param tableName tableName
+	 * @param columnName columnName
      * @return The database name of the referenced column derived from the
      * referencing table and column, or NULL
      */
@@ -60,8 +60,8 @@ public class ForeignKeyRecognisor {
     /**
      * Default implementation, returns NULL.
      *
-     * @param tableName
-     * @param columnName
+	 * @param tableName tableName
+	 * @param columnName columnName
      * @return The database name of the referenced table based on the
      * referencing table and column or NULL.
      */

@@ -27,7 +27,7 @@ public class DBRuntimeException extends RuntimeException {
 	/**
 	 * Thrown when unexpected errors occur.
 	 *
-	 * @param message
+	 * @param message	 message	
 	 */
 	public DBRuntimeException(String message) {
 		super(message);
@@ -36,7 +36,7 @@ public class DBRuntimeException extends RuntimeException {
 	/**
 	 * Thrown when unexpected errors occur.
 	 *
-	 * @param cause
+	 * @param cause	 cause	
 	 */
 	public DBRuntimeException(Throwable cause) {
 		super(cause);
@@ -45,8 +45,8 @@ public class DBRuntimeException extends RuntimeException {
 	/**
 	 * Thrown when unexpected errors occur.
 	 *
-	 * @param message
-	 * @param cause
+	 * @param message message
+	 * @param cause cause
 	 */
 	public DBRuntimeException(String message, Throwable cause) {
 		super(message, cause);

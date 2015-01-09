@@ -37,8 +37,8 @@ public class UnableToCopyQueryableDatatypeException extends DBRuntimeException {
 	 * A lot of reflection is used in DBV, please ensure that the fields are
 	 * publicly accessible and non-null.
 	 *
-	 * @param qdt
-	 * @param ex
+	 * @param qdt qdt
+	 * @param ex ex
 	 */
 	public UnableToCopyQueryableDatatypeException(QueryableDatatype qdt, IllegalAccessException ex) {
 		super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + ex.getClass().getSimpleName() + ": Please ensure that all fields are accessible.", ex);

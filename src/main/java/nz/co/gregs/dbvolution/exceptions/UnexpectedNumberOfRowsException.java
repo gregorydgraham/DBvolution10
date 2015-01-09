@@ -32,10 +32,10 @@ public class UnexpectedNumberOfRowsException extends Exception {
 	 * <p>
 	 * There has probably been a mistake.
 	 *
-	 * @param expected
-	 * @param actual
-	 * @param message
-	 * @param cause
+	 * @param expected expected
+	 * @param actual actual
+	 * @param message message
+	 * @param cause cause
 	 */
 	public UnexpectedNumberOfRowsException(long expected, long actual, String message, Exception cause) {
 		super(message, cause);
@@ -49,9 +49,9 @@ public class UnexpectedNumberOfRowsException extends Exception {
 	 *
 	 * <p>
 	 * There has probably been a mistake.
-	 * @param expected
-	 * @param actual
-	 * @param message
+	 * @param expected expected
+	 * @param message message
+	 * @param actual actual
 	 */
 	public UnexpectedNumberOfRowsException(long expected, long actual, String message) {
 		this(expected, actual, message, null);
@@ -64,8 +64,8 @@ public class UnexpectedNumberOfRowsException extends Exception {
 	 *
 	 * <p>
 	 * There has probably been a mistake.
-	 * @param expected
-	 * @param actual
+	 * @param expected expected
+	 * @param actual actual
 	 */
 	public UnexpectedNumberOfRowsException(long expected, long actual) {
 		this(expected, actual, "Unexpected Number Of Rows Found: expected " + expected + " but found " + actual, null);

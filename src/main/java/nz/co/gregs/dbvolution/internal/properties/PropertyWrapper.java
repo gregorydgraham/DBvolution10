@@ -59,7 +59,7 @@ public class PropertyWrapper {
     private final Object target;
 
     /**
-     * @param instanceWrapper
+	 * @param instanceWrapper instanceWrapper
      * @param classProperty the class-level wrapper
      * @param target the target object containing the given property
      */
@@ -143,7 +143,7 @@ public class PropertyWrapper {
      * bean-property) in the same object instance (by object reference, rather
      * than {@code .equals()} equality).
      *
-     * @param obj
+	 * @param obj obj
      * @return TRUE if this PropertyWrapper wraps the same property on the same
      * RowDefinition as the object supplied, FALSE otherwise
      */
@@ -230,7 +230,7 @@ public class PropertyWrapper {
      * Convenience method for testing the type of the QueryableDatatype.
      * Equivalent to {@code refType.isAssignableFrom(this.type())}.
      *
-     * @param refType
+	 * @param refType refType
      * @return TRUE if this property's internal QueryableDatatype is the similar to that of the supplied instance.
      */
     public boolean isInstanceOf(Class<? extends QueryableDatatype> refType) {
@@ -407,7 +407,7 @@ public class PropertyWrapper {
      * Use {@link #isReadable()} beforehand to check whether the property can be
      * read.
      *
-     * @param <A>
+	 * @param <A> the QDT type
      * @return The queryableDatatype instance representing this property
      * @throws IllegalStateException if not readable (you should have called
      * isReadable() first)
@@ -428,7 +428,7 @@ public class PropertyWrapper {
      * Use {@link #isWritable()} beforehand to check whether the property can be
      * modified.
      *
-     * @param value
+	 * @param value value
      * @throws IllegalStateException if not writable (you should have called
      * isWritable() first)
      * @throws DBThrownByEndUserCodeException if any user code throws an
@@ -542,7 +542,7 @@ public class PropertyWrapper {
      * Returns the Column Expression, if any, defined on this property.
      *
      * @return the expression used by this property to generate values, or null.
-     * @throws ClassCastException
+     
      */
     public DBExpression getColumnExpression() throws ClassCastException {
         return this.getQueryableDatatype().getColumnExpression();
@@ -552,7 +552,7 @@ public class PropertyWrapper {
      * The name of this property as it will appear in a SELECT and WHERE
      * clauses.
      *
-     * @param db
+	 * @param db db
      * @return A String of the property for use in SELECT and WHERE clauses.
      */
     public String getSelectableName(DBDatabase db) {
@@ -564,7 +564,7 @@ public class PropertyWrapper {
      * The alias to the column for use in the select clause and during value
      * retrieval
      *
-     * @param db
+	 * @param db db
      * @return the column alias for this property.
      */
     public String getColumnAlias(DBDatabase db) {
@@ -575,7 +575,7 @@ public class PropertyWrapper {
 	/**
 	 * Returns TRUE if the property wrapped is a foreign key reference to the table supplied
 	 *
-	 * @param table
+	 * @param table	 table	
 	 * @return TRUE if the property wrapped is a foreign key reference to the table supplied, otherwise FALSE.
 	 */
 	public boolean isForeignKeyTo(DBRow table) {

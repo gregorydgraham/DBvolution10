@@ -37,7 +37,7 @@ public class DBLessThanOperator extends DBOperator {
 
     /**
      *
-     * @param lessThanThis
+	 * @param lessThanThis the expression to compare to.
      */
     public DBLessThanOperator(DBExpression lessThanThis) {
         super();

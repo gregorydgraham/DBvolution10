@@ -38,8 +38,8 @@ public class PrimaryKeyRecognisor {
     /**
      * Default implementation, returns FALSE
      *
-     * @param tableName
-     * @param columnName
+	 * @param tableName tableName
+	 * @param columnName columnName
      * @return TRUE if the column is a PRimary Key, otherwise FALSE.
      */
     public boolean isPrimaryKeyColumn(String tableName, String columnName) {

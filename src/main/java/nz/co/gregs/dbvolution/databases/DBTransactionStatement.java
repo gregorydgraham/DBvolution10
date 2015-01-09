@@ -50,9 +50,12 @@ public class DBTransactionStatement extends DBStatement {
 	 * Used within {@link DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 * } to create a transaction.
 	 *
-	 * @param database
-	 * @param statement
-	 * @throws SQLException
+	 
+	 
+	  1 Database exceptions may be thrown
+	 * @param database database
+	 * @param statement statement
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBTransactionStatement(DBDatabase database, DBStatement statement) throws SQLException {
 		super(database, statement.getConnection());
@@ -64,7 +67,7 @@ public class DBTransactionStatement extends DBStatement {
 	 *
 	 * <p>
 	 * To close a transaction call the {@link #transactionFinished() } method.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException	 SQLException
 	 */
 	@Override
 	public void close() throws SQLException {
@@ -95,7 +98,8 @@ public class DBTransactionStatement extends DBStatement {
 	 * Transactions last longer than the standard DBStatement so a new method is
 	 * required to close their resources.
 	 *
-	 * @throws SQLException
+	  1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public void transactionFinished() throws SQLException {
 //		getInternalStatement().close();

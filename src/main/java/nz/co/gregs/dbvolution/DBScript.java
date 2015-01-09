@@ -52,9 +52,10 @@ public abstract class DBScript {
 	 * Use the {@link DBActionList} to collect the script's actions for saving
 	 * or later use.
 	 *
-	 * @param db
+	 * @param db	 db	
 	 * @return DBActionList
-	 * @throws Exception
+	 * @throws java.lang.Exception java.lang.Exception
+	 
 	 */
 	public abstract DBActionList script(DBDatabase db) throws Exception;
 
@@ -72,9 +73,10 @@ public abstract class DBScript {
 	 * When the script executes without exceptions the changes will be committed
 	 * and made permanent.
 	 *
-	 * @param db
+	 * @param db	 db	
 	 * @return a DBActionList of all the actions performed on the database
-	 * @throws Exception
+	 * @throws java.lang.Exception java.lang.Exception
+	 
 	 */
 	public final DBActionList implement(DBDatabase db) throws Exception {
 		DBTransaction<DBActionList> trans = getDBTransaction();
@@ -94,9 +96,10 @@ public abstract class DBScript {
 	 * <P>
 	 * Any exceptions will cause the script to abort and rollback safely.
 	 *
-	 * @param db
+	 * @param db	 db	
 	 * @return a DBActionList of all the actions performed on the database
-	 * @throws Exception
+	 * @throws java.lang.Exception java.lang.Exception
+	 
 	 */
 	public final DBActionList test(DBDatabase db) throws Exception {
 		DBTransaction<DBActionList> trans = getDBTransaction();

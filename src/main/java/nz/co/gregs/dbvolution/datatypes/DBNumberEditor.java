@@ -27,7 +27,7 @@ public class DBNumberEditor extends PropertyEditorSupport {
 
     /**
      *
-     * @param format
+	 * @param format format
      */
     public void setFormat(String format) {
         this.format = format;
@@ -35,7 +35,7 @@ public class DBNumberEditor extends PropertyEditorSupport {
 
     /**
      *
-     * @param text
+	 * @param text text
      */
     @Override
     public void setAsText(String text) {

@@ -39,7 +39,7 @@ public interface ColumnProvider {
 	 * {@code this.column.setUseTableAlias(useTableAlias);} and passes the
 	 * boolean along to the underlying AbstractColumn
 	 *
-	 * @param useTableAlias
+	 * @param useTableAlias true or false
 	 */
 	public void setUseTableAlias(boolean useTableAlias);
 

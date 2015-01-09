@@ -54,7 +54,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Creates a DBIntegerEnum set to the value supplied..
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBIntegerEnum(Integer value) {
 		super(value.longValue());
@@ -63,7 +63,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Creates a DBIntegerEnum set to the value supplied..
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBIntegerEnum(Long value) {
 		super(value);
@@ -77,7 +77,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * This constructor is used in {@link DBReport DBReports} to generate new
 	 * information from existing data using the databases builtin capabilities.
 	 *
-	 * @param numberExpression
+	 * @param numberExpression	 numberExpression	
 	 */
 	public DBIntegerEnum(NumberResult numberExpression) {
 		super(numberExpression);
@@ -86,7 +86,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Creates a DBIntegerEnum set to the value supplied..
 	 *
-	 * @param value
+	 * @param value	 value	
 	 */
 	public DBIntegerEnum(E value) {
 		super(value);
@@ -99,7 +99,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * However only some types of objects can set the value of a DBIntegerEnum and
 	 * you should probably use the more particular versions of setValue.
 	 *
-	 * @param newLiteralValue
+	 
 	 */
 	@Override
 	void setValue(Object newLiteralValue) {
@@ -124,7 +124,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
 	 * } method.
 	 *
-	 * @param newLiteralValue
+	 
 	 */
 	private void setValue(Long newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
@@ -140,7 +140,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
 	 * } method.
 	 *
-	 * @param newLiteralValue
+	 
 	 */
 	private void setValue(Integer newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
@@ -183,7 +183,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(E... permitted) {
 		this.setOperator(new DBPermittedValuesOperator(convertToLiteral(permitted)));
@@ -194,7 +194,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(E... excluded) {
 		this.setOperator(new DBPermittedValuesOperator(convertToLiteral(excluded)));
@@ -218,8 +218,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeOperator(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
@@ -242,8 +242,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
@@ -266,8 +266,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
@@ -290,8 +290,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeOperator(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
@@ -315,8 +315,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
@@ -340,8 +340,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(E lowerBound, E upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
@@ -351,7 +351,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Long... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -362,7 +362,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(Long... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -386,8 +386,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -410,8 +410,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -434,8 +434,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -458,8 +458,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -483,8 +483,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -508,8 +508,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(Long lowerBound, Long upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -520,7 +520,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted
+	 * @param permitted	 permitted	
 	 */
 	public void permittedValues(Integer... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -531,7 +531,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded
+	 * @param excluded	 excluded	
 	 */
 	public void excludedValues(Integer... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -555,8 +555,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -579,8 +579,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeInclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -603,8 +603,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void permittedRangeExclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));
@@ -627,8 +627,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRange(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
@@ -652,8 +652,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRangeInclusive(null, 5) will exclude 5,4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeInclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeInclusiveOperator(lowerBound, upperBound));
@@ -677,8 +677,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * <br>
 	 * I.e excludedRangeExclusive(null, 5) will exclude 4,3,2,1, etc.
 	 *
-	 * @param lowerBound
-	 * @param upperBound
+	 * @param lowerBound lowerBound
+	 * @param upperBound upperBound
 	 */
 	public void excludedRangeExclusive(Integer lowerBound, Integer upperBound) {
 		setOperator(new DBPermittedRangeExclusiveOperator(lowerBound, upperBound));

@@ -45,11 +45,11 @@ public class Oracle11DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11.
 	 *
-	 * @param definition
-	 * @param driverName
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param definition definition
+	 * @param jdbcURL jdbcURL
+	 * @param driverName driverName
+	 * @param password password
+	 * @param username username
 	 */
 	public Oracle11DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		super(definition, driverName, jdbcURL, username, password);
@@ -58,10 +58,10 @@ public class Oracle11DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11.
 	 *
-	 * @param driverName
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param driverName driverName
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
 	public Oracle11DB(String driverName, String jdbcURL, String username, String password) {
 		super(new Oracle11DBDefinition(), driverName, jdbcURL, username, password);
@@ -70,9 +70,9 @@ public class Oracle11DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11.
 	 *
-	 * @param jdbcURL
-	 * @param username
-	 * @param password
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
 	 */
 	public Oracle11DB(String jdbcURL, String username, String password) {
 		super(new Oracle11DBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
@@ -81,11 +81,11 @@ public class Oracle11DB extends OracleDB {
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11.
 	 *
-	 * @param host
-	 * @param port
-	 * @param serviceName
-	 * @param username
-	 * @param password
+	 * @param host host
+	 * @param port port
+	 * @param serviceName serviceName
+	 * @param password password
+	 * @param username username
 	 */
 	public Oracle11DB(String host, int port, String serviceName, String username, String password) {
 		super(new Oracle11DBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
