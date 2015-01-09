@@ -15,8 +15,11 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.io.File;
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 
 /**
@@ -104,6 +107,17 @@ public class PostgresDB extends DBDatabase {
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public int loadFromCSVFile(DBRow table, File file, String delimiter, String nullValue, String escapeCharacter, String quoteCharacter) throws SQLException {
+		int returnValue = 0;
+		final DBStatement dbStatement = this.getDBStatement();
+		try {
+			returnValue = dbStatement.executeUpdate("COPY " + table.getTableName() + " FROM '" + file.getAbsolutePath() + "' WITH (DELIMITER '" + delimiter + "', NULL '" + nullValue + "', ESCAPE '" + escapeCharacter + "', FORMAT csv, QUOTE '" + quoteCharacter + "');");
+		} finally {
+			dbStatement.close();
+		}
+		return returnValue;
 	}
 
 }
