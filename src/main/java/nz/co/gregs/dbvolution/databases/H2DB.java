@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 
 /**
  * Stores all the required functionality to use an H2 database.
@@ -34,7 +35,7 @@ public class H2DB extends DBDatabase {
 	 * Used to hold the database open
 	 *
 	 */
-	protected final Connection storedConnection;
+	protected Connection storedConnection;
 
 	/**
 	 * Creates a DBDatabase for a H2 database.
@@ -50,8 +51,7 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
-		this.storedConnection = getConnection();
-		this.storedConnection.createStatement();
+		jamDatabaseConnectionOpen();
 	}
 
 	/**
@@ -82,6 +82,10 @@ public class H2DB extends DBDatabase {
 	 */
 	public H2DB(DataSource dataSource) throws SQLException {
 		super(new H2DBDefinition(), dataSource);
+		jamDatabaseConnectionOpen();
+	}
+
+	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {
 		this.storedConnection = getConnection();
 		this.storedConnection.createStatement();
 	}

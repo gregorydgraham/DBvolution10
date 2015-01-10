@@ -140,6 +140,9 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 * Returns the defined or set value of this DBBoolean as an actual Boolean.
+	 * 
+	 * <p>
+	 * May return a null.
 	 *
 	 * @return the value of this QDT as a boolean.
 	 */

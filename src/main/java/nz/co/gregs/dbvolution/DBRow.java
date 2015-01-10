@@ -237,7 +237,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
 	 * field, then the QueryableDatatype instance of that field is returned.
 	 *
-	 * @param <A>	 QDT	
+	 * @param <A>	QDT
 	 * @return the QDT of the primary key or null if there is no primary key.
 	 */
 	public <A extends QueryableDatatype> A getPrimaryKey() {
@@ -500,7 +500,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * The database is not accessed and this method does not protect against
 	 * functionally blank queries.
 	 *
-	 * @param db	 db	
+	 * @param db	db
 	 * @return true if this DBRow instance has no specified criteria and will
 	 * create a blank query returning the whole table.
 	 *
@@ -561,7 +561,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * Returns a list of the column names used by the database.
 	 *
-	 * @param db	 db	
+	 * @param db	db
 	 * @return A list of all raw, unformatted column names
 	 */
 	@Deprecated
@@ -623,7 +623,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * Requires the field to be from this instance to work.
 	 *
-	 * @param qdt	 qdt	
+	 * @param qdt	qdt
 	 */
 	public void ignoreForeignKey(Object qdt) throws IncorrectRowProviderInstanceSuppliedException {
 		PropertyWrapper fkProp = getPropertyWrapperOf(qdt);
@@ -649,7 +649,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * Requires the field to be from this instance to work.
 	 *
-	 * @param qdts	 qdts	
+	 * @param qdts	qdts
 	 */
 	public void ignoreForeignKeys(Object... qdts) throws IncorrectRowProviderInstanceSuppliedException {
 		for (Object object : qdts) {
@@ -672,7 +672,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * Requires the field to be from this instance to work.
 	 *
-	 * @param columns	 columns	
+	 * @param columns	columns
 	 */
 	public void ignoreForeignKeys(ColumnProvider... columns) throws IncorrectRowProviderInstanceSuppliedException {
 		for (ColumnProvider col : columns) {
@@ -695,7 +695,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * cust2.ignoreForeignKey(addressColumn);
 	 * </pre>
 	 *
-	 * @param column	 column	
+	 * @param column	column
 	 */
 	public void ignoreForeignKey(ColumnProvider column) {
 		PropertyWrapper fkProp = column.getColumn().getPropertyWrapper();
@@ -740,7 +740,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * {@link AccidentalCartesianJoinException} if no additional relationships
 	 * have been added.
 	 *
-	 * @param importantForeignKeys	 importantForeignKeys	
+	 * @param importantForeignKeys	importantForeignKeys
 	 */
 	public void ignoreAllForeignKeysExcept(Object... importantForeignKeys) throws IncorrectRowProviderInstanceSuppliedException {
 		ArrayList<PropertyWrapperDefinition> importantFKs = new ArrayList<PropertyWrapperDefinition>();
@@ -1204,7 +1204,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * annotation.
 	 *
 	 * <p>
-	 * That is to say: where A is this class, returns a List of B such that A =&gt; B
+	 * That is to say: where A is this class, returns a List of B such that A
+	 * =&gt; B
 	 *
 	 * @return A set of DBRow subclasses referenced with {@code @DBForeignKey}
 	 *
@@ -1233,8 +1234,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * class.
 	 *
 	 * <p>
-	 * That is to say: where A is this class, returns a List of B such that B =&gt; A
-	 * or A =&gt; B
+	 * That is to say: where A is this class, returns a List of B such that B
+	 * =&gt; A or A =&gt; B
 	 *
 	 * @return a set of classes that have a {@code @DBForeignKey} reference to or
 	 * from this class
@@ -1255,7 +1256,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * referenced by the external DBRow subclass.
 	 *
 	 * <p>
-	 * That is to say: where A is this class, returns a List of B such that B =&gt; A
+	 * That is to say: where A is this class, returns a List of B such that B
+	 * =&gt; A
 	 *
 	 * @return a set of classes that have a {@code @DBForeignKey} reference to
 	 * this class
@@ -1284,7 +1286,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * Ignores the Foreign Keys to all tables except those to the supplied DBRows
 	 *
-	 * @param goodTables	 goodTables	
+	 * @param goodTables	goodTables
 	 */
 	public void ignoreAllForeignKeysExceptFKsTo(DBRow... goodTables) {
 //        if (referencedTables.isEmpty()) {
@@ -1331,8 +1333,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param query query
 	 * @param example example
 	 * @return all instances of {@code example} that are connected to this
-	 * instance in the {@code query}
-	  1 Database exceptions may be thrown
+	 * instance in the {@code query} 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQuery query, R example) throws SQLException {
@@ -1379,7 +1380,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * Used within DBQuery while creating the DBRows to indicate an empty row.
 	 *
-	 * @param isThisRowEmpty	 isThisRowEmpty	
+	 * @param isThisRowEmpty	isThisRowEmpty
 	 */
 	protected void setEmptyRow(Boolean isThisRowEmpty) {
 		this.emptyRow = isThisRowEmpty;
@@ -1505,7 +1506,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p>
 	 * Requires the field to be from this instance to work.
 	 *
-	 * @param ignoreTheseFKs	 ignoreTheseFKs	
+	 * @param ignoreTheseFKs	ignoreTheseFKs
 	 * @see #ignoreForeignKey(java.lang.Object)
 	 */
 	public void ignoreForeignKeyProperties(Collection<Object> ignoreTheseFKs) {
@@ -1533,7 +1534,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * </pre>
 	 *
-	 * @param ignoreTheseFKColumns	 ignoreTheseFKColumns	
+	 * @param ignoreTheseFKColumns	ignoreTheseFKColumns
 	 * @see #ignoreForeignKey(nz.co.gregs.dbvolution.columns.ColumnProvider)
 	 */
 	public void ignoreForeignKeyColumns(Collection<ColumnProvider> ignoreTheseFKColumns) {
@@ -1578,8 +1579,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param <A> the field type
 	 * @param database - the database to connect to.
 	 * @param fieldOfThisInstance - the field/column that you need data from.
-	 * @return a list of distinct values used in the column.
-	  1 Database exceptions may be thrown
+	 * @return a list of distinct values used in the column. 1 Database exceptions
+	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("unchecked")
@@ -1658,7 +1659,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Default sorting for DBRow in the various collections in DBRow and DBQuery.
 	 *
 	 */
-	private static class ClassNameComparator implements Comparator<Class<?>> {
+	private static class ClassNameComparator implements Comparator<Class<?>>, Serializable {
+
+		private static final long serialVersionUID = 1L;
 
 		ClassNameComparator() {
 		}
