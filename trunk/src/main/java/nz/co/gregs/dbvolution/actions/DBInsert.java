@@ -191,8 +191,7 @@ public class DBInsert extends DBAction {
 								} else if ((originalPK instanceof DBNumber) && (rowPK instanceof DBInteger)) {
 									DBNumber inPK = (DBNumber) originalPK;
 									inPK.setValue(rs.getBigDecimal(1));
-									inPK = (DBNumber) rowPK;
-									inPK.setValue(rs.getBigDecimal(1));
+									((DBInteger) rowPK).setValue(rs.getLong(1));
 								} else if ((originalPK instanceof DBString) && (rowPK instanceof DBString)) {
 									DBString inPK = (DBString) originalPK;
 									inPK.setValue(rs.getString(1));

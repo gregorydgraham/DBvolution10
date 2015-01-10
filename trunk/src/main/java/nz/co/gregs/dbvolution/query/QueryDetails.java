@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.query;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;

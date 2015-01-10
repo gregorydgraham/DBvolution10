@@ -64,7 +64,7 @@ import org.apache.commons.codec.binary.Base64;
 public class DBByteArray extends DBLargeObject {
 
 	private static final long serialVersionUID = 1;
-	InputStream byteStream = null;
+	transient InputStream byteStream = null;
 
 	/**
 	 * The Default constructor for a DBByteArray.
@@ -86,7 +86,7 @@ public class DBByteArray extends DBLargeObject {
 	/**
 	 * Sets the value of this DBByteArray to the byte array supplied.
 	 *
-	 * @param byteArray	 byteArray	
+	 * @param byteArray	byteArray
 	 */
 	public void setValue(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
@@ -104,7 +104,7 @@ public class DBByteArray extends DBLargeObject {
 	 * The input stream will not be read until the containing DBRow is
 	 * saved/inserted.
 	 *
-	 * @param inputViaStream	 inputViaStream	
+	 * @param inputViaStream	inputViaStream
 	 */
 	public void setValue(InputStream inputViaStream) {
 		super.setLiteralValue(inputViaStream);
@@ -129,7 +129,7 @@ public class DBByteArray extends DBLargeObject {
 	/**
 	 * Set the value of the DBByteArray to the String provided.
 	 *
-	 * @param string	 string	
+	 * @param string	string
 	 */
 	public void setValue(String string) {
 		setValue(string.getBytes());
@@ -160,7 +160,7 @@ public class DBByteArray extends DBLargeObject {
 		if (inputStream == null) {
 			this.setToNull();
 		} else {
-			bytes = getBytesFromInputStream(inputStream, bytes);
+			bytes = getBytesFromInputStream(inputStream);
 		}
 		return bytes;
 	}
@@ -175,12 +175,13 @@ public class DBByteArray extends DBLargeObject {
 			this.setToNull();
 		} else {
 			InputStream inputStream = blob.getBinaryStream();
-			bytes = getBytesFromInputStream(inputStream, bytes);
+			bytes = getBytesFromInputStream(inputStream);
 		}
 		return bytes;
 	}
 
-	private byte[] getBytesFromInputStream(InputStream inputStream, byte[] bytes) {
+	private byte[] getBytesFromInputStream(InputStream inputStream) {
+		byte[] bytes;
 		InputStream input = new BufferedInputStream(inputStream);
 		List<byte[]> byteArrays = new ArrayList<byte[]>();
 		int totalBytesRead = 0;
@@ -241,6 +242,8 @@ public class DBByteArray extends DBLargeObject {
 					}
 				} catch (IOException ex) {
 					Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+				} finally {
+					input.close();
 				}
 				byte[] bytes = new byte[totalBytesRead];
 				int bytesAdded = 0;
@@ -261,28 +264,41 @@ public class DBByteArray extends DBLargeObject {
 		if (resultSet.wasNull() || clob == null) {
 			this.setToNull();
 		} else {
-			BufferedReader input = new BufferedReader(clob.getCharacterStream());
-			List<byte[]> byteArrays = new ArrayList<byte[]>();
-
-			int totalBytesRead = 0;
+			final Reader characterStream = clob.getCharacterStream();
 			try {
-				char[] resultSetBytes;
-				resultSetBytes = new char[100000];
-				int bytesRead = input.read(resultSetBytes);
-				while (bytesRead > 0) {
-					totalBytesRead += bytesRead;
-					byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+				BufferedReader input = new BufferedReader(characterStream);
+				List<byte[]> byteArrays = new ArrayList<byte[]>();
+
+				int totalBytesRead = 0;
+				try {
+					char[] resultSetBytes;
 					resultSetBytes = new char[100000];
-					bytesRead = input.read(resultSetBytes);
+					try {
+						int bytesRead = input.read(resultSetBytes);
+						while (bytesRead > 0) {
+							totalBytesRead += bytesRead;
+							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+							resultSetBytes = new char[100000];
+							bytesRead = input.read(resultSetBytes);
+						}
+					} finally {
+						input.close();
+					}
+				} catch (IOException ex) {
+					Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
 				}
-			} catch (IOException ex) {
-				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			bytes = new byte[totalBytesRead];
-			int bytesAdded = 0;
-			for (byte[] someBytes : byteArrays) {
-				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-				bytesAdded += someBytes.length;
+				bytes = new byte[totalBytesRead];
+				int bytesAdded = 0;
+				for (byte[] someBytes : byteArrays) {
+					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+					bytesAdded += someBytes.length;
+				}
+			} finally {
+				try {
+					characterStream.close();
+				} catch (IOException ex) {
+					Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+				}
 			}
 //			this.setValue(bytes);
 		}
@@ -336,12 +352,12 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
-	 * @param originalFile	 originalFile	
+	 * @param originalFile	originalFile
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
-	 
-	 
+	 *
+	 *
 	 */
 	public byte[] setFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile);
@@ -354,12 +370,12 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
-	 * @param originalFile	 originalFile	
+	 * @param originalFile	originalFile
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
-	 
-	 
+	 *
+	 *
 	 */
 	public byte[] setFromFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile.stringValue());
@@ -369,12 +385,12 @@ public class DBByteArray extends DBLargeObject {
 	/**
 	 * Tries to set the DBDyteArray to the contents of the supplied file.
 	 *
-	 * @param originalFile	 originalFile	
+	 * @param originalFile	originalFile
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
-	 
-	 
+	 *
+	 *
 	 */
 	public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
 //		System.out.println("FILE: " + originalFile.getAbsolutePath());
@@ -445,22 +461,27 @@ public class DBByteArray extends DBLargeObject {
 	 * @throws java.io.IOException java.io.IOException
 	 */
 	public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
+		boolean createdNewFile = false;
 		if (getLiteralValue() != null && originalFile != null) {
 //			System.out.println("FILE: " + originalFile.getAbsolutePath());
 			if (!originalFile.exists()) {
-				originalFile.createNewFile();
+				createdNewFile = originalFile.createNewFile();
 			}
-			OutputStream output = null;
-			try {
-				output = new BufferedOutputStream(new FileOutputStream(originalFile));
-				output.write(getBytes());
-				output.flush();
-				output.close();
-				output = null;
-			} finally {
-				if (output != null) {
+			if (createdNewFile) {
+				OutputStream output = null;
+				try {
+					output = new BufferedOutputStream(new FileOutputStream(originalFile));
+					output.write(getBytes());
+					output.flush();
 					output.close();
+					output = null;
+				} finally {
+					if (output != null) {
+						output.close();
+					}
 				}
+			} else {
+				throw new FileNotFoundException("Unable Create File: the file \"" + originalFile.getAbsolutePath() + " could not be found or created.");
 			}
 		}
 	}

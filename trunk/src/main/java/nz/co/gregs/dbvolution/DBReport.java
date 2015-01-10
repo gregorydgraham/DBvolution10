@@ -82,7 +82,7 @@ public class DBReport extends RowDefinition {
 
 	private static final long serialVersionUID = 1L;
 
-	private ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	private transient ColumnProvider[] sortColumns = new ColumnProvider[]{};
 
 	/**
 	 * Gets all the report rows of the supplied DBReport using only conditions
@@ -322,7 +322,7 @@ public class DBReport extends RowDefinition {
 	<A extends DBReport> void addTablesAndExpressions(DBQuery query, A exampleReport) {
 		Field[] fields = exampleReport.getClass().getFields();
 		if (fields.length == 0) {
-			throw new UnableToAccessDBReportFieldException(exampleReport, null, null);
+			throw new UnableToAccessDBReportFieldException(exampleReport, null);
 		}
 		for (Field field : fields) {
 			final Object value;

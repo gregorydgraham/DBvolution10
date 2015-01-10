@@ -17,6 +17,9 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
+import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 
 /**
  * Use this class to work with an in-memory JavaDB.
@@ -24,7 +27,8 @@ import java.sql.SQLException;
  * @author gregory.graham
  */
 public class JavaDBMemoryDB extends JavaDB {
-	private final Connection storedConnection;
+
+	private Connection storedConnection;
 
 	/**
 	 * Creates or connects to a JavaDB in-memory instance.
@@ -36,15 +40,19 @@ public class JavaDBMemoryDB extends JavaDB {
 	 * @param password password
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException {
+	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		super("jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
+		jamDatabaseConnectionOpen();
+	}
+
+	private void jamDatabaseConnectionOpen() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		this.storedConnection = getConnection();
 		this.storedConnection.createStatement();
 	}
 
 	@Override
 	public JavaDBMemoryDB clone() throws CloneNotSupportedException {
-		return (JavaDBMemoryDB)super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return (JavaDBMemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
-	
+
 }

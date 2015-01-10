@@ -81,10 +81,10 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * foreign key provided to the traverse "down" the tree from the results of
 	 * the current query thru all the rows that reference the current rows.
 	 *
-	 
-	 
+	 *
+	 *
 	 * @return A linked List
-	 
+	 *
 	 */
 	private List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveSQLDirection direction) throws SQLException {
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
@@ -204,13 +204,13 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	private DBQuery getRecursiveSubQuery(String recursiveTableAlias, ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
-		Class<? extends DBRow> referencedClass = DBRow.class;
+		Class<? extends DBRow> referencedClass;
 		final DBDatabase database = originalQuery.getDatabase();
 		DBQuery newQuery = database.getDBQuery();
-		try {
 
-			final AbstractColumn fkColumn = foreignKeyToFollow.getColumn();
-			referencedClass = fkColumn.getClassReferencedByForeignKey();
+		final AbstractColumn fkColumn = foreignKeyToFollow.getColumn();
+		referencedClass = fkColumn.getClassReferencedByForeignKey();
+		try {
 			final DBRow referencedRow = referencedClass.newInstance();
 
 			DBRow originatingRow = fkColumn.getInstanceOfRow();
@@ -333,8 +333,8 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * semantic information and help complex query creation. As such sub-classed
 	 * foreign keys are fully supported.
 	 *
-	 * @return a list of the ancestors of the results from this query.
-	  1 Database exceptions may be thrown
+	 * @return a list of the ancestors of the results from this query. 1 Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<TreeNode<T>> getPathsToRoot() throws SQLException {
@@ -401,7 +401,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * foreign keys are fully supported.
 	 *
 	 * @return a list of trees of the descendants of the results from this query.
-	  1 Database exceptions may be thrown
+	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<TreeNode<T>> getTrees() throws SQLException {
@@ -443,7 +443,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	private List<DBQueryRow> performRecursiveQueryEmulation(RecursiveSQLDirection direction) throws SQLException {
-		
+
 		final T returnType = getReturnType();
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
 		List<DBQueryRow> primingRows = this.originalQuery.getAllRows();

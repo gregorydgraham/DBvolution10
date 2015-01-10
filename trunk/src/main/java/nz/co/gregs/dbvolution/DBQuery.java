@@ -24,6 +24,7 @@ import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
@@ -80,7 +81,7 @@ import nz.co.gregs.dbvolution.internal.query.*;
  *
  * @author Gregory Graham
  */
-public class DBQuery {
+public class DBQuery{
 
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();

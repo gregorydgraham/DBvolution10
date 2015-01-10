@@ -282,7 +282,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @return the Connection to be used.
 	 */
-	public Connection getConnection() throws DBRuntimeException {
+	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver{
 		if (isInATransaction) {
 			return this.transactionConnection;
 		}
@@ -312,7 +312,7 @@ public abstract class DBDatabase implements Cloneable {
 		return conn;
 	}
 
-	private Connection getRawConnection() throws DBRuntimeException {
+	private Connection getRawConnection() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException {
 		Connection connection;
 		synchronized (getConnectionSynchronizeObject) {
 			if (this.dataSource == null) {

@@ -128,15 +128,19 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
-			prep.setBinaryStream(1, largeObject.getInputStream());
-		} catch (SQLException exp) {
 			try {
-				prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
-			} catch (SQLException exp2) {
-				throw new DBRuntimeException(exp);
+				prep.setBinaryStream(1, largeObject.getInputStream());
+			} catch (SQLException exp) {
+				try {
+					prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
+				} catch (SQLException exp2) {
+					throw new DBRuntimeException(exp);
+				}
 			}
+			prep.execute();
+		} finally {
+			prep.close();
 		}
-		prep.execute();
 	}
 
 	private void setUsingBLOB(DBDefinition defn, DBRow row, String col, DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
@@ -154,8 +158,12 @@ public class DBUpdateLargeObjects extends DBUpdate {
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		prep.setBlob(1, largeObject.getInputStream(), largeObject.getSize());
-		prep.execute();
+		try {
+			prep.setBlob(1, largeObject.getInputStream(), largeObject.getSize());
+			prep.execute();
+		} finally {
+			prep.close();
+		}
 	}
 
 	private void setUsingBase64String(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
@@ -173,31 +181,39 @@ public class DBUpdateLargeObjects extends DBUpdate {
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		InputStream inputStream = largeObject.getInputStream();
+		try {
+			InputStream inputStream = largeObject.getInputStream();
 
-		InputStream input = new BufferedInputStream(inputStream);
-		List<byte[]> byteArrays = new ArrayList<byte[]>();
+			InputStream input = new BufferedInputStream(inputStream);
+			try {
+				List<byte[]> byteArrays = new ArrayList<byte[]>();
 
-		int totalBytesRead = 0;
-		byte[] resultSetBytes;
-		resultSetBytes = new byte[100000];
-		int bytesRead = input.read(resultSetBytes);
-		while (bytesRead > 0) {
-			totalBytesRead += bytesRead;
-			byteArrays.add(resultSetBytes);
-			resultSetBytes = new byte[100000];
-			bytesRead = input.read(resultSetBytes);
+				int totalBytesRead = 0;
+				byte[] resultSetBytes;
+				resultSetBytes = new byte[100000];
+				int bytesRead = input.read(resultSetBytes);
+				while (bytesRead > 0) {
+					totalBytesRead += bytesRead;
+					byteArrays.add(resultSetBytes);
+					resultSetBytes = new byte[100000];
+					bytesRead = input.read(resultSetBytes);
+				}
+				byte[] bytes = new byte[totalBytesRead];
+				int bytesAdded = 0;
+				for (byte[] someBytes : byteArrays) {
+					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+					bytesAdded += someBytes.length;
+				}
+				String b64encoded = Base64.encodeBase64String(bytes);
+				//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
+				prep.setString(1, b64encoded);
+				prep.execute();
+			} finally {
+				input.close();
+			}
+		} finally {
+			prep.close();
 		}
-		byte[] bytes = new byte[totalBytesRead];
-		int bytesAdded = 0;
-		for (byte[] someBytes : byteArrays) {
-			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-			bytesAdded += someBytes.length;
-		}
-		String b64encoded = Base64.encodeBase64String(bytes);
-		//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
-		prep.setString(1, b64encoded);
-		prep.execute();
 	}
 
 	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
@@ -215,8 +231,12 @@ public class DBUpdateLargeObjects extends DBUpdate {
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
-		prep.execute();
+		try {
+			prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
+			prep.execute();
+		} finally {
+			prep.close();
+		}
 	}
 
 	@Override
@@ -230,7 +250,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	/**
 	 * Finds all the DBLargeObject fields that this action will need to update.
 	 *
-	 * @param row the row to be updated 
+	 * @param row the row to be updated
 	 * @return a list of the interesting DBLargeObjects.
 	 */
 	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
