@@ -67,7 +67,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * {@link StringResult} objects are generally StringExpressions but they can
 	 * be {@link DBString}, {@link StringColumn}, or other types.
 	 *
-	 * @param stringVariable	 stringVariable	
+	 * @param stringVariable	stringVariable
 	 */
 	public StringExpression(StringResult stringVariable) {
 		string1 = stringVariable;
@@ -82,7 +82,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * <p>
 	 * Essentially the same as {@link StringExpression#value(java.lang.String) }
 	 *
-	 * @param stringVariable	 stringVariable	
+	 * @param stringVariable	stringVariable
 	 */
 	public StringExpression(String stringVariable) {
 		string1 = new DBString(stringVariable);
@@ -94,12 +94,17 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	/**
 	 * Creates a StringExpression from an arbitrary DBString object.
 	 *
-	 * @param stringVariable	 stringVariable	
+	 * @param stringVariable	stringVariable
 	 */
 	public StringExpression(DBString stringVariable) {
-		string1 = stringVariable.copy();
-		if (stringVariable == null || stringVariable.getIncludesNull()) {
+		if (stringVariable == null) {
+			string1 = null;
 			nullProtectionRequired = true;
+		} else {
+			string1 = stringVariable.copy();
+			if (stringVariable.getIncludesNull()) {
+				nullProtectionRequired = true;
+			}
 		}
 	}
 
@@ -114,12 +119,17 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Refer to {@link NumberExpression#NumberExpression(java.lang.Number) } and {@link NumberExpression#stringResult()
 	 * } for more information.
 	 *
-	 * @param numberVariable	 numberVariable	
+	 * @param numberVariable	numberVariable
 	 */
 	public StringExpression(NumberExpression numberVariable) {
-		string1 = numberVariable.stringResult();
-		if (numberVariable == null || string1.getIncludesNull()) {
+		if (numberVariable == null) {
+			string1 = null;
 			nullProtectionRequired = true;
+		} else {
+			string1 = numberVariable.stringResult();
+			if (string1.getIncludesNull()) {
+				nullProtectionRequired = true;
+			}
 		}
 	}
 
@@ -134,7 +144,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Refer to {@link NumberExpression#NumberExpression(java.lang.Number) } and {@link NumberExpression#stringResult()
 	 * } for more information.
 	 *
-	 * @param numberVariable	 numberVariable	
+	 * @param numberVariable	numberVariable
 	 */
 	public StringExpression(Number numberVariable) {
 		string1 = NumberExpression.value(numberVariable).stringResult();
@@ -165,10 +175,9 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -176,33 +185,33 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * <li>The implementation should be {@code static}</li>
 	 * </ul>
 	 *
-	 * @param string	 string	
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @param string	string
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static StringExpression value(String string) {
 		return new StringExpression(string);
 	}
 
 	/**
-	 * Provides a default option when the StringExpression resolves to NULL
-	 * within the query.
+	 * Provides a default option when the StringExpression resolves to NULL within
+	 * the query.
 	 *
-	 * @param alternative	 alternative	
-	 * @return a StringExpression that will substitute to the given value when
-	 * the StringExpression resolves to NULL.
+	 * @param alternative	alternative
+	 * @return a StringExpression that will substitute to the given value when the
+	 * StringExpression resolves to NULL.
 	 */
 	public StringExpression ifDBNull(String alternative) {
 		return this.ifDBNull(new StringExpression(alternative));
 	}
 
 	/**
-	 * Provides a default option when the StringExpression resolves to NULL
-	 * within the query.
+	 * Provides a default option when the StringExpression resolves to NULL within
+	 * the query.
 	 *
-	 * @param alternative	 alternative	
-	 * @return a StringExpression that will substitute to the given value when
-	 * the StringExpression resolves to NULL.
+	 * @param alternative	alternative
+	 * @return a StringExpression that will substitute to the given value when the
+	 * StringExpression resolves to NULL.
 	 */
 	public StringExpression ifDBNull(StringResult alternative) {
 		return new StringExpression(
@@ -238,7 +247,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param sqlPattern	 sqlPattern	
+	 * @param sqlPattern	sqlPattern
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLike(String sqlPattern) {
@@ -258,7 +267,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param sqlPattern	 sqlPattern	
+	 * @param sqlPattern	sqlPattern
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLike(StringResult sqlPattern) {
@@ -294,7 +303,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param sqlPattern	 sqlPattern	
+	 * @param sqlPattern	sqlPattern
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLikeIgnoreCase(String sqlPattern) {
@@ -316,7 +325,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param sqlPattern	 sqlPattern	
+	 * @param sqlPattern	sqlPattern
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLikeIgnoreCase(StringResult sqlPattern) {
@@ -338,7 +347,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param sqlPattern	 sqlPattern	
+	 * @param sqlPattern	sqlPattern
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLikeIgnoreCase(StringExpression sqlPattern) {
@@ -351,10 +360,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(String equivalentString) {
@@ -367,10 +376,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
-	 * @param numberResult	 numberResult	
+	 * @param numberResult	numberResult
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(NumberExpression numberResult) {
@@ -383,10 +392,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
-	 * @param number	 number	
+	 * @param number	number
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(Number number) {
@@ -399,10 +408,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(StringResult equivalentString) {
@@ -415,10 +424,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied value changing both expressions
-	 * to lowercase first.
+	 * current StringExpression to the supplied value changing both expressions to
+	 * lowercase first.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(StringExpression equivalentString) {
@@ -432,7 +441,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(String equivalentString) {
@@ -446,7 +455,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param numberResult	 numberResult	
+	 * @param numberResult	numberResult
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(NumberExpression numberResult) {
@@ -460,7 +469,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param number	 number	
+	 * @param number	number
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(Number number) {
@@ -474,11 +483,11 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(StringExpression equivalentString) {
-		return is((StringResult)equivalentString);
+		return is((StringResult) equivalentString);
 	}
 
 	/**
@@ -488,7 +497,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(StringResult equivalentString) {
@@ -524,7 +533,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(String equivalentString) {
@@ -538,7 +547,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param numberResult	 numberResult	
+	 * @param numberResult	numberResult
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(NumberExpression numberResult) {
@@ -552,7 +561,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param number	 number	
+	 * @param number	number
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(Number number) {
@@ -566,7 +575,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(StringResult equivalentString) {
@@ -576,8 +585,8 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -604,8 +613,8 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -632,8 +641,8 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -660,8 +669,8 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -924,7 +933,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLessThan(String equivalentString) {
@@ -938,7 +947,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLessThan(StringResult equivalentString) {
@@ -966,7 +975,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLessThanOrEqual(String equivalentString) {
@@ -980,7 +989,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLessThanOrEqual(StringResult equivalentString) {
@@ -1008,7 +1017,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isGreaterThan(String equivalentString) {
@@ -1022,7 +1031,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isGreaterThan(StringResult equivalentString) {
@@ -1050,7 +1059,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isGreaterThanOrEqual(String equivalentString) {
@@ -1064,7 +1073,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied value.
 	 *
-	 * @param equivalentString	 equivalentString	
+	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isGreaterThanOrEqual(StringResult equivalentString) {
@@ -1089,10 +1098,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Creates a query comparison using the IN operator.
 	 *
 	 * <p>
-	 * Use this comparison to generate a BooleanExpression that indicates
-	 * whether the current StringExpression is included in the supplied values.
+	 * Use this comparison to generate a BooleanExpression that indicates whether
+	 * the current StringExpression is included in the supplied values.
 	 *
-	 * @param possibleValues	 possibleValues	
+	 * @param possibleValues	possibleValues
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIn(String... possibleValues) {
@@ -1107,10 +1116,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Creates a query comparison using the IN operator.
 	 *
 	 * <p>
-	 * Use this comparison to generate a BooleanExpression that indicates
-	 * whether the current StringExpression is included in the supplied values.
+	 * Use this comparison to generate a BooleanExpression that indicates whether
+	 * the current StringExpression is included in the supplied values.
 	 *
-	 * @param possibleValues	 possibleValues	
+	 * @param possibleValues	possibleValues
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIn(Collection<String> possibleValues) {
@@ -1125,10 +1134,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Creates a query comparison using the IN operator.
 	 *
 	 * <p>
-	 * Use this comparison to generate a BooleanExpression that indicates
-	 * whether the current StringExpression is included in the supplied values.
+	 * Use this comparison to generate a BooleanExpression that indicates whether
+	 * the current StringExpression is included in the supplied values.
 	 *
-	 * @param possibleValues	 possibleValues	
+	 * @param possibleValues	possibleValues
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIn(StringResult... possibleValues) {
@@ -1160,7 +1169,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Creates a query expression that appends the supplied value to the current
 	 * StringExpression.
 	 *
-	 * @param string2	 string2	
+	 * @param string2	string2
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(StringResult string2) {
@@ -1181,7 +1190,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Creates a query expression that appends the supplied value to the current
 	 * StringExpression.
 	 *
-	 * @param string2	 string2	
+	 * @param string2	string2
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(String string2) {
@@ -1192,7 +1201,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Creates a query expression that appends the supplied value to the current
 	 * StringExpression.
 	 *
-	 * @param number1	 number1	
+	 * @param number1	number1
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(NumberResult number1) {
@@ -1203,7 +1212,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * Creates a query expression that appends the supplied value to the current
 	 * StringExpression.
 	 *
-	 * @param number1	 number1	
+	 * @param number1	number1
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(Number number1) {
@@ -1284,8 +1293,8 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	}
 
 	/**
-	 * Creates a query expression that trims all leading and trailing spaces
-	 * from the current StringExpression.
+	 * Creates a query expression that trims all leading and trailing spaces from
+	 * the current StringExpression.
 	 *
 	 * @return a StringExpression.
 	 */
@@ -1326,8 +1335,8 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	}
 
 	/**
-	 * Creates a query expression that trims all trailing spaces from the
-	 * current StringExpression.
+	 * Creates a query expression that trims all trailing spaces from the current
+	 * StringExpression.
 	 *
 	 * @return a StringExpression.
 	 */
@@ -1380,7 +1389,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * <p>
 	 * The first character is at position zero (0).
 	 *
-	 * @param startingIndex0Based	 startingIndex0Based	
+	 * @param startingIndex0Based	startingIndex0Based
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(Number startingIndex0Based) {
@@ -1394,7 +1403,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * <p>
 	 * The first character is at position zero (0).
 	 *
-	 * @param startingIndex0Based	 startingIndex0Based	
+	 * @param startingIndex0Based	startingIndex0Based
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(NumberExpression startingIndex0Based) {
@@ -1510,10 +1519,9 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * the StringExpression.
 	 *
 	 * <p>
-	 * The index is 1-based, and returns 0 when the searchString is not
-	 * found.</p>
+	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
 	 *
-	 * @param searchString	 searchString	
+	 * @param searchString	searchString
 	 * @return an expression that will find the location of the searchString.
 	 */
 	public NumberExpression locationOf(String searchString) {
@@ -1526,8 +1534,8 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	}
 
 	/**
-	 * Creates an expression that will count all the non-null values of the
-	 * column supplied.
+	 * Creates an expression that will count all the non-null values of the column
+	 * supplied.
 	 *
 	 * <p>
 	 * Count is an aggregator function for use in DBReport or in a column
@@ -1618,12 +1626,11 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	}
 
 	/**
-	 * Creates a BooleanExpression that tests to ensure the database value is
-	 * not a database NULL value.
+	 * Creates a BooleanExpression that tests to ensure the database value is not
+	 * a database NULL value.
 	 *
 	 * <P>
-	 * The expression will be true if the value is not NULL, and false
-	 * otherwise.
+	 * The expression will be true if the value is not NULL, and false otherwise.
 	 *
 	 * @return a BooleanExpression
 	 */
@@ -1632,18 +1639,17 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	}
 
 	/**
-	 * Creates a BooleanExpression that tests to ensure the database value is
-	 * not a database NULL value AND is not an empty string.
+	 * Creates a BooleanExpression that tests to ensure the database value is not
+	 * a database NULL value AND is not an empty string.
 	 *
 	 * <P>
 	 * The expression will be true if the value is not NULL and is not an empty
 	 * string, and false otherwise.
 	 *
 	 * <p>
-	 * This method provides the maximum portability as some database
-	 * differentiate between a NULL string and a empty string, and some do not.
-	 * To protect your queries against this fundamental variation use this
-	 * method.
+	 * This method provides the maximum portability as some database differentiate
+	 * between a NULL string and a empty string, and some do not. To protect your
+	 * queries against this fundamental variation use this method.
 	 *
 	 * @return a BooleanExpression
 	 */
@@ -1672,14 +1678,13 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * database NULL value OR is an empty string.
 	 *
 	 * <P>
-	 * The expression will be true if the value is NULL OR the expression
-	 * produces an empty string, and false otherwise.
+	 * The expression will be true if the value is NULL OR the expression produces
+	 * an empty string, and false otherwise.
 	 *
 	 * <p>
-	 * This method provides the maximum portability as some database
-	 * differentiate between a NULL string and a empty string, and some do not.
-	 * To protect your queries against this fundamental variation use this
-	 * method.
+	 * This method provides the maximum portability as some database differentiate
+	 * between a NULL string and a empty string, and some do not. To protect your
+	 * queries against this fundamental variation use this method.
 	 *
 	 * @return a BooleanExpression
 	 */
@@ -1698,8 +1703,8 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	/**
 	 * Adds an explicit bracket at this point in the expression chain.
 	 *
-	 * @return a StringExpression that will have the current expression wrapped
-	 * in brackets.
+	 * @return a StringExpression that will have the current expression wrapped in
+	 * brackets.
 	 */
 	public StringExpression bracket() {
 		return new StringExpression(new DBUnaryStringFunction(this) {
@@ -1719,7 +1724,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * expression will return true if the current expression's value is included
 	 * in the list of potential values, otherwise it will return false.
 	 *
-	 * @param potentialValues	 potentialValues	
+	 * @param potentialValues	potentialValues
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isInIgnoreCase(StringResult[] potentialValues) {
@@ -1742,7 +1747,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 
 		private StringResult first;
 		private StringResult second;
-		private boolean includeNulls;
+//		private boolean includeNulls;
 
 		DBBinaryStringArithmetic(StringResult first, StringResult second) {
 			this.first = first;
@@ -1793,10 +1798,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 			return this.first.isAggregator() || second.isAggregator();
 		}
 
-		@Override
-		public boolean getIncludesNull() {
-			return this.includeNulls;
-		}
+//		@Override
+//		public boolean getIncludesNull() {
+//			return this.includeNulls;
+//		}
 
 //		@Override
 //		public void setIncludesNull(boolean nullsAreIncluded) {
@@ -2414,7 +2419,6 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 //		public DBString getQueryableDatatypeForExpressionValue() {
 //			return new DBString();
 //		}
-
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
@@ -2455,7 +2459,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 		}
 	}
 
-	private static abstract class DBNnaryBooleanFunction extends BooleanExpression{
+	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
 
 		protected StringExpression column;
 		protected List<StringResult> values = new ArrayList<StringResult>();
@@ -2482,7 +2486,6 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 //		public DBString getQueryableDatatypeForExpressionValue() {
 //			return new DBString();
 //		}
-
 		abstract String getFunctionName(DBDatabase db);
 
 		protected String beforeValue(DBDatabase db) {

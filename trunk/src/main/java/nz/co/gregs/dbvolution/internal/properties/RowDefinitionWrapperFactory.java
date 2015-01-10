@@ -46,18 +46,6 @@ public class RowDefinitionWrapperFactory {
     }
 
     /**
-     * Gets the class adaptor for the given object's class. If an adaptor for
-     * the given class has not yet been created, one will be created and added
-     * to the internal cache.
-     *
-	 * @param object object
-     * @return the class adaptor
-     */
-    public RowDefinitionClassWrapper classWrapperFor(Object object) {
-        return classWrapperFor(object.getClass());
-    }
-
-    /**
      * Gets the object adaptor for the given object. If an adaptor for the
      * object's class has not yet been created, one will be created and added to
      * the internal cache.

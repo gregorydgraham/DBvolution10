@@ -633,7 +633,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression{
 
 		private BooleanResult[] bools;
-		private boolean includeNulls;
+//		private boolean includeNulls;
 
 		DBNnaryBooleanArithmetic(BooleanResult... bools) {
 			this.bools = bools;
@@ -693,10 +693,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			return result;
 		}
 
-		@Override
-		public boolean getIncludesNull() {
-			return this.includeNulls;
-		}
+//		@Override
+//		public boolean getIncludesNull() {
+//			return this.includeNulls;
+//		}
 
 //		@Override
 //		public void setIncludesNull(boolean nullsAreIncluded) {
@@ -759,17 +759,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		public Set<DBRow> getTablesInvolved() {
 			return onlyBool.getTablesInvolved();
 		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
 	}
 
 	private static abstract class DBUnaryBinaryFunction extends BooleanExpression {
 
 		protected BooleanExpression onlyBool;
-		private boolean includeNulls;
+//		private boolean includeNulls;
 
 		DBUnaryBinaryFunction() {
 			this.onlyBool = null;
@@ -823,10 +818,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			return onlyBool.getTablesInvolved();
 		}
 
-		@Override
-		public boolean getIncludesNull() {
-			return this.includeNulls;
-		}
+//		@Override
+//		public boolean getIncludesNull() {
+//			return this.includeNulls;
+//		}
 
 //		@Override
 //		public void setIncludesNull(boolean nullsAreIncluded) {

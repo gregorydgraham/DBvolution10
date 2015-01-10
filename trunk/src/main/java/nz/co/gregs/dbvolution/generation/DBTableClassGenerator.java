@@ -55,10 +55,11 @@ public class DBTableClassGenerator {
 	 * password, packageName, 1L, baseDirectory,new PrimaryKeyRecognisor(),new
 	 * ForeignKeyRecognisor());}
 	 *
-	 
-	 
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param database database
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
@@ -86,15 +87,15 @@ public class DBTableClassGenerator {
 	 *
 	 * @param database database
 	 * @param versionNumber - the value to use for serialVersionUID
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
-	 
-	 
+	 *
+	 *
 	 */
 	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber) throws SQLException, FileNotFoundException, IOException {
 		generateClasses(database, packageName, baseDirectory, versionNumber, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
@@ -113,13 +114,14 @@ public class DBTableClassGenerator {
 	 * Primary keys and foreign keys are created based on the definitions within
 	 * the database and the results from the PK and FK recognisors.
 	 *
-	 
-	 
-	 
-	 
-	 
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param database database
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
@@ -171,24 +173,25 @@ public class DBTableClassGenerator {
 	 * You probably want to use {@link #generateClasses(nz.co.gregs.dbvolution.DBDatabase, java.lang.String, java.lang.String)
 	 * }
 	 *
-	 
-	 
-	  1 Database exceptions may be thrown
-	 
-	 
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
+	 *
 	 */
 	private static void saveGeneratedClassesToDirectory(List<DBTableClass> generatedClasses, File classDirectory) throws SQLException, FileNotFoundException, IOException {
 		{
 			File file;
 			FileOutputStream fileOutputStream;
 			for (DBTableClass clazz : generatedClasses) {
-//                System.out.println(clazz.className + " => " + classDirectory.getAbsolutePath() + "/" + clazz.className + ".java");
 				file = new File(classDirectory, clazz.getClassName() + ".java");
 				fileOutputStream = new FileOutputStream(file);
-//                System.out.println(clazz.javaSource);
-//                System.out.println("");
-				fileOutputStream.write(clazz.getJavaSource().getBytes());
-				fileOutputStream.close();
+				try {
+					fileOutputStream.write(clazz.getJavaSource().getBytes());
+					fileOutputStream.close();
+				} finally {
+					fileOutputStream.close();
+				}
 			}
 		}
 	}
@@ -211,8 +214,7 @@ public class DBTableClassGenerator {
 	 * @param pkRecog pkRecog
 	 * @param fkRecog fkRecog
 	 * @return a List of DBTableClass instances representing the tables found on
-	 * the database
-	  1 Database exceptions may be thrown
+	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
@@ -236,8 +238,7 @@ public class DBTableClassGenerator {
 	 * @param pkRecog pkRecog
 	 * @param fkRecog fkRecog
 	 * @return a List of DBTableClass instances representing the views found on
-	 * the database
-	  1 Database exceptions may be thrown
+	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
@@ -257,12 +258,11 @@ public class DBTableClassGenerator {
 	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
 	 * and {@link ForeignKeyRecognisor} will be used.
 	 *
-	 
-	 
-	 
+	 *
+	 *
+	 *
 	 * @return a List of DBTableClass instances representing the tables and views
-	 * found on the database
-	  1 Database exceptions may be thrown
+	 * found on the database 1 Database exceptions may be thrown
 	 */
 	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecognisor, ForeignKeyRecognisor fkRecogisor, String... dbObjectTypes) throws SQLException {
 		List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
@@ -424,12 +424,12 @@ public class DBTableClassGenerator {
 	 * Returns a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 *
-	 
+	 *
 	 * @return a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 */
 	private static Class<? extends Object> getQueryableDatatypeNameOfSQLType(int columnType, int precision) throws UnknownJavaSQLTypeException {
-		Class<? extends Object> value = QueryableDatatype.class;
+		Class<? extends Object> value;
 		switch (columnType) {
 			case Types.BIT:
 				if (precision == 1) {
@@ -496,7 +496,7 @@ public class DBTableClassGenerator {
 	 *
 	 * I.e. changes "_" into an uppercase letter.
 	 *
-	 * @param s	 s	
+	 * @param s	s
 	 * @return camel case version of the String
 	 */
 	public static String toClassCase(String s) {
@@ -519,7 +519,7 @@ public class DBTableClassGenerator {
 	 *
 	 * I.e. changes "_" into an uppercase letter.
 	 *
-	 
+	 *
 	 * @return Camel Case version of S
 	 */
 	private static String toFieldCase(String s) {
@@ -532,7 +532,7 @@ public class DBTableClassGenerator {
 	 *
 	 * Capitalizes the first letter of the string
 	 *
-	 
+	 *
 	 * @return Capitalizes the first letter of the string
 	 */
 	private static String toProperCase(String s) {

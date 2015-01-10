@@ -50,7 +50,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
 	private static final long serialVersionUID = 1;
 	private final Map<Object, QueryableDatatype> expressionColumnValues = new LinkedHashMap<Object, QueryableDatatype>();
-	private final DBQuery baseQuery;
+	private transient final DBQuery baseQuery;
 
 	public DBQueryRow(DBQuery queryThatThisRowWasGeneratedFor) {
 		super();

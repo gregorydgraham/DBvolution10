@@ -36,7 +36,7 @@ import org.apache.commons.codec.binary.Base64;
 public class DBJavaObject<O> extends DBLargeObject {
 
 	private static final long serialVersionUID = 1;
-	private InputStream byteStream = null;
+	private transient InputStream byteStream = null;
 	private O literalObject;
 
 	@Override
@@ -49,7 +49,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 		if (newLiteralValue instanceof DBJavaObject) {
 			final DBJavaObject<O> valBytes = (DBJavaObject<O>) newLiteralValue;
 			setValue(valBytes.getValue());
-		} else if (newLiteralValue instanceof Object) {
+		} else {
 			try {
 				literalObject = (O) newLiteralValue;
 				ByteArrayOutputStream tempByteStream = new ByteArrayOutputStream();
@@ -59,8 +59,6 @@ public class DBJavaObject<O> extends DBLargeObject {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Inappropriate Type");
 		}
 	}
 
@@ -109,6 +107,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 //	}
 	@SuppressWarnings("unchecked")
 	private O getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
+		O returnValue = null;
 		InputStream inputStream;
 		inputStream = resultSet.getBinaryStream(fullColumnName);
 		if (resultSet.wasNull()) {
@@ -117,17 +116,21 @@ public class DBJavaObject<O> extends DBLargeObject {
 		if (inputStream == null) {
 			this.setToNull();
 		} else {
+			final BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 			try {
-				ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(inputStream));
-//				this.setValue(input.readObject());
-				return (O) input.readObject();
+				ObjectInputStream input = new ObjectInputStream(bufferedInputStream);
+				try {
+					returnValue = (O) input.readObject();
+				} finally {
+					input.close();
+				}
 			} catch (IOException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (ClassNotFoundException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		return null;
+		return returnValue;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -159,36 +162,40 @@ public class DBJavaObject<O> extends DBLargeObject {
 				this.setToNull();
 			} else {
 				BufferedReader input = new BufferedReader(inputReader);
-				List<byte[]> byteArrays = new ArrayList<byte[]>();
-
-				int totalBytesRead = 0;
 				try {
-					char[] resultSetBytes;
-					resultSetBytes = new char[100000];
-					int bytesRead = input.read(resultSetBytes);
-					while (bytesRead > 0) {
-						totalBytesRead += bytesRead;
-						byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+					List<byte[]> byteArrays = new ArrayList<byte[]>();
+
+					int totalBytesRead = 0;
+					try {
+						char[] resultSetBytes;
 						resultSetBytes = new char[100000];
-						bytesRead = input.read(resultSetBytes);
+						int bytesRead = input.read(resultSetBytes);
+						while (bytesRead > 0) {
+							totalBytesRead += bytesRead;
+							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+							resultSetBytes = new char[100000];
+							bytesRead = input.read(resultSetBytes);
+						}
+					} catch (IOException ex) {
+						Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
 					}
-				} catch (IOException ex) {
-					Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				byte[] bytes = new byte[totalBytesRead];
-				int bytesAdded = 0;
-				for (byte[] someBytes : byteArrays) {
-					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-					bytesAdded += someBytes.length;
-				}
-				byte[] decodeBuffer = Base64.decodeBase64(bytes);
+					byte[] bytes = new byte[totalBytesRead];
+					int bytesAdded = 0;
+					for (byte[] someBytes : byteArrays) {
+						System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+						bytesAdded += someBytes.length;
+					}
+					byte[] decodeBuffer = Base64.decodeBase64(bytes);
 
-				ObjectInputStream decodedInput = new ObjectInputStream(new ByteArrayInputStream(decodeBuffer));
-				try {
+					ObjectInputStream decodedInput = new ObjectInputStream(new ByteArrayInputStream(decodeBuffer));
+					try {
 //					this.setValue(decodedInput.readObject());
-					obj = (O) decodedInput.readObject();
-				} catch (ClassNotFoundException ex) {
-					Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+						obj = (O) decodedInput.readObject();
+					} catch (ClassNotFoundException ex) {
+						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+					}
+				} finally {
+					input.close();
 				}
 			}
 		}
@@ -197,45 +204,49 @@ public class DBJavaObject<O> extends DBLargeObject {
 
 	@SuppressWarnings("unchecked")
 	private O getFromCLOB(ResultSet resultSet, String fullColumnName) throws SQLException {
-//		InputStream inputStream;
+		O returnValue = null;
 		Clob clob = resultSet.getClob(fullColumnName);
 		if (resultSet.wasNull() || clob == null) {
 			this.setToNull();
 		} else {
 			try {
 				BufferedReader input = new BufferedReader(clob.getCharacterStream());
-				List<byte[]> byteArrays = new ArrayList<byte[]>();
-
-				int totalBytesRead = 0;
 				try {
-					char[] resultSetBytes;
-					resultSetBytes = new char[100000];
-					int bytesRead = input.read(resultSetBytes);
-					while (bytesRead > 0) {
-						totalBytesRead += bytesRead;
-						byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+					List<byte[]> byteArrays = new ArrayList<byte[]>();
+
+					int totalBytesRead = 0;
+					try {
+						char[] resultSetBytes;
 						resultSetBytes = new char[100000];
-						bytesRead = input.read(resultSetBytes);
+						int bytesRead = input.read(resultSetBytes);
+						while (bytesRead > 0) {
+							totalBytesRead += bytesRead;
+							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+							resultSetBytes = new char[100000];
+							bytesRead = input.read(resultSetBytes);
+						}
+					} catch (IOException ex) {
+						Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
 					}
-				} catch (IOException ex) {
-					Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
-				}
-				byte[] bytes = new byte[totalBytesRead];
-				int bytesAdded = 0;
-				for (byte[] someBytes : byteArrays) {
-					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-					bytesAdded += someBytes.length;
-				}
-				ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes));
+					byte[] bytes = new byte[totalBytesRead];
+					int bytesAdded = 0;
+					for (byte[] someBytes : byteArrays) {
+						System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+						bytesAdded += someBytes.length;
+					}
+					ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes));
 //				this.setValue(objectInput.readObject());
-				return (O) objectInput.readObject();
+					returnValue = (O) objectInput.readObject();
+				} finally {
+					input.close();
+				}
 			} catch (IOException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (ClassNotFoundException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		return null;
+		return returnValue;
 	}
 
 	@Override
@@ -277,12 +288,11 @@ public class DBJavaObject<O> extends DBLargeObject {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this
-	 * DBByteArray.
+	 * Returns the byte[] used internally to store the value of this DBByteArray.
 	 *
 	 * @return the byte[] value of this DBByteArray.
 	 * @throws java.io.IOException java.io.IOException
-	 
+	 *
 	 */
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -329,7 +339,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 		}
 		return obj;
 	}
-	
+
 	@Override
 	public boolean getIncludesNull() {
 		return false;
