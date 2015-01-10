@@ -34,7 +34,8 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 @DBTableName("lt_carco_logo_with_prev")
 @SuppressWarnings("serial")
 public class LinkCarCompanyAndLogoWithPreviousLink extends DBRow{
-    
+    	private static final long serialVersionUID = 1L;
+
 	/**
 	 * A DBInteger field representing the "fk_car_company" column in the database.
 	 *

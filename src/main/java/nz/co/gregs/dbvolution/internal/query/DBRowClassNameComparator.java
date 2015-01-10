@@ -15,13 +15,16 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  *
  * @author gregory.graham
  */
-public class DBRowClassNameComparator implements Comparator<Class<?>> {
+public class DBRowClassNameComparator implements Comparator<Class<?>>, Serializable {
+
+	static final long serialVersionUID = 1L;
 
 	public DBRowClassNameComparator() {
 	}
@@ -36,5 +39,5 @@ public class DBRowClassNameComparator implements Comparator<Class<?>> {
 			return first.getSimpleName().compareTo(second.getSimpleName());
 		}
 	}
-	
+
 }
