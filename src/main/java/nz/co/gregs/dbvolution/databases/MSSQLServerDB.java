@@ -29,7 +29,9 @@ import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
  * @author Gregory Graham
  */
 public class MSSQLServerDB extends DBDatabase {
-    private final static String SQLSERVERDRIVERNAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    public final static String SQLSERVERDRIVERNAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    public final static String JTDSDRIVERNAME = "net.sourceforge.jtds.jdbc.Driver";
+	public final static int DEFAULT_PORT_NUMBER = 1433;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
@@ -65,6 +67,18 @@ public class MSSQLServerDB extends DBDatabase {
     public MSSQLServerDB(String jdbcURL, String username, String password) {
         super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
     }
+	
+    public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+        super(
+				new MSSQLServerDBDefinition(), 
+				SQLSERVERDRIVERNAME, 
+				"jdbc:sqlserver://"+hostname+(instanceName!=null?"\\"+instanceName:"")+":"+portNumber+";"+(databaseName==null?"":"databaseName="+databaseName+";"), 
+				username, 
+				password
+		);
+    }
+	
+	//jdbc:sqlserver://[serverName[\instanceName][:portNumber]][;property=value[;property=value]]
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {

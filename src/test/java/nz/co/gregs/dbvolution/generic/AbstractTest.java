@@ -93,7 +93,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testMSSQL") != null) {
-			databases.add(new Object[]{"MSSQL", new MSSQLServerDB("net.sourceforge.jtds.jdbc.Driver","jdbc:jtds:sqlserver://dbvtest-mssql.c0wzty6pgnq4.us-west-2.rds.amazonaws.com:1433/dbvtest", "dbv", "Testingdbv")});
+			databases.add(new Object[]{"MSSQL", new MSSQLServerDB("dbvtest-mssql.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testJavaDBMemory") != null) {
 			databases.add(new Object[]{"JavaDBMemory", new JavaDBMemoryDB("localhost", 1527, "dbv", "dbv", "dbv")});
