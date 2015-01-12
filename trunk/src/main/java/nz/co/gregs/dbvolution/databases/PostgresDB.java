@@ -30,6 +30,8 @@ import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 public class PostgresDB extends DBDatabase {
 
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
+	public static final int POSTGRES_DEFAULT_PORT = 5432;
+	public static final String POSTGRES_DEFAULT_USERNAME = "postgres";
 
 	/**
 	 * Creates a PostgreSQL connection for the DataSource.
@@ -101,7 +103,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param urlExtras urlExtras
 	 */
 	public PostgresDB(String databaseName, String username, String password, String urlExtras) {
-		this("localhost", 5432, databaseName, username, password, urlExtras);
+		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
 	}
 
 	@Override

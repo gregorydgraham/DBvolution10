@@ -20,73 +20,91 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
- * Defines the features of the Microsoft SQL Server database that differ from the standard
- * database.
+ * Defines the features of the Microsoft SQL Server database that differ from
+ * the standard database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link MSSQLServerDB} instances, and
- * you should not need to use it directly.
+ * This DBDefinition is automatically included in {@link MSSQLServerDB}
+ * instances, and you should not need to use it directly.
  *
  * @author Gregory Graham
  */
 public class MSSQLServerDBDefinition extends DBDefinition {
 
-    private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    @Override
-    public String getDateFormattedForQuery(Date date) {
-        return "'" + DATETIME_FORMAT.format(date) + "'";
-    }
+	@Override
+	public String getDateFormattedForQuery(Date date) {
+		return "'" + DATETIME_FORMAT.format(date) + "'";
+	}
 
-    @Override
-    public String formatTableName(DBRow table) {
-        return "["+table.getTableName()+"]";
-    }
+	@Override
+	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+		if (qdt instanceof DBBoolean) {
+			return " BIT ";
+		} else if (qdt instanceof DBDate) {
+			return " DATETIME ";
+		} else if (qdt instanceof DBLargeObject) {
+			return " NTEXT ";
+		} else if (qdt instanceof DBString) {
+			return " NVARCHAR(1000) COLLATE Latin1_General_CS_AS_KS_WS ";
+		} else {
+			return super.getSQLTypeOfDBDatatype(qdt);
+		}
+	}
 
-    @Override
-    public Object endSQLStatement() {
-        return "";
-    }
+	@Override
+	public String formatTableName(DBRow table) {
+		return "[" + table.getTableName() + "]";
+	}
 
-    @Override
-    public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
-        return " TOP("+options.getRowLimit()+") "; //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public Object endSQLStatement() {
+		return "";
+	}
 
-    @Override
-    public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
-        return "";
-    }
+	@Override
+	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+		return " TOP(" + options.getRowLimit() + ") "; //To change body of generated methods, choose Tools | Templates.
+	}
 
-    @Override
-    public String doTrimFunction(String enclosedValue) {
-        return " LTRIM(RTRIM("+enclosedValue+")) "; //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
+	@Override
+	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+		return "";
+	}
 
-    @Override
-    public String doConcatTransform(String firstString, String secondString) {
-        return firstString+"+"+secondString;
-    }
+	@Override
+	public String doTrimFunction(String enclosedValue) {
+		return " LTRIM(RTRIM(" + enclosedValue + ")) "; //To change body of generated methods, choose Tools | Templates.
+	}
 
-    @Override
-    public String getIfNullFunctionName() {
-        return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public String doConcatTransform(String firstString, String secondString) {
+		return firstString + "+" + secondString;
+	}
 
-    @Override
-    public String getStandardDeviationFunctionName() {
-        return "STDEV";
-    }
+	@Override
+	public String getIfNullFunctionName() {
+		return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
+	}
 
-    @Override
-    public boolean supportsPagingNatively(QueryOptions options) {
-        return false;
-    }
+	@Override
+	public String getStandardDeviationFunctionName() {
+		return "STDEV";
+	}
+
+	@Override
+	public boolean supportsPagingNatively(QueryOptions options) {
+		return false;
+	}
 
 	@Override
 	public String getColumnAutoIncrementSuffix() {
@@ -94,6 +112,16 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	public boolean supportsXOROperator() {
+		return true;
+	}
+
+	@Override
+	public boolean prefersLargeObjectsSetAsBase64String() {
+		return true;
+	}
+
+	@Override
+	public boolean prefersLargeObjectsReadAsBase64CharacterStream() {
 		return true;
 	}
 }
