@@ -1078,7 +1078,7 @@ public abstract class DBDefinition {
 	 * @return SQL snippet
 	 */
 	public String doStringLengthTransform(String enclosedValue) {
-		return " CHAR_LENGTH( " + enclosedValue + " ) ";
+		return " "+getStringLengthFunctionName()+"( " + enclosedValue + " ) ";
 	}
 
 	/**
@@ -2136,13 +2136,30 @@ public abstract class DBDefinition {
 	 * list provided.
 	 */
 	public String doLeastOfTransformation(List<String> strs) {
+		if(supportsLeastOfNatively()){
 		StringBuilder sql = new StringBuilder(getLeastOfFunctionName() + "(");
 		String comma = "";
 		for (String str : strs) {
 			sql.append(comma).append(str);
 			comma = ", ";
 		}
-		return sql.append(")").toString();
+		return sql.append(")").toString();}else{return fakeLeastOfTransformation(strs);}
+	}
+
+	protected String fakeLeastOfTransformation(List<String> strs) {
+		String sql = "";
+		String prevCase = null;
+		if (strs.size() == 1) {
+			return strs.get(0);
+		}
+		for (String str : strs) {
+			if (prevCase == null) {
+				prevCase = "(" + str + ")";
+			} else {
+				sql = "(case when " + str + " < " + prevCase + " then " + str + " else " + prevCase + " end)";
+			}
+		}
+		return sql;
 	}
 
 	/**
@@ -2161,13 +2178,33 @@ public abstract class DBDefinition {
 	 * supplied list.
 	 */
 	public String doGreatestOfTransformation(List<String> strs) {
-		StringBuilder sql = new StringBuilder(getGreatestOfFunctionName() + "(");
-		String comma = "";
-		for (String str : strs) {
-			sql.append(comma).append(str);
-			comma = ", ";
+		if (supportsGreatestOfNatively()) {
+			StringBuilder sql = new StringBuilder(getGreatestOfFunctionName() + "(");
+			String comma = "";
+			for (String str : strs) {
+				sql.append(comma).append(str);
+				comma = ", ";
+			}
+			return sql.append(")").toString();
+		} else {
+			return fakeGreatestOfTransformation(strs);
 		}
-		return sql.append(")").toString();
+	}
+
+	public String fakeGreatestOfTransformation(List<String> strs) {
+		String sql = "";
+		String prevCase = null;
+		if (strs.size() == 1) {
+			return strs.get(0);
+		}
+		for (String str : strs) {
+			if (prevCase == null) {
+				prevCase = "(" + str + ")";
+			} else {
+				sql = "(case when " + str + " > " + prevCase + " then " + str + " else " + prevCase + " end)";
+			}
+		}
+		return sql;
 	}
 
 	/**
@@ -2442,5 +2479,13 @@ public abstract class DBDefinition {
 
 	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper field) {
 		return getSQLTypeOfDBDatatype(field);
+	}
+
+	protected boolean supportsLeastOfNatively() {
+		return true;
+	}
+
+	protected boolean supportsGreatestOfNatively() {
+		return true;
 	}
 }

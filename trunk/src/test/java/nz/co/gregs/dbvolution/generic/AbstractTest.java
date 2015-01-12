@@ -123,6 +123,8 @@ public abstract class AbstractTest {
 				return trimStr.replaceAll(" oo", " __").replaceAll(" +[aA][sS] +", " ").replaceAll("\"", "").replaceAll(" *; *$", "");
 			} else if (database instanceof PostgresDB) {
 				return trimStr.replaceAll("::[a-zA-Z]*", "");
+			} else if (database instanceof MSSQLServerDB) {
+				return trimStr.replaceAll("[\\[\\]]", "");
 			} else {
 				return trimStr;
 			}

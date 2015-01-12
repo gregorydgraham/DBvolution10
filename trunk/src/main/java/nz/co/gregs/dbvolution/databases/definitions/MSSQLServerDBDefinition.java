@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -80,6 +81,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		return "";
 	}
+	
+	@Override
+	public String getStringLengthFunctionName() {
+		return "LEN";
+	}
 
 	@Override
 	public String doTrimFunction(String enclosedValue) {
@@ -122,6 +128,25 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public boolean prefersLargeObjectsReadAsBase64CharacterStream() {
+		return true;
+	}
+	@Override
+	protected String getCurrentDateOnlyFunctionName() {
+		return " NOW";
+	}
+	@Override
+	public String doTruncTransform(String realNumberExpression, String numberOfDecimalPlacesExpression) {
+		//When the third parameter != 0 it truncates rather than rounds
+		return " ROUND(" + realNumberExpression + ", " + numberOfDecimalPlacesExpression + ", 1)";
+	}
+
+	@Override
+	protected boolean supportsLeastOfNatively() {
+		return false;
+	}
+
+	@Override
+	protected boolean supportsGreatestOfNatively() {
 		return true;
 	}
 }
