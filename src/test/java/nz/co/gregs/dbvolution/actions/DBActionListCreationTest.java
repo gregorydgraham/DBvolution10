@@ -54,10 +54,12 @@ public class DBActionListCreationTest extends AbstractTest {
 		List<String> revertStrings = revertList.get(0).getSQLStatements(database);
 		Assert.assertThat(revertStrings.size(), is(1));
 		final String standardUpdateSQL = "UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
+		final String microsoftUpdateSQL = "UPDATE [MARQUE] SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
 		final String oracleUpdateSQL = "UPDATE OO1081299805 SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999";
 		Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
 				anyOf(
 						is(this.testableSQLWithoutColumnAliases(standardUpdateSQL)),
+						is(this.testableSQLWithoutColumnAliases(microsoftUpdateSQL)),
 						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL))
 				));
 		System.out.println("REVERT:");
@@ -244,10 +246,12 @@ public class DBActionListCreationTest extends AbstractTest {
 		List<String> revertStrings = revertList.get(0).getSQLStatements(database);
 		Assert.assertThat(revertStrings.size(), is(1));
 		final String standardSQL = "UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
+		final String microsoftSQL = "UPDATE [MARQUE] SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
 		final String oracleSQL = "update __1081299805 set uid_marque = 1 where uid_marque = 99999";
 		Assert.assertThat(this.testableSQLWithoutColumnAliases(revertStrings.get(0)),
 				anyOf(
 						is(this.testableSQLWithoutColumnAliases(standardSQL)),
+						is(this.testableSQLWithoutColumnAliases(microsoftSQL)),
 						is(this.testableSQLWithoutColumnAliases(oracleSQL))  
 				)
 		);

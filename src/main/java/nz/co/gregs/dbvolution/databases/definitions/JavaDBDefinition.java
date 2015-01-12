@@ -163,37 +163,13 @@ public class JavaDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doLeastOfTransformation(List<String> strs) {
-		String sql = "";
-		String prevCase = null;
-		if (strs.size() == 1) {
-			return strs.get(0);
-		}
-		for (String str : strs) {
-			if (prevCase == null) {
-				prevCase = "(" + str + ")";
-			} else {
-				sql = "(case when " + str + " < " + prevCase + " then " + str + " else " + prevCase + " end)";
-			}
-		}
-		return sql;
+	protected boolean supportsGreatestOfNatively() {
+		return false;
 	}
 
 	@Override
-	public String doGreatestOfTransformation(List<String> strs) {
-		String sql = "";
-		String prevCase = null;
-		if (strs.size() == 1) {
-			return strs.get(0);
-		}
-		for (String str : strs) {
-			if (prevCase == null) {
-				prevCase = "(" + str + ")";
-			} else {
-				sql = "(case when " + str + " > " + prevCase + " then " + str + " else " + prevCase + " end)";
-			}
-		}
-		return sql;
+	protected boolean supportsLeastOfNatively() {
+		return false;
 	}
 
 	@Override
