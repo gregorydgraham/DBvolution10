@@ -55,5 +55,10 @@ public class RecursiveQueryDepthIncreaseExpression implements DBExpression {
 	public Set<DBRow> getTablesInvolved() {
 		return new HashSet<DBRow>();
 	}
+
+	@Override
+	public boolean isPurelyFunctional(){
+		return false;
+	}
 	
 }

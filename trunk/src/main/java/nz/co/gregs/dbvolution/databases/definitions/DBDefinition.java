@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1321,7 +1322,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provides the key words and syntax that start the GROUP BY clause.
 	 *
-	 * @return "GROUP BY "
+	 * @return " GROUP BY "
 	 */
 	public String beginGroupByClause() {
 		return " GROUP BY ";
@@ -1799,7 +1800,7 @@ public abstract class DBDefinition {
 	 * using a text mode.
 	 *
 	 * @return the default implementation returns false.
-	 * @see #getDateGetStringFormat()
+	 * @see #parseDateFromGetString()
 	 */
 	public boolean prefersDatesReadAsStrings() {
 		return false;
@@ -1815,8 +1816,8 @@ public abstract class DBDefinition {
 	 * @return the date format required to interpret strings as dates.
 	 * @see #prefersDatesReadAsStrings()
 	 */
-	public DateFormat getDateGetStringFormat() {
-		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public Date parseDateFromGetString(String getStringDate) throws ParseException {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(getStringDate);
 	}
 
 	/**
@@ -2486,6 +2487,10 @@ public abstract class DBDefinition {
 	}
 
 	protected boolean supportsGreatestOfNatively() {
+		return true;
+	}
+
+	public boolean supportsPurelyFunctionalGroupByColumns() {
 		return true;
 	}
 }

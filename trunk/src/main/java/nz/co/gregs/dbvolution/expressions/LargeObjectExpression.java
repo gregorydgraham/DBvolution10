@@ -107,4 +107,13 @@ public class LargeObjectExpression implements LargeObjectResult {
 		return nullProtectionRequired;
 	}
 
+		@Override
+		public boolean isPurelyFunctional() {
+			if (blobResult == null) {
+				return true;
+			} else {
+				return blobResult.isPurelyFunctional();
+			}
+		}
+
 }

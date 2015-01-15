@@ -80,4 +80,9 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
 	public void setUseTableAlias(boolean useTableAlias) {
 		this.column.setUseTableAlias(useTableAlias);
 	}
+
+	@Override
+	public boolean isPurelyFunctional() {
+		return getTablesInvolved().size()==0;
+	}
 }

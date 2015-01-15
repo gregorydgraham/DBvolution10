@@ -50,7 +50,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class StringExpression implements StringResult, RangeComparable<StringExpression> {
 
-	private StringResult string1;
+	private StringResult string1=null;
 	private boolean nullProtectionRequired;
 
 	/**
@@ -161,6 +161,15 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	@Override
 	public StringExpression copy() {
 		return new StringExpression(this);
+	}
+	
+	@Override
+	public boolean isPurelyFunctional(){
+		if (string1==null){
+			return true;
+		}else{
+			return string1.isPurelyFunctional();
+		}
 	}
 
 	/**
@@ -1798,15 +1807,14 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 			return this.first.isAggregator() || second.isAggregator();
 		}
 
-//		@Override
-//		public boolean getIncludesNull() {
-//			return this.includeNulls;
-//		}
-
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			this.includeNulls = nullsAreIncluded;
-//		}
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBNonaryStringFunction extends StringExpression {
@@ -1863,10 +1871,10 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 			return false;
 		}
 
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
-//		}
+		@Override
+		public boolean isPurelyFunctional() {
+			return true;
+		}
 	}
 
 	private static abstract class DBUnaryStringFunction extends StringExpression {
@@ -1932,12 +1940,17 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 		@Override
 		public boolean getIncludesNull() {
 			return false;
+		}		
+		
+		@Override
+		public boolean isPurelyFunctional() {
+			if (only == null) {
+				return true;
+			} else {
+				return only.isPurelyFunctional();
+			}
 		}
 
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
-//		}
 	}
 
 //	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
@@ -2182,6 +2195,15 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 		protected DBExpression getThird() {
 			return third;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null && third == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBBinaryStringFunction extends StringExpression {
@@ -2270,12 +2292,21 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 		protected StringResult getSecond() {
 			return second;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class BinaryComplicatedNumberFunction extends NumberExpression {
 
-		protected StringExpression first;
-		protected StringExpression second;
+		protected StringExpression first = null;
+		protected StringExpression second = null;
 
 		BinaryComplicatedNumberFunction() {
 			this.first = null;
@@ -2330,6 +2361,15 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 		public boolean getIncludesNull() {
 			return false;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
 	}
 
 	private class Substring extends StringExpression implements StringResult {
@@ -2381,12 +2421,6 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 					(startingPosition.toSQLString(db) + " + 1"),
 					(substringLength != null ? (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
 			);
-//			return " SUBSTRING("
-//					+ enclosedValue.toSQLString(db)
-//					+ " FROM "
-//					+ (startingPosition.toSQLString(db) + " + 1")
-//					+ (substringLength != null ? " for " + (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
-//					+ ") ";
 		}
 
 		@Override
@@ -2397,12 +2431,19 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 		@Override
 		public boolean getIncludesNull() {
 			return false;
+		}		
+		
+		@Override
+		public boolean isPurelyFunctional() {
+			if (startingPosition == null && length == null && string1 == null) {
+				return true;
+			} else {
+				return (startingPosition == null || startingPosition.isPurelyFunctional()) 
+						&& (length == null || length.isPurelyFunctional()) 
+						&& (string1 == null || string1.isPurelyFunctional());
+			}
 		}
 
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//		}
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
@@ -2414,11 +2455,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 			this.first = first;
 			this.second = second;
 		}
-
-//		@Override
-//		public DBString getQueryableDatatypeForExpressionValue() {
-//			return new DBString();
-//		}
+		
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);

@@ -227,7 +227,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 			return null;
 		} else {
 			try {
-				return new Date(database.getDefinition().getDateGetStringFormat().parse(string).getTime());
+				return new Date(database.getDefinition().parseDateFromGetString(string).getTime());
 			} catch (ParseException ex) {
 				throw new DBRuntimeException("Unable To Parse Date: " + string, ex);
 			}

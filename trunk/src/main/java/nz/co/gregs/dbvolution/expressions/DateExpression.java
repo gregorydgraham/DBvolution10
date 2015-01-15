@@ -113,6 +113,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		return new DateExpression(this.date1);
 	}
 
+	@Override
+	public boolean isPurelyFunctional() {
+		if (date1 == null) {
+			return true;
+		} else {
+			return date1.isPurelyFunctional();
+		}
+	}
+
 	/**
 	 * Create An Appropriate Expression Object For This Object
 	 *
@@ -1819,6 +1828,11 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		public boolean getIncludesNull() {
 			return false;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return true;
+		}
 	}
 
 	private static abstract class UnaryComplicatedNumberFunction extends NumberExpression{
@@ -1872,6 +1886,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		@Override
 		public boolean getIncludesNull() {
 			return false;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (only == null) {
+				return true;
+			} else {
+				return only.isPurelyFunctional();
+			}
 		}
 	}
 
@@ -2211,6 +2234,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		protected DateResult getSecond() {
 			return second;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBUnaryNumberFunction extends NumberExpression {
@@ -2273,6 +2305,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		public boolean getIncludesNull() {
 			return false;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (only == null) {
+				return true;
+			} else {
+				return only.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBUnaryDateFunction extends DateExpression {
@@ -2330,6 +2371,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		public Set<DBRow> getTablesInvolved() {
 			return only.getTablesInvolved();
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (only == null) {
+				return true;
+			} else {
+				return only.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBBinaryDateNumberFunctionWithDateResult extends DateExpression {
@@ -2346,21 +2396,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 			this.first = dateExp;
 			this.second = numbExp;
 		}
-
-//		@Override
-//		public DBString getQueryableDatatypeForExpressionValue() {
-//			return new DBString();
-//		}
-
-//		abstract String getFunctionName(DBDatabase db);
-//
-//		protected String beforeValue(DBDatabase db) {
-//			return "" + getFunctionName(db) + "( ";
-//		}
-//
-//		protected String afterValue(DBDatabase db) {
-//			return ") ";
-//		}
+		
 		@Override
 		abstract public String toSQLString(DBDatabase db); //{
 //			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
@@ -2392,6 +2428,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 			tablesInvolved.addAll(second.getTablesInvolved());
 			return tablesInvolved;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBBinaryDateFunctionWithNumberResult extends NumberExpression {
@@ -2408,11 +2453,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 			this.first = dateExp;
 			this.second = otherDateExp;
 		}
-
-//		@Override
-//		public DBString getQueryableDatatypeForExpressionValue() {
-//			return new DBString();
-//		}
 
 		@Override
 		abstract public String toSQLString(DBDatabase db);
@@ -2442,6 +2482,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 			final Set<DBRow> tablesInvolved = first.getTablesInvolved();
 			tablesInvolved.addAll(second.getTablesInvolved());
 			return tablesInvolved;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
 		}
 	}
 }

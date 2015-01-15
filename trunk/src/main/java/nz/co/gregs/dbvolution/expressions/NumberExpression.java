@@ -21,10 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.datatypes.*;
 
 /**
@@ -132,6 +129,15 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 		return numberExpression;
 	}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (innerNumberResult == null) {
+				return true;
+			} else {
+				return innerNumberResult.isPurelyFunctional();
+			}
+		}
 
 	/**
 	 * Converts the number expression into a string/character expression.
@@ -1986,6 +1992,15 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		public boolean getIncludesNull() {
 			return false;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBNonaryFunction extends NumberExpression {
@@ -2038,6 +2053,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		@Override
 		public boolean getIncludesNull() {
 			return false;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return true;
 		}
 	}
 
@@ -2109,6 +2129,15 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		public boolean getIncludesNull() {
 			return false;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (only == null) {
+				return true;
+			} else {
+				return only.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBUnaryBitsFunction implements BooleanArrayResult {
@@ -2178,6 +2207,15 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		@Override
 		public boolean getIncludesNull() {
 			return false;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (only == null) {
+				return true;
+			} else {
+				return only.isPurelyFunctional();
+			}
 		}
 	}
 
@@ -2269,6 +2307,15 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		 */
 		protected DBExpression getSecond() {
 			return second;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
 		}
 	}
 
@@ -2677,10 +2724,18 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			return nullProtectionRequired;
 		}
 
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			this.nullProtectionRequired = nullsAreIncluded;
-//		}
+		@Override
+		public boolean isPurelyFunctional() {
+			if (column == null && values.size() == 0) {
+				return true;
+			} else {
+				boolean result = column.isPurelyFunctional();
+				for (NumberResult value : values) {
+					result = result & value.isPurelyFunctional();
+				}
+				return result;
+			}
+		}
 	}
 
 	private static abstract class DBUnaryStringFunction extends StringExpression {
@@ -2742,6 +2797,16 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		public boolean isAggregator() {
 			return only.isAggregator();
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (only == null) {
+				return true;
+			} else {
+				return only.isPurelyFunctional();
+			}
+		}
+
 	}
 
 	private static class MaxUnaryFunction extends DBUnaryFunction {

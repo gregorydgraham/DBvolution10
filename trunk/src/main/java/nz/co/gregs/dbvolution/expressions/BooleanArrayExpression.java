@@ -215,6 +215,15 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 		}
 	}
 
+		@Override
+		public boolean isPurelyFunctional() {
+			if (innerBitsResult == null) {
+				return true;
+			} else {
+				return innerBitsResult.isPurelyFunctional();
+			}
+		}
+
 	/**
 	 * Return the BooleanArrayResult held internally in this class.
 	 *
@@ -337,6 +346,15 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 		@Override
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
 		}
 	}
 
