@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
@@ -199,8 +200,8 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public DateFormat getDateGetStringFormat() {
-		return DATETIME_FORMAT;
+	public Date parseDateFromGetString(String getStringDate) throws ParseException {
+		return DATETIME_FORMAT.parse(getStringDate);
 	}
 
 	@Override

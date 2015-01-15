@@ -49,7 +49,7 @@ public class DateExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBDate actualJavaDate = new DBDate(new Date());
 		@DBColumn
-		public DBDate currentDate = new DBDate(DateExpression.currentDate());
+		public DBDate currentDate = new DBDate(DateExpression.currentDateOnly());
 		@DBColumn
 		public DBDate currentDateTime = new DBDate(DateExpression.currentDate());
 		@DBColumn
@@ -72,7 +72,9 @@ public class DateExpressionTest extends AbstractTest {
 		Marque reportLimitingMarque = new Marque();
 		reportLimitingMarque.name.permittedPatternIgnoreCase("% HUMMER %");
 		CurrentDateReport currentDateReport = new CurrentDateReport();
-		database.print(DBReport.getRows(database, currentDateReport, reportLimitingMarque));
+		final List<CurrentDateReport> reportRows = DBReport.getRows(database, currentDateReport, reportLimitingMarque);
+		database.print(reportRows);
+		Assert.assertThat(reportRows.size(), is(1));
 
 		marq.creationDate.permittedRangeInclusive(DateExpression.currentDate().addSeconds(-10), null);
 		got = database.get(marq);
@@ -85,8 +87,8 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(21));
 
 		marq.creationDate.permittedRangeInclusive(
-				DateExpression.currentDate().addSeconds(-20),
-				DateExpression.currentDate().addSeconds(+20));
+				DateExpression.currentDate().addMinutes(-5),
+				DateExpression.currentDate().addMinutes(5));
 		got = database.getDBTable(marq).getAllRows();
 		database.print(got);
 		Assert.assertThat(got.size(), is(1));

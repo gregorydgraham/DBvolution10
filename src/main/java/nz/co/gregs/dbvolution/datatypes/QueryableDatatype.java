@@ -910,4 +910,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	public void setValueToNull() {
 		this.setLiteralValue(null);
 	}
+
+	@Override
+	public boolean isPurelyFunctional(){
+		if (!hasColumnExpression()){
+			return getTablesInvolved().isEmpty();
+		}else{
+			return getColumnExpression().isPurelyFunctional();
+		}
+	}
 }

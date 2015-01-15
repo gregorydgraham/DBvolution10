@@ -457,7 +457,9 @@ public class DBQuery{
 				final DBExpression expression = entry.getValue();
 				selectClause.append(colSep).append(expression.toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
 				colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-				if (!expression.isAggregator()) {
+				if (!expression.isAggregator() &&
+						(!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())
+						) {
 					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
 				}
@@ -466,8 +468,11 @@ public class DBQuery{
 			}
 
 			for (Map.Entry<Object, DBExpression> entry : details.getDbReportGroupByColumns().entrySet()) {
-				groupByClause.append(groupByColSep).append(entry.getValue().toSQLString(getDatabase()));
-				groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+				final DBExpression expression = entry.getValue();
+				if ((!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
+					groupByClause.append(groupByColSep).append(expression.toSQLString(getDatabase()));
+					groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+				}
 			}
 
 			boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();

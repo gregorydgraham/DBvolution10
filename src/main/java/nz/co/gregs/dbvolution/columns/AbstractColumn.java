@@ -135,6 +135,11 @@ public class AbstractColumn implements DBExpression {
 	}
 
 	@Override
+	public boolean isPurelyFunctional(){
+		return getTablesInvolved().size()==0;
+	}
+
+	@Override
 	public Set<DBRow> getTablesInvolved() {
 		HashSet<DBRow> hashSet = new HashSet<DBRow>();
 		if (DBRow.class.isAssignableFrom(getRowDefinition().getClass())) {

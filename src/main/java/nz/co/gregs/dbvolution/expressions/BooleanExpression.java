@@ -563,6 +563,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 	}
 
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional();
+			}
+		}
+
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		return onlyBool == null ? new HashSet<DBRow>() : onlyBool.getTablesInvolved();
@@ -628,6 +637,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 
 		protected abstract String getEquationOperator(DBDatabase db);
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression{
@@ -693,15 +711,18 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			return result;
 		}
 
-//		@Override
-//		public boolean getIncludesNull() {
-//			return this.includeNulls;
-//		}
-
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			this.includeNulls = nullsAreIncluded;
-//		}
+		@Override
+		public boolean isPurelyFunctional() {
+			if (bools.length == 0) {
+				return true;
+			} else {
+				boolean result = true;
+				for (BooleanResult bool : bools) {
+					result= result&&bool.isPurelyFunctional();
+				}
+				return result;
+			}
+		}
 	}
 
 	private static abstract class DBUnaryNumberFunction extends NumberExpression {
@@ -758,6 +779,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			return onlyBool.getTablesInvolved();
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional();
+			}
 		}
 	}
 
@@ -818,15 +848,14 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			return onlyBool.getTablesInvolved();
 		}
 
-//		@Override
-//		public boolean getIncludesNull() {
-//			return this.includeNulls;
-//		}
-
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			this.includeNulls = nullsAreIncluded;
-//		}
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional();
+			}
+		}
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
@@ -928,6 +957,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		 */
 		protected BooleanExpression getSecond() {
 			return second;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
 		}
 	}
 }

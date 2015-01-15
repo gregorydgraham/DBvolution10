@@ -114,5 +114,7 @@ public interface DBExpression {
      * @return a set of DBRow instances involved in this DBExpression.
      */
     public Set<DBRow> getTablesInvolved();
+
+	public boolean isPurelyFunctional();
     
 }
