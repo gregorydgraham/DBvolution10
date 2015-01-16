@@ -96,7 +96,7 @@ public class NuoDBDefinition extends DBDefinition{
 	@Override
 	@Deprecated
 	public String doLeftTrimTransform(String toSQLString) {
-		return " (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
+		return super.doLeftTrimTransform(toSQLString);//" (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
 	}
 
 	@Override

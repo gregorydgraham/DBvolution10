@@ -19,8 +19,10 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -59,15 +61,23 @@ public class StringExpressionTest extends AbstractTest {
 		got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(2));
 	}
+	
+	
+	public static class trimmedMarque extends Marque{
+		@DBColumn
+		DBString leftTrim = new DBString(this.column(this.name).leftTrim());
+		@DBColumn
+		DBString rightTrim = new DBString(this.column(this.name).rightTrim());
+	}
 
 	@Test
 	public void testLeftAndRightTrimTransforms() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
-		Marque marq = new Marque();
+		trimmedMarque marq = new trimmedMarque();
 		marq.name.permittedValuesIgnoreCase("HUMMER");
 		DBQuery dbQuery = database.getDBQuery(marq);
-		List<Marque> got = dbQuery.getAllInstancesOf(marq);
+		List<trimmedMarque> got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(1));
 
 		marq.name.clear();
