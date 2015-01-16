@@ -119,6 +119,27 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "LEN";
 	}
 
+	/**
+	 * SQLServer follows the standard, unlike anyone else, and pads the short
+	 * string with spaces before comparing.
+	 *
+	 * <p>
+	 * This effectively means strings are trimmed during comparisons whether you
+	 * like it or not.
+	 *
+	 * <p>
+	 * While this seems useful, in fact it prevents checking for incorrect
+	 * strings and breaks the industrial standard.
+	 *
+	 * @param firstSQLExpression
+	 * @param secondSQLExpression
+	 * @return
+	 */
+	@Override
+	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {
+		return "(" + firstSQLExpression + "+'@') = (" + secondSQLExpression + "+'@')";
+	}
+
 	@Override
 	public String doTrimFunction(String enclosedValue) {
 		return " LTRIM(RTRIM(" + enclosedValue + ")) "; //To change body of generated methods, choose Tools | Templates.
@@ -141,9 +162,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	/**
 	 * MSSQLserver only supports integer degrees, and that's not good enough.
-	 * 
+	 *
 	 * @return false
 	 */
+	@Override
 	public boolean supportsDegreesFunction() {
 		return false;
 	}
