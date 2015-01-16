@@ -286,7 +286,7 @@ public class DBReport extends RowDefinition {
 	 * <p>
 	 * ONLY USE FIELDS FROM THE SAME INSTANCE.
 	 * <p>
-	 * For example the following code snippet will sort by just the name column:
+	 * For example the following code snippet will sort by the name and accountNumber columns:
 	 * <pre>
 	 * CustomerReport customers = ...;
 	 * customers.setSortOrder(customers.name, customers.accountNumber);

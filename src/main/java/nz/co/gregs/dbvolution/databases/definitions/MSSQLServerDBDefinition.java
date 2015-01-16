@@ -41,7 +41,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		DateFormat tzFormat = new SimpleDateFormat("Z");
 		String tz = tzFormat.format(date);
 		if (tz.length() == 4) {
-			tz = "+"+tz.substring(0, 2) + ":" + tz.substring(2, 4);
+			tz = "+" + tz.substring(0, 2) + ":" + tz.substring(2, 4);
 		} else if (tz.length() == 5) {
 			tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
 		} else {
@@ -103,6 +103,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		return "";
 	}
+
 	@Override
 	public String doSubstringTransform(String originalString, String start, String length) {
 		return " SUBSTRING("
@@ -112,7 +113,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				+ (length.trim().isEmpty() ? "" : ", " + length)
 				+ ") ";
 	}
-	
+
 	@Override
 	public String getStringLengthFunctionName() {
 		return "LEN";
@@ -122,7 +123,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doTrimFunction(String enclosedValue) {
 		return " LTRIM(RTRIM(" + enclosedValue + ")) "; //To change body of generated methods, choose Tools | Templates.
 	}
-	
+
 	@Override
 	public String doPositionInStringTransform(String originalString, String stringToFind) {
 		return "CHARINDEX(" + stringToFind + ", " + originalString + ")";
@@ -136,6 +137,15 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String getIfNullFunctionName() {
 		return "ISNULL"; //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * MSSQLserver only supports integer degrees, and that's not good enough.
+	 * 
+	 * @return false
+	 */
+	public boolean supportsDegreesFunction() {
+		return false;
 	}
 
 	@Override
@@ -167,12 +177,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public boolean prefersLargeObjectsReadAsBase64CharacterStream() {
 		return true;
 	}
-	
+
 	@Override
 	protected String getCurrentDateOnlyFunctionName() {
 		return " GETDATE";
 	}
-	
+
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
@@ -187,93 +197,93 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doAddDaysTransform(String dateValue, String numberOfDays) {
 		return "DATEADD( DAY, " + numberOfDays + "," + dateValue + ")";
 	}
-	
+
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
 		return "DATEADD( HOUR, " + numberOfHours + "," + dateValue + ")";
 	}
-	
+
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
 		return "DATEADD( WEEK, " + numberOfWeeks + "," + dateValue + ")";
 	}
-	
+
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
 		return "DATEADD( MONTH, " + numberOfMonths + "," + dateValue + ")";
 	}
-	
+
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
 		return "DATEADD( YEAR, " + numberOfYears + "," + dateValue + ")";
 	}
-	
+
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF(DAY, " + dateValue + "," + otherDateValue + "))";
 	}
-	
+
 	@Override
 	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF(WEEK, " + dateValue + "," + otherDateValue + "))";
 	}
-	
+
 	@Override
 	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF(MONTH, " + dateValue + "," + otherDateValue + "))";
 	}
-	
+
 	@Override
 	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF(YEAR, " + dateValue + "," + otherDateValue + "))";
 	}
-	
+
 	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF(HOUR, " + dateValue + "," + otherDateValue + "))";
 	}
-	
+
 	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF(MINUTE, " + dateValue + "," + otherDateValue + "))";
 	}
-	
+
 	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(DATEDIFF(SECOND, " + dateValue + "," + otherDateValue + "))";
 	}
-	
+
 	@Override
 	public String doTruncTransform(String realNumberExpression, String numberOfDecimalPlacesExpression) {
 		//When the third parameter != 0 it truncates rather than rounds
 		return " ROUND(" + realNumberExpression + ", " + numberOfDecimalPlacesExpression + ", 1)";
 	}
-	
+
 	@Override
 	public String doYearTransform(String dateExpression) {
 		return "DATEPART(YEAR, " + dateExpression + ")";
 	}
-	
+
 	@Override
 	public String doMonthTransform(String dateExpression) {
 		return "DATEPART(MONTH, " + dateExpression + ")";
 	}
-	
+
 	@Override
 	public String doDayTransform(String dateExpression) {
 		return "DATEPART(DAY, " + dateExpression + ")";
 	}
-	
+
 	@Override
 	public String doHourTransform(String dateExpression) {
 		return "DATEPART(HOUR, " + dateExpression + ")";
 	}
-	
+
 	@Override
 	public String doMinuteTransform(String dateExpression) {
 		return "DATEPART(MINUTE, " + dateExpression + ")";
 	}
-	
+
 	@Override
 	public String doSecondTransform(String dateExpression) {
 		return "DATEPART(SECOND , " + dateExpression + ")";

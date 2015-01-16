@@ -467,7 +467,7 @@ public class DBByteArray extends DBLargeObject {
 			if (!originalFile.exists()) {
 				createdNewFile = originalFile.createNewFile();
 			}
-			if (createdNewFile) {
+			if (originalFile.exists()) {
 				OutputStream output = null;
 				try {
 					output = new BufferedOutputStream(new FileOutputStream(originalFile));
