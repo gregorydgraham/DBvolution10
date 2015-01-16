@@ -234,14 +234,26 @@ public class NumberExpressionTest extends AbstractTest {
 		CarCompany carCompany = allRows.get(0).get(carCo);
 		Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(), is(2));
 	}
+	
+	public static class degreeRow extends CarCompany{
+		@DBColumn
+		DBNumber degrees = new DBNumber(this.column(this.uidCarCompany).degrees());
+		@DBColumn
+		DBNumber radians = new DBNumber(this.column(this.uidCarCompany).degrees().radians());
+		@DBColumn
+		DBNumber tangent = new DBNumber(this.column(this.uidCarCompany).degrees().tan());
+	}
 
 	@Test
 	public void testDegrees() throws SQLException {
-		CarCompany carCo = new CarCompany();
-		DBQuery dbQuery = database.getDBQuery(carCo);
+		degreeRow carCo = new degreeRow();
+		DBQuery dbQuery = database.getDBQuery(carCo).setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		
 		dbQuery.addCondition(
 				carCo.column(carCo.uidCarCompany).degrees().tan().isGreaterThan(0));
-		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {

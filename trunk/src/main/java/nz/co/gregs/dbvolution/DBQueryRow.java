@@ -115,7 +115,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		expressionColumnValues.put(key, expressionQDT);
 	}
 
-	QueryableDatatype getExpressionColumnValue(Object key) {
+	public QueryableDatatype getExpressionColumnValue(Object key) {
 		return expressionColumnValues.get(key);
 	}
 
