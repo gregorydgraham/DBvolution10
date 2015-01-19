@@ -101,18 +101,18 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 *
 	 
 	 */
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof Long) {
-			setValue((Long) newLiteralValue);
-		} else if (newLiteralValue instanceof Integer) {
-			setValue((Integer) newLiteralValue);
-		} else if (newLiteralValue instanceof DBIntegerEnum) {
-			setValue(((QueryableDatatype) newLiteralValue).getLiteralValue());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Long: Use only Long with this class");
-		}
-	}
+//	@Override
+//	void setValue(Object newLiteralValue) {
+//		if (newLiteralValue instanceof Long) {
+//			setValue((Long) newLiteralValue);
+//		} else if (newLiteralValue instanceof Integer) {
+//			setValue((Integer) newLiteralValue);
+//		} else if (newLiteralValue instanceof DBIntegerEnum) {
+//			setValue(((QueryableDatatype) newLiteralValue).getLiteralValue());
+//		} else {
+//			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Long: Use only Long with this class");
+//		}
+//	}
 
 	/**
 	 * Used to set the value of the instance to the Long provided.
@@ -126,9 +126,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 *
 	 
 	 */
-	private void setValue(Long newLiteralValue) {
-		super.setLiteralValue(newLiteralValue);
-	}
+//	private void setValue(Long newLiteralValue) {
+//		super.setLiteralValue(newLiteralValue);
+//	}
 
 	/**
 	 * Used to set the value of the instance to the Integer provided.
@@ -142,9 +142,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 *
 	 
 	 */
-	private void setValue(Integer newLiteralValue) {
-		super.setLiteralValue(newLiteralValue);
-	}
+//	private void setValue(Integer newLiteralValue) {
+//		super.setLiteralValue(newLiteralValue);
+//	}
 
 	@Override
 	protected void validateLiteralValue(E enumValue) {

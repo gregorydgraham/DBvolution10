@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.gregs.dbvolution.DBRow;
@@ -27,6 +28,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerEnumTable.RecordType;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringEnumTable.StringEnumType;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class DBEnumTest extends AbstractTest {
@@ -133,12 +135,16 @@ public class DBEnumTest extends AbstractTest {
 			List<StringEnumTable> rows = database.get(stringTableExemplar);
 			database.print(rows);
 
+			Assert.assertThat(rows.size(), is(3));
 			for (StringEnumTable row : rows) {
 				if (row.uid_202.getValue().intValue() == 1) {
 					assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
-				}
-				if (row.uid_202.getValue().intValue() == 2) {
+				} else if (row.uid_202.getValue().intValue() == 2) {
 					assertThat(row.recordType.enumValue(), is(StringEnumType.SHIPPING_MANIFEST_RECORD));
+				} else if (row.uid_202.getValue().intValue() == 4) {
+					assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
+				} else {
+					throw new RuntimeException("Unknown Row Found");
 				}
 			}
 		} finally {
@@ -161,22 +167,71 @@ public class DBEnumTest extends AbstractTest {
 	}
 
 	@Test
-	public void displayInJsp() {
-		/*
-		 jsp: <%-- in a table --%>
-		 <table>		
-		 <c:forEach var="records" item="record">
-		 <tr>
-		 <td>${record.recordType.displayName}</td>
-		 </tr>
-		 </c:forEach>
-		 </table>
-		   
-		 <%-- in a selection dropdown --%>
-		 <form:select path="recordType">
-		 <form:options items="${allRecordTypes}" itemLabel="displayName"/>
-		 </form:select>
-		 */
+	public void operatorsWorkWithStringRecord() throws SQLException {
+		final StringEnumTable stringTableExemplar = new StringEnumTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(stringTableExemplar);
+		database.createTable(stringTableExemplar);
+		database.insert(
+				new StringEnumTable(1, StringEnumType.MOVEMENT_REQUEST_RECORD),
+				new StringEnumTable(2, StringEnumType.SHIPPING_MANIFEST_RECORD),
+				new StringEnumTable(4, StringEnumType.MOVEMENT_REQUEST_RECORD));
+
+		stringTableExemplar.recordType.permittedValues(
+				StringEnumType.MOVEMENT_CANCELLATION_REQUEST,
+				StringEnumType.MOVEMENT_REQUEST_RECORD);
+		List<StringEnumTable> rows = database.get(stringTableExemplar);
+		database.print(rows);
+		Assert.assertThat(rows.size(), is(2));
+		
+		stringTableExemplar.recordType.excludedValues(
+				StringEnumType.SHIPPING_MANIFEST_RECORD,
+				StringEnumType.MOVEMENT_CANCELLATION_REQUEST
+		);
+		rows = database.get(stringTableExemplar);
+		database.print(rows);
+		Assert.assertThat(rows.size(), is(2));
+		
+		stringTableExemplar.recordType.permittedRangeInclusive(
+				StringEnumType.MOVEMENT_REQUEST_RECORD, 
+				null
+		);
+		rows = database.get(stringTableExemplar);
+		database.print(rows);
+		Assert.assertThat(rows.size(), is(2));
+		
+		stringTableExemplar.recordType.excludedRangeInclusive(
+				StringEnumType.MOVEMENT_CANCELLATION_REQUEST, 
+				StringEnumType.SHIPPING_MANIFEST_RECORD
+		);
+		rows = database.get(stringTableExemplar);
+		database.print(rows);
+		Assert.assertThat(rows.size(), is(2));
+		
+		stringTableExemplar.recordType.excludedPattern(StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
+		rows = database.get(stringTableExemplar);
+		database.print(rows);
+		Assert.assertThat(rows.size(), is(2));
+		
+		stringTableExemplar.recordType.permittedPattern(StringEnumType.MOVEMENT_REQUEST_RECORD.literalValue);
+		rows = database.get(stringTableExemplar);
+		database.print(rows);
+		Assert.assertThat(rows.size(), is(2));
+		
+		ArrayList<StringEnumType> arrayList = new ArrayList<StringEnumType>();
+		arrayList.add(StringEnumType.SHIPPING_MANIFEST_RECORD);
+		arrayList.add(StringEnumType.MOVEMENT_CANCELLATION_REQUEST);
+		stringTableExemplar.recordType.excludedValuesIgnoreCase(arrayList);
+		rows = database.get(stringTableExemplar);
+		database.print(rows);
+		Assert.assertThat(rows.size(), is(2));
+
+		arrayList.clear();
+		arrayList.add(StringEnumType.MOVEMENT_REQUEST_RECORD);
+		stringTableExemplar.recordType.permittedValuesIgnoreCase(arrayList);
+		rows = database.get(stringTableExemplar);
+		database.print(rows);
+		Assert.assertThat(rows.size(), is(2));
 	}
 
 	public static class IntegerEnumTable extends DBRow {
@@ -245,67 +300,6 @@ public class DBEnumTest extends AbstractTest {
 		}
 	}
 
-//    public static class LongTable extends DBRow {
-//        private static final long serialVersionUID = 1L;
-//
-//        @DBColumn("uid_202")
-//        @DBPrimaryKey
-//        public DBInteger uid_202 = new DBInteger();
-//        
-//        @DBColumn("c_5")
-//        public DBIntegerEnum<RecordType> recordType = new DBIntegerEnum<RecordType>();
-//        
-//        public LongTable() {
-//        }
-//
-//        public LongTable(Integer uid, RecordType recType) {
-//            this.uid_202.setLiteralValue(uid);
-//            this.recordType.setLiteralValue(recType);
-//        }
-//
-//        /**
-//         * Valid values for {@link #recordType}
-//         */
-//        // Nested class to make it obvious which table the enum is for
-//        public static enum RecordType implements DBEnumValue<Long> {
-//            SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),
-//            MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
-//            MOVEMENT_CANCELLATION_REQUEST(3, "Movement Cancellation Request");
-//            
-//            private long literalValue;
-//            private String displayName;
-//
-//            private RecordType(int code, String displayName) {
-//                this.literalValue = code;
-//                this.displayName = displayName;
-//            }
-//
-//            @Override
-//            public Long getLiteralValue() {
-//                return literalValue;
-//            }
-//
-//            public String getDisplayName() {
-//                return displayName;
-//            }
-//
-//            public static RecordType valueOfCode(DBInteger code) {
-//                return valueOfCode(code == null ? null : code.longValue());
-//            }
-//
-//            public static RecordType valueOfCode(Long code) {
-//                if (code == null) {
-//                    return null;
-//                }
-//                for (RecordType recordType : values()) {
-//                    if (recordType.getLiteralValue() == code) {
-//                        return recordType;
-//                    }
-//                }
-//                throw new IllegalArgumentException("Invalid " + RecordType.class.getSimpleName() + " code: " + code);
-//            }
-//        }
-//    }
 	public static class StringEnumTable extends DBRow {
 
 		private static final long serialVersionUID = 1L;

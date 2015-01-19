@@ -857,12 +857,12 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @param possibleValues needs to be the least of these
 	 * @return the least/smallest value from the list.
 	 */
-	public static NumberExpression leastOf(Collection<? extends Number> possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
-		for (Number num : possibleValues) {
-			possVals.add(value(num));
-		}
-		return leastOf(possVals.toArray(new NumberExpression[]{}));
+	public static NumberExpression leastOf(Collection<? extends NumberResult> possibleValues) {
+//		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+//		for (Number num : possibleValues) {
+//			possVals.add(value(num));
+//		}
+		return leastOf(possibleValues.toArray(new NumberExpression[]{}));
 	}
 
 	/**

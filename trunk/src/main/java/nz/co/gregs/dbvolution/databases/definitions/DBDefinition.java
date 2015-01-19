@@ -15,13 +15,14 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import java.text.DateFormat;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -41,14 +42,14 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 public abstract class DBDefinition {
 
 	/**
-	 * Transforms the Date instance into a SQL snippet that can be used as a
-	 * date in a query.
+	 * Transforms the Date instance into a SQL snippet that can be used as a date
+	 * in a query.
 	 *
 	 * <p>
 	 * For instance the date might be transformed into a string like "
 	 * DATETIME('2013-03-23 00:00:00') "
 	 *
-	 * @param date	 date	
+	 * @param date	date
 	 * @return the date formatted as a string that the database will correctly
 	 * interpret as a date.
 	 */
@@ -60,7 +61,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * The default implementation does not change the column name.
 	 *
-	 * @param columnName	 columnName	
+	 * @param columnName	columnName
 	 * @return the column name formatted for the database.
 	 */
 	public String formatColumnName(String columnName) {
@@ -120,8 +121,8 @@ public abstract class DBDefinition {
 	 * Formats the table and column name pair correctly for this database.
 	 *
 	 * <p>
-	 * This should only be used for column names in the select query when
-	 * aliases are not being used. Which is probably never.
+	 * This should only be used for column names in the select query when aliases
+	 * are not being used. Which is probably never.
 	 * <p>
 	 * e.g table, column =&gt; TABLE.COLUMN
 	 *
@@ -174,7 +175,7 @@ public abstract class DBDefinition {
 	 * Used wherever a table alias is inappropriate, for instance UPDATE
 	 * statements.
 	 *
-	 * @param table	 table	
+	 * @param table	table
 	 * @return a string of the table name formatted for this database definition
 	 */
 	public String formatTableName(DBRow table) {
@@ -202,7 +203,7 @@ public abstract class DBDefinition {
 	 * Apply standard formatting of the column alias to avoid issues with the
 	 * database's column naming issues.
 	 *
-	 * @param actualName	 actualName	
+	 * @param actualName	actualName
 	 * @return the column alias formatted for this database.
 	 */
 	public String formatForColumnAlias(final String actualName) {
@@ -210,15 +211,25 @@ public abstract class DBDefinition {
 		return formatNameForDatabase("DB" + formattedName.hashCode()).replaceAll("-", "_");
 	}
 
+	/**
+	 * Apply standard object name transformations required by the database.
+	 *
+	 * <p>
+	 * This methods helps support database specific naming rules by allowing
+	 * post-processing of the object names to conform to the rules.
+	 *
+	 * @param sqlObjectName
+	 * @return
+	 */
 	protected String formatNameForDatabase(final String sqlObjectName) {
 		return sqlObjectName;
 	}
 
 	/**
-	 * Apply standard formatting of the expression alias to avoid issues with
-	 * the database's alias naming issues.
+	 * Apply standard formatting of the expression alias to avoid issues with the
+	 * database's alias naming issues.
 	 *
-	 * @param key	 key	
+	 * @param key	key
 	 * @return the alias of the key formatted correctly.
 	 */
 	public String formatExpressionAlias(Object key) {
@@ -226,14 +237,14 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Apply necessary transformations on the string to avoid it being used for
-	 * an SQL injection attack.
+	 * Apply necessary transformations on the string to avoid it being used for an
+	 * SQL injection attack.
 	 *
 	 * <p>
 	 * The default method changes every single quote (') into 2 single quotes
 	 * ('').
 	 *
-	 * @param toString	 toString	
+	 * @param toString	toString
 	 * @return the string value safely escaped for use in an SQL query.
 	 */
 	public String safeString(String toString) {
@@ -242,8 +253,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause
-	 * for conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * conditions.
 	 *
 	 * usually, but not always " and "
 	 *
@@ -255,12 +266,12 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause
-	 * for conditions.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * conditions.
 	 *
 	 * usually, but not always " and "
 	 *
-	 * @param options	 options	
+	 * @param options	options
 	 * @return a string for the start of a where clause line
 	 */
 	public String beginConditionClauseLine(QueryOptions options) {
@@ -273,12 +284,12 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * returns the required SQL to begin a line within the WHERE or ON Clause
-	 * for joins.
+	 * returns the required SQL to begin a line within the WHERE or ON Clause for
+	 * joins.
 	 *
 	 * usually, but not always " and "
 	 *
-	 * @param options	 options	
+	 * @param options	options
 	 * @return a string for the start of a where clause line
 	 */
 	public String beginJoinClauseLine(QueryOptions options) {
@@ -290,12 +301,11 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database does not accept named GROUP BY columns and
-	 * the query generator should create the GROUP BY clause using indexes
-	 * instead.
+	 * Indicates that the database does not accept named GROUP BY columns and the
+	 * query generator should create the GROUP BY clause using indexes instead.
 	 *
-	 * @return TRUE if the database needs indexes for the group by columns,
-	 * FALSE otherwise.
+	 * @return TRUE if the database needs indexes for the group by columns, FALSE
+	 * otherwise.
 	 */
 	public boolean prefersIndexBasedGroupByClause() {
 		return false;
@@ -329,8 +339,7 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the start of the PRIMARY KEY clause of the CREATE TABLE
-	 * statement.
+	 * Returns the start of the PRIMARY KEY clause of the CREATE TABLE statement.
 	 *
 	 * <p>
 	 * This is the clause within the column definition clause after the columns
@@ -343,8 +352,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the separator between the columns in the PRIMARY KEY clause of
-	 * the CREATE TABLE statement.
+	 * Returns the separator between the columns in the PRIMARY KEY clause of the
+	 * CREATE TABLE statement.
 	 *
 	 * <p>
 	 * This is the clause within the column definition clause after the columns
@@ -393,8 +402,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the separator between column definitions in the column list of
-	 * the CREATE TABLE statement.
+	 * Returns the separator between column definitions in the column list of the
+	 * CREATE TABLE statement.
 	 *
 	 * <p>
 	 * This is the clause within the CREATE TABLE that defines the columns
@@ -437,7 +446,7 @@ public abstract class DBDefinition {
 	/**
 	 * Wraps the SQL snippet provided in the LOWER operator of the database.
 	 *
-	 * @param sql	 sql	
+	 * @param sql	sql
 	 * @return " lower("+string+")"
 	 */
 	public String toLowerCase(String sql) {
@@ -557,8 +566,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the subsequent separator of a SET sub-clause of an UPDATE
-	 * statement for this database.
+	 * Returns the subsequent separator of a SET sub-clause of an UPDATE statement
+	 * for this database.
 	 *
 	 * @return "," or equivalent.
 	 */
@@ -587,8 +596,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the initial clause of a WHERE clause of a SELECT statement for
-	 * this database.
+	 * Returns the initial clause of a WHERE clause of a SELECT statement for this
+	 * database.
 	 *
 	 * <p>
 	 * DBvolution inserts a constant operation to every WHERE clause to simplify
@@ -603,8 +612,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the initial clause of a WHERE clause of a SELECT statement for
-	 * this database.
+	 * Returns the initial clause of a WHERE clause of a SELECT statement for this
+	 * database.
 	 *
 	 * <p>
 	 * DBvolution inserts a constant operation to every WHERE clause to simplify
@@ -612,7 +621,7 @@ public abstract class DBDefinition {
 	 * returns a TRUE operation or a FALSE operation depending on the query
 	 * requirements.
 	 *
-	 * @param options	 options	
+	 * @param options	options
 	 * @return the required initial condition.
 	 * @see #getTrueOperation()
 	 * @see #getFalseOperation()
@@ -691,8 +700,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the subsequent separator of the column list sub-clause of a
-	 * SELECT statement for this database.
+	 * Returns the subsequent separator of the column list sub-clause of a SELECT
+	 * statement for this database.
 	 *
 	 * @return "," or equivalent.
 	 */
@@ -722,7 +731,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * The default implementation returns "".
 	 *
-	 * @param options	 options	
+	 * @param options	options
 	 * @return a string for the row limit sub-clause or ""
 	 */
 	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
@@ -730,8 +739,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the beginning of the ORDER BY clause of a SELECT statement for
-	 * this database.
+	 * Returns the beginning of the ORDER BY clause of a SELECT statement for this
+	 * database.
 	 *
 	 * @return " ORDER BY " or equivalent.
 	 */
@@ -753,7 +762,7 @@ public abstract class DBDefinition {
 	 * Returns the appropriate ascending or descending keyword for this database
 	 * given the sort order.
 	 *
-	 * @param sortOrder	 sortOrder	
+	 * @param sortOrder	sortOrder
 	 * @return " ASC " for TRUE, " DESC " for false or equivalent
 	 */
 	public Object getOrderByDirectionClause(Boolean sortOrder) {
@@ -797,8 +806,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Used during the creation of an ANSI join to add the criteria of an
-	 * optional table using an ON clause.
+	 * Used during the creation of an ANSI join to add the criteria of an optional
+	 * table using an ON clause.
 	 *
 	 * @return the default implementation returns " ON( ".
 	 */
@@ -826,7 +835,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * When the
 	 *
-	 * @param qdt	 qdt	
+	 * @param qdt	qdt
 	 * @return the databases type for the QDT as a string
 	 */
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
@@ -839,8 +848,8 @@ public abstract class DBDefinition {
 	 *
 	 * for example MySQL/MariaDB use SELECT ... FROM ... WHERE ... LIMIT 10 ;
 	 *
-	 * Based on the example for MySQL/MariaDB this method should return " LIMIT
-	 * 10 "
+	 * Based on the example for MySQL/MariaDB this method should return " LIMIT 10
+	 * "
 	 *
 	 * If the database does not support row limiting this method should throw an
 	 * exception when rowLimit is not null
@@ -848,7 +857,7 @@ public abstract class DBDefinition {
 	 * If the database does not limit rows after the where clause this method
 	 * should return ""
 	 *
-	 * @param options	 options	
+	 * @param options	options
 	 * @return the row limiting sub-clause or ""
 	 */
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
@@ -864,8 +873,8 @@ public abstract class DBDefinition {
 
 	/**
 	 *
-	 * The place holder for variables inserted into a prepared statement,
-	 * usually " ? "
+	 * The place holder for variables inserted into a prepared statement, usually
+	 * " ? "
 	 *
 	 * @return the place holder for variables as a string
 	 */
@@ -922,8 +931,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Used within DBInsert to separate the values within the VALUES clause of
-	 * the INSERT statement.
+	 * Used within DBInsert to separate the values within the VALUES clause of the
+	 * INSERT statement.
 	 *
 	 * @return the default implementation returns ",".
 	 */
@@ -963,7 +972,7 @@ public abstract class DBDefinition {
 	/**
 	 * Transforms the table name into the unique and deterministic table alias.
 	 *
-	 * @param tabRow	 tabRow	
+	 * @param tabRow	tabRow
 	 * @return the table alias.
 	 */
 	public String getTableAlias(RowDefinition tabRow) {
@@ -971,10 +980,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Formats the suggested table alias provided by DBvolution for the
-	 * particular database..
+	 * Formats the suggested table alias provided by DBvolution for the particular
+	 * database..
 	 *
-	 * @param suggestedTableAlias	 suggestedTableAlias	
+	 * @param suggestedTableAlias	suggestedTableAlias
 	 * @return the table alias.
 	 */
 	public String formatTableAlias(String suggestedTableAlias) {
@@ -982,8 +991,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Defines the function used to get the current date (excluding time) from
-	 * the database.
+	 * Defines the function used to get the current date (excluding time) from the
+	 * database.
 	 *
 	 * @return the default implementation returns " CURRENT_DATE "
 	 */
@@ -1030,9 +1039,9 @@ public abstract class DBDefinition {
 	/**
 	 * Provides the SQL statement required to drop the named database.
 	 *
-	 * @param databaseName	 databaseName	
+	 * @param databaseName	databaseName
 	 * @return the default implementation does not support dropping databases.
-	 
+	 *
 	 */
 	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("DROP DATABASE is not supported by this DBDatabase implementation");
@@ -1042,7 +1051,7 @@ public abstract class DBDefinition {
 	 * Wraps the provided SQL snippet in a statement that performs trims all
 	 * spaces from the left of the value of the snippet.
 	 *
-	 * @param enclosedValue	 enclosedValue	
+	 * @param enclosedValue	enclosedValue
 	 * @return SQL snippet
 	 */
 	public String doLeftTrimTransform(String enclosedValue) {
@@ -1050,10 +1059,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Wraps the provided SQL snippet in a statement that changes the value of
-	 * the snippet to lowercase characters.
+	 * Wraps the provided SQL snippet in a statement that changes the value of the
+	 * snippet to lowercase characters.
 	 *
-	 * @param enclosedValue	 enclosedValue	
+	 * @param enclosedValue	enclosedValue
 	 * @return SQL snippet
 	 */
 	public String doLowercaseTransform(String enclosedValue) {
@@ -1064,7 +1073,7 @@ public abstract class DBDefinition {
 	 * Wraps the provided SQL snippet in a statement that trims all spaces from
 	 * the right of the value of the snippet.
 	 *
-	 * @param enclosedValue	 enclosedValue	
+	 * @param enclosedValue	enclosedValue
 	 * @return SQL snippet
 	 */
 	public String doRightTrimTransform(String enclosedValue) {
@@ -1072,21 +1081,21 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Wraps the provided SQL snippet in a statement that the length of the
-	 * value of the snippet.
+	 * Wraps the provided SQL snippet in a statement that the length of the value
+	 * of the snippet.
 	 *
-	 * @param enclosedValue	 enclosedValue	
+	 * @param enclosedValue	enclosedValue
 	 * @return SQL snippet
 	 */
 	public String doStringLengthTransform(String enclosedValue) {
-		return " "+getStringLengthFunctionName()+"( " + enclosedValue + " ) ";
+		return " " + getStringLengthFunctionName() + "( " + enclosedValue + " ) ";
 	}
 
 	/**
 	 * Wraps the provided SQL snippet in a statement that performs trims all
 	 * spaces from the left and right of the value of the snippet.
 	 *
-	 * @param enclosedValue	 enclosedValue	
+	 * @param enclosedValue	enclosedValue
 	 * @return SQL snippet
 	 */
 	public String doTrimFunction(String enclosedValue) {
@@ -1097,7 +1106,7 @@ public abstract class DBDefinition {
 	 * Wraps the provided SQL snippet in a statement that changes the characters
 	 * of the value of the snippet to their uppercase equivalent.
 	 *
-	 * @param enclosedValue	 enclosedValue	
+	 * @param enclosedValue	enclosedValue
 	 * @return SQL snippet
 	 */
 	public String doUppercaseTransform(String enclosedValue) {
@@ -1105,8 +1114,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Wraps the provided SQL snippets in a statement that joins the two
-	 * snippets into one SQL snippet.
+	 * Wraps the provided SQL snippets in a statement that joins the two snippets
+	 * into one SQL snippet.
 	 *
 	 * @param firstString firstString
 	 * @param secondString secondString
@@ -1123,8 +1132,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the function name of the function used to return the next value
-	 * of a sequence.
+	 * Returns the function name of the function used to return the next value of
+	 * a sequence.
 	 *
 	 * @return "NEXTVAL"
 	 * @see NumberExpression#getNextSequenceValue(java.lang.String)
@@ -1151,8 +1160,8 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Usually databases only support lower and upper case functions for ASCII
-	 * characters. Support for change the case of unicode characters is
-	 * dependent on the underlying database.
+	 * characters. Support for change the case of unicode characters is dependent
+	 * on the underlying database.
 	 *
 	 * @return "LOWER"
 	 */
@@ -1166,8 +1175,8 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Usually databases only support lower and upper case functions for ASCII
-	 * characters. Support for change the case of unicode characters is
-	 * dependent on the underlying database.
+	 * characters. Support for change the case of unicode characters is dependent
+	 * on the underlying database.
 	 *
 	 * @return "UPPER"
 	 */
@@ -1180,8 +1189,8 @@ public abstract class DBDefinition {
 	 * characters in the value.
 	 *
 	 * <p>
-	 * DBvolution tries to ensure that the character length of a value is equal
-	 * to the character length of an equivalent Java String.
+	 * DBvolution tries to ensure that the character length of a value is equal to
+	 * the character length of an equivalent Java String.
 	 *
 	 * <p>
 	 * That is to say: DBV.charlength() === java.lang.String.length()
@@ -1197,8 +1206,8 @@ public abstract class DBDefinition {
 	 * logged into the database.
 	 *
 	 * <p>
-	 * Usually this is the same username supplied when you created the
-	 * DBDatabase instance.
+	 * Usually this is the same username supplied when you created the DBDatabase
+	 * instance.
 	 *
 	 * @return "CURRENT_USER'
 	 */
@@ -1210,7 +1219,7 @@ public abstract class DBDefinition {
 	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
 	 * that provides the year part of the date.
 	 *
-	 * @param dateExpression	 dateExpression	
+	 * @param dateExpression	dateExpression
 	 * @return a SQL snippet that will produce the year of the supplied date.
 	 */
 	public String doYearTransform(String dateExpression) {
@@ -1221,7 +1230,7 @@ public abstract class DBDefinition {
 	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
 	 * that provides the month part of the date.
 	 *
-	 * @param dateExpression	 dateExpression	
+	 * @param dateExpression	dateExpression
 	 * @return a SQL snippet that will produce the month of the supplied date.
 	 */
 	public String doMonthTransform(String dateExpression) {
@@ -1233,10 +1242,10 @@ public abstract class DBDefinition {
 	 * that provides the day part of the date.
 	 *
 	 * <p>
-	 * Day in this sense is the number of the day within the month: that is the
-	 * 23 part of Monday 25th of August 2014
+	 * Day in this sense is the number of the day within the month: that is the 23
+	 * part of Monday 25th of August 2014
 	 *
-	 * @param dateExpression	 dateExpression	
+	 * @param dateExpression	dateExpression
 	 * @return a SQL snippet that will produce the day of the supplied date.
 	 */
 	public String doDayTransform(String dateExpression) {
@@ -1247,7 +1256,7 @@ public abstract class DBDefinition {
 	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
 	 * that provides the hour part of the date.
 	 *
-	 * @param dateExpression	 dateExpression	
+	 * @param dateExpression	dateExpression
 	 * @return a SQL snippet that will produce the hour of the supplied date.
 	 */
 	public String doHourTransform(String dateExpression) {
@@ -1258,7 +1267,7 @@ public abstract class DBDefinition {
 	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
 	 * that provides the minute part of the date.
 	 *
-	 * @param dateExpression	 dateExpression	
+	 * @param dateExpression	dateExpression
 	 * @return a SQL snippet that will produce the minute of the supplied date.
 	 */
 	public String doMinuteTransform(String dateExpression) {
@@ -1269,7 +1278,7 @@ public abstract class DBDefinition {
 	 * Transforms a SQL snippet that is assumed to be a date into an SQL snippet
 	 * that provides the second part of the date.
 	 *
-	 * @param dateExpression	 dateExpression	
+	 * @param dateExpression	dateExpression
 	 * @return a SQL snippet that will produce the second of the supplied date.
 	 */
 	public String doSecondTransform(String dateExpression) {
@@ -1339,8 +1348,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the count of items in
-	 * a selection.
+	 * Provides the function of the function that provides the count of items in a
+	 * selection.
 	 *
 	 * @return "COUNT"
 	 */
@@ -1349,8 +1358,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the maximum value in
-	 * a selection.
+	 * Provides the function of the function that provides the maximum value in a
+	 * selection.
 	 *
 	 * @return "MAX"
 	 */
@@ -1359,8 +1368,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the minimum value in
-	 * a selection.
+	 * Provides the function of the function that provides the minimum value in a
+	 * selection.
 	 *
 	 * @return "MIN"
 	 */
@@ -1369,8 +1378,7 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the sum of a
-	 * selection.
+	 * Provides the function of the function that provides the sum of a selection.
 	 *
 	 * @return "SUM"
 	 */
@@ -1379,8 +1387,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the function of the function that provides the standard
-	 * deviation of a selection.
+	 * Provides the function of the function that provides the standard deviation
+	 * of a selection.
 	 *
 	 * @return "stddev"
 	 */
@@ -1389,8 +1397,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether the database prefers (probably exclusively) the ORDER
-	 * BY clause to use column indexes rather than column names.
+	 * Indicates whether the database prefers (probably exclusively) the ORDER BY
+	 * clause to use column indexes rather than column names.
 	 *
 	 * @return the default implementation returns FALSE.
 	 */
@@ -1403,12 +1411,12 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Databases that don't support paging will have paging handled by the java
-	 * side. Unfortunately this causes some problems as the entire dataset will
-	 * be retrieved with the first call, making the first call expensive in time
-	 * and memory. Subsequent calls will be more efficient but that probably
-	 * won't help your developers.
+	 * side. Unfortunately this causes some problems as the entire dataset will be
+	 * retrieved with the first call, making the first call expensive in time and
+	 * memory. Subsequent calls will be more efficient but that probably won't
+	 * help your developers.
 	 *
-	 * @param options	 options	
+	 * @param options	options
 	 * @return the default implementation returns TRUE.
 	 */
 	public boolean supportsPagingNatively(QueryOptions options) {
@@ -1449,8 +1457,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Transforms 2 SQL snippets that represent a real number and a integer into
-	 * a real number with the decimal places reduced to the integer.
+	 * Transforms 2 SQL snippets that represent a real number and a integer into a
+	 * real number with the decimal places reduced to the integer.
 	 *
 	 * <p>
 	 * 0 decimal places transforms the real number into an integer.
@@ -1481,7 +1489,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Used to allow comparison of bit columns in some databases.
 	 *
-	 * @param bitExpression	 bitExpression	
+	 * @param bitExpression	bitExpression
 	 * @return the transformation necessary to transform bitExpression into an
 	 * integer expression in the SQL.
 	 */
@@ -1495,7 +1503,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Used to allow comparison of integer columns in some databases.
 	 *
-	 * @param bitExpression	 bitExpression	
+	 * @param bitExpression	bitExpression
 	 * @return the transformation necessary to transform bitExpression into an
 	 * integer expression in the SQL.
 	 */
@@ -1606,8 +1614,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether the database uses a special type for it's
-	 * auto-increment columns.
+	 * Indicates whether the database uses a special type for it's auto-increment
+	 * columns.
 	 *
 	 * @return the default implementation returns FALSE.
 	 */
@@ -1616,11 +1624,12 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether field provided can be used as a auto-incrementing
-	 * column in this database
+	 * Indicates whether field provided can be used as a auto-incrementing column
+	 * in this database
 	 *
-	 
-	 * @return true if the QDT field can be used with this database's autoincrement feature.
+	 *
+	 * @return true if the QDT field can be used with this database's
+	 * autoincrement feature.
 	 */
 	private boolean propertyWrapperConformsToAutoIncrementType(PropertyWrapper field) {
 		final QueryableDatatype qdt = field.getQueryableDatatype();
@@ -1631,7 +1640,7 @@ public abstract class DBDefinition {
 	 * Indicates whether {@link QueryableDatatype} provided can be used as a
 	 * auto-incrementing column in this database
 	 *
-	 * @param qdt	 qdt	
+	 * @param qdt	qdt
 	 * @return the default implementation returns TRUE for DBNumber or DBString,
 	 * FALSE otherwise.
 	 */
@@ -1650,8 +1659,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether the database prefers the primary key to be defined at
-	 * the end of the CREATE TABLE statement.
+	 * Indicates whether the database prefers the primary key to be defined at the
+	 * end of the CREATE TABLE statement.
 	 *
 	 * @return the default implementation returns TRUE.
 	 */
@@ -1719,8 +1728,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database prefers Large Object values to be set using
-	 * the setCharacterStream method.
+	 * Indicates that the database prefers Large Object values to be set using the
+	 * setCharacterStream method.
 	 *
 	 * <p>
 	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
@@ -1734,8 +1743,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database prefers Large Object values to be set using
-	 * the setBLOB method.
+	 * Indicates that the database prefers Large Object values to be set using the
+	 * setBLOB method.
 	 *
 	 * <p>
 	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
@@ -1749,8 +1758,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates that the database prefers Large Object values to be set using
-	 * the setCharacterStream method.
+	 * Indicates that the database prefers Large Object values to be set using the
+	 * setCharacterStream method.
 	 *
 	 * <p>
 	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
@@ -1764,8 +1773,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the name of the function that will choose the largest value from
-	 * a list of options.
+	 * Provides the name of the function that will choose the largest value from a
+	 * list of options.
 	 *
 	 * @return " GREATEST "
 	 */
@@ -1774,8 +1783,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the name of the function that will choose the smallest value
-	 * from a list of options.
+	 * Provides the name of the function that will choose the smallest value from
+	 * a list of options.
 	 *
 	 * @return " LEAST "
 	 */
@@ -1810,10 +1819,14 @@ public abstract class DBDefinition {
 	 * returns the date format used when reading dates as strings.
 	 *
 	 * <p>
-	 * Normally dates are read as dates but this method allows DBvolution to
-	 * read them using a text mode.
+	 * Normally dates are read as dates but this method allows DBvolution to read
+	 * them using a text mode.
 	 *
-	 * @return the date format required to interpret strings as dates.
+	 * @param getStringDate a date retrieved with {@link ResultSet#getString(java.lang.String)
+	 * }
+	 * @
+	 * return the date format required to interpret strings as dates.
+	 * @throws java.text.ParseException
 	 * @see #prefersDatesReadAsStrings()
 	 */
 	public Date parseDateFromGetString(String getStringDate) throws ParseException {
@@ -1821,8 +1834,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides an opportunity to tweak the generated DBTableField before
-	 * creating the Java classes
+	 * Provides an opportunity to tweak the generated DBTableField before creating
+	 * the Java classes
 	 *
 	 * @param dbTableField the current field being processed by
 	 * DBTableClassGenerator
@@ -1833,20 +1846,18 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether this DBDefinition supports retrieving the primary key
-	 * of the last inserted row using SQL.
+	 * Indicates whether this DBDefinition supports retrieving the primary key of
+	 * the last inserted row using SQL.
 	 *
 	 * <p>
 	 * Preferably the database should support
-	 * {@link #supportsGeneratedKeys() generated keys} but if it doesn't this
-	 * and {@link #getRetrieveLastInsertedRowSQL()
+	 * {@link #supportsGeneratedKeys() generated keys} but if it doesn't this and {@link #getRetrieveLastInsertedRowSQL()
 	 * }
 	 * allow the DBDefinition to provide raw SQL for retrieving the last created
 	 * primary key.
 	 *
 	 * <p>
-	 * The database should support either generated keys or last inserted row
-	 * SQL.
+	 * The database should support either generated keys or last inserted row SQL.
 	 *
 	 * <p>
 	 * If both {@link #supportsGeneratedKeys()
@@ -1889,9 +1900,9 @@ public abstract class DBDefinition {
 	 * The default implementation returns TRUE.
 	 *
 	 * <p>
-	 * If the database does not support the standard function then the
-	 * definition may override {@link #doDegreesTransform(java.lang.String) } to
-	 * implement the required functionality.
+	 * If the database does not support the standard function then the definition
+	 * may override {@link #doDegreesTransform(java.lang.String) } to implement
+	 * the required functionality.
 	 *
 	 * @return TRUE if the database supports the standard DEGREES function,
 	 * otherwise FALSE.
@@ -1907,9 +1918,9 @@ public abstract class DBDefinition {
 	 * The default implementation returns TRUE.
 	 *
 	 * <p>
-	 * If the database does not support the standard function then the
-	 * definition may override {@link #doRadiansTransform(java.lang.String) } to
-	 * implement the required functionality.
+	 * If the database does not support the standard function then the definition
+	 * may override {@link #doRadiansTransform(java.lang.String) } to implement
+	 * the required functionality.
 	 *
 	 * @return TRUE if the database supports the standard RADIANS function,
 	 * otherwise FALSE.
@@ -1922,10 +1933,10 @@ public abstract class DBDefinition {
 	 * Implements the degrees to radians transformation using simple maths.
 	 *
 	 * <p>
-	 * If the database does not support the standard RADIANS function this
-	 * method provides another method of providing the function.
+	 * If the database does not support the standard RADIANS function this method
+	 * provides another method of providing the function.
 	 *
-	 * @param degreesSQL	 degreesSQL	
+	 * @param degreesSQL	degreesSQL
 	 * @return the degrees expression transformed into a radians expression
 	 */
 	public String doRadiansTransform(String degreesSQL) {
@@ -1936,10 +1947,10 @@ public abstract class DBDefinition {
 	 * Implements the radians to degrees transformation using simple maths.
 	 *
 	 * <p>
-	 * If the database does not support the standard DEGREES function this
-	 * method provides another method of providing the function.
+	 * If the database does not support the standard DEGREES function this method
+	 * provides another method of providing the function.
 	 *
-	 * @param radiansSQL	 radiansSQL	
+	 * @param radiansSQL	radiansSQL
 	 * @return the radians expression transformed into a degrees expression
 	 */
 	public String doDegreesTransform(String radiansSQL) {
@@ -2105,7 +2116,7 @@ public abstract class DBDefinition {
 	/**
 	 * Transform a Java Boolean into the equivalent in an SQL snippet.
 	 *
-	 * @param boolValue	 boolValue	
+	 * @param boolValue	boolValue
 	 * @return an SQL snippet
 	 */
 	public String doBooleanValueTransform(Boolean boolValue) {
@@ -2113,8 +2124,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether the database supports use of the "^" operator to
-	 * perform boolean XOR.
+	 * Indicates whether the database supports use of the "^" operator to perform
+	 * boolean XOR.
 	 *
 	 * @return TRUE if the database supports "^" as XOR, FALSE otherwise.
 	 */
@@ -2132,22 +2143,25 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Not to be confused with the MIN aggregate function.
 	 *
-	 * @param strs	 strs	
-	 * @return a String of the SQL required to find the smallest value in the
-	 * list provided.
+	 * @param strs	strs
+	 * @return a String of the SQL required to find the smallest value in the list
+	 * provided.
 	 */
 	public String doLeastOfTransformation(List<String> strs) {
-		if(supportsLeastOfNatively()){
-		StringBuilder sql = new StringBuilder(getLeastOfFunctionName() + "(");
-		String comma = "";
-		for (String str : strs) {
-			sql.append(comma).append(str);
-			comma = ", ";
+		if (supportsLeastOfNatively()) {
+			StringBuilder sql = new StringBuilder(getLeastOfFunctionName() + "(");
+			String comma = "";
+			for (String str : strs) {
+				sql.append(comma).append(str);
+				comma = ", ";
+			}
+			return sql.append(")").toString();
+		} else {
+			return fakeLeastOfTransformation(strs);
 		}
-		return sql.append(")").toString();}else{return fakeLeastOfTransformation(strs);}
 	}
 
-	protected String fakeLeastOfTransformation(List<String> strs) {
+	private String fakeLeastOfTransformation(List<String> strs) {
 		String sql = "";
 		String prevCase = null;
 		if (strs.size() == 1) {
@@ -2164,17 +2178,16 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Transform a set of SQL snippets into the database's version of the
-	 * GREATEST function.
+	 * Transform a set of SQL snippets into the database's version of the GREATEST
+	 * function.
 	 *
 	 * <p>
-	 * The GREATEST function takes a list of values and returns the largest
-	 * value.
+	 * The GREATEST function takes a list of values and returns the largest value.
 	 *
 	 * <p>
 	 * Not to be confused with the MAX aggregate function.
 	 *
-	 * @param strs	 strs	
+	 * @param strs	strs
 	 * @return a String of the SQL required to get the largest value in the
 	 * supplied list.
 	 */
@@ -2192,7 +2205,7 @@ public abstract class DBDefinition {
 		}
 	}
 
-	public String fakeGreatestOfTransformation(List<String> strs) {
+	private String fakeGreatestOfTransformation(List<String> strs) {
 		String sql = "";
 		String prevCase = null;
 		if (strs.size() == 1) {
@@ -2231,12 +2244,12 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Transforms a SQL snippet of a number expression into a character
-	 * expression for this database.
+	 * Transforms a SQL snippet of a number expression into a character expression
+	 * for this database.
 	 *
-	 * @param numberExpression	 numberExpression	
-	 * @return a String of the SQL required to transform the number supplied
-	 * into a character or String type.
+	 * @param numberExpression	numberExpression
+	 * @return a String of the SQL required to transform the number supplied into
+	 * a character or String type.
 	 */
 	public String doNumberToStringTransform(String numberExpression) {
 		return doConcatTransform(getEmptyString(), numberExpression);
@@ -2254,7 +2267,7 @@ public abstract class DBDefinition {
 	/**
 	 * Convert the boolean array of bit values into the SQL equivalent.
 	 *
-	 * @param booleanArray	 booleanArray	
+	 * @param booleanArray	booleanArray
 	 * @return SQL snippet.
 	 */
 	public String doBitsValueTransform(boolean[] booleanArray) {
@@ -2355,7 +2368,7 @@ public abstract class DBDefinition {
 	 * Create a foreign key clause for use in a CREATE TABLE statement from the
 	 * {@link PropertyWrapper} provided.
 	 *
-	 * @param field	 field	
+	 * @param field	field
 	 * @return The default implementation returns something like " FOREIGN KEY
 	 * (column) REFERENCES table(reference_column) "
 	 */
@@ -2367,8 +2380,7 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Produce SQL that will provide return the second value if the first is
-	 * NULL.
+	 * Produce SQL that will provide return the second value if the first is NULL.
 	 *
 	 * @param possiblyNullValue possiblyNullValue
 	 * @param alternativeIfNull alternativeIfNull
@@ -2382,8 +2394,7 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Produce SQL that will provide return the second value if the first is
-	 * NULL.
+	 * Produce SQL that will provide return the second value if the first is NULL.
 	 *
 	 * @param possiblyNullValue possiblyNullValue
 	 * @param alternativeIfNull alternativeIfNull
@@ -2394,8 +2405,7 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Produce SQL that will provide return the second value if the first is
-	 * NULL.
+	 * Produce SQL that will provide return the second value if the first is NULL.
 	 *
 	 * @param possiblyNullValue possiblyNullValue
 	 * @param alternativeIfNull alternativeIfNull
@@ -2406,8 +2416,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Produce SQL that will compare the first value to all the other values
-	 * using the IN operator.
+	 * Produce SQL that will compare the first value to all the other values using
+	 * the IN operator.
 	 *
 	 * @param comparableValue comparableValue
 	 * @param values values
@@ -2429,6 +2439,12 @@ public abstract class DBDefinition {
 		return builder.toString();
 	}
 
+	/**
+	 * Returns FROM clause to be used for this table.
+	 *
+	 * @param table
+	 * @return a SQL snippet for a FROM clause.
+	 */
 	public String getFromClause(DBRow table) {
 		String recursiveTableAlias = table.getRecursiveTableAlias();
 		if (recursiveTableAlias != null) {
@@ -2438,46 +2454,108 @@ public abstract class DBDefinition {
 		}
 	}
 
+	/**
+	 * The beginning of the WITH variant supported by this database.
+	 *
+	 * @return "WITH RECURSIVE" by default.
+	 */
 	public String beginWithClause() {
 		return " WITH RECURSIVE ";
 	}
 
+	/**
+	 * Define the table to be used during a recursive query.
+	 *
+	 * @param recursiveTableAlias
+	 * @param recursiveColumnNames
+	 * @return by default something like: ALIAS(COL1, COL2, ... )
+	 */
 	public String formatWithClauseTableDefinition(String recursiveTableAlias, String recursiveColumnNames) {
 		return recursiveTableAlias + "(" + recursiveColumnNames + ")" + " \n";
 	}
 
+	/**
+	 * Return the default preamble to the priming query of a {@link DBRecursiveQuery}.
+	 *
+	 * @return " AS ("
+	 */
 	public String beginWithClausePrimingQuery() {
 		return " AS (";
 	}
 
+	/**
+	 * Return the necessary connector between the priming query and the recursive
+	 * query used in a {@link DBRecursiveQuery}.
+	 *
+	 * @return " \n UNION ALL "
+	 */
 	public String endWithClausePrimingQuery() {
 		return " \n UNION ALL ";
 	}
 
+	/**
+	 * Return the default preamble to the recursive query of a {@link DBRecursiveQuery}.
+	 *
+	 * @return ""
+	 */
 	public String beginWithClauseRecursiveQuery() {
 		return "";
 	}
 
+	/**
+	 * Return the default preamble to the recursive query of a {@link DBRecursiveQuery}.
+	 *
+	 * @return " \n ) \n"
+	 */
 	public String endWithClauseRecursiveQuery() {
 		return " \n ) \n";
 	}
 
+	/**
+	 * Return the default select clause for the final query of a {@link DBRecursiveQuery}.
+	 *
+	 * @param recursiveTableAlias
+	 * @param recursiveAliases
+	 * @return " SELECT ... FROM ... ORDER BY ... ASC; ";
+	 */
 	public String doSelectFromRecursiveTable(String recursiveTableAlias, String recursiveAliases) {
 		return " SELECT " + recursiveAliases + ", " + getRecursiveQueryDepthColumnName() + " FROM " + recursiveTableAlias + " ORDER BY " + getRecursiveQueryDepthColumnName() + " ASC; ";
 	}
 
+	/**
+	 * Indicates whether this database needs the recursive query to use table aliases.
+	 *
+	 * @return TRUE
+	 */
 	public boolean requiresRecursiveTableAlias() {
 		return true;
 	}
 
+	/**
+	 * Return the default name for the depth column generated during a {@link DBRecursiveQuery}.
+	 *
+	 * @return " DBDEPTHCOLUMN "
+	 */
 	public String getRecursiveQueryDepthColumnName() {
 		return " DBDEPTHCOLUMN ";
 	}
 
+	/**
+	 * Expresses whether the database has a particular datatype for primary key columns.
+	 *
+	 * @param field
+	 * @return FALSE by default
+	 */
 	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper field) {
 		return false;
 	}
 
+	/**
+	 * Return the necessary SQL data type for this field to be a primary key in this database.
+	 *
+	 * @param field
+	 * @return by default DBvolution returns the standard datatype for this field.
+	 */
 	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper field) {
 		return getSQLTypeOfDBDatatype(field);
 	}

@@ -52,7 +52,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	private final Map<Object, QueryableDatatype> expressionColumnValues = new LinkedHashMap<Object, QueryableDatatype>();
 	private transient final DBQuery baseQuery;
 
-	public DBQueryRow(DBQuery queryThatThisRowWasGeneratedFor) {
+	DBQueryRow(DBQuery queryThatThisRowWasGeneratedFor) {
 		super();
 		baseQuery = queryThatThisRowWasGeneratedFor;
 	}
@@ -115,7 +115,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		expressionColumnValues.put(key, expressionQDT);
 	}
 
-	public QueryableDatatype getExpressionColumnValue(Object key) {
+	QueryableDatatype getExpressionColumnValue(Object key) {
 		return expressionColumnValues.get(key);
 	}
 

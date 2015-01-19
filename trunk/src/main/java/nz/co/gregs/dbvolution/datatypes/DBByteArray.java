@@ -15,30 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.DBRow;
+import java.io.*;
+import java.sql.*;
+import java.util.*;
+import java.util.logging.*;
+import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import org.apache.commons.codec.binary.Base64;

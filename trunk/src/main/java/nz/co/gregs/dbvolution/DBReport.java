@@ -131,7 +131,7 @@ public class DBReport extends RowDefinition {
 				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
 					if ((value instanceof QueryableDatatype)) {
 						QueryableDatatype qdt = (QueryableDatatype) value;
-						str.append(field.getName() + ": " + qdt.toString() + " ");
+						str.append(field.getName()).append(": ").append(qdt.toString()).append(" ");
 					}
 				}
 			} catch (IllegalArgumentException ex) {
@@ -177,7 +177,7 @@ public class DBReport extends RowDefinition {
 		return reportRows;
 	}
 
-	public static <A extends DBReport> List<A> getReportsFromQueryResults(List<DBQueryRow> allRows, A exampleReport) {
+	private static <A extends DBReport> List<A> getReportsFromQueryResults(List<DBQueryRow> allRows, A exampleReport) {
 		 List<A> reportRows = new ArrayList<A>();
 		for (DBQueryRow row : allRows) {
 			reportRows.add(DBReport.getReportInstance(exampleReport, row));
@@ -305,13 +305,18 @@ public class DBReport extends RowDefinition {
 		return this;
 	}
 
-	public void addAsOptionalTables(DBRow... tables) {
-		for (DBRow table : tables) {
+	/**
+	 * Add the rows as optional tables in the query.
+	 *
+	 * @param examples
+	 */
+	public void addAsOptionalTables(DBRow... examples) {
+		for (DBRow table : examples) {
 			optionalTables.add(table);
 		}
 	}
 
-	public static <A extends DBReport> DBQuery getDBQuery(DBDatabase database, A exampleReport, DBRow... rows) {
+	static <A extends DBReport> DBQuery getDBQuery(DBDatabase database, A exampleReport, DBRow... rows) {
 		DBQuery query = database.getDBQuery();
 		exampleReport.addTablesAndExpressions(query, exampleReport);
 		query.addExtraExamples(rows);

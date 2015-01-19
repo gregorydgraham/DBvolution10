@@ -30,13 +30,21 @@ import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 public class PostgresDB extends DBDatabase {
 
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
+
+	/**
+	 * The default port number used by PostgreSQL.
+	 */
 	public static final int POSTGRES_DEFAULT_PORT = 5432;
+
+	/**
+	 * The default username used by PostgreSQL.
+	 */
 	public static final String POSTGRES_DEFAULT_USERNAME = "postgres";
 
 	/**
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
-	 * @param ds	 ds	
+	 * @param ds	ds
 	 */
 	public PostgresDB(DataSource ds) {
 		super(new PostgresDBDefinition(), ds);
@@ -111,6 +119,20 @@ public class PostgresDB extends DBDatabase {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Assumes that the database and application are on the the same machine.
+	 *
+	 * @param table
+	 * @param file
+	 * @param delimiter
+	 * @param nullValue
+	 * @param escapeCharacter
+	 * @param quoteCharacter
+	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
+	 * statements or (2) 0 for SQL statements that return nothing 1 Database
+	 * exceptions may be thrown
+	 * @throws SQLException
+	 */
 	public int loadFromCSVFile(DBRow table, File file, String delimiter, String nullValue, String escapeCharacter, String quoteCharacter) throws SQLException {
 		int returnValue = 0;
 		final DBStatement dbStatement = this.getDBStatement();

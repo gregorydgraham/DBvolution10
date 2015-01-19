@@ -522,10 +522,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return getWrapper().tableName();
 	}
 
-	public void setRecursiveTableAlias(String alias) {
+	void setRecursiveTableAlias(String alias) {
 		recursiveTableAlias = alias;
 	}
 
+	/**
+	 * Returns the alias to be used if this DBRow is being used in a recursive
+	 * query.
+	 *
+	 * @return the recursive alias set by {@link DBRecursiveQuery} during query
+	 * execution.
+	 */
 	public String getRecursiveTableAlias() {
 		return recursiveTableAlias;
 	}
@@ -1627,6 +1634,18 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		this.setReturnColumns(tableRow.getReturnColumns());
 	}
 
+	/**
+	 * Find all the DBRow subclasses in the package.
+	 * 
+	 * <p>
+	 * Because sometimes you need everything.
+	 * 
+	 * <p>
+	 * Might be helpful for recreating the database, but I recommend triple-checking everything.
+	 *
+	 * @param referencePackage
+	 * @return a list of all the direct subclasses of DBRow from the specified package.
+	 */
 	public static List<DBRow> getDBRowSubclassesFromPackage(Package referencePackage) {
 		List<DBRow> resultList = new ArrayList<DBRow>();
 		Reflections reflections = new Reflections(referencePackage);

@@ -161,17 +161,6 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		}
 	}
 
-//	@Override
-//	public String getWhereClause(DBDatabase db, String columnName) {
-//		if (this.getOperator() instanceof DBLikeCaseInsensitiveOperator) {
-//			throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
-//		} else if (this.getOperator() instanceof DBLikeOperator) {
-//			throw new RuntimeException("NUMBER COLUMNS CAN'T USE \"LIKE\": " + columnName);
-//		} else {
-//			return super.getWhereClause(db, columnName);
-//		}
-//	}
-
 	/**
 	 *
 	 * @return the default database type as a string, may be gazumped by the

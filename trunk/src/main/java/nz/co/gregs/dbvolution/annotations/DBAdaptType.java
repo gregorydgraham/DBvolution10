@@ -7,8 +7,8 @@ import java.lang.annotation.Target;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
+import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.ImplicitQueryableDatatype;
 
 /**
  * Adapts a non-DBvolution field or property to a DBvolution type, or adapts a
@@ -71,5 +71,5 @@ public @interface DBAdaptType {
 	 *
 	 * @return the QueryableDatatype class used internally for DB communication
 	 */
-	Class<? extends QueryableDatatype> type() default ImplicitQueryableDatatype.class;
+	Class<? extends QueryableDatatype> type() default DBUnknownDatatype.class;
 }

@@ -15,10 +15,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
-import java.util.Calendar;
 import java.util.Date;
 import static org.hamcrest.Matchers.*;
 import org.junit.After;

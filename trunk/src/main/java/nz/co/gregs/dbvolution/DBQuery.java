@@ -322,7 +322,7 @@ public class DBQuery{
 			} else {
 				sqlToReturn = lineSep + defn.beginInnerJoin();
 			}
-			sqlToReturn += defn.getFromClause(newTable);//defn.formatTableName(newTable) + defn.beginTableAlias() + defn.getTableAlias(newTable) + defn.endTableAlias();
+			sqlToReturn += defn.getFromClause(newTable);
 			sqlToReturn += defn.beginOnClause();
 			if (!conditionClauses.isEmpty()) {
 				if (!joinClauses.isEmpty()) {
@@ -2221,18 +2221,33 @@ public class DBQuery{
 		return returnList;
 	}
 
+	/**
+	 * Return a list of all tables, required or optional, used in this query.
+	 *
+	 * @return all DBRows used in this DBQuery
+	 */
 	public List<DBRow> getAllTables() {
 		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
 		arrayList.addAll(details.getAllQueryTables());
 		return arrayList;
 	}
 
+	/**
+	 * Return a list of all the required tables used in this query.
+	 *
+	 * @return all DBRows required by this DBQuery
+	 */
 	public List<DBRow> getRequiredTables() {
 		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
 		arrayList.addAll(details.getRequiredQueryTables());
 		return arrayList;
 	}
 
+	/**
+	 * Return a list of all the optional tables used in this query.
+	 *
+	 * @return all DBRows optionally returned by this DBQuery
+	 */
 	public List<DBRow> getOptionalTables() {
 		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
 		arrayList.addAll(details.getOptionalQueryTables());
@@ -2264,6 +2279,9 @@ public class DBQuery{
 	 * <p>
 	 * Used during recursive queries. If you are not manually constructing a
 	 * recursive query do NOT use this method.
+	 * 
+	 * <p>
+	 * Also used by the {@link ExistsExpression}.
 	 *
 	 * @param tables	 tables	
 	 * @return this DBQuery object.
@@ -2272,6 +2290,20 @@ public class DBQuery{
 		return addAssumedTables(tables.toArray(new DBRow[]{}));
 	}
 
+	/**
+	 * Add tables that will be used in the query but are already part of an
+	 * outer query and need not be explicitly added to the SQL.
+	 *
+	 * <p>
+	 * Used during recursive queries. If you are not manually constructing a
+	 * recursive query do NOT use this method.
+	 *
+	 * <p>
+	 * Also used by the {@link ExistsExpression}.
+	 *
+	 * @param tables	 tables	
+	 * @return this DBQuery object.
+	 */
 	public DBQuery addAssumedTables(DBRow... tables) {
 		for (DBRow table : tables) {
 			details.getAssumedQueryTables().add(table);
@@ -2282,6 +2314,26 @@ public class DBQuery{
 	}
 
 
+	/**
+	 * Adds optional tables to this query
+	 *
+	 * <p>
+	 * This method adds optional (OUTER) tables to the query.
+	 *
+	 * <p>
+	 * The query will return an instance of these DBRows for each row found,
+	 * though it may be a null instance as there was no matching row in the
+	 * database.
+	 *
+	 * <p>
+	 * Criteria (permitted and excluded values) specified in the supplied
+	 * instance will be added to the query.
+	 *
+	 * @param optionalQueryTables  a list of DBRow objects that defines optional tables and
+	 * criteria
+	 *
+	 * @return this DBQuery instance
+	 */
 	public DBQuery addOptional(List<DBRow> optionalQueryTables) {
 		for (DBRow optionalQueryTable : optionalQueryTables) {
 			this.addOptional(optionalQueryTable);
@@ -2289,6 +2341,26 @@ public class DBQuery{
 		return this;
 	}
 
+
+
+	/**
+	 * Ignores the foreign key of the column provided.
+	 * <p>
+	 * Similar to {@link DBRow#ignoreForeignKey(java.lang.Object) } but uses a
+	 * ColumnProvider which is portable between instances of DBRow.
+	 * <p>
+	 * For example the following code snippet will ignore the foreign key provided
+	 * by a different instance of Customer:
+	 * <pre>
+	 * Customer customer = new Customer();
+	 * IntegerColumn addressColumn = customer.column(customer.fkAddress);
+	 * Customer cust2 = new Customer();
+	 * cust2.ignoreForeignKey(addressColumn);
+	 * </pre>
+	 *
+	 * @param foreignKeyToFollow 	the foreign key to ignore
+	 * @return This DBQuery object
+	 */
 	public DBQuery ignoreForeignKey(ColumnProvider foreignKeyToFollow) {
 		Set<DBRow> tablesInvolved = foreignKeyToFollow.getColumn().getTablesInvolved();
 		for (DBRow fkTable : tablesInvolved) {

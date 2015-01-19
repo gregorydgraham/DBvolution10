@@ -103,15 +103,4 @@ public class H2DBDefinition extends DBDefinition {
 //		return " DATEADD('hour',-1* "+timezone+",CURRENT_TIMESTAMP )";
 		return " CURRENT_TIMESTAMP ";
 	}
-
-
-	@Override
-	public String endWithClausePrimingQuery() {
-		return " \n UNION ALL ";
-	}
-
-	@Override
-	public boolean requiresRecursiveTableAlias() {
-		return true;
-	}
 }

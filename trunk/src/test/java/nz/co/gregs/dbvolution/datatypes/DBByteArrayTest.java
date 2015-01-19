@@ -75,7 +75,7 @@ public class DBByteArrayTest extends AbstractTest {
 		Assert.assertThat(foundLogo.imageFilename.stringValue(), is("ford_logo.jpg"));
 		Assert.assertThat(foundLogo.imageBytes.isNull(), is(false));
 		File tempFile = new File("tempfileForCreateRowWithByteArray.jpg");
-		foundLogo.imageBytes.writeToFileSystem(tempFile);
+		foundLogo.imageBytes.writeToFileSystem(tempFile.getAbsoluteFile());
 		Assert.assertThat(tempFile.length(), is(fordLogoFile.length()));
 		tempFile.delete();
 	}

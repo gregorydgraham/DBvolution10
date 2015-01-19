@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
@@ -33,13 +34,13 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
 public class DBBetweenExclusiveOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
-	DBExpression lowest;
-	DBExpression highest;
-	
+//	DBExpression lowest;
+//	DBExpression highest;
+
 	public DBBetweenExclusiveOperator(DBExpression lowValue, DBExpression highValue) {
 		super();
-		lowest = lowValue == null ? lowValue : lowValue.copy();
-		highest = highValue == null ? highValue : highValue.copy();
+		firstValue = lowValue == null ? lowValue : lowValue.copy();
+		secondValue = highValue == null ? highValue : highValue.copy();
 	}
 
 	@Override
@@ -83,6 +84,8 @@ public class DBBetweenExclusiveOperator extends DBOperator {
 				&& (secondValue instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetweenExclusive((DateResult) firstValue, (DateResult) secondValue);
+		} else {
+			throw new DBRuntimeException("whoops");
 		}
 		return this.invertOperator ? betweenOp.not() : betweenOp;
 	}

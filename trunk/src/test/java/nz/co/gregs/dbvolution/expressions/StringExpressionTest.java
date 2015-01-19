@@ -61,9 +61,11 @@ public class StringExpressionTest extends AbstractTest {
 		got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(2));
 	}
-	
-	
-	public static class trimmedMarque extends Marque{
+
+	public static class trimmedMarque extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
 		@DBColumn
 		DBString leftTrim = new DBString(this.column(this.name).leftTrim());
 		@DBColumn
@@ -196,7 +198,7 @@ public class StringExpressionTest extends AbstractTest {
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
 
-		query.addCondition(marq.column(marq.name).length().isBetweenInclusive(1,3));
+		query.addCondition(marq.column(marq.name).length().isBetweenInclusive(1, 3));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 		database.print(got);
@@ -245,7 +247,7 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat(got.get(0).name.stringValue(), is("VOLVO"));
 		Assert.assertThat(got.get(1).name.stringValue(), is("VW"));
 	}
-	
+
 	@Test
 	public void testConcatTransform() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
@@ -266,7 +268,7 @@ public class StringExpressionTest extends AbstractTest {
 
 		query = database.getDBQuery(marq);
 		// Find VW and BMW by appending V and W around the replaced brands
-		query.addCondition(StringExpression.value("V").append(nameValue.replace("BMW", "-").replace("VW", "-")).replace("-","W").is("VW"));
+		query.addCondition(StringExpression.value("V").append(nameValue.replace("BMW", "-").replace("VW", "-")).replace("-", "W").is("VW"));
 		query.setSortOrder(nameColumn);
 		got = query.getAllInstancesOf(marq);
 		database.print(got);

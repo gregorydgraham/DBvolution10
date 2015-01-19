@@ -18,9 +18,7 @@ package nz.co.gregs.dbvolution;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -211,6 +209,7 @@ public class DBReportTest extends AbstractTest {
 			carCompany.uidCarCompany.excludedValues((Long) null);
 		}
 	}
+	
 	
 	public static class GroupReport extends DBReport {
 
