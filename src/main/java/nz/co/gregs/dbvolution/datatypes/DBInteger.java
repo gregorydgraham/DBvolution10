@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -628,7 +630,9 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 			super.setLiteralValue(null);
 		} else {
 			try {
-				Long literalLong = Long.parseLong(newLiteralValue.toString());
+				Double parseDouble = Double.parseDouble(newLiteralValue.toString());
+				Long literalLong = parseDouble.longValue();
+//				Long literalLong = Long.parseLong(newLiteralValue.toString());
 				setLiteralValue(literalLong);
 			} catch (NumberFormatException noFormat) {
 				setLiteralValue(null);

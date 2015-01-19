@@ -48,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Gregory Graham
  */
 public class DBUpdateLargeObjects extends DBUpdate {
-
+	
 	private static final Log log = LogFactory.getLog(DBUpdateLargeObjects.class);
 
 	/**
@@ -59,7 +59,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	protected DBUpdateLargeObjects(DBRow row) {
 		super(row);
 	}
-
+	
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow row = getRow();
@@ -71,19 +71,22 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			for (PropertyWrapper prop : getInterestingLargeObjects(row)) {
 				final String col = prop.columnName();
 				final DBLargeObject largeObject = (DBLargeObject) prop.getQueryableDatatype();
-
-				if (defn.prefersLargeObjectsSetAsCharacterStream()) {
-					setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-				} else if (defn.prefersLargeObjectsSetAsBase64String()) {
-					setUsingBase64String(defn, row, col, largeObject, db, statement);
-				} else if (defn.prefersLargeObjectsSetAsBLOB()) {
-					setUsingBLOB(defn, row, col, largeObject, db, statement);
+				
+				if (largeObject.isNull()) {
+					setToNullUsingStringValue(defn, row, col, largeObject, db, statement);
 				} else {
-					setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+					if (defn.prefersLargeObjectsSetAsCharacterStream()) {
+						setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+					} else if (defn.prefersLargeObjectsSetAsBase64String()) {
+						setUsingBase64String(defn, row, col, largeObject, db, statement);
+					} else if (defn.prefersLargeObjectsSetAsBLOB()) {
+						setUsingBLOB(defn, row, col, largeObject, db, statement);
+					} else {
+						setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+					}
 				}
 				DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
 				actions.add(update);
-
 				largeObject.setUnchanged();
 			}
 		} catch (IOException ex) {
@@ -94,7 +97,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 		return actions;
 	}
-
+	
 	private void setUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
@@ -111,7 +114,24 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		log.debug(sqlString);
 		statement.execute(sqlString);
 	}
-
+	
+	private void setToNullUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+		String sqlString = defn.beginUpdateLine()
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getNull()
+				+ defn.beginWhereClause()
+				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
+				+ defn.getEqualsComparator()
+				+ row.getPrimaryKey().toSQLString(db)
+				+ defn.endSQLStatement();
+//					db.printSQLIfRequested(sqlString);
+		log.debug(sqlString);
+		statement.execute(sqlString);
+	}
+	
 	private void setUsingBinaryStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
@@ -142,7 +162,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			prep.close();
 		}
 	}
-
+	
 	private void setUsingBLOB(DBDefinition defn, DBRow row, String col, DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
@@ -165,7 +185,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			prep.close();
 		}
 	}
-
+	
 	private void setUsingBase64String(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
@@ -183,11 +203,11 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
 			InputStream inputStream = largeObject.getInputStream();
-
+			
 			InputStream input = new BufferedInputStream(inputStream);
 			try {
 				List<byte[]> byteArrays = new ArrayList<byte[]>();
-
+				
 				int totalBytesRead = 0;
 				byte[] resultSetBytes;
 				resultSetBytes = new byte[100000];
@@ -215,7 +235,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			prep.close();
 		}
 	}
-
+	
 	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
@@ -229,7 +249,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ row.getPrimaryKey().toSQLString(db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.debug(sqlString);
+		log.info(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
 			prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
@@ -238,7 +258,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			prep.close();
 		}
 	}
-
+	
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
 		DBRow row = getRow();
@@ -256,17 +276,17 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
 		return getChangedLargeObjects(row);
 	}
-
+	
 	@Override
 	protected DBActionList getRevertDBActionList() {
 		return new DBActionList();
 	}
-
+	
 	@Override
 	protected DBActionList getActions() {
 		return new DBActionList(new DBUpdateLargeObjects(getRow()));
 	}
-
+	
 	private List<PropertyWrapper> getChangedLargeObjects(DBRow row) {
 		List<PropertyWrapper> changed = new ArrayList<PropertyWrapper>();
 		if (row.hasLargeObjects()) {

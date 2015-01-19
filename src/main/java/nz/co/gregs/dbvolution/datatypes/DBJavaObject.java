@@ -38,6 +38,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 	private static final long serialVersionUID = 1;
 	private transient InputStream byteStream = null;
 	private O literalObject;
+	private boolean internalValueHasBeenSet = false;
 
 	@Override
 	public String getSQLDatatype() {
@@ -46,18 +47,21 @@ public class DBJavaObject<O> extends DBLargeObject {
 
 	@SuppressWarnings("unchecked")
 	private void setInternalValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof DBJavaObject) {
-			final DBJavaObject<O> valBytes = (DBJavaObject<O>) newLiteralValue;
-			setValue(valBytes.getValue());
-		} else {
-			try {
-				literalObject = (O) newLiteralValue;
-				ByteArrayOutputStream tempByteStream = new ByteArrayOutputStream();
-				ObjectOutputStream oStream = new ObjectOutputStream(tempByteStream);
-				oStream.writeObject(literalObject);
-				setLiteralValue(tempByteStream.toByteArray());
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+		if (!internalValueHasBeenSet) {
+			if (newLiteralValue instanceof DBJavaObject) {
+				final DBJavaObject<O> valBytes = (DBJavaObject<O>) newLiteralValue;
+				setValue(valBytes.getValue());
+			} else {
+				try {
+					literalObject = (O) newLiteralValue;
+					ByteArrayOutputStream tempByteStream = new ByteArrayOutputStream();
+					ObjectOutputStream oStream = new ObjectOutputStream(tempByteStream);
+					oStream.writeObject(literalObject);
+					setLiteralValue(tempByteStream.toByteArray());
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+				internalValueHasBeenSet = true;
 			}
 		}
 	}
@@ -79,32 +83,6 @@ public class DBJavaObject<O> extends DBLargeObject {
 		}
 	}
 
-//	@Override
-//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-//		removeConstraints();
-//		DBDefinition defn = database.getDefinition();
-//		if (resultSet == null || fullColumnName == null) {
-//			this.setToNull();
-//		} else {
-//			if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
-//				try {
-//					setFromCharacterReader(resultSet, fullColumnName);
-//				} catch (IOException ex) {
-//					throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
-//				}
-//			} else if (defn.prefersLargeObjectsReadAsBytes()) {
-//				setFromGetBytes(resultSet, fullColumnName);
-//			} else if (defn.prefersLargeObjectsReadAsCLOB()) {
-//				setFromCLOB(resultSet, fullColumnName);
-//			} else {
-//				setFromBinaryStream(resultSet, fullColumnName);
-//			}
-//		}
-//
-//		setUnchanged();
-//
-//		setDefined(true);
-//	}
 	@SuppressWarnings("unchecked")
 	private O getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
 		O returnValue = null;
@@ -250,7 +228,8 @@ public class DBJavaObject<O> extends DBLargeObject {
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
+	public String formatValueForSQLStatement(DBDatabase db
+	) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -303,11 +282,11 @@ public class DBJavaObject<O> extends DBLargeObject {
 
 	@Override
 	public String stringValue() {
-		Object value = this.getValue();
 		if (this.isNull()) {
 			return super.stringValue();
 		} else {
-			return value.toString();
+			O value = this.getValue();
+			return "" + value;
 		}
 	}
 

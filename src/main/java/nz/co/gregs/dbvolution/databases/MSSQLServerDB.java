@@ -29,14 +29,26 @@ import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
  * @author Gregory Graham
  */
 public class MSSQLServerDB extends DBDatabase {
-    public final static String SQLSERVERDRIVERNAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    public final static String JTDSDRIVERNAME = "net.sourceforge.jtds.jdbc.Driver";
+
+	/**
+	 * The Microsoft Driver used to connect to MS SQLServer databases.
+	 */
+	public final static String SQLSERVERDRIVERNAME = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	
+	/**
+	 * The JTDS Driver to use to connect to MS SQLServer databases.
+	 */
+	public final static String JTDSDRIVERNAME = "net.sourceforge.jtds.jdbc.Driver";
+	
+	/**
+	 * The default port used by MS SQLServer databases.
+	 */
 	public final static int DEFAULT_PORT_NUMBER = 1433;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
-	 * @param ds	 ds	
+	 * @param ds	 a DataSource to an MS SQLServer database	
 	 */
 	public MSSQLServerDB(DataSource ds) {
         super(new MSSQLServerDBDefinition(), ds);
@@ -68,7 +80,17 @@ public class MSSQLServerDB extends DBDatabase {
         super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
     }
 	
-    public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	/**
+	 * Connect to an MS SQLServer database using the connection details specified and Microsoft's driver.
+	 *
+	 * @param hostname
+	 * @param instanceName
+	 * @param databaseName
+	 * @param portNumber
+	 * @param username
+	 * @param password
+	 */
+	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
         super(
 				new MSSQLServerDBDefinition(), 
 				SQLSERVERDRIVERNAME, 
@@ -78,8 +100,27 @@ public class MSSQLServerDB extends DBDatabase {
 		);
     }
 	
-	//jdbc:sqlserver://[serverName[\instanceName][:portNumber]][;property=value[;property=value]]
-
+	/**
+	 * Connect to an MS SQLServer database using the connection details specified and Microsoft's driver.
+	 *
+	 * @param driverName
+	 * @param hostname
+	 * @param instanceName
+	 * @param databaseName
+	 * @param portNumber
+	 * @param username
+	 * @param password
+	 */
+	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+        super(
+				new MSSQLServerDBDefinition(), 
+				driverName, 
+				"jdbc:sqlserver://"+hostname+(instanceName!=null?"\\"+instanceName:"")+":"+portNumber+";"+(databaseName==null?"":"databaseName="+databaseName+";"), 
+				username, 
+				password
+		);
+    }
+	
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.

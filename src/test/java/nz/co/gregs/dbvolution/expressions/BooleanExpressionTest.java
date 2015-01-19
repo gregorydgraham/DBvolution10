@@ -42,8 +42,10 @@ public class BooleanExpressionTest extends AbstractTest {
 	public void testStringLike() throws SQLException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
-
-		dbQuery.addCondition(marque.column(marque.name).isLike("TOY%"));
+		final BooleanExpression like = marque.column(marque.name).isLike("TOY%");
+		Assert.assertThat(like.isAggregator(), is(false));
+		
+		dbQuery.addCondition(like);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
@@ -52,6 +54,21 @@ public class BooleanExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringLikeIgnoreCase() throws SQLException {
+		Marque marque = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(
+				marque.column(marque.name).isLikeIgnoreCase("%o%")
+				.xor(marque.column(marque.name).isLikeIgnoreCase("%a%"))
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(10));
+	}
+
+	@Test
+	public void testXOR() throws SQLException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
@@ -542,7 +559,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(0));
+		Assert.assertThat(allRows.size(), is(2));
 
 		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", datetimeFormat.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
@@ -558,7 +575,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -572,7 +589,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(0));
+		Assert.assertThat(allRows.size(), is(2));
 
 		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", datetimeFormat.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
@@ -588,7 +605,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.size(), is(3));
 	}
 
 	@Test

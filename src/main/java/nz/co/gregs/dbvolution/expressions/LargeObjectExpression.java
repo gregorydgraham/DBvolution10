@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 public class LargeObjectExpression implements LargeObjectResult {
 
 	private final LargeObjectResult blobResult;
-	private boolean nullProtectionRequired;
+	private boolean nullProtectionRequired = false;
 
 	/**
 	 * Default Constructor.
@@ -110,7 +110,7 @@ public class LargeObjectExpression implements LargeObjectResult {
 		@Override
 		public boolean isPurelyFunctional() {
 			if (blobResult == null) {
-				return true;
+				return true; // this should never occur, just sayin'
 			} else {
 				return blobResult.isPurelyFunctional();
 			}

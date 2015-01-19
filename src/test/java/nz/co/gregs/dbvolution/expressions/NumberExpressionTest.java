@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -198,13 +199,98 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testLeastOf() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
+		ArrayList<NumberExpression> arrayList = new ArrayList<NumberExpression>();
+		arrayList.add(marq.column(marq.uidMarque));
+		arrayList.add(NumberExpression.value(900000));
+		arrayList.add(NumberExpression.value(800000));
 		dbQuery.addCondition(
-				NumberExpression.leastOf(marq.column(marq.uidMarque), NumberExpression.value(900000), NumberExpression.value(800000))
+				NumberExpression.leastOf(arrayList)
 				.is(marq.column(marq.uidMarque))
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
+	public void testAppend() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+						.append("$")
+						.isLike("%2$")
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testIsEven() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+						.isEven()
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(11));
+	}
+
+	@Test
+	public void testIsOdd() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+						.isOdd()
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(11));
+	}
+
+	@Test
+	public void testIsNotNull() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.updateCount)
+						.isNotNull()
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(20));
+	}
+
+	@Test
+	public void testIsNull() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.updateCount)
+						.isNull()
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+	}
+
+	@Test
+	public void testLeastOfNumberArray() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				NumberExpression.leastOf(1,2,3,4,5)
+				.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
 	}
@@ -236,6 +322,9 @@ public class NumberExpressionTest extends AbstractTest {
 	}
 	
 	public static class degreeRow extends CarCompany{
+
+		private static final long serialVersionUID = 1L;
+		
 		@DBColumn
 		DBNumber degrees = new DBNumber(this.column(this.uidCarCompany).degrees());
 		@DBColumn

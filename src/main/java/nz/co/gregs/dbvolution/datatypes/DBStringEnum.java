@@ -26,12 +26,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.StringResult;
-import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
+import nz.co.gregs.dbvolution.operators.*;
 
 /**
  * Like {@link DBString} except that the database value can be easily
@@ -123,16 +118,16 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		return new DBString().getSQLDatatype();
 	}
 
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof String) {
-			setValue((String) newLiteralValue);
-		} else if (newLiteralValue instanceof DBString) {
-			setValue(((DBString) newLiteralValue).getValue());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-String: Use only Strings with this class");
-		}
-	}
+//	@Override
+//	void setValue(Object newLiteralValue) {
+//		if (newLiteralValue instanceof String) {
+//			setValue((String) newLiteralValue);
+//		} else if (newLiteralValue instanceof DBString) {
+//			setValue(((DBString) newLiteralValue).getValue());
+//		} else {
+//			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-String: Use only Strings with this class");
+//		}
+//	}
 
 	/**
 	 * Set the value of this DBStringEnum to the String provided.
@@ -155,9 +150,9 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 
 	 */
-	private void setValue(String newLiteralValue) {
-		super.setLiteralValue(newLiteralValue);
-	}
+//	private void setValue(String newLiteralValue) {
+//		super.setLiteralValue(newLiteralValue);
+//	}
 
 	@Override
 	public DBString getQueryableDatatypeForExpressionValue() {
@@ -278,8 +273,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * @param permitted	 permitted	
 	 */
-	public void permittedValuesIgnoreCase(Collection<String> permitted) {
-		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
+	public void permittedValuesIgnoreCase(Collection<E> permitted) {
+		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(convertToLiteralString(permitted)));
 	}
 
 	/**

@@ -27,7 +27,6 @@ import static org.hamcrest.Matchers.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -65,8 +64,12 @@ public class DBJavaObjectTest extends AbstractTest {
 		List<DBJavaObjectTable> allRows = database.getDBTable(new DBJavaObjectTable()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		final DBJavaObjectTable foundRow = allRows.get(0);
+		Assert.assertThat(foundRow.javaInteger.getSize(), is(81));
 		Assert.assertThat(foundRow.javaInteger.getValue(), is(3));
+		Assert.assertThat(foundRow.javaInteger.stringValue(), is("3"));
+		Assert.assertThat(foundRow.javaString.getSize(), is(15));
 		Assert.assertThat(foundRow.javaString.getValue(), is("Thisland"));
+		Assert.assertThat(foundRow.javaString.stringValue(), is("Thisland"));
 		System.out.println(foundRow);
 
 		database.preventDroppingOfTables(false);

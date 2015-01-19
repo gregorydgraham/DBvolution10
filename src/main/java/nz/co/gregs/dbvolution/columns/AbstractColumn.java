@@ -206,6 +206,11 @@ public class AbstractColumn implements DBExpression {
 		this.useTableAlias = useTableAlias;
 	}
 
+	/**
+	 * Returns a new version of the DBRow from which this column has been made.
+	 *
+	 * @return an appropriate DBRow
+	 */
 	@SuppressWarnings("unchecked")
 	public DBRow getInstanceOfRow() {
 		final Class<? extends DBRow> originatingClass;
@@ -214,6 +219,12 @@ public class AbstractColumn implements DBExpression {
 		return originatingRow;
 	}
 
+	/**
+	 * Returns the class of the DBRow from which this column has been made.
+	 * 
+	 *
+	 * @return an appropriate DBRow class
+	 */
 	public Class<? extends DBRow> getClassReferencedByForeignKey() {
 		return this.getPropertyWrapper().referencedClass();
 	}

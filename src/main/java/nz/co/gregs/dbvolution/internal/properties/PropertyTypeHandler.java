@@ -6,14 +6,13 @@ import java.lang.reflect.Modifier;
 import java.util.Date;
 
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
-import nz.co.gregs.dbvolution.datatypes.ImplicitQueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
+import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.datatypes.SimpleValueQueryableDatatypeSyncer;
@@ -436,7 +435,7 @@ class PropertyTypeHandler {
         }
 
         // detect default
-        if (annotation.type().equals(ImplicitQueryableDatatype.class)) {
+        if (annotation.type().equals(DBUnknownDatatype.class)) {
             return null;
         }
 

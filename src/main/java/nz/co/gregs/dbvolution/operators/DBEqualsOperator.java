@@ -18,7 +18,9 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.BooleanResult;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.DateResult;
@@ -76,6 +78,11 @@ public class DBEqualsOperator extends DBOperator {
 		} else if (genericExpression instanceof DateExpression) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			op = dateExpression.is((DateResult) firstValue);
+		} else if (genericExpression instanceof BooleanExpression) {
+			BooleanExpression boolExpr = (BooleanExpression) genericExpression;
+			op = boolExpr.is((BooleanResult) firstValue);
+		}else{
+			throw new DBRuntimeException("whoops");
 		}
 		return this.invertOperator ? op.not() : op;
 	}
