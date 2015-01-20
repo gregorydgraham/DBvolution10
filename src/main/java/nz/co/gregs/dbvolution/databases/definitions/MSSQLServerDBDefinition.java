@@ -186,11 +186,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean supportsXOROperator() {
-		return true;
-	}
-
-	@Override
 	public boolean prefersLargeObjectsSetAsBase64String() {
 		return true;
 	}
@@ -324,5 +319,20 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public boolean supportsPurelyFunctionalGroupByColumns() {
 		return false;
+	}
+
+	/**
+	 * Transforms a SQL snippet of a number expression into a character expression
+	 * for this database.
+	 *
+	 * @param numberExpression	numberExpression
+	 * @return a String of the SQL required to transform the number supplied into
+	 * a character or String type.
+	 */
+	@Override
+	public String doNumberToStringTransform(String numberExpression) {
+		DBString dbs = new DBString();
+		String sqlTypeOfString = this.getSQLTypeOfDBDatatype(dbs);
+		return "CONVERT(NVARCHAR(1000), "+numberExpression+")";
 	}
 }
