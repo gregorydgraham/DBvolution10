@@ -94,22 +94,25 @@ public class SelectTopTest extends AbstractTest {
 		query.setRowLimit(5);
 		System.out.println("PAGE 1:");
 		List<DBQueryRow> firstPage = query.getAllRowsForPage(0);
+		List<DBQueryRow> secondPage = query.getAllRowsForPage(1);
+		List<DBQueryRow> thirdPage = query.getAllRowsForPage(2);
+		Assert.assertThat(firstPage.size(), is(4));
+		Assert.assertThat(secondPage.size(), is(5));
+		Assert.assertThat(thirdPage.size(), is(5));
 		query.print();
 		Assert.assertThat(firstPage.get(0).get(carCompany).name.stringValue(), is("Ford"));
 		Assert.assertThat(firstPage.get(1).get(carCompany).name.stringValue(), is("GENERAL MOTORS"));
 		System.out.println("PAGE 2:");
-		List<DBQueryRow> secondPage = query.getAllRowsForPage(1);
 		query.print();
 		Assert.assertThat(secondPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
 		Assert.assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
 		Assert.assertThat(secondPage.get(0).get(marque).name.stringValue(), is("CHRYSLER"));
 		Assert.assertThat(secondPage.get(1).get(marque).name.stringValue(), is("DAEWOO"));
-		secondPage = query.getAllRowsForPage(2);
 		query.print();
 		database.print(secondPage);
-		Assert.assertThat(secondPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
-		Assert.assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
-		Assert.assertThat(secondPage.get(0).get(marque).name.stringValue(), is("LANDROVER"));
-		Assert.assertThat(secondPage.get(1).get(marque).name.stringValue(), is("MAZDA"));
+		Assert.assertThat(thirdPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));
+		Assert.assertThat(thirdPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
+		Assert.assertThat(thirdPage.get(0).get(marque).name.stringValue(), is("LANDROVER"));
+		Assert.assertThat(thirdPage.get(1).get(marque).name.stringValue(), is("MAZDA"));
 	}
 }
