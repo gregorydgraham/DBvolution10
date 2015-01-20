@@ -1796,7 +1796,7 @@ public class DBQuery{
 			int rowLimit = options.getRowLimit();
 			int startIndex = rowLimit * pageNumber;
 			startIndex = (startIndex < 0 ? 0 : startIndex);
-			int stopIndex = rowLimit * (pageNumber + 1) - 1;
+			int stopIndex = rowLimit * (pageNumber + 1);
 			stopIndex = (stopIndex >= results.size() ? results.size() - 1 : stopIndex);
 			if (stopIndex - startIndex < 1) {
 				return new ArrayList<DBQueryRow>();
