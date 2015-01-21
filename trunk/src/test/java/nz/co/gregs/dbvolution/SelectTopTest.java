@@ -96,6 +96,12 @@ public class SelectTopTest extends AbstractTest {
 		List<DBQueryRow> firstPage = query.getAllRowsForPage(0);
 		List<DBQueryRow> secondPage = query.getAllRowsForPage(1);
 		List<DBQueryRow> thirdPage = query.getAllRowsForPage(2);
+		System.out.println("FIRST:");
+		database.print(firstPage);
+		System.out.println("SECOND:");
+		database.print(secondPage);
+		System.out.println("THIRD:");
+		database.print(thirdPage);
 		Assert.assertThat(firstPage.size(), is(5));
 		Assert.assertThat(secondPage.size(), is(5));
 		Assert.assertThat(thirdPage.size(), is(5));

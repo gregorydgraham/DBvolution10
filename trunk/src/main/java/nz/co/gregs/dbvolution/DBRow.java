@@ -1465,7 +1465,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				final QueryableDatatype sourceFK = propertyWrapper.getQueryableDatatype();
 				final QueryableDatatype targetPK = target.getPrimaryKey().getQueryableDatatypeForExpressionValue();
 
-				DBExpression column = source.column(sourceFK).getColumn().asExpression();
+				Object column = source.column(sourceFK);
 				try {
 					final Method isMethod = column.getClass().getMethod("is", targetPK.getClass());
 					if (isMethod != null) {

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -23,6 +24,8 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import static org.hamcrest.Matchers.*;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -35,20 +38,72 @@ public class ForeignKeyCannotBeComparedToPrimaryKeyTest {
 	}
 
 	@Test(expected = ForeignKeyCannotBeComparedToPrimaryKey.class)
-	public void testSomeMethod() {
+	public void testExceptionIsThrown() {
 		TableA tableA = new TableA();
-		TableB tableB = new TableB();
-		List<DBExpression> foreignKeyExpressionsTo = tableB.getForeignKeyExpressionsTo(tableA);
+		TableE tableE = new TableE();
+		
+		List<DBExpression> foreignKeyExpressionsTo = tableE.getForeignKeyExpressionsTo(tableA);
 	}
 	
-	public class TableA extends DBRow{
+	@Test()
+	public void testExceptionIsNotThrown() {
+		TableA tableA = new TableA();
+		TableAString tableAString = new TableAString();
+		TableB tableB = new TableB();
+		
+		List<DBExpression> foreignKeyExpressionsTo = tableB.getForeignKeyExpressionsTo(tableA);
+		Assert.assertThat(foreignKeyExpressionsTo.size(), is(1));
+		
+		foreignKeyExpressionsTo = tableB.getForeignKeyExpressionsTo(tableAString);
+		Assert.assertThat(foreignKeyExpressionsTo.size(), is(1));
+	}
+	
+	@Test(expected = ForeignKeyCannotBeComparedToPrimaryKey.class)
+	public void testExceptionIsThrownForStringToo() {
+		TableAString tableAString = new TableAString();
+		TableE tableE = new TableE();
+		
+		List<DBExpression> foreignKeyExpressionsTo = tableE.getForeignKeyExpressionsTo(tableAString);
+	}
+	
+	public static class TableA extends DBRow{
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
-		DBInteger apk = new DBInteger();
+		public DBInteger apk = new DBInteger();
+		
+		public TableA(){
+			super();
+		}
 	}
 	
-	public class TableB extends DBRow{
+	public static class TableAString extends DBRow{
+		private static final long serialVersionUID = 1L;
+		@DBColumn
+		@DBPrimaryKey
+		public DBString apk = new DBString();
+		
+		public TableAString(){
+			super();
+		}
+	}
+	
+	public static class TableE extends DBRow{
+		private static final long serialVersionUID = 1L;
+		@DBColumn
+		@DBPrimaryKey
+		public DBInteger bpk = new DBInteger();
+
+		@DBColumn
+		@DBForeignKey(TableA.class)
+		DBString afk = new DBString();
+
+		@DBColumn
+		@DBForeignKey(TableAString.class)
+		DBInteger aStringfk = new DBInteger();
+	}
+	
+	public static class TableB extends DBRow{
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
@@ -56,7 +111,15 @@ public class ForeignKeyCannotBeComparedToPrimaryKeyTest {
 
 		@DBColumn
 		@DBForeignKey(TableA.class)
-		DBString afk = new DBString();
+		public DBInteger afk = new DBInteger();
+
+		@DBColumn
+		@DBForeignKey(TableAString.class)
+		public DBString aStringfk = new DBString();
+		
+		public TableB(){
+			super();
+		}
 	}
 	
 }
