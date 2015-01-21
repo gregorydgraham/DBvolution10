@@ -26,7 +26,6 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.query.TreeNode;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

@@ -57,27 +57,6 @@ public class OracleDBDefinition extends DBDefinition {
 		//return "'"+strToDateFormat.format(date)+"'";
 	}
 
-//	@Override
-//	public String formatTableName(DBRow table) {
-//		final String sqlObjectName = table.getTableName();
-//		return formatNameForOracle(sqlObjectName);
-//	}
-//
-//	@Override
-//	public String getPrimaryKeySequenceName(String table, String column) {
-//		return formatNameForOracle(super.getPrimaryKeySequenceName(table, column));
-//	}
-//
-//	@Override
-//	public String getPrimaryKeyTriggerName(String table, String column) {
-//		return formatNameForOracle(super.getPrimaryKeyTriggerName(table, column));
-//	}
-//
-//	@Override
-//	public String formatColumnName(String column) {
-//		return formatNameForOracle(super.formatColumnName(column));
-//	}
-
 	@Override
 	protected String formatNameForDatabase(final String sqlObjectName) {
 		if (sqlObjectName.length() < 30 && !(reservedWords.contains(sqlObjectName.toUpperCase()))) {
