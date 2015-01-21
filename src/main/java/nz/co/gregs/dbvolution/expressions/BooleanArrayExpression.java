@@ -43,7 +43,7 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	/**
 	 * Create a BitsExpression from an existing BitResult object.
 	 *
-	 * @param bitResult	 bitResult	
+	 * @param bitResult	bitResult
 	 */
 	public BooleanArrayExpression(BooleanArrayResult bitResult) {
 		this.innerBitsResult = bitResult;
@@ -66,9 +66,10 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * even easier.
 	 *
 	 * <p>
-	 * This method provides the easy route to an expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to an expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -77,8 +78,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * </ul>
 	 *
 	 * @param number integer to base the BooleanArrayExpression on.
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanArrayExpression value(int number) {
 		return NumberExpression.value(number).convertToBits();
@@ -96,9 +97,10 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * even easier.
 	 *
 	 * <p>
-	 * This method provides the easy route to an expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to an expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -107,8 +109,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * </ul>
 	 *
 	 * @param number integer to base the BooleanArrayExpression on.
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanArrayExpression value(long number) {
 		return NumberExpression.value(number).convertToBits();
@@ -126,9 +128,10 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * even easier.
 	 *
 	 * <p>
-	 * This method provides the easy route to an expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to an expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -137,8 +140,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * </ul>
 	 *
 	 * @param number integer to base the BooleanArrayExpression on.
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanArrayExpression value(double number) {
 		return NumberExpression.value(number).convertToBits();
@@ -156,9 +159,10 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * even easier.
 	 *
 	 * <p>
-	 * This method provides the easy route to an expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to an expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -167,8 +171,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * </ul>
 	 *
 	 * @param number integer to base the BooleanArrayExpression on.
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanArrayExpression value(Number number) {
 		return NumberExpression.value(number).convertToBits();
@@ -215,14 +219,14 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 		}
 	}
 
-		@Override
-		public boolean isPurelyFunctional() {
-			if (innerBitsResult == null) {
-				return true;
-			} else {
-				return innerBitsResult.isPurelyFunctional();
-			}
+	@Override
+	public boolean isPurelyFunctional() {
+		if (innerBitsResult == null) {
+			return true;
+		} else {
+			return innerBitsResult.isPurelyFunctional();
 		}
+	}
 
 	/**
 	 * Return the BooleanArrayResult held internally in this class.
@@ -235,10 +239,11 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 
 	/**
 	 * Create a BooleanExpression that will compare the integer provided to this
- BooleanArrayExpression using the equivalent of the EQUALS operator.
+	 * BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
 	 * @param i the value to compare this expression to.
-	 * @return a BooleanExpresson of the Bit comparison of the integer and this expression.
+	 * @return a BooleanExpresson of the Bit comparison of the integer and this
+	 * expression.
 	 */
 	public BooleanExpression is(int i) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
@@ -251,10 +256,11 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 
 	/**
 	 * Create a BooleanExpression that will compare the long provided to this
- BooleanArrayExpression using the equivalent of the EQUALS operator.
+	 * BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
 	 * @param i the value to compare this expression to
-	 * @return a BooleanExpresson of the Bit comparison of the long and this expression.
+	 * @return a BooleanExpresson of the Bit comparison of the long and this
+	 * expression.
 	 */
 	public BooleanExpression is(long i) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
@@ -267,13 +273,32 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 
 	/**
 	 * Create a BooleanExpression that will compare the number provided to this
- BooleanArrayExpression using the equivalent of the EQUALS operator.
+	 * BooleanArrayExpression using the equivalent of the EQUALS operator.
 	 *
 	 * @param i the value to compare this expression to
-	 * @return a BooleanExpresson of the Bit comparison of the number and this expression.
+	 * @return a BooleanExpresson of the Bit comparison of the number and this
+	 * expression.
 	 */
 	public BooleanExpression is(Number i) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " = ";
+			}
+		});
+	}
+
+	/**
+	 * Create a BooleanExpression that will compare the BooleanArrayResult
+	 * provided to this BooleanArrayExpression using the equivalent of the
+	 * EQUALS operator.
+	 *
+	 * @param i the value to compare this expression to
+	 * @return a BooleanExpresson of the Bit comparison of the number and this
+	 * expression.
+	 */
+	public BooleanExpression is(BooleanArrayResult i) {
+		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, i) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " = ";

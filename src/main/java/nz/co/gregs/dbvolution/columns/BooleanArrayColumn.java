@@ -20,6 +20,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
+import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -42,7 +44,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * @see AbstractColumn
  * @see BooleanArrayExpression
  */
-public class BitsColumn extends BooleanArrayExpression implements ColumnProvider {
+public class BooleanArrayColumn extends BooleanArrayExpression implements ColumnProvider {
 
 	private final AbstractColumn column;
 
@@ -52,7 +54,7 @@ public class BitsColumn extends BooleanArrayExpression implements ColumnProvider
 	 * @param row the row containing the field
 	 * @param field the field representing the column
 	 */
-	public BitsColumn(RowDefinition row, byte[] field) {
+	public BooleanArrayColumn(RowDefinition row, byte[] field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -62,7 +64,7 @@ public class BitsColumn extends BooleanArrayExpression implements ColumnProvider
 	 * @param row the row containing the field
 	 * @param field the field representing the column
 	 */
-	public BitsColumn(RowDefinition row, DBBooleanArray field) {
+	public BooleanArrayColumn(RowDefinition row, DBBooleanArray field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -72,8 +74,8 @@ public class BitsColumn extends BooleanArrayExpression implements ColumnProvider
 	}
 
 	@Override
-	public BitsColumn copy() {
-		return (BitsColumn) super.copy();
+	public BooleanArrayColumn copy() {
+		return (BooleanArrayColumn) super.copy();
 	}
 
 	@Override
@@ -94,5 +96,9 @@ public class BitsColumn extends BooleanArrayExpression implements ColumnProvider
 	@Override
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().size()==0;
+	}
+	
+	public BooleanExpression is(DBBooleanArray boolArrayColumn){
+		return super.is((BooleanArrayResult)boolArrayColumn);
 	}
 }

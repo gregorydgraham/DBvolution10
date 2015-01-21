@@ -20,7 +20,11 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.BooleanResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.NumberResult;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -127,6 +131,14 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return getTablesInvolved().size()==0;
+		return getTablesInvolved().isEmpty();
+	}
+	
+	public BooleanExpression is(DBInteger integerColumn){
+		return super.is((NumberResult)integerColumn);
+	}
+	
+	public BooleanExpression is(DBNumber numberColumn){
+		return super.is((NumberResult)numberColumn);
 	}
 }

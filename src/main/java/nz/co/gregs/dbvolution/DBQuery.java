@@ -1783,7 +1783,7 @@ public class DBQuery{
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
 		final QueryOptions options = details.getOptions();
 
-		if (database.supportsPaging(options)) {
+		if (database.getDefinition().supportsPagingNatively(options)) {
 			options.setPageIndex(pageNumber);
 			if (this.needsResults()) {
 				getAllRows();
@@ -1791,7 +1791,10 @@ public class DBQuery{
 			return results;
 		} else {
 			if (this.needsResults()) {
+				int rowLimit = options.getRowLimit();
+				options.setRowLimit(-1);
 				getAllRows();
+				options.setRowLimit(rowLimit);
 			}
 			int rowLimit = options.getRowLimit();
 			int startIndex = rowLimit * pageNumber;

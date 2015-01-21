@@ -18,7 +18,10 @@ package nz.co.gregs.dbvolution.columns;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -106,5 +109,13 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	@Override
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().size()==0;
+	}
+	
+	public BooleanExpression is(DBInteger column){
+		return super.is(column);
+	}
+	
+	public BooleanExpression is(DBNumber column){
+		return super.is(column);
 	}
 }

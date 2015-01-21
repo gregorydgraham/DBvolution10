@@ -20,7 +20,9 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -108,5 +110,9 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	@Override
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().size()==0;
+	}
+	
+	public BooleanExpression is(DBDate dateColumn){
+		return super.is(dateColumn);
 	}
 }
