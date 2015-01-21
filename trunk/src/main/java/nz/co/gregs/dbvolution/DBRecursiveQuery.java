@@ -125,7 +125,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			final DBDatabase database = originalQuery.getDatabase();
 			DBDefinition defn = database.getDefinition();
 			final DBRow newInstance = referencedClass.newInstance();
-			final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
+			final String recursiveTableAlias = "["+database.getDefinition().getTableAlias(newInstance)+"]";
 			String recursiveColumnNames = "";
 			String recursiveAliases = "";
 			final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
