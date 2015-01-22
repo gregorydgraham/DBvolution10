@@ -231,7 +231,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * }
 	 */
 	public BooleanExpression isOdd() {
-		return this.mod(2).is(1);
+		return this.mod(2).isNot(0);
 	}
 
 	/**
