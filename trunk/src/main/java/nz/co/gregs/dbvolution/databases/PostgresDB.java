@@ -143,5 +143,24 @@ public class PostgresDB extends DBDatabase {
 		}
 		return returnValue;
 	}
-
+	
+	public void createDatabase(String databaseName) throws SQLException{
+		String sqlString = "CREATE DATABASE "+databaseName+";";
+		final DBStatement dbStatement = getDBStatement();
+		try {
+			dbStatement.execute(sqlString);
+		} finally {
+			dbStatement.close();
+		}
+	}
+	
+	public void createUser(String username, String password) throws SQLException{
+		String sqlString = "CREATE USER \""+username.replaceAll("\\\"", "")+"\" WITH PASSWORD '"+password.replaceAll("'", "")+"';";
+		final DBStatement dbStatement = getDBStatement();
+		try {
+			dbStatement.execute(sqlString);
+		} finally {
+			dbStatement.close();
+		}
+	}
 }
