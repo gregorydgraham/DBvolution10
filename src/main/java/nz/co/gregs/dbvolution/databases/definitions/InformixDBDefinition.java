@@ -91,6 +91,19 @@ public class InformixDBDefinition extends DBDefinition {
 		return "";
 	}
 
+	/**
+	 * Provides the function name of the COALESCE, IFNULL, or NVL function.
+	 *
+	 * <p>
+	 * Informix provides NVL only.
+	 *
+	 * @return "COALESCE"
+	 */
+	@Override
+	public String getIfNullFunctionName() {
+		return "NVL";
+	}
+
 	@Override
 	protected String getCurrentTimeFunction() {
 		throw new UnsupportedOperationException("Informix Does Not Support CurrentTime as a Function: Please use doCurrentTimeTransform() instead of getCurrentTimeFunction().");
