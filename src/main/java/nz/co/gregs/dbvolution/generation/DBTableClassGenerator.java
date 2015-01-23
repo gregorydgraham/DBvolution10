@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,9 @@ import nz.co.gregs.dbvolution.datatypes.*;
  * @author Gregory Graham
  */
 public class DBTableClassGenerator {
+
+	private static final String[] javaReservedWordsArray = new String[]{"null", "abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"};
+	private static final List<String> javaReservedWords = Arrays.asList(javaReservedWordsArray);
 
 	/**
 	 *
@@ -257,12 +261,9 @@ public class DBTableClassGenerator {
 	 * Classes will be in the package supplied, serialVersionUID will be set to
 	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
 	 * and {@link ForeignKeyRecognisor} will be used.
-	 *
-	 *
-	 *
-	 *
-	 * @return a List of DBTableClass instances representing the tables and views
-	 * found on the database 1 Database exceptions may be thrown
+	 * 
+	 * @return a List of DBTableClass instances representing the tables and
+	 * views found on the database 1 Database exceptions may be thrown
 	 */
 	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecognisor, ForeignKeyRecognisor fkRecogisor, String... dbObjectTypes) throws SQLException {
 		List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
@@ -525,6 +526,9 @@ public class DBTableClassGenerator {
 	private static String toFieldCase(String s) {
 		String classClass = toClassCase(s);
 		String camelCaseString = classClass.substring(0, 1).toLowerCase() + classClass.substring(1);
+		if (javaReservedWords.contains(camelCaseString)) {
+			camelCaseString += "_";
+		}
 		return camelCaseString;
 	}
 
