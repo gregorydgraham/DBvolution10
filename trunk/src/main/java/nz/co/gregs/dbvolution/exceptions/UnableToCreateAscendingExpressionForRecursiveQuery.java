@@ -26,8 +26,20 @@ public class UnableToCreateAscendingExpressionForRecursiveQuery extends DBRuntim
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * For some reason beyond my knowledge the column provided can not be used to
+	 * create an ascending recursive query.
+	 *
+	 * <p>
+	 * While this is highly unusual it may be because the datatypes of the FK and
+	 * the associated Primary Key disagree: e.g. one is a DBString and the other a
+	 * DBInteger.
+	 *
+	 * @param keyToFollow
+	 * @param originatingRow
+	 */
 	public UnableToCreateAscendingExpressionForRecursiveQuery(ColumnProvider keyToFollow, DBRow originatingRow) {
-		super("Unable To Create Ascending Expression For Recursive Query: some combination of the datatypes in "+keyToFollow.getColumn().getPropertyWrapper().javaName()+" and "+originatingRow.getClass().getSimpleName()+" prevents ascending queries working, please check them.");
+		super("Unable To Create Ascending Expression For Recursive Query: some combination of the datatypes in " + keyToFollow.getColumn().getPropertyWrapper().javaName() + " and " + originatingRow.getClass().getSimpleName() + " prevents ascending queries working, please check them.");
 	}
-	
+
 }

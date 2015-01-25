@@ -26,6 +26,10 @@ public class DBRowClassNameComparator implements Comparator<Class<?>>, Serializa
 
 	static final long serialVersionUID = 1L;
 
+	/**
+	 * Compares DBRow Classes using their canonical names.
+	 *
+	 */
 	public DBRowClassNameComparator() {
 	}
 

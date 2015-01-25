@@ -109,9 +109,15 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return getTablesInvolved().size()==0;
+		return getTablesInvolved().isEmpty();
 	}
 	
+	/**
+	 * Create an expression to compare this column to the other column using EQUALS.
+	 *
+	 * @param dateColumn 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(DBDate dateColumn){
 		return super.is(dateColumn);
 	}

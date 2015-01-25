@@ -27,6 +27,10 @@ public class DBRowNameComparator implements Comparator<DBRow>, Serializable {
 
 	static final long serialVersionUID = 1L;
 
+	/**
+	 * Compares DBRows using their canonical names.
+	 *
+	 */
 	public DBRowNameComparator() {
 	}
 

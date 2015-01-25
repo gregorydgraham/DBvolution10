@@ -134,11 +134,23 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 		return getTablesInvolved().isEmpty();
 	}
 	
+	/**
+	 * Create an expression to compare this column to the other column using EQUALS.
+	 *
+	 * @param integerColumn 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(DBInteger integerColumn){
-		return super.is((NumberResult)integerColumn);
+		return super.is(integerColumn);
 	}
 	
+	/**
+	 * Create an expression to compare this column to the other column using EQUALS.
+	 *
+	 * @param numberColumn 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(DBNumber numberColumn){
-		return super.is((NumberResult)numberColumn);
+		return super.is(numberColumn);
 	}
 }

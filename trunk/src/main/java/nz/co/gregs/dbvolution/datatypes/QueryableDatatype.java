@@ -907,6 +907,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		this.columnExpression = columnExpression;
 	}
 
+	/**
+	 * Convenient synonym for setValue(null).
+	 *
+	 */
 	public void setValueToNull() {
 		this.setLiteralValue(null);
 	}

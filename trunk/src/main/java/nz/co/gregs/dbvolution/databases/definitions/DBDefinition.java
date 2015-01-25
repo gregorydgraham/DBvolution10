@@ -1824,8 +1824,8 @@ public abstract class DBDefinition {
 	 *
 	 * @param getStringDate a date retrieved with {@link ResultSet#getString(java.lang.String)
 	 * }
-	 * @
-	 * return the date format required to interpret strings as dates.
+	 *
+	 * @return return the date format required to interpret strings as dates.
 	 * @throws java.text.ParseException
 	 * @see #prefersDatesReadAsStrings()
 	 */
@@ -2475,7 +2475,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return the default preamble to the priming query of a {@link DBRecursiveQuery}.
+	 * Return the default preamble to the priming query of a
+	 * {@link DBRecursiveQuery}.
 	 *
 	 * @return " AS ("
 	 */
@@ -2494,7 +2495,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return the default preamble to the recursive query of a {@link DBRecursiveQuery}.
+	 * Return the default preamble to the recursive query of a
+	 * {@link DBRecursiveQuery}.
 	 *
 	 * @return ""
 	 */
@@ -2503,7 +2505,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return the default preamble to the recursive query of a {@link DBRecursiveQuery}.
+	 * Return the default preamble to the recursive query of a
+	 * {@link DBRecursiveQuery}.
 	 *
 	 * @return " \n ) \n"
 	 */
@@ -2512,7 +2515,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return the default select clause for the final query of a {@link DBRecursiveQuery}.
+	 * Return the default select clause for the final query of a
+	 * {@link DBRecursiveQuery}.
 	 *
 	 * @param recursiveTableAlias
 	 * @param recursiveAliases
@@ -2523,7 +2527,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether this database needs the recursive query to use table aliases.
+	 * Indicates whether this database needs the recursive query to use table
+	 * aliases.
 	 *
 	 * @return TRUE
 	 */
@@ -2532,7 +2537,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return the default name for the depth column generated during a {@link DBRecursiveQuery}.
+	 * Return the default name for the depth column generated during a
+	 * {@link DBRecursiveQuery}.
 	 *
 	 * @return " DBDEPTHCOLUMN "
 	 */
@@ -2541,7 +2547,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Expresses whether the database has a particular datatype for primary key columns.
+	 * Expresses whether the database has a particular datatype for primary key
+	 * columns.
 	 *
 	 * @param field
 	 * @return FALSE by default
@@ -2551,7 +2558,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return the necessary SQL data type for this field to be a primary key in this database.
+	 * Return the necessary SQL data type for this field to be a primary key in
+	 * this database.
 	 *
 	 * @param field
 	 * @return by default DBvolution returns the standard datatype for this field.
@@ -2560,14 +2568,32 @@ public abstract class DBDefinition {
 		return getSQLTypeOfDBDatatype(field);
 	}
 
+	/**
+	 * Indicates whether the LEASTOF operator is supported by the database or
+	 * needs to be emulated.
+	 *
+	 * @return TRUE by default.
+	 */
 	protected boolean supportsLeastOfNatively() {
 		return true;
 	}
 
+	/**
+	 * Indicates whether the GREATESTOF operator is supported by the database or
+	 * needs to be emulated.
+	 *
+	 * @return TRUE by default.
+	 */
 	protected boolean supportsGreatestOfNatively() {
 		return true;
 	}
 
+	/**
+	 * Indicates whether the database supports grouping by columns that don't
+	 * involve any tables.
+	 *
+	 * @return TRUE by default.
+	 */
 	public boolean supportsPurelyFunctionalGroupByColumns() {
 		return true;
 	}

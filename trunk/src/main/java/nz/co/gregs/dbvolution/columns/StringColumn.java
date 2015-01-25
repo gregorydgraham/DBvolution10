@@ -121,6 +121,12 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 		return getTablesInvolved().isEmpty();
 	}
 	
+	/**
+	 * Create an expression to compare this column to the other column using EQUALS.
+	 *
+	 * @param column 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(DBString column){
 		return super.is(column);
 	}
