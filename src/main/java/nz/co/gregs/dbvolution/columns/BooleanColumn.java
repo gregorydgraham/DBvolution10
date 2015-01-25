@@ -96,10 +96,16 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return getTablesInvolved().size()==0;
+		return getTablesInvolved().isEmpty();
 	}
 	
+	/**
+	 * Create an expression to compare this column to the other column using EQUALS.
+	 *
+	 * @param boolColumn
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(DBBoolean boolColumn){
-		return super.is((BooleanResult)boolColumn);
+		return super.is(boolColumn);
 	}
 }

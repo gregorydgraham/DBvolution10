@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregory.graham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,15 @@ package nz.co.gregs.dbvolution.internal.query;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
+ * Creates a depth expression for the {@link DBRecursiveQuery} query.
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class RecursiveQueryDepthIncreaseExpression implements DBExpression {
 

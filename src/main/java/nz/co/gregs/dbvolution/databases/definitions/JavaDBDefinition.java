@@ -162,11 +162,21 @@ public class JavaDBDefinition extends DBDefinition {
 		return " MOD(" + firstNumber + "," + secondNumber + ") ";
 	}
 
+	/**
+	 * JavaDB does not support the GREATESTOF operation natively.
+	 * 
+	 * @return FALSE
+	 */
 	@Override
 	protected boolean supportsGreatestOfNatively() {
 		return false;
 	}
 
+	/**
+	 * JavaDB does not support the LEASTOF operation natively.
+	 * 
+	 * @return FALSE
+	 */
 	@Override
 	protected boolean supportsLeastOfNatively() {
 		return false;

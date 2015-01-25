@@ -29,6 +29,32 @@ import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.internal.query.RecursiveQueryDepthIncreaseExpression;
 import nz.co.gregs.dbvolution.query.*;
 
+/**
+ * Provides the infrastructure required to create recursive queries. DBvolution
+ * uses native recursive queries where possible and emulation when necessary.
+ *
+ * <p>
+ * Recursive queries repeatedly access the same table with new data to produce
+ * more rows.
+ *
+ * <p>
+ * The two main uses of recursive queries are to retrieve tree data structures
+ * stored with in the database or to retrieve a path from the tree structure.
+ *
+ * <p>
+ * Tree structures are stored in relational databases as foreign keys
+ * referencing the same table. That is to say: table T includes a foreign key to
+ * table T. By following the foreign key we find another row with another
+ * foreign key to table T and the process repeats.
+ *
+ * <p>
+ * Recursive queries and structures can also be used to access and store
+ * Digraphs but digraphs are not yet supported.
+ *
+ * @author gregorygraham
+ * @param <T> the table/DBRow that will be returned from the query and is
+ * referenced by the foreign key.
+ */
 public class DBRecursiveQuery<T extends DBRow> {
 
 	private final DBQuery originalQuery;
@@ -40,6 +66,37 @@ public class DBRecursiveQuery<T extends DBRow> {
 		TOWARDS_ROOT, TOWARDS_LEAVES
 	};
 
+	/**
+	 * Create a DBRecursiveQuery based on the query and foreign key supplied.
+	 *
+	 * <p>
+	 * DBRecursiveQuery uses the query to create the first rows of the recursive
+	 * query. This can be any query and contain any tables. However it must
+	 * contain the table T and the foreign key must be a recursive FK to and from
+	 * table T.
+	 *
+	 * <p>
+	 * After the priming query has been created the foreign key(FK) supplied will
+	 * be followed repeatedly. The FK must be contained in one of the tables of
+	 * the priming query and it must reference the same table, that is to say it
+	 * must be a recursive foreign key.
+	 *
+	 * <p>
+	 * The FK will be repeatedly followed until the root node is reached (an
+	 * ascending query) or the leaf nodes have been reached (a descending query).
+	 * A root node is defined as a row with a null value in the FK. A leaf node is
+	 * a row that has no FKs referencing it.
+	 *
+	 * <p>
+	 * While it is possible to define a root node in other ways only the above
+	 * definition is currently supported.
+	 *
+	 * @param query
+	 * @param keyToFollow
+	 * @throws ColumnProvidedMustBeAForeignKey
+	 * @throws ForeignKeyDoesNotReferenceATableInTheQuery
+	 * @throws ForeignKeyIsNotRecursiveException
+	 */
 	public DBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow) throws ColumnProvidedMustBeAForeignKey, ForeignKeyDoesNotReferenceATableInTheQuery, ForeignKeyIsNotRecursiveException {
 		this.originalQuery = query;
 		this.keyToFollow = keyToFollow;
@@ -277,6 +334,19 @@ public class DBRecursiveQuery<T extends DBRow> {
 		}
 	}
 
+	/**
+	 * Queries that database and returns all descendants including priming and leaf nodes of
+	 * this query.
+	 *
+	 * <p>
+	 * Using this DBRecursiveQuery as a basis, this method descends the tree
+	 * structure finding all descendents of the rows returned by the priming
+	 * query. This is used by {@link #getTrees() } to recreate the tree structure
+	 * stored in the database as a tree of {@link TreeNode TreeNodes}.
+	 *
+	 * @return a list of all descendants of this query.
+	 * @throws SQLException
+	 */
 	public List<T> getDescendants() throws SQLException {
 		List<T> resultsList = new ArrayList<T>();
 		List<DBQueryRow> descendants = this.getRowsFromRecursiveQuery(RecursiveSQLDirection.TOWARDS_LEAVES);
@@ -286,6 +356,19 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return resultsList;
 	}
 
+	/**
+	 * Queries that database and returns all ancestors including priming and root nodes of
+	 * this query.
+	 *
+	 * <p>
+	 * Using this DBRecursiveQuery as a basis, this method ascends the tree
+	 * structure finding all ancestors of the rows returned by the priming
+	 * query. This is used by {@link #getPathsToRoot() } to recreate the paths
+	 * stored in the database as a list of {@link TreeNode TreeNodes}.
+	 *
+	 * @return a list of all descendants of this query.
+	 * @throws SQLException
+	 */
 	public List<T> getAncestors() throws SQLException {
 		List<T> resultsList = new ArrayList<T>();
 		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(RecursiveSQLDirection.TOWARDS_ROOT);

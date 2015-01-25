@@ -17,21 +17,24 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
+/**
+ * Extends and updates the MS SQLServer database definition to use features made
+ * available by the 2012 version of MS SQLServer.
+ *
+ * @author Gregory Graham
+ */
 public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
-
-
-
 
 	@Override
 	public boolean supportsPagingNatively(QueryOptions options) {
 		return true;
 	}
-	
+
 	@Override
 	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
 		return "";
 	}
-	
+
 	@Override
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		String returnString = "";

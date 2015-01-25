@@ -117,43 +117,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	public String getSQLDatatype() {
 		return new DBString().getSQLDatatype();
 	}
-
-//	@Override
-//	void setValue(Object newLiteralValue) {
-//		if (newLiteralValue instanceof String) {
-//			setValue((String) newLiteralValue);
-//		} else if (newLiteralValue instanceof DBString) {
-//			setValue(((DBString) newLiteralValue).getValue());
-//		} else {
-//			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-String: Use only Strings with this class");
-//		}
-//	}
-
-	/**
-	 * Set the value of this DBStringEnum to the String provided.
-	 *
-	 * <p>
-	 * This is probably the method you want to use to set or change the value of
-	 * this DBStringEnum. When creating a new row or updating an existing row use
-	 * the
-	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
-	 * } method to correctly set the value.
-	 *
-	 * <p>
-	 * Remember:</p>
-	 *
-	 * <ul>
-	 * <li>Set the column to NULL using setValue((String)null)</li>
-	 * <li>Use {@link DBDatabase#insert(nz.co.gregs.dbvolution.DBRow...) } or {@link DBDatabase#update(nz.co.gregs.dbvolution.DBRow...)
-	 * } to make the changes permanent.</li>
-	 * </ul>
-	 *
-	 
-	 */
-//	private void setValue(String newLiteralValue) {
-//		super.setLiteralValue(newLiteralValue);
-//	}
-
+	
 	@Override
 	public DBString getQueryableDatatypeForExpressionValue() {
 		return new DBString();

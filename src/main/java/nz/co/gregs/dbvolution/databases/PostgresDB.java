@@ -143,9 +143,19 @@ public class PostgresDB extends DBDatabase {
 		}
 		return returnValue;
 	}
-	
-	public void createDatabase(String databaseName) throws SQLException{
-		String sqlString = "CREATE DATABASE "+databaseName+";";
+
+	/**
+	 * Create a new database/schema on this database server.
+	 *
+	 * <p>
+	 * Generally requires all sorts of privileges and is best performed by
+	 * database administrator (DBA).
+	 *
+	 * @param databaseName the name of the new database
+	 * @throws SQLException
+	 */
+	public void createDatabase(String databaseName) throws SQLException {
+		String sqlString = "CREATE DATABASE " + databaseName + ";";
 		final DBStatement dbStatement = getDBStatement();
 		try {
 			dbStatement.execute(sqlString);
@@ -153,9 +163,20 @@ public class PostgresDB extends DBDatabase {
 			dbStatement.close();
 		}
 	}
-	
-	public void createUser(String username, String password) throws SQLException{
-		String sqlString = "CREATE USER \""+username.replaceAll("\\\"", "")+"\" WITH PASSWORD '"+password.replaceAll("'", "")+"';";
+
+	/**
+	 * Create a new database/schema on this database server.
+	 *
+	 * <p>
+	 * Generally requires all sorts of privileges and is best performed by
+	 * database administrator (DBA).
+	 * 
+	 * @param username
+	 * @param password
+	 * @throws SQLException
+	 */
+	public void createUser(String username, String password) throws SQLException {
+		String sqlString = "CREATE USER \"" + username.replaceAll("\\\"", "") + "\" WITH PASSWORD '" + password.replaceAll("'", "") + "';";
 		final DBStatement dbStatement = getDBStatement();
 		try {
 			dbStatement.execute(sqlString);

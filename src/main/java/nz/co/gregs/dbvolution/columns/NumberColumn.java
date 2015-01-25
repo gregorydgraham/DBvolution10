@@ -108,13 +108,25 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return getTablesInvolved().size()==0;
+		return getTablesInvolved().isEmpty();
 	}
 	
+	/**
+	 * Create an expression to compare this column to the other column using EQUALS.
+	 *
+	 * @param column 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(DBInteger column){
 		return super.is(column);
 	}
 	
+	/**
+	 * Create an expression to compare this column to the other column using EQUALS.
+	 *
+	 * @param column 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(DBNumber column){
 		return super.is(column);
 	}

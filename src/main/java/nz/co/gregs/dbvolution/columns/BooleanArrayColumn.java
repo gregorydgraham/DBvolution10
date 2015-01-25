@@ -95,10 +95,16 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return getTablesInvolved().size()==0;
+		return getTablesInvolved().isEmpty();
 	}
 	
+	/**
+	 * Creates an expression that will compare this column to the other column.
+	 *
+	 * @param boolArrayColumn
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(DBBooleanArray boolArrayColumn){
-		return super.is((BooleanArrayResult)boolArrayColumn);
+		return super.is(boolArrayColumn);
 	}
 }

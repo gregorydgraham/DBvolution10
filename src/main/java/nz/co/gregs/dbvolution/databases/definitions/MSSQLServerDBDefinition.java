@@ -317,16 +317,31 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "DATEPART(SECOND , " + dateExpression + ")";
 	}
 
+	/**
+	 * MS SQLServer does not support the LEASTOF operation natively.
+	 * 
+	 * @return FALSE
+	 */
 	@Override
 	protected boolean supportsLeastOfNatively() {
 		return false;
 	}
 
+	/**
+	 * MS SQLServer does not support the GREATESTOF operation natively.
+	 * 
+	 * @return FALSE
+	 */
 	@Override
 	protected boolean supportsGreatestOfNatively() {
 		return false;
 	}
 
+	/**
+	 * MS SQLServer does not support the grouping by columns that do not access table data.
+	 * 
+	 * @return FALSE
+	 */
 	@Override
 	public boolean supportsPurelyFunctionalGroupByColumns() {
 		return false;
