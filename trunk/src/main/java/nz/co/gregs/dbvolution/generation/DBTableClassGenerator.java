@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.datatypes.*;
  */
 public class DBTableClassGenerator {
 
-	private static final String[] javaReservedWordsArray = new String[]{"null", "abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"};
+	private static final String[] javaReservedWordsArray = new String[]{"null", "true", "false", "abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"};
 	private static final List<String> javaReservedWords = Arrays.asList(javaReservedWordsArray);
 
 	/**
@@ -261,7 +261,7 @@ public class DBTableClassGenerator {
 	 * Classes will be in the package supplied, serialVersionUID will be set to
 	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
 	 * and {@link ForeignKeyRecognisor} will be used.
-	 * 
+	 *
 	 * @return a List of DBTableClass instances representing the tables and
 	 * views found on the database 1 Database exceptions may be thrown
 	 */
@@ -306,81 +306,82 @@ public class DBTableClassGenerator {
 			try {
 				while (tables.next()) {
 					final String tableName = tables.getString("TABLE_NAME");
-					final String className = toClassCase(tableName);
-					DBTableClass dbTableClass = new DBTableClass(tableName, packageName, className);
-//					dbTableClass.setPackageName(packageName);
-//					dbTableClass.setTableName(tableName);
-//					dbTableClass.setClassName(className);
+					if (tableName.matches(database.getDefinition().getSystemTableExclusionPattern())) {
+						final String className = toClassCase(tableName);
+						DBTableClass dbTableClass = new DBTableClass(tableName, packageName, className);
 
-					ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
-					List<String> pkNames = new ArrayList<String>();
-					try {
-						while (primaryKeysRS.next()) {
-							String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
-							pkNames.add(pkColumnName);
+						ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
+						List<String> pkNames = new ArrayList<String>();
+						try {
+							while (primaryKeysRS.next()) {
+								String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
+								pkNames.add(pkColumnName);
+							}
+						} finally {
+							primaryKeysRS.close();
 						}
-					} finally {
-						primaryKeysRS.close();
-					}
 
-					ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.getTableName());
-					Map<String, String[]> fkNames = new HashMap<String, String[]>();
-					try {
-						while (foreignKeysRS.next()) {
-							String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
-							String pkColumnName = foreignKeysRS.getString("PKCOLUMN_NAME");
-							String fkColumnName = foreignKeysRS.getString("FKCOLUMN_NAME");
-							fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
+						ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.getTableName());
+						Map<String, String[]> fkNames = new HashMap<String, String[]>();
+						try {
+							while (foreignKeysRS.next()) {
+								String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
+								String pkColumnName = foreignKeysRS.getString("PKCOLUMN_NAME");
+								String fkColumnName = foreignKeysRS.getString("FKCOLUMN_NAME");
+								fkNames.put(fkColumnName, new String[]{pkTableName, pkColumnName});
+							}
+						} finally {
+							foreignKeysRS.close();
 						}
-					} finally {
-						foreignKeysRS.close();
-					}
 
-					ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null);
-					try {
-						while (columns.next()) {
-							DBTableField dbTableField = new DBTableField();
-							dbTableField.columnName = columns.getString("COLUMN_NAME");
-							dbTableField.fieldName = toFieldCase(dbTableField.columnName);
-							dbTableField.precision = columns.getInt("COLUMN_SIZE");
-							dbTableField.comments = columns.getString("REMARKS");
-							String isAutoIncr = null;
-							try {
-								isAutoIncr = columns.getString("IS_AUTOINCREMENT");
-							} catch (SQLException sqlex) {
-								;// SQLite-JDBC throws an exception when retrieving IS_AUTOINCREMENT
-							}
-							dbTableField.isAutoIncrement = isAutoIncr != null && isAutoIncr.equals("YES");
-							try {
-								dbTableField.sqlDataTypeInt = columns.getInt("DATA_TYPE");
-								dbTableField.columnType = getQueryableDatatypeNameOfSQLType(dbTableField.sqlDataTypeInt, dbTableField.precision);
-							} catch (UnknownJavaSQLTypeException ex) {
-								dbTableField.columnType = DBUnknownDatatype.class;
-								dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
-							}
-							if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
-								dbTableField.isPrimaryKey = true;
-							}
+						ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null);
+						try {
+							while (columns.next()) {
+								DBTableField dbTableField = new DBTableField();
+								dbTableField.columnName = columns.getString("COLUMN_NAME");
+								dbTableField.fieldName = toFieldCase(dbTableField.columnName);
+								dbTableField.precision = columns.getInt("COLUMN_SIZE");
+								dbTableField.comments = columns.getString("REMARKS");
+								String isAutoIncr = null;
+								try {
+									isAutoIncr = columns.getString("IS_AUTOINCREMENT");
+								} catch (SQLException sqlex) {
+									;// SQLite-JDBC throws an exception when retrieving IS_AUTOINCREMENT
+								}
+								dbTableField.isAutoIncrement = isAutoIncr != null && isAutoIncr.equals("YES");
+								try {
+									dbTableField.sqlDataTypeInt = columns.getInt("DATA_TYPE");
+									dbTableField.columnType = getQueryableDatatypeNameOfSQLType(dbTableField.sqlDataTypeInt, dbTableField.precision);
+								} catch (UnknownJavaSQLTypeException ex) {
+									dbTableField.columnType = DBUnknownDatatype.class;
+									dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
+								}
+								if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
+									dbTableField.isPrimaryKey = true;
+								}
 
-							database.getDefinition().sanityCheckDBTableField(dbTableField);
+								database.getDefinition().sanityCheckDBTableField(dbTableField);
 
-							String[] pkData = fkNames.get(dbTableField.columnName);
-							if (pkData != null && pkData.length == 2) {
-								dbTableField.isForeignKey = true;
-								dbTableField.referencesClass = toClassCase(pkData[0]);
-								dbTableField.referencesField = pkData[1];
-							} else if (fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
-								dbTableField.isForeignKey = true;
-								dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.columnName);
-								dbTableField.referencesClass = toClassCase(fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName));
+								String[] pkData = fkNames.get(dbTableField.columnName);
+								if (pkData != null && pkData.length == 2) {
+									dbTableField.isForeignKey = true;
+									dbTableField.referencesClass = toClassCase(pkData[0]);
+									dbTableField.referencesField = pkData[1];
+								} else if (fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
+									dbTableField.isForeignKey = true;
+									dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.columnName);
+									dbTableField.referencesClass = toClassCase(fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName));
+								}
+								if (!dbTableClass.getFields().contains(dbTableField)) {
+									dbTableClass.getFields().add(dbTableField);
+								}
 							}
-							dbTableClass.getFields().add(dbTableField);
+						} finally {
+							columns.close();
 						}
-					} finally {
-						columns.close();
-					}
 
-					dbTableClasses.add(dbTableClass);
+						dbTableClasses.add(dbTableClass);
+					}
 				}
 			} finally {
 				tables.close();
@@ -506,7 +507,7 @@ public class DBTableClassGenerator {
 			classCaseString = s.toUpperCase();
 		} else {
 //            System.out.println("Splitting: " + s);
-			String[] parts = s.split("[_$#]");
+			String[] parts = s.split("[^a-zA-Z0-9]");//"[_$#]");
 			for (String part : parts) {
 				classCaseString += toProperCase(part);
 			}
@@ -526,6 +527,7 @@ public class DBTableClassGenerator {
 	private static String toFieldCase(String s) {
 		String classClass = toClassCase(s);
 		String camelCaseString = classClass.substring(0, 1).toLowerCase() + classClass.substring(1);
+		camelCaseString = camelCaseString.replaceAll("[^a-zA-Z0-9_$]", "_");
 		if (javaReservedWords.contains(camelCaseString)) {
 			camelCaseString += "_";
 		}
