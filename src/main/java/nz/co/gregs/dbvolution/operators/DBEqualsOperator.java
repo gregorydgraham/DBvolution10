@@ -18,12 +18,12 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanResult;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.expressions.EqualComparable;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -65,24 +65,30 @@ public class DBEqualsOperator extends DBOperator {
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
 		DBExpression genericExpression = column;
 		BooleanExpression op = BooleanExpression.trueExpression();
-		if (genericExpression instanceof StringExpression) {
-			StringExpression stringExpression = (StringExpression) genericExpression;
-			if (firstValue instanceof StringResult) {
-				op = stringExpression.bracket().is((StringResult) firstValue);
-			} else if (firstValue instanceof NumberResult) {
-				op = stringExpression.bracket().is(new NumberExpression((NumberResult) firstValue).stringResult());
+		if (genericExpression instanceof EqualComparable) {
+			if (genericExpression instanceof StringExpression) {
+				StringExpression stringExpression = (StringExpression) genericExpression;
+				if ((firstValue instanceof StringResult)||firstValue==null) {
+					op = stringExpression.bracket().is((StringResult) firstValue);
+				} else if (firstValue instanceof NumberResult) {
+					op = stringExpression.bracket().is(new NumberExpression((NumberResult) firstValue).stringResult());
+				} else {
+					throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, firstValue);
+				}
+			} else if ((genericExpression instanceof NumberExpression) && ((firstValue instanceof NumberResult)||firstValue==null)) {
+				NumberExpression numberExpression = (NumberExpression) genericExpression;
+				op = numberExpression.is((NumberResult) firstValue);
+			} else if ((genericExpression instanceof DateExpression) && ((firstValue instanceof DateResult)||firstValue==null)) {
+				DateExpression dateExpression = (DateExpression) genericExpression;
+				op = dateExpression.is((DateResult) firstValue);
+			} else if ((genericExpression instanceof BooleanExpression) && ((firstValue instanceof BooleanResult)||firstValue==null)) {
+				BooleanExpression boolExpr = (BooleanExpression) genericExpression;
+				op = boolExpr.is((BooleanResult) firstValue);
+			} else {
+				throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, firstValue);
 			}
-		} else if (genericExpression instanceof NumberExpression) {
-			NumberExpression numberExpression = (NumberExpression) genericExpression;
-			op = numberExpression.is((NumberResult) firstValue);
-		} else if (genericExpression instanceof DateExpression) {
-			DateExpression dateExpression = (DateExpression) genericExpression;
-			op = dateExpression.is((DateResult) firstValue);
-		} else if (genericExpression instanceof BooleanExpression) {
-			BooleanExpression boolExpr = (BooleanExpression) genericExpression;
-			op = boolExpr.is((BooleanResult) firstValue);
-		}else{
-			throw new DBRuntimeException("whoops");
+		} else {
+			throw new nz.co.gregs.dbvolution.exceptions.IncomparableTypeUsedInComparison(db, genericExpression);
 		}
 		return this.invertOperator ? op.not() : op;
 	}
