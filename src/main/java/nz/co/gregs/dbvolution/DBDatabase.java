@@ -138,13 +138,13 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
-	 * database.
+	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your
+	 * particular database.
 	 *
 	 * <p>
 	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
+	 * syntax of the database in the DBDefinition and the connection details
+	 * from a DataSource.
 	 *
 	 * @see DBDefinition
 	 * @see OracleDB
@@ -165,12 +165,13 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
+	 * database.
 	 *
 	 * <p>
 	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
+	 * syntax of the database in the DBDefinition and the connection details
+	 * from a DataSource.
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
@@ -197,15 +198,16 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
-	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular
+	 * database.
 	 *
 	 * <p>
 	 * Create a new DBDatabase by providing the connection details
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
-	 * @param driverName - The name of the JDBC class that is the Driver for this
-	 * database.
+	 * @param driverName - The name of the JDBC class that is the Driver for
+	 * this database.
 	 * @param jdbcURL - The JDBC URL to connect to the database.
 	 * @param username - The username to login to the database as.
 	 * @param password - The users password for the database.
@@ -491,13 +493,13 @@ public abstract class DBDatabase implements Cloneable {
 	 * See {@link DBTable#getRowsByExample(nz.co.gregs.dbvolution.DBRow, long)}
 	 *
 	 * @param <R> the table affected
-	 * @param expectedNumberOfRows throw an exception and abort if this number is
-	 * not matched
+	 * @param expectedNumberOfRows throw an exception and abort if this number
+	 * is not matched
 	 * @param exampleRow the example
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
-	 * @throws UnexpectedNumberOfRowsException the exception thrown if the number
-	 * of rows is wrong
+	 * @throws UnexpectedNumberOfRowsException the exception thrown if the
+	 * number of rows is wrong
 	 */
 	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
 		if (expectedNumberOfRows == null) {
@@ -575,16 +577,16 @@ public abstract class DBDatabase implements Cloneable {
 	 * creates a query and fetches the rows automatically, based on the examples
 	 * given
 	 *
-	 * Will throw a {@link UnexpectedNumberOfRowsException} if the number of rows
-	 * found is different from the number expected. See {@link DBQuery#getAllRows(long)
+	 * Will throw a {@link UnexpectedNumberOfRowsException} if the number of
+	 * rows found is different from the number expected. See {@link DBQuery#getAllRows(long)
 	 * } for further details.
 	 *
 	 * @param expectedNumberOfRows the number of rows required
 	 * @param rows examples of the tables required
 	 * @return a list of DBQueryRows relating to the selected rows
 	 * @throws SQLException database exceptions
-	 * @throws UnexpectedNumberOfRowsException thrown when the retrieved row count
-	 * is wrong
+	 * @throws UnexpectedNumberOfRowsException thrown when the retrieved row
+	 * count is wrong
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows(long)
 	 */
@@ -655,8 +657,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * Performs the transaction on this database.
 	 *
 	 * <p>
-	 * If there is an exception of any kind the transaction is rolled back and no
-	 * changes are made.
+	 * If there is an exception of any kind the transaction is rolled back and
+	 * no changes are made.
 	 *
 	 * <p>
 	 * Otherwise the transaction is committed and changes are made permanent
@@ -676,12 +678,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * Performs the transaction on this database without making changes.
 	 *
 	 * <p>
-	 * If there is an exception of any kind the transaction is rolled back and no
-	 * changes are made.
+	 * If there is an exception of any kind the transaction is rolled back and
+	 * no changes are made.
 	 *
 	 * <p>
-	 * If no exception occurs, the transaction is still rolled back and no changes
-	 * are made
+	 * If no exception occurs, the transaction is still rolled back and no
+	 * changes are made
 	 *
 	 * @param <V> the return type of the transaction
 	 * @param dbTransaction the transaction to execute
@@ -721,7 +723,8 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Returns the name of the JDBC driver class used by this DBDatabase instance.
+	 * Returns the name of the JDBC driver class used by this DBDatabase
+	 * instance.
 	 *
 	 * @return the driverName
 	 */
@@ -831,8 +834,8 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Called by internal methods that are about to execute SQL so the SQL can be
-	 * printed.
+	 * Called by internal methods that are about to execute SQL so the SQL can
+	 * be printed.
 	 *
 	 * @param sqlString the raw SQL to print
 	 */
@@ -856,8 +859,8 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param newTableRow the table to create
 	 * @throws SQLException database exceptions
-	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
-	 * used during a DBTransaction or DBScript
+	 * @throws AutoCommitActionDuringTransactionException thrown if this action
+	 * is used during a DBTransaction or DBScript
 	 */
 	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		createTable(newTableRow, false);
@@ -873,8 +876,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * DBRow.
 	 *
 	 * <p>
-	 * DBvolution does not require actual foreign keys constraints to exist in the
-	 * database but there are some advantages in terms of data integrity and
+	 * DBvolution does not require actual foreign keys constraints to exist in
+	 * the database but there are some advantages in terms of data integrity and
 	 * schema transparency.
 	 *
 	 * <p>
@@ -882,9 +885,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * constraints: insertion order sensitivity for instance.
 	 *
 	 * <p>
-	 * Personally I prefer the foreign keys to exist, however database constraints
-	 * have been described as the "ambulance at the bottom of the cliff" so you
-	 * might be better off without them.
+	 * Personally I prefer the foreign keys to exist, however database
+	 * constraints have been described as the "ambulance at the bottom of the
+	 * cliff" so you might be better off without them.
 	 *
 	 * @param newTableRow table
 	 * @throws SQLException database exceptions
@@ -1020,7 +1023,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * }
 	 * <
 	 * p>
-	 * In General NEVER USE THIS METHOD.
+	 * I
+	 * n General NEVER USE THIS METHOD.
 	 *
 	 * <p>
 	 * Seriously NEVER USE THIS METHOD.
@@ -1048,8 +1052,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * database.
 	 *
 	 * <p>
-	 * While DBDefinition is important, unless you are implementing support for a
-	 * new database you probably don't need this.
+	 * While DBDefinition is important, unless you are implementing support for
+	 * a new database you probably don't need this.
 	 *
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
@@ -1065,8 +1069,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * database.
 	 *
 	 * <p>
-	 * While DBDefinition is important, unless you are implementing support for a
-	 * new database you probably don't need this.
+	 * While DBDefinition is important, unless you are implementing support for
+	 * a new database you probably don't need this.
 	 *
 	 * @param defn the DBDefinition to be used by this DBDatabase instance.
 	 */
@@ -1147,8 +1151,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * generally DBvolution attempts to do that when handed several actions at
 	 * once.
 	 * <p>
-	 * However sometimes this is inappropriate and this method can help with those
-	 * times.
+	 * However sometimes this is inappropriate and this method can help with
+	 * those times.
 	 *
 	 * @return TRUE if this instance will try to batch SQL statements, FALSE
 	 * otherwise
@@ -1165,8 +1169,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * generally DBvolution attempts to do that when handed several actions at
 	 * once.
 	 * <p>
-	 * However sometimes this is inappropriate and this method can help with those
-	 * times.
+	 * However sometimes this is inappropriate and this method can help with
+	 * those times.
 	 *
 	 * @param batchSQLStatementsWhenPossible TRUE if this instance will try to
 	 * batch SQL statements, FALSE otherwise
@@ -1201,8 +1205,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * Indicates whether this database supports full outer joins.
 	 *
 	 * <p>
-	 * Some databases don't yet support queries where all the tables are optional,
-	 * that is FULL OUTER joins.
+	 * Some databases don't yet support queries where all the tables are
+	 * optional, that is FULL OUTER joins.
 	 *
 	 * <p>
 	 * This method indicates whether or not this instance can perform full outer
@@ -1225,15 +1229,15 @@ public abstract class DBDatabase implements Cloneable {
 	 * Indicates whether this database supports full outer joins natively.
 	 *
 	 * <p>
-	 * Some databases don't yet support queries where all the tables are optional,
-	 * that is FULL OUTER joins.
+	 * Some databases don't yet support queries where all the tables are
+	 * optional, that is FULL OUTER joins.
 	 *
 	 * <p>
 	 * This method indicates whether or not this instance can perform full outer
 	 * joins.
 	 *
-	 * @return TRUE if the underlying database supports full outer joins natively,
-	 * FALSE otherwise.
+	 * @return TRUE if the underlying database supports full outer joins
+	 * natively, FALSE otherwise.
 	 */
 	protected boolean supportsFullOuterJoinNatively() {
 		return true;
@@ -1286,7 +1290,8 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Indicates to the DBSDatabase that the provided connection has been opened.
+	 * Indicates to the DBSDatabase that the provided connection has been
+	 * opened.
 	 *
 	 * <p>
 	 * This is used internally for reference counting.
@@ -1314,8 +1319,8 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Provided to allow DBDatabase sub-classes to tweak their connections before
-	 * use.
+	 * Provided to allow DBDatabase sub-classes to tweak their connections
+	 * before use.
 	 *
 	 * <p>
 	 * Used by {@link SQLiteDB} in particular.
@@ -1440,9 +1445,10 @@ public abstract class DBDatabase implements Cloneable {
 	 * RECURSIVE".
 	 *
 	 * <p>
-	 * If the database does not support recursive queries natively then DBvolution
-	 * will emulate recursive queries. Native queries are faster and easier on the
-	 * network and application server, so emulation should be a last resort.
+	 * If the database does not support recursive queries natively then
+	 * DBvolution will emulate recursive queries. Native queries are faster and
+	 * easier on the network and application server, so emulation should be a
+	 * last resort.
 	 *
 	 * @return TRUE by default, but some DBDatabases may return FALSE.
 	 */
