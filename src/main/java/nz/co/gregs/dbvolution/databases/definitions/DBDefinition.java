@@ -2597,4 +2597,18 @@ public abstract class DBDefinition {
 	public boolean supportsPurelyFunctionalGroupByColumns() {
 		return true;
 	}
+
+	/**
+	 * Creates a pattern that will exclude system tables during DBRow class
+	 * generation i.e. {@link DBTableClassGenerator}.
+	 *
+	 * <p>
+	 * By default this method returns ".*" as system tables are not a problem
+	 * for most databases.
+	 *
+	 * @return default is ".*" so all tables are included.
+	 */
+	public String getSystemTableExclusionPattern() {
+		return ".*";
+	}
 }

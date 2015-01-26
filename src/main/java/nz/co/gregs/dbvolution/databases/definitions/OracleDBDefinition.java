@@ -19,14 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.QueryOptions;
-import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Defines the features of all Oracle databases that differ from the standard
@@ -300,5 +298,20 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doSelectFromRecursiveTable(String recursiveTableAlias, String recursiveAliases) {
 		return " SELECT " + recursiveAliases +", "+getRecursiveQueryDepthColumnName()+ " FROM " + recursiveTableAlias + " ORDER BY "+getRecursiveQueryDepthColumnName()+" ASC ";
+	}
+
+	/**
+	 * Creates a pattern that will exclude system tables during DBRow class
+	 * generation i.e. {@link DBTableClassGenerator}.
+	 *
+	 * <p>
+	 * By default this method returns null as system tables are not a problem
+	 * for most databases.
+	 *
+	 * @return
+	 */
+	@Override
+	public String getSystemTableExclusionPattern() {
+		return "^[^$]*$"; //"^(.*(?!\\$)\\b)*$";
 	}
 }
