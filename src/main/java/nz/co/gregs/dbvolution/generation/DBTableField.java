@@ -95,4 +95,32 @@ public class DBTableField {
 	 */
 	public int sqlDataTypeInt;
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DBTableField) {
+			DBTableField other = (DBTableField) obj;
+			return fieldName.equals(other.fieldName);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 79 * hash + (this.fieldName != null ? this.fieldName.hashCode() : 0);
+		hash = 79 * hash + (this.columnName != null ? this.columnName.hashCode() : 0);
+		hash = 79 * hash + (this.isPrimaryKey ? 1 : 0);
+		hash = 79 * hash + (this.isForeignKey ? 1 : 0);
+		hash = 79 * hash + (this.referencesClass != null ? this.referencesClass.hashCode() : 0);
+		hash = 79 * hash + (this.referencesField != null ? this.referencesField.hashCode() : 0);
+		hash = 79 * hash + (this.columnType != null ? this.columnType.hashCode() : 0);
+		hash = 79 * hash + this.precision;
+		hash = 79 * hash + this.javaSQLDatatype;
+		hash = 79 * hash + (this.comments != null ? this.comments.hashCode() : 0);
+		hash = 79 * hash + (this.isAutoIncrement ? 1 : 0);
+		hash = 79 * hash + this.sqlDataTypeInt;
+		return hash;
+	}
+
 }
