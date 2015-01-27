@@ -120,7 +120,12 @@ public abstract class AbstractTest {
 		if (str != null) {
 			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
 			if ((database instanceof OracleDB) || (database instanceof JavaDB)) {
-				return trimStr.replaceAll(" oo", " __").replaceAll(" +[aA][sS] +", " ").replaceAll("\"", "").replaceAll(" *; *$", "");
+				return trimStr
+						.replaceAll("\"", "")
+						.replaceAll(" oo", " ")
+						.replaceAll("\\b_+", "")
+						.replaceAll(" +[aA][sS] +", " ")
+						.replaceAll(" *; *$", "");
 			} else if (database instanceof PostgresDB) {
 				return trimStr.replaceAll("::[a-zA-Z]*", "");
 			} else if (database instanceof MSSQLServerDB) {
@@ -143,8 +148,9 @@ public abstract class AbstractTest {
 			if ((database instanceof OracleDB)
 					|| (database instanceof JavaDB)) {
 				return trimStr
-						.replaceAll(" oo", " __")
 						.replaceAll("\"", "")
+						.replaceAll("\\boo", "__")
+						.replaceAll("\\b_+", "")
 						.replaceAll(" *; *$", "")
 						.replaceAll(" as ", " ");
 			} else if ((database instanceof MSSQLServerDB)) {

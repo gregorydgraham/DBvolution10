@@ -34,6 +34,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class IncomparableTypeUsedInComparison extends DBRuntimeException {
 
+	private static final long serialVersionUID = 1L;
+	
 	public IncomparableTypeUsedInComparison(DBDatabase db, DBExpression genericExpression) {
 		super("Incomparable Type: " + genericExpression.toSQLString(db) + " is a " + genericExpression.getClass().getSimpleName() + " and is not an equals comparable expression");
 	}

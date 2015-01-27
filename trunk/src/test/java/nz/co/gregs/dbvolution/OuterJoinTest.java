@@ -274,8 +274,9 @@ public class OuterJoinTest extends AbstractTest {
 						containsString(testableSQL("( __78874071.name) <= 'toyota'")),
 						containsString(testableSQL("__1997432637.enabled = 1"))
 				));
-		final String carCompanyCondition = "__78874071.NAME) >= 'ford' and (__78874071.NAME) <= 'TOYOTA'";
-		Assert.assertThat(sqlForQuery.indexOf(carCompanyCondition), is(sqlForQuery.lastIndexOf(carCompanyCondition)));
+		final String carCompanyCondition = testableSQL("__78874071.NAME) >= 'ford' and (__78874071.NAME) <= 'TOYOTA'");
+		final String testableQuery = testableSQL(sqlForQuery);
+		Assert.assertThat(testableQuery.indexOf(carCompanyCondition), is(testableQuery.lastIndexOf(carCompanyCondition)));
 
 //		database.print(dbquery.getAllRows());
 	}
@@ -294,12 +295,12 @@ public class OuterJoinTest extends AbstractTest {
 		dbquery.addOptional(carCompany);
 
 		String sqlForQuery = dbquery.getSQLForQuery();
-		String testableSQL = testableSQL(sqlForQuery);
+		String testableQuery = testableSQL(sqlForQuery);
 		System.out.println(sqlForQuery);
 
-		final String marqueCondition = "__1997432637.ENABLED = 1".toLowerCase();
-		Assert.assertThat(testableSQL, containsString(marqueCondition));
-		Assert.assertThat(testableSQL.indexOf(marqueCondition), is(testableSQL.lastIndexOf(marqueCondition)));
+		final String marqueCondition = testableSQL("1997432637.ENABLED = 1");
+		Assert.assertThat(testableQuery, containsString(marqueCondition));
+		Assert.assertThat(testableQuery.indexOf(marqueCondition), is(testableQuery.lastIndexOf(marqueCondition)));
 
 		if (database.supportsFullOuterJoin()) {
 			List<DBQueryRow> allRows = dbquery.getAllRows();
