@@ -35,6 +35,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author Gregory Graham
  */
 public class ComparisonBetweenTwoDissimilarTypes extends DBRuntimeException {
+	
+	private static final long serialVersionUID = 1L;
 
 	public ComparisonBetweenTwoDissimilarTypes(DBDatabase db, DBExpression genericExpression, DBExpression firstValue) {
 		super("Attempt To Compared Two Dissimilar Types: "
