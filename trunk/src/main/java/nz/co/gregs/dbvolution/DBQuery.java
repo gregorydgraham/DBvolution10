@@ -626,7 +626,14 @@ public class DBQuery{
 		} finally {
 			dbStatement.close();
 		}
-		return results;
+		if (options.getRowLimit() > 0 && results.size() > options.getRowLimit()) {
+			final int firstItemOfPage = options.getPageIndex() * options.getRowLimit();
+			final int firstItemOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit();
+			return results.subList(firstItemOfPage, firstItemOfNextPage);
+		} else {
+			return results;
+		}
+//		return results;
 	}
 
 	/**
