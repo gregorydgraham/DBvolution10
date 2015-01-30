@@ -671,7 +671,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				returnStr += separator + boo.toSQLString(db);
 				separator = op;
 			}
-			return returnStr;
+			return "("+returnStr+")";
 		}
 
 		@Override

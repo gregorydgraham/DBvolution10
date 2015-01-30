@@ -328,9 +328,9 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 		@Override
 		public String toSQLString(DBDatabase db) {
 			if (this.getIncludesNull()) {
-				return BooleanExpression.isNull(first).toSQLString(db);
+				return "("+BooleanExpression.isNull(first).toSQLString(db)+")";
 			} else {
-				return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+				return "("+first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db)+")";
 			}
 		}
 
