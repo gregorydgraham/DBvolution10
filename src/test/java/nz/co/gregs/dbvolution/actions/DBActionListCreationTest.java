@@ -20,7 +20,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -122,6 +129,52 @@ public class DBActionListCreationTest extends AbstractTest {
 		foundTVR = database.get(example);
 		Assert.assertThat(foundTVR.size(), is(0));
 
+	}
+
+	@Test
+	public void insertAndRevertWithAutoIncrementTest() throws SQLException {
+		
+		CarCompanyWithAutoIncrement tvr = new CarCompanyWithAutoIncrement();
+		tvr.name.setValue("TVR");
+		
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(tvr);
+		database.createTable(tvr);
+		
+		DBActionList insertTVRActions = database.insert(tvr);
+		Assert.assertThat(tvr.carcoId.intValue(), is(1));
+		
+		CarCompanyWithAutoIncrement hulme = new CarCompanyWithAutoIncrement();
+		hulme.name.setValue("HULME");
+		database.insert(hulme);
+		Assert.assertThat(hulme.carcoId.intValue(), is(2));
+		
+		CarCompanyWithAutoIncrement tvrExample = new CarCompanyWithAutoIncrement();
+		tvrExample.name.permittedValuesIgnoreCase("TVR");
+		CarCompanyWithAutoIncrement hulmeExample = new CarCompanyWithAutoIncrement();
+		hulmeExample.name.permittedValuesIgnoreCase("HULME");
+		List<CarCompanyWithAutoIncrement> foundTVR = database.get(tvrExample);
+		Assert.assertThat(foundTVR.size(), is(1));
+		List<CarCompanyWithAutoIncrement> foundHulme = database.get(hulmeExample);
+		Assert.assertThat(foundHulme.size(), is(1));
+		
+		DBActionList revertTVRInsertActionList = insertTVRActions.getRevertActionList();
+		revertTVRInsertActionList.execute(database);
+		foundTVR = database.get(tvrExample);
+		Assert.assertThat(foundTVR.size(), is(0));
+		foundHulme = database.get(hulmeExample);
+		Assert.assertThat(foundHulme.size(), is(1));
+	}
+	
+	@DBTableName("carcompany_auto")
+	public static class CarCompanyWithAutoIncrement extends DBRow{
+		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		public DBInteger carcoId = new DBInteger();
+		
+		@DBColumn
+		DBString name = new DBString();
 	}
 
 	@Test

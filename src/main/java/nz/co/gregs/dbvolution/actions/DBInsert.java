@@ -144,7 +144,7 @@ public class DBInsert extends DBAction {
 							if (primaryKeyColumnName.isEmpty()) {
 								statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
 							} else {
-								statement.execute(sql, new String[]{primaryKeyColumnName});
+								statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)});
 								pkIndex = 1;
 							}
 							if (row.getPrimaryKey().hasBeenSet() == false) {
@@ -155,7 +155,9 @@ public class DBInsert extends DBAction {
 										if (pkValue > 0) {
 											this.getGeneratedPrimaryKeys().add(pkValue);
 											log.info("GENERATED KEYS: " + pkValue);
-											final QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
+											QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
+											new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+											pkQDT = row.getPrimaryKey();
 											new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
 										}
 									}
@@ -266,10 +268,11 @@ public class DBInsert extends DBAction {
 	@Override
 	protected DBActionList getRevertDBActionList() {
 		DBActionList reverts = new DBActionList();
+		DBRow row = DBRow.copyDBRow(originalRow);
 		if (this.getRow().getPrimaryKey() == null) {
-			reverts.add(new DBDeleteUsingAllColumns(getRow()));
+			reverts.add(new DBDeleteUsingAllColumns(row));
 		} else {
-			reverts.add(new DBDeleteByPrimaryKey(getRow()));
+			reverts.add(new DBDeleteByPrimaryKey(row));
 		}
 		return reverts;
 	}

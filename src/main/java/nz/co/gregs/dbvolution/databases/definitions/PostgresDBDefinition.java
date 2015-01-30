@@ -45,7 +45,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	private static final String[] reservedWordsArray = new String[]{"LIMIT", "END"};
 	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
 
-
+	@Override
+	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
+		return primaryKeyColumnName.toLowerCase();
+	}
+	
 	@Override
 	protected String formatNameForDatabase(final String sqlObjectName) {
 		if (!(reservedWords.contains(sqlObjectName.toUpperCase()))) {
