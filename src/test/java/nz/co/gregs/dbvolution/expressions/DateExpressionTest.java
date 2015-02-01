@@ -17,18 +17,23 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBDateOnly;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import static org.hamcrest.Matchers.is;
+import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -411,9 +416,9 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	public static class DiffTestReport extends DBReport {
-		
+
 		private static final long serialVersionUID = 1L;
-		
+
 		public Marque marq = new Marque();
 		public DBDate dayNormal = new DBDate(
 				marq.column(marq.creationDate));
@@ -431,7 +436,7 @@ public class DateExpressionTest extends AbstractTest {
 //	@Ignore
 	public void testDayDifferenceFunction() throws SQLException, ParseException {
 		database.print(DBReport.getAllRows(database, new DiffTestReport()));
-		
+
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -452,7 +457,7 @@ public class DateExpressionTest extends AbstractTest {
 				marq.column(marq.creationDate)
 				.hoursFrom(
 						marq.column(marq.creationDate).addDays(2))
-				.isIn(48,49)); //Interestingly  one of my examples is near DST transition and NuoDB gives 49 hours
+				.isIn(48, 49)); //Interestingly  one of my examples is near DST transition and NuoDB gives 49 hours
 		got = query.getAllInstancesOf(marq);
 		database.print(got);
 		nonNullMarque = new Marque();
@@ -460,7 +465,7 @@ public class DateExpressionTest extends AbstractTest {
 		numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
-		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -492,7 +497,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
-		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -524,7 +529,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
-		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -556,7 +561,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
-		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -588,7 +593,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
-		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -620,7 +625,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
-		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -652,7 +657,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 
-		Date secondDate = AbstractTest.datetimeFormat.parse(super.secondDateStr);
+		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -665,5 +670,54 @@ public class DateExpressionTest extends AbstractTest {
 		secondDateMarques.creationDate.permittedValues(secondDate);
 		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+	}
+
+	@Test
+	public void testEndOfMonthCalculation() throws SQLException {
+		MarqueWithEndOfMonthColumn marq = new MarqueWithEndOfMonthColumn();
+		DBTable<MarqueWithEndOfMonthColumn> table = database.getDBTable(marq);
+		List<MarqueWithEndOfMonthColumn> allRows = table.setBlankQueryAllowed(true).getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(22));
+		final Date march31st2013 = (new GregorianCalendar(2013, 2, 31)).getTime();
+		final Date april30th2011 = (new GregorianCalendar(2011, 3, 30)).getTime();
+		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
+		final Date april1st2011 = (new GregorianCalendar(2011, 3, 1)).getTime();
+		final Date nullDate = null;
+		for (MarqueWithEndOfMonthColumn allRow : allRows) {
+			Assert.assertThat(allRow.endOfMonth.dateValue(),
+					anyOf(
+							is(nullDate),
+							is(march31st2013),
+							is(april30th2011)
+					));
+			Assert.assertThat(allRow.firstOfMonth.dateValue(),
+					anyOf(
+							is(nullDate),
+							is(march1st2013),
+							is(april1st2011)
+					));
+		}
+
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(marq.column(marq.endOfMonth).dayIs(31));
+		List<DBQueryRow> allRows1 = dbQuery.getAllRows();
+		for (DBQueryRow row : allRows1) {
+			Assert.assertThat(
+					row.get(marq).endOfMonth.dateValue(),
+					is(march31st2013));
+			Assert.assertThat(
+					row.get(marq).firstOfMonth.dateValue(),
+					is(march1st2013)
+			);
+		}
+	}
+
+	public static class MarqueWithEndOfMonthColumn extends Marque {
+
+		@DBColumn
+		DBDateOnly firstOfMonth = new DBDateOnly(this.column(this.creationDate).addDays(this.column(this.creationDate).day().minus(1).bracket().times(-1)));
+		@DBColumn
+		DBDateOnly endOfMonth = new DBDateOnly(this.column(this.creationDate).addDays(this.column(this.creationDate).day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1));
 	}
 }
