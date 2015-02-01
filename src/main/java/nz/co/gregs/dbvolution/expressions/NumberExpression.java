@@ -22,7 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 
 /**
  * NumberExpression implements standard functions that produce a numeric result,
@@ -858,11 +861,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(Collection<? extends NumberResult> possibleValues) {
-//		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
-//		for (Number num : possibleValues) {
-//			possVals.add(value(num));
-//		}
-		return leastOf(possibleValues.toArray(new NumberExpression[]{}));
+		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		for (NumberResult num : possibleValues) {
+			possVals.add(new NumberExpression(num));
+		}
+		return leastOf(possVals.toArray(new NumberExpression[]{}));
 	}
 
 	/**
@@ -1726,11 +1729,42 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * For the NumberExpression x: x.mod(y) =&gt; mod(x.y)
 	 *
-	 * @param num	num
+	 * @param num => this/num.
 	 * @return a NumberExpression
 	 */
 	public NumberExpression mod(Number num) {
 		return this.mod(new NumberExpression(num));
+	}
+	
+	public StringExpression choose(String... stringsToChooseFrom)
+	{
+		List<StringResult> strResult = new ArrayList<StringResult>();
+		for (String str : stringsToChooseFrom) {
+			strResult.add(new StringExpression(str));
+		}
+		return choose(strResult.toArray(new StringResult[]{}));
+	}
+	
+	public StringExpression choose(StringResult... stringsToChooseFrom)
+	{
+		StringExpression leastExpr
+				= new StringExpression(new DBNumberAndNnaryStringFunction(this, stringsToChooseFrom) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						List<String> strs = new ArrayList<String>();
+						for (StringResult num : this.values) {
+							strs.add(num.toSQLString(db));
+						}
+						return db.getDefinition().doChooseTransformation(numberExpression.toSQLString(db), strs);
+					}
+
+					@Override
+					protected String getFunctionName(DBDatabase db) {
+						return db.getDefinition().getChooseFunctionName();
+					}
+				});
+		return leastExpr;
 	}
 
 	/**
@@ -2735,12 +2769,124 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 		@Override
 		public boolean isPurelyFunctional() {
-			if (column == null && values.size() == 0) {
+			if (column == null && values.isEmpty()) {
 				return true;
 			} else {
 				boolean result = column.isPurelyFunctional();
 				for (NumberResult value : values) {
-					result = result & value.isPurelyFunctional();
+					result &= value.isPurelyFunctional();
+				}
+				return result;
+			}
+		}
+	}
+
+private static abstract class DBNumberAndNnaryStringFunction extends StringExpression {
+
+		protected NumberResult numberExpression=null;
+		protected final List<StringResult> values = new ArrayList<StringResult>();
+		boolean nullProtectionRequired = false;
+
+		DBNumberAndNnaryStringFunction() {
+		}
+
+		DBNumberAndNnaryStringFunction(NumberResult numberResult, StringResult[] rightHandSide) {
+			numberExpression = numberResult;
+			for (StringResult stringResult : rightHandSide) {
+				if (stringResult == null) {
+					this.nullProtectionRequired = true;
+				} else {
+					if (stringResult.getIncludesNull()) {
+						this.nullProtectionRequired = true;
+					}
+					values.add(stringResult);
+				}
+			}
+		}
+
+		@Override
+		public DBString getQueryableDatatypeForExpressionValue() {
+			return new DBString();
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return "( ";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			StringBuilder builder = new StringBuilder();
+			builder
+					.append(this.getFunctionName(db))
+					.append(this.beforeValue(db));
+			String separator = "";
+			for (StringResult val : values) {
+				if (val != null) {
+					builder.append(separator).append(val.toSQLString(db));
+				}
+				separator = ", ";
+			}
+			builder.append(this.afterValue(db));
+			return builder.toString();
+		}
+
+		@Override
+		public DBNumberAndNnaryStringFunction copy() {
+			DBNumberAndNnaryStringFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.numberExpression = this.numberExpression.copy();
+			Collections.copy(this.values, newInstance.values);
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (numberExpression != null) {
+				hashSet.addAll(numberExpression.getTablesInvolved());
+			}
+			for (StringResult second : values) {
+				if (second != null) {
+					hashSet.addAll(second.getTablesInvolved());
+				}
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			boolean result = numberExpression.isAggregator();
+			for (StringResult numer : values) {
+				result = result || numer.isAggregator();
+			}
+			return result;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return nullProtectionRequired;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (numberExpression == null && values.isEmpty()) {
+				return true;
+			} else {
+				boolean result = numberExpression.isPurelyFunctional();
+				for (StringResult value : values) {
+					result &= value.isPurelyFunctional();
 				}
 				return result;
 			}

@@ -53,8 +53,8 @@ public abstract class AbstractTest {
 	public static final FlexibleDateFormat tedhiFormat = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
 	public static final SimpleDateFormat datetimeFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
 	public static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
-	public String firstDateStr = "23/March/2013 12:34:56";
-	public String secondDateStr = "2/April/2011 1:02:03";
+	public static String firstDateStr = "23/March/2013 12:34:56";
+	public static String secondDateStr = "2/April/2011 1:02:03";
 
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException {

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -88,7 +89,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * objects and add functionality to them. Use this constructor to wrap an
 	 * existing BooleanExpression.
 	 *
-	 * @param booleanResult	 booleanResult	
+	 * @param booleanResult	booleanResult
 	 */
 	public BooleanExpression(BooleanResult booleanResult) {
 		onlyBool = booleanResult;
@@ -102,10 +103,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 *
 	 * <p>
 	 * BooleanExpressions generally wrap other BooleanExpressions or similar
-	 * objects and add functionality to them. Use this constructor to wrap a
-	 * known value for use in a BooleanExpression.
+	 * objects and add functionality to them. Use this constructor to wrap a known
+	 * value for use in a BooleanExpression.
 	 *
-	 
+	 *
 	 */
 	private BooleanExpression(Boolean bool) {
 		onlyBool = new DBBoolean(bool);
@@ -136,10 +137,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -148,8 +148,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * </ul>
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static BooleanExpression value(Boolean bool) {
 		return new BooleanExpression(bool);
@@ -160,8 +160,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * operator, that is "=" or similar.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(Boolean bool) {
 		return is(new BooleanExpression(bool));
@@ -175,13 +175,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(BooleanExpression bool) {
-		return is((BooleanResult)bool);
+		return is((BooleanResult) bool);
 	}
-	
+
 	/**
 	 * Compare this BooleanExpression and the given {@link BooleanResult} using
 	 * the equality operator, that is "=" or similar.
@@ -190,8 +190,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
@@ -248,7 +248,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * This expression returns true if and only if all the component expressions
 	 * are true
 	 *
-	 * @param booleanExpressions  the boolean expressions to be tested
+	 * @param booleanExpressions the boolean expressions to be tested
 	 * @return a boolean expression that returns true IFF all the
 	 * booleanExpressions are true.
 	 * @see #anyOf(BooleanExpression...)
@@ -272,7 +272,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <p>
 	 * This expression returns true if any of the component expressions is true
 	 *
-	 * @param booleanExpressions  the boolean expressions to be tested
+	 * @param booleanExpressions the boolean expressions to be tested
 	 * @return a boolean expression that returns true if any of the
 	 * booleanExpressions is true.
 	 * @see #allOf(BooleanExpression...)
@@ -289,7 +289,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	/**
 	 * Returns true only if all of the conditions are FALSE.
 	 *
-	 * @param booleanExpressions  the boolean expressions to be tested
+	 * @param booleanExpressions the boolean expressions to be tested
 	 * @return a boolean expression that returns true if all of the
 	 * booleanExpressions evaluate to FALSE.
 	 * @see #allOf(BooleanExpression...)
@@ -413,7 +413,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * {@link NumberExpression}, {@link StringExpression}, {@link DateExpression},
 	 * and {@link LargeObjectExpression}.
 	 *
-	 * @param possibleNullExpression   the expression to be tested
+	 * @param possibleNullExpression the expression to be tested
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNotNull(DBExpression possibleNullExpression) {
@@ -432,11 +432,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Returns FALSE if the given {@link ColumnProvider} evaluates to NULL, otherwise
-	 * TRUE.
-	 * 
+	 * Returns FALSE if the given {@link ColumnProvider} evaluates to NULL,
+	 * otherwise TRUE.
+	 *
 	 * <p>
-	 * Obtain a {@link ColumnProvider} by using the column method of {@link DBRow}.
+	 * Obtain a {@link ColumnProvider} by using the column method of
+	 * {@link DBRow}.
 	 *
 	 * @param possibleNullExpression the expression to be tested
 	 * @return a BooleanExpression
@@ -446,11 +447,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Returns TRUE if the given {@link ColumnProvider} evaluates to NULL, otherwise
-	 * FALSE.
-	 * 
+	 * Returns TRUE if the given {@link ColumnProvider} evaluates to NULL,
+	 * otherwise FALSE.
+	 *
 	 * <p>
-	 * Obtain a {@link ColumnProvider} by using the column method of {@link DBRow}.
+	 * Obtain a {@link ColumnProvider} by using the column method of
+	 * {@link DBRow}.
 	 *
 	 * @param possibleNullExpression the expression to be tested
 	 * @return a BooleanExpression
@@ -460,8 +462,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL,
-	 * otherwise FALSE.
+	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL, otherwise
+	 * FALSE.
 	 *
 	 * <p>
 	 * DBExpression subclasses include
@@ -489,9 +491,83 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		});
 	}
 
+	public StringExpression ifThenElse(String thenExpr, String elseExpr) {
+		return this.ifThenElse(new StringExpression(thenExpr), new StringExpression(elseExpr));
+	}
+
+	public StringExpression ifThenElse(StringExpression thenExpr, StringExpression elseExpr) {
+		return new StringExpression(new DBBooleanStringStringFunction(this, thenExpr, elseExpr) {
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
+
+		});
+	}
+
+	public NumberExpression ifThenElse(Number thenExpr, Number elseExpr) {
+		return this.ifThenElse(new NumberExpression(thenExpr), new NumberExpression(elseExpr));
+	}
+
+	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
+		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
+		});
+	}
+
+	public DateExpression ifThenElse(Date thenExpr, Date elseExpr) {
+		return this.ifThenElse(new DateExpression(thenExpr), new DateExpression(elseExpr));
+	}
+
+	public DateExpression ifThenElse(DateExpression thenExpr, DateExpression elseExpr) {
+		return new DateExpression(new DBBinaryDateDateFunction(this, thenExpr, elseExpr) {
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
+
+		});
+	}
+
 	/**
 	 * Creates an Aggregate function that counts the rows returned by the query.
-	 * 
+	 *
 	 * <p>
 	 * For use within a {@link DBReport}
 	 *
@@ -563,14 +639,14 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 	}
 
-		@Override
-		public boolean isPurelyFunctional() {
-			if (onlyBool == null) {
-				return true;
-			} else {
-				return onlyBool.isPurelyFunctional();
-			}
+	@Override
+	public boolean isPurelyFunctional() {
+		if (onlyBool == null) {
+			return true;
+		} else {
+			return onlyBool.isPurelyFunctional();
 		}
+	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
@@ -578,8 +654,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Indicates if this expression is a relationship between 2, or more,
-	 * tables.
+	 * Indicates if this expression is a relationship between 2, or more, tables.
 	 *
 	 * @return the relationship
 	 */
@@ -648,7 +723,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 	}
 
-	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression{
+	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression {
 
 		private BooleanResult[] bools;
 //		private boolean includeNulls;
@@ -671,7 +746,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				returnStr += separator + boo.toSQLString(db);
 				separator = op;
 			}
-			return "("+returnStr+")";
+			return "(" + returnStr + ")";
 		}
 
 		@Override
@@ -718,7 +793,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			} else {
 				boolean result = true;
 				for (BooleanResult bool : bools) {
-					result= result&&bool.isPurelyFunctional();
+					result = result && bool.isPurelyFunctional();
 				}
 				return result;
 			}
@@ -808,7 +883,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 //		public DBNumber getQueryableDatatypeForExpressionValue() {
 //			return new DBNumber();
 //		}
-
 		abstract String getFunctionName(DBDatabase db);
 
 		protected String beforeValue(DBDatabase db) {
@@ -965,6 +1039,208 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				return true;
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
+
+	private static abstract class DBBooleanStringStringFunction extends StringExpression {
+
+		protected BooleanExpression onlyBool = null;
+		protected StringResult first = null;
+		protected StringResult second = null;
+//		private boolean includeNulls;
+
+		DBBooleanStringStringFunction() {
+		}
+
+		DBBooleanStringStringFunction(BooleanExpression only, StringResult first, StringResult second) {
+			this.onlyBool = only;
+			this.first = first;
+			this.second = second;
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return "" + getFunctionName(db) + "( ";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public DBBooleanStringStringFunction copy() {
+			DBBooleanStringStringFunction newInstance;
+			try {
+				newInstance = this.getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
+			newInstance.first = (first == null ? null : first.copy());
+			newInstance.second = (second == null ? null : second.copy());
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return onlyBool.getTablesInvolved();
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional() && first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
+
+	private static abstract class DBBooleanNumberNumberFunction extends NumberExpression {
+
+		protected BooleanExpression onlyBool = null;
+		protected NumberResult first = null;
+		protected NumberResult second = null;
+//		private boolean includeNulls;
+
+		DBBooleanNumberNumberFunction() {
+		}
+
+		DBBooleanNumberNumberFunction(BooleanExpression only, NumberResult first, NumberResult second) {
+			this.onlyBool = only;
+			this.first = first;
+			this.second = second;
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return "" + getFunctionName(db) + "( ";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public DBBooleanNumberNumberFunction copy() {
+			DBBooleanNumberNumberFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
+			newInstance.first = (first == null ? null : first.copy());
+			newInstance.second = (second == null ? null : second.copy());
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return onlyBool.getTablesInvolved();
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional() && first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
+
+	private static abstract class DBBinaryDateDateFunction extends DateExpression {
+
+		protected BooleanExpression onlyBool = null;
+		protected DateResult first = null;
+		protected DateResult second = null;
+//		private boolean includeNulls;
+
+		DBBinaryDateDateFunction() {
+		}
+
+		DBBinaryDateDateFunction(BooleanExpression only, DateExpression first, DateExpression second) {
+			this.onlyBool = only;
+			this.first = first;
+			this.second = second;
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return "" + getFunctionName(db) + "( ";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public DBBinaryDateDateFunction copy() {
+			DBBinaryDateDateFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
+			newInstance.first = (first == null ? null : first.copy());
+			newInstance.second = (second == null ? null : second.copy());
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return onlyBool.getTablesInvolved();
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional() && first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
 		}
 	}

@@ -3,8 +3,6 @@ package nz.co.gregs.dbvolution.internal.properties;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  * Handles annotation processing, business logic, validation rules, defaulting,

@@ -45,4 +45,19 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 		return returnString;
 	}
 
+	@Override
+	public String getChooseFunctionName() {
+		return "CHOOSE";
+	}
+
+	@Override
+	protected boolean supportsChooseNatively() {
+		return true;
+	}
+
+	@Override
+	public String doIfThenElseTransform(String booleanTest, String thenResult, String elseResult) {
+		return " IFF( ("+booleanTest+"), ("+thenResult+"), ("+elseResult+"))";
+	}
+
 }

@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -421,4 +422,37 @@ public class NumberExpressionTest extends AbstractTest {
 		}
 
 	}
+
+	@Test
+	public void testChoose() throws SQLException {
+		CarCompanyWithChoose carCo = new CarCompanyWithChoose();
+		DBQuery dbQuery = database.getDBQuery(carCo);
+		List<DBQueryRow> allRows = dbQuery.setBlankQueryAllowed(true).getAllRows();
+		database.print(allRows);
+		for (CarCompanyWithChoose carCompany : dbQuery.getAllInstancesOf(carCo)) {
+			if (carCompany.uidCarCompany.intValue() <= 1) {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), is("too low"));
+			}else if (carCompany.uidCarCompany.intValue() == 2) {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), is("ok"));
+			}else if (carCompany.uidCarCompany.intValue() == 3) {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), is("high"));
+			}else {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), is("too high"));
+			}
+		}
+	}
+
+	public static class CarCompanyWithChoose extends CarCompany {
+
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString chooseOnID = new DBString(this.column(this.uidCarCompany).choose("too low", "ok", "high", "too high"));
+
+		public CarCompanyWithChoose() {
+			super();
+		}
+
+	}
+
 }

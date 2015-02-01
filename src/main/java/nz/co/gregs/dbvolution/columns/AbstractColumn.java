@@ -59,7 +59,8 @@ public class AbstractColumn implements DBExpression {
 	 *
 	 * @param row the row which contains the field
 	 * @param field the field of the row that represents the database column
-	 * @throws IncorrectRowProviderInstanceSuppliedException Please note the the field must be a field of the row
+	 * @throws IncorrectRowProviderInstanceSuppliedException Please note the the
+	 * field must be a field of the row
 	 */
 	public AbstractColumn(RowDefinition row, Object field) throws IncorrectRowProviderInstanceSuppliedException {
 		this.dbrow = row;
@@ -73,11 +74,16 @@ public class AbstractColumn implements DBExpression {
 	@Override
 	public String toSQLString(DBDatabase db) {
 		RowDefinition rowDefn = this.getRowDefinition();
-		if (useTableAlias) {
-			return db.getDefinition().formatTableAliasAndColumnName(rowDefn, propertyWrapper.columnName());
-		} else if (rowDefn instanceof DBRow) {
-			DBRow dbRow = (DBRow) rowDefn;
-			return db.getDefinition().formatTableAndColumnName(dbRow, propertyWrapper.columnName());
+		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
+			DBExpression columnExpression = ((QueryableDatatype) field).getColumnExpression();
+			return columnExpression.toSQLString(db);
+		} else {
+			if (useTableAlias) {
+				return db.getDefinition().formatTableAliasAndColumnName(rowDefn, propertyWrapper.columnName());
+			} else if (rowDefn instanceof DBRow) {
+				DBRow dbRow = (DBRow) rowDefn;
+				return db.getDefinition().formatTableAndColumnName(dbRow, propertyWrapper.columnName());
+			}
 		}
 		return "";
 	}
@@ -135,8 +141,8 @@ public class AbstractColumn implements DBExpression {
 	}
 
 	@Override
-	public boolean isPurelyFunctional(){
-		return getTablesInvolved().size()==0;
+	public boolean isPurelyFunctional() {
+		return getTablesInvolved().size() == 0;
 	}
 
 	@Override
@@ -170,7 +176,8 @@ public class AbstractColumn implements DBExpression {
 	 * The value returned may have undergone type conversion from the target
 	 * object's actual property type, if a type adaptor is present.
 	 *
-	 * @param row resolve the column for this row and provide the QueryableDatatype that is appropriate
+	 * @param row resolve the column for this row and provide the
+	 * QueryableDatatype that is appropriate
 	 * @return the QDT version of the field on the DBRow
 	 */
 	public QueryableDatatype getAppropriateQDTFromRow(RowDefinition row) {
@@ -185,7 +192,8 @@ public class AbstractColumn implements DBExpression {
 	 * you should probably be using {@link #getAppropriateQDTFromRow(nz.co.gregs.dbvolution.query.RowDefinition)
 	 * }
 	 *
-	 * @param row resolve the column for this row and provide the appropriate Java field (may be a QueryableDatatype)
+	 * @param row resolve the column for this row and provide the appropriate Java
+	 * field (may be a QueryableDatatype)
 	 * @return the actual field on the DBRow object referenced by this column.
 	 */
 	public Object getAppropriateFieldFromRow(RowDefinition row) {
@@ -221,7 +229,7 @@ public class AbstractColumn implements DBExpression {
 
 	/**
 	 * Returns the class of the DBRow from which this column has been made.
-	 * 
+	 *
 	 *
 	 * @return an appropriate DBRow class
 	 */

@@ -2636,4 +2636,48 @@ public abstract class DBDefinition {
 	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
 		return primaryKeyColumnName;
 	}
+
+	public String doChooseTransformation(String numberToChooseWith, List<String> strs) {
+		if (supportsChooseNatively()) {
+			StringBuilder sql = new StringBuilder(getChooseFunctionName() + "("+numberToChooseWith);
+			String comma = ", ";
+			for (String str : strs) {
+				sql.append(comma).append(str);
+			}
+			return sql.append(")").toString();
+		} else {
+			return fakeChooseTransformation(numberToChooseWith, strs);
+		}
+	}
+
+	private String fakeChooseTransformation(String numberToChooseWith, List<String> strs) {
+		String sql = "(case ";
+		String prevCase = null;
+		if (strs.size() == 1) {
+			return strs.get(0);
+		}
+		String op = " <= ";
+		for (int index = 0; index < strs.size(); index++) {
+			String str = strs.get(index);
+			if (index==strs.size()-1) {
+				sql+= " else "+str +" end)";
+			} else {
+				sql += " when " + numberToChooseWith + op + (index+1) + " then " + str+System.getProperty("line.separator");
+				op = " = ";
+			}
+		}
+		return sql;
+	}
+
+	public String getChooseFunctionName() {
+		return "";
+	}
+
+	protected boolean supportsChooseNatively() {
+		return false;
+	}
+
+	public String doIfThenElseTransform(String booleanTest, String thenResult, String elseResult) {
+		return "(CASE WHEN "+booleanTest+" THEN "+thenResult+" ELSE "+elseResult+" END)";
+	}
 }

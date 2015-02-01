@@ -17,13 +17,23 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static nz.co.gregs.dbvolution.generic.AbstractTest.secondDateStr;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,7 +54,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marque);
 		final BooleanExpression like = marque.column(marque.name).isLike("TOY%");
 		Assert.assertThat(like.isAggregator(), is(false));
-		
+
 		dbQuery.addCondition(like);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -77,6 +87,93 @@ public class BooleanExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
+	}
+
+	@Test
+	public void testStringIfThenElse() throws SQLException {
+		MarqueWithIfThenElse marque = new MarqueWithIfThenElse();
+		DBQuery dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(marque.column(marque.toyotaMarque).is("TOYOTA"));
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		for (DBQueryRow row : allRows) {
+			Assert.assertThat(row.get(marque).toyotaMarque.getValue(), is("TOYOTA"));
+		}
+
+		dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(marque.column(marque.toyotaMarque).isNot("TOYOTA"));
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(20));
+		for (DBQueryRow row : allRows) {
+			Assert.assertThat(row.get(marque).toyotaMarque.getValue(), is("NON-TOYOTA"));
+		}
+
+		dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(marque.column(marque.numberMarque).is(1));
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		for (DBQueryRow row : allRows) {
+			Assert.assertThat(row.get(marque).numberMarque.intValue(), is(1));
+		}
+
+		dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(marque.column(marque.dateMarque).is(MarqueWithIfThenElse.thenDate));
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(22));
+		for (DBQueryRow row : allRows) {
+			Assert.assertThat(row.get(marque).dateMarque.getValue().toString(), is(MarqueWithIfThenElse.thenDate.toString()));
+		}
+
+		dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(marque.column(marque.dateMarque).is(MarqueWithIfThenElse.elseDate));
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(22));
+		for (DBQueryRow row : allRows) {
+			Assert.assertThat(row.get(marque).dateMarque.getValue().toString(), is(MarqueWithIfThenElse.elseDate.toString()));
+		}
+	}
+
+	public static class MarqueWithIfThenElse extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		public DBString toyotaMarque = new DBString(this.column(this.name).isIn("TOYOTA", "HYUNDAI").ifThenElse("TOYOTA", "NON-TOYOTA"));
+
+		@DBColumn
+		public DBNumber numberMarque = new DBNumber(this.column(this.carCompany).isIn(1, 4896300).ifThenElse(1, 2));
+
+		Date earlyDate = new Date();
+		public static Date thenDate = new Date();
+		public static Date elseDate = new Date();
+		@DBColumn
+		public DBDate dateMarque = new DBDate(this.column(this.creationDate).is(earlyDate).ifThenElse(MarqueWithIfThenElse.thenDate, elseDate));
+
+		{
+			SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
+			try {
+				earlyDate = format.parse(secondDateStr);
+				thenDate = format.parse("1/1/2011 00:00:00");
+				thenDate = format.parse("1/1/2014 00:00:00");
+			} catch (ParseException ex) {
+				Logger.getLogger(BooleanExpressionTest.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 
 	@Test
