@@ -2043,7 +2043,7 @@ public abstract class DBDefinition {
 	 * @return an SQL snippet
 	 */
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL '" + numberOfSeconds + "' SECOND )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfSeconds + ") SECOND )";
 	}
 
 	/**
@@ -2055,7 +2055,7 @@ public abstract class DBDefinition {
 	 * @return an SQL snippet
 	 */
 	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL '" + numberOfMinutes + "' MINUTE )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfMinutes + ") MINUTE )";
 	}
 
 	/**
@@ -2067,7 +2067,7 @@ public abstract class DBDefinition {
 	 * @return an SQL snippet
 	 */
 	public String doAddDaysTransform(String dateValue, String numberOfDays) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL '" + numberOfDays + "' DAY )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfDays + ") DAY )";
 	}
 
 	/**
@@ -2079,7 +2079,7 @@ public abstract class DBDefinition {
 	 * @return an SQL snippet
 	 */
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL '" + numberOfHours + "' HOUR )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfHours + ") HOUR )";
 	}
 
 	/**
@@ -2091,7 +2091,7 @@ public abstract class DBDefinition {
 	 * @return an SQL snippet
 	 */
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL '" + numberOfWeeks + "' WEEK )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfWeeks + ") WEEK )";
 	}
 
 	/**
@@ -2103,7 +2103,7 @@ public abstract class DBDefinition {
 	 * @return an SQL snippet
 	 */
 	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL '" + numberOfMonths + "' MONTH )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfMonths + ") MONTH )";
 	}
 
 	/**
@@ -2115,7 +2115,7 @@ public abstract class DBDefinition {
 	 * @return an SQL snippet
 	 */
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL '" + numberOfYears + "' YEAR )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfYears + ") YEAR )";
 	}
 
 	/**
