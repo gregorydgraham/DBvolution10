@@ -168,6 +168,9 @@ public class DBActionListCreationTest extends AbstractTest {
 	
 	@DBTableName("carcompany_auto")
 	public static class CarCompanyWithAutoIncrement extends DBRow{
+
+	private static final long serialVersionUID = 1L;
+	
 		@DBColumn
 		@DBPrimaryKey
 		@DBAutoIncrement
