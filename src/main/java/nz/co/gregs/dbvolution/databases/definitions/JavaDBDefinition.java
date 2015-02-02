@@ -284,17 +284,9 @@ public class JavaDBDefinition extends DBDefinition {
 		return super.getOrderByDirectionClause(sortOrder) + (sortOrder ? " NULLS FIRST " : " NULLS LAST ");
 	}
 
-//	@Override
-//	public String endOrderByClause() {
-//		return " NULLS FIRST ";
-//	}
-//	@Override
-//	public String beginStringValue() {
-//		return "cast('";
-//	}
-//
-//	@Override
-//	public String endStringValue() {
-//		return "' as VARCHAR(1000))"; //To change body of generated methods, choose Tools | Templates.
-//	}
+	@Override
+	public String doDayOfWeekTransform(String dateSQL) {
+		throw new UnsupportedOperationException("JavaDB does not support the DAYOFWEEK function");
+	}
+
 }

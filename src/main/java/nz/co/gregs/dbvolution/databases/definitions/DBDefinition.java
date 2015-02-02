@@ -2680,4 +2680,6 @@ public abstract class DBDefinition {
 	public String doIfThenElseTransform(String booleanTest, String thenResult, String elseResult) {
 		return "(CASE WHEN "+booleanTest+" THEN "+thenResult+" ELSE "+elseResult+" END)";
 	}
+
+	abstract public String doDayOfWeekTransform(String dateSQL) ;
 }

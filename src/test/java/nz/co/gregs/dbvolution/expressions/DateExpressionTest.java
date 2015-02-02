@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -32,7 +31,6 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -297,6 +295,34 @@ public class DateExpressionTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationDate).firstOfMonth().isNull());
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+
+	}
+
+
+	@Test
+	public void testDayOfWeekFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).addMonths(1).dayOfWeek().is(DateExpression.TUESDAY));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).addMonths(1).dayOfWeek().is(DateExpression.MONDAY));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(3));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).addMonths(1).dayOfWeek().isNull());
 		got = query.getAllInstancesOf(marq);
 		database.print(got);
 		Assert.assertThat(got.size(), is(1));
