@@ -56,6 +56,14 @@ import nz.co.gregs.dbvolution.datatypes.*;
  */
 public class DateExpression implements DateResult, RangeComparable<DateResult> {
 
+	static final public Number SUNDAY = 1;
+	static final public Number MONDAY = 2;
+	static final public Number TUESDAY = 3;
+	static final public Number WEDNESDAY = 4;
+	static final public Number THURSDAY = 5;
+	static final public Number FRIDAY = 6;
+	static final public Number SATURDAY = 7;
+
 	private DateResult date1;
 	private boolean needsNullProtection = false;
 
@@ -1763,6 +1771,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 
 	public DateExpression endOfMonth() {
 		return this.addDays(this.day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1);
+	}
+
+	public NumberExpression dayOfWeek() {
+		return new NumberExpression(
+				new UnaryComplicatedNumberFunction(this) {
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doDayOfWeekTransform(this.only.toSQLString(db));
+					}
+				});
 	}
 
 	private static abstract class DBNonaryFunction extends DateExpression {

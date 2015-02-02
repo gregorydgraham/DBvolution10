@@ -314,4 +314,10 @@ public class OracleDBDefinition extends DBDefinition {
 	public String getSystemTableExclusionPattern() {
 		return "^[^$]*$"; //"^(.*(?!\\$)\\b)*$";
 	}
+
+	@Override
+	public String doDayOfWeekTransform(String dateSQL) {
+		return " TO_CHAR("+dateSQL+",'D')";
+	}
+
 }

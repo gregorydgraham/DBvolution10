@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import net.sourceforge.tedhi.FlexibleDateFormat;
@@ -55,6 +56,8 @@ public abstract class AbstractTest {
 	public static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
 	public static String firstDateStr = "23/March/2013 12:34:56";
 	public static String secondDateStr = "2/April/2011 1:02:03";
+	public static Date march23rd2013 = (new GregorianCalendar(2013, 2, 23, 12, 34, 56)).getTime();
+	public static Date april2nd2011 = (new GregorianCalendar(2011, 3, 2, 1, 2, 3)).getTime();
 
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException {

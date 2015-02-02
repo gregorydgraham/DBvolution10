@@ -365,4 +365,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String beginWithClause() {
 		return " WITH ";
 	}
+
+	@Override
+	public String doDayOfWeekTransform(String dateSQL) {
+		return " datepart(dw,("+dateSQL+"))";
+	}
 }

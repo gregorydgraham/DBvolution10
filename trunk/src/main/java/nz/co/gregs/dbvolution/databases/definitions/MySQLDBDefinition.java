@@ -149,4 +149,9 @@ public class MySQLDBDefinition extends DBDefinition {
 			return super.getSpecialPrimaryKeyTypeOfDBDatatype(field);
 		}
 	}
+
+	@Override
+	public String doDayOfWeekTransform(String dateSQL) {
+		return " DAYOFWEEK("+dateSQL+")";
+	}
 }

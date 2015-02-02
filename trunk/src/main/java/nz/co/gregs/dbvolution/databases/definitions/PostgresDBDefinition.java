@@ -220,4 +220,9 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1)";
 	}
 
+	@Override
+	public String doDayOfWeekTransform(String dateSQL) {
+		return " (EXTRACT(DOW FROM ("+dateSQL+"))+1)";
+	}
+
 }

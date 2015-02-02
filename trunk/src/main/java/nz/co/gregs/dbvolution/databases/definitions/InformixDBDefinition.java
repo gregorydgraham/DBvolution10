@@ -193,4 +193,8 @@ public class InformixDBDefinition extends DBDefinition {
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "((" + dateValue + ")+ (" + numberOfSeconds + ") UNITS SECOND)";
 	}
+
+	public String doDayOfWeekTransform(String dateSQL) {
+		return " (WEEKDAY("+dateSQL+")+1)";
+	}
 }

@@ -293,4 +293,9 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "cast((strftime('%s',"+otherDateValue+")-strftime('%s',"+dateValue+")) AS real)"; 
 	}
+
+	@Override
+	public String doDayOfWeekTransform(String dateSQL) {
+		return " (cast(STRFTIME('%w', ("+dateSQL+")) AS real)+1)";
+	}
 }

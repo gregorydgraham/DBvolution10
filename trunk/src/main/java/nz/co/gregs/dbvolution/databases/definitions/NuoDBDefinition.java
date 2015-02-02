@@ -23,7 +23,6 @@ import nz.co.gregs.dbvolution.databases.NuoDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
-import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -148,6 +147,12 @@ public class NuoDBDefinition extends DBDefinition{
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60*60)"; 
 	}
+
+	@Override
+	public String doDayOfWeekTransform(String dateSQL) {
+		return " DAYOFWEEK("+dateSQL+")";
+	}
+
 
 
 	

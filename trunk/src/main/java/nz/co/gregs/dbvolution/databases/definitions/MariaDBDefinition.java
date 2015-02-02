@@ -98,4 +98,10 @@ public class MariaDBDefinition extends DBDefinition {
 	public String getColumnAutoIncrementSuffix() {
 		return " AUTO_INCREMENT ";
 	}
+
+	@Override
+	public String doDayOfWeekTransform(String dateSQL) {
+		return " DAYOFWEEK("+dateSQL+")";
+	}
+
 }
