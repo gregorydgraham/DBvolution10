@@ -138,37 +138,37 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
-		return "(" + dateValue + "+ (" + numberOfSeconds + "*INTERVAL '1 SECOND' ))";
+		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 SECOND' )";
 	}
 
 	@Override
 	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
-		return "(" + dateValue + "+ (" + numberOfMinutes + "*INTERVAL '1 MINUTE' ))";
+		return "(" + dateValue + "+ (" + numberOfMinutes + ")*INTERVAL '1 MINUTE' )";
 	}
 
 	@Override
 	public String doAddDaysTransform(String dateValue, String numberOfDays) {
-		return "(" + dateValue + "+ (" + numberOfDays + "*INTERVAL '1 DAY' ))";
+		return "(" + dateValue + "+ (" + numberOfDays + ")*INTERVAL '1 DAY' )";
 	}
 
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
-		return "(" + dateValue + "+ (" + numberOfHours + "*INTERVAL '1 HOUR' ))";
+		return "(" + dateValue + "+ (" + numberOfHours + ")*INTERVAL '1 HOUR')";
 	}
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "(" + dateValue + "+ (" + numberOfWeeks + "*INTERVAL '1 WEEK' ))";
+		return "(" + dateValue + "+ (" + numberOfWeeks + ")*INTERVAL '1 WEEK')";
 	}
 
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfWeeks) {
-		return "(" + dateValue + "+ (" + numberOfWeeks + "*INTERVAL '1 MONTH' ))";
+		return "(" + dateValue + "+ (" + numberOfWeeks + ")*INTERVAL '1 MONTH')";
 	}
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfWeeks) {
-		return "(" + dateValue + "+ (" + numberOfWeeks + "*INTERVAL '1 YEAR' ))";
+		return "(" + dateValue + "+ (" + numberOfWeeks + ")*INTERVAL '1 YEAR')";
 	}
 
 	@Override
