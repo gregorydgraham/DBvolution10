@@ -246,6 +246,64 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testEndOfMonthFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).endOfMonth().day().is(31));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).endOfMonth().day().is(30));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(3));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).endOfMonth().day().isNull());
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+
+	}
+
+	@Test
+	public void testFirstOfMonthFunction() throws SQLException {
+		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
+		final Date march2nd2013 = (new GregorianCalendar(2013, 2, 2)).getTime();
+		final Date april1st2011 = (new GregorianCalendar(2011, 3, 1)).getTime();
+		final Date april2nd2011 = (new GregorianCalendar(2011, 3, 2)).getTime();
+		final Date nullDate = null;
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isBetween(march1st2013, march2nd2013));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isBetween(april1st2011,april2nd2011));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(3));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isNull());
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+
+	}
+
+	@Test
 	public void testDayFunction() throws SQLException {
 //        database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
