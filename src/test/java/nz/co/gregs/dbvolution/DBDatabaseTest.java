@@ -87,18 +87,18 @@ public class DBDatabaseTest extends AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
 
 		final CreateTableWithForeignKeyTestClass createTableTestClass = new CreateTableWithForeignKeyTestClass();
 		database.createTableWithForeignKeys(createTableTestClass);
-		System.out.println("CreateTableTestClass table created successfully");
-
+		System.out.println("CreateTableWithForeignKeyTestClass table created successfully");
+		
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
 	}
 

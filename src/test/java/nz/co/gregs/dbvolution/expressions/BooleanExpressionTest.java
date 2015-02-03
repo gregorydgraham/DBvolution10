@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -131,9 +132,10 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(22));
+		Assert.assertThat(allRows.size(), is(18));
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMDD");
 		for (DBQueryRow row : allRows) {
-			Assert.assertThat(row.get(marque).dateMarque.getValue().toString(), is(MarqueWithIfThenElse.thenDate.toString()));
+			Assert.assertThat(format.format(row.get(marque).dateMarque.getValue()), is(format.format(MarqueWithIfThenElse.thenDate)));
 		}
 
 		dbQuery = database.getDBQuery(marque);
@@ -142,9 +144,9 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(22));
+		Assert.assertThat(allRows.size(), is(4)); // NULL is included in the ELSE collection
 		for (DBQueryRow row : allRows) {
-			Assert.assertThat(row.get(marque).dateMarque.getValue().toString(), is(MarqueWithIfThenElse.elseDate.toString()));
+			Assert.assertThat(format.format(row.get(marque).dateMarque.getValue()), is(format.format(MarqueWithIfThenElse.elseDate)));
 		}
 	}
 
@@ -158,22 +160,10 @@ public class BooleanExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBNumber numberMarque = new DBNumber(this.column(this.carCompany).isIn(1, 4896300).ifThenElse(1, 2));
 
-		Date earlyDate = new Date();
-		public static Date thenDate = new Date();
-		public static Date elseDate = new Date();
+		public static final Date thenDate = (new GregorianCalendar(2015, 1, 3, 11, 22, 33)).getTime();
+		public static final Date elseDate = (new GregorianCalendar(2010, 11, 30, 23, 45, 56)).getTime();
 		@DBColumn
-		public DBDate dateMarque = new DBDate(this.column(this.creationDate).is(earlyDate).ifThenElse(MarqueWithIfThenElse.thenDate, elseDate));
-
-		{
-			SimpleDateFormat format = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
-			try {
-				earlyDate = format.parse(secondDateStr);
-				thenDate = format.parse("1/1/2011 00:00:00");
-				thenDate = format.parse("1/1/2014 00:00:00");
-			} catch (ParseException ex) {
-				Logger.getLogger(BooleanExpressionTest.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
+		public DBDate dateMarque = new DBDate(this.column(this.creationDate).is(march23rd2013).ifThenElse(thenDate, elseDate));
 	}
 
 	@Test

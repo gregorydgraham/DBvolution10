@@ -2639,7 +2639,7 @@ public abstract class DBDefinition {
 
 	public String doChooseTransformation(String numberToChooseWith, List<String> strs) {
 		if (supportsChooseNatively()) {
-			StringBuilder sql = new StringBuilder(getChooseFunctionName() + "("+numberToChooseWith);
+			StringBuilder sql = new StringBuilder(getChooseFunctionName() + "(" + numberToChooseWith);
 			String comma = ", ";
 			for (String str : strs) {
 				sql.append(comma).append(str);
@@ -2659,10 +2659,10 @@ public abstract class DBDefinition {
 		String op = " <= ";
 		for (int index = 0; index < strs.size(); index++) {
 			String str = strs.get(index);
-			if (index==strs.size()-1) {
-				sql+= " else "+str +" end)";
+			if (index == strs.size() - 1) {
+				sql += " else " + str + " end)";
 			} else {
-				sql += " when " + numberToChooseWith + op + (index+1) + " then " + str+System.getProperty("line.separator");
+				sql += " when " + numberToChooseWith + op + (index + 1) + " then " + str + System.getProperty("line.separator");
 				op = " = ";
 			}
 		}
@@ -2678,8 +2678,30 @@ public abstract class DBDefinition {
 	}
 
 	public String doIfThenElseTransform(String booleanTest, String thenResult, String elseResult) {
-		return "(CASE WHEN "+booleanTest+" THEN "+thenResult+" ELSE "+elseResult+" END)";
+		return "(CASE WHEN " + booleanTest + " THEN " + thenResult + " ELSE " + elseResult + " END)";
 	}
 
-	abstract public String doDayOfWeekTransform(String dateSQL) ;
+	abstract public String doDayOfWeekTransform(String dateSQL);
+
+	public String getIndexClauseForCreateTable(PropertyWrapper field) {
+		return "CREATE INDEX " + formatNameForDatabase("DBI_" + field.tableName() + "_" + field.columnName()) + " ON " + formatNameForDatabase(field.tableName()) + "(" + formatNameForDatabase(field.columnName()) + ")";
+	}
+
+	public String doBooleanArrayTransform(Boolean[] bools) {
+		StringBuilder str = new StringBuilder();
+		str.append("(");
+		String separator = "";
+		if (bools.length == 0) {
+			return "()";
+		} else if (bools.length == 1) {
+			return "(" + bools[0] + ",)";
+		} else {
+			for (Boolean bool : bools) {
+				str.append(separator).append(bool.toString().toUpperCase());
+				separator =",";
+			}
+			str.append(")");
+			return str.toString();
+		}
+	}
 }
