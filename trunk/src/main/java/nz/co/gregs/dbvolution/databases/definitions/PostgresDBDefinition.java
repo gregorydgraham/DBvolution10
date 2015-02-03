@@ -23,6 +23,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -72,6 +73,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " BYTEA ";
 		} else if (qdt instanceof DBBoolean) {
 			return " BOOLEAN ";
+		} else  if (qdt instanceof DBBooleanArray) {
+			return " BOOL[] ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -223,6 +226,25 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " (EXTRACT(DOW FROM ("+dateSQL+"))+1)";
+	}
+
+	@Override
+	public String doBooleanArrayTransform(Boolean[] bools) {
+		StringBuilder str = new StringBuilder();
+		str.append("'{");
+		String separator = "";
+		if (bools.length == 0) {
+			return "'{}'";
+		} else if (bools.length == 1) {
+			return "'{" + bools[0] + "}'";
+		} else {
+			for (Boolean bool : bools) {
+				str.append(separator).append(bool?1:0);
+				separator =",";
+			}
+			str.append("}'");
+			return str.toString();
+		}
 	}
 
 }

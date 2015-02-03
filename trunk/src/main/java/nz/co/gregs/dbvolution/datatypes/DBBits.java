@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -24,7 +25,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
+import nz.co.gregs.dbvolution.expressions.BitsResult;
 
 /**
  * Encapsulates database values that are BIT arrays of up to 64 bits.
@@ -33,8 +34,8 @@ import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
  * Use DBBoolean when the column is a {@code bool} or {@code bit(1)} datatype.
  *
  * <p>
- * Generally DBBooleanArray is declared inside your DBRow sub-class as:
- * {@code @DBColumn public DBBooleanArray myBoolColumn = new DBBooleanArray();}
+ Generally DBBooleanArray is declared inside your DBRow sub-class as:
+ {@code @DBColumn public DBBooleanArray myBoolColumn = new DBBooleanArray();}
  *
  * <p>
  * Yes/No Strings and 0/1 integer columns will need to use {@link DBString} and
@@ -44,7 +45,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
  *
  * @author Gregory Graham
  */
-public class DBBooleanArray extends QueryableDatatype implements BooleanArrayResult {
+public class DBBits extends QueryableDatatype implements BitsResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -55,7 +56,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 * Creates an unset undefined DBBits object.
 	 *
 	 */
-	public DBBooleanArray() {
+	public DBBits() {
 	}
 
 	/**
@@ -65,36 +66,36 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 * The resulting DBBits will be set as having the value provided but will
 	 * not be defined in the database.
 	 *
-	 * @param bools	bits
+	 * @param bits
 	 */
-	public DBBooleanArray(Boolean[] bools) {
-		super(bools);
+	public DBBits(boolean[] bits) {
+		super(bits);
 	}
 
 	/**
-	 * Creates a column expression with a Boolean[] result from the expression
+	 * Creates a column expression with a boolean result from the expression
 	 * provided.
 	 *
 	 * <p>
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param bools	bits
+	 * @param bits
 	 */
-	public DBBooleanArray(BooleanArrayResult bools) {
-		super(bools);
+	public DBBits(BitsResult bits) {
+		super(bits);
 	}
 
 	/**
 	 * Implements the standard Java equals method.
 	 *
-	 * @param other	other
+	 * @param other
 	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
 	public boolean equals(QueryableDatatype other) {
-		if (other instanceof DBBooleanArray) {
-			DBBooleanArray otherDBBits = (DBBooleanArray) other;
+		if (other instanceof DBBits) {
+			DBBits otherDBBits = (DBBits) other;
 			return Arrays.equals(getValue(), otherDBBits.getValue());
 		}
 		return false;
@@ -102,54 +103,26 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 
 	@Override
 	public String getSQLDatatype() {
-		return "ARRAY";
+		return "BIT(64)";
 	}
-
-	@Override
-	protected Boolean[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-		Boolean[] result = new Boolean[]{};
-		if (database.getDefinition().supportsArraysNatively()) {
-			Object array = resultSet.getArray(fullColumnName).getArray();
-			if (!resultSet.wasNull()) {
-				if (array instanceof Object[]) {
-					Object[] objArray = (Object[]) array;
-					if (objArray.length > 0) {
-						result = new Boolean[objArray.length];
-						for (int i = 0; i < objArray.length; i++) {
-							if (objArray[i] instanceof Boolean) {
-								result[i] = (Boolean) objArray[i];
-							} else {
-								Boolean bool = database.getDefinition().doBooleanArrayElementTransform();
-								result[i] = bool;
-							}
-						}
-					}
-				}
-			}
-		} else {
-			byte[] string = resultSet.getBytes(fullColumnName);
-			result = database.getDefinition().doBooleanArrayResultInterpretation(string);
-		}
-		return result;
-	}
-
+	
 	@Override
 	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof Boolean[]) {
-			setValue((Boolean[]) newLiteralValue);
+		if (newLiteralValue instanceof boolean[]) {
+			setValue((boolean[]) newLiteralValue);
 		} else if (newLiteralValue instanceof DBBooleanArray) {
 			setValue(((DBBooleanArray) newLiteralValue).booleanArrayValue());
 		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Boolean[]: Use only Boolean[1-100] with this class");
+			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-boolean[]: Use only boolean[1-64] with this class");
 		}
 	}
 
 	/**
 	 * Sets the value of this DBBooleanArray to the value provided.
 	 *
-	 * @param newLiteralValue	newLiteralValue
+	 * @param newLiteralValue
 	 */
-	public void setValue(Boolean[] newLiteralValue) {
+	public void setValue(boolean[] newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 
@@ -157,33 +130,32 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
 		if (getLiteralValue() != null) {
-			Boolean[] booleanArray = (Boolean[]) getLiteralValue();
-			return defn.doBooleanArrayTransform(booleanArray);
+			boolean[] boolArray = (boolean[]) getLiteralValue();
+			return defn.doBitsValueTransform(boolArray);
 		}
 		return defn.getNull();
 	}
 
 	/**
-	 * Returns the defined or set value of this DBBooleanArray as an actual
-	 * Boolean[].
+	 * Returns the defined or set value of this DBBooleanArray as an actual boolean[].
 	 *
-	 * @return the value of this QDT as a Boolean[].
+	 * @return the value of this QDT as a boolean.
 	 */
-	public Boolean[] booleanArrayValue() {
+	public boolean[] booleanArrayValue() {
 		if (this.getLiteralValue() != null) {
-			return (Boolean[]) this.getLiteralValue();
+			return (boolean[]) this.getLiteralValue();
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public DBBooleanArray copy() {
-		return (DBBooleanArray) (BooleanArrayResult) super.copy();
+	public DBBits copy() {
+		return (DBBits) super.copy();
 	}
 
 	@Override
-	public Boolean[] getValue() {
+	public boolean[] getValue() {
 		return booleanArrayValue();
 	}
 
@@ -210,6 +182,15 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		byte[] dbValue = resultSet.getBytes(fullColumnName);
+		if (resultSet.wasNull()) {
+			dbValue = null;
+		}
+		return dbValue;
 	}
 
 }
