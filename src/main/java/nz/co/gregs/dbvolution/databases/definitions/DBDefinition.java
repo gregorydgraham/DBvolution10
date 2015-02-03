@@ -2698,10 +2698,28 @@ public abstract class DBDefinition {
 		} else {
 			for (Boolean bool : bools) {
 				str.append(separator).append(bool.toString().toUpperCase());
-				separator =",";
+				separator = ",";
 			}
 			str.append(")");
 			return str.toString();
 		}
+	}
+
+	public Boolean doBooleanArrayElementTransform() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public Boolean[] doBooleanArrayResultInterpretation(byte[] bytes) {
+		Boolean[] bits = new Boolean[bytes.length * 8];
+		for (int i = 0; i < bytes.length * 8; i++) {
+			if ((bytes[i / 8] & (1 << (7 - (i % 8)))) > 0) {
+				bits[i] = true;
+			}
+		}
+		return bits;
+	}
+
+	public boolean supportsArraysNatively() {
+		return true;
 	}
 }

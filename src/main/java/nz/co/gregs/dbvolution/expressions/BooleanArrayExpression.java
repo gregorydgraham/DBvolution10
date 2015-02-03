@@ -29,15 +29,15 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * @author gregory.graham
  */
 // TODO imlement EqualsComparable<BooleanArrayExpression>
-public class BooleanArrayExpression implements BooleanArrayResult {
+public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<BooleanArrayResult> {
 
-	private final BooleanArrayResult innerBitsResult;
+	private final BooleanArrayResult innerBooleanArrayResult;
 
 	/**
 	 * Default Constructor.
 	 */
 	protected BooleanArrayExpression() {
-		this.innerBitsResult = new DBBooleanArray();
+		this.innerBooleanArrayResult = new DBBooleanArray();
 	}
 
 	/**
@@ -46,136 +46,12 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 * @param bitResult	bitResult
 	 */
 	public BooleanArrayExpression(BooleanArrayResult bitResult) {
-		this.innerBitsResult = bitResult;
+		this.innerBooleanArrayResult = bitResult;
 	}
 
 	@Override
 	public BooleanArrayExpression copy() {
-		return new BooleanArrayExpression(this.getInnerBitsResult());
-	}
-
-	/**
-	 * Create An Appropriate BooleanArrayExpression Object For This Object.
-	 *
-	 * <p>
-	 * The expression framework requires an Expression to work with. The easiest
-	 * way to get that are the {@code DBRow.column()} methods.
-	 *
-	 * <p>
-	 * However if you wish your expression to start with a literal value it is
-	 * even easier.
-	 *
-	 * <p>
-	 * This method provides the easy route to an expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
-	 *
-	 * <ul>
-	 * <li>Only object classes that are appropriate need to be handle by the
-	 * DBExpression subclass.<li>
-	 * <li>The implementation should be {@code static}</li>
-	 * </ul>
-	 *
-	 * @param number integer to base the BooleanArrayExpression on.
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
-	 */
-	public static BooleanArrayExpression value(int number) {
-		return NumberExpression.value(number).convertToBits();
-	}
-
-	/**
-	 * Create An Appropriate BooleanArrayExpression Object For This Object.
-	 *
-	 * <p>
-	 * The expression framework requires an Expression to work with. The easiest
-	 * way to get that are the {@code DBRow.column()} methods.
-	 *
-	 * <p>
-	 * However if you wish your expression to start with a literal value it is
-	 * even easier.
-	 *
-	 * <p>
-	 * This method provides the easy route to an expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
-	 *
-	 * <ul>
-	 * <li>Only object classes that are appropriate need to be handle by the
-	 * DBExpression subclass.<li>
-	 * <li>The implementation should be {@code static}</li>
-	 * </ul>
-	 *
-	 * @param number integer to base the BooleanArrayExpression on.
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
-	 */
-	public static BooleanArrayExpression value(long number) {
-		return NumberExpression.value(number).convertToBits();
-	}
-
-	/**
-	 * Create An Appropriate BooleanArrayExpression Object For This Object.
-	 *
-	 * <p>
-	 * The expression framework requires an Expression to work with. The easiest
-	 * way to get that are the {@code DBRow.column()} methods.
-	 *
-	 * <p>
-	 * However if you wish your expression to start with a literal value it is
-	 * even easier.
-	 *
-	 * <p>
-	 * This method provides the easy route to an expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
-	 *
-	 * <ul>
-	 * <li>Only object classes that are appropriate need to be handle by the
-	 * DBExpression subclass.<li>
-	 * <li>The implementation should be {@code static}</li>
-	 * </ul>
-	 *
-	 * @param number integer to base the BooleanArrayExpression on.
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
-	 */
-	public static BooleanArrayExpression value(double number) {
-		return NumberExpression.value(number).convertToBits();
-	}
-
-	/**
-	 * Create An Appropriate BooleanArrayExpression Object For This Object.
-	 *
-	 * <p>
-	 * The expression framework requires an Expression to work with. The easiest
-	 * way to get that are the {@code DBRow.column()} methods.
-	 *
-	 * <p>
-	 * However if you wish your expression to start with a literal value it is
-	 * even easier.
-	 *
-	 * <p>
-	 * This method provides the easy route to an expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
-	 *
-	 * <ul>
-	 * <li>Only object classes that are appropriate need to be handle by the
-	 * DBExpression subclass.<li>
-	 * <li>The implementation should be {@code static}</li>
-	 * </ul>
-	 *
-	 * @param number integer to base the BooleanArrayExpression on.
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
-	 */
-	public static BooleanArrayExpression value(Number number) {
-		return NumberExpression.value(number).convertToBits();
+		return new BooleanArrayExpression(this.getInnerBooleanArrayResult());
 	}
 
 	@Override
@@ -185,8 +61,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		if (innerBitsResult != null) {
-			return innerBitsResult.toSQLString(db);
+		if (innerBooleanArrayResult != null) {
+			return innerBooleanArrayResult.toSQLString(db);
 		} else {
 			return "";
 		}
@@ -194,8 +70,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 
 	@Override
 	public boolean isAggregator() {
-		if (innerBitsResult != null) {
-			return innerBitsResult.isAggregator();
+		if (innerBooleanArrayResult != null) {
+			return innerBooleanArrayResult.isAggregator();
 		} else {
 			return false;
 		}
@@ -203,8 +79,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		if (innerBitsResult != null) {
-			return innerBitsResult.getTablesInvolved();
+		if (innerBooleanArrayResult != null) {
+			return innerBooleanArrayResult.getTablesInvolved();
 		} else {
 			return new HashSet<DBRow>();
 		}
@@ -212,8 +88,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 
 	@Override
 	public boolean getIncludesNull() {
-		if (innerBitsResult != null) {
-			return innerBitsResult.getIncludesNull();
+		if (innerBooleanArrayResult != null) {
+			return innerBooleanArrayResult.getIncludesNull();
 		} else {
 			return false;
 		}
@@ -221,10 +97,10 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 
 	@Override
 	public boolean isPurelyFunctional() {
-		if (innerBitsResult == null) {
+		if (innerBooleanArrayResult == null) {
 			return true;
 		} else {
-			return innerBitsResult.isPurelyFunctional();
+			return innerBooleanArrayResult.isPurelyFunctional();
 		}
 	}
 
@@ -233,59 +109,8 @@ public class BooleanArrayExpression implements BooleanArrayResult {
 	 *
 	 * @return The BooleanArrayResult used internally.
 	 */
-	protected BooleanArrayResult getInnerBitsResult() {
-		return innerBitsResult;
-	}
-
-	/**
-	 * Create a BooleanExpression that will compare the integer provided to this
-	 * BooleanArrayExpression using the equivalent of the EQUALS operator.
-	 *
-	 * @param i the value to compare this expression to.
-	 * @return a BooleanExpresson of the Bit comparison of the integer and this
-	 * expression.
-	 */
-	public BooleanExpression is(int i) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " = ";
-			}
-		});
-	}
-
-	/**
-	 * Create a BooleanExpression that will compare the long provided to this
-	 * BooleanArrayExpression using the equivalent of the EQUALS operator.
-	 *
-	 * @param i the value to compare this expression to
-	 * @return a BooleanExpresson of the Bit comparison of the long and this
-	 * expression.
-	 */
-	public BooleanExpression is(long i) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " = ";
-			}
-		});
-	}
-
-	/**
-	 * Create a BooleanExpression that will compare the number provided to this
-	 * BooleanArrayExpression using the equivalent of the EQUALS operator.
-	 *
-	 * @param i the value to compare this expression to
-	 * @return a BooleanExpresson of the Bit comparison of the number and this
-	 * expression.
-	 */
-	public BooleanExpression is(Number i) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, NumberExpression.value(i).convertToBits()) {
-			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " = ";
-			}
-		});
+	protected BooleanArrayResult getInnerBooleanArrayResult() {
+		return innerBooleanArrayResult;
 	}
 
 	/**

@@ -1527,8 +1527,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @return a NumberExpression of the NumberExpression changed to a BIT type.
 	 */
-	public BooleanArrayExpression convertToBits() {
-		return new BooleanArrayExpression(new DBUnaryBitsFunction(this) {
+	public BitsExpression convertToBits() {
+		return new BitsExpression(new DBUnaryBitsFunction(this) {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
@@ -2183,7 +2183,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	private static abstract class DBUnaryBitsFunction implements BooleanArrayResult {
+	private static abstract class DBUnaryBitsFunction implements BitsResult {
 
 		protected DBExpression only;
 
