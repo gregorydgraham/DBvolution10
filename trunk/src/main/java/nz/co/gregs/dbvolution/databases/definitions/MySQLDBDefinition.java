@@ -152,6 +152,15 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " DAYOFWEEK("+dateSQL+")";
+		return " DAYOFWEEK(" + dateSQL + ")";
+	}
+
+	@Override
+	public String getIndexClauseForCreateTable(PropertyWrapper field) {
+		if (field.getQueryableDatatype() instanceof DBString) {
+			return "CREATE INDEX " + formatNameForDatabase("DBI_" + field.tableName() + "_" + field.columnName()) + " ON " + formatNameForDatabase(field.tableName()) + "(" + formatNameForDatabase(field.columnName()) + "(255))";
+		} else {
+			return super.getIndexClauseForCreateTable(field);
+		}
 	}
 }

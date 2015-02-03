@@ -863,7 +863,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * is used during a DBTransaction or DBScript
 	 */
 	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		createTable(newTableRow, false);
+		createTable(newTableRow, false, false);
 	}
 
 	/**
@@ -894,10 +894,10 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 */
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		createTable(newTableRow, true);
+		createTable(newTableRow, true, true);
 	}
 
-	private void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+	private void createTable(DBRow newTableRow, boolean includeForeignKeyClauses, boolean includeIndexes) throws SQLException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 		StringBuilder sqlScript = new StringBuilder();
 		List<PropertyWrapper> pkFields = new ArrayList<PropertyWrapper>();
@@ -911,6 +911,7 @@ public abstract class DBDatabase implements Cloneable {
 		String nextSep = definition.getCreateTableColumnsSeparator();
 		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
 		List<String> fkClauses = new ArrayList<String>();
+		List<String> indexClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 				String colName = field.columnName();
@@ -927,6 +928,10 @@ public abstract class DBDatabase implements Cloneable {
 				String fkClause = definition.getForeignKeyClauseForCreateTable(field);
 				if (!fkClause.isEmpty()) {
 					fkClauses.add(fkClause);
+				}
+				String indexClause = definition.getIndexClauseForCreateTable(field);
+				if (!indexClause.isEmpty()) {
+					indexClauses.add(indexClause);
 				}
 			}
 		}
@@ -967,6 +972,18 @@ public abstract class DBDatabase implements Cloneable {
 			}
 		} finally {
 			dbStatement.close();
+		}
+
+		//Create indexes
+		if (includeIndexes && indexClauses.size() > 0) {
+			final DBStatement statement = getDBStatement();
+			try {
+				for (String indexClause : indexClauses) {
+					statement.execute(indexClause);
+				}
+			} finally {
+				statement.close();
+			}
 		}
 	}
 
@@ -1035,12 +1052,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param <TR> DBRow type
 	 * @param tableRow tableRow
 	 */
-	@SuppressWarnings("empty-statement")
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		try {
 			this.dropTable(tableRow);
 //			this.dropAnyAssociatedDatabaseObjects(tableRow);
 		} catch (SQLException exp) {
+			exp.printStackTrace();
 		}
 	}
 
@@ -1412,8 +1429,10 @@ public abstract class DBDatabase implements Cloneable {
 		getConnectionList(freeConnections).remove(connection);
 		try {
 			connection.close();
+
 		} catch (SQLException ex) {
-			Logger.getLogger(DBDatabase.class.getName()).log(Level.FINEST, null, ex);
+			Logger.getLogger(DBDatabase.class
+					.getName()).log(Level.FINEST, null, ex);
 		}
 		connectionClosed(connection);
 	}

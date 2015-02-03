@@ -103,6 +103,10 @@ public class RowDefinition implements Serializable {
 	public LargeObjectColumn column(DBLargeObject fieldOfThisInstance) {
 		return new LargeObjectColumn(this, fieldOfThisInstance);
 	}
+	
+	public BooleanArrayColumn column(DBBooleanArray fieldOfThisInstance) {
+		return new BooleanArrayColumn(this, fieldOfThisInstance);
+	}
 
 	/**
 	 * Creates a new ColumnProvider instance to help create
@@ -138,6 +142,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBStringEnum) fieldOfThisInstance);
 		} else if (DBString.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBString) fieldOfThisInstance);
+		} else if (DBBooleanArray.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBBooleanArray) fieldOfThisInstance);
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);
