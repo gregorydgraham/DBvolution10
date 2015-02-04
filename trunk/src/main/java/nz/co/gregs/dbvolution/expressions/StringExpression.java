@@ -45,7 +45,7 @@ import nz.co.gregs.dbvolution.datatypes.*;
  *
  * @author Gregory Graham
  */
-public class StringExpression implements StringResult, RangeComparable<StringExpression> {
+public class StringExpression implements StringResult, RangeComparable<StringResult> {
 
 	private StringResult string1=null;
 	private boolean nullProtectionRequired;
@@ -506,6 +506,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+	@Override
 	public BooleanExpression is(StringResult equivalentString) {
 		if (equivalentString == null) {
 			return new BooleanExpression(this.isNull());
@@ -956,6 +957,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+	@Override
 	public BooleanExpression isLessThan(StringResult equivalentString) {
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
@@ -987,7 +989,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	public BooleanExpression isLessThanOrEqual(String equivalentString) {
 		return isLessThanOrEqual(value(equivalentString));
 	}
-
+	
 	/**
 	 * Creates a query comparison using the "&lt;=" operator.
 	 *
@@ -998,6 +1000,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+	@Override
 	public BooleanExpression isLessThanOrEqual(StringResult equivalentString) {
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
@@ -1040,6 +1043,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+	@Override
 	public BooleanExpression isGreaterThan(StringResult equivalentString) {
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNotNull());
@@ -1082,6 +1086,7 @@ public class StringExpression implements StringResult, RangeComparable<StringExp
 	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+	@Override
 	public BooleanExpression isGreaterThanOrEqual(StringResult equivalentString) {
 		if (equivalentString.getIncludesNull()) {
 			return this.is(equivalentString).not();

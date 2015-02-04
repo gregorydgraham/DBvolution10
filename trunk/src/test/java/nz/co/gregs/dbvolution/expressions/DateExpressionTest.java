@@ -287,7 +287,7 @@ public class DateExpressionTest extends AbstractTest {
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).firstOfMonth().isBetween(april1st2011,april2nd2011));
+				marq.column(marq.creationDate).firstOfMonth().isBetween(april1st2011, april2nd2011));
 		got = query.getAllInstancesOf(marq);
 		database.print(got);
 		Assert.assertThat(got.size(), is(3));
@@ -300,7 +300,6 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(1));
 
 	}
-
 
 	@Test
 	public void testDayOfWeekFunction() throws SQLException {
@@ -798,6 +797,8 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	public static class MarqueWithEndOfMonthColumn extends Marque {
+
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn
 		DBDateOnly firstOfMonth = new DBDateOnly(this.column(this.creationDate).addDays(this.column(this.creationDate).day().minus(1).bracket().times(-1)));

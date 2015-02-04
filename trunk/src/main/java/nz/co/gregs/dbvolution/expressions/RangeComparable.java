@@ -25,5 +25,8 @@ package nz.co.gregs.dbvolution.expressions;
  * @param <A> the class that can be compared
  */
 public interface RangeComparable<A> extends EqualComparable<A> {
-	
+	public BooleanExpression isLessThan(A anotherInstance);
+	public BooleanExpression isLessThanOrEqual(A anotherInstance);
+	public BooleanExpression isGreaterThan(A anotherInstance);
+	public BooleanExpression isGreaterThanOrEqual(A anotherInstance);
 }
