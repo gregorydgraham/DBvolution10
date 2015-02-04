@@ -108,4 +108,23 @@ public class H2DBDefinition extends DBDefinition {
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " DAY_OF_WEEK("+dateSQL+")";
 	}
+	
+	@Override
+	public String doBooleanArrayTransform(Boolean[] bools) {
+		StringBuilder str = new StringBuilder();
+		str.append("(");
+		String separator = "";
+		if (bools.length == 0) {
+			return "()";
+		} else if (bools.length == 1) {
+			return "(" + bools[0] + ",)";
+		} else {
+			for (Boolean bool : bools) {
+				str.append(separator).append(bool.toString().toUpperCase());
+				separator = ",";
+			}
+			str.append(")");
+			return str.toString();
+		}
+	}
 }

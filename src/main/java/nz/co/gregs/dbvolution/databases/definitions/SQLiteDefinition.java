@@ -18,9 +18,13 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
+import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -78,6 +82,8 @@ public class SQLiteDefinition extends DBDefinition {
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBLargeObject) {
 			return " TEXT ";
+		} else if (qdt instanceof DBBooleanArray) {
+			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME ";
 		} else {
@@ -297,5 +303,10 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " (cast(STRFTIME('%w', ("+dateSQL+")) AS real)+1)";
+	}
+
+	@Override
+	public boolean supportsArraysNatively() {
+		return false;
 	}
 }

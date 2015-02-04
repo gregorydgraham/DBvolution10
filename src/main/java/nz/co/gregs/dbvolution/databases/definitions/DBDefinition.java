@@ -19,6 +19,8 @@ import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -2689,37 +2691,36 @@ public abstract class DBDefinition {
 
 	public String doBooleanArrayTransform(Boolean[] bools) {
 		StringBuilder str = new StringBuilder();
-		str.append("(");
-		String separator = "";
-		if (bools.length == 0) {
-			return "()";
-		} else if (bools.length == 1) {
-			return "(" + bools[0] + ",)";
-		} else {
-			for (Boolean bool : bools) {
-				str.append(separator).append(bool.toString().toUpperCase());
-				separator = ",";
-			}
-			str.append(")");
-			return str.toString();
+		for (Boolean bool : bools) {
+			str.append((bool==true ? "1" : "0"));
 		}
+		return "'"+str.toString()+"'";
 	}
 
-	public Boolean doBooleanArrayElementTransform() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	public Boolean[] doBooleanArrayResultInterpretation(byte[] bytes) {
-		Boolean[] bits = new Boolean[bytes.length * 8];
-		for (int i = 0; i < bytes.length * 8; i++) {
-			if ((bytes[i / 8] & (1 << (7 - (i % 8)))) > 0) {
-				bits[i] = true;
-			}
+//	public Boolean[] doBooleanArrayResultInterpretation(byte[] bytes) {
+//		Boolean[] bits = new Boolean[bytes.length * 8];
+//		for (int i = 0; i < bytes.length * 8; i++) {
+//			if ((bytes[i / 8] & (1 << (7 - (i % 8)))) > 0) {
+//				bits[i] = true;
+//			}else{
+//				bits[i] = false;
+//			}
+//		}
+//		return bits;
+//	}
+	public Boolean[] doBooleanArrayResultInterpretation(String stringOfBools) {
+		Boolean[] result = new Boolean[stringOfBools.length()];
+		for (int i = 0; i < stringOfBools.length(); i++) {
+			result[i] = (stringOfBools.substring(i, i+1)).equals("1");
 		}
-		return bits;
+		return result;
 	}
 
 	public boolean supportsArraysNatively() {
 		return true;
+	}
+
+	public Boolean doBooleanArrayElementTransform() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

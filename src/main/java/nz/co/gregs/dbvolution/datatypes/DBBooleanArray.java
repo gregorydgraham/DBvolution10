@@ -127,7 +127,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 				}
 			}
 		} else {
-			byte[] string = resultSet.getBytes(fullColumnName);
+			String string = resultSet.getString(fullColumnName);
 			result = database.getDefinition().doBooleanArrayResultInterpretation(string);
 		}
 		return result;

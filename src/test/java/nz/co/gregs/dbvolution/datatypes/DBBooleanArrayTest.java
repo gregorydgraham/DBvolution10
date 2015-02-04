@@ -127,6 +127,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		Assert.assertThat(
 				result,
 				anyOf(
+						is("'011'"), //MS SQLServer
 						is("b'110'"), //MySQL
 						is("(FALSE,TRUE,TRUE)"), //H2
 						is("'{0,1,1}'") // Postgres
@@ -237,9 +238,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		boolArrayTable.boolArrayColumn.setValue(theValue);
 		database.insert(boolArrayTable);
 		BooleanArrayTable bitsRow = database.getDBQuery(boolArrayTable).getOnlyInstanceOf(boolArrayTable);
-		final Boolean[] booleanArrayValue = bitsRow.boolArrayColumn.booleanArrayValue();
-		Boolean[] copyOf = Arrays.copyOf(booleanArrayValue,3);
-		Assert.assertThat(copyOf, is(theValue));
+		Assert.assertThat(bitsRow.boolArrayColumn.booleanArrayValue(), is(theValue));
 	}
 
 	public static class BooleanArrayTable extends DBRow {
