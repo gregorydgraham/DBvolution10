@@ -24,6 +24,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 public class DBMultipoint extends QueryableDatatype {
 
+	private static final long serialVersionUID = 1L;
+
 	public DBMultipoint() {
 	}
 

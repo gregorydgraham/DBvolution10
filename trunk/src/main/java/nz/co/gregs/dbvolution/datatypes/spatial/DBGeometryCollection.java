@@ -23,6 +23,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 public class DBGeometryCollection extends QueryableDatatype {
 
+	private static final long serialVersionUID = 1L;
+
 	public DBGeometryCollection() {
 	}
 
