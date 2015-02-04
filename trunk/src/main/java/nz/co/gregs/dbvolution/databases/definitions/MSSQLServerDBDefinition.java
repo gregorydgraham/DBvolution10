@@ -59,6 +59,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBBoolean) {
 			return " BIT ";
+		} else if (qdt instanceof DBBooleanArray) {
+			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIMEOFFSET ";
 		} else if (qdt instanceof DBLargeObject) {
@@ -370,4 +372,19 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " datepart(dw,("+dateSQL+"))";
 	}
+
+	@Override
+	public boolean supportsArraysNatively() {
+		return false;
+	}
+//
+//	@Override
+//	public String doBooleanArrayTransform(Boolean[] bools) {
+//		StringBuilder str = new StringBuilder();
+//		for (Boolean bool : bools) {
+//			str.append((bool?"1":"0"));
+//		}
+//		Long parseLong = Long.parseLong(str.toString(),2);
+//		return "0x"+ parseLong.byteValue();
+//	}
 }

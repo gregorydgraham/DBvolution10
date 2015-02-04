@@ -64,7 +64,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBLargeObject) {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
-			return " BIT(64) ";
+			return " VARCHAR(64) ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
@@ -166,41 +166,41 @@ public class MySQLDBDefinition extends DBDefinition {
 		}
 	}
 
-	@Override
-	public String doBooleanArrayTransform(Boolean[] bools) {
-		StringBuilder str = new StringBuilder();
-		str.append("'");
-		String separator = "";
-		if (bools.length == 0) {
-			return "''";
-		} else if (bools.length == 1) {
-			return "'" + (bools[0] ? 1 : 0) + "'";
-		} else {
-			for (Boolean bool : bools) {
-				str.append(separator).append(bool ? 1 : 0);
-			}
-			str.append("'");
-			return "b" + str.reverse();
-		}
-	}
-
-	@Override
-	public Boolean[] doBooleanArrayResultInterpretation(byte[] bytes) {
-		Boolean[] bools = new Boolean[bytes.length * 8];
-		for (int i = 0; i < bytes.length * 8; i++) {
-			if ((bytes[i / 8] & (1 << (7 - (i % 8)))) > 0) {
-				bools[i] = true;
-			}else{
-				bools[i] = false;
-			}
-		}
-		final int length = bools.length;
-		Boolean[] reversedBools = new Boolean[length];
-		for (int i = 0; i < length; i++) {
-			reversedBools[length-(i+1)] = bools[i];
-		}
-		return reversedBools;
-	}
+//	@Override
+//	public String doBooleanArrayTransform(Boolean[] bools) {
+//		StringBuilder str = new StringBuilder();
+//		str.append("'");
+//		String separator = "";
+//		if (bools.length == 0) {
+//			return "''";
+//		} else if (bools.length == 1) {
+//			return "'" + (bools[0] ? 1 : 0) + "'";
+//		} else {
+//			for (Boolean bool : bools) {
+//				str.append(separator).append(bool ? 1 : 0);
+//			}
+//			str.append("'");
+//			return "b" + str.reverse();
+//		}
+//	}
+//
+//	@Override
+//	public Boolean[] doBooleanArrayResultInterpretation(byte[] bytes) {
+//		Boolean[] bools = new Boolean[bytes.length * 8];
+//		for (int i = 0; i < bytes.length * 8; i++) {
+//			if ((bytes[i / 8] & (1 << (7 - (i % 8)))) > 0) {
+//				bools[i] = true;
+//			}else{
+//				bools[i] = false;
+//			}
+//		}
+//		final int length = bools.length;
+//		Boolean[] reversedBools = new Boolean[length];
+//		for (int i = 0; i < length; i++) {
+//			reversedBools[length-(i+1)] = bools[i];
+//		}
+//		return reversedBools;
+//	}
 
 	@Override
 	public boolean supportsArraysNatively() {
