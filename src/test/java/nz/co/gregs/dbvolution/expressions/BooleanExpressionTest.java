@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -33,8 +30,9 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import static nz.co.gregs.dbvolution.generic.AbstractTest.secondDateStr;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -443,10 +441,7 @@ public class BooleanExpressionTest extends AbstractTest {
 	public void testNumberIsAnyOf() throws SQLException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
-		List<Long> longs = new ArrayList<Long>();
-		longs.add(new Long(1));
-		longs.add(new Long(2));
-
+		
 		dbQuery.addCondition(
 				BooleanExpression.anyOf(
 						marque.column(marque.uidMarque).is(1),
@@ -462,9 +457,6 @@ public class BooleanExpressionTest extends AbstractTest {
 	public void testNumberIsNoneOf() throws SQLException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
-		List<Long> longs = new ArrayList<Long>();
-		longs.add(new Long(1));
-		longs.add(new Long(2));
 
 		dbQuery.addCondition(
 				BooleanExpression.noneOf(
@@ -756,5 +748,23 @@ public class BooleanExpressionTest extends AbstractTest {
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(5));
+	}
+
+	@Test
+	public void testSeekStringString() throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+
+		dbQuery.addCondition(
+				BooleanExpression.seekLessThan(
+						marq.column(marq.name), StringExpression.value("BMW"),
+						marq.column(marq.uidMarque), NumberExpression.value(6664478),
+						marq.column(marq.creationDate), DateExpression.value(april2nd2011)
+				)
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
 	}
 }

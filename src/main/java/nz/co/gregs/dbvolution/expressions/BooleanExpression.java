@@ -64,7 +64,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public class BooleanExpression implements BooleanResult, EqualComparable<BooleanExpression> {
+public class BooleanExpression implements BooleanResult, EqualComparable<BooleanResult> {
 
 	private final BooleanResult onlyBool;
 	private boolean includeNulls;
@@ -193,6 +193,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @return a BooleanExpression that compares the previous BooleanExpression to
 	 * the Boolean supplied.
 	 */
+	@Override
 	public BooleanExpression is(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
 			@Override
@@ -623,6 +624,60 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				return false;
 			}
 		};
+	}
+
+	public static 
+		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>> 
+		BooleanExpression 
+		seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB) {
+		return BooleanExpression.anyOf(
+				columnA.isLessThan(valueA),
+				BooleanExpression.allOf(columnA.is(valueA), columnB.isLessThanOrEqual(valueB)));
+	}
+
+	public static 
+		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>> 
+		BooleanExpression 
+		seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC) {
+		return BooleanExpression.anyOf(
+				columnA.isLessThan(valueA),
+				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC)));
+	}
+
+	public static 
+		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>> 
+		BooleanExpression 
+		seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC, RangeComparableW columnD, RangeComparableW valueD) {
+		return BooleanExpression.anyOf(
+				columnA.isLessThan(valueA),
+				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC, columnD, valueD)));
+	}
+
+	public static 
+		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>> 
+		BooleanExpression 
+		seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB) {
+		return BooleanExpression.anyOf(
+				columnA.isGreaterThan(valueA),
+				BooleanExpression.allOf(columnA.is(valueA), columnB.isGreaterThanOrEqual(valueB)));
+	}
+
+	public static 
+		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>> 
+		BooleanExpression 
+		seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC) {
+		return BooleanExpression.anyOf(
+				columnA.isGreaterThan(valueA),
+				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC)));
+	}
+
+	public static 
+		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>> 
+		BooleanExpression 
+		seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC, RangeComparableW columnD, RangeComparableW valueD) {
+		return BooleanExpression.anyOf(
+				columnA.isGreaterThan(valueA),
+				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC, columnD, valueD)));
 	}
 
 	@Override
