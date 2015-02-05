@@ -21,6 +21,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
+import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
+import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.
@@ -95,6 +97,7 @@ public class PostgresDB extends DBDatabase {
 				POSTGRES_DRIVER_NAME,
 				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
 				username, password);
+		this.setDatabaseName(databaseName);
 	}
 
 	/**
@@ -182,6 +185,16 @@ public class PostgresDB extends DBDatabase {
 			dbStatement.execute(sqlString);
 		} finally {
 			dbStatement.close();
+		}
+	}
+	
+	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
+		try {
+			this.dropTable(tableRow);
+		} catch (org.postgresql.util.PSQLException exp) {
+			exp.printStackTrace();
+		} catch (SQLException exp) {
+			exp.printStackTrace();
 		}
 	}
 }

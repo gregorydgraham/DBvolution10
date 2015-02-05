@@ -1055,7 +1055,6 @@ public abstract class DBDatabase implements Cloneable {
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		try {
 			this.dropTable(tableRow);
-//			this.dropAnyAssociatedDatabaseObjects(tableRow);
 		} catch (SQLException exp) {
 			exp.printStackTrace();
 		}
