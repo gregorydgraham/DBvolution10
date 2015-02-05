@@ -441,7 +441,7 @@ public class BooleanExpressionTest extends AbstractTest {
 	public void testNumberIsAnyOf() throws SQLException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
-		
+
 		dbQuery.addCondition(
 				BooleanExpression.anyOf(
 						marque.column(marque.uidMarque).is(1),
@@ -469,12 +469,6 @@ public class BooleanExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(20));
 	}
 
-	/*
-	 query.addCondition(BooleanExpression.anyOf(
-	 row.column(row.date1).is((Date)null),
-	 row.column(row.date1).is(new Date())
-	 ).not());
-	 */
 	@Test
 	public void testIsAnyOfWithNulls() throws SQLException, ParseException {
 		CarCompany carCo = new CarCompany();
@@ -751,7 +745,7 @@ public class BooleanExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSeekStringString() throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException {
+	public void testSeekLessThanStringNumberDate() throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 
@@ -766,5 +760,63 @@ public class BooleanExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
+
+		dbQuery = database.getDBQuery(marq);
+
+		dbQuery.addCondition(
+				BooleanExpression.seekLessThan(
+						marq.column(marq.name), StringExpression.value("BMW"),
+						marq.column(marq.uidMarque), NumberExpression.value(6664478),
+						marq.column(marq.creationDate), DateExpression.value(april2nd2011)
+				)
+		);
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+	}
+
+	@Test
+	public void testSeekGreaterThanStringNumberDate() throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+
+		dbQuery.addCondition(
+				BooleanExpression.seekGreaterThan(
+						marq.column(marq.name), StringExpression.value("BMW"),
+						marq.column(marq.uidMarque), NumberExpression.value(6664478),
+						marq.column(marq.creationDate), DateExpression.value(march23rd2013)
+				)
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(21));
+	}
+
+	@Test
+	public void testOr() throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+
+		dbQuery.addCondition(
+				marq.column(marq.name).isLessThan("FORD")
+				.or(marq.column(marq.updateCount).isGreaterThan(2))
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(7));
+
+		dbQuery = database.getDBQuery(marq);
+
+		dbQuery.addCondition(
+				marq.column(marq.name).isLessThan("FORD")
+				.or(marq.column(marq.creationDate).isLessThan(march23rd2013))
+		);
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(6));
 	}
 }

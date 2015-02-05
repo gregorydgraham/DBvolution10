@@ -261,6 +261,100 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
+	 * Like LESSTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isLessThan(String value, BooleanExpression fallBackWhenEquals){
+		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isGreaterThan(String value, BooleanExpression fallBackWhenEquals){
+		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like LESSTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	@Override
+	public BooleanExpression isLessThan(StringResult value, BooleanExpression fallBackWhenEquals){
+		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	@Override
+	public BooleanExpression isGreaterThan(StringResult value, BooleanExpression fallBackWhenEquals){
+		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
 	 * Creates a query comparison using the LIKE operator.
 	 *
 	 * <p>
