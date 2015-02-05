@@ -16,8 +16,9 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Indicates that the class can be compared to other instances of this class as if the instances were part of a range.
- * 
+ * Indicates that the class can be compared to other instances of this class as
+ * if the instances were part of a range.
+ *
  * <p>
  * Methods appropriate to a range include Greater Than, Less Than, and Equals.
  *
@@ -25,8 +26,66 @@ package nz.co.gregs.dbvolution.expressions;
  * @param <A> the class that can be compared
  */
 public interface RangeComparable<A> extends EqualComparable<A> {
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using
+	 * the LESSTHAN operation.
+	 *
+	 * @param anotherInstance
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isLessThan(A anotherInstance);
-	public BooleanExpression isLessThanOrEqual(A anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using
+	 * the GREATERTHAN operation.
+	 *
+	 * @param anotherInstance
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isGreaterThan(A anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using
+	 * the LESSTHAN operation.
+	 *
+	 * @param anotherInstance
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isLessThanOrEqual(A anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using
+	 * the GREATERTHAN operation.
+	 *
+	 * @param anotherInstance
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isGreaterThanOrEqual(A anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using
+	 * the LESSTHAN operation.
+	 *
+	 * <p>
+	 * However when the 2 values are equal the results of the fallback
+	 * expression is returned instead. This helps apply the LESSTHAN operator
+	 * across multiple columns.
+	 *
+	 * @param anotherInstance
+	 * @param fallBackWhenEqual
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isLessThan(A anotherInstance, BooleanExpression fallBackWhenEqual);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using
+	 * the GREATERTHAN operation.
+	 *
+	 * @param anotherInstance
+	 * @param fallBackWhenEqual
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isGreaterThan(A anotherInstance, BooleanExpression fallBackWhenEqual);
+
 }

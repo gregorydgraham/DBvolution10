@@ -886,6 +886,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @param dateExpression the date this expression must not exceed
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isLessThan(DateResult dateExpression) {
 		return new BooleanExpression(new DateExpression.DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -918,6 +919,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @param dateExpression the date this expression must not exceed
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -950,6 +952,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @param dateExpression the date this expression must be compared to
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isGreaterThan(DateResult dateExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -982,6 +985,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @param dateExpression the date this expression must be compared to
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
@@ -994,6 +998,100 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				return false;
 			}
 		});
+	}
+
+	/**
+	 * Like LESSTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isLessThan(Date value, BooleanExpression fallBackWhenEquals){
+		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isGreaterThan(Date value, BooleanExpression fallBackWhenEquals){
+		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like LESSTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	@Override
+	public BooleanExpression isLessThan(DateResult value, BooleanExpression fallBackWhenEquals){
+		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	@Override
+	public BooleanExpression isGreaterThan(DateResult value, BooleanExpression fallBackWhenEquals){
+		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**

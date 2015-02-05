@@ -749,6 +749,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
+	@Override
 	public BooleanExpression isGreaterThanOrEqual(NumberResult number) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, number) {
 			@Override
@@ -761,6 +762,100 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 				return false;
 			}
 		});
+	}
+
+	/**
+	 * Like LESSTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isLessThan(Number value, BooleanExpression fallBackWhenEquals) {
+		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like LESSTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isGreaterThan(Number value, BooleanExpression fallBackWhenEquals) {
+		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	@Override
+	public BooleanExpression isLessThan(NumberResult value, BooleanExpression fallBackWhenEquals) {
+		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+	}
+
+	/**
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * @return a BooleanExpression
+	 */
+	@Override
+	public BooleanExpression isGreaterThan(NumberResult value, BooleanExpression fallBackWhenEquals) {
+		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
@@ -1735,18 +1830,16 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	public NumberExpression mod(Number num) {
 		return this.mod(new NumberExpression(num));
 	}
-	
-	public StringExpression choose(String... stringsToChooseFrom)
-	{
+
+	public StringExpression choose(String... stringsToChooseFrom) {
 		List<StringResult> strResult = new ArrayList<StringResult>();
 		for (String str : stringsToChooseFrom) {
 			strResult.add(new StringExpression(str));
 		}
 		return choose(strResult.toArray(new StringResult[]{}));
 	}
-	
-	public StringExpression choose(StringResult... stringsToChooseFrom)
-	{
+
+	public StringExpression choose(StringResult... stringsToChooseFrom) {
 		StringExpression leastExpr
 				= new StringExpression(new DBNumberAndNnaryStringFunction(this, stringsToChooseFrom) {
 
@@ -2781,9 +2874,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-private static abstract class DBNumberAndNnaryStringFunction extends StringExpression {
+	private static abstract class DBNumberAndNnaryStringFunction extends StringExpression {
 
-		protected NumberResult numberExpression=null;
+		protected NumberResult numberExpression = null;
 		protected final List<StringResult> values = new ArrayList<StringResult>();
 		boolean nullProtectionRequired = false;
 
