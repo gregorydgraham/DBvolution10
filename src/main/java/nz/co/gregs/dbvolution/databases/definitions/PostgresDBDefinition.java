@@ -46,6 +46,17 @@ public class PostgresDBDefinition extends DBDefinition {
 	private static final String[] reservedWordsArray = new String[]{"LIMIT", "END"};
 	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
 
+
+	@Override
+	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
+		return "DROP DATABASE IF EXISTS "+databaseName+"";
+	}
+
+	@Override
+	public String getDropTableStart() {
+		return super.getDropTableStart() + " IF EXISTS "; //To change body of generated methods, choose Tools | Templates.
+	}
+	
 	@Override
 	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
 		return primaryKeyColumnName.toLowerCase();
