@@ -65,7 +65,7 @@ public class QueryGraphEdgeLabelTransformerTest extends AbstractTest {
 		QueryGraphEdgeLabelTransformer instance = new QueryGraphEdgeLabelTransformer(dbQuery);
 		String expResult = "fk_carcompany = 2";
 		String result = instance.transform(v);
-		Assert.assertThat(result.toLowerCase(), is(expResult));
+		Assert.assertThat(result.toLowerCase(), containsString(expResult));
 	}
 
 }

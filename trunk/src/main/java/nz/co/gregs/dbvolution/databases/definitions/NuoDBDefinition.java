@@ -19,8 +19,10 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.databases.NuoDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -51,6 +53,8 @@ public class NuoDBDefinition extends DBDefinition{
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBBoolean) {
 			return " boolean ";
+		} else if (qdt instanceof DBBooleanArray) {
+			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
 			return " TIMESTAMP(0) ";
 		} else if (qdt instanceof DBJavaObject) {
@@ -95,7 +99,29 @@ public class NuoDBDefinition extends DBDefinition{
 	@Override
 	@Deprecated
 	public String doLeftTrimTransform(String toSQLString) {
-		return super.doLeftTrimTransform(toSQLString);//" (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
+		return super.doLeftTrimTransform(toSQLString);
+//		return " (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
+	}
+
+	/**
+	 * SQLServer follows the standard, unlike anyone else, and pads the short
+	 * string with spaces before comparing.
+	 *
+	 * <p>
+	 * This effectively means strings are trimmed during comparisons whether you
+	 * like it or not.
+	 *
+	 * <p>
+	 * While this seems useful, in fact it prevents checking for incorrect
+	 * strings and breaks the industrial standard.
+	 *
+	 * @param firstSQLExpression
+	 * @param secondSQLExpression
+	 * @return
+	 */
+	@Override
+	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {
+		return "(" + firstSQLExpression + "||'@') = (" + secondSQLExpression + "||'@')";
 	}
 
 	@Override
@@ -154,6 +180,15 @@ public class NuoDBDefinition extends DBDefinition{
 	}
 
 
+@Override
+	public boolean supportsArraysNatively() {
+		return false;
+	}
+
+	@Override
+	public String doNumberEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(("+super.doNumberEqualsTransform(leftHandSide, rightHandSide)+")=true)";
+	}
 
 	
 }

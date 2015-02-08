@@ -341,6 +341,19 @@ public class BooleanExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testBooleanIsWithNull() throws SQLException {
+		Marque marque = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(marque.column(marque.uidMarque).is(1));
+		dbQuery.addCondition(BooleanExpression.value((Boolean)null).is((Boolean)null));
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+	}
+
+	@Test
 	public void testBooleanIsnt() throws SQLException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);

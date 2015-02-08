@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
-
 public class DBMultiPolygon extends QueryableDatatype {
 
 	private static final long serialVersionUID = 1L;
@@ -39,7 +38,7 @@ public class DBMultiPolygon extends QueryableDatatype {
 
 	@Override
 	public String getSQLDatatype() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "MULTIPOLYGON";
 	}
 
 	@Override
@@ -56,5 +55,5 @@ public class DBMultiPolygon extends QueryableDatatype {
 	public boolean isAggregator() {
 		return false;
 	}
-	
+
 }

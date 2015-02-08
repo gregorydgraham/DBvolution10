@@ -42,7 +42,7 @@ public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 			if (firstValue instanceof BooleanResult) {
 				op = expr.is((BooleanResult) firstValue);
 			}else if (firstValue instanceof NumberResult) {
-				op = expr.is(new NumberExpression((NumberResult) firstValue).convertToBits().is(1));
+				op = expr.is(new NumberExpression((NumberResult) firstValue).is(1));
 			}
 		}
 		return this.invertOperator ? op.not() : op;

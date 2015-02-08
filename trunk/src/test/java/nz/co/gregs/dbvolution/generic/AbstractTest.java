@@ -131,6 +131,8 @@ public abstract class AbstractTest {
 						.replaceAll(" *; *$", "");
 			} else if (database instanceof PostgresDB) {
 				return trimStr.replaceAll("::[a-zA-Z]*", "");
+			} else if ((database instanceof NuoDB)) {
+				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
 			} else if (database instanceof MSSQLServerDB) {
 				return trimStr.replaceAll("[\\[\\]]", "");
 			} else {
@@ -156,6 +158,8 @@ public abstract class AbstractTest {
 						.replaceAll("\\b_+", "")
 						.replaceAll(" *; *$", "")
 						.replaceAll(" as ", " ");
+			} else if ((database instanceof NuoDB)) {
+				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
 			} else if ((database instanceof MSSQLServerDB)) {
 				return trimStr
 						.replaceAll("\\[", "")

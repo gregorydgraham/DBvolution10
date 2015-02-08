@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
-
 public class DBGeometry extends QueryableDatatype {
 
 	private static final long serialVersionUID = 1L;
@@ -39,7 +38,7 @@ public class DBGeometry extends QueryableDatatype {
 
 	@Override
 	public String getSQLDatatype() {
-		return "GEOM";
+		return "GEOMETRY";
 	}
 
 	@Override
@@ -56,5 +55,10 @@ public class DBGeometry extends QueryableDatatype {
 	public boolean isAggregator() {
 		return false;
 	}
-	
+
+	@Override
+	public Object toSQLStringForInsert(DBDatabase database) {
+		return "GeomFromText('POINT(1 1)')";
+	}
+
 }
