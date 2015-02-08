@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import java.util.Arrays;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;

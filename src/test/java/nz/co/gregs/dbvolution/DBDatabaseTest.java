@@ -16,8 +16,11 @@
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -72,12 +75,12 @@ public class DBDatabaseTest extends AbstractTest {
 		database.createTable(createTableTestClass);
 		System.out.println("CreateTableTestClass table created successfully");
 
-		try {
-			database.preventDroppingOfTables(false);
-			database.dropTableNoExceptions(new CreateTableTestClass());
-		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
-		}
+//		try {
+//			database.preventDroppingOfTables(false);
+//			database.dropTableNoExceptions(new CreateTableTestClass());
+//		} catch (AutoCommitActionDuringTransactionException ex) {
+//			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+//		}
 	}
 
 	@Test
@@ -89,17 +92,62 @@ public class DBDatabaseTest extends AbstractTest {
 		} catch (AutoCommitActionDuringTransactionException ex) {
 			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CreateTableTestClass());
+		} catch (Exception ex) {
+		}
+
+		final CreateTableTestClass createTableClass = new CreateTableTestClass();
+		database.createTableWithForeignKeys(createTableClass);
 
 		final CreateTableWithForeignKeyTestClass createTableTestClass = new CreateTableWithForeignKeyTestClass();
 		database.createTableWithForeignKeys(createTableTestClass);
 		System.out.println("CreateTableWithForeignKeyTestClass table created successfully");
-		
+		database.createIndexesOnAllFields(createTableTestClass);
+		System.out.println("CreateTableWithForeignKeyTestClass indexes created successfully");
+
+//		try {
+//			database.preventDroppingOfTables(false);
+//			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
+//		} catch (AutoCommitActionDuringTransactionException ex) {
+//			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+//		}
+	}
+
+	@Test
+	public void testCreateTableAndAddForeignKeys() throws SQLException {
+
 		try {
 			database.preventDroppingOfTables(false);
-			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
-		} catch (AutoCommitActionDuringTransactionException ex) {
+			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass2());
+		} catch (Exception ex) {
 			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new CreateTableTestClass2());
+		} catch (Exception ex) {
+		}
+
+		final CreateTableTestClass2 createTableClass = new CreateTableTestClass2();
+		database.createTable(createTableClass);
+
+		final CreateTableWithForeignKeyTestClass2 createTableTestClass = new CreateTableWithForeignKeyTestClass2();
+		database.createTable(createTableTestClass);
+		if (!(database instanceof SQLiteDB)) {
+			database.createForeignKeyConstraints(createTableTestClass);
+			System.out.println("CreateTableWithForeignKeyTestClass foreign keys created successfully");
+		}
+		database.createIndexesOnAllFields(createTableTestClass);
+		System.out.println("CreateTableWithForeignKeyTestClass indexes created successfully");
+
+//		try {
+//			database.preventDroppingOfTables(false);
+//			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
+//		} catch (AutoCommitActionDuringTransactionException ex) {
+//			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+//		}
 	}
 
 	@Test
@@ -157,6 +205,11 @@ public class DBDatabaseTest extends AbstractTest {
 		public static final long serialVersionUID = 1L;
 
 		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		DBInteger id = new DBInteger();
+
+		@DBColumn
 		DBString name = new DBString();
 	}
 
@@ -168,12 +221,33 @@ public class DBDatabaseTest extends AbstractTest {
 		DBString name = new DBString();
 
 		@DBColumn
-		@DBForeignKey(Marque.class)
+		@DBForeignKey(CreateTableTestClass.class)
 		DBInteger marqueForeignKey = new DBInteger();
-		
+	}
+
+	public static class CreateTableTestClass2 extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+
 		@DBColumn
-		@DBForeignKey(CarCompany.class)
-		DBInteger carCoForeignKey = new DBInteger();
+		@DBPrimaryKey
+		@DBAutoIncrement
+		DBInteger id = new DBInteger();
+
+		@DBColumn
+		DBString name = new DBString();
+	}
+
+	public static class CreateTableWithForeignKeyTestClass2 extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString name = new DBString();
+
+		@DBColumn
+		@DBForeignKey(CreateTableTestClass2.class)
+		DBInteger marqueForeignKey = new DBInteger();
 	}
 
 	public static class DropTableTestClass extends DBRow {

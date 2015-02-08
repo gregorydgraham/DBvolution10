@@ -243,7 +243,7 @@ public class DBInsert extends DBAction {
 								.append(defn.formatColumnName(prop.columnName()));
 						allColumnSeparator = defn.getValuesClauseColumnSeparator();
 						// add the value
-						allValues.append(allValuesSeparator).append(qdt.toSQLString(database));
+						allValues.append(allValuesSeparator).append(qdt.toSQLStringForInsert(database));
 						allValuesSeparator = defn.getValuesClauseValueSeparator();
 					}
 					if (qdt.hasBeenSet()) {
@@ -255,7 +255,7 @@ public class DBInsert extends DBAction {
 								.append(defn.formatColumnName(prop.columnName()));
 						columnSeparator = defn.getValuesClauseColumnSeparator();
 						// add the value
-						allSetValues.append(valuesSeparator).append(qdt.toSQLString(database));
+						allSetValues.append(valuesSeparator).append(qdt.toSQLStringForInsert(database));
 						valuesSeparator = defn.getValuesClauseValueSeparator();
 					}
 				}

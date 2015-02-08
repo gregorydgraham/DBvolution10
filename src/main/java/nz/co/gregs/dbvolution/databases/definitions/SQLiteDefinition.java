@@ -18,10 +18,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
@@ -30,6 +27,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generation.DBTableField;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  * Defines the features of the SQLite database that differ from the standard
@@ -309,4 +307,15 @@ public class SQLiteDefinition extends DBDefinition {
 	public boolean supportsArraysNatively() {
 		return false;
 	}
+
+	@Override
+	public String getAlterTableAddForeignKeyStatement(DBRow newTableRow, PropertyWrapper field) {
+		if (field.isForeignKey()) {
+			return "ALTER TABLE " + this.formatTableName(newTableRow) + " ADD " + field.columnName() + " REFERENCES " + field.referencedTableName() + "(" + field.referencedColumnName() + ") ";
+		
+		}
+		return "";
+	}
+
+
 }

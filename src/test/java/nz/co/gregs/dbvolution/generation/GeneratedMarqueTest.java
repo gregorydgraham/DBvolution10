@@ -167,23 +167,30 @@ public class GeneratedMarqueTest extends AbstractTest {
 					? new CachedCompiler(new File(System.getProperty("user.dir"), "src/test/java"), new File(System.getProperty("user.dir"), "target/compiled"))
 					: CompilerUtils.CACHED_COMPILER;
 
-			List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+			List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation.test", new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
 			for (DBTableClass dbcl : generateSchema) {
-				Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), dbcl.getJavaSource());
-				Object newInstance = compiledClass.newInstance();
-				DBRow row = (DBRow) newInstance;
-				List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
-				database.print(rows);
-				if (row.getTableName().equals("CAR_COMPANY")) {
-					Assert.assertThat(rows.size(), is(4));
-				} else if (row.getTableName().equals("MARQUE")) {
-					Assert.assertThat(rows.size(), is(22));
-				} else if (row.getTableName().equals("LT_CARCO_LOGO")) {
-					Assert.assertThat(rows.size(), is(0));
-				} else if (row.getTableName().equals("COMPANYLOGO")) {
-					Assert.assertThat(rows.size(), is(0));
+				if (dbcl.getTableName().equals("CAR_COMPANY")
+						|| dbcl.getTableName().equals("MARQUE")
+						|| dbcl.getTableName().equals("LT_CARCO_LOGO")
+						|| dbcl.getTableName().equals("COMPANYLOGO")) {
+					final String javaSource = dbcl.getJavaSource();
+					System.out.println("" + javaSource);
+					Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), javaSource);
+					Object newInstance = compiledClass.newInstance();
+					DBRow row = (DBRow) newInstance;
+					List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
+					database.print(rows);
+					if (row.getTableName().equals("CAR_COMPANY")) {
+						Assert.assertThat(rows.size(), is(4));
+					} else if (row.getTableName().equals("MARQUE")) {
+						Assert.assertThat(rows.size(), is(22));
+					} else if (row.getTableName().equals("LT_CARCO_LOGO")) {
+						Assert.assertThat(rows.size(), is(0));
+					} else if (row.getTableName().equals("COMPANYLOGO")) {
+						Assert.assertThat(rows.size(), is(0));
+					}
 				} else {
-					System.out.println("UNKNOWN CLASS FOUND: " + row.getTableName());
+					System.out.println("SKIPPED: " + dbcl.getTableName());
 				}
 			}
 		}

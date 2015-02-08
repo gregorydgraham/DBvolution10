@@ -923,4 +923,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			return getColumnExpression().isPurelyFunctional();
 		}
 	}
+
+	public Object toSQLStringForInsert(DBDatabase database) {
+		return toSQLString(database);
+	}
 }

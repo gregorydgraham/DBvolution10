@@ -127,10 +127,7 @@ public abstract class DBDatabase implements Cloneable {
 		if ((this.password == null) ? (other.password != null) : !this.password.equals(other.password)) {
 			return false;
 		}
-		if (this.dataSource != other.dataSource && (this.dataSource == null || !this.dataSource.equals(other.dataSource))) {
-			return false;
-		}
-		return true;
+		return !(this.dataSource != other.dataSource && (this.dataSource == null || !this.dataSource.equals(other.dataSource)));
 	}
 
 	/**
@@ -863,7 +860,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * is used during a DBTransaction or DBScript
 	 */
 	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		createTable(newTableRow, false, false);
+		createTable(newTableRow, false);
 	}
 
 	/**
@@ -894,10 +891,10 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 */
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		createTable(newTableRow, true, true);
+		createTable(newTableRow, true);
 	}
 
-	private void createTable(DBRow newTableRow, boolean includeForeignKeyClauses, boolean includeIndexes) throws SQLException, AutoCommitActionDuringTransactionException {
+	private void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 		StringBuilder sqlScript = new StringBuilder();
 		List<PropertyWrapper> pkFields = new ArrayList<PropertyWrapper>();
@@ -911,7 +908,6 @@ public abstract class DBDatabase implements Cloneable {
 		String nextSep = definition.getCreateTableColumnsSeparator();
 		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
 		List<String> fkClauses = new ArrayList<String>();
-		List<String> indexClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 				String colName = field.columnName();
@@ -928,10 +924,6 @@ public abstract class DBDatabase implements Cloneable {
 				String fkClause = definition.getForeignKeyClauseForCreateTable(field);
 				if (!fkClause.isEmpty()) {
 					fkClauses.add(fkClause);
-				}
-				String indexClause = definition.getIndexClauseForCreateTable(field);
-				if (!indexClause.isEmpty()) {
-					indexClauses.add(indexClause);
 				}
 			}
 		}
@@ -973,9 +965,70 @@ public abstract class DBDatabase implements Cloneable {
 		} finally {
 			dbStatement.close();
 		}
+	}
+	
+	public void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
+		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
+		List<String> fkClauses = new ArrayList<String>();
+		for (PropertyWrapper field : fields) {
+			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
+				final String alterTableAddForeignKeyStatement = definition.getAlterTableAddForeignKeyStatement(newTableRow, field);
+				if (!alterTableAddForeignKeyStatement.isEmpty()) {
+					fkClauses.add(alterTableAddForeignKeyStatement);
+				}
+			}
+		}
+		if (fkClauses.size() > 0) {
+			final DBStatement statement = getDBStatement();
+			try {
+				for (String fkClause : fkClauses) {
+					statement.execute(fkClause);
+				}
+			} finally {
+				statement.close();
+			}
+		}
+	}
+	
+	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
+
+		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
+		List<String> fkClauses = new ArrayList<String>();
+		for (PropertyWrapper field : fields) {
+			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
+				final String alterTableDropForeignKeyStatement = definition.getAlterTableDropForeignKeyStatement(newTableRow, field);
+				if (!alterTableDropForeignKeyStatement.isEmpty()) {
+					fkClauses.add(alterTableDropForeignKeyStatement);
+				}
+			}
+		}
+		if (fkClauses.size() > 0) {
+			final DBStatement statement = getDBStatement();
+			try {
+				for (String fkClause : fkClauses) {
+					statement.execute(fkClause);
+				}
+			} finally {
+				statement.close();
+			}
+		}
+	}
+	
+	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException{
+		
+		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
+		List<String> indexClauses = new ArrayList<String>();
+		for (PropertyWrapper field : fields) {
+			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {				
+				String indexClause = definition.getIndexClauseForCreateTable(field);
+				if (!indexClause.isEmpty()) {
+					indexClauses.add(indexClause);
+				}
+			}
+		}
 		//Create indexes
-		if (includeIndexes && indexClauses.size() > 0) {
+		if (indexClauses.size() > 0) {
 			final DBStatement statement = getDBStatement();
 			try {
 				for (String indexClause : indexClauses) {
@@ -1040,8 +1093,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * }
 	 * <
 	 * p>
-	 * I
-	 * n General NEVER USE THIS METHOD.
+	 * In General NEVER USE THIS METHOD.
 	 *
 	 * <p>
 	 * Seriously NEVER USE THIS METHOD.
@@ -1056,7 +1108,7 @@ public abstract class DBDatabase implements Cloneable {
 		try {
 			this.dropTable(tableRow);
 		} catch (SQLException exp) {
-			exp.printStackTrace();
+//			exp.printStackTrace();
 		}
 	}
 

@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
  *
  * @author Gregory Graham
  */
-public class MySQLDB extends DBDatabase {
+public class MySQLDB extends DBDatabase implements SpatialDatabase {
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 

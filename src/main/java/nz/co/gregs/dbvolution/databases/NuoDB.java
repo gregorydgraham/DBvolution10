@@ -133,4 +133,9 @@ public class NuoDB extends DBDatabase {
 		return false;
 	}
 
+	@Override
+	public boolean supportsRecursiveQueriesNatively() {
+		return false;
+	}
+
 }

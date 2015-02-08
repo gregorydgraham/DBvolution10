@@ -18,8 +18,6 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.expressions.BitsExpression;
-import nz.co.gregs.dbvolution.expressions.BitsResult;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -88,9 +86,6 @@ public class DBEqualsOperator extends DBOperator {
 			} else if ((genericExpression instanceof BooleanExpression) && ((firstValue instanceof BooleanResult)||firstValue==null)) {
 				BooleanExpression boolExpr = (BooleanExpression) genericExpression;
 				op = boolExpr.is((BooleanResult) firstValue);
-			} else if ((genericExpression instanceof BitsExpression) && ((firstValue instanceof BitsResult)||firstValue==null)) {
-				BitsExpression boolExpr = (BitsExpression) genericExpression;
-				op = boolExpr.is((BitsResult) firstValue);
 			} else if ((genericExpression instanceof BooleanArrayExpression) && ((firstValue instanceof BooleanArrayResult)||firstValue==null)) {
 				BooleanArrayExpression boolExpr = (BooleanArrayExpression) genericExpression;
 				op = boolExpr.is((BooleanArrayResult) firstValue);
