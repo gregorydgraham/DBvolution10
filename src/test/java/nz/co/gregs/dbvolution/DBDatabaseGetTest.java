@@ -105,6 +105,16 @@ public class DBDatabaseGetTest extends AbstractTest {
     }
     
     @Test
+    public void testIsNull() throws SQLException {
+        Marque literalQuery = new Marque();
+        literalQuery.individualAllocationsAllowed.permittedValues((String)null);
+        List<Marque> gotMarques = database.get(literalQuery);
+        Assert.assertEquals(gotMarques.size(), 2);
+        Assert.assertEquals("", gotMarques.get(0).individualAllocationsAllowed.stringValue());
+        Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
+    }
+    
+    @Test
     public void testMultiplePermittedValues() throws SQLException {
         Marque literalQuery = new Marque();
         literalQuery.getUidMarque().permittedValues(4893059, 4893090);
@@ -186,6 +196,13 @@ public class DBDatabaseGetTest extends AbstractTest {
         Assert.assertTrue("Wrong number of rows selected, should be NONE of them", gotMarques.isEmpty());
         oldQuery = new Marque();
         oldQuery.getCreationDate().permittedRangeInclusive(null, future);
+        gotMarques = database.get(oldQuery);
+        for (Marque row : gotMarques) {
+            System.out.println(row);
+        }
+        Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
+        oldQuery = new Marque();
+        oldQuery.getCreationDate().permittedRangeExclusive(null, future);
         gotMarques = database.get(oldQuery);
         for (Marque row : gotMarques) {
             System.out.println(row);
