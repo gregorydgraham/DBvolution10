@@ -110,8 +110,16 @@ public class DBDatabaseGetTest extends AbstractTest {
         literalQuery.individualAllocationsAllowed.permittedValues((String)null);
         List<Marque> gotMarques = database.get(literalQuery);
         Assert.assertEquals(gotMarques.size(), 2);
-        Assert.assertEquals("", gotMarques.get(0).individualAllocationsAllowed.stringValue());
         Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
+    }
+    
+    @Test
+    public void testIsNotNull() throws SQLException {
+        Marque literalQuery = new Marque();
+        literalQuery.individualAllocationsAllowed.excludedValues((String)null);
+        List<Marque> gotMarques = database.get(literalQuery);
+        Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count()-2);
+        Assert.assertEquals(false, gotMarques.get(0).individualAllocationsAllowed.isNull());
     }
     
     @Test
