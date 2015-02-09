@@ -34,7 +34,7 @@ public class DBPermittedValuesOperator extends DBMetaOperator {
 			for (Object obj : permitted) {
 				if (obj == null) {
 					this.includeNulls = true;
-					expressions.add(null);
+//					expressions.add(null);
 					objectCount++;
 				} else if (obj instanceof Collection) {
 					Collection<Object> myList = (Collection) obj;

@@ -94,20 +94,53 @@ public class DBDatabaseGetTest extends AbstractTest {
         List<Marque> gotMarques = database.get(marqueQuery);
         Assert.assertTrue("Incorrect number of marques retreived", gotMarques.size() == marqueRows.size());
     }
+		
+    @Test
+    public void testNumberIsBetweenExclusive() throws SQLException {
+        Marque marqueQuery = new Marque();
+        marqueQuery.getUidMarque().permittedRangeExclusive(0, 2);
+        List<Marque> gotMarques = database.get(marqueQuery);
+        Assert.assertTrue("Incorrect number of marques retreived", gotMarques.size() == 1);
+    }
+		
+    @Test
+    public void testNumberIsGreaterThan() throws SQLException {
+        Marque marqueQuery = new Marque();
+        marqueQuery.getUidMarque().permittedRangeExclusive(2,null);
+        List<Marque> gotMarques = database.get(marqueQuery);
+        Assert.assertThat(gotMarques.size(), is(20));
+    }
+		
+    @Test
+    public void testNumberIsLessThan() throws SQLException {
+        Marque marqueQuery = new Marque();
+        marqueQuery.getUidMarque().permittedRangeExclusive(null,2);
+        List<Marque> gotMarques = database.get(marqueQuery);
+        Assert.assertThat(gotMarques.size(), is(1));
+    }
+		
+    @Test
+    public void testStringIsBetweenExclusive() throws SQLException {
+        Marque marqueQuery = new Marque();
+        marqueQuery.name.permittedRangeExclusive("FORD", "TOYOTA");
+        List<Marque> gotMarques = database.get(marqueQuery);
+				database.print(gotMarques);
+        Assert.assertThat( gotMarques.size(), is(14));
+    }
     
     @Test
     public void testIsLiterally() throws SQLException {
         Marque literalQuery = new Marque();
         literalQuery.getUidMarque().permittedValues(4893059);
         List<Marque> gotMarques = database.get(literalQuery);
-        Assert.assertEquals(gotMarques.size(), 1);
+        Assert.assertEquals(1, gotMarques.size());
         Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().toSQLString(database));
     }
     
     @Test
     public void testIsNull() throws SQLException {
         Marque literalQuery = new Marque();
-        literalQuery.individualAllocationsAllowed.permittedValues((String)null);
+        literalQuery.individualAllocationsAllowed.permittedValues((Object)null);
         List<Marque> gotMarques = database.get(literalQuery);
         Assert.assertEquals(gotMarques.size(), 2);
         Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
