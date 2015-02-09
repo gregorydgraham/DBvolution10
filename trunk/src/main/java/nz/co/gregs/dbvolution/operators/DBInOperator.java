@@ -47,9 +47,7 @@ public class DBInOperator extends DBOperator {
 			final DBExpression newQDT = qdt == null ? null : qdt.copy();
 			this.listOfPossibleValues.add(newQDT);
 			if (newQDT == null) {
-				listOfPossibleStrings.add(null);
-				listOfPossibleNumbers.add(null);
-				listOfPossibleDates.add(null);
+				includeNulls = true;
 			} else if (newQDT instanceof StringResult) {
 				listOfPossibleStrings.add((StringResult) newQDT);
 			} else if ((newQDT instanceof NumberResult)) {
@@ -105,14 +103,26 @@ public class DBInOperator extends DBOperator {
 		DBExpression genericExpression = column;
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
+			ArrayList<StringResult> listString = new ArrayList<StringResult>(listOfPossibleStrings);
+			if (this.includeNulls) {
+				listString.add(null);
+			}
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			op = stringExpression.bracket().isIn(listOfPossibleStrings.toArray(new StringResult[]{}));
+			op = stringExpression.bracket().isIn(listString.toArray(new StringResult[]{}));
 		} else if (genericExpression instanceof NumberExpression) {
+			ArrayList<NumberResult> listNumbers = new ArrayList<NumberResult>(listOfPossibleNumbers);
+			if (this.includeNulls) {
+				listNumbers.add(null);
+			}
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
-			op = numberExpression.isIn(listOfPossibleNumbers.toArray(new NumberResult[]{}));
+			op = numberExpression.isIn(listNumbers.toArray(new NumberResult[]{}));
 		} else if (genericExpression instanceof DateExpression) {
+				ArrayList<DateResult> listDate = new ArrayList<DateResult>(listOfPossibleDates);
+			if (this.includeNulls) {
+				listDate.add(null);
+			}
 			DateExpression dateExpression = (DateExpression) genericExpression;
-			op = dateExpression.isIn(listOfPossibleDates.toArray(new DateResult[]{}));
+			op = dateExpression.isIn(listDate.toArray(new DateResult[]{}));
 		}
 		return this.invertOperator ? op.not() : op;
 	}
