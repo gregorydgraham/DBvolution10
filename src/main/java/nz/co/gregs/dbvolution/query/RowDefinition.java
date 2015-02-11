@@ -21,6 +21,7 @@ import java.util.*;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.columns.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
@@ -111,6 +112,10 @@ public class RowDefinition implements Serializable {
 	public BooleanArrayColumn column(DBBooleanArray fieldOfThisInstance) {
 		return new BooleanArrayColumn(this, fieldOfThisInstance);
 	}
+	
+	public GeometryColumn column(DBGeometry fieldOfThisInstance) {
+		return new GeometryColumn(this, fieldOfThisInstance);
+	}
 
 	/**
 	 * Creates a new ColumnProvider instance to help create
@@ -150,6 +155,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBInterval) fieldOfThisInstance);
 		} else if (DBBooleanArray.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBBooleanArray) fieldOfThisInstance);
+		} else if (DBGeometry.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBGeometry) fieldOfThisInstance);
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);

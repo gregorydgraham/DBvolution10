@@ -2729,4 +2729,8 @@ public abstract class DBDefinition {
 		}
 		return "";
 	}
+
+	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+		return selectableName;
+	}
 }

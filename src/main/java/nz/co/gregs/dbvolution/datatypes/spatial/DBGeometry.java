@@ -15,24 +15,29 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial;
 
+import nz.co.gregs.dbvolution.datatypes.TransformRequiredForSelectClause;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 
-public class DBGeometry extends QueryableDatatype {
+public class DBGeometry extends QueryableDatatype implements TransformRequiredForSelectClause {
 
 	private static final long serialVersionUID = 1L;
 
 	public DBGeometry() {
 	}
 
-	public DBGeometry(Object obj) {
-		super(obj);
+	public void setValue(Geometry geometry) {
+		setLiteralValue(geometry);
 	}
 
-	public DBGeometry(DBExpression columnExpression) {
+	public DBGeometry(nz.co.gregs.dbvolution.expressions.GeometryExpression columnExpression) {
 		super(columnExpression);
 	}
 
@@ -43,22 +48,37 @@ public class DBGeometry extends QueryableDatatype {
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		Geometry geom = (Geometry) getLiteralValue();
+		String wktValue = geom.toText();
+		return "GeomFromText('" + wktValue + "')";
 	}
 
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+		Geometry geometry = null;
+		WKTReader wktReader = new WKTReader();
+		String string = resultSet.getString(fullColumnName);
+		try {
+			geometry = wktReader.read(string);
+		} catch (ParseException ex) {
+			Logger.getLogger(DBGeometry.class.getName()).log(Level.SEVERE, null, ex);
+			throw new nz.co.gregs.dbvolution.exceptions.ParsingGeometryValueException(fullColumnName, string);
+		}
+		return geometry;
+	}
+
+	public Geometry getGeometryValue() {
+		return (Geometry) ((this.getLiteralValue() != null) ? this.getLiteralValue() : null);
+	}
+
+	@Override
+	public Geometry getValue() {
+		return getGeometryValue();
 	}
 
 	@Override
 	public boolean isAggregator() {
 		return false;
 	}
-
-	@Override
-	public Object toSQLStringForInsert(DBDatabase database) {
-		return "GeomFromText('POINT(1 1)')";
-	}
-
 }

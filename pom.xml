@@ -641,6 +641,18 @@
             <artifactId>sqljdbc</artifactId>
             <version>1.0</version>
         </dependency>-->
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>1.14-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.7</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <snapshotRepository>
