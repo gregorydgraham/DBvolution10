@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
@@ -67,6 +68,14 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " VARCHAR(64) ";
 		} else {
 			return qdt.getSQLDatatype();
+		}
+	}
+
+	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+		if (qdt instanceof DBGeometry) {
+			return "AsText(" + selectableName + ")";
+		} else {
+			return selectableName;
 		}
 	}
 
@@ -201,7 +210,6 @@ public class MySQLDBDefinition extends DBDefinition {
 //		}
 //		return reversedBools;
 //	}
-
 	@Override
 	public boolean supportsArraysNatively() {
 		return false;

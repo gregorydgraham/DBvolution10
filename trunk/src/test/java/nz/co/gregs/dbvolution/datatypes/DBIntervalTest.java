@@ -57,6 +57,8 @@ public class DBIntervalTest extends AbstractTest {
 
 	public static class intervalTable extends DBRow {
 
+		private static final long serialVersionUID = 1L;
+
 		@DBColumn
 		@DBPrimaryKey
 		@DBAutoIncrement

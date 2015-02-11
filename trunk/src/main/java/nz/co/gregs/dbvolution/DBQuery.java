@@ -24,7 +24,6 @@ import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.PrintStream;
-import java.io.Serializable;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
@@ -403,7 +402,7 @@ public class DBQuery{
 
 				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
 				for (PropertyWrapper propWrapper : tabProps) {
-					selectClause.append(colSep).append(propWrapper.getSelectableName(getDatabase())).append(" ").append(propWrapper.getColumnAlias(getDatabase()));
+					selectClause.append(colSep).append(defn.doColumnTransformForSelect(propWrapper.getQueryableDatatype(), propWrapper.getSelectableName(getDatabase()))).append(" ").append(propWrapper.getColumnAlias(getDatabase()));
 					colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
 
 					// Now deal with the GROUP BY and ORDER BY clause requirements

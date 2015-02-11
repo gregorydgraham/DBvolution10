@@ -20,7 +20,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
-import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
