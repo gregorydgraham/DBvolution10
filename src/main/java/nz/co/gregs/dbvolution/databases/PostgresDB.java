@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
+import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 
@@ -29,7 +30,7 @@ import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionExcept
  *
  * @author Gregory Graham
  */
-public class PostgresDB extends DBDatabase {
+public class PostgresDB extends DBDatabase implements SupportsIntervalDatatype{
 
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
 

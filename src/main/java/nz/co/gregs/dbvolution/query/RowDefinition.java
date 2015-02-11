@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
+import org.joda.time.Period;
 
 /**
  * Encapsulates the concept of a row that has fields/columns and is part of a
@@ -103,6 +104,9 @@ public class RowDefinition implements Serializable {
 	public LargeObjectColumn column(DBLargeObject fieldOfThisInstance) {
 		return new LargeObjectColumn(this, fieldOfThisInstance);
 	}
+	public IntervalColumn column(DBInterval fieldOfThisInstance) {
+		return new IntervalColumn(this, fieldOfThisInstance);
+	}
 	
 	public BooleanArrayColumn column(DBBooleanArray fieldOfThisInstance) {
 		return new BooleanArrayColumn(this, fieldOfThisInstance);
@@ -142,6 +146,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBStringEnum) fieldOfThisInstance);
 		} else if (DBString.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBString) fieldOfThisInstance);
+		} else if (DBInterval.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBInterval) fieldOfThisInstance);
 		} else if (DBBooleanArray.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBBooleanArray) fieldOfThisInstance);
 		}
@@ -171,6 +177,8 @@ public class RowDefinition implements Serializable {
 		ColumnProvider col = null;
 		if (QueryableDatatype.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((QueryableDatatype) fieldOfThisInstance);
+		} else if (Period.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((Period) fieldOfThisInstance);
 		} else if (Date.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((Date) fieldOfThisInstance);
 		} else if (Boolean.class.isAssignableFrom(fieldOfThisInstance.getClass())) {

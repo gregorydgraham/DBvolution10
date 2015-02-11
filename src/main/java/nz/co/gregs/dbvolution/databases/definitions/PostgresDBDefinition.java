@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class PostgresDBDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS");
 
 	private static final String[] reservedWordsArray = new String[]{"LIMIT", "END"};
 	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
@@ -49,7 +49,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
-		return "DROP DATABASE IF EXISTS "+databaseName+"";
+		return "DROP DATABASE IF EXISTS '"+databaseName+"';";
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	
 	@Override
 	public String getDateFormattedForQuery(Date date) {
-		return "'" + DATETIME_FORMAT.format(date) + "'";
+		return "('" + DATETIME_FORMAT.format(date) + "'::timestamp)";
 	}
 
 	@Override
