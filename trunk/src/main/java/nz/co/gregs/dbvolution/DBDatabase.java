@@ -24,6 +24,8 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -1020,7 +1022,8 @@ public abstract class DBDatabase implements Cloneable {
 		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
 		List<String> indexClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
-			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {				
+			final QueryableDatatype qdt = field.getQueryableDatatype();				
+			if (field.isColumn() && !qdt.hasColumnExpression() && !(qdt instanceof DBLargeObject)) {				
 				String indexClause = definition.getIndexClauseForCreateTable(field);
 				if (!indexClause.isEmpty()) {
 					indexClauses.add(indexClause);
@@ -1169,7 +1172,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Do NOT Use This.
 	 *
-	 * @param doIt doIt
+	 * @param doIt don't do it.
 	 * @throws java.lang.Exception java.lang.Exception
 	 */
 	public void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
@@ -1182,6 +1185,35 @@ public abstract class DBDatabase implements Cloneable {
 		}
 
 		String dropStr = getDefinition().getDropDatabase(getDatabaseName());
+
+		printSQLIfRequested(dropStr);
+		log.info(dropStr);
+		if (doIt) {
+			this.doTransaction(new DBRawSQLTransaction(dropStr));
+		}
+		preventAccidentalDroppingOfTables = true;
+		preventAccidentalDroppingDatabase = true;
+	}
+
+	/**
+	 * The worst idea EVAH.
+	 *
+	 * <p>
+	 * Do NOT Use This.
+	 *
+	 * @param doIt don't do it.
+	 * @throws java.lang.Exception java.lang.Exception
+	 */
+	public void dropDatabase(String databaseName, boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
+		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
+		if (preventAccidentalDroppingOfTables) {
+			throw new AccidentalDroppingOfTableException();
+		}
+		if (preventAccidentalDroppingDatabase) {
+			throw new AccidentalDroppingOfDatabaseException();
+		}
+
+		String dropStr = getDefinition().getDropDatabase(databaseName);
 
 		printSQLIfRequested(dropStr);
 		log.info(dropStr);
