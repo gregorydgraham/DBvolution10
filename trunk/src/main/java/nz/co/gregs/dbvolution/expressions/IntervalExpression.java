@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBInterval;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import org.joda.time.Period;
 
 /**
@@ -50,6 +49,10 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 		}
 	}
 
+	public IntervalExpression value(Period period) {
+		return new IntervalExpression(period);
+	}
+
 	@Override
 	public IntervalExpression copy() {
 		return new IntervalExpression(innerIntervalResult);
@@ -62,7 +65,7 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return innerIntervalResult.toSQLString(db);
 	}
 
 	@Override
@@ -85,18 +88,13 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 		return nullProtectionRequired||innerIntervalResult.getIncludesNull();
 	}
 
+	public BooleanExpression isLessThan(Period period) {
+		return this.isLessThan(value(period));
+	}
+
 	@Override
 	public BooleanExpression isLessThan(IntervalResult anotherInstance) {
 		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
-
-			@Override
-			public String toSQLString(DBDatabase db) {
-				if (this.getIncludesNull()) {
-					return BooleanExpression.isNull(getFirst()).toSQLString(db);
-				} else {
-					return db.getDefinition().doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				}
-			}
 
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
@@ -105,18 +103,13 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 		});
 	}
 
+	public BooleanExpression isGreaterThan(Period period) {
+		return this.isGreaterThan(value(period));
+	}
+
 	@Override
 	public BooleanExpression isGreaterThan(IntervalResult anotherInstance) {
 		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
-
-			@Override
-			public String toSQLString(DBDatabase db) {
-				if (this.getIncludesNull()) {
-					return BooleanExpression.isNull(getFirst()).toSQLString(db);
-				} else {
-					return db.getDefinition().doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				}
-			}
 
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
@@ -124,19 +117,14 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 			}
 		});
 	}
-
+	
+	public BooleanExpression isLessThanOrEqual(Period period) {
+		return this.isLessThanOrEqual(value(period));
+	}
+	
 	@Override
 	public BooleanExpression isLessThanOrEqual(IntervalResult anotherInstance) {
 		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
-
-			@Override
-			public String toSQLString(DBDatabase db) {
-				if (this.getIncludesNull()) {
-					return BooleanExpression.isNull(getFirst()).toSQLString(db);
-				} else {
-					return db.getDefinition().doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				}
-			}
 
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
@@ -144,19 +132,14 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 			}
 		});
 	}
+	
+	public BooleanExpression isGreaterThanOrEqual(Period period) {
+		return this.isGreaterThanOrEqual(value(period));
+	}
 
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(IntervalResult anotherInstance) {
 		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
-
-			@Override
-			public String toSQLString(DBDatabase db) {
-				if (this.getIncludesNull()) {
-					return BooleanExpression.isNull(getFirst()).toSQLString(db);
-				} else {
-					return db.getDefinition().doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				}
-			}
 
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
@@ -165,9 +148,17 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 		});
 	}
 
+	public BooleanExpression isLessThan(Period period, BooleanExpression fallBackWhenEqual) {
+		return this.isLessThan(value(period), fallBackWhenEqual);
+	}
+
 	@Override
 	public BooleanExpression isLessThan(IntervalResult anotherInstance, BooleanExpression fallBackWhenEqual) {
 		return this.isLessThan(anotherInstance).or(this.is(anotherInstance).and(fallBackWhenEqual));
+	}
+
+	public BooleanExpression isGreaterThan(Period period, BooleanExpression fallBackWhenEqual) {
+		return this.isGreaterThan(value(period), fallBackWhenEqual);
 	}
 
 	@Override
@@ -175,18 +166,14 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 		return this.isGreaterThan(anotherInstance).or(this.is(anotherInstance).and(fallBackWhenEqual));
 	}
 
+	public BooleanExpression is(Period period) {
+		return this.is(value(period));
+	}
+
 	@Override
 	public BooleanExpression is(IntervalResult anotherInstance) {
 		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
 
-			@Override
-			public String toSQLString(DBDatabase db) {
-				if (this.getIncludesNull()) {
-					return BooleanExpression.isNull(getFirst()).toSQLString(db);
-				} else {
-					return db.getDefinition().doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				}
-			}
 
 			@Override
 			protected String getEquationOperator(DBDatabase db) {

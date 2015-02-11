@@ -901,6 +901,25 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		});
 	}
 
+	
+	public IntervalExpression minus(Date date) {
+		return minus(value(date));
+	}
+	
+	public IntervalExpression minus(DateResult dateExpression) {
+		return new IntervalExpression(new DateDateArithmeticIntervalResult(this, dateExpression) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " - ";
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+		});
+	}
+
 	/**
 	 * Creates an SQL expression that test whether this date expression is less
 	 * than or equal to the supplied date.
@@ -2030,6 +2049,65 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		@Override
 		public DBBinaryBooleanArithmetic copy() {
 			DBBinaryBooleanArithmetic newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		protected abstract String getEquationOperator(DBDatabase db);
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class DateDateArithmeticIntervalResult extends IntervalExpression {
+
+		private DateExpression first;
+		private DateResult second;
+		private boolean requiresNullProtection = false;
+
+		DateDateArithmeticIntervalResult(DateExpression first, DateResult second) {
+			this.first = first;
+			this.second = second;
+			if (second == null || second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+		}
+
+		@Override
+		public DateDateArithmeticIntervalResult copy() {
+			DateDateArithmeticIntervalResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

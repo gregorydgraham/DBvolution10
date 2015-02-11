@@ -17,12 +17,15 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.SQLException;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatype;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
 import org.junit.Assert;
@@ -52,6 +55,24 @@ public class DBIntervalTest extends AbstractTest {
 			List<intervalTable> allRows = tab.getAllRows();
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
+		}
+	}
+
+	@Test
+	public void testDateExpressionProducingIntervals() throws SQLException {
+		if (database instanceof SupportsIntervalDatatype) {
+			Marque marq = new Marque();
+			DBQuery query = database.getDBQuery(marq);
+			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isGreaterThan(new Period().withYears(1)));
+			List<DBQueryRow> allRows = query.getAllRows();
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(18));
+			
+			query = database.getDBQuery(marq);
+			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isLessThan(new Period().withYears(1)));
+			allRows = query.getAllRows();
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(3));
 		}
 	}
 
