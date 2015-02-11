@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.databases.supports.SupportsGeometryDatatype;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
@@ -24,7 +25,7 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
  *
  * @author Gregory Graham
  */
-public class MySQLDB extends DBDatabase implements SpatialDatabase {
+public class MySQLDB extends DBDatabase implements SupportsGeometryDatatype{
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 

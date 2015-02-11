@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.databases;
+package nz.co.gregs.dbvolution.databases.supports;
 
 /**
  * Indicates that this database is known to support or has a reliable extension that
@@ -26,6 +26,6 @@ package nz.co.gregs.dbvolution.databases;
  *
  * @author gregorygraham
  */
-public interface SpatialDatabase {
+public interface SupportsGeometryDatatype {
 
 }

@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import org.joda.time.Period;
 
 /**
  * Defines the features of the MySQL database that differ from the standard
@@ -71,6 +72,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		}
 	}
 
+	@Override
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		if (qdt instanceof DBGeometry) {
 			return "AsText(" + selectableName + ")";
@@ -79,10 +81,6 @@ public class MySQLDBDefinition extends DBDefinition {
 		}
 	}
 
-//	@Override
-//	public String getDropDatabase(String databaseName) {
-//		return "DROP DATABASE IF EXISTS " + databaseName + ";";
-//	}
 	@Override
 	public String doConcatTransform(String firstString, String secondString) {
 		return " CONCAT(" + firstString + ", " + secondString + ") ";
@@ -175,43 +173,40 @@ public class MySQLDBDefinition extends DBDefinition {
 		}
 	}
 
-//	@Override
-//	public String doBooleanArrayTransform(Boolean[] bools) {
-//		StringBuilder str = new StringBuilder();
-//		str.append("'");
-//		String separator = "";
-//		if (bools.length == 0) {
-//			return "''";
-//		} else if (bools.length == 1) {
-//			return "'" + (bools[0] ? 1 : 0) + "'";
-//		} else {
-//			for (Boolean bool : bools) {
-//				str.append(separator).append(bool ? 1 : 0);
-//			}
-//			str.append("'");
-//			return "b" + str.reverse();
-//		}
-//	}
-//
-//	@Override
-//	public Boolean[] doBooleanArrayResultInterpretation(byte[] bytes) {
-//		Boolean[] bools = new Boolean[bytes.length * 8];
-//		for (int i = 0; i < bytes.length * 8; i++) {
-//			if ((bytes[i / 8] & (1 << (7 - (i % 8)))) > 0) {
-//				bools[i] = true;
-//			}else{
-//				bools[i] = false;
-//			}
-//		}
-//		final int length = bools.length;
-//		Boolean[] reversedBools = new Boolean[length];
-//		for (int i = 0; i < length; i++) {
-//			reversedBools[length-(i+1)] = bools[i];
-//		}
-//		return reversedBools;
-//	}
 	@Override
 	public boolean supportsArraysNatively() {
 		return false;
+	}	
+	
+	public StringBuilder transformPeriodIntoInterval(Period interval) {
+		StringBuilder str = new StringBuilder();
+		str.append("(");
+		if (interval.getYears() > 0) {
+			str.append("(INTERVAL ").append(interval.getYears()).append(" YEAR)");
+		}
+		if (interval.getMonths()> 0) {
+			str.append("+(INTERVAL ").append(interval.getMonths()).append(" MONTH)");
+		}
+		if (interval.getWeeks()> 0) {
+			str.append("+(INTERVAL ").append(interval.getWeeks()).append(" WEEK)");
+		}
+		if (interval.getDays()> 0) {
+			str.append("+(INTERVAL ").append(interval.getDays()).append(" DAY)");
+		}
+		if (interval.getHours()> 0) {
+			str.append("+(INTERVAL ").append(interval.getHours()).append(" HOUR)");
+		}
+		if (interval.getMinutes()> 0) {
+			str.append("+(INTERVAL ").append(interval.getMinutes()).append(" MINUTE)");
+		}
+		if (interval.getSeconds()> 0) {
+			str.append("+(INTERVAL ").append(interval.getSeconds()).append(" SECOND)");
+		}
+		if (interval.getMillis()> 0) {
+			str.append("+(INTERVAL ").append(interval.getMillis() * 1000).append(" MICROSECOND)");
+		}
+		str.append(")");
+		return str;
 	}
+
 }

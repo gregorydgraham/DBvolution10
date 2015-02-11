@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.*;
+import org.joda.time.Period;
 
 /**
  * DateExpression implements standard functions that produce a Date or Time
@@ -911,6 +912,42 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " - ";
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+		});
+	}
+
+	public DateExpression minus(Period interval) {
+		return minus(IntervalExpression.value(interval));
+	}
+	
+	public DateExpression minus(IntervalResult intervalExpression) {
+		return new DateExpression(new DateIntervalArithmeticDateResult(this, intervalExpression) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " - ";
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+		});
+	}
+
+	public DateExpression plus(Period interval) {
+		return minus(IntervalExpression.value(interval));
+	}
+	
+	public DateExpression plus(IntervalResult intervalExpression) {
+		return new DateExpression(new DateIntervalArithmeticDateResult(this, intervalExpression) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " + ";
 			}
 
 			@Override
@@ -2108,6 +2145,65 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		@Override
 		public DateDateArithmeticIntervalResult copy() {
 			DateDateArithmeticIntervalResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		protected abstract String getEquationOperator(DBDatabase db);
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class DateIntervalArithmeticDateResult extends DateExpression {
+
+		private DateExpression first;
+		private IntervalResult second;
+		private boolean requiresNullProtection = false;
+
+		DateIntervalArithmeticDateResult(DateExpression first, IntervalResult second) {
+			this.first = first;
+			this.second = second;
+			if (second == null || second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+		}
+
+		@Override
+		public DateIntervalArithmeticDateResult copy() {
+			DateIntervalArithmeticDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

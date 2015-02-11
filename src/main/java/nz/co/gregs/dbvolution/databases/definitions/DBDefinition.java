@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import org.joda.time.Period;
 
 /**
  *
@@ -2732,5 +2733,36 @@ public abstract class DBDefinition {
 
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		return selectableName;
+	}
+
+	public StringBuilder transformPeriodIntoInterval(Period interval) {
+		StringBuilder str = new StringBuilder();
+		str.append("(");
+		if (interval.getYears() > 0) {
+			str.append("(INTERVAL '").append(interval.getYears()).append(" YEARS')");
+		}
+		if (interval.getMonths()> 0) {
+			str.append("+(INTERVAL '").append(interval.getMonths()).append(" MONTHS')");
+		}
+		if (interval.getWeeks()> 0) {
+			str.append("+(INTERVAL '").append(interval.getWeeks()).append(" WEEKS')");
+		}
+		if (interval.getDays()> 0) {
+			str.append("+(INTERVAL '").append(interval.getDays()).append(" DAYS')");
+		}
+		if (interval.getHours()> 0) {
+			str.append("+(INTERVAL '").append(interval.getHours()).append(" HOURS')");
+		}
+		if (interval.getMinutes()> 0) {
+			str.append("+(INTERVAL '").append(interval.getMinutes()).append(" MINUTES')");
+		}
+		if (interval.getSeconds()> 0) {
+			str.append("+(INTERVAL '").append(interval.getSeconds()).append(" SECONDS')");
+		}
+		if (interval.getMillis()> 0) {
+			str.append("+(INTERVAL '").append(interval.getMillis() * 1000).append(" MICROSECONDS')");
+		}
+		str.append(")");
+		return str;
 	}
 }
