@@ -49,7 +49,7 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 		}
 	}
 
-	public IntervalExpression value(Period period) {
+	public static IntervalExpression value(Period period) {
 		return new IntervalExpression(period);
 	}
 

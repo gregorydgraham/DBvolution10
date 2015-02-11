@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.databases.SpatialDatabase;
+import nz.co.gregs.dbvolution.databases.supports.SupportsGeometryDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -37,7 +37,7 @@ public class SpatialTest extends AbstractTest {
 
 	@Test
 	public void basicSpatialTest() throws SQLException {
-		if (database instanceof SpatialDatabase) {
+		if (database instanceof SupportsGeometryDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);

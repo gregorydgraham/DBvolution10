@@ -49,12 +49,15 @@ public class DBIntervalTest extends AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(intervalTable);
 			database.createTable(intervalTable);
-			intervalTable.intervalCol.setValue(new Period().withMillis(1).withSeconds(2).withMinutes(3).withHours(4).withDays(5).withWeeks(6).withMonths(7).withYears(8));
+			final Period testPeriod = new Period().withMillis(1).withSeconds(2).withMinutes(3).withHours(4).withDays(5).withWeeks(6).withMonths(7).withYears(8);
+			intervalTable.intervalCol.setValue(testPeriod);
 			database.insert(intervalTable);
 			DBTable<intervalTable> tab = database.getDBTable(intervalTable).setBlankQueryAllowed(true);
 			List<intervalTable> allRows = tab.getAllRows();
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
+			
+			Assert.assertThat(allRows.get(0).intervalCol.periodValue().normalizedStandard(),is(testPeriod.normalizedStandard()));
 		}
 	}
 
@@ -63,12 +66,15 @@ public class DBIntervalTest extends AbstractTest {
 		if (database instanceof SupportsIntervalDatatype) {
 			Marque marq = new Marque();
 			DBQuery query = database.getDBQuery(marq);
+			final Period oneYear = new Period().withYears(1);
+			query.addCondition(marq.column(marq.creationDate).minus(oneYear).isGreaterThan(april2nd2011));
 			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isGreaterThan(new Period().withYears(1)));
 			List<DBQueryRow> allRows = query.getAllRows();
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(18));
 			
 			query = database.getDBQuery(marq);
+			query.addCondition(marq.column(marq.creationDate).plus(oneYear).isLessThan(april2nd2011));
 			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isLessThan(new Period().withYears(1)));
 			allRows = query.getAllRows();
 			database.print(allRows);
