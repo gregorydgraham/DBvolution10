@@ -940,7 +940,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	public DateExpression plus(Period interval) {
-		return minus(IntervalExpression.value(interval));
+		return plus(IntervalExpression.value(interval));
 	}
 	
 	public DateExpression plus(IntervalResult intervalExpression) {
@@ -1936,6 +1936,166 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 					}
 				});
 	}
+	
+	public static BooleanExpression overlaps(Date firstStartTime, Date firstEndTime, Date secondStartTime, Date secondEndtime){
+		return DateExpression.overlaps(
+				DateExpression.value(firstStartTime), DateExpression.value(firstEndTime), 
+				DateExpression.value(secondStartTime), DateExpression.value(secondEndtime)
+		);
+	}
+	
+	public BooleanExpression overlaps(DateResult firstStartTime, DateResult firstEndTime, DateResult secondStartTime, DateResult secondEndtime){
+		return DateExpression.overlaps(
+				new DateExpression(firstStartTime), new DateExpression(firstEndTime), 
+				secondStartTime, secondEndtime
+		);
+	}
+	
+	public static BooleanExpression overlaps(DateExpression firstStartTime, DateExpression firstEndTime, DateResult secondStartTime, DateResult secondEndtime){
+		return BooleanExpression.anyOf(
+				firstStartTime.isBetween(
+						DateExpression.leastOf(secondStartTime, secondEndtime),
+						DateExpression.greatestOf(secondStartTime, secondEndtime)),
+				firstEndTime.isBetween(
+						DateExpression.leastOf(secondStartTime, secondEndtime),
+						DateExpression.greatestOf(secondStartTime, secondEndtime)
+				)
+		);
+	}
+
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the least of these
+	 * @return the least/smallest value from the list.
+	 */
+	public static DateExpression leastOf(Date... possibleValues) {
+		ArrayList<DateExpression> possVals = new ArrayList<DateExpression>();
+		for (Date num : possibleValues) {
+			possVals.add(value(num));
+		}
+		return leastOf(possVals.toArray(new DateExpression[]{}));
+	}
+
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the least of these
+	 * @return the least/smallest value from the list.
+	 */
+	public static DateExpression leastOf(Collection<? extends DateResult> possibleValues) {
+		ArrayList<DateExpression> possVals = new ArrayList<DateExpression>();
+		for (DateResult num : possibleValues) {
+			possVals.add(new DateExpression(num));
+		}
+		return leastOf(possVals.toArray(new DateExpression[]{}));
+	}
+
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the least of these
+	 * @return the least/smallest value from the list.
+	 */
+	public static DateExpression leastOf(DateResult... possibleValues) {
+		DateExpression leastExpr
+				= new DateExpression(new NnaryDateFunctionDateResult(possibleValues) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						List<String> strs = new ArrayList<String>();
+						for (DateResult num : this.values) {
+							strs.add(num.toSQLString(db));
+						}
+						return db.getDefinition().doLeastOfTransformation(strs);
+					}
+
+					@Override
+					protected String getFunctionName(DBDatabase db) {
+						return db.getDefinition().getLeastOfFunctionName();
+					}
+				});
+		return leastExpr;
+	}
+
+	/**
+	 * Returns the largest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the largest of these
+	 * @return the largest value from the list.
+	 */
+	public static DateExpression greatestOf(Date... possibleValues) {
+		ArrayList<DateExpression> possVals = new ArrayList<DateExpression>();
+		for (Date num : possibleValues) {
+			possVals.add(value(num));
+		}
+		return greatestOf(possVals.toArray(new DateExpression[]{}));
+	}
+
+	/**
+	 * Returns the largest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the largest of these
+	 * @return the largest value from the list.
+	 */
+	public static DateExpression greatestOf(Collection<? extends DateResult> possibleValues) {
+		ArrayList<DateExpression> possVals = new ArrayList<DateExpression>();
+		for (DateResult num : possibleValues) {
+			possVals.add(new DateExpression(num));
+		}
+		return greatestOf(possVals.toArray(new DateExpression[]{}));
+	}
+
+	/**
+	 * Returns the largest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the largest of these
+	 * @return the largest value from the list.
+	 */
+	public static DateExpression greatestOf(DateResult... possibleValues) {
+		DateExpression leastExpr
+				= new DateExpression(new NnaryDateFunctionDateResult(possibleValues) {
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						List<String> strs = new ArrayList<String>();
+						for (DateResult num : this.values) {
+							strs.add(num.toSQLString(db));
+						}
+						return db.getDefinition().doGreatestOfTransformation(strs);
+					}
+
+					@Override
+					protected String getFunctionName(DBDatabase db) {
+						return db.getDefinition().getGreatestOfFunctionName();
+					}
+				});
+		return leastExpr;
+	}
 
 	private static abstract class DBNonaryFunction extends DateExpression {
 
@@ -2198,7 +2358,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+			return "("+first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db)+")";
 		}
 
 		@Override
@@ -2240,25 +2400,27 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 			return requiresNullProtection;
 		}
 	}
-
-	private static abstract class DBNnaryDateFunction implements DateResult {
+	
+	private static abstract class NnaryDateFunctionDateResult extends DateExpression {
 
 		protected DateExpression column;
-		protected DateResult[] values;
+		protected final List<DateResult> values = new ArrayList<DateResult>();
+		boolean nullProtectionRequired = false;
 
-		DBNnaryDateFunction() {
-			this.values = null;
+		NnaryDateFunctionDateResult() {
 		}
 
-		DBNnaryDateFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
-			this.values = new DateResult[rightHandSide.length];
-			this.column = leftHandSide;
-			System.arraycopy(rightHandSide, 0, this.values, 0, rightHandSide.length);
-		}
-
-		@Override
-		public DBDate getQueryableDatatypeForExpressionValue() {
-			return new DBDate();
+		NnaryDateFunctionDateResult(DateResult[] rightHandSide) {
+			for (DateResult dateResult : rightHandSide) {
+				if (dateResult == null) {
+					this.nullProtectionRequired = true;
+				} else {
+					if (dateResult.getIncludesNull()) {
+						this.nullProtectionRequired = true;
+					}
+					values.add(dateResult);
+				}
+			}
 		}
 
 		abstract String getFunctionName(DBDatabase db);
@@ -2275,7 +2437,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		public String toSQLString(DBDatabase db) {
 			StringBuilder builder = new StringBuilder();
 			builder
-					.append(column.toSQLString(db)).append(" ")
 					.append(this.getFunctionName(db))
 					.append(this.beforeValue(db));
 			String separator = "";
@@ -2290,8 +2451,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DBNnaryDateFunction copy() {
-			DBNnaryDateFunction newInstance;
+		public NnaryDateFunctionDateResult copy() {
+			NnaryDateFunctionDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2300,17 +2461,49 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
-			newInstance.values = this.values;
+			Collections.copy(this.values, newInstance.values);
 			return newInstance;
 		}
 
 		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (column != null) {
+				hashSet.addAll(column.getTablesInvolved());
+			}
+			for (DateResult second : values) {
+				if (second != null) {
+					hashSet.addAll(second.getTablesInvolved());
+				}
+			}
+			return hashSet;
+		}
+
+		@Override
 		public boolean isAggregator() {
-			boolean result = false || column.isAggregator();
-			for (DateResult dater : values) {
-				result = result || dater.isAggregator();
+			boolean result = column.isAggregator();
+			for (DateResult numer : values) {
+				result = result || numer.isAggregator();
 			}
 			return result;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return nullProtectionRequired;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (column == null && values.isEmpty()) {
+				return true;
+			} else {
+				boolean result = column.isPurelyFunctional();
+				for (DateResult value : values) {
+					result &= value.isPurelyFunctional();
+				}
+				return result;
+			}
 		}
 	}
 

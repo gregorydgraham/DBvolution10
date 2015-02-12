@@ -2161,7 +2161,7 @@ public abstract class DBDefinition {
 			return fakeLeastOfTransformation(strs);
 		}
 	}
-
+	
 	private String fakeLeastOfTransformation(List<String> strs) {
 		String sql = "";
 		String prevCase = null;
@@ -2737,30 +2737,39 @@ public abstract class DBDefinition {
 
 	public StringBuilder transformPeriodIntoInterval(Period interval) {
 		StringBuilder str = new StringBuilder();
+		String separator = "";
 		str.append("(");
-		if (interval.getYears() > 0) {
-			str.append("(INTERVAL '").append(interval.getYears()).append(" YEARS')");
+		if (interval.getYears() != 0) {
+			str.append(separator).append("(INTERVAL '").append(interval.getYears()).append(" YEARS')");
+			separator = "+";
 		}
-		if (interval.getMonths()> 0) {
-			str.append("+(INTERVAL '").append(interval.getMonths()).append(" MONTHS')");
+		if (interval.getMonths() != 0) {
+			str.append(separator).append("(INTERVAL '").append(interval.getMonths()).append(" MONTHS')");
+			separator = "+";
 		}
-		if (interval.getWeeks()> 0) {
-			str.append("+(INTERVAL '").append(interval.getWeeks()).append(" WEEKS')");
+		if (interval.getWeeks() != 0) {
+			str.append(separator).append("(INTERVAL '").append(interval.getWeeks()).append(" WEEKS')");
+			separator = "+";
 		}
-		if (interval.getDays()> 0) {
-			str.append("+(INTERVAL '").append(interval.getDays()).append(" DAYS')");
+		if (interval.getDays() != 0) {
+			str.append(separator).append("(INTERVAL '").append(interval.getDays()).append(" DAYS')");
+			separator = "+";
 		}
-		if (interval.getHours()> 0) {
-			str.append("+(INTERVAL '").append(interval.getHours()).append(" HOURS')");
+		if (interval.getHours() != 0) {
+			str.append(separator).append("(INTERVAL '").append(interval.getHours()).append(" HOURS')");
+			separator = "+";
 		}
-		if (interval.getMinutes()> 0) {
-			str.append("+(INTERVAL '").append(interval.getMinutes()).append(" MINUTES')");
+		if (interval.getMinutes() != 0) {
+			str.append(separator).append("(INTERVAL '").append(interval.getMinutes()).append(" MINUTES')");
+			separator = "+";
 		}
-		if (interval.getSeconds()> 0) {
-			str.append("+(INTERVAL '").append(interval.getSeconds()).append(" SECONDS')");
+		if (interval.getSeconds() != 0) {
+			str.append(separator).append("(INTERVAL '").append(interval.getSeconds()).append(" SECONDS')");
+			separator = "+";
 		}
-		if (interval.getMillis()> 0) {
-			str.append("+(INTERVAL '").append(interval.getMillis() * 1000).append(" MICROSECONDS')");
+		if (interval.getMillis() != 0) {
+			str.append(separator).append("(INTERVAL '").append(interval.getMillis() * 1000).append(" MICROSECONDS')");
+			separator = "+";
 		}
 		str.append(")");
 		return str;

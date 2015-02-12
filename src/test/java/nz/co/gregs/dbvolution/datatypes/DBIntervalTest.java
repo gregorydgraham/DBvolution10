@@ -26,7 +26,9 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatype;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static nz.co.gregs.dbvolution.generic.AbstractTest.march23rd2013;
 import org.junit.Test;
 import org.junit.Assert;
 import static org.hamcrest.Matchers.*;
@@ -56,8 +58,8 @@ public class DBIntervalTest extends AbstractTest {
 			List<intervalTable> allRows = tab.getAllRows();
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
-			
-			Assert.assertThat(allRows.get(0).intervalCol.periodValue().normalizedStandard(),is(testPeriod.normalizedStandard()));
+
+			Assert.assertThat(allRows.get(0).intervalCol.periodValue().normalizedStandard(), is(testPeriod.normalizedStandard()));
 		}
 	}
 
@@ -68,17 +70,32 @@ public class DBIntervalTest extends AbstractTest {
 			DBQuery query = database.getDBQuery(marq);
 			final Period oneYear = new Period().withYears(1);
 			query.addCondition(marq.column(marq.creationDate).minus(oneYear).isGreaterThan(april2nd2011));
-			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isGreaterThan(new Period().withYears(1)));
+			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isGreaterThan(oneYear));
 			List<DBQueryRow> allRows = query.getAllRows();
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(18));
-			
+
 			query = database.getDBQuery(marq);
-			query.addCondition(marq.column(marq.creationDate).plus(oneYear).isLessThan(april2nd2011));
-			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isLessThan(new Period().withYears(1)));
+			query.addCondition(marq.column(marq.creationDate).minus(oneYear).isLessThan(april2nd2011));
+			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isLessThan(oneYear));
 			allRows = query.getAllRows();
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(3));
+		}
+	}
+
+	@Test
+	public void testOverlaps() throws SQLException {
+		if (database instanceof SupportsIntervalDatatype) {
+			Marque marq = new Marque();
+			DBQuery query = database.getDBQuery(marq);
+			query.addCondition(DateExpression.overlaps(
+					marq.column(marq.creationDate), marq.column(marq.creationDate).plus(new Period().withDays(-5)),
+					DateExpression.value(march23rd2013).plus(new Period().withWeeks(-5)), DateExpression.value(march23rd2013).plus(new Period().withDays(-2)))
+			);
+			List<DBQueryRow> allRows = query.getAllRows();
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(18));
 		}
 	}
 
