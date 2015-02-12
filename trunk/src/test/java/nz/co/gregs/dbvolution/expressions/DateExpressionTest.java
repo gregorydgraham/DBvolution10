@@ -60,6 +60,19 @@ public class DateExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBDate currentDateTimePlus10Seconds = new DBDate(DateExpression.currentDate().addSeconds(10));
 	}
+	
+	@Test
+	public void testOverlaps()throws SQLException{
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(DateExpression.overlaps(
+				marq.column(marq.creationDate), marq.column(marq.creationDate).addDays(-5),
+				DateExpression.value(march23rd2013).addWeeks(-5), DateExpression.value(march23rd2013).addDays(-2))
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(18));
+	}
 
 	@Test
 	public void testCurrentDateTimeAndAddSecondsFunctions() throws SQLException {
