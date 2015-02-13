@@ -2774,4 +2774,8 @@ public abstract class DBDefinition {
 		str.append(")");
 		return str;
 	}
+	
+	public String doGeometryIntersectionTransform(DBDatabase db, String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
 }

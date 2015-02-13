@@ -27,17 +27,9 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.expressions.StringResult;
-import nz.co.gregs.dbvolution.operators.DBOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedPatternIgnoreCaseOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedPatternOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesIgnoreCaseOperator;
-import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
+import nz.co.gregs.dbvolution.operators.*;
 
 /**
  * Encapsulates database values that are strings of characters.
