@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

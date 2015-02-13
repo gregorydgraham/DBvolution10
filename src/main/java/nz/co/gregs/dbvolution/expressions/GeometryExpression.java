@@ -15,10 +15,11 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
 
 /**
  *
@@ -26,39 +27,135 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class GeometryExpression implements GeometryResult{
 
+	private GeometryResult innerGeometry;
+	private boolean nullProtectionRequired;
+	
+	protected GeometryExpression() {
+	}
+	
+	public GeometryExpression(GeometryResult value) {
+		innerGeometry = value;
+		if (value == null || innerGeometry.getIncludesNull()) {
+			nullProtectionRequired = true;
+		}
+	}
+	
 	@Override
-	public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public DBGeometry getQueryableDatatypeForExpressionValue() {
+		return new DBGeometry();
 	}
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return innerGeometry.toSQLString(db);
 	}
 
 	@Override
-	public DBExpression copy() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public GeometryExpression copy() {
+		return new GeometryExpression(innerGeometry);
 	}
 
 	@Override
 	public boolean isAggregator() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return innerGeometry.isAggregator();
 	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return innerGeometry.getTablesInvolved();
 	}
 
 	@Override
 	public boolean isPurelyFunctional() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return innerGeometry.isPurelyFunctional();
 	}
 
 	@Override
 	public boolean getIncludesNull() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return nullProtectionRequired;
 	}
+	
+	public BooleanExpression intersects(GeometryResult rightHandSide){
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+					return db.getDefinition().doGeometryIntersectionTransform(db, getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+	
+	private static abstract class GeometryGeometryWithBooleanResult extends BooleanExpression {
+
+		private GeometryExpression first;
+		private GeometryExpression second;
+		private boolean requiresNullProtection;
+
+		GeometryGeometryWithBooleanResult(GeometryExpression first, GeometryExpression second) {
+			this.first = first;
+			this.second = second;
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		GeometryExpression getFirst() {
+			return first;
+		}
+
+		GeometryResult getSecond() {
+			return second;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public GeometryGeometryWithBooleanResult copy() {
+			GeometryGeometryWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+
 	
 }

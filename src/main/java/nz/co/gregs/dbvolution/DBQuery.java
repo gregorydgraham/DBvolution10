@@ -80,7 +80,7 @@ import nz.co.gregs.dbvolution.internal.query.*;
  *
  * @author Gregory Graham
  */
-public class DBQuery{
+public class DBQuery {
 
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();
@@ -580,8 +580,7 @@ public class DBQuery{
 	 * are added.
 	 *
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
-	 * with their related instances.
-	  1 Database exceptions may be thrown
+	 * with their related instances. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @see DBRow
 	 * @see DBForeignKey
@@ -640,8 +639,8 @@ public class DBQuery{
 	 *
 	 * @param dbStatement dbStatement
 	 * @param sql sql
-	 * @return the ResultSet returned from the actual database.
-	  1 Database exceptions may be thrown
+	 * @return the ResultSet returned from the actual database. Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected ResultSet getResultSetForSQL(DBStatement dbStatement, String sql) throws SQLException {
@@ -652,13 +651,11 @@ public class DBQuery{
 	 * Using the current ResultSet row, set the values for the DBQueryRow
 	 * provided.
 	 *
-	 
-	 
-	 
-	  1 Database exceptions may be thrown
-	 * @param resultSet	 resultSet	
-	 * @param queryRow	 queryRow	
-	 * @param isGroupedQuery	 isGroupedQuery	
+	 * Database exceptions may be thrown
+	 *
+	 * @param resultSet	resultSet
+	 * @param queryRow	queryRow
+	 * @param isGroupedQuery	isGroupedQuery
 	 * @throws java.sql.SQLException the database threw an exception
 	 */
 	protected void setQueryRowFromResultSet(ResultSet resultSet, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException, UnableToInstantiateDBRowSubclassException {
@@ -743,10 +740,8 @@ public class DBQuery{
 	 * OldInstance is used to find the selected properties, newInstance is the
 	 * result, and restultSet contains the retrieved data.
 	 *
-	 
-	 
-	 
-	  1 Database exceptions may be thrown
+	 * Database exceptions may be thrown
+	 *
 	 * @param oldInstance oldInstance
 	 * @param newInstance newInstance
 	 * @param resultSet resultSet
@@ -779,9 +774,8 @@ public class DBQuery{
 	 * Sets all the expression columns using data from the current ResultSet
 	 * row.
 	 *
-	 
-	 
-	  1 Database exceptions may be thrown
+	 * Database exceptions may be thrown
+	 *
 	 * @param resultSet resultSet
 	 * @param queryRow queryRow
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -819,11 +813,12 @@ public class DBQuery{
 	 *
 	 * @param <R> a subclass of DBRow
 	 * @param exemplar an instance of R
-	 * @return the ONLY instance found using this query
-	  1 Database exceptions may be thrown
+	 * @return the ONLY instance found using this query 1 Database exceptions
+	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 *
 	 */
 	public <R extends DBRow> R getOnlyInstanceOf(R exemplar) throws SQLException, UnexpectedNumberOfRowsException {
 		List<R> allInstancesFound = getAllInstancesOf(exemplar, 1);
@@ -856,11 +851,13 @@ public class DBQuery{
 	 * @param exemplar The DBRow class that you would like returned.
 	 * @param expected The expected number of rows, an exception will be thrown
 	 * if this expectation is not met.
-	 * @return a list of all the instances of the exemplar found by this query
-	  1 Database exceptions may be thrown
+	 * @return a list of all the instances of the exemplar found by this query.
+	 * 
+	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 *
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, long expected) throws SQLException, UnexpectedNumberOfRowsException {
 		List<R> allInstancesFound = getAllInstancesOf(exemplar);
@@ -897,8 +894,9 @@ public class DBQuery{
 	 *
 	 * @param <R> a class that extends DBRow
 	 * @param exemplar an instance of R that has been included in the query
-	 * @return A List of all the instances found of the exemplar.
-	  1 Database exceptions may be thrown
+	 * @return A List of all the instances found of the exemplar. 
+	 * 
+	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
@@ -936,7 +934,7 @@ public class DBQuery{
 	 *
 	 * @param ps a printstream to print to.
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 
+	 *
 	 */
 	public void print(PrintStream ps) throws SQLException {
 		if (needsResults()) {
@@ -974,7 +972,7 @@ public class DBQuery{
 	 *
 	 * @param printStream a printstream to print to
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 
+	 *
 	 */
 	public void printAllDataColumns(PrintStream printStream) throws SQLException {
 		if (needsResults()) {
@@ -1006,7 +1004,7 @@ public class DBQuery{
 	 *
 	 * @param ps a PrintStream to print to.
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 
+	 *
 	 */
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
 		if (needsResults()) {
@@ -1056,8 +1054,8 @@ public class DBQuery{
 	 * number of rows that would have been returned had
 	 * {@link #getAllRows() getAllRows()} been called.
 	 *
-	 * @return the number of rows that have or will be retrieved.
-	  1 Database exceptions may be thrown
+	 * @return the number of rows that have or will be retrieved. Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public Long count() throws SQLException {
@@ -1185,7 +1183,7 @@ public class DBQuery{
 		blankResults();
 
 		sortOrderColumns = Arrays.copyOf(sortColumns, sortColumns.length);
-
+		
 		sortOrder = new ArrayList<PropertyWrapper>();
 		PropertyWrapper prop;
 		for (ColumnProvider col : sortColumns) {
@@ -1412,9 +1410,12 @@ public class DBQuery{
 	 * @param expectedRows - the number of rows expected to be retrieved
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances.
-	 
-	  1 Database exceptions may be thrown
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 *
+	 * <p>
+	 * Database exceptions may be thrown.
+	 * 
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @see #getAllRows()
 	 */
@@ -1605,8 +1606,6 @@ public class DBQuery{
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
-	 
-	 
 	 * @return this DBQuery instance
 	 * @throws java.lang.InstantiationException java.lang.InstantiationException
 	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
@@ -1639,8 +1638,6 @@ public class DBQuery{
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
-	 
-	 
 	 * @return this DBQuery instance
 	 * @throws java.lang.InstantiationException java.lang.InstantiationException
 	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
@@ -1685,8 +1682,6 @@ public class DBQuery{
 	 * @return this DBQuery instance
 	 * @throws java.lang.InstantiationException java.lang.InstantiationException
 	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
-	 
-	 
 	 */
 	public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws InstantiationException, IllegalAccessException {
 		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
@@ -1730,8 +1725,8 @@ public class DBQuery{
 	 * status DBRow as a block.
 	 *
 	 * @param instance the DBRow instance you are interested in.
-	 * @return A list of DBQueryRow instances that relate to the exemplar
-	  1 Database exceptions may be thrown
+	 * @return A list of DBQueryRow instances that relate to the exemplar 1
+	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException {
@@ -1761,9 +1756,9 @@ public class DBQuery{
 	 * <p>
 	 * Convenience method for {@link #getAllRowsForPage(java.lang.Integer) }.
 	 *
-	 * @param pageNumber	 pageNumber	
-	 * @return a list of the DBQueryRows for the selected page.
-	  1 Database exceptions may be thrown
+	 * @param pageNumber	pageNumber
+	 * @return a list of the DBQueryRows for the selected page. 1 Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<DBQueryRow> getPage(Integer pageNumber) throws SQLException {
@@ -1781,9 +1776,9 @@ public class DBQuery{
 	 * <p>
 	 * This method is zero-based so the first page is getAllRowsForPage(0).
 	 *
-	 * @param pageNumber	 pageNumber	
-	 * @return a list of the DBQueryRows for the selected page.
-	  1 Database exceptions may be thrown
+	 * @param pageNumber	pageNumber
+	 * @return a list of the DBQueryRows for the selected page. 1 Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
@@ -2055,7 +2050,7 @@ public class DBQuery{
 	 * They will NOT be added as tables however, for that use
 	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
 	 *
-	 
+	 *
 	 */
 	void addExtraExamples(DBRow... extraExamples) {
 		for (DBRow extraExample : extraExamples) {
@@ -2170,8 +2165,7 @@ public class DBQuery{
 	 *
 	 * @param fieldsOfProvidedRows - the field/column that you need data for.
 	 * @return a list of DBQQueryRows with distinct combinations of values used
-	 * in the columns.
-	  1 Database exceptions may be thrown
+	 * in the columns. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings({"unchecked", "empty-statement"})
@@ -2288,11 +2282,11 @@ public class DBQuery{
 	 * <p>
 	 * Used during recursive queries. If you are not manually constructing a
 	 * recursive query do NOT use this method.
-	 * 
+	 *
 	 * <p>
 	 * Also used by the {@link ExistsExpression}.
 	 *
-	 * @param tables	 tables	
+	 * @param tables	tables
 	 * @return this DBQuery object.
 	 */
 	public DBQuery addAssumedTables(List<DBRow> tables) {
@@ -2310,7 +2304,7 @@ public class DBQuery{
 	 * <p>
 	 * Also used by the {@link ExistsExpression}.
 	 *
-	 * @param tables	 tables	
+	 * @param tables	tables
 	 * @return this DBQuery object.
 	 */
 	public DBQuery addAssumedTables(DBRow... tables) {
@@ -2321,7 +2315,6 @@ public class DBQuery{
 		}
 		return this;
 	}
-
 
 	/**
 	 * Adds optional tables to this query
@@ -2338,8 +2331,8 @@ public class DBQuery{
 	 * Criteria (permitted and excluded values) specified in the supplied
 	 * instance will be added to the query.
 	 *
-	 * @param optionalQueryTables  a list of DBRow objects that defines optional tables and
-	 * criteria
+	 * @param optionalQueryTables a list of DBRow objects that defines optional
+	 * tables and criteria
 	 *
 	 * @return this DBQuery instance
 	 */
@@ -2350,16 +2343,14 @@ public class DBQuery{
 		return this;
 	}
 
-
-
 	/**
 	 * Ignores the foreign key of the column provided.
 	 * <p>
 	 * Similar to {@link DBRow#ignoreForeignKey(java.lang.Object) } but uses a
 	 * ColumnProvider which is portable between instances of DBRow.
 	 * <p>
-	 * For example the following code snippet will ignore the foreign key provided
-	 * by a different instance of Customer:
+	 * For example the following code snippet will ignore the foreign key
+	 * provided by a different instance of Customer:
 	 * <pre>
 	 * Customer customer = new Customer();
 	 * IntegerColumn addressColumn = customer.column(customer.fkAddress);
@@ -2367,7 +2358,7 @@ public class DBQuery{
 	 * cust2.ignoreForeignKey(addressColumn);
 	 * </pre>
 	 *
-	 * @param foreignKeyToFollow 	the foreign key to ignore
+	 * @param foreignKeyToFollow the foreign key to ignore
 	 * @return This DBQuery object
 	 */
 	public DBQuery ignoreForeignKey(ColumnProvider foreignKeyToFollow) {
@@ -2381,7 +2372,7 @@ public class DBQuery{
 		}
 		return this;
 	}
-		
+
 	/**
 	 * Helper class to store the progress of turning the DBQuery into an actual
 	 * piece of SQL.
@@ -2421,7 +2412,7 @@ public class DBQuery{
 		/**
 		 * Adds a condition that pertains to a required table.
 		 *
-		 * @param conditionClause		 conditionClause		
+		 * @param conditionClause	conditionClause
 		 */
 		protected void addRequiredCondition(String conditionClause) {
 			requiredConditions.add(conditionClause);
@@ -2443,7 +2434,7 @@ public class DBQuery{
 		/**
 		 * Add conditions that pertain to optional tables.
 		 *
-		 * @param conditionClauses		 conditionClauses		
+		 * @param conditionClauses	conditionClauses
 		 */
 		protected void addOptionalConditions(List<String> conditionClauses) {
 			optionalConditions.addAll(conditionClauses);
