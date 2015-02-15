@@ -132,8 +132,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.2</version>
 				<configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<compilerArgs>
 						<arg>-Xlint</arg>
 					</compilerArgs>
@@ -145,7 +145,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.18.1</version>
 				<configuration>
-					<argLine>-Dfile.encoding=UTF8 ${surefireArgLine}</argLine>
+					<argLine>-Dfile.encoding=UTF8</argLine>
 					<includes>
 						<include>**/*.java</include>
 					</includes>
@@ -213,6 +213,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<version>2.18.1</version>
 						<configuration>
+							<argLine>-Dfile.encoding=UTF8 ${surefireArgLine}</argLine>
 							<systemPropertyVariables>
 								<testAllDatabases>true</testAllDatabases>
 								<testSQLite>true</testSQLite>
@@ -663,7 +664,7 @@
 			<artifactId>emma</artifactId>
 			<version>2.1.5320</version>
 		</dependency>
-<!--		<dependency>
+		<!--		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.1.0.1.0</version>

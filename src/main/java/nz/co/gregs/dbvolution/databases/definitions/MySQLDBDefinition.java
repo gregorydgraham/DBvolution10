@@ -178,7 +178,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		return false;
 	}	
 	
-	public StringBuilder transformPeriodIntoInterval(Period interval) {
+	public String transformPeriodIntoInterval(Period interval) {
 		StringBuilder str = new StringBuilder();
 		str.append("(");
 		if (interval.getYears() > 0) {
@@ -206,7 +206,7 @@ public class MySQLDBDefinition extends DBDefinition {
 			str.append("+(INTERVAL ").append(interval.getMillis() * 1000).append(" MICROSECOND)");
 		}
 		str.append(")");
-		return str;
+		return str.toString();
 	}
 
 }

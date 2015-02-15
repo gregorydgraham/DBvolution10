@@ -2161,7 +2161,7 @@ public abstract class DBDefinition {
 			return fakeLeastOfTransformation(strs);
 		}
 	}
-	
+
 	private String fakeLeastOfTransformation(List<String> strs) {
 		String sql = "";
 		String prevCase = null;
@@ -2726,7 +2726,7 @@ public abstract class DBDefinition {
 
 	public String getAlterTableDropForeignKeyStatement(DBRow newTableRow, PropertyWrapper field) {
 		if (field.isForeignKey()) {
-			return "ALTER TABLE " + this.formatTableName(newTableRow) + " DROP FOREIGN KEY " +field.columnName();
+			return "ALTER TABLE " + this.formatTableName(newTableRow) + " DROP FOREIGN KEY " + field.columnName();
 		}
 		return "";
 	}
@@ -2735,7 +2735,7 @@ public abstract class DBDefinition {
 		return selectableName;
 	}
 
-	public StringBuilder transformPeriodIntoInterval(Period interval) {
+	public String transformPeriodIntoInterval(Period interval) {
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		str.append("(");
@@ -2772,10 +2772,82 @@ public abstract class DBDefinition {
 			separator = "+";
 		}
 		str.append(")");
-		return str;
+		return str.toString();
 	}
-	
-	public String doGeometryIntersectionTransform(DBDatabase db, String firstGeometry, String secondGeometry) {
+
+	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
+	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " - " + rightHandSide + ")";
+	}
+
+	public String doIntervalEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " = " + rightHandSide + ")";
+	}
+
+	public String doIntervalLessThanTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " < " + rightHandSide + ")";
+	}
+
+	public String doIntervalLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " <= " + rightHandSide + ")";
+	}
+
+	public String doIntervalGreaterThanTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " > " + rightHandSide + ")";
+	}
+
+	public String doIntervalGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " >= " + rightHandSide + ")";
+	}
+
+	public String doDateIntervalAdditionTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " + " + rightHandSide + ")";
+	}
+
+	public String doDateIntervalSubtractionTransform(String leftHandSide, String rightHandSide) {
+		return leftHandSide + "-" + rightHandSide;
+	}
+
+	public Period parseIntervalFromGetString(String anInterval) {
+		String intervalStr = " " + anInterval;
+		System.out.println(intervalStr);
+		//8 years 7 mons 47 days 04:03:02.001
+		int years = 0;
+		int months = 0;
+		int days = 0;
+		int hours = 0;
+		int minutes = 0;
+		int seconds = 0;
+		int millis = 0;
+		if (intervalStr.contains("years")) {
+			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) years.*", "$1");
+			years = Integer.parseInt(replaced);
+		}
+		if (intervalStr.contains("mons")) {
+			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) mons.*", "$1");
+			months = Integer.parseInt(replaced);
+		}
+		if (intervalStr.contains("days")) {
+			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) days.*", "$1");
+			System.out.println("DAYS: " + replaced);
+			days = Integer.parseInt(replaced);
+		}
+		if (intervalStr.matches(".* [-0-9]+:.*")) {
+			String replaced = intervalStr.replaceAll(".*([-0-9]+):[-0-9]+:[-0-9]+[-.0-9]*.*", "$1");
+			hours = Integer.parseInt(replaced);
+			replaced = intervalStr.replaceAll(".*[-0-9]+:([-0-9]+):[-0-9]+[-.0-9]*.*", "$1");
+			minutes = Integer.parseInt(replaced);
+			replaced = intervalStr.replaceAll(".*[-0-9]+:[-0-9]+:([-0-9]+)[-.0-9]*.*", "$1");
+			seconds = Integer.parseInt(replaced);
+			if (intervalStr.matches(".*\\.([0-9]+).*")) {
+				replaced = (seconds == Math.abs(seconds) ? "" : "-") + intervalStr.replaceAll(".*\\.([0-9]+).*", "$1");
+				millis = (new Double(Double.parseDouble(replaced))).intValue();
+			}
+		}
+		Period parsePeriod = new Period().withYears(years).withMonths(months).withDays(days).withHours(hours).withMinutes(minutes).withSeconds(seconds).withMillis(millis);
+		return parsePeriod;
 	}
 }

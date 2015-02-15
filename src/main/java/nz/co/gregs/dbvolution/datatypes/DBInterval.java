@@ -43,7 +43,7 @@ public class DBInterval extends QueryableDatatype implements IntervalResult {
 	}
 
 	public void setValue(Period newLiteralValue) {
-		super.setLiteralValue(newLiteralValue); 
+		super.setLiteralValue(newLiteralValue);
 	}
 
 	public Period periodValue() {
@@ -70,48 +70,19 @@ public class DBInterval extends QueryableDatatype implements IntervalResult {
 		if (interval == null) {
 			return "NULL";
 		} else {
-			StringBuilder str = db.getDefinition().transformPeriodIntoInterval(interval);
-			return str.toString();
+			String str = db.getDefinition().transformPeriodIntoInterval(interval);
+			return str;
 		}
 	}
 
 	@Override
 	protected Period getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String intervalStr = resultSet.getString(fullColumnName);
-		//8 years 7 mons 47 days 04:03:02.001
-		int years = 0;
-		int months = 0;
-		int days = 0;
-		int hours = 0;
-		int minutes = 0;
-		int seconds = 0;
-		int millis = 0;
-		if (intervalStr.contains("years")) {
-			final String replaced = intervalStr.replaceAll(".*([0-9]+) years.*", "$1");
-			years = Integer.parseInt(replaced);
+		if (intervalStr == null || intervalStr.equals("")) {
+			return null;
+		} else {
+			return database.getDefinition().parseIntervalFromGetString(intervalStr);
 		}
-		if (intervalStr.contains("mons")) {
-			final String replaced = intervalStr.replaceAll(".* ([0-9]+) mons.*", "$1");
-			months = Integer.parseInt(replaced);
-		}
-		if (intervalStr.contains("days")) {
-			final String replaced = intervalStr.replaceAll(".* ([0-9]+) days.*", "$1");
-			days = Integer.parseInt(replaced);
-		}
-		if (intervalStr.matches(".* [0-9]+:.*")) {
-			String replaced = intervalStr.replaceAll(".* ([0-9]+):[0-9]+:[0-9]+[.0-9]*.*", "$1");
-			hours = Integer.parseInt(replaced);
-			replaced = intervalStr.replaceAll(".* [0-9]+:([0-9]+):[0-9]+[.0-9]*.*", "$1");
-			minutes = Integer.parseInt(replaced);
-			replaced = intervalStr.replaceAll(".* [0-9]+:[0-9]+:([0-9]+)[.0-9]*.*", "$1");
-			seconds = Integer.parseInt(replaced);
-		}
-		if (intervalStr.matches(".*\\.[0-9]+.*")) {
-			final String replaced = "0" + intervalStr.replaceAll(".*\\.([0-9]+).*", "$1");
-			millis = (new Double(Double.parseDouble(replaced))).intValue();
-		}
-		Period parsePeriod = new Period().withYears(years).withMonths(months).withDays(days).withHours(hours).withMinutes(minutes).withSeconds(seconds).withMillis(millis);
-		return parsePeriod;
 	}
 
 	@Override
@@ -138,5 +109,4 @@ public class DBInterval extends QueryableDatatype implements IntervalResult {
 			return PeriodFormat.getDefault().print(interval);
 		}
 	}
-
 }
