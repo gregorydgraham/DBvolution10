@@ -902,16 +902,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		});
 	}
 
-	
 	public IntervalExpression minus(Date date) {
 		return minus(value(date));
 	}
-	
+
 	public IntervalExpression minus(DateResult dateExpression) {
-		return new IntervalExpression(new DateDateArithmeticIntervalResult(this, dateExpression) {
+		return new IntervalExpression(new DateDateWithIntervalResult(this, dateExpression) {
+
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " - ";
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doDateMinusTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 			@Override
@@ -924,12 +924,12 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	public DateExpression minus(Period interval) {
 		return minus(IntervalExpression.value(interval));
 	}
-	
+
 	public DateExpression minus(IntervalResult intervalExpression) {
 		return new DateExpression(new DateIntervalArithmeticDateResult(this, intervalExpression) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " - ";
+			protected String doExpressionTransformation(DBDatabase db) {
+				return db.getDefinition().doDateIntervalSubtractionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 			@Override
@@ -942,12 +942,12 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	public DateExpression plus(Period interval) {
 		return plus(IntervalExpression.value(interval));
 	}
-	
+
 	public DateExpression plus(IntervalResult intervalExpression) {
 		return new DateExpression(new DateIntervalArithmeticDateResult(this, intervalExpression) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " + ";
+			protected String doExpressionTransformation(DBDatabase db) {
+				return db.getDefinition().doDateIntervalAdditionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 			@Override
@@ -1075,13 +1075,13 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * equal.
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isLessThan(Date value, BooleanExpression fallBackWhenEquals){
+	public BooleanExpression isLessThan(Date value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
-	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
-	 * matches.
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the
+	 * fallback matches.
 	 *
 	 * <p>
 	 * Often used to implement efficient paging by using LESSTHAN across 2
@@ -1098,7 +1098,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * equal.
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isGreaterThan(Date value, BooleanExpression fallBackWhenEquals){
+	public BooleanExpression isGreaterThan(Date value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
@@ -1122,13 +1122,13 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return a BooleanExpression
 	 */
 	@Override
-	public BooleanExpression isLessThan(DateResult value, BooleanExpression fallBackWhenEquals){
+	public BooleanExpression isLessThan(DateResult value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
-	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
-	 * matches.
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the
+	 * fallback matches.
 	 *
 	 * <p>
 	 * Often used to implement efficient paging by using LESSTHAN across 2
@@ -1146,7 +1146,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return a BooleanExpression
 	 */
 	@Override
-	public BooleanExpression isGreaterThan(DateResult value, BooleanExpression fallBackWhenEquals){
+	public BooleanExpression isGreaterThan(DateResult value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
@@ -1936,22 +1936,22 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 					}
 				});
 	}
-	
-	public static BooleanExpression overlaps(Date firstStartTime, Date firstEndTime, Date secondStartTime, Date secondEndtime){
+
+	public static BooleanExpression overlaps(Date firstStartTime, Date firstEndTime, Date secondStartTime, Date secondEndtime) {
 		return DateExpression.overlaps(
-				DateExpression.value(firstStartTime), DateExpression.value(firstEndTime), 
+				DateExpression.value(firstStartTime), DateExpression.value(firstEndTime),
 				DateExpression.value(secondStartTime), DateExpression.value(secondEndtime)
 		);
 	}
-	
-	public BooleanExpression overlaps(DateResult firstStartTime, DateResult firstEndTime, DateResult secondStartTime, DateResult secondEndtime){
+
+	public BooleanExpression overlaps(DateResult firstStartTime, DateResult firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
 		return DateExpression.overlaps(
-				new DateExpression(firstStartTime), new DateExpression(firstEndTime), 
+				new DateExpression(firstStartTime), new DateExpression(firstEndTime),
 				secondStartTime, secondEndtime
 		);
 	}
-	
-	public static BooleanExpression overlaps(DateExpression firstStartTime, DateExpression firstEndTime, DateResult secondStartTime, DateResult secondEndtime){
+
+	public static BooleanExpression overlaps(DateExpression firstStartTime, DateExpression firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
 		return BooleanExpression.anyOf(
 				firstStartTime.isBetween(
 						DateExpression.leastOf(secondStartTime, secondEndtime),
@@ -2283,13 +2283,13 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DateDateArithmeticIntervalResult extends IntervalExpression {
+	private static abstract class DateDateWithIntervalResult extends IntervalExpression {
 
 		private DateExpression first;
 		private DateResult second;
 		private boolean requiresNullProtection = false;
 
-		DateDateArithmeticIntervalResult(DateExpression first, DateResult second) {
+		DateDateWithIntervalResult(DateExpression first, DateResult second) {
 			this.first = first;
 			this.second = second;
 			if (second == null || second.getIncludesNull()) {
@@ -2298,13 +2298,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
-		}
-
-		@Override
-		public DateDateArithmeticIntervalResult copy() {
-			DateDateArithmeticIntervalResult newInstance;
+		public DateDateWithIntervalResult copy() {
+			DateDateWithIntervalResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2312,33 +2307,45 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond().copy();
 			return newInstance;
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
 			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
 			}
 			return hashSet;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
-
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator();
 		}
 
 		@Override
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
+		}
+
+		/**
+		 * @return the first
+		 */
+		public DateExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		public DateResult getSecond() {
+			return second;
 		}
 	}
 
@@ -2358,7 +2365,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return "("+first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db)+")";
+			return this.doExpressionTransformation(db);
 		}
 
 		@Override
@@ -2371,36 +2378,50 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond().copy();
 			return newInstance;
 		}
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
 			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
 			}
 			return hashSet;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String doExpressionTransformation(DBDatabase db);
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
+			return getFirst().isAggregator() || getSecond().isAggregator();
 		}
 
 		@Override
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
 		}
+
+		/**
+		 * @return the first
+		 */
+		public DateExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		public IntervalResult getSecond() {
+			return second;
+		}
 	}
-	
+
 	private static abstract class NnaryDateFunctionDateResult extends DateExpression {
 
 		protected DateExpression column;

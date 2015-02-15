@@ -260,7 +260,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 	
 	@Override
-	public String doGeometryIntersectionTransform(DBDatabase db, String firstGeometry, String secondGeometry) {
+	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Intersects(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 

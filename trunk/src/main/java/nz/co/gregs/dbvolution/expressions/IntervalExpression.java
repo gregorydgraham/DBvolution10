@@ -32,7 +32,7 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 	IntervalResult innerIntervalResult = null;
 	private boolean nullProtectionRequired = false;
 	
-	protected IntervalExpression(){
+	public IntervalExpression(){
 	}
 	
 	public IntervalExpression(Period interval){
@@ -94,11 +94,11 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 
 	@Override
 	public BooleanExpression isLessThan(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
+		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " < ";
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doIntervalLessThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -109,11 +109,11 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 
 	@Override
 	public BooleanExpression isGreaterThan(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
+		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " > ";
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doIntervalGreaterThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -124,11 +124,11 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 	
 	@Override
 	public BooleanExpression isLessThanOrEqual(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
+		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " <= ";
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doIntervalLessThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -139,12 +139,13 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
+		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " >= ";
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doIntervalGreaterThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
+
 		});
 	}
 
@@ -172,24 +173,23 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 
 	@Override
 	public BooleanExpression is(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalBooleanArithmetic(this, anotherInstance) {
-
+		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " = ";
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doIntervalEqualsTransform(getFirst().toSQLString(db),getSecond().toSQLString(db));
 			}
 		});
 	}
 	
 
-	private static abstract class IntervalIntervalBooleanArithmetic extends BooleanExpression {
+	private static abstract class IntervalIntervalWithBooleanResult extends BooleanExpression {
 
 		private IntervalExpression first;
 		private IntervalResult second;
 		private boolean requiresNullProtection;
 
-		IntervalIntervalBooleanArithmetic(IntervalExpression first, IntervalResult second) {
+		IntervalIntervalWithBooleanResult(IntervalExpression first, IntervalResult second) {
 			this.first = first;
 			this.second = second;
 			if (this.second == null || this.second.getIncludesNull()) {
@@ -215,13 +215,13 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
-				return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+				return doExpressionTransform(db);
 			}
 		}
 
 		@Override
-		public IntervalIntervalBooleanArithmetic copy() {
-			IntervalIntervalBooleanArithmetic newInstance;
+		public IntervalIntervalWithBooleanResult copy() {
+			IntervalIntervalWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -234,7 +234,7 @@ public class IntervalExpression  implements IntervalResult, RangeComparable<Inte
 			return newInstance;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDatabase db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {

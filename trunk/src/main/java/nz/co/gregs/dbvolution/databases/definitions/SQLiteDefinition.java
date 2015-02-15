@@ -24,10 +24,13 @@ import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBInterval;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generation.DBTableField;
+import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import org.joda.time.Period;
 
 /**
  * Defines the features of the SQLite database that differ from the standard
@@ -42,12 +45,17 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 public class SQLiteDefinition extends DBDefinition {
 
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static String INTERVAL_CREATION_FUNCTION = "DBV_INTERVAL_CREATE";
+	public static String INTERVAL_EQUALS_FUNCTION = "DBV_INTERVAL_EQUALS";
+	public static String INTERVAL_LESSTHAN_FUNCTION = "DBV_INTERVAL_LESSTHAN";
+	public static String INTERVAL_LESSTHANEQUALS_FUNCTION = "DBV_INTERVAL_LESSTHANEQUALS";
+	public static String INTERVAL_GREATERTHAN_FUNCTION = "DBV_INTERVAL_GREATERTHAN";
+	public static String INTERVAL_GREATERTHANEQUALS_FUNCTION = "DBV_INTERVAL_GREATERTHANEQUALS";
+	public static String INTERVAL_DATEADDITION_FUNCTION = "DBV_INTERVAL_DATEADD";
+	public static String INTERVAL_DATESUBTRACTION_FUNCTION = "DBV_INTERVAL_DATEMINUS";
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
-		//%Y-%m-%d %H:%M:%S.%s
-//		return " STRFTIME('%Y-%m-%d %H:%M:%S', '" + DATETIME_FORMAT.format(date) + "') ";
-//		return " '" + DATETIME_FORMAT.format(date) + "' ";
 		return " DATETIME('" + DATETIME_FORMAT.format(date) + "') ";
 	}
 
@@ -80,6 +88,8 @@ public class SQLiteDefinition extends DBDefinition {
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBLargeObject) {
 			return " TEXT ";
+		}else if (qdt instanceof DBInterval) {
+			return " VARCHAR(20) ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
@@ -208,6 +218,10 @@ public class SQLiteDefinition extends DBDefinition {
 		return DATETIME_FORMAT.parse(getStringDate);
 	}
 
+	public String formatDateForGetString(Date date) throws ParseException {
+		return DATETIME_FORMAT.format(date);
+	}
+
 	@Override
 	public boolean supportsRetrievingLastInsertedRowViaSQL() {
 		return true;
@@ -317,5 +331,54 @@ public class SQLiteDefinition extends DBDefinition {
 		return "";
 	}
 
+	@Override
+	public String transformPeriodIntoInterval(Period interval) {
+		return "'"+IntervalImpl.getIntervalString(interval)+"'";
+	}
+
+	@Override
+	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
+		return " "+INTERVAL_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	}
+
+	@Override
+	public String doDateIntervalAdditionTransform(String leftHandSide, String rightHandSide) {
+		return " "+INTERVAL_DATEADDITION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	}
+
+	@Override
+	public String doDateIntervalSubtractionTransform(String leftHandSide, String rightHandSide) {
+		return " "+INTERVAL_DATESUBTRACTION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	}
+
+	@Override
+	public Period parseIntervalFromGetString(String intervalStr) {
+		return IntervalImpl.parseIntervalFromGetString(intervalStr);
+	}
+
+	@Override
+	public String doIntervalEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "("+leftHandSide +" = "+rightHandSide+")";
+	}
+
+	@Override
+	public String doIntervalLessThanTransform(String leftHandSide, String rightHandSide) {
+		return INTERVAL_LESSTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	}
+
+	@Override
+	public String doIntervalLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return INTERVAL_LESSTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	}
+
+	@Override
+	public String doIntervalGreaterThanTransform(String leftHandSide, String rightHandSide) {
+		return INTERVAL_GREATERTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	}
+
+	@Override
+	public String doIntervalGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return INTERVAL_GREATERTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	}
 
 }

@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -29,6 +30,7 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.march23rd2013;
+import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
 import org.junit.Test;
 import org.junit.Assert;
 import static org.hamcrest.Matchers.*;
@@ -63,15 +65,28 @@ public class DBIntervalTest extends AbstractTest {
 		}
 	}
 
+	public static class MarqueWithIntervalExprCol extends Marque {
+
+		@DBColumn
+		DBInterval interval = new DBInterval(this.column(this.creationDate).minus(april2nd2011));
+
+		Period oneYear = new Period().withYears(1);
+		@DBColumn
+		DBDate creationDatePlus1Year = new DBDate(this.column(this.creationDate).minus(oneYear));
+	}
+
 	@Test
 	public void testDateExpressionProducingIntervals() throws SQLException {
 		if (database instanceof SupportsIntervalDatatype) {
-			Marque marq = new Marque();
-			DBQuery query = database.getDBQuery(marq);
+			Marque marq;
+			marq = new MarqueWithIntervalExprCol();
+			DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
+			List<DBQueryRow> allRows = query.getAllRows();
+			database.print(allRows);
 			final Period oneYear = new Period().withYears(1);
 			query.addCondition(marq.column(marq.creationDate).minus(oneYear).isGreaterThan(april2nd2011));
 			query.addCondition(marq.column(marq.creationDate).minus(april2nd2011).isGreaterThan(oneYear));
-			List<DBQueryRow> allRows = query.getAllRows();
+			allRows = query.getAllRows();
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(18));
 
@@ -97,6 +112,30 @@ public class DBIntervalTest extends AbstractTest {
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(18));
 		}
+	}
+
+	@Test
+	public void testParsing() {
+		String twoYearPlusInterval = "P2Y-1M0D11h32m53s0";
+		String zeroInterval = "P0Y0M0D0h0m0s0";
+		IntervalImpl.compareIntervalStrings(twoYearPlusInterval, "P1Y0M0D0h0m0s0");
+		IntervalImpl.compareIntervalStrings(zeroInterval, "P1Y0M0D0h0m0s0");
+	}
+
+	@Test
+	public void testSubtracting() {
+		String oneYear = "P1Y0M0D0h0m0s0";
+		Date resultDate = IntervalImpl.subtractDateAndIntervalString(april2nd2011,IntervalImpl.getZeroIntervalString());
+		System.out.println("RESULTDATE: "+resultDate);
+		Assert.assertThat(resultDate.getYear()+1900, is(2011));
+		Assert.assertThat(resultDate.getMonth()+1, is(4));
+		Assert.assertThat(resultDate.getDate(), is(2));
+		
+		resultDate = IntervalImpl.subtractDateAndIntervalString(april2nd2011, oneYear);
+		System.out.println("RESULTDATE: "+resultDate);
+		Assert.assertThat(resultDate.getYear()+1900, is(2010));
+		Assert.assertThat(resultDate.getMonth()+1, is(4));
+		Assert.assertThat(resultDate.getDate(), is(2));
 	}
 
 	public static class intervalTable extends DBRow {

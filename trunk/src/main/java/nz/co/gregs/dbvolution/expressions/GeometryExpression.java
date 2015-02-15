@@ -25,21 +25,21 @@ import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
  *
  * @author gregorygraham
  */
-public class GeometryExpression implements GeometryResult{
+public class GeometryExpression implements GeometryResult {
 
 	private GeometryResult innerGeometry;
 	private boolean nullProtectionRequired;
-	
+
 	protected GeometryExpression() {
 	}
-	
+
 	public GeometryExpression(GeometryResult value) {
 		innerGeometry = value;
 		if (value == null || innerGeometry.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
-	
+
 	@Override
 	public DBGeometry getQueryableDatatypeForExpressionValue() {
 		return new DBGeometry();
@@ -74,17 +74,17 @@ public class GeometryExpression implements GeometryResult{
 	public boolean getIncludesNull() {
 		return nullProtectionRequired;
 	}
-	
-	public BooleanExpression intersects(GeometryResult rightHandSide){
+
+	public BooleanExpression intersects(GeometryResult rightHandSide) {
 		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-					return db.getDefinition().doGeometryIntersectionTransform(db, getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doGeometryIntersectionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
-	
+
 	private static abstract class GeometryGeometryWithBooleanResult extends BooleanExpression {
 
 		private GeometryExpression first;
@@ -156,6 +156,4 @@ public class GeometryExpression implements GeometryResult{
 		}
 	}
 
-
-	
 }
