@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
 import nz.co.gregs.dbvolution.expressions.GeometryExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -39,4 +40,9 @@ public class GeometryColumn extends GeometryExpression implements ColumnProvider
 	public void setUseTableAlias(boolean useTableAlias) {
 		this.column.setUseTableAlias(useTableAlias);
 	}	
+
+    @Override
+    public String toSQLString(DBDatabase db) {
+        return column.toSQLString(db);
+    }
 }
