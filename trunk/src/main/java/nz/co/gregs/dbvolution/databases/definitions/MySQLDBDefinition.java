@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial.*;
@@ -176,37 +177,41 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public boolean supportsArraysNatively() {
 		return false;
-	}	
-	
-	public String transformPeriodIntoInterval(Period interval) {
-		StringBuilder str = new StringBuilder();
-		str.append("(");
-		if (interval.getYears() > 0) {
-			str.append("(INTERVAL ").append(interval.getYears()).append(" YEAR)");
-		}
-		if (interval.getMonths()> 0) {
-			str.append("+(INTERVAL ").append(interval.getMonths()).append(" MONTH)");
-		}
-		if (interval.getWeeks()> 0) {
-			str.append("+(INTERVAL ").append(interval.getWeeks()).append(" WEEK)");
-		}
-		if (interval.getDays()> 0) {
-			str.append("+(INTERVAL ").append(interval.getDays()).append(" DAY)");
-		}
-		if (interval.getHours()> 0) {
-			str.append("+(INTERVAL ").append(interval.getHours()).append(" HOUR)");
-		}
-		if (interval.getMinutes()> 0) {
-			str.append("+(INTERVAL ").append(interval.getMinutes()).append(" MINUTE)");
-		}
-		if (interval.getSeconds()> 0) {
-			str.append("+(INTERVAL ").append(interval.getSeconds()).append(" SECOND)");
-		}
-		if (interval.getMillis()> 0) {
-			str.append("+(INTERVAL ").append(interval.getMillis() * 1000).append(" MICROSECOND)");
-		}
-		str.append(")");
-		return str.toString();
 	}
-
+	
+	@Override
+	public String doGeometryEqualsTransform(String firstGeometry, String secondGeometry) {
+		return "Equals(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+	
+	@Override
+	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return "Intersects(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+	
+	@Override
+	public String doGeometryContainsTransform(String firstGeometry, String secondGeometry) {
+		return "Contains(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+	
+	@Override
+	public String doGeometryDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return "Disjoint(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+	
+	@Override
+	public String doGeometryOverlapsTransform(String firstGeometry, String secondGeometry) {
+		return "Overlaps(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+	
+	@Override
+	public String doGeometryTouchesTransform(String firstGeometry, String secondGeometry) {
+		return "Touches(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+	
+	@Override
+	public String doGeometryWithinTransform(String firstGeometry, String secondGeometry) {
+		//Returns 1 or 0 to indicate whether g1 is spatially within g2. This tests the opposite relationship as Contains(). 
+		return "Within(" + firstGeometry + ", " + secondGeometry + ")";
+	}
 }

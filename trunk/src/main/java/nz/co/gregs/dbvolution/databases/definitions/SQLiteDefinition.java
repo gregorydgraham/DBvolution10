@@ -337,6 +337,11 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
+	public Period parseIntervalFromGetString(String intervalStr) {
+		return IntervalImpl.parseIntervalFromGetString(intervalStr);
+	}
+
+	@Override
 	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
 		return " "+INTERVAL_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
@@ -349,11 +354,6 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doDateIntervalSubtractionTransform(String leftHandSide, String rightHandSide) {
 		return " "+INTERVAL_DATESUBTRACTION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
-	}
-
-	@Override
-	public Period parseIntervalFromGetString(String intervalStr) {
-		return IntervalImpl.parseIntervalFromGetString(intervalStr);
 	}
 
 	@Override

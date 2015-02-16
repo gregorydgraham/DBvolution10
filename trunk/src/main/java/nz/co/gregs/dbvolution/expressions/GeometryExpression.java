@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -25,7 +26,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
  *
  * @author gregorygraham
  */
-public class GeometryExpression implements GeometryResult {
+public class GeometryExpression implements GeometryResult, EqualComparable<GeometryResult> {
 
 	private GeometryResult innerGeometry;
 	private boolean nullProtectionRequired;
@@ -40,6 +41,17 @@ public class GeometryExpression implements GeometryResult {
 		}
 	}
 
+	private GeometryExpression(Geometry geometry) {
+		innerGeometry = new DBGeometry(geometry);
+		if (geometry == null || innerGeometry.getIncludesNull()) {
+			nullProtectionRequired = true;
+		}
+	}
+
+	public static GeometryExpression value(Geometry geometry) {
+		return new GeometryExpression(geometry);
+	}
+
 	@Override
 	public DBGeometry getQueryableDatatypeForExpressionValue() {
 		return new DBGeometry();
@@ -47,7 +59,11 @@ public class GeometryExpression implements GeometryResult {
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		return innerGeometry.toSQLString(db);
+		if (innerGeometry == null) {
+			return db.getDefinition().getNull();
+		} else {
+			return innerGeometry.toSQLString(db);
+		}
 	}
 
 	@Override
@@ -62,7 +78,11 @@ public class GeometryExpression implements GeometryResult {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		return innerGeometry.getTablesInvolved();
+		HashSet<DBRow> hashSet = new HashSet<DBRow>();
+		if (innerGeometry != null) {
+			hashSet.addAll(innerGeometry.getTablesInvolved());
+		}
+		return hashSet;
 	}
 
 	@Override
@@ -75,12 +95,101 @@ public class GeometryExpression implements GeometryResult {
 		return nullProtectionRequired;
 	}
 
+	public BooleanExpression intersects(Geometry rightHandSide) {
+		return intersects(new DBGeometry(rightHandSide));
+	}
+
 	public BooleanExpression intersects(GeometryResult rightHandSide) {
 		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
 				return db.getDefinition().doGeometryIntersectionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
+	public BooleanExpression is(Geometry rightHandSide) {
+		return is(new DBGeometry(rightHandSide));
+	}
+
+	@Override
+	public BooleanExpression is(GeometryResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
+	public BooleanExpression contains(Geometry rightHandSide) {
+		return contains(new DBGeometry(rightHandSide));
+	}
+
+	public BooleanExpression contains(GeometryResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryContainsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
+	public BooleanExpression doesNotIntersect(Geometry rightHandSide) {
+		return doesNotIntersect(new DBGeometry(rightHandSide));
+	}
+
+	public BooleanExpression doesNotIntersect(GeometryResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryDoesNotIntersectTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
+	public BooleanExpression overlaps(Geometry rightHandSide) {
+		return overlaps(new DBGeometry(rightHandSide));
+	}
+
+	public BooleanExpression overlaps(GeometryResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
+	public BooleanExpression touches(Geometry rightHandSide) {
+		return touches(new DBGeometry(rightHandSide));
+	}
+
+	public BooleanExpression touches(GeometryResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryTouchesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
+	public BooleanExpression within(Geometry rightHandSide) {
+		return within(new DBGeometry(rightHandSide));
+	}
+
+	public BooleanExpression within(GeometryResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryWithinTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}

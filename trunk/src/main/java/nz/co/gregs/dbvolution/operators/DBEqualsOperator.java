@@ -26,6 +26,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.expressions.EqualComparable;
+import nz.co.gregs.dbvolution.expressions.GeometryExpression;
+import nz.co.gregs.dbvolution.expressions.GeometryResult;
 import nz.co.gregs.dbvolution.expressions.IntervalExpression;
 import nz.co.gregs.dbvolution.expressions.IntervalResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -94,6 +96,9 @@ public class DBEqualsOperator extends DBOperator {
 			} else if ((genericExpression instanceof IntervalExpression) && ((firstValue instanceof IntervalResult)||firstValue==null)) {
 				IntervalExpression intervalExpr = (IntervalExpression) genericExpression;
 				op = intervalExpr.is((IntervalResult) firstValue);
+			} else if ((genericExpression instanceof GeometryExpression) && ((firstValue instanceof GeometryResult)||firstValue==null)) {
+				GeometryExpression intervalExpr = (GeometryExpression) genericExpression;
+				op = intervalExpr.is((GeometryResult) firstValue);
 			} else {
 				throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, firstValue);
 			}

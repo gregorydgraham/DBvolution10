@@ -18,12 +18,15 @@ package nz.co.gregs.dbvolution.datatypes;
 import com.vividsolutions.jts.geom.*;
 import java.sql.SQLException;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.supports.SupportsGeometryDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
+import nz.co.gregs.dbvolution.expressions.GeometryExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -52,6 +55,233 @@ public class SpatialTest extends AbstractTest {
 			Assert.assertThat(allRows.size(), is(1));
 
 			Assert.assertThat(allRows.get(0).myfirstgeom.getValue().getGeometryType(), is("Point"));
+			Assert.assertThat(allRows.get(0).myfirstgeom.getValue().equals(createPoint), is(true));
+			
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+			allRows = database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows();
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(2));
+		}
+	}
+	
+	@Test
+	public void testIntersects() throws SQLException {
+		if (database instanceof SupportsGeometryDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+			
+			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom)));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(2));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).intersects(polygon));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(2));
+		}
+	}
+	
+	@Test
+	public void testContains() throws SQLException {
+		if (database instanceof SupportsGeometryDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).contains(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+			
+			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).contains(spatial.column(spatial.myfirstgeom)));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(2));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).contains(polygon));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(0));
+		}
+	}
+	
+	@Test
+	public void testDoesNotIntersect() throws SQLException {
+		if (database instanceof SupportsGeometryDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).doesNotIntersect(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(2));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).doesNotIntersect(polygon));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			
+			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).doesNotIntersect(spatial.column(spatial.myfirstgeom)));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(0));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).doesNotIntersect(polygon));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(0));
+		}
+	}
+	
+	@Test
+	public void testIs() throws SQLException {
+		if (database instanceof SupportsGeometryDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).is(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(0));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).is(createPoint));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(2));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).is(createPoint).not());
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+		}
+	}
+	
+	@Test
+	public void testOverlaps() throws SQLException {
+		if (database instanceof SupportsGeometryDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(polygon);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).overlaps(polygon));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).overlaps(polygon));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
+			
+			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).overlaps(spatial.column(spatial.myfirstgeom)));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).overlaps(polygon));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
 		}
 	}
 

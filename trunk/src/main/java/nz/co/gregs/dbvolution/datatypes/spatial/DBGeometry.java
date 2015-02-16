@@ -25,8 +25,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.GeometryResult;
 
-public class DBGeometry extends QueryableDatatype implements TransformRequiredForSelectClause {
+public class DBGeometry extends QueryableDatatype implements TransformRequiredForSelectClause, GeometryResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -39,6 +40,10 @@ public class DBGeometry extends QueryableDatatype implements TransformRequiredFo
 
 	public DBGeometry(nz.co.gregs.dbvolution.expressions.GeometryExpression columnExpression) {
 		super(columnExpression);
+	}
+
+	public DBGeometry(Geometry geometry) {
+		super(geometry);
 	}
 
 	@Override
@@ -79,6 +84,11 @@ public class DBGeometry extends QueryableDatatype implements TransformRequiredFo
 
 	@Override
 	public boolean isAggregator() {
+		return false;
+	}
+
+	@Override
+	public boolean getIncludesNull() {
 		return false;
 	}
 }

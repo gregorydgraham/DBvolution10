@@ -2685,18 +2685,7 @@ public abstract class DBDefinition {
 		}
 		return "'" + str.toString() + "'";
 	}
-
-//	public Boolean[] doBooleanArrayResultInterpretation(byte[] bytes) {
-//		Boolean[] bits = new Boolean[bytes.length * 8];
-//		for (int i = 0; i < bytes.length * 8; i++) {
-//			if ((bytes[i / 8] & (1 << (7 - (i % 8)))) > 0) {
-//				bits[i] = true;
-//			}else{
-//				bits[i] = false;
-//			}
-//		}
-//		return bits;
-//	}
+	
 	public Boolean[] doBooleanArrayResultInterpretation(String stringOfBools) {
 		Boolean[] result = new Boolean[stringOfBools.length()];
 		for (int i = 0; i < stringOfBools.length(); i++) {
@@ -2774,7 +2763,11 @@ public abstract class DBDefinition {
 		str.append(")");
 		return str.toString();
 	}
-
+	
+	public String doGeometryEqualsTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+	
 	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
@@ -2812,42 +2805,28 @@ public abstract class DBDefinition {
 	}
 
 	public Period parseIntervalFromGetString(String anInterval) {
-		String intervalStr = " " + anInterval;
-		System.out.println(intervalStr);
-		//8 years 7 mons 47 days 04:03:02.001
-		int years = 0;
-		int months = 0;
-		int days = 0;
-		int hours = 0;
-		int minutes = 0;
-		int seconds = 0;
-		int millis = 0;
-		if (intervalStr.contains("years")) {
-			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) years.*", "$1");
-			years = Integer.parseInt(replaced);
-		}
-		if (intervalStr.contains("mons")) {
-			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) mons.*", "$1");
-			months = Integer.parseInt(replaced);
-		}
-		if (intervalStr.contains("days")) {
-			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) days.*", "$1");
-			System.out.println("DAYS: " + replaced);
-			days = Integer.parseInt(replaced);
-		}
-		if (intervalStr.matches(".* [-0-9]+:.*")) {
-			String replaced = intervalStr.replaceAll(".*([-0-9]+):[-0-9]+:[-0-9]+[-.0-9]*.*", "$1");
-			hours = Integer.parseInt(replaced);
-			replaced = intervalStr.replaceAll(".*[-0-9]+:([-0-9]+):[-0-9]+[-.0-9]*.*", "$1");
-			minutes = Integer.parseInt(replaced);
-			replaced = intervalStr.replaceAll(".*[-0-9]+:[-0-9]+:([-0-9]+)[-.0-9]*.*", "$1");
-			seconds = Integer.parseInt(replaced);
-			if (intervalStr.matches(".*\\.([0-9]+).*")) {
-				replaced = (seconds == Math.abs(seconds) ? "" : "-") + intervalStr.replaceAll(".*\\.([0-9]+).*", "$1");
-				millis = (new Double(Double.parseDouble(replaced))).intValue();
-			}
-		}
-		Period parsePeriod = new Period().withYears(years).withMonths(months).withDays(days).withHours(hours).withMinutes(minutes).withSeconds(seconds).withMillis(millis);
-		return parsePeriod;
+		throw new UnsupportedOperationException("Interval Operations Have Not Been Defined For This Database Yet.");
+	}
+	
+	public String doGeometryContainsTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+	
+	public String doGeometryDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+	
+	public String doGeometryOverlapsTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+	
+	public String doGeometryTouchesTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+	
+	public String doGeometryWithinTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 }

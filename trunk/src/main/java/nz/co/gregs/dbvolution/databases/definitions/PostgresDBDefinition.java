@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import org.joda.time.Period;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard
@@ -257,6 +258,47 @@ public class PostgresDBDefinition extends DBDefinition {
 			str.append("}'");
 			return str.toString();
 		}
+	}
+
+	@Override
+	public Period parseIntervalFromGetString(String anInterval) {
+		String intervalStr = " " + anInterval;
+		System.out.println(intervalStr);
+		//8 years 7 mons 47 days 04:03:02.001
+		int years = 0;
+		int months = 0;
+		int days = 0;
+		int hours = 0;
+		int minutes = 0;
+		int seconds = 0;
+		int millis = 0;
+		if (intervalStr.contains("years")) {
+			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) years.*", "$1");
+			years = Integer.parseInt(replaced);
+		}
+		if (intervalStr.contains("mons")) {
+			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) mons.*", "$1");
+			months = Integer.parseInt(replaced);
+		}
+		if (intervalStr.contains("days")) {
+			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) days.*", "$1");
+			System.out.println("DAYS: " + replaced);
+			days = Integer.parseInt(replaced);
+		}
+		if (intervalStr.matches(".* [-0-9]+:.*")) {
+			String replaced = intervalStr.replaceAll(".*([-0-9]+):[-0-9]+:[-0-9]+[-.0-9]*.*", "$1");
+			hours = Integer.parseInt(replaced);
+			replaced = intervalStr.replaceAll(".*[-0-9]+:([-0-9]+):[-0-9]+[-.0-9]*.*", "$1");
+			minutes = Integer.parseInt(replaced);
+			replaced = intervalStr.replaceAll(".*[-0-9]+:[-0-9]+:([-0-9]+)[-.0-9]*.*", "$1");
+			seconds = Integer.parseInt(replaced);
+			if (intervalStr.matches(".*\\.([0-9]+).*")) {
+				replaced = (seconds == Math.abs(seconds) ? "" : "-") + intervalStr.replaceAll(".*\\.([0-9]+).*", "$1");
+				millis = (new Double(Double.parseDouble(replaced))).intValue();
+			}
+		}
+		Period parsePeriod = new Period().withYears(years).withMonths(months).withDays(days).withHours(hours).withMinutes(minutes).withSeconds(seconds).withMillis(millis);
+		return parsePeriod;
 	}
 	
 	@Override
