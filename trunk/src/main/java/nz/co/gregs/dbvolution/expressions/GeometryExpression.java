@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -41,7 +42,7 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 		}
 	}
 
-	private GeometryExpression(Geometry geometry) {
+	public GeometryExpression(Geometry geometry) {
 		innerGeometry = new DBGeometry(geometry);
 		if (geometry == null || innerGeometry.getIncludesNull()) {
 			nullProtectionRequired = true;
@@ -194,6 +195,55 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 		});
 	}
 
+	public NumberExpression dimension() {
+		return new NumberExpression(new GeometryWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryGetDimensionTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public NumberExpression area() {
+		return new NumberExpression(new GeometryWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryGetAreaTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public GeometryExpression boundingBox() {
+		return new GeometryExpression(new GeometryWithGeometryResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryGetBoundingBoxTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public GeometryExpression exteriorRing() {
+		GeometryExpression exteriorRingExpr = new GeometryExpression(new GeometryWithGeometryResult(this) {
+			
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doGeometryGetExteriorRingTransform(getFirst().toSQLString(db));
+			}
+		});
+		return this.dimension().is(2).ifThenElse(exteriorRingExpr, this);
+	}
+
+	public BooleanExpression isNot(Geometry geometry) {
+		return this.is(geometry).not();
+	}
+
+	public BooleanExpression isNot(GeometryResult geometry) {
+		return this.is(geometry).not();
+	}
+
 	private static abstract class GeometryGeometryWithBooleanResult extends BooleanExpression {
 
 		private GeometryExpression first;
@@ -257,6 +307,149 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class GeometryWithNumberResult extends NumberExpression {
+
+		private GeometryExpression first;
+//		private GeometryExpression second;
+		private boolean requiresNullProtection;
+
+		GeometryWithNumberResult(GeometryExpression first) {
+			this.first = first;
+//			this.second = second;
+//			if (this.second == null || this.second.getIncludesNull()) {
+//				this.requiresNullProtection = true;
+//			}
+		}
+
+		GeometryExpression getFirst() {
+			return first;
+		}
+
+//		GeometryResult getSecond() {
+//			return second;
+//		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public GeometryWithNumberResult copy() {
+			GeometryWithNumberResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+//			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() ;//|| second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+
+	private static abstract class GeometryWithGeometryResult extends GeometryExpression {
+
+		private GeometryExpression first;
+//		private GeometryExpression second;
+		private boolean requiresNullProtection;
+
+		GeometryWithGeometryResult(GeometryExpression first) {
+			this.first = first;
+//			this.second = second;
+//			if (this.second == null || this.second.getIncludesNull()) {
+//				this.requiresNullProtection = true;
+//			}
+		}
+
+		GeometryExpression getFirst() {
+			return first;
+		}
+
+//		GeometryResult getSecond() {
+//			return second;
+//		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public GeometryWithGeometryResult copy() {
+			GeometryWithGeometryResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+//			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() ;//|| second.isAggregator();
 		}
 
 		@Override

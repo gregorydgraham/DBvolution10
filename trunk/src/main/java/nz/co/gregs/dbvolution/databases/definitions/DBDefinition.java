@@ -2829,4 +2829,20 @@ public abstract class DBDefinition {
 		// i.e. G1.within(G2) === G2.contains(G1)
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
+
+	public String doGeometryGetDimensionTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	public String doGeometryGetBoundingBoxTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	public String doGeometryGetAreaTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	public String doGeometryGetExteriorRingTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
 }
