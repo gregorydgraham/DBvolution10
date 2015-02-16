@@ -37,6 +37,7 @@ public class IntervalImpl {
 
 	@SuppressWarnings("deprecation")
 	public static String getIntervalString(Date original, Date compareTo) {
+		if (original==null||compareTo==null){return null;}
 		int years = original.getYear() - compareTo.getYear();
 		int months = original.getMonth() - compareTo.getMonth();
 		int days = original.getDay() - compareTo.getDay();
@@ -49,6 +50,7 @@ public class IntervalImpl {
 	}
 
 	public static String getIntervalString(Period interval) {
+		if (interval==null){return null;}
 		int years = interval.getYears();
 		int months = interval.getMonths();
 		int days = interval.getDays() + interval.getWeeks() * 7;
@@ -60,7 +62,20 @@ public class IntervalImpl {
 		return intervalString;
 	}
 
-	public static int compareIntervalStrings(String original, String compareTo) {
+	public static boolean isEqualTo(String original, String compareTo) {
+		return compareIntervalStrings(original,compareTo) == 0;
+	}
+
+	public static boolean isGreaterThan(String original, String compareTo) {
+		return compareIntervalStrings(original,compareTo) == 1;
+	}
+
+	public static boolean isLessThan(String original, String compareTo) {
+		return compareIntervalStrings(original,compareTo) == -1;
+	}
+
+	public static Integer compareIntervalStrings(String original, String compareTo) {		
+		if (original==null||compareTo==null){return null;}
 		String[] splitOriginal = original.split("[A-Za-z]");
 		String[] splitCompareTo = compareTo.split("[A-Za-z]");
 		for (int i = 1; i < splitCompareTo.length; i++) { // Start at 1 because the first split is empty
@@ -78,6 +93,7 @@ public class IntervalImpl {
 	}
 
 	public static Date addDateAndIntervalString(Date original, String intervalStr) {
+		if (original==null||intervalStr==null||intervalStr.length()==0||original.toString().length()==0){return null;}
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(original);
 		int years = Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1"));
@@ -99,6 +115,7 @@ public class IntervalImpl {
 	}
 
 	public static Date subtractDateAndIntervalString(Date original, String intervalStr) {
+		if (original==null||intervalStr==null){return null;}
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(original);
 		int years = Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1"));
@@ -120,6 +137,7 @@ public class IntervalImpl {
 	}
 
 	public static Period parseIntervalFromGetString(String intervalStr) {
+		if (intervalStr==null){return null;}
 		System.out.println("DBV INTERVAL: "+intervalStr);
 		Period interval = new Period();
 		interval = interval.withYears(Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1")));

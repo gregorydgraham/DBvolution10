@@ -89,7 +89,7 @@ public class SQLiteDefinition extends DBDefinition {
 		if (qdt instanceof DBLargeObject) {
 			return " TEXT ";
 		}else if (qdt instanceof DBInterval) {
-			return " VARCHAR(20) ";
+			return " VARCHAR(100) ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
