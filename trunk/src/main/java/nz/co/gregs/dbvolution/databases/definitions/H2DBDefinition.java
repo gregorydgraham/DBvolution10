@@ -80,7 +80,7 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBInterval) {
-			return " VARCHAR(100) ";
+			return " DBV_INTERVAL ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}

@@ -63,7 +63,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatype {
 	private void addIntervalFunctions() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException, SQLException {
 		Connection connection = getConnection();
 		Statement stmt = connection.createStatement();
-		stmt.execute("CREATE ALIAS IF NOT EXISTS DBV_REVERSE AS $$ import java.util.*; @CODE String reverse(String s) { return new StringBuilder(s).reverse().toString(); } $$;");
+		stmt.execute("CREATE DOMAIN IF NOT EXISTS DBV_INTERVAL AS VARCHAR(100); ");
 		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_CREATION_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
