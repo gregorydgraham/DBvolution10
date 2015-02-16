@@ -64,13 +64,17 @@ public class DBGeometry extends QueryableDatatype implements TransformRequiredFo
 		Geometry geometry = null;
 		WKTReader wktReader = new WKTReader();
 		String string = resultSet.getString(fullColumnName);
-		try {
-			geometry = wktReader.read(string);
-		} catch (ParseException ex) {
-			Logger.getLogger(DBGeometry.class.getName()).log(Level.SEVERE, null, ex);
-			throw new nz.co.gregs.dbvolution.exceptions.ParsingGeometryValueException(fullColumnName, string);
+		if (string == null) {
+			return null;
+		} else {
+			try {
+				geometry = wktReader.read(string);
+			} catch (ParseException ex) {
+				Logger.getLogger(DBGeometry.class.getName()).log(Level.SEVERE, null, ex);
+				throw new nz.co.gregs.dbvolution.exceptions.ParsingGeometryValueException(fullColumnName, string);
+			}
+			return geometry;
 		}
-		return geometry;
 	}
 
 	public Geometry getGeometryValue() {

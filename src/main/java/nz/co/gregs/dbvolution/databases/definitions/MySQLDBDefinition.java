@@ -214,4 +214,24 @@ public class MySQLDBDefinition extends DBDefinition {
 		//Returns 1 or 0 to indicate whether g1 is spatially within g2. This tests the opposite relationship as Contains(). 
 		return "Within(" + firstGeometry + ", " + secondGeometry + ")";
 	}
+
+	@Override
+	public String doGeometryGetDimensionTransform(String thisGeometry) {
+		return "Dimension(" + thisGeometry + ")";
+	}
+
+	@Override
+	public String doGeometryGetBoundingBoxTransform(String thisGeometry) {
+		return "Envelope(" + thisGeometry + ")";
+	}
+	
+	@Override
+	public String doGeometryGetAreaTransform(String thisGeometry) {
+		return "Area(" + thisGeometry + ")";
+	}
+
+	@Override
+	public String doGeometryGetExteriorRingTransform(String thisGeometry) {
+		return "ExteriorRing(" + thisGeometry + ")";
+	}
 }

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -562,6 +563,26 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "";
+			}
+
+		});
+	}
+
+	public GeometryExpression ifThenElse(Geometry thenExpr, Geometry elseExpr) {
+		return this.ifThenElse(new GeometryExpression(thenExpr), new GeometryExpression(elseExpr));
+	}
+
+	public GeometryExpression ifThenElse(GeometryExpression thenExpr, GeometryExpression elseExpr) {
+		return new GeometryExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
 			}
 
 		});
@@ -1345,6 +1366,58 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		@Override
 		public DBBinaryDateDateFunction copy() {
 			DBBinaryDateDateFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
+			newInstance.first = (first == null ? null : first.copy());
+			newInstance.second = (second == null ? null : second.copy());
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return onlyBool.getTablesInvolved();
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional() && first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
+
+	private static abstract class DBBinaryGeometryGeometryFunction extends GeometryExpression {
+
+		protected BooleanExpression onlyBool = null;
+		protected GeometryExpression first = null;
+		protected GeometryExpression second = null;
+//		private boolean includeNulls;
+
+		DBBinaryGeometryGeometryFunction() {
+		}
+
+		DBBinaryGeometryGeometryFunction(BooleanExpression only, GeometryExpression first, GeometryExpression second) {
+			this.onlyBool = only;
+			this.first = first;
+			this.second = second;
+		}
+
+		@Override
+		public DBBinaryGeometryGeometryFunction copy() {
+			DBBinaryGeometryGeometryFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
