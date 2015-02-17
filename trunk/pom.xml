@@ -55,6 +55,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<libDirectory>${basedir}/lib</libDirectory>
 	</properties>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.18.1</version>
+            </plugin>
+        </plugins>
+    </reporting>
 	
 	<build>
 		<plugins>  
@@ -260,6 +270,14 @@
 		</profile>
 		<profile>
 			<id>TestableDBsTest</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>ojdbc</artifactId>
+                    <scope>test</scope>
+                    <version>6.0</version>
+                </dependency>
+            </dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -267,6 +285,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<version>2.18.1</version>
 						<configuration>
+							<argLine>-Dfile.encoding=UTF8 ${surefireArgLine}</argLine>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
 								<testH2DB>true</testH2DB>
@@ -274,9 +293,10 @@
 								<testH2MemoryDB>true</testH2MemoryDB>
 								<testMySQL>true</testMySQL>
 								<testPostgresSQL>true</testPostgresSQL>
-								<testNuo>true</testNuo>
 								<testOracle>true</testOracle>
-								<testJavaDB>true</testJavaDB>
+								<!--testMSSQLServer>true</testMSSQLServer-->
+								<!--testNuo>true</testNuo-->
+								<!--testJavaDB>true</testJavaDB-->
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
