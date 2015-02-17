@@ -36,7 +36,7 @@ public class IntervalImpl {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static String getIntervalString(Date original, Date compareTo) {
+	public static String subtract2Dates(Date original, Date compareTo) {
 		if (original==null||compareTo==null){return null;}
 		int years = original.getYear() - compareTo.getYear();
 		int months = original.getMonth() - compareTo.getMonth();

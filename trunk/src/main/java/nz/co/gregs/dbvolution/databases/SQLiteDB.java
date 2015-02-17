@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatype;
+import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeNatively;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
 import org.sqlite.Function;
@@ -38,7 +38,7 @@ import org.sqlite.SQLiteConfig;
  *
  * @author Gregory Graham
  */
-public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatype {
+public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNatively {
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 
@@ -192,7 +192,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatype {
 				} else {
 					Date original = defn.parseDateFromGetString(originalStr);
 					Date compareTo = defn.parseDateFromGetString(compareToStr);
-					String intervalString = IntervalImpl.getIntervalString(original, compareTo);
+					String intervalString = IntervalImpl.subtract2Dates(original, compareTo);
 					result(intervalString);
 				}
 			} catch (ParseException ex) {

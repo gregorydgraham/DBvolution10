@@ -19,6 +19,6 @@ package nz.co.gregs.dbvolution.databases.supports;
  *
  * @author gregory.graham
  */
-public interface SupportsIntervalDatatype {
+public interface SupportsIntervalDatatypeNatively {
 	
 }

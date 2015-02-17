@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatype;
+import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeNatively;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -48,7 +48,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void basicTest() throws SQLException {
-		if (database instanceof SupportsIntervalDatatype) {
+		if (database instanceof SupportsIntervalDatatypeNatively) {
 			final intervalTable intervalTable = new intervalTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(intervalTable);
@@ -77,7 +77,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testDateExpressionProducingIntervals() throws SQLException {
-		if (database instanceof SupportsIntervalDatatype) {
+		if (database instanceof SupportsIntervalDatatypeNatively) {
 			Marque marq;
 			marq = new MarqueWithIntervalExprCol();
 			DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
@@ -101,7 +101,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testOverlaps() throws SQLException {
-		if (database instanceof SupportsIntervalDatatype) {
+		if (database instanceof SupportsIntervalDatatypeNatively) {
 			Marque marq = new Marque();
 			DBQuery query = database.getDBQuery(marq);
 			query.addCondition(DateExpression.overlaps(
