@@ -1623,6 +1623,14 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		});
 	}
 
+	public NumberExpression integerPart() {
+		return this.trunc();
+	}
+
+	public NumberExpression decimalPart() {
+		return this.minus(this.trunc());
+	}
+
 	/**
 	 * Provides access to the basic arithmetic operation minus.
 	 *
@@ -1742,19 +1750,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	}
 
 	/**
-	 * MOD returns the remainder from integer division.
+	 * Division as represent by x/y.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the function
-	 * are evaluated before MOD is applied.
-	 *
-	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and is
-	 * considered equivalent to "*" and "/". However databases vary in their
-	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
-	 * Arithmetic. So I have decided to err on the side of consistency between
-	 * databases and implement it so that mod() will return the same result for
-	 * all databases.
+	 * For a NumberExpression x: x.dividedBy(y) =&gt; x / y.
 	 *
 	 * @param num	num
 	 * @return a NumberExpression of a division operation.
@@ -1800,17 +1799,22 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}).trunc();
 	}
 
-	/**
-	 * Provides access to the modulus/remainder function of the database.
+	/**	/**
+	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * The modulus function is the remainder of the integer division operation of
-	 * x/y.
+	 * DBvolution implements mod as a function. The two arguments to the function
+	 * are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * For the NumberExpression x: x.mod(y) =&gt; mod(x.y)
+	 * This differs from some implementations where MOD is the "%" operator and is
+	 * considered analogous to "*" and "/". However databases vary in their
+	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
+	 * Arithmetic. So I have decided to err on the side of consistency between
+	 * databases and implement it so that mod() will return the same result for
+	 * all databases.
 	 *
-	 * @param num => this/num.
+	 * @param num =&gt; MOD(this,num).
 	 * @return a NumberExpression
 	 */
 	public NumberExpression mod(Number num) {

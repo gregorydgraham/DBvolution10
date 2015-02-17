@@ -23,7 +23,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatype;
+import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeNatively;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
  *
  * @author Gregory Graham
  */
-public class H2DB extends DBDatabase implements SupportsIntervalDatatype {
+public class H2DB extends DBDatabase implements SupportsIntervalDatatypeNatively {
 
 	/**
 	 * Used to hold the database open
