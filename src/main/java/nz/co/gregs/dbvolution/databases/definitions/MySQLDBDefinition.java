@@ -18,12 +18,10 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import org.joda.time.Period;
 
 /**
  * Defines the features of the MySQL database that differ from the standard
@@ -234,4 +232,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doGeometryGetExteriorRingTransform(String thisGeometry) {
 		return "ExteriorRing(" + thisGeometry + ")";
 	}
+	
+	@Override
+	public boolean supportsHyperbolicFunctionsNatively() {
+		return false;
+	}
+
+
 }

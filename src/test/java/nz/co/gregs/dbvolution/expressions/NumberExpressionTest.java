@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -182,6 +183,126 @@ public class NumberExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testASIN() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.isBetween(-1, 10)
+		);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.arcsin()
+				.isBetween(1.4, 1.6)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
+	public void testATAN() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.isBetween(-1, 10)
+		);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.arctan()
+				.isBetween(0.78, 0.79)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
+	public void testATAN2() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.isBetween(-1, 10)
+		);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.arctan2(NumberExpression.value(2))
+				.isBetween(0.46, 0.47)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
+	public void testCotangent() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.isBetween(-1, 10)
+		);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.cotangent()
+				.isBetween(0.64, 0.65)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
+	public void testCOSH() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.isBetween(-1, 10)
+		);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.cosh()
+				.isBetween(1.54, 1.55)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
+	public void testTANH() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.isBetween(-1, 10)
+		);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.tanh()
+				.isLessThan(1)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
 	public void testGreatestOf() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
@@ -227,6 +348,16 @@ public class NumberExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
 		Assert.assertThat(allRows.size(), is(3));
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+						.append(StringExpression.value("$"))
+						.isLike("%2$")
+		);
+		allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(3));
 	}
 
 	@Test
@@ -240,6 +371,46 @@ public class NumberExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
         database.print(allRows);
 		Assert.assertThat(allRows.size(), is(11));
+	}
+
+
+	@Test
+	public void testAbs() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+						.times(-2).abs().is(4)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+	}
+
+	@Test
+	public void testDecimalPart() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+						.dividedBy(2).bracket().decimalPart().is(0.5)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(11));
+	}
+
+	@Test
+	public void testIntegerPart() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+						.dividedBy(2).integerPart().is(1)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -452,7 +623,6 @@ public class NumberExpressionTest extends AbstractTest {
 		public CarCompanyWithChoose() {
 			super();
 		}
-
 	}
 
 }

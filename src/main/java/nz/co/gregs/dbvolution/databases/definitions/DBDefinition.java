@@ -2845,4 +2845,12 @@ public abstract class DBDefinition {
 	public String doGeometryGetExteriorRingTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
+
+	public boolean supportsHyperbolicFunctionsNatively() {
+		return true;
+	}
+
+	public String getArctan2FunctionName() {
+		return "atan2";
+	}
 }

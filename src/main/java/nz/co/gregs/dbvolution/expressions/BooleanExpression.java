@@ -687,7 +687,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param whenEqualsFallbackComparison the comparison used when the ColumnA and ValueA are equal.
 	 * @return a BooleanExpression
 	 */
-	public static <A extends DBExpression, Z extends RangeComparable<A>> 
+	public static <A extends DBExpression, Z extends RangeComparable<? super A>> 
 		BooleanExpression seekLessThan(Z columnA, A valueA, BooleanExpression whenEqualsFallbackComparison) {
 		return columnA.isLessThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
 	}
@@ -719,7 +719,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param whenEqualsFallbackComparison the comparison used when the ColumnA and ValueA are equal.
 	 * @return a BooleanExpression
 	 */
-	public static <A extends DBExpression, Z extends RangeComparable<A>> 
+	public static <A extends DBExpression, Z extends RangeComparable<? super A>> 
 		BooleanExpression seekGreaterThan(Z columnA, A valueA, BooleanExpression whenEqualsFallbackComparison) {
 		return columnA.isGreaterThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
 	}
