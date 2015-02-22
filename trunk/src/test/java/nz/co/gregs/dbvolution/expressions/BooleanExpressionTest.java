@@ -808,6 +808,38 @@ public class BooleanExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testSeekGreaterThan() throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+
+		dbQuery.addCondition(
+				BooleanExpression.seekGreaterThan(
+						marq.column(marq.name), StringExpression.value("FORD"), marq.column(marq.auto_created).isNull()
+				)
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(17));
+	}
+
+	@Test
+	public void testSeekLessThan() throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+
+		dbQuery.addCondition(
+				BooleanExpression.seekLessThan(
+						marq.column(marq.name), StringExpression.value("FORD"), marq.column(marq.auto_created).isNotNull()
+				)
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(5));
+	}
+
+	@Test
 	public void testOr() throws AccidentalBlankQueryException, AccidentalCartesianJoinException, SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);

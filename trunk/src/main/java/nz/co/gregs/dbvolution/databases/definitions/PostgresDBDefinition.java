@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -304,6 +303,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Intersects(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public boolean supportsHyperbolicFunctionsNatively() {
+		return false;//To change body of generated methods, choose Tools | Templates.
 	}
 
 }

@@ -234,6 +234,46 @@ public class SpatialTest extends AbstractTest {
 	}
 	
 	@Test
+	public void testIsNot() throws SQLException {
+		if (database instanceof SupportsGeometryDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPoint);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).isNot(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(2));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).isNot(createPoint));
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+			
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).isNot(createPoint).not());
+			allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(2));
+		}
+	}
+	
+	@Test
 	public void testOverlaps() throws SQLException {
 		if (database instanceof SupportsGeometryDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
