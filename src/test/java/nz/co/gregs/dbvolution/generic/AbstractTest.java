@@ -76,13 +76,13 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv")});
 		}
 		if (System.getProperty("testH2DB") != null) {
-			databases.add(new Object[]{"H2DB", new H2DB("jdbc:h2:~/dbvolutionTest", "", "")});
+			databases.add(new Object[]{"H2DB", new H2DB("jdbc:h2:./directTest.h2db", "", "")});
 		}
 		if (System.getProperty("testH2DataSourceDB") != null) {
 			JdbcDataSource h2DataSource = new JdbcDataSource();
 			h2DataSource.setUser("");
 			h2DataSource.setPassword("");
-			h2DataSource.setURL("jdbc:h2:~/dbvolutionTest");
+			h2DataSource.setURL("jdbc:h2:./dataSourceTest.h2db");
 			databases.add(new Object[]{"H2DataSourceDB", new H2DB(h2DataSource)});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
@@ -92,7 +92,6 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost",48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracle") != null) {
-//			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("localhost", 1521, "XE", "dbv", "dbv")});
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testMSSQLServer") != null) {
