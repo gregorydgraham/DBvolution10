@@ -25,8 +25,8 @@ import org.joda.time.Period;
  * @author gregorygraham
  */
 public class IntervalImpl {
-	
-	private static final String ZERO_INTERVAL_STRING = "P0Y0M0D0h0m0s000";
+
+	private static final String ZERO_INTERVAL_STRING = "P0Y0M0D0h0n0.0s";
 
 	public IntervalImpl() {
 	}
@@ -37,51 +37,58 @@ public class IntervalImpl {
 
 	@SuppressWarnings("deprecation")
 	public static String subtract2Dates(Date original, Date compareTo) {
-		if (original==null||compareTo==null){return null;}
+		if (original == null || compareTo == null) {
+			return null;
+		}
 		int years = original.getYear() - compareTo.getYear();
 		int months = original.getMonth() - compareTo.getMonth();
-		int days = original.getDay() - compareTo.getDay();
+		int days = original.getDate() - compareTo.getDate();
 		int hours = original.getHours() - compareTo.getHours();
 		int minutes = original.getMinutes() - compareTo.getMinutes();
-		int seconds = original.getSeconds() - compareTo.getSeconds();
 		int millis = (int) ((original.getTime() - ((original.getTime() / 1000) * 1000)) - (compareTo.getTime() - ((compareTo.getTime() / 1000) * 1000)));
-		String intervalString = "P" + years + "Y" + months + "M" + days + "D" + hours + "h" + minutes + "m" + seconds + "s" + millis;
+		double seconds = original.getSeconds() - compareTo.getSeconds() + (millis / 1000.0);
+		String intervalString = "P" + years + "Y" + months + "M" + days + "D" + hours + "h" + minutes + "n" + seconds + "s";
 		return intervalString;
 	}
 
 	public static String getIntervalString(Period interval) {
-		if (interval==null){return null;}
+		if (interval == null) {
+			return null;
+		}
 		int years = interval.getYears();
 		int months = interval.getMonths();
 		int days = interval.getDays() + interval.getWeeks() * 7;
 		int hours = interval.getHours();
 		int minutes = interval.getMinutes();
-		int seconds = interval.getSeconds();
+
 		int millis = interval.getMillis();
-		String intervalString = "P" + years + "Y" + months + "M" + days + "D" + hours + "h" + minutes + "m" + seconds + "s" + millis;
+		double seconds = interval.getSeconds() + (millis / 1000.0);
+		String intervalString = "P" + years + "Y" + months + "M" + days + "D" + hours + "h" + minutes + "n" + seconds + "s";
 		return intervalString;
 	}
 
 	public static boolean isEqualTo(String original, String compareTo) {
-		return compareIntervalStrings(original,compareTo) == 0;
+		return compareIntervalStrings(original, compareTo) == 0;
 	}
 
 	public static boolean isGreaterThan(String original, String compareTo) {
-		return compareIntervalStrings(original,compareTo) == 1;
+		return compareIntervalStrings(original, compareTo) == 1;
 	}
 
 	public static boolean isLessThan(String original, String compareTo) {
-		return compareIntervalStrings(original,compareTo) == -1;
+		return compareIntervalStrings(original, compareTo) == -1;
 	}
 
-	public static Integer compareIntervalStrings(String original, String compareTo) {		
-		if (original==null||compareTo==null){return null;}
+	public static Integer compareIntervalStrings(String original, String compareTo) {
+		if (original == null || compareTo == null) {
+			return null;
+		}
 		String[] splitOriginal = original.split("[A-Za-z]");
 		String[] splitCompareTo = compareTo.split("[A-Za-z]");
 		for (int i = 1; i < splitCompareTo.length; i++) { // Start at 1 because the first split is empty
-			System.out.println("SPLITORIGINAL "+i+": "+splitOriginal[i]);
-			int intOriginal = Integer.parseInt(splitOriginal[i]);
-			int intCompareTo = Integer.parseInt(splitCompareTo[i]);
+			System.out.println("SPLITORIGINAL " + i + ": " + splitOriginal[i]);
+			double intOriginal = Double.parseDouble(splitOriginal[i]);
+			double intCompareTo = Double.parseDouble(splitCompareTo[i]);
 			if (intOriginal > intCompareTo) {
 				return 1;
 			}
@@ -93,16 +100,19 @@ public class IntervalImpl {
 	}
 
 	public static Date addDateAndIntervalString(Date original, String intervalStr) {
-		if (original==null||intervalStr==null||intervalStr.length()==0||original.toString().length()==0){return null;}
+		if (original == null || intervalStr == null || intervalStr.length() == 0 || original.toString().length() == 0) {
+			return null;
+		}
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(original);
-		int years = Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1"));
-		int months = Integer.parseInt(intervalStr.replaceAll(".*Y([-0-9.]+)M.*", "$1"));
-		int days = Integer.parseInt(intervalStr.replaceAll(".*M([-0-9.]+)D.*", "$1"));
-		int hours = Integer.parseInt(intervalStr.replaceAll(".*D([-0-9.]+)h.*", "$1"));
-		int minutes = Integer.parseInt(intervalStr.replaceAll(".*h([-0-9.]+)m.*", "$1"));
-		int seconds = Integer.parseInt(intervalStr.replaceAll(".*m([-0-9.]+)s.*", "$1"));
-		int millis = Integer.parseInt(intervalStr.replaceAll(".*s([-0-9.]+)$", "$1"));
+		int years = getYearPart(intervalStr);
+		int months = getMonthPart(intervalStr);
+		int days = getDayPart(intervalStr);
+		int hours = getHourPart(intervalStr);
+		int minutes = getMinutePart(intervalStr);
+		int seconds = getSecondPart(intervalStr);
+
+		int millis = getMillisecondPart(intervalStr);
 
 		cal.add(Calendar.YEAR, years);
 		cal.add(Calendar.MONTH, months);
@@ -114,17 +124,20 @@ public class IntervalImpl {
 		return cal.getTime();
 	}
 
-	public static Date subtractDateAndIntervalString(Date original, String intervalStr) {
-		if (original==null||intervalStr==null){return null;}
+	public static Date subtractDateAndIntervalString(Date original, String intervalInput) {
+		if (original == null || intervalInput == null || intervalInput.length() == 0) {
+			return null;
+		}
+		String intervalStr = intervalInput.replaceAll("[^-.PYMDhns0-9]+", "");
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(original);
-		int years = Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1"));
-		int months = Integer.parseInt(intervalStr.replaceAll(".*Y([-0-9.]+)M.*", "$1"));
-		int days = Integer.parseInt(intervalStr.replaceAll(".*M([-0-9.]+)D.*", "$1"));
-		int hours = Integer.parseInt(intervalStr.replaceAll(".*D([-0-9.]+)h.*", "$1"));
-		int minutes = Integer.parseInt(intervalStr.replaceAll(".*h([-0-9.]+)m.*", "$1"));
-		int seconds = Integer.parseInt(intervalStr.replaceAll(".*m([-0-9.]+)s.*", "$1"));
-		int millis = Integer.parseInt(intervalStr.replaceAll(".*s([-0-9.]+)$", "$1"));
+		int years = getYearPart(intervalStr);
+		int months = getMonthPart(intervalStr);
+		int days = getDayPart(intervalStr);
+		int hours = getHourPart(intervalStr);
+		int minutes = getMinutePart(intervalStr);
+		int seconds = getSecondPart(intervalStr);
+		int millis = getMillisecondPart(intervalStr);
 
 		cal.add(Calendar.YEAR, -1 * years);
 		cal.add(Calendar.MONTH, -1 * months);
@@ -137,16 +150,74 @@ public class IntervalImpl {
 	}
 
 	public static Period parseIntervalFromGetString(String intervalStr) {
-		if (intervalStr==null){return null;}
-		System.out.println("DBV INTERVAL: "+intervalStr);
+		if (intervalStr == null || intervalStr.length() == 0) {
+			return null;
+		}
+		System.out.println("DBV INTERVAL: " + intervalStr);
 		Period interval = new Period();
-		interval = interval.withYears(Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1")));
-		interval = interval.withMonths(Integer.parseInt(intervalStr.replaceAll(".*Y([-0-9.]+)M.*", "$1")));
-		interval = interval.withDays(Integer.parseInt(intervalStr.replaceAll(".*M([-0-9.]+)D.*", "$1")));
-		interval = interval.withHours(Integer.parseInt(intervalStr.replaceAll(".*D([-0-9.]+)h.*", "$1")));
-		interval = interval.withMinutes(Integer.parseInt(intervalStr.replaceAll(".*h([-0-9.]+)m.*", "$1")));
-		interval = interval.withSeconds(Integer.parseInt(intervalStr.replaceAll(".*m([-0-9.]+)s.*", "$1")));
-		interval = interval.withMillis(Integer.parseInt(intervalStr.replaceAll(".*s([-0-9.]+)$", "$1")));
+		interval = interval.withYears(getYearPart(intervalStr));
+		interval = interval.withMonths(getMonthPart(intervalStr));
+		interval = interval.withDays(getDayPart(intervalStr));
+		interval = interval.withHours(getHourPart(intervalStr));
+		interval = interval.withMinutes(getMinutePart(intervalStr));
+		interval = interval.withSeconds(getSecondPart(intervalStr));
+		interval = interval.withMillis(getMillisecondPart(intervalStr));
 		return interval;
+	}
+
+	public static Integer getMillisecondPart(String intervalStr) throws NumberFormatException {
+		if (intervalStr == null || intervalStr.length() == 0) {
+			return null;
+		}
+		final Double secondsDouble = Double.parseDouble(intervalStr.replaceAll(".*n([-0-9.]+)s.*", "$1"));
+		final int secondsInt = secondsDouble.intValue();
+		final int millis = new Double(secondsDouble * 1000.0 - secondsInt * 1000).intValue();
+		return millis;
+	}
+
+	public static Integer getSecondPart(String intervalStr) throws NumberFormatException {
+		if (intervalStr == null || intervalStr.length() == 0 || !intervalStr.matches(".*n([-0-9.]+)s.*")) {
+			return null;
+		}
+		final Double valueOf = Double.valueOf(intervalStr.replaceAll(".*n([-0-9.]+)s.*", "$1"));
+		if (valueOf == null) {
+			return null;
+		}
+		return valueOf.intValue();
+	}
+
+	public static int getMinutePart(String intervalStr) throws NumberFormatException {
+		if (intervalStr == null || intervalStr.length() == 0) {
+			return 0;
+		}
+		return Integer.parseInt(intervalStr.replaceAll(".*h([-0-9.]+)n.*", "$1"));
+	}
+
+	public static int getHourPart(String intervalStr) throws NumberFormatException {
+		if (intervalStr == null || intervalStr.length() == 0) {
+			return 0;
+		}
+		return Integer.parseInt(intervalStr.replaceAll(".*D([-0-9.]+)h.*", "$1"));
+	}
+
+	public static int getDayPart(String intervalStr) throws NumberFormatException {
+		if (intervalStr == null || intervalStr.length() == 0) {
+			return 0;
+		}
+		return Integer.parseInt(intervalStr.replaceAll(".*M([-0-9.]+)D.*", "$1"));
+	}
+
+	public static int getMonthPart(String intervalStr) throws NumberFormatException {
+		if (intervalStr == null || intervalStr.length() == 0) {
+			return 0;
+		}
+		return Integer.parseInt(intervalStr.replaceAll(".*Y([-0-9.]+)M.*", "$1"));
+	}
+
+	public static int getYearPart(String intervalStr) throws NumberFormatException {
+		if (intervalStr == null || intervalStr.length() == 0) {
+			return 0;
+		}
+		return Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1"));
 	}
 }

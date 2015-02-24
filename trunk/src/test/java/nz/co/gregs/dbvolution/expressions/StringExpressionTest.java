@@ -208,6 +208,51 @@ public class StringExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testStringBefore() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(marq.column(marq.name).stringBefore("Y").is("TO"));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
+	public void testStringAfter() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(marq.column(marq.name).stringAfter("Y").is("OTA"));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
+	public void testStringBeforeAndAfter() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(marq.column(marq.name).stringBefore("Y").stringAfter("T").is("O"));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
 	public void testReplaceTransform() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();

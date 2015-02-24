@@ -1341,6 +1341,16 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 */
 	public NumberExpression arcsin() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsArcSineFunction()){
+					return super.toSQLString(db);
+				}else{
+					return only.dividedBy(value(1.0).minus(only.times(only).bracket()).bracket().squareRoot()).arctan().toSQLString(db);
+				}
+			}
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "asin";

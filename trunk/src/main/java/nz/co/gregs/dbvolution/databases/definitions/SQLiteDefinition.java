@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBInterval;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generation.DBTableField;
@@ -53,6 +52,14 @@ public class SQLiteDefinition extends DBDefinition {
 	public static String INTERVAL_GREATERTHANEQUALS_FUNCTION = "DBV_INTERVAL_GREATERTHANEQUALS";
 	public static String INTERVAL_DATEADDITION_FUNCTION = "DBV_INTERVAL_DATEADD";
 	public static String INTERVAL_DATESUBTRACTION_FUNCTION = "DBV_INTERVAL_DATEMINUS";
+	
+	public static String INTERVAL_YEAR_PART_FUNCTION = "DBV_INTERVAL_YEAR_PART";
+	public static String INTERVAL_MONTH_PART_FUNCTION = "DBV_INTERVAL_MONTH_PART";
+	public static String INTERVAL_DAY_PART_FUNCTION = "DBV_INTERVAL_DAY_PART";
+	public static String INTERVAL_HOUR_PART_FUNCTION = "DBV_INTERVAL_HOUR_PART";
+	public static String INTERVAL_MINUTE_PART_FUNCTION = "DBV_INTERVAL_MINUTE_PART";
+	public static String INTERVAL_SECOND_PART_FUNCTION = "DBV_INTERVAL_SECOND_PART";
+	public static String INTERVAL_MILLISECOND_PART_FUNCTION = "DBV_INTERVAL_MILLI_PART";
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -88,8 +95,6 @@ public class SQLiteDefinition extends DBDefinition {
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBLargeObject) {
 			return " TEXT ";
-		}else if (qdt instanceof DBInterval) {
-			return " VARCHAR(100) ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
@@ -243,13 +248,13 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doAddDaysTransform(String dayValue, String numberOfDays) {
-		return "datetime(" + dayValue + ", (" + numberOfDays + ")||' days')";
+	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
+		return "datetime(" + dateValue + ", (" + numberOfSeconds + ")||' MILLISECOND' )";
 	}
 
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
-		return "datetime(" + dateValue + ", (" + numberOfSeconds + ")||' second')";
+		return "datetime(" + dateValue + ", (" + numberOfSeconds + ")||' SECOND')";
 	}
 
 	@Override
@@ -260,6 +265,11 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
 		return "datetime(" + dateValue + ", (" + numberOfHours + ")||' hour')";
+	}
+	
+	@Override
+	public String doAddDaysTransform(String dayValue, String numberOfDays) {
+		return "datetime(" + dayValue + ", (" + numberOfDays + ")||' days')";
 	}
 
 	@Override
@@ -337,11 +347,6 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Period parseIntervalFromGetString(String intervalStr) {
-		return IntervalImpl.parseIntervalFromGetString(intervalStr);
-	}
-
-	@Override
 	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
 		return " "+INTERVAL_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
@@ -381,4 +386,42 @@ public class SQLiteDefinition extends DBDefinition {
 		return INTERVAL_GREATERTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
+	@Override
+	public String doIntervalGetYearsTransform(String intervalStr) {
+		return INTERVAL_YEAR_PART_FUNCTION+"("+intervalStr +")";
+	}
+	@Override
+	public String doIntervalGetMonthsTransform(String intervalStr) {
+		return INTERVAL_MONTH_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetDaysTransform(String intervalStr) {
+		return INTERVAL_DAY_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetHoursTransform(String intervalStr) {
+		return INTERVAL_HOUR_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetMinutesTransform(String intervalStr) {
+		return INTERVAL_MINUTE_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetSecondsTransform(String intervalStr) {
+		return INTERVAL_SECOND_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetMillisecondsTransform(String intervalStr) {
+		return INTERVAL_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public boolean supportsArcSineFunction() {
+		return false;
+	}
 }

@@ -25,7 +25,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeNatively;
+import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import org.joda.time.Period;
 
@@ -919,20 +919,19 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeNatively) {
+				if (db instanceof SupportsIntervalDatatypeFunctions) {
 					return db.getDefinition().doDateMinusTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
 					final DateExpression left = getFirst();
-					final DateResult right = getSecond();
-					return (StringExpression.value("P")
-							.append(left.yearsFrom(right)).append("Y")
-							.append(left.monthsFrom(right)).append("M")
-							.append(left.daysFrom(right)).append("D")
-							.append(left.hoursFrom(right)).append("h")
-							.append(left.minutesFrom(right)).append("m")
-							.append(left.secondsFrom(right).integerPart()).append("s")
-							.append(left.secondsFrom(right).decimalPart()))
-							.toSQLString(db);
+					final DateExpression right = new DateExpression(getSecond());
+					return (StringExpression.value(INTERVAL_PREFIX)
+							.append(left.year().minus(right.year())).append(YEAR_SUFFIX)
+							.append(left.month().minus(right.month())).append(MONTH_SUFFIX)
+							.append(left.day().minus(right.day())).append(DAY_SUFFIX)
+							.append(left.hour().minus(right.hour())).append(HOUR_SUFFIX)
+							.append(left.minute().minus(right.minute())).append(MINUTE_SUFFIX)
+							.append(left.second().minus(right.second())).append(SECOND_SUFFIX)
+							).toSQLString(db);
 				}
 			}
 
@@ -951,7 +950,21 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		return new DateExpression(new DateIntervalArithmeticDateResult(this, intervalExpression) {
 			@Override
 			protected String doExpressionTransformation(DBDatabase db) {
-				return db.getDefinition().doDateIntervalSubtractionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				if (db instanceof SupportsIntervalDatatypeFunctions) {
+					return db.getDefinition().doDateIntervalSubtractionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				} else {
+					final DateExpression left = getFirst();
+					final IntervalExpression right = new IntervalExpression(getSecond());
+					return (
+							left.addYears(right.getYears().times(-1))
+							.addMonths(right.getMonths().times(-1))
+							.addDays(right.getDays().times(-1))
+							.addHours(right.getHours().times(-1))
+							.addMinutes(right.getMinutes().times(-1))
+							.addSeconds(right.getSeconds().times(-1))
+							.addMilliseconds(right.getMilliseconds().times(-1))
+							).toSQLString(db);
+				}
 			}
 
 			@Override
@@ -1432,6 +1445,22 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	public DateExpression addMilliseconds(NumberExpression millisecondsToAdd) {
+		return new DateExpression(
+				new DBBinaryDateNumberFunctionWithDateResult(this, millisecondsToAdd) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doAddMillisecondsTransform(first.toSQLString(db), second.toSQLString(db));
 					}
 				});
 	}
@@ -1983,11 +2012,11 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	public static BooleanExpression overlaps(DateExpression firstStartTime, DateExpression firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
 		return BooleanExpression.anyOf(
 				firstStartTime.isBetween(
-						DateExpression.leastOf(secondStartTime, secondEndtime),
-						DateExpression.greatestOf(secondStartTime, secondEndtime)),
+						leastOf(secondStartTime, secondEndtime),
+						greatestOf(secondStartTime, secondEndtime)),
 				firstEndTime.isBetween(
-						DateExpression.leastOf(secondStartTime, secondEndtime),
-						DateExpression.greatestOf(secondStartTime, secondEndtime)
+						leastOf(secondStartTime, secondEndtime),
+						greatestOf(secondStartTime, secondEndtime)
 				)
 		);
 	}

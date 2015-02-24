@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeNatively;
+import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeFunctions;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
 import org.sqlite.Function;
@@ -38,7 +38,7 @@ import org.sqlite.SQLiteConfig;
  *
  * @author Gregory Graham
  */
-public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNatively {
+public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunctions {
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 
@@ -82,6 +82,13 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 		config.apply(connection);
 		Function.create(connection, "TRUNC", new Trunc());
 		Function.create(connection, "LOCATION_OF", new LocationOf());
+		Function.create(connection, "CURRENT_USER", new CurrentUser(getUsername()));
+		Function.create(connection, "STDEV", new StandardDeviation());
+		addIntervalFunctions(connection);
+		return connection;
+	}
+
+	private void addIntervalFunctions(Connection connection) throws SQLException {
 		Function.create(connection, SQLiteDefinition.INTERVAL_CREATION_FUNCTION, new IntervalCreate());
 		Function.create(connection, SQLiteDefinition.INTERVAL_EQUALS_FUNCTION, new IntervalEquals());
 		Function.create(connection, SQLiteDefinition.INTERVAL_LESSTHAN_FUNCTION, new IntervalLessThan());
@@ -90,10 +97,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 		Function.create(connection, SQLiteDefinition.INTERVAL_GREATERTHANEQUALS_FUNCTION, new IntervalGreaterThanOrEqual());
 		Function.create(connection, SQLiteDefinition.INTERVAL_DATEADDITION_FUNCTION, new IntervalDateAddition());
 		Function.create(connection, SQLiteDefinition.INTERVAL_DATESUBTRACTION_FUNCTION, new IntervalDateSubtraction());
-		Function.create(connection, "CURRENT_USER", new CurrentUser(getUsername()));
-		Function.create(connection, "STDEV", new StandardDeviation());
-		return connection;
-	}
+		
+		Function.create(connection, SQLiteDefinition.INTERVAL_YEAR_PART_FUNCTION, new IntervalGetYear());
+		Function.create(connection, SQLiteDefinition.INTERVAL_MONTH_PART_FUNCTION, new IntervalGetMonth());
+		Function.create(connection, SQLiteDefinition.INTERVAL_DAY_PART_FUNCTION, new IntervalGetDay());
+		Function.create(connection, SQLiteDefinition.INTERVAL_HOUR_PART_FUNCTION, new IntervalGetHour());
+		Function.create(connection, SQLiteDefinition.INTERVAL_MINUTE_PART_FUNCTION, new IntervalGetMinute());
+		Function.create(connection, SQLiteDefinition.INTERVAL_SECOND_PART_FUNCTION, new IntervalGetSecond());
+		Function.create(connection, SQLiteDefinition.INTERVAL_MILLISECOND_PART_FUNCTION, new IntervalGetMillisecond());
+			}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
@@ -206,7 +218,6 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 
 		@Override
 		protected void xFunc() throws SQLException {
-			SQLiteDefinition defn = new SQLiteDefinition();
 			final String originalStr = value_text(0);
 			final String compareToStr = value_text(1);
 
@@ -221,12 +232,11 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 
 	private static class IntervalLessThan extends Function {
 
-		public IntervalLessThan() {
+		IntervalLessThan() {
 		}
 
 		@Override
 		protected void xFunc() throws SQLException {
-			SQLiteDefinition defn = new SQLiteDefinition();
 			final String originalStr = value_text(0);
 			final String compareToStr = value_text(1);
 
@@ -241,12 +251,11 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 
 	private static class IntervalGreaterThan extends Function {
 
-		public IntervalGreaterThan() {
+		IntervalGreaterThan() {
 		}
 
 		@Override
 		protected void xFunc() throws SQLException {
-			SQLiteDefinition defn = new SQLiteDefinition();
 			final String originalStr = value_text(0);
 			final String compareToStr = value_text(1);
 
@@ -261,12 +270,11 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 
 	private static class IntervalLessThanOrEqual extends Function {
 
-		public IntervalLessThanOrEqual() {
+		IntervalLessThanOrEqual() {
 		}
 
 		@Override
 		protected void xFunc() throws SQLException {
-			SQLiteDefinition defn = new SQLiteDefinition();
 			final String originalStr = value_text(0);
 			final String compareToStr = value_text(1);
 
@@ -281,12 +289,11 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 
 	private static class IntervalGreaterThanOrEqual extends Function {
 
-		public IntervalGreaterThanOrEqual() {
+		IntervalGreaterThanOrEqual() {
 		}
 
 		@Override
 		protected void xFunc() throws SQLException {
-			SQLiteDefinition defn = new SQLiteDefinition();
 			final String originalStr = value_text(0);
 			final String compareToStr = value_text(1);
 
@@ -301,7 +308,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 
 	private static class IntervalDateAddition extends Function {
 
-		public IntervalDateAddition() {
+		IntervalDateAddition() {
 		}
 
 		@Override
@@ -311,7 +318,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 				final String dateStr = value_text(0);
 				final String intervalStr = value_text(1);
 
-				if (dateStr == null || intervalStr == null||dateStr.length()==0||dateStr.length()==0) {
+				if (dateStr == null || intervalStr == null || intervalStr.length() == 0 || dateStr.length() == 0) {
 					result((String) null);
 				} else {
 					Date date = defn.parseDateFromGetString(dateStr);
@@ -320,14 +327,14 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 				}
 			} catch (ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new DBRuntimeException("Failed To Parse SQLIte Date", ex);
+				throw new DBRuntimeException("Failed To Parse SQLite Date", ex);
 			}
 		}
 	}
 
 	private static class IntervalDateSubtraction extends Function {
 
-		public IntervalDateSubtraction() {
+		IntervalDateSubtraction() {
 		}
 
 		@Override
@@ -337,7 +344,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 				final String dateStr = value_text(0);
 				final String intervalStr = value_text(1);
 
-				if (dateStr == null || intervalStr == null||dateStr.length()==0||dateStr.length()==0) {
+				if (dateStr == null || intervalStr == null||dateStr.length()==0||intervalStr.length()==0) {
 					result((String) null);
 				} else {
 					Date date = defn.parseDateFromGetString(dateStr);
@@ -347,6 +354,125 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeNati
 			} catch (ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new DBRuntimeException("Failed To Parse SQLIte Date", ex);
+			}
+		}
+	}
+
+	private static class IntervalGetYear extends Function {
+
+		IntervalGetYear() {
+		}
+
+		@Override
+		protected void xFunc() throws SQLException {
+			final String intervalStr = value_text(0);
+			if (intervalStr == null||intervalStr.length()==0) {
+				result((String) null);
+			} else {
+				int result = IntervalImpl.getYearPart(intervalStr);
+				result(result);
+			}
+		}
+	}
+
+	private static class IntervalGetMonth extends Function {
+
+		IntervalGetMonth() {
+		}
+
+		@Override
+		protected void xFunc() throws SQLException {
+			final String intervalStr = value_text(0);
+			if (intervalStr == null||intervalStr.length()==0) {
+				result((String) null);
+			} else {
+				int result = IntervalImpl.getMonthPart(intervalStr);
+				result(result);
+			}
+		}
+	}
+
+	private static class IntervalGetDay extends Function {
+
+		IntervalGetDay() {
+		}
+
+		@Override
+		protected void xFunc() throws SQLException {
+			final String intervalStr = value_text(0);
+			if (intervalStr == null||intervalStr.length()==0) {
+				result((String) null);
+			} else {
+				int result = IntervalImpl.getDayPart(intervalStr);
+				result(result);
+			}
+		}
+	}
+
+	private static class IntervalGetHour extends Function {
+
+		IntervalGetHour() {
+		}
+
+		@Override
+		protected void xFunc() throws SQLException {
+			final String intervalStr = value_text(0);
+			if (intervalStr == null||intervalStr.length()==0) {
+				result((String) null);
+			} else {
+				int result = IntervalImpl.getHourPart(intervalStr);
+				result(result);
+			}
+		}
+	}
+
+	private static class IntervalGetMinute extends Function {
+
+		IntervalGetMinute() {
+		}
+
+		@Override
+		protected void xFunc() throws SQLException {
+			final String intervalStr = value_text(0);
+			if (intervalStr == null||intervalStr.length()==0) {
+				result((String) null);
+			} else {
+				int result = IntervalImpl.getMinutePart(intervalStr);
+				result(result);
+			}
+		}
+	}
+
+	private static class IntervalGetSecond extends Function {
+
+		IntervalGetSecond() {
+		}
+
+		@Override
+		protected void xFunc() throws SQLException {
+			final String intervalStr = value_text(0);
+			if (intervalStr == null||intervalStr.length()==0) {
+				result((String) null);
+			} else {
+				int result = IntervalImpl.getSecondPart(intervalStr);
+				result(result);
+			}
+		}
+	}
+
+	private static class IntervalGetMillisecond extends Function {
+
+		IntervalGetMillisecond() {
+		}
+
+		@Override
+		protected void xFunc() throws SQLException {
+			final String intervalStr = value_text(0);
+			if (intervalStr == null||intervalStr.length()==0) {
+				result((String) null);
+			} else {
+				int result = IntervalImpl.getMillisecondPart(intervalStr);
+				result(result);
 			}
 		}
 	}

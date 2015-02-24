@@ -152,6 +152,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
+		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 MILLISECOND' )";
+	}
+	
+	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 SECOND' )";
 	}
@@ -183,7 +188,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfWeeks) {
-		return "(" + dateValue + "+ (" + numberOfWeeks + ")*INTERVAL '1 YEAR')";
+		return "(" + dateValue + "+ (" + numberOfWeeks + ")*(INTERVAL '1 YEAR'))";
 	}
 
 	@Override
@@ -259,55 +264,100 @@ public class PostgresDBDefinition extends DBDefinition {
 		}
 	}
 
-	@Override
-	public Period parseIntervalFromGetString(String anInterval) {
-		String intervalStr = " " + anInterval;
-		System.out.println(intervalStr);
-		//8 years 7 mons 47 days 04:03:02.001
-		int years = 0;
-		int months = 0;
-		int days = 0;
-		int hours = 0;
-		int minutes = 0;
-		int seconds = 0;
-		int millis = 0;
-		if (intervalStr.contains("years")) {
-			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) years.*", "$1");
-			years = Integer.parseInt(replaced);
-		}
-		if (intervalStr.contains("mons")) {
-			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) mons.*", "$1");
-			months = Integer.parseInt(replaced);
-		}
-		if (intervalStr.contains("days")) {
-			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) days.*", "$1");
-			System.out.println("DAYS: " + replaced);
-			days = Integer.parseInt(replaced);
-		}
-		if (intervalStr.matches(".* [-0-9]+:.*")) {
-			String replaced = intervalStr.replaceAll(".*([-0-9]+):[-0-9]+:[-0-9]+[-.0-9]*.*", "$1");
-			hours = Integer.parseInt(replaced);
-			replaced = intervalStr.replaceAll(".*[-0-9]+:([-0-9]+):[-0-9]+[-.0-9]*.*", "$1");
-			minutes = Integer.parseInt(replaced);
-			replaced = intervalStr.replaceAll(".*[-0-9]+:[-0-9]+:([-0-9]+)[-.0-9]*.*", "$1");
-			seconds = Integer.parseInt(replaced);
-			if (intervalStr.matches(".*\\.([0-9]+).*")) {
-				replaced = (seconds == Math.abs(seconds) ? "" : "-") + intervalStr.replaceAll(".*\\.([0-9]+).*", "$1");
-				millis = (new Double(Double.parseDouble(replaced))).intValue();
-			}
-		}
-		Period parsePeriod = new Period().withYears(years).withMonths(months).withDays(days).withHours(hours).withMinutes(minutes).withSeconds(seconds).withMillis(millis);
-		return parsePeriod;
-	}
+//	@Override
+//	public Period parseIntervalFromGetString(String anInterval) {
+//		String intervalStr = " " + anInterval;
+//		System.out.println(intervalStr);
+//		//8 years 7 mons 47 days 04:03:02.001
+//		int years = 0;
+//		int months = 0;
+//		int days = 0;
+//		int hours = 0;
+//		int minutes = 0;
+//		int seconds = 0;
+//		int millis = 0;
+//		if (intervalStr.contains("years")) {
+//			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) years.*", "$1");
+//			years = Integer.parseInt(replaced);
+//		}
+//		if (intervalStr.contains("mons")) {
+//			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) mons.*", "$1");
+//			months = Integer.parseInt(replaced);
+//		}
+//		if (intervalStr.contains("days")) {
+//			final String replaced = intervalStr.replaceAll(".* ([-0-9]+) days.*", "$1");
+//			System.out.println("DAYS: " + replaced);
+//			days = Integer.parseInt(replaced);
+//		}
+//		if (intervalStr.matches(".* [-0-9]+:.*")) {
+//			String replaced = intervalStr.replaceAll(".*([-0-9]+):[-0-9]+:[-0-9]+[-.0-9]*.*", "$1");
+//			hours = Integer.parseInt(replaced);
+//			replaced = intervalStr.replaceAll(".*[-0-9]+:([-0-9]+):[-0-9]+[-.0-9]*.*", "$1");
+//			minutes = Integer.parseInt(replaced);
+//			replaced = intervalStr.replaceAll(".*[-0-9]+:[-0-9]+:([-0-9]+)[-.0-9]*.*", "$1");
+//			seconds = Integer.parseInt(replaced);
+//			if (intervalStr.matches(".*\\.([0-9]+).*")) {
+//				replaced = (seconds == Math.abs(seconds) ? "" : "-") + intervalStr.replaceAll(".*\\.([0-9]+).*", "$1");
+//				millis = (new Double(Double.parseDouble(replaced))).intValue();
+//			}
+//		}
+//		Period parsePeriod = new Period().withYears(years).withMonths(months).withDays(days).withHours(hours).withMinutes(minutes).withSeconds(seconds).withMillis(millis);
+//		return parsePeriod;
+//	}
 	
 	@Override
 	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Intersects(" + firstGeometry + ", " + secondGeometry + ")";
 	}
+	
+//	@Override
+//	public String doIntervalGetYearsTransform(String interval) {
+//		return doTruncTransform("(EXTRACT(DAY FROM "+interval+")/365.25)","0");
+//	}
+//	
+//	@Override
+//	public String doIntervalGetMonthsTransform(String interval) {
+//		return doModulusTransform(doTruncTransform("((EXTRACT(DAY FROM "+interval+")/30.4375))","0"), "12");
+//	}
+//	
+//	@Override
+//	public String doIntervalGetDaysTransform(String interval) {
+//		return "(EXTRACT(DAY FROM "+interval+")";
+//	}
+//	
+//	@Override
+//	public String doIntervalGetHoursTransform(String interval) {
+//		return "EXTRACT(HOUR FROM "+interval+")";
+//	}
+//	
+//	@Override
+//	public String doIntervalGetMinutesTransform(String interval) {
+//		return "EXTRACT(MINUTE FROM "+interval+")";
+//	}
+//	
+//	@Override
+//	public String doIntervalGetSecondsTransform(String interval) {
+//		return "EXTRACT(SECOND FROM "+interval+")";
+//	}
+//	
+//	@Override
+//	public String doIntervalGetMillisecondsTransform(String interval) {
+//		return "EXTRACT(MILLISECONDS FROM "+interval+")";
+//	}
 
 	@Override
 	public boolean supportsHyperbolicFunctionsNatively() {
 		return false;//To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doStringToNumberTransform(String stringResultContainingANumber) {
+		return "(CASE WHEN ("+stringResultContainingANumber+") IS NULL OR ("+stringResultContainingANumber+") = '' THEN 0 ELSE TO_NUMBER("+stringResultContainingANumber+", 'S999999999999999D9999999') END)";
+	}
+
+	@Override
+	public boolean supportsArcSineFunction() {
+		return false;
 	}
 
 }
