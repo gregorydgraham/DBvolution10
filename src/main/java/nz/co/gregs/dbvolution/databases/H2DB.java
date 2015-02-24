@@ -109,7 +109,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "@CODE Date subtractDateAndIntervalString(Date original, String intervalInput) {\n"
-				+ "		if (original == null || intervalInput == null) {\n"
+				+ "		if (original == null || intervalInput == null || intervalInput.length() == 0) {\n"
 				+ "			return null;\n"
 				+ "		}\n"
 				+ "		String intervalStr = intervalInput.replaceAll(\"[^-.PYMDhns0-9]+\", \"\");\n"
