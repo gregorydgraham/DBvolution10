@@ -64,12 +64,12 @@
                 <version>2.18.1</version>
             </plugin>
             <!--integrate maven emma plugin to project site--> 
-            <plugin>
+<!--            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>emma-maven-plugin</artifactId>
                 <version>1.0-alpha-3</version>
                 <inherited>true</inherited>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
