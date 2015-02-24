@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeNatively;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 
@@ -30,7 +29,7 @@ import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionExcept
  *
  * @author Gregory Graham
  */
-public class PostgresDB extends DBDatabase implements SupportsIntervalDatatypeNatively{
+public class PostgresDB extends DBDatabase {
 
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
 
@@ -189,6 +188,7 @@ public class PostgresDB extends DBDatabase implements SupportsIntervalDatatypeNa
 		}
 	}
 	
+	@Override
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		try {
 			this.dropTable(tableRow);

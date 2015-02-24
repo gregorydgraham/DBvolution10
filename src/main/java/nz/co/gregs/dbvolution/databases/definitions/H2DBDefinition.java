@@ -19,17 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
-import static nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition.INTERVAL_CREATION_FUNCTION;
-import static nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition.INTERVAL_DATEADDITION_FUNCTION;
-import static nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition.INTERVAL_DATESUBTRACTION_FUNCTION;
-import static nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition.INTERVAL_GREATERTHANEQUALS_FUNCTION;
-import static nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition.INTERVAL_GREATERTHAN_FUNCTION;
-import static nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition.INTERVAL_LESSTHANEQUALS_FUNCTION;
-import static nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition.INTERVAL_LESSTHAN_FUNCTION;
-import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInterval;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
 import org.joda.time.Period;
@@ -57,6 +47,14 @@ public class H2DBDefinition extends DBDefinition {
 	public static String INTERVAL_GREATERTHANEQUALS_FUNCTION = "DBV_INTERVAL_GREATERTHANEQUALS";
 	public static String INTERVAL_DATEADDITION_FUNCTION = "DBV_INTERVAL_DATEPLUSINTERVAL";
 	public static String INTERVAL_DATESUBTRACTION_FUNCTION = "DBV_INTERVAL_DATEMINUS";
+	
+	public static String INTERVAL_YEAR_PART_FUNCTION = "DBV_INTERVAL_YEAR_PART";
+	public static String INTERVAL_MONTH_PART_FUNCTION = "DBV_INTERVAL_MONTH_PART";
+	public static String INTERVAL_DAY_PART_FUNCTION = "DBV_INTERVAL_DAY_PART";
+	public static String INTERVAL_HOUR_PART_FUNCTION = "DBV_INTERVAL_HOUR_PART";
+	public static String INTERVAL_MINUTE_PART_FUNCTION = "DBV_INTERVAL_MINUTE_PART";
+	public static String INTERVAL_SECOND_PART_FUNCTION = "DBV_INTERVAL_SECOND_PART";
+	public static String INTERVAL_MILLISECOND_PART_FUNCTION = "DBV_INTERVAL_MILLI_PART";
 
 
 	@Override
@@ -160,15 +158,15 @@ public class H2DBDefinition extends DBDefinition {
 		}
 	}
 
-	@Override
-	public String transformPeriodIntoInterval(Period interval) {
-		return "'"+IntervalImpl.getIntervalString(interval)+"'";
-	}
+//	@Override
+//	public String transformPeriodIntoInterval(Period interval) {
+//		return "'"+IntervalImpl.getIntervalString(interval)+"'";
+//	}
 
-	@Override
-	public Period parseIntervalFromGetString(String intervalStr) {
-		return IntervalImpl.parseIntervalFromGetString(intervalStr);
-	}
+//	@Override
+//	public Period parseIntervalFromGetString(String intervalStr) {
+//		return IntervalImpl.parseIntervalFromGetString(intervalStr);
+//	}
 
 	@Override
 	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
@@ -209,5 +207,40 @@ public class H2DBDefinition extends DBDefinition {
 	public String doIntervalGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
 		return INTERVAL_GREATERTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
+
+	@Override
+	public String doIntervalGetYearsTransform(String intervalStr) {
+		return INTERVAL_YEAR_PART_FUNCTION+"("+intervalStr +")";
+	}
+	@Override
+	public String doIntervalGetMonthsTransform(String intervalStr) {
+		return INTERVAL_MONTH_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetDaysTransform(String intervalStr) {
+		return INTERVAL_DAY_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetHoursTransform(String intervalStr) {
+		return INTERVAL_HOUR_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetMinutesTransform(String intervalStr) {
+		return INTERVAL_MINUTE_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetSecondsTransform(String intervalStr) {
+		return INTERVAL_SECOND_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doIntervalGetMillisecondsTransform(String intervalStr) {
+		return INTERVAL_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
+	}
+
 
 }

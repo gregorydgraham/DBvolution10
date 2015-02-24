@@ -61,7 +61,7 @@ public class DBInterval extends QueryableDatatype implements IntervalResult {
 
 	@Override
 	public String getSQLDatatype() {
-		return " INTERVAL ";
+		return " VARCHAR(100) ";
 	}
 
 	@Override

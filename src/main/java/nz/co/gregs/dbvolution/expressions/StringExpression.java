@@ -1396,6 +1396,22 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 					}
 				});
 	}
+	
+	public StringExpression stringBefore(String splitBeforeThis) {
+		return stringBefore(value(splitBeforeThis));
+	}
+	
+	public StringExpression stringBefore(StringResult splitBeforeThis) {
+		return this.locationOf(splitBeforeThis).isGreaterThan(0).ifThenElse(this.substring(0, this.locationOf(splitBeforeThis).minus(1)), value(""));
+	}
+	
+	public StringExpression stringAfter(String splitAfterThis) {
+		return stringAfter(value(splitAfterThis));
+	}
+	
+	public StringExpression stringAfter(StringResult splitAfterThis) {
+		return this.locationOf(splitAfterThis).isGreaterThan(0).ifThenElse(this.substring(this.locationOf(splitAfterThis), this.length()), value(""));
+	}
 
 	/**
 	 * Creates a query expression that trims all leading and trailing spaces from
@@ -1630,7 +1646,21 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return an expression that will find the location of the searchString.
 	 */
 	public NumberExpression locationOf(String searchString) {
-		return new NumberExpression(new BinaryComplicatedNumberFunction(this, value(searchString)) {
+		return locationOf(value(searchString));
+	}
+
+	/**
+	 * Returns the 1-based index of the first occurrence of searchString within
+	 * the StringExpression.
+	 *
+	 * <p>
+	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
+	 *
+	 * @param searchString	searchString
+	 * @return an expression that will find the location of the searchString.
+	 */
+	public NumberExpression locationOf(StringResult searchString) {
+		return new NumberExpression(new BinaryComplicatedNumberFunction(this, searchString) {
 			@Override
 			public String toSQLString(DBDatabase db) {
 				return db.getDefinition().doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
@@ -1846,6 +1876,22 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		} else {
 			return isInExpression;
 		}
+	}
+	
+	public NumberExpression numberResult() {
+		return new NumberExpression(
+				new DBUnaryNumberFunction(this) {
+					
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doStringToNumberTransform(this.only.toSQLString(db));
+					}
+
+					@Override
+					String getFunctionName(DBDatabase db) {
+						return "TO_NUMBER";
+					}
+				});
 	}
 
 	private static abstract class DBBinaryStringArithmetic extends StringExpression {
@@ -2402,13 +2448,13 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	private static abstract class BinaryComplicatedNumberFunction extends NumberExpression {
 
 		protected StringExpression first = null;
-		protected StringExpression second = null;
+		protected StringResult second = null;
 
 		BinaryComplicatedNumberFunction() {
 			this.first = null;
 		}
 
-		BinaryComplicatedNumberFunction(StringExpression first, StringExpression second) {
+		BinaryComplicatedNumberFunction(StringExpression first, StringResult second) {
 			this.first = first;
 			this.second = second;
 		}

@@ -192,8 +192,9 @@ public class NumberExpressionTest extends AbstractTest {
 		);
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque)
-				.arcsin()
-				.isBetween(1.4, 1.6)
+						.times(0.3)
+						.arcsin()
+						.isBetween(0.3, 0.31)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);

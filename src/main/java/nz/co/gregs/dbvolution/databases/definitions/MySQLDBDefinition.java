@@ -176,6 +176,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	public boolean supportsArraysNatively() {
 		return false;
 	}
+
+	@Override
+	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
+		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfSeconds + ")*1000) MICROSECOND )";
+	}
 	
 	@Override
 	public String doGeometryEqualsTransform(String firstGeometry, String secondGeometry) {
