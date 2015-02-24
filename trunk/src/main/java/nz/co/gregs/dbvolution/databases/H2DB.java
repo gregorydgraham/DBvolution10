@@ -41,6 +41,40 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 	 */
 	protected Connection storedConnection;
 
+
+	/**
+	 * Creates a DBDatabase for a H2 database in the file supplied.
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
+	 * @param file file
+	 * @param username username
+	 * @param password password
+	 * @throws java.io.IOException java.io.IOException
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public H2DB(File file, String username, String password) throws IOException, SQLException {
+		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
+	}
+
+	/**
+	 * Creates a DBDatabase for a H2 database.
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
+	 * @param dataSource dataSource
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public H2DB(DataSource dataSource) throws SQLException {
+		super(new H2DBDefinition(), dataSource);
+		jamDatabaseConnectionOpen();
+		addIntervalFunctions();
+	}
 	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
@@ -323,39 +357,6 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		final int millis = (int) (secondsDouble*1000.0-secondsInt*1000);\n"
 				+ "		return millis;\n"
 				+ "	} $$;");
-	}
-
-	/**
-	 * Creates a DBDatabase for a H2 database in the file supplied.
-	 *
-	 *
-	 *
-	 *
-	 *
-	 * 1 Database exceptions may be thrown
-	 *
-	 * @param file file
-	 * @param username username
-	 * @param password password
-	 * @throws java.io.IOException java.io.IOException
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 */
-	public H2DB(File file, String username, String password) throws IOException, SQLException {
-		this("jdbc:h2:" + file.getCanonicalFile(), username, password);
-	}
-
-	/**
-	 * Creates a DBDatabase for a H2 database.
-	 *
-	 *
-	 * 1 Database exceptions may be thrown
-	 *
-	 * @param dataSource dataSource
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 */
-	public H2DB(DataSource dataSource) throws SQLException {
-		super(new H2DBDefinition(), dataSource);
-		jamDatabaseConnectionOpen();
 	}
 
 	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {
