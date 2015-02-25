@@ -378,8 +378,8 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 	 *
 	 */
 	@Override
-	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	public H2DB clone() throws CloneNotSupportedException {
+		return (H2DB) super.clone(); 
 	}
 
 }

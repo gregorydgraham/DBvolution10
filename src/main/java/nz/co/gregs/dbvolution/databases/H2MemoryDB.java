@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBDatabase;
 
 /**
  * Stores all the required functionality to use an H2 database in memory.
@@ -77,7 +76,7 @@ public class H2MemoryDB extends H2DB {
     }
 
 	@Override
-	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	public H2MemoryDB clone() throws CloneNotSupportedException {
+		return (H2MemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 }

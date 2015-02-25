@@ -154,7 +154,6 @@ public class DBInsert extends DBAction {
 										final long pkValue = generatedKeysResultSet.getLong(pkIndex);
 										if (pkValue > 0) {
 											this.getGeneratedPrimaryKeys().add(pkValue);
-											log.info("GENERATED KEYS: " + pkValue);
 											QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
 											new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
 											pkQDT = row.getPrimaryKey();
