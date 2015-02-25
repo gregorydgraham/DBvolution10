@@ -63,10 +63,9 @@ public abstract class AbstractTest {
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException {
 
 		List<Object[]> databases = new ArrayList<Object[]>();
-		final SQLiteDB sqliteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
-		final H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
 
 		if (System.getProperty("testSQLite") != null) {
+			final SQLiteDB sqliteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
 			databases.add(new Object[]{"SQLiteDB", sqliteDB});
 		}
 		if (System.getProperty("testMySQLMXJDB") != null) {
@@ -89,7 +88,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("dbvtest", "dbv", "dbv", "")});
 		}
 		if (System.getProperty("testNuo") != null) {
-			databases.add(new Object[]{"NuoDB", new NuoDB("localhost",48004L, "dbv", "dbv", "dbv", "dbv")});
+			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracle") != null) {
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
@@ -105,6 +104,7 @@ public abstract class AbstractTest {
 		}
 		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
+			final H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
 
