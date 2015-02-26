@@ -317,7 +317,12 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " TO_CHAR("+dateSQL+",'D')";
+		return " (TO_CHAR("+dateSQL+",'D')+1)";
+	}
+
+	@Override
+	public boolean supportsCotangentFunction() {
+		return false;
 	}
 
 }

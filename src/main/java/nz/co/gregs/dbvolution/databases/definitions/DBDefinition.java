@@ -2922,4 +2922,8 @@ public abstract class DBDefinition {
 		return true;
 	}
 
+	public boolean supportsCotangentFunction() {
+		return true;
+	}
+
 }
