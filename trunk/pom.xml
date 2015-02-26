@@ -296,6 +296,12 @@
                     <scope>test</scope>
                     <version>6.0</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.microsoft</groupId>
+                    <artifactId>mssqlserver-jdbc</artifactId>
+                    <scope>test</scope>
+                    <version>1.0</version>
+                </dependency>
             </dependencies>
             <build>
                 <plugins>
@@ -313,7 +319,7 @@
                                 <testMySQL>true</testMySQL>
                                 <testPostgresSQL>true</testPostgresSQL>
                                 <testOracle>true</testOracle>
-                                <!--testMSSQLServer>true</testMSSQLServer-->
+                                <testMSSQLServer>true</testMSSQLServer>
                                 <!--testNuo>true</testNuo-->
                                 <!--testJavaDB>true</testJavaDB-->
                             </systemPropertyVariables>
