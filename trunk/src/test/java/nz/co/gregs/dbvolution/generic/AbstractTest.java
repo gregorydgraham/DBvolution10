@@ -104,7 +104,7 @@ public abstract class AbstractTest {
 		}
 		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
-			final H2MemoryDB h2MemoryDB = new H2MemoryDB("dbvolutionTest", "", "", false);
+			final H2MemoryDB h2MemoryDB = new H2MemoryDB("memoryTest.h2db", "", "", false);
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
 
