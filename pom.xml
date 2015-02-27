@@ -310,7 +310,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<version>2.18.1</version>
 						<configuration>
-							<argLine>-Dfile.encoding=UTF8</argLine>
+							<argLine>-Dfile.encoding=UTF8  -Xms1512m -Xmx2512m </argLine>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
 								<testH2DB>true</testH2DB>
