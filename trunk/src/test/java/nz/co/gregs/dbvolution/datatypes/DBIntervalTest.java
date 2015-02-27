@@ -65,11 +65,12 @@ public class DBIntervalTest extends AbstractTest {
 	}
 
 	public static class MarqueWithIntervalExprCol extends Marque {
-		
-		
+
+		private static final long serialVersionUID = 1L;
+
 		@DBColumn
 		DBInterval interval = new DBInterval(this.column(this.creationDate).minus(april2nd2011));
-		
+
 		@DBColumn
 		DBNumber yearPart = new DBNumber(this.column(this.creationDate).minus(april2nd2011).getYears());
 
@@ -118,6 +119,8 @@ public class DBIntervalTest extends AbstractTest {
 
 	public static class IntervalSeconds extends Marque {
 
+		private static final long serialVersionUID = 1L;
+
 		@DBColumn
 		DBString intervalString = new DBString(this.column(this.creationDate).minus(march23rd2013).stringResult());
 		@DBColumn
@@ -125,6 +128,8 @@ public class DBIntervalTest extends AbstractTest {
 	}
 
 	public static class IntervalYears extends Marque {
+
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn
 		DBString intervalString = new DBString(this.column(this.creationDate).minus(march23rd2013).stringResult());
@@ -134,6 +139,8 @@ public class DBIntervalTest extends AbstractTest {
 	}
 
 	public static class IntervalMaths extends Marque {
+
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn
 		DBString intervalString = new DBString(this.column(this.creationDate).minus(march23rd2013).stringResult());
@@ -155,7 +162,6 @@ public class DBIntervalTest extends AbstractTest {
 
 //		@DBColumn
 //		DBNumber numberOfSeconds = new DBNumber(this.column(this.creationDate).minus(march23rd2013).getSeconds());
-
 //		@DBColumn
 //		DBNumber numberOfMillis = new DBNumber(this.column(this.creationDate).minus(march23rd2013).getMilliseconds());
 	}
@@ -250,23 +256,22 @@ public class DBIntervalTest extends AbstractTest {
 		String twoYearPlusInterval = "P2Y-1M0D11h32n53s";
 		String zeroInterval = "P0Y0M0D0h0n0s";
 		String plus2Days = "P0Y0M2D0h0n0.0s";
-		Assert.assertThat(IntervalImpl.compareIntervalStrings(twoYearPlusInterval, "P1Y0M0D0h0n0s"),is(1));
-		Assert.assertThat(IntervalImpl.compareIntervalStrings(zeroInterval, "P1Y0M0D0h0n0s"),is(-1));
-		Assert.assertThat(IntervalImpl.compareIntervalStrings(plus2Days, "P1Y0M0D0h0n0s"),is(-1));
-		Assert.assertThat(IntervalImpl.compareIntervalStrings("P1Y0M0D0h0n0s", "P1Y0M0D0h0n0s"),is(0));
+		Assert.assertThat(IntervalImpl.compareIntervalStrings(twoYearPlusInterval, "P1Y0M0D0h0n0s"), is(1));
+		Assert.assertThat(IntervalImpl.compareIntervalStrings(zeroInterval, "P1Y0M0D0h0n0s"), is(-1));
+		Assert.assertThat(IntervalImpl.compareIntervalStrings(plus2Days, "P1Y0M0D0h0n0s"), is(-1));
+		Assert.assertThat(IntervalImpl.compareIntervalStrings("P1Y0M0D0h0n0s", "P1Y0M0D0h0n0s"), is(0));
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void testSubtracting() {
 		String oneYear = "P1Y0M0D0h0n0s";
 		Date resultDate = IntervalImpl.subtractDateAndIntervalString(april2nd2011, IntervalImpl.getZeroIntervalString());
-		System.out.println("RESULTDATE: " + resultDate);
 		Assert.assertThat(resultDate.getYear() + 1900, is(2011));
 		Assert.assertThat(resultDate.getMonth() + 1, is(4));
 		Assert.assertThat(resultDate.getDate(), is(2));
 
 		resultDate = IntervalImpl.subtractDateAndIntervalString(april2nd2011, oneYear);
-		System.out.println("RESULTDATE: " + resultDate);
 		Assert.assertThat(resultDate.getYear() + 1900, is(2010));
 		Assert.assertThat(resultDate.getMonth() + 1, is(4));
 		Assert.assertThat(resultDate.getDate(), is(2));
