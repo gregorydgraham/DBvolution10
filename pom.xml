@@ -292,9 +292,9 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc</artifactId>
+					<artifactId>ojdbc6</artifactId>
 					<scope>test</scope>
-					<version>6.0</version>
+					<version>11.2.1.0.1.0</version>
 				</dependency>
 				<dependency>
 					<groupId>com.microsoft</groupId>
@@ -310,7 +310,7 @@
 						<artifactId>maven-surefire-plugin</artifactId>
 						<version>2.18.1</version>
 						<configuration>
-							<argLine>-Dfile.encoding=UTF8 ${surefireArgLine}</argLine>
+							<argLine>-Dfile.encoding=UTF8</argLine>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
 								<testH2DB>true</testH2DB>
@@ -360,9 +360,9 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc</artifactId>
+					<artifactId>ojdbc6</artifactId>
 					<scope>test</scope>
-					<version>6.0</version>
+					<version>11.2.1.0.1.0</version>
 				</dependency>
 			</dependencies>
 			<build>
