@@ -642,6 +642,24 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	}
 
 	/**
+	 * Indicates whether object is NULL within the database
+	 *
+	 * <p>
+	 * Databases and Java both use the term NULL but for slightly different
+	 * meanings.
+	 *
+	 * <p>
+	 * This method indicates whether the field represented by this object is NULL
+	 * in the database sense.
+	 *
+	 * @return TRUE if this object represents a NULL database value, otherwise
+	 * FALSE
+	 */
+	public boolean isNotNull() {
+		return !isNull();
+	}
+
+	/**
 	 * Returns the previous value of this field as an SQL formatted String.
 	 *
 	 * <p>
