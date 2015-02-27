@@ -293,14 +293,14 @@
 				<dependency>
 					<groupId>com.oracle</groupId>
 					<artifactId>ojdbc6</artifactId>
-					<scope>test</scope>
 					<version>11.2.1.0.1.0</version>
+					<scope>test</scope>
 				</dependency>
 				<dependency>
 					<groupId>com.microsoft</groupId>
 					<artifactId>mssqlserver-jdbc</artifactId>
-					<scope>test</scope>
 					<version>1.0</version>
+					<scope>test</scope>
 				</dependency>
 			</dependencies>
 			<build>
