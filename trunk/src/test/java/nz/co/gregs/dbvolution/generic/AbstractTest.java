@@ -91,7 +91,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("dbvtest", "dbv", "dbv", "")});
 		}
 		if (System.getProperty("testPostgresSQLRDS") != null) {
-			databases.add(new Object[]{"PostgresSQL-RDS", new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com",5432, "dbvtest", "dbv", "dbv", "Testingdbv")});
+			databases.add(new Object[]{"PostgresSQL-RDS", new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com",5432, "dbvtest", "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
