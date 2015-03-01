@@ -72,7 +72,10 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
 		}
 		if (System.getProperty("testMySQL") != null) {
-			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv")});
+			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv")});
+		}
+		if (System.getProperty("testMySQLRDS") != null) {
+			databases.add(new Object[]{"MySQLDB-RDS", new MySQLDB("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testH2DB") != null) {
 			databases.add(new Object[]{"H2DB", new H2DB("jdbc:h2:./directTest.h2db", "", "")});
@@ -87,6 +90,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testPostgresSQL") != null) {
 			databases.add(new Object[]{"PostgresSQL", new PostgresDB("dbvtest", "dbv", "dbv", "")});
 		}
+		if (System.getProperty("testPostgresSQLRDS") != null) {
+			databases.add(new Object[]{"PostgresSQL-RDS", new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com",5432, "dbvtest", "dbv", "dbv", "Testingdbv")});
+		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
@@ -94,7 +100,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testMSSQLServer") != null) {
-			databases.add(new Object[]{"testMSSQLServer", new MSSQLServerDB("dbvtest-mssql.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv")});
+			databases.add(new Object[]{"MSSQLServer", new MSSQLServerDB("dbvtest-mssql.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testJavaDBMemory") != null) {
 			databases.add(new Object[]{"JavaDBMemory", new JavaDBMemoryDB("localhost", 1527, "dbv", "dbv", "dbv")});
