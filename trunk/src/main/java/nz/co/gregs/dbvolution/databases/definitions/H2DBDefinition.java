@@ -76,7 +76,7 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBDateRepeat) {
-			return " DBV_INTERVAL ";
+			return " DBV_DATEREPEAT ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
