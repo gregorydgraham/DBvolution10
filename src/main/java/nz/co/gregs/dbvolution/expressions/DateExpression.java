@@ -910,25 +910,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		});
 	}
 
-	public NumberExpression getSecondsFrom(Date date) {
-		return getSecondsFrom(value(date));
-	}
-
-	public NumberExpression getSecondsFrom(DateResult dateExpression) {
-		return new NumberExpression(new DBBinaryDateFunctionWithNumberResult(this, dateExpression) {
-
-			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doDateMinusToSecondsTransformation(first.toSQLString(db), second.toSQLString(db));
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
-	}
-
 	public DateRepeatExpression getDateRepeatFrom(Date date) {
 		return getDateRepeatFrom(value(date));
 	}
@@ -1992,6 +1973,26 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doSecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+					}
+				});
+	}
+
+	public NumberExpression millisecondsFrom(Date date) {
+		return millisecondsFrom(value(date));
+	}
+
+	public NumberExpression millisecondsFrom(DateResult dateExpression) {
+		return new NumberExpression(
+				new DBBinaryDateFunctionWithNumberResult(this, dateExpression) {
+
+					@Override
+					public boolean getIncludesNull() {
+						return false;
+					}
+
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doMillisecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 					}
 				});
 	}

@@ -2378,6 +2378,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Convert the 2 SQL date values into a difference in seconds.
+	 *
+	 * @param dateValue dateValue
+	 * @param otherDateValue otherDateValue
+	 * @return SQL
+	 */
+	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(DATEDIFF('MILLISECOND', " + dateValue + "," + otherDateValue + "))";
+	}
+
+	/**
 	 * Create a foreign key clause for use in a CREATE TABLE statement from the
 	 * {@link PropertyWrapper} provided.
 	 *
@@ -2739,46 +2750,7 @@ public abstract class DBDefinition {
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		return selectableName;
 	}
-
-//	public String transformPeriodIntoDateRepeat(Period interval) {
-//		StringBuilder str = new StringBuilder();
-//		String separator = "";
-//		str.append("(");
-//		if (interval.getYears() != 0) {
-//			str.append(separator).append("(INTERVAL '").append(interval.getYears()).append(" YEARS')");
-//			separator = "+";
-//		}
-//		if (interval.getMonths() != 0) {
-//			str.append(separator).append("(INTERVAL '").append(interval.getMonths()).append(" MONTHS')");
-//			separator = "+";
-//		}
-//		if (interval.getWeeks() != 0) {
-//			str.append(separator).append("(INTERVAL '").append(interval.getWeeks()).append(" WEEKS')");
-//			separator = "+";
-//		}
-//		if (interval.getDays() != 0) {
-//			str.append(separator).append("(INTERVAL '").append(interval.getDays()).append(" DAYS')");
-//			separator = "+";
-//		}
-//		if (interval.getHours() != 0) {
-//			str.append(separator).append("(INTERVAL '").append(interval.getHours()).append(" HOURS')");
-//			separator = "+";
-//		}
-//		if (interval.getMinutes() != 0) {
-//			str.append(separator).append("(INTERVAL '").append(interval.getMinutes()).append(" MINUTES')");
-//			separator = "+";
-//		}
-//		if (interval.getSeconds() != 0) {
-//			str.append(separator).append("(INTERVAL '").append(interval.getSeconds()).append(" SECONDS')");
-//			separator = "+";
-//		}
-//		if (interval.getMillis() != 0) {
-//			str.append(separator).append("(INTERVAL '").append(interval.getMillis() * 1000).append(" MICROSECONDS')");
-//			separator = "+";
-//		}
-//		str.append(")");
-//		return str.toString();
-//	}	
+	
 	public String transformPeriodIntoDateRepeat(Period interval) {
 		StringBuilder str = new StringBuilder();
 		str.append("'").append(DateRepeatExpression.INTERVAL_PREFIX);
@@ -2798,10 +2770,6 @@ public abstract class DBDefinition {
 
 	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
-	}
-	
-	public String doDateMinusToSecondsTransformation(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " - " + rightHandSide + ")";
 	}
 
 	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {

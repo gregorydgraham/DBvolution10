@@ -141,6 +141,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "TIMESTAMPDIFF(MILLISECOND, " + dateValue + "," + otherDateValue + ")";
+	}
+
+	@Override
 	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper field) {
 		if (field.getQueryableDatatype() instanceof DBString) {
 			return true;

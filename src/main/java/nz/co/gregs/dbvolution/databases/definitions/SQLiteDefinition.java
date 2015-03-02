@@ -323,6 +323,11 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(cast((strftime('%s',"+otherDateValue+")-strftime('%s',"+dateValue+")) AS real)*1000.0)"; 
+	}
+
+	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " (cast(STRFTIME('%w', ("+dateSQL+")) AS real)+1)";
 	}
