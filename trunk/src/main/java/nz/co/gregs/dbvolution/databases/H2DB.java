@@ -23,7 +23,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
  *
  * @author Gregory Graham
  */
-public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunctions {
+public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions {
 
 	/**
 	 * Used to hold the database open
@@ -73,7 +73,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 	public H2DB(DataSource dataSource) throws SQLException {
 		super(new H2DBDefinition(), dataSource);
 		jamDatabaseConnectionOpen();
-		addIntervalFunctions();
+		addDateRepeatFunctions();
 	}
 	/**
 	 * Creates a DBDatabase for a H2 database.
@@ -91,14 +91,14 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
 		jamDatabaseConnectionOpen();
-		addIntervalFunctions();
+		addDateRepeatFunctions();
 	}
 
-	private void addIntervalFunctions() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException, SQLException {
+	private void addDateRepeatFunctions() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException, SQLException {
 		Connection connection = getConnection();
 		Statement stmt = connection.createStatement();
 		stmt.execute("CREATE DOMAIN IF NOT EXISTS DBV_INTERVAL AS VARCHAR(100); ");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_CREATION_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_CREATION_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "@CODE String getIntervalString(Date original, Date compareTo) {\n"
@@ -113,7 +113,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		String intervalString = \"P\" + years + \"Y\" + months + \"M\" + days + \"D\" + hours + \"h\" + minutes + \"n\" + seconds + \"s\";\n"
 				+ "		return intervalString;"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_DATEADDITION_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_DATEADDITION_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "import java.lang.*;"
@@ -139,7 +139,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		cal.add(Calendar.MILLISECOND, millis);\n"
 				+ "		return cal.getTime();}\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_DATESUBTRACTION_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_DATESUBTRACTION_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "@CODE Date subtractDateAndIntervalString(Date original, String intervalInput) {\n"
@@ -218,7 +218,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		}\n"
 				+ "		return Integer.parseInt(intervalStr.replaceAll(\".*P([-0-9.]+)Y.*\", \"$1\"));\n"
 				+ "	}$$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_EQUALS_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_EQUALS_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "@CODE boolean isEqualTo(String original, String compareTo) {\n"
@@ -238,7 +238,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		}\n"
 				+ "		return true;\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_GREATERTHANEQUALS_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_GREATERTHANEQUALS_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "@CODE boolean isEqualTo(String original, String compareTo) {\n"
@@ -258,7 +258,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		}\n"
 				+ "		return true;\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_GREATERTHAN_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_GREATERTHAN_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "@CODE boolean isEqualTo(String original, String compareTo) {\n"
@@ -278,7 +278,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		}\n"
 				+ "		return false;\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_LESSTHANEQUALS_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_LESSTHANEQUALS_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "@CODE boolean isEqualTo(String original, String compareTo) {\n"
@@ -298,7 +298,7 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		}\n"
 				+ "		return true;\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_LESSTHAN_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_LESSTHAN_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "import org.joda.time.Period;"
 				+ "import java.util.*;"
 				+ "@CODE boolean isEqualTo(String original, String compareTo) {\n"
@@ -319,37 +319,37 @@ public class H2DB extends DBDatabase implements SupportsIntervalDatatypeFunction
 				+ "		return false;\n"
 				+ "	} $$;");
 
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_YEAR_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_YEAR_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "int getYearPart(String intervalStr) throws NumberFormatException {\n"
 				+ "		if (intervalStr==null||intervalStr.length()==0){return 0;}\n"
 				+ "		return Integer.parseInt(intervalStr.replaceAll(\".*P([-0-9.]+)Y.*\", \"$1\"));\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_MONTH_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_MONTH_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "int getMonthPart(String intervalStr) throws NumberFormatException {\n"
 				+ "		if (intervalStr==null||intervalStr.length()==0){return 0;}\n"
 				+ "		return Integer.parseInt(intervalStr.replaceAll(\".*Y([-0-9.]+)M.*\", \"$1\"));\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_DAY_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_DAY_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "int getDayPart(String intervalStr) throws NumberFormatException {\n"
 				+ "		if (intervalStr==null||intervalStr.length()==0){return 0;}\n"
 				+ "		return Integer.parseInt(intervalStr.replaceAll(\".*M([-0-9.]+)D.*\", \"$1\"));\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_HOUR_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_HOUR_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "int getHourPart(String intervalStr) throws NumberFormatException {\n"
 				+ "		if (intervalStr==null||intervalStr.length()==0){return 0;}\n"
 				+ "		return Integer.parseInt(intervalStr.replaceAll(\".*D([-0-9.]+)h.*\", \"$1\"));\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_MINUTE_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_MINUTE_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "int getMinutePart(String intervalStr) throws NumberFormatException {\n"
 				+ "		if (intervalStr==null||intervalStr.length()==0){return 0;}\n"
 				+ "		return Integer.parseInt(intervalStr.replaceAll(\".*h([-0-9.]+)n.*\", \"$1\"));\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_SECOND_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_SECOND_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "int getSecondPart(String intervalStr) throws NumberFormatException {\n"
 				+ "		if (intervalStr==null||intervalStr.length()==0){return 0;}\n"
 				+ "		return Double.valueOf(intervalStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\")).intValue();\n"
 				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.INTERVAL_MILLISECOND_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
+		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_MILLISECOND_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
 				+ "int getMillisecondPart(String intervalStr) throws NumberFormatException {\n"
 				+ "		if (intervalStr==null||intervalStr.length()==0){return 0;}\n"
 				+ "		final Double secondsDouble = Double.parseDouble(intervalStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\"));\n"

@@ -28,8 +28,8 @@ import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.expressions.EqualComparable;
 import nz.co.gregs.dbvolution.expressions.GeometryExpression;
 import nz.co.gregs.dbvolution.expressions.GeometryResult;
-import nz.co.gregs.dbvolution.expressions.IntervalExpression;
-import nz.co.gregs.dbvolution.expressions.IntervalResult;
+import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
+import nz.co.gregs.dbvolution.expressions.DateRepeatResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -93,9 +93,9 @@ public class DBEqualsOperator extends DBOperator {
 			} else if ((genericExpression instanceof BooleanArrayExpression) && ((firstValue instanceof BooleanArrayResult)||firstValue==null)) {
 				BooleanArrayExpression boolExpr = (BooleanArrayExpression) genericExpression;
 				op = boolExpr.is((BooleanArrayResult) firstValue);
-			} else if ((genericExpression instanceof IntervalExpression) && ((firstValue instanceof IntervalResult)||firstValue==null)) {
-				IntervalExpression intervalExpr = (IntervalExpression) genericExpression;
-				op = intervalExpr.is((IntervalResult) firstValue);
+			} else if ((genericExpression instanceof DateRepeatExpression) && ((firstValue instanceof DateRepeatResult)||firstValue==null)) {
+				DateRepeatExpression intervalExpr = (DateRepeatExpression) genericExpression;
+				op = intervalExpr.is((DateRepeatResult) firstValue);
 			} else if ((genericExpression instanceof GeometryExpression) && ((firstValue instanceof GeometryResult)||firstValue==null)) {
 				GeometryExpression intervalExpr = (GeometryExpression) genericExpression;
 				op = intervalExpr.is((GeometryResult) firstValue);

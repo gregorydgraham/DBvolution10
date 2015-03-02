@@ -265,7 +265,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 //	@Override
-//	public Period parseIntervalFromGetString(String anInterval) {
+//	public Period parseDateRepeatFromGetString(String anInterval) {
 //		String intervalStr = " " + anInterval;
 //		System.out.println(intervalStr);
 //		//8 years 7 mons 47 days 04:03:02.001
@@ -311,37 +311,37 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 	
 //	@Override
-//	public String doIntervalGetYearsTransform(String interval) {
+//	public String doDateRepeatGetYearsTransform(String interval) {
 //		return doTruncTransform("(EXTRACT(DAY FROM "+interval+")/365.25)","0");
 //	}
 //	
 //	@Override
-//	public String doIntervalGetMonthsTransform(String interval) {
+//	public String doDateRepeatGetMonthsTransform(String interval) {
 //		return doModulusTransform(doTruncTransform("((EXTRACT(DAY FROM "+interval+")/30.4375))","0"), "12");
 //	}
 //	
 //	@Override
-//	public String doIntervalGetDaysTransform(String interval) {
+//	public String doDateRepeatGetDaysTransform(String interval) {
 //		return "(EXTRACT(DAY FROM "+interval+")";
 //	}
 //	
 //	@Override
-//	public String doIntervalGetHoursTransform(String interval) {
+//	public String doDateRepeatGetHoursTransform(String interval) {
 //		return "EXTRACT(HOUR FROM "+interval+")";
 //	}
 //	
 //	@Override
-//	public String doIntervalGetMinutesTransform(String interval) {
+//	public String doDateRepeatGetMinutesTransform(String interval) {
 //		return "EXTRACT(MINUTE FROM "+interval+")";
 //	}
 //	
 //	@Override
-//	public String doIntervalGetSecondsTransform(String interval) {
+//	public String doDateRepeatGetSecondsTransform(String interval) {
 //		return "EXTRACT(SECOND FROM "+interval+")";
 //	}
 //	
 //	@Override
-//	public String doIntervalGetMillisecondsTransform(String interval) {
+//	public String doDateRepeatGetMillisecondsTransform(String interval) {
 //		return "EXTRACT(MILLISECONDS FROM "+interval+")";
 //	}
 

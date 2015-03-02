@@ -19,18 +19,18 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBInterval;
+import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import org.joda.time.Period;
 
 /**
  *
  * @author gregory.graham
  */
-public class IntervalExpression implements IntervalResult, RangeComparable<IntervalResult> {
+public class DateRepeatExpression implements DateRepeatResult, RangeComparable<DateRepeatResult> {
 
-	IntervalResult innerIntervalResult = null;
+	DateRepeatResult innerDateRepeatResult = null;
 	private boolean nullProtectionRequired = false;
 
 	public static final String INTERVAL_PREFIX = "P";
@@ -41,60 +41,60 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	public static final String MINUTE_SUFFIX = "n";
 	public static final String SECOND_SUFFIX = "s";
 
-	public IntervalExpression() {
+	public DateRepeatExpression() {
 	}
 
-	public IntervalExpression(Period interval) {
-		innerIntervalResult = new DBInterval(interval);
-		if (interval == null || innerIntervalResult.getIncludesNull()) {
+	public DateRepeatExpression(Period interval) {
+		innerDateRepeatResult = new DBDateRepeat(interval);
+		if (interval == null || innerDateRepeatResult.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
-	public IntervalExpression(IntervalResult interval) {
-		innerIntervalResult = interval;
-		if (interval == null || innerIntervalResult.getIncludesNull()) {
+	public DateRepeatExpression(DateRepeatResult interval) {
+		innerDateRepeatResult = interval;
+		if (interval == null || innerDateRepeatResult.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
-	public static IntervalExpression value(Period period) {
-		return new IntervalExpression(period);
+	public static DateRepeatExpression value(Period period) {
+		return new DateRepeatExpression(period);
 	}
 
 	@Override
-	public IntervalExpression copy() {
-		return new IntervalExpression(innerIntervalResult);
+	public DateRepeatExpression copy() {
+		return new DateRepeatExpression(innerDateRepeatResult);
 	}
 
 	@Override
-	public DBInterval getQueryableDatatypeForExpressionValue() {
-		return new DBInterval();
+	public DBDateRepeat getQueryableDatatypeForExpressionValue() {
+		return new DBDateRepeat();
 	}
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		return innerIntervalResult.toSQLString(db);
+		return innerDateRepeatResult.toSQLString(db);
 	}
 
 	@Override
 	public boolean isAggregator() {
-		return innerIntervalResult.isAggregator();
+		return innerDateRepeatResult.isAggregator();
 	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		return innerIntervalResult.getTablesInvolved();
+		return innerDateRepeatResult.getTablesInvolved();
 	}
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return innerIntervalResult.isPurelyFunctional();
+		return innerDateRepeatResult.isPurelyFunctional();
 	}
 
 	@Override
 	public boolean getIncludesNull() {
-		return nullProtectionRequired || innerIntervalResult.getIncludesNull();
+		return nullProtectionRequired || innerDateRepeatResult.getIncludesNull();
 	}
 
 	public BooleanExpression isLessThan(Period period) {
@@ -102,12 +102,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	@Override
-	public BooleanExpression isLessThan(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
+	public BooleanExpression isLessThan(DateRepeatResult anotherInstance) {
+		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doIntervalLessThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doDateRepeatLessThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -117,12 +117,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	@Override
-	public BooleanExpression isGreaterThan(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
+	public BooleanExpression isGreaterThan(DateRepeatResult anotherInstance) {
+		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doIntervalGreaterThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doDateRepeatGreaterThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -132,12 +132,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	@Override
-	public BooleanExpression isLessThanOrEqual(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
+	public BooleanExpression isLessThanOrEqual(DateRepeatResult anotherInstance) {
+		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doIntervalLessThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doDateRepeatLessThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -147,12 +147,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	@Override
-	public BooleanExpression isGreaterThanOrEqual(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
+	public BooleanExpression isGreaterThanOrEqual(DateRepeatResult anotherInstance) {
+		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doIntervalGreaterThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doDateRepeatGreaterThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 		});
@@ -163,7 +163,7 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	@Override
-	public BooleanExpression isLessThan(IntervalResult anotherInstance, BooleanExpression fallBackWhenEqual) {
+	public BooleanExpression isLessThan(DateRepeatResult anotherInstance, BooleanExpression fallBackWhenEqual) {
 		return this.isLessThan(anotherInstance).or(this.is(anotherInstance).and(fallBackWhenEqual));
 	}
 
@@ -172,7 +172,7 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	@Override
-	public BooleanExpression isGreaterThan(IntervalResult anotherInstance, BooleanExpression fallBackWhenEqual) {
+	public BooleanExpression isGreaterThan(DateRepeatResult anotherInstance, BooleanExpression fallBackWhenEqual) {
 		return this.isGreaterThan(anotherInstance).or(this.is(anotherInstance).and(fallBackWhenEqual));
 	}
 
@@ -181,23 +181,23 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	@Override
-	public BooleanExpression is(IntervalResult anotherInstance) {
-		return new BooleanExpression(new IntervalIntervalWithBooleanResult(this, anotherInstance) {
+	public BooleanExpression is(DateRepeatResult anotherInstance) {
+		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doIntervalEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doDateRepeatEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
 
 	public NumberExpression getYears() {
-		return new NumberExpression(new IntervalWithNumberResult(this) {
+		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
-					return db.getDefinition().doIntervalGetYearsTransform(getFirst().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateRepeatGetYearsTransform(getFirst().toSQLString(db));
 				} else {
 					return getFirst().stringResult().stringBefore(YEAR_SUFFIX).stringAfter(INTERVAL_PREFIX).numberResult().toSQLString(db);
 				}
@@ -207,12 +207,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	public NumberExpression getMonths() {
-		return new NumberExpression(new IntervalWithNumberResult(this) {
+		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
-					return db.getDefinition().doIntervalGetMonthsTransform(getFirst().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateRepeatGetMonthsTransform(getFirst().toSQLString(db));
 				} else {
 					return getFirst().stringResult().stringBefore(MONTH_SUFFIX).stringAfter(YEAR_SUFFIX).numberResult().toSQLString(db);
 				}
@@ -222,12 +222,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	public NumberExpression getDays() {
-		return new NumberExpression(new IntervalWithNumberResult(this) {
+		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
-					return db.getDefinition().doIntervalGetDaysTransform(getFirst().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateRepeatGetDaysTransform(getFirst().toSQLString(db));
 				} else {
 					return getFirst().stringResult().stringBefore(DAY_SUFFIX).stringAfter(MONTH_SUFFIX).numberResult().toSQLString(db);
 				}
@@ -237,12 +237,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	public NumberExpression getHours() {
-		return new NumberExpression(new IntervalWithNumberResult(this) {
+		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
-					return db.getDefinition().doIntervalGetHoursTransform(getFirst().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateRepeatGetHoursTransform(getFirst().toSQLString(db));
 				} else {
 					return getFirst().stringResult().stringBefore(HOUR_SUFFIX).stringAfter(DAY_SUFFIX).numberResult().toSQLString(db);
 				}
@@ -252,12 +252,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	public NumberExpression getMinutes() {
-		return new NumberExpression(new IntervalWithNumberResult(this) {
+		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
-					return db.getDefinition().doIntervalGetMinutesTransform(getFirst().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateRepeatGetMinutesTransform(getFirst().toSQLString(db));
 				} else {
 					return getFirst().stringResult().stringBefore(MINUTE_SUFFIX).stringAfter(HOUR_SUFFIX).numberResult().toSQLString(db);
 				}
@@ -267,12 +267,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	public NumberExpression getSeconds() {
-		return new NumberExpression(new IntervalWithNumberResult(this) {
+		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
-					return db.getDefinition().doIntervalGetSecondsTransform(getFirst().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateRepeatGetSecondsTransform(getFirst().toSQLString(db));
 				} else {
 					return getFirst().stringResult().stringBefore(SECOND_SUFFIX).stringAfter(MINUTE_SUFFIX).numberResult().toSQLString(db);
 				}
@@ -282,12 +282,12 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	}
 
 	public NumberExpression getMilliseconds() {
-		return new NumberExpression(new IntervalWithNumberResult(this) {
+		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
-					return db.getDefinition().doIntervalGetMillisecondsTransform(getFirst().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateRepeatGetMillisecondsTransform(getFirst().toSQLString(db));
 				} else {
 					return getFirst().stringResult().stringBefore("s").stringAfter(SECOND_SUFFIX).numberResult().decimalPart().times(1000).toSQLString(db);
 				}
@@ -302,22 +302,22 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 	 * @return a StringExpression of the interval expression.
 	 */
 	public StringExpression stringResult() {
-		return new StringExpression(new IntervalWithStringResult(this) {
+		return new StringExpression(new DateRepeatWithStringResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doIntervalToStringTransform(getFirst().toSQLString(db));
+				return db.getDefinition().doDateRepeatToStringTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
 
-	private static abstract class IntervalIntervalWithBooleanResult extends BooleanExpression {
+	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
 
-		private IntervalExpression first;
-		private IntervalResult second;
+		private DateRepeatExpression first;
+		private DateRepeatResult second;
 		private boolean requiresNullProtection;
 
-		IntervalIntervalWithBooleanResult(IntervalExpression first, IntervalResult second) {
+		DateRepeatDateRepeatWithBooleanResult(DateRepeatExpression first, DateRepeatResult second) {
 			this.first = first;
 			this.second = second;
 			if (this.second == null || this.second.getIncludesNull()) {
@@ -325,11 +325,11 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 			}
 		}
 
-		IntervalExpression getFirst() {
+		DateRepeatExpression getFirst() {
 			return first;
 		}
 
-		IntervalResult getSecond() {
+		DateRepeatResult getSecond() {
 			return second;
 		}
 
@@ -348,8 +348,8 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 		}
 
 		@Override
-		public IntervalIntervalWithBooleanResult copy() {
-			IntervalIntervalWithBooleanResult newInstance;
+		public DateRepeatDateRepeatWithBooleanResult copy() {
+			DateRepeatDateRepeatWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -387,13 +387,13 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 		}
 	}
 
-	private static abstract class IntervalWithNumberResult extends NumberExpression {
+	private static abstract class DateRepeatWithNumberResult extends NumberExpression {
 
-		private IntervalExpression first;
-//		private IntervalResult second;
+		private DateRepeatExpression first;
+//		private DateRepeatResult second;
 		private boolean requiresNullProtection;
 
-		IntervalWithNumberResult(IntervalExpression first) {
+		DateRepeatWithNumberResult(DateRepeatExpression first) {
 			this.first = first;
 //			this.second = second;
 //			if (this.second == null || this.second.getIncludesNull()) {
@@ -403,11 +403,11 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 
 		protected abstract String doExpressionTransform(DBDatabase db);
 
-		IntervalExpression getFirst() {
+		DateRepeatExpression getFirst() {
 			return first;
 		}
 
-//		IntervalResult getSecond() {
+//		DateRepeatResult getSecond() {
 //			return second;
 //		}
 		@Override
@@ -420,8 +420,8 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 		}
 
 		@Override
-		public IntervalWithNumberResult copy() {
-			IntervalWithNumberResult newInstance;
+		public DateRepeatWithNumberResult copy() {
+			DateRepeatWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -457,13 +457,13 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 		}
 	}
 
-	private static abstract class IntervalWithStringResult extends StringExpression {
+	private static abstract class DateRepeatWithStringResult extends StringExpression {
 
-		private IntervalExpression first;
-//		private IntervalResult second;
+		private DateRepeatExpression first;
+//		private DateRepeatResult second;
 		private boolean requiresNullProtection;
 
-		IntervalWithStringResult(IntervalExpression first) {
+		DateRepeatWithStringResult(DateRepeatExpression first) {
 			this.first = first;
 //			this.second = second;
 //			if (this.second == null || this.second.getIncludesNull()) {
@@ -473,11 +473,11 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 
 		protected abstract String doExpressionTransform(DBDatabase db);
 
-		IntervalExpression getFirst() {
+		DateRepeatExpression getFirst() {
 			return first;
 		}
 
-//		IntervalResult getSecond() {
+//		DateRepeatResult getSecond() {
 //			return second;
 //		}
 		@Override
@@ -490,8 +490,8 @@ public class IntervalExpression implements IntervalResult, RangeComparable<Inter
 		}
 
 		@Override
-		public IntervalWithStringResult copy() {
-			IntervalWithStringResult newInstance;
+		public DateRepeatWithStringResult copy() {
+			DateRepeatWithStringResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

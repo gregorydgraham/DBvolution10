@@ -18,18 +18,18 @@ package nz.co.gregs.dbvolution.columns;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBInterval;
+import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.IntervalExpression;
+import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.joda.time.Period;
 
 
-public class IntervalColumn extends IntervalExpression implements ColumnProvider {
+public class DateRepeatColumn extends DateRepeatExpression implements ColumnProvider {
 	
 	private AbstractColumn column;
 
-	private IntervalColumn() {
+	private DateRepeatColumn() {
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class IntervalColumn extends IntervalExpression implements ColumnProvider
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-	public IntervalColumn(RowDefinition row, Period field) {
+	public DateRepeatColumn(RowDefinition row, Period field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -49,7 +49,7 @@ public class IntervalColumn extends IntervalExpression implements ColumnProvider
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-	public IntervalColumn(RowDefinition row, DBInterval field) {
+	public DateRepeatColumn(RowDefinition row, DBDateRepeat field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -59,9 +59,9 @@ public class IntervalColumn extends IntervalExpression implements ColumnProvider
 	}
 
 	@Override
-	public synchronized IntervalColumn copy() {
+	public synchronized DateRepeatColumn copy() {
 		try {
-			IntervalColumn newInstance = this.getClass().newInstance();
+			DateRepeatColumn newInstance = this.getClass().newInstance();
 			newInstance.column = this.column;
 			return newInstance;
 		} catch (InstantiationException ex) {
@@ -98,7 +98,7 @@ public class IntervalColumn extends IntervalExpression implements ColumnProvider
 	 * @param intervalColumn  
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBInterval intervalColumn){
+	public BooleanExpression is(DBDateRepeat intervalColumn){
 		return super.is(intervalColumn);
 	}
 }

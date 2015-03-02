@@ -19,10 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
-import nz.co.gregs.dbvolution.datatypes.DBInterval;
+import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
-import org.joda.time.Period;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -39,22 +37,22 @@ public class H2DBDefinition extends DBDefinition {
 	private final String dateFormatStr = "yyyy-M-d HH:mm:ss Z";
 	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss Z";
 	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
-	public static String INTERVAL_CREATION_FUNCTION = "DBV_INTERVAL_CREATE";
-	public static String INTERVAL_EQUALS_FUNCTION = "DBV_INTERVAL_EQUALS";
-	public static String INTERVAL_LESSTHAN_FUNCTION = "DBV_INTERVAL_LESSTHAN";
-	public static String INTERVAL_LESSTHANEQUALS_FUNCTION = "DBV_INTERVAL_LESSTHANEQUALS";
-	public static String INTERVAL_GREATERTHAN_FUNCTION = "DBV_INTERVAL_GREATERTHAN";
-	public static String INTERVAL_GREATERTHANEQUALS_FUNCTION = "DBV_INTERVAL_GREATERTHANEQUALS";
-	public static String INTERVAL_DATEADDITION_FUNCTION = "DBV_INTERVAL_DATEPLUSINTERVAL";
-	public static String INTERVAL_DATESUBTRACTION_FUNCTION = "DBV_INTERVAL_DATEMINUS";
+	public static String DATEREPEAT_CREATION_FUNCTION = "DBV_DATEREPEAT_CREATE";
+	public static String DATEREPEAT_EQUALS_FUNCTION = "DBV_DATEREPEAT_EQUALS";
+	public static String DATEREPEAT_LESSTHAN_FUNCTION = "DBV_DATEREPEAT_LESSTHAN";
+	public static String DATEREPEAT_LESSTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_LESSTHANEQUALS";
+	public static String DATEREPEAT_GREATERTHAN_FUNCTION = "DBV_DATEREPEAT_GREATERTHAN";
+	public static String DATEREPEAT_GREATERTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_GREATERTHANEQUALS";
+	public static String DATEREPEAT_DATEADDITION_FUNCTION = "DBV_DATEREPEAT_DATEPLUSDATEREPEAT";
+	public static String DATEREPEAT_DATESUBTRACTION_FUNCTION = "DBV_DATEREPEAT_DATEMINUSDATEREPEAT";
 	
-	public static String INTERVAL_YEAR_PART_FUNCTION = "DBV_INTERVAL_YEAR_PART";
-	public static String INTERVAL_MONTH_PART_FUNCTION = "DBV_INTERVAL_MONTH_PART";
-	public static String INTERVAL_DAY_PART_FUNCTION = "DBV_INTERVAL_DAY_PART";
-	public static String INTERVAL_HOUR_PART_FUNCTION = "DBV_INTERVAL_HOUR_PART";
-	public static String INTERVAL_MINUTE_PART_FUNCTION = "DBV_INTERVAL_MINUTE_PART";
-	public static String INTERVAL_SECOND_PART_FUNCTION = "DBV_INTERVAL_SECOND_PART";
-	public static String INTERVAL_MILLISECOND_PART_FUNCTION = "DBV_INTERVAL_MILLI_PART";
+	public static String DATEREPEAT_YEAR_PART_FUNCTION = "DBV_DATEREPEAT_YEAR_PART";
+	public static String DATEREPEAT_MONTH_PART_FUNCTION = "DBV_DATEREPEAT_MONTH_PART";
+	public static String DATEREPEAT_DAY_PART_FUNCTION = "DBV_DATEREPEAT_DAY_PART";
+	public static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_DATEREPEAT_HOUR_PART";
+	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
+	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
+	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_DATEREPEAT_MILLI_PART";
 
 
 	@Override
@@ -77,7 +75,7 @@ public class H2DBDefinition extends DBDefinition {
 
 	@Override
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
-		if (qdt instanceof DBInterval) {
+		if (qdt instanceof DBDateRepeat) {
 			return " DBV_INTERVAL ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
@@ -159,87 +157,87 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 //	@Override
-//	public String transformPeriodIntoInterval(Period interval) {
-//		return "'"+IntervalImpl.getIntervalString(interval)+"'";
+//	public String transformPeriodIntoDateRepeat(Period interval) {
+//		return "'"+DateRepeatImpl.getIntervalString(interval)+"'";
 //	}
 
 //	@Override
-//	public Period parseIntervalFromGetString(String intervalStr) {
-//		return IntervalImpl.parseIntervalFromGetString(intervalStr);
+//	public Period parseDateRepeatFromGetString(String intervalStr) {
+//		return DateRepeatImpl.parseDateRepeatFromGetString(intervalStr);
 //	}
 
 	@Override
 	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
-		return " "+INTERVAL_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return " "+DATEREPEAT_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doDateIntervalAdditionTransform(String leftHandSide, String rightHandSide) {
-		return " "+INTERVAL_DATEADDITION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDatePlusDateRepeatTransform(String leftHandSide, String rightHandSide) {
+		return " "+DATEREPEAT_DATEADDITION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doDateIntervalSubtractionTransform(String leftHandSide, String rightHandSide) {
-		return " "+INTERVAL_DATESUBTRACTION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateMinusDateRepeatTransform(String leftHandSide, String rightHandSide) {
+		return " "+DATEREPEAT_DATESUBTRACTION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalEqualsTransform(String leftHandSide, String rightHandSide) {
-		return " "+INTERVAL_EQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
+		return " "+DATEREPEAT_EQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalLessThanTransform(String leftHandSide, String rightHandSide) {
-		return INTERVAL_LESSTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
+		return DATEREPEAT_LESSTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return INTERVAL_LESSTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return DATEREPEAT_LESSTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalGreaterThanTransform(String leftHandSide, String rightHandSide) {
-		return INTERVAL_GREATERTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
+		return DATEREPEAT_GREATERTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return INTERVAL_GREATERTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return DATEREPEAT_GREATERTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalGetYearsTransform(String intervalStr) {
-		return INTERVAL_YEAR_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetYearsTransform(String intervalStr) {
+		return DATEREPEAT_YEAR_PART_FUNCTION+"("+intervalStr +")";
 	}
 	@Override
-	public String doIntervalGetMonthsTransform(String intervalStr) {
-		return INTERVAL_MONTH_PART_FUNCTION+"("+intervalStr +")";
-	}
-
-	@Override
-	public String doIntervalGetDaysTransform(String intervalStr) {
-		return INTERVAL_DAY_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetMonthsTransform(String intervalStr) {
+		return DATEREPEAT_MONTH_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override
-	public String doIntervalGetHoursTransform(String intervalStr) {
-		return INTERVAL_HOUR_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetDaysTransform(String intervalStr) {
+		return DATEREPEAT_DAY_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override
-	public String doIntervalGetMinutesTransform(String intervalStr) {
-		return INTERVAL_MINUTE_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetHoursTransform(String intervalStr) {
+		return DATEREPEAT_HOUR_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override
-	public String doIntervalGetSecondsTransform(String intervalStr) {
-		return INTERVAL_SECOND_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetMinutesTransform(String intervalStr) {
+		return DATEREPEAT_MINUTE_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override
-	public String doIntervalGetMillisecondsTransform(String intervalStr) {
-		return INTERVAL_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetSecondsTransform(String intervalStr) {
+		return DATEREPEAT_SECOND_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doDateRepeatGetMillisecondsTransform(String intervalStr) {
+		return DATEREPEAT_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 

@@ -28,11 +28,11 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
-import nz.co.gregs.dbvolution.expressions.IntervalExpression;
+import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generation.DBTableField;
-import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
+import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -2740,7 +2740,7 @@ public abstract class DBDefinition {
 		return selectableName;
 	}
 
-//	public String transformPeriodIntoInterval(Period interval) {
+//	public String transformPeriodIntoDateRepeat(Period interval) {
 //		StringBuilder str = new StringBuilder();
 //		String separator = "";
 //		str.append("(");
@@ -2779,15 +2779,15 @@ public abstract class DBDefinition {
 //		str.append(")");
 //		return str.toString();
 //	}	
-	public String transformPeriodIntoInterval(Period interval) {
+	public String transformPeriodIntoDateRepeat(Period interval) {
 		StringBuilder str = new StringBuilder();
-		str.append("'").append(IntervalExpression.INTERVAL_PREFIX);
-		str.append(interval.getYears()).append(IntervalExpression.YEAR_SUFFIX);
-		str.append(interval.getMonths()).append(IntervalExpression.MONTH_SUFFIX);
-		str.append(interval.getDays()+(interval.getWeeks()*7)).append(IntervalExpression.DAY_SUFFIX);
-		str.append(interval.getHours()).append(IntervalExpression.HOUR_SUFFIX);
-		str.append(interval.getMinutes()).append(IntervalExpression.MINUTE_SUFFIX);
-		str.append(interval.getSeconds()+(interval.getMillis()/1000.0)).append(IntervalExpression.SECOND_SUFFIX);
+		str.append("'").append(DateRepeatExpression.INTERVAL_PREFIX);
+		str.append(interval.getYears()).append(DateRepeatExpression.YEAR_SUFFIX);
+		str.append(interval.getMonths()).append(DateRepeatExpression.MONTH_SUFFIX);
+		str.append(interval.getDays()+(interval.getWeeks()*7)).append(DateRepeatExpression.DAY_SUFFIX);
+		str.append(interval.getHours()).append(DateRepeatExpression.HOUR_SUFFIX);
+		str.append(interval.getMinutes()).append(DateRepeatExpression.MINUTE_SUFFIX);
+		str.append(interval.getSeconds()+(interval.getMillis()/1000.0)).append(DateRepeatExpression.SECOND_SUFFIX);
 		str.append("'");
 		return str.toString();
 	}
@@ -2804,36 +2804,36 @@ public abstract class DBDefinition {
 		return "(" + leftHandSide + " - " + rightHandSide + ")";
 	}
 
-	public String doIntervalEqualsTransform(String leftHandSide, String rightHandSide) {
+	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " = " + rightHandSide + ")";
 	}
 
-	public String doIntervalLessThanTransform(String leftHandSide, String rightHandSide) {
+	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " < " + rightHandSide + ")";
 	}
 
-	public String doIntervalLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
+	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " <= " + rightHandSide + ")";
 	}
 
-	public String doIntervalGreaterThanTransform(String leftHandSide, String rightHandSide) {
+	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " > " + rightHandSide + ")";
 	}
 
-	public String doIntervalGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
+	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " >= " + rightHandSide + ")";
 	}
 
-	public String doDateIntervalAdditionTransform(String leftHandSide, String rightHandSide) {
+	public String doDatePlusDateRepeatTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " + " + rightHandSide + ")";
 	}
 
-	public String doDateIntervalSubtractionTransform(String leftHandSide, String rightHandSide) {
+	public String doDateMinusDateRepeatTransform(String leftHandSide, String rightHandSide) {
 		return leftHandSide + "-" + rightHandSide;
 	}
 	
-	public Period parseIntervalFromGetString(String intervalStr) {
-		return IntervalImpl.parseIntervalFromGetString(intervalStr);
+	public Period parseDateRepeatFromGetString(String intervalStr) {
+		return DateRepeatImpl.parseDateRepeatFromGetString(intervalStr);
 	}
 
 	public String doGeometryContainsTransform(String firstGeometry, String secondGeometry) {
@@ -2882,35 +2882,35 @@ public abstract class DBDefinition {
 		return "atan2";
 	}
 
-	public String doIntervalGetYearsTransform(String toSQLString) {
+	public String doDateRepeatGetYearsTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doIntervalGetMonthsTransform(String interval) {
+	public String doDateRepeatGetMonthsTransform(String interval) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doIntervalGetDaysTransform(String interval) {
+	public String doDateRepeatGetDaysTransform(String interval) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doIntervalGetHoursTransform(String interval) {
+	public String doDateRepeatGetHoursTransform(String interval) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doIntervalGetMinutesTransform(String interval) {
+	public String doDateRepeatGetMinutesTransform(String interval) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doIntervalGetSecondsTransform(String interval) {
+	public String doDateRepeatGetSecondsTransform(String interval) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doIntervalGetMillisecondsTransform(String interval) {
+	public String doDateRepeatGetMillisecondsTransform(String interval) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doIntervalToStringTransform(String interval) {
+	public String doDateRepeatToStringTransform(String interval) {
 		return doConcatTransform(getEmptyString(), interval);
 	}
 
