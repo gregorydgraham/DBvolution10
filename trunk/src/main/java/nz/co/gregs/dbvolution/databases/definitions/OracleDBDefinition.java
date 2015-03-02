@@ -263,6 +263,12 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(EXTRACT(MILLISECOND FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
+				+ "+(" + doSecondDifferenceTransform(dateValue, otherDateValue) + "*1000))";
+	}
+
+	@Override
 	public String doInTransform(String column, List<String> values) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("(")

@@ -239,6 +239,4 @@ public class H2DBDefinition extends DBDefinition {
 	public String doDateRepeatGetMillisecondsTransform(String intervalStr) {
 		return DATEREPEAT_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
 	}
-
-
 }

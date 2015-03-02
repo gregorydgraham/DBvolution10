@@ -103,8 +103,7 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(21));
 
 		marq.creationDate.permittedRangeInclusive(
-				DateExpression.currentDate().addMinutes(-5),
-				DateExpression.currentDate().addMinutes(5));
+				DateExpression.currentDate().addMinutes(-5),null);
 		got = database.getDBTable(marq).getAllRows();
 		database.print(got);
 		Assert.assertThat(got.size(), is(1));
@@ -758,8 +757,39 @@ public class DateExpressionTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationDate)
-				.minutesFrom(secondDate)
+				.secondsFrom(secondDate)
 				.is(0));
+		got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque secondDateMarques = new Marque();
+		secondDateMarques.creationDate.permittedValues(secondDate);
+		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
+	}
+
+	@Test
+	public void testMillisecondsDifferenceFunction() throws SQLException, ParseException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.millisecondsFrom(
+						marq.column(marq.creationDate).addSeconds(2))
+				.isBetween(1999,3000));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Marque nonNullMarque = new Marque();
+		nonNullMarque.creationDate.excludedValues((Date) null);
+		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
+		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
+
+		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+		marq = new Marque();
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate)
+				.millisecondsFrom(secondDate)
+				.isBetween(-1000,1000));
 		got = query.getAllInstancesOf(marq);
 		database.print(got);
 		Marque secondDateMarques = new Marque();

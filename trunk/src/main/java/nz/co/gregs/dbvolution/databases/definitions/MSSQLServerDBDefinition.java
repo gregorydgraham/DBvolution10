@@ -284,6 +284,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+		return "(DATEDIFF(MILLISECOND, " + dateValue + "," + otherDateValue + "))";
+	}
+
+	@Override
 	public String doTruncTransform(String realNumberExpression, String numberOfDecimalPlacesExpression) {
 		//When the third parameter != 0 it truncates rather than rounds
 		return " ROUND(" + realNumberExpression + ", " + numberOfDecimalPlacesExpression + ", 1)";
