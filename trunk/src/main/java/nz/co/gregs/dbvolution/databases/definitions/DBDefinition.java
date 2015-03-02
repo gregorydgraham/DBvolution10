@@ -2799,8 +2799,12 @@ public abstract class DBDefinition {
 	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
+	
+	public String doDateMinusToSecondsTransformation(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " - " + rightHandSide + ")";
+	}
 
-	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
+	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " - " + rightHandSide + ")";
 	}
 

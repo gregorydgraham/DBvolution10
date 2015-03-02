@@ -347,7 +347,7 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
+	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
 		return " "+DATEREPEAT_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 

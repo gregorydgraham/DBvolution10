@@ -910,17 +910,36 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		});
 	}
 
-	public DateRepeatExpression minus(Date date) {
-		return minus(value(date));
+	public NumberExpression getSecondsFrom(Date date) {
+		return getSecondsFrom(value(date));
 	}
 
-	public DateRepeatExpression minus(DateResult dateExpression) {
+	public NumberExpression getSecondsFrom(DateResult dateExpression) {
+		return new NumberExpression(new DBBinaryDateFunctionWithNumberResult(this, dateExpression) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doDateMinusToSecondsTransformation(first.toSQLString(db), second.toSQLString(db));
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+		});
+	}
+
+	public DateRepeatExpression getDateRepeatFrom(Date date) {
+		return getDateRepeatFrom(value(date));
+	}
+
+	public DateRepeatExpression getDateRepeatFrom(DateResult dateExpression) {
 		return new DateRepeatExpression(new DateDateWithDateRepeatResult(this, dateExpression) {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateMinusTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.getDefinition().doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
 					final DateExpression left = getFirst();
 					final DateExpression right = new DateExpression(getSecond());
