@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.april2nd2011;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.march23rd2013;
-import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
+import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import org.junit.Test;
 import org.junit.Assert;
 import static org.hamcrest.Matchers.*;
@@ -41,35 +41,35 @@ import org.joda.time.Period;
  *
  * @author gregory.graham
  */
-public class DBIntervalTest extends AbstractTest {
+public class DBDateRepeatTest extends AbstractTest {
 
-	public DBIntervalTest(Object testIterationName, Object db) {
+	public DBDateRepeatTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 
 	@Test
 	public void basicTest() throws SQLException {
-		final IntervalTable intervalTable = new IntervalTable();
+		final DateRepeatTable intervalTable = new DateRepeatTable();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(intervalTable);
 		database.createTable(intervalTable);
 		final Period testPeriod = new Period().withMillis(1).withSeconds(2).withMinutes(3).withHours(4).withDays(5).withWeeks(6).withMonths(7).withYears(8);
 		intervalTable.intervalCol.setValue(testPeriod);
 		database.insert(intervalTable);
-		DBTable<IntervalTable> tab = database.getDBTable(intervalTable).setBlankQueryAllowed(true);
-		List<IntervalTable> allRows = tab.getAllRows();
+		DBTable<DateRepeatTable> tab = database.getDBTable(intervalTable).setBlankQueryAllowed(true);
+		List<DateRepeatTable> allRows = tab.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 
 		Assert.assertThat(allRows.get(0).intervalCol.periodValue().normalizedStandard(), is(testPeriod.normalizedStandard()));
 	}
 
-	public static class MarqueWithIntervalExprCol extends Marque {
+	public static class MarqueWithDateRepeatExprCol extends Marque {
 
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBInterval interval = new DBInterval(this.column(this.creationDate).minus(april2nd2011));
+		DBDateRepeat interval = new DBDateRepeat(this.column(this.creationDate).minus(april2nd2011));
 
 		@DBColumn
 		DBNumber yearPart = new DBNumber(this.column(this.creationDate).minus(april2nd2011).getYears());
@@ -79,9 +79,9 @@ public class DBIntervalTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDateExpressionProducingIntervals() throws SQLException {
+	public void testDateExpressionProducingDateRepeats() throws SQLException {
 		Marque marq;
-		marq = new MarqueWithIntervalExprCol();
+		marq = new MarqueWithDateRepeatExprCol();
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
@@ -117,7 +117,7 @@ public class DBIntervalTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(18));
 	}
 
-	public static class IntervalSeconds extends Marque {
+	public static class DateRepeatSeconds extends Marque {
 
 		private static final long serialVersionUID = 1L;
 
@@ -127,7 +127,7 @@ public class DBIntervalTest extends AbstractTest {
 		DBNumber numberOfSeconds = new DBNumber(this.column(this.creationDate).minus(march23rd2013).getSeconds());
 	}
 
-	public static class IntervalYears extends Marque {
+	public static class DateRepeatYears extends Marque {
 
 		private static final long serialVersionUID = 1L;
 
@@ -138,7 +138,7 @@ public class DBIntervalTest extends AbstractTest {
 		DBNumber numberOfYears = new DBNumber(this.column(this.creationDate).minus(march23rd2013).getYears());
 	}
 
-	public static class IntervalMaths extends Marque {
+	public static class DateRepeatMaths extends Marque {
 
 		private static final long serialVersionUID = 1L;
 
@@ -168,7 +168,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testGetYears() throws SQLException {
-		IntervalYears marq = new IntervalYears();
+		DateRepeatYears marq = new DateRepeatYears();
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
@@ -182,7 +182,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testGetMonths() throws SQLException {
-		IntervalMaths marq = new IntervalMaths();
+		DateRepeatMaths marq = new DateRepeatMaths();
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
@@ -196,7 +196,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testGetDays() throws SQLException {
-		IntervalMaths marq = new IntervalMaths();
+		DateRepeatMaths marq = new DateRepeatMaths();
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
@@ -210,7 +210,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testGetHours() throws SQLException {
-		IntervalMaths marq = new IntervalMaths();
+		DateRepeatMaths marq = new DateRepeatMaths();
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
@@ -224,7 +224,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testGetMinutes() throws SQLException {
-		IntervalMaths marq = new IntervalMaths();
+		DateRepeatMaths marq = new DateRepeatMaths();
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
@@ -238,7 +238,7 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testGetSeconds() throws SQLException {
-		IntervalSeconds marq = new IntervalSeconds();
+		DateRepeatSeconds marq = new DateRepeatSeconds();
 //		marq.creationDate.excludedValues((Date)null);
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
@@ -253,31 +253,31 @@ public class DBIntervalTest extends AbstractTest {
 
 	@Test
 	public void testParsing() {
-		String twoYearPlusInterval = "P2Y-1M0D11h32n53s";
-		String zeroInterval = "P0Y0M0D0h0n0s";
+		String twoYearPlusDateRepeat = "P2Y-1M0D11h32n53s";
+		String zeroDateRepeat = "P0Y0M0D0h0n0s";
 		String plus2Days = "P0Y0M2D0h0n0.0s";
-		Assert.assertThat(IntervalImpl.compareIntervalStrings(twoYearPlusInterval, "P1Y0M0D0h0n0s"), is(1));
-		Assert.assertThat(IntervalImpl.compareIntervalStrings(zeroInterval, "P1Y0M0D0h0n0s"), is(-1));
-		Assert.assertThat(IntervalImpl.compareIntervalStrings(plus2Days, "P1Y0M0D0h0n0s"), is(-1));
-		Assert.assertThat(IntervalImpl.compareIntervalStrings("P1Y0M0D0h0n0s", "P1Y0M0D0h0n0s"), is(0));
+		Assert.assertThat(DateRepeatImpl.compareDateRepeatStrings(twoYearPlusDateRepeat, "P1Y0M0D0h0n0s"), is(1));
+		Assert.assertThat(DateRepeatImpl.compareDateRepeatStrings(zeroDateRepeat, "P1Y0M0D0h0n0s"), is(-1));
+		Assert.assertThat(DateRepeatImpl.compareDateRepeatStrings(plus2Days, "P1Y0M0D0h0n0s"), is(-1));
+		Assert.assertThat(DateRepeatImpl.compareDateRepeatStrings("P1Y0M0D0h0n0s", "P1Y0M0D0h0n0s"), is(0));
 	}
 
 	@Test
 	@SuppressWarnings("deprecation")
 	public void testSubtracting() {
 		String oneYear = "P1Y0M0D0h0n0s";
-		Date resultDate = IntervalImpl.subtractDateAndIntervalString(april2nd2011, IntervalImpl.getZeroIntervalString());
+		Date resultDate = DateRepeatImpl.subtractDateAndDateRepeatString(april2nd2011, DateRepeatImpl.getZeroDateRepeatString());
 		Assert.assertThat(resultDate.getYear() + 1900, is(2011));
 		Assert.assertThat(resultDate.getMonth() + 1, is(4));
 		Assert.assertThat(resultDate.getDate(), is(2));
 
-		resultDate = IntervalImpl.subtractDateAndIntervalString(april2nd2011, oneYear);
+		resultDate = DateRepeatImpl.subtractDateAndDateRepeatString(april2nd2011, oneYear);
 		Assert.assertThat(resultDate.getYear() + 1900, is(2010));
 		Assert.assertThat(resultDate.getMonth() + 1, is(4));
 		Assert.assertThat(resultDate.getDate(), is(2));
 	}
 
-	public static class IntervalTable extends DBRow {
+	public static class DateRepeatTable extends DBRow {
 
 		private static final long serialVersionUID = 1L;
 
@@ -287,6 +287,6 @@ public class DBIntervalTest extends AbstractTest {
 		DBInteger pkid = new DBInteger();
 
 		@DBColumn
-		DBInterval intervalCol = new DBInterval();
+		DBDateRepeat intervalCol = new DBDateRepeat();
 	}
 }

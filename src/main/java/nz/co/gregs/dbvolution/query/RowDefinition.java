@@ -105,8 +105,8 @@ public class RowDefinition implements Serializable {
 	public LargeObjectColumn column(DBLargeObject fieldOfThisInstance) {
 		return new LargeObjectColumn(this, fieldOfThisInstance);
 	}
-	public IntervalColumn column(DBInterval fieldOfThisInstance) {
-		return new IntervalColumn(this, fieldOfThisInstance);
+	public DateRepeatColumn column(DBDateRepeat fieldOfThisInstance) {
+		return new DateRepeatColumn(this, fieldOfThisInstance);
 	}
 	
 	public BooleanArrayColumn column(DBBooleanArray fieldOfThisInstance) {
@@ -151,8 +151,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBStringEnum) fieldOfThisInstance);
 		} else if (DBString.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBString) fieldOfThisInstance);
-		} else if (DBInterval.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBInterval) fieldOfThisInstance);
+		} else if (DBDateRepeat.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBDateRepeat) fieldOfThisInstance);
 		} else if (DBBooleanArray.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBBooleanArray) fieldOfThisInstance);
 		} else if (DBGeometry.class.isAssignableFrom(fieldOfThisInstance.getClass())) {

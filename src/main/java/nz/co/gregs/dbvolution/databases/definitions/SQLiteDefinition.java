@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generation.DBTableField;
-import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
+import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.joda.time.Period;
 
@@ -44,22 +44,22 @@ import org.joda.time.Period;
 public class SQLiteDefinition extends DBDefinition {
 
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	public static String INTERVAL_CREATION_FUNCTION = "DBV_INTERVAL_CREATE";
-	public static String INTERVAL_EQUALS_FUNCTION = "DBV_INTERVAL_EQUALS";
-	public static String INTERVAL_LESSTHAN_FUNCTION = "DBV_INTERVAL_LESSTHAN";
-	public static String INTERVAL_LESSTHANEQUALS_FUNCTION = "DBV_INTERVAL_LESSTHANEQUALS";
-	public static String INTERVAL_GREATERTHAN_FUNCTION = "DBV_INTERVAL_GREATERTHAN";
-	public static String INTERVAL_GREATERTHANEQUALS_FUNCTION = "DBV_INTERVAL_GREATERTHANEQUALS";
-	public static String INTERVAL_DATEADDITION_FUNCTION = "DBV_INTERVAL_DATEADD";
-	public static String INTERVAL_DATESUBTRACTION_FUNCTION = "DBV_INTERVAL_DATEMINUS";
+	public static String DATEREPEAT_CREATION_FUNCTION = "DBV_INTERVAL_CREATE";
+	public static String DATEREPEAT_EQUALS_FUNCTION = "DBV_INTERVAL_EQUALS";
+	public static String DATEREPEAT_LESSTHAN_FUNCTION = "DBV_INTERVAL_LESSTHAN";
+	public static String DATEREPEAT_LESSTHANEQUALS_FUNCTION = "DBV_INTERVAL_LESSTHANEQUALS";
+	public static String DATEREPEAT_GREATERTHAN_FUNCTION = "DBV_INTERVAL_GREATERTHAN";
+	public static String DATEREPEAT_GREATERTHANEQUALS_FUNCTION = "DBV_INTERVAL_GREATERTHANEQUALS";
+	public static String DATEREPEAT_DATEADDITION_FUNCTION = "DBV_INTERVAL_DATEADD";
+	public static String DATEREPEAT_DATESUBTRACTION_FUNCTION = "DBV_INTERVAL_DATEMINUS";
 	
-	public static String INTERVAL_YEAR_PART_FUNCTION = "DBV_INTERVAL_YEAR_PART";
-	public static String INTERVAL_MONTH_PART_FUNCTION = "DBV_INTERVAL_MONTH_PART";
-	public static String INTERVAL_DAY_PART_FUNCTION = "DBV_INTERVAL_DAY_PART";
-	public static String INTERVAL_HOUR_PART_FUNCTION = "DBV_INTERVAL_HOUR_PART";
-	public static String INTERVAL_MINUTE_PART_FUNCTION = "DBV_INTERVAL_MINUTE_PART";
-	public static String INTERVAL_SECOND_PART_FUNCTION = "DBV_INTERVAL_SECOND_PART";
-	public static String INTERVAL_MILLISECOND_PART_FUNCTION = "DBV_INTERVAL_MILLI_PART";
+	public static String DATEREPEAT_YEAR_PART_FUNCTION = "DBV_INTERVAL_YEAR_PART";
+	public static String DATEREPEAT_MONTH_PART_FUNCTION = "DBV_INTERVAL_MONTH_PART";
+	public static String DATEREPEAT_DAY_PART_FUNCTION = "DBV_INTERVAL_DAY_PART";
+	public static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_INTERVAL_HOUR_PART";
+	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_INTERVAL_MINUTE_PART";
+	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_INTERVAL_SECOND_PART";
+	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_INTERVAL_MILLI_PART";
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -342,82 +342,82 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String transformPeriodIntoInterval(Period interval) {
-		return "'"+IntervalImpl.getIntervalString(interval)+"'";
+	public String transformPeriodIntoDateRepeat(Period interval) {
+		return "'"+DateRepeatImpl.getDateRepeatString(interval)+"'";
 	}
 
 	@Override
 	public String doDateMinusTransformation(String leftHandSide, String rightHandSide) {
-		return " "+INTERVAL_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return " "+DATEREPEAT_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doDateIntervalAdditionTransform(String leftHandSide, String rightHandSide) {
-		return " "+INTERVAL_DATEADDITION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDatePlusDateRepeatTransform(String leftHandSide, String rightHandSide) {
+		return " "+DATEREPEAT_DATEADDITION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doDateIntervalSubtractionTransform(String leftHandSide, String rightHandSide) {
-		return " "+INTERVAL_DATESUBTRACTION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateMinusDateRepeatTransform(String leftHandSide, String rightHandSide) {
+		return " "+DATEREPEAT_DATESUBTRACTION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalEqualsTransform(String leftHandSide, String rightHandSide) {
+	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "("+leftHandSide +" = "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalLessThanTransform(String leftHandSide, String rightHandSide) {
-		return INTERVAL_LESSTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
+		return DATEREPEAT_LESSTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return INTERVAL_LESSTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return DATEREPEAT_LESSTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalGreaterThanTransform(String leftHandSide, String rightHandSide) {
-		return INTERVAL_GREATERTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
+		return DATEREPEAT_GREATERTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return INTERVAL_GREATERTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
+		return DATEREPEAT_GREATERTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
 	}
 
 	@Override
-	public String doIntervalGetYearsTransform(String intervalStr) {
-		return INTERVAL_YEAR_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetYearsTransform(String intervalStr) {
+		return DATEREPEAT_YEAR_PART_FUNCTION+"("+intervalStr +")";
 	}
 	@Override
-	public String doIntervalGetMonthsTransform(String intervalStr) {
-		return INTERVAL_MONTH_PART_FUNCTION+"("+intervalStr +")";
-	}
-
-	@Override
-	public String doIntervalGetDaysTransform(String intervalStr) {
-		return INTERVAL_DAY_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetMonthsTransform(String intervalStr) {
+		return DATEREPEAT_MONTH_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override
-	public String doIntervalGetHoursTransform(String intervalStr) {
-		return INTERVAL_HOUR_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetDaysTransform(String intervalStr) {
+		return DATEREPEAT_DAY_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override
-	public String doIntervalGetMinutesTransform(String intervalStr) {
-		return INTERVAL_MINUTE_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetHoursTransform(String intervalStr) {
+		return DATEREPEAT_HOUR_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override
-	public String doIntervalGetSecondsTransform(String intervalStr) {
-		return INTERVAL_SECOND_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetMinutesTransform(String intervalStr) {
+		return DATEREPEAT_MINUTE_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override
-	public String doIntervalGetMillisecondsTransform(String intervalStr) {
-		return INTERVAL_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
+	public String doDateRepeatGetSecondsTransform(String intervalStr) {
+		return DATEREPEAT_SECOND_PART_FUNCTION+"("+intervalStr +")";
+	}
+
+	@Override
+	public String doDateRepeatGetMillisecondsTransform(String intervalStr) {
+		return DATEREPEAT_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override

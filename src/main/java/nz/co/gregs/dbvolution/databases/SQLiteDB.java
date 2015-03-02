@@ -27,9 +27,9 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.internal.datatypes.IntervalImpl;
+import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import org.sqlite.Function;
 import org.sqlite.SQLiteConfig;
 
@@ -38,7 +38,7 @@ import org.sqlite.SQLiteConfig;
  *
  * @author Gregory Graham
  */
-public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunctions {
+public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions {
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 
@@ -84,27 +84,27 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 		Function.create(connection, "LOCATION_OF", new LocationOf());
 		Function.create(connection, "CURRENT_USER", new CurrentUser(getUsername()));
 		Function.create(connection, "STDEV", new StandardDeviation());
-		addIntervalFunctions(connection);
+		addDateRepeatFunctions(connection);
 		return connection;
 	}
 
-	private void addIntervalFunctions(Connection connection) throws SQLException {
-		Function.create(connection, SQLiteDefinition.INTERVAL_CREATION_FUNCTION, new IntervalCreate());
-		Function.create(connection, SQLiteDefinition.INTERVAL_EQUALS_FUNCTION, new IntervalEquals());
-		Function.create(connection, SQLiteDefinition.INTERVAL_LESSTHAN_FUNCTION, new IntervalLessThan());
-		Function.create(connection, SQLiteDefinition.INTERVAL_GREATERTHAN_FUNCTION, new IntervalGreaterThan());
-		Function.create(connection, SQLiteDefinition.INTERVAL_LESSTHANEQUALS_FUNCTION, new IntervalLessThanOrEqual());
-		Function.create(connection, SQLiteDefinition.INTERVAL_GREATERTHANEQUALS_FUNCTION, new IntervalGreaterThanOrEqual());
-		Function.create(connection, SQLiteDefinition.INTERVAL_DATEADDITION_FUNCTION, new IntervalDateAddition());
-		Function.create(connection, SQLiteDefinition.INTERVAL_DATESUBTRACTION_FUNCTION, new IntervalDateSubtraction());
+	private void addDateRepeatFunctions(Connection connection) throws SQLException {
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_CREATION_FUNCTION, new DateRepeatCreate());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_EQUALS_FUNCTION, new DateRepeatEquals());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_LESSTHAN_FUNCTION, new DateRepeatLessThan());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_GREATERTHAN_FUNCTION, new DateRepeatGreaterThan());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_LESSTHANEQUALS_FUNCTION, new DateRepeatLessThanOrEqual());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_GREATERTHANEQUALS_FUNCTION, new DateRepeatGreaterThanOrEqual());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_DATEADDITION_FUNCTION, new DateRepeatDateAddition());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_DATESUBTRACTION_FUNCTION, new DateRepeatDateSubtraction());
 		
-		Function.create(connection, SQLiteDefinition.INTERVAL_YEAR_PART_FUNCTION, new IntervalGetYear());
-		Function.create(connection, SQLiteDefinition.INTERVAL_MONTH_PART_FUNCTION, new IntervalGetMonth());
-		Function.create(connection, SQLiteDefinition.INTERVAL_DAY_PART_FUNCTION, new IntervalGetDay());
-		Function.create(connection, SQLiteDefinition.INTERVAL_HOUR_PART_FUNCTION, new IntervalGetHour());
-		Function.create(connection, SQLiteDefinition.INTERVAL_MINUTE_PART_FUNCTION, new IntervalGetMinute());
-		Function.create(connection, SQLiteDefinition.INTERVAL_SECOND_PART_FUNCTION, new IntervalGetSecond());
-		Function.create(connection, SQLiteDefinition.INTERVAL_MILLISECOND_PART_FUNCTION, new IntervalGetMillisecond());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_YEAR_PART_FUNCTION, new DateRepeatGetYear());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_MONTH_PART_FUNCTION, new DateRepeatGetMonth());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_DAY_PART_FUNCTION, new DateRepeatGetDay());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_HOUR_PART_FUNCTION, new DateRepeatGetHour());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_MINUTE_PART_FUNCTION, new DateRepeatGetMinute());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_SECOND_PART_FUNCTION, new DateRepeatGetSecond());
+		Function.create(connection, SQLiteDefinition.DATEREPEAT_MILLISECOND_PART_FUNCTION, new DateRepeatGetMillisecond());
 			}
 
 	@Override
@@ -191,7 +191,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 		}
 	}
 
-	private static class IntervalCreate extends Function {
+	private static class DateRepeatCreate extends Function {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -204,7 +204,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 				} else {
 					Date original = defn.parseDateFromGetString(originalStr);
 					Date compareTo = defn.parseDateFromGetString(compareToStr);
-					String intervalString = IntervalImpl.subtract2Dates(original, compareTo);
+					String intervalString = DateRepeatImpl.repeatFromTwoDates(original, compareTo);
 					result(intervalString);
 				}
 			} catch (ParseException ex) {
@@ -214,7 +214,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 		}
 	}
 
-	private static class IntervalEquals extends Function {
+	private static class DateRepeatEquals extends Function {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -224,15 +224,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (originalStr == null || compareToStr == null) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.compareIntervalStrings(originalStr, compareToStr);
+				int result = DateRepeatImpl.compareDateRepeatStrings(originalStr, compareToStr);
 				result(result == 0 ? 1 : 0);
 			}
 		}
 	}
 
-	private static class IntervalLessThan extends Function {
+	private static class DateRepeatLessThan extends Function {
 
-		IntervalLessThan() {
+		DateRepeatLessThan() {
 		}
 
 		@Override
@@ -243,15 +243,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (originalStr == null || compareToStr == null) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.compareIntervalStrings(originalStr, compareToStr);
+				int result = DateRepeatImpl.compareDateRepeatStrings(originalStr, compareToStr);
 				result(result == -1 ? 1 : 0);
 			}
 		}
 	}
 
-	private static class IntervalGreaterThan extends Function {
+	private static class DateRepeatGreaterThan extends Function {
 
-		IntervalGreaterThan() {
+		DateRepeatGreaterThan() {
 		}
 
 		@Override
@@ -262,15 +262,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (originalStr == null || compareToStr == null || originalStr.length() == 0 || compareToStr.length() == 0) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.compareIntervalStrings(originalStr, compareToStr);
+				int result = DateRepeatImpl.compareDateRepeatStrings(originalStr, compareToStr);
 				result(result == 1 ? 1 : 0);
 			}
 		}
 	}
 
-	private static class IntervalLessThanOrEqual extends Function {
+	private static class DateRepeatLessThanOrEqual extends Function {
 
-		IntervalLessThanOrEqual() {
+		DateRepeatLessThanOrEqual() {
 		}
 
 		@Override
@@ -281,15 +281,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (originalStr == null || compareToStr == null) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.compareIntervalStrings(originalStr, compareToStr);
+				int result = DateRepeatImpl.compareDateRepeatStrings(originalStr, compareToStr);
 				result(result < 1 ? 1 : 0);
 			}
 		}
 	}
 
-	private static class IntervalGreaterThanOrEqual extends Function {
+	private static class DateRepeatGreaterThanOrEqual extends Function {
 
-		IntervalGreaterThanOrEqual() {
+		DateRepeatGreaterThanOrEqual() {
 		}
 
 		@Override
@@ -300,15 +300,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (originalStr == null || compareToStr == null) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.compareIntervalStrings(originalStr, compareToStr);
+				int result = DateRepeatImpl.compareDateRepeatStrings(originalStr, compareToStr);
 				result(result > -1 ? 1 : 0);
 			}
 		}
 	}
 
-	private static class IntervalDateAddition extends Function {
+	private static class DateRepeatDateAddition extends Function {
 
-		IntervalDateAddition() {
+		DateRepeatDateAddition() {
 		}
 
 		@Override
@@ -322,7 +322,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 					result((String) null);
 				} else {
 					Date date = defn.parseDateFromGetString(dateStr);
-					Date result = IntervalImpl.addDateAndIntervalString(date, intervalStr);
+					Date result = DateRepeatImpl.addDateAndDateRepeatString(date, intervalStr);
 					result(defn.formatDateForGetString(result));
 				}
 			} catch (ParseException ex) {
@@ -332,9 +332,9 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 		}
 	}
 
-	private static class IntervalDateSubtraction extends Function {
+	private static class DateRepeatDateSubtraction extends Function {
 
-		IntervalDateSubtraction() {
+		DateRepeatDateSubtraction() {
 		}
 
 		@Override
@@ -348,7 +348,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 					result((String) null);
 				} else {
 					Date date = defn.parseDateFromGetString(dateStr);
-					Date result = IntervalImpl.subtractDateAndIntervalString(date, intervalStr);
+					Date result = DateRepeatImpl.subtractDateAndDateRepeatString(date, intervalStr);
 					result(defn.formatDateForGetString(result));
 				}
 			} catch (ParseException ex) {
@@ -358,9 +358,9 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 		}
 	}
 
-	private static class IntervalGetYear extends Function {
+	private static class DateRepeatGetYear extends Function {
 
-		IntervalGetYear() {
+		DateRepeatGetYear() {
 		}
 
 		@Override
@@ -369,15 +369,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (intervalStr == null||intervalStr.length()==0) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.getYearPart(intervalStr);
+				int result = DateRepeatImpl.getYearPart(intervalStr);
 				result(result);
 			}
 		}
 	}
 
-	private static class IntervalGetMonth extends Function {
+	private static class DateRepeatGetMonth extends Function {
 
-		IntervalGetMonth() {
+		DateRepeatGetMonth() {
 		}
 
 		@Override
@@ -386,15 +386,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (intervalStr == null||intervalStr.length()==0) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.getMonthPart(intervalStr);
+				int result = DateRepeatImpl.getMonthPart(intervalStr);
 				result(result);
 			}
 		}
 	}
 
-	private static class IntervalGetDay extends Function {
+	private static class DateRepeatGetDay extends Function {
 
-		IntervalGetDay() {
+		DateRepeatGetDay() {
 		}
 
 		@Override
@@ -403,15 +403,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (intervalStr == null||intervalStr.length()==0) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.getDayPart(intervalStr);
+				int result = DateRepeatImpl.getDayPart(intervalStr);
 				result(result);
 			}
 		}
 	}
 
-	private static class IntervalGetHour extends Function {
+	private static class DateRepeatGetHour extends Function {
 
-		IntervalGetHour() {
+		DateRepeatGetHour() {
 		}
 
 		@Override
@@ -420,15 +420,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (intervalStr == null||intervalStr.length()==0) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.getHourPart(intervalStr);
+				int result = DateRepeatImpl.getHourPart(intervalStr);
 				result(result);
 			}
 		}
 	}
 
-	private static class IntervalGetMinute extends Function {
+	private static class DateRepeatGetMinute extends Function {
 
-		IntervalGetMinute() {
+		DateRepeatGetMinute() {
 		}
 
 		@Override
@@ -437,15 +437,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (intervalStr == null||intervalStr.length()==0) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.getMinutePart(intervalStr);
+				int result = DateRepeatImpl.getMinutePart(intervalStr);
 				result(result);
 			}
 		}
 	}
 
-	private static class IntervalGetSecond extends Function {
+	private static class DateRepeatGetSecond extends Function {
 
-		IntervalGetSecond() {
+		DateRepeatGetSecond() {
 		}
 
 		@Override
@@ -454,15 +454,15 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (intervalStr == null||intervalStr.length()==0) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.getSecondPart(intervalStr);
+				int result = DateRepeatImpl.getSecondPart(intervalStr);
 				result(result);
 			}
 		}
 	}
 
-	private static class IntervalGetMillisecond extends Function {
+	private static class DateRepeatGetMillisecond extends Function {
 
-		IntervalGetMillisecond() {
+		DateRepeatGetMillisecond() {
 		}
 
 		@Override
@@ -471,7 +471,7 @@ public class SQLiteDB extends DBDatabase implements SupportsIntervalDatatypeFunc
 			if (intervalStr == null||intervalStr.length()==0) {
 				result((String) null);
 			} else {
-				int result = IntervalImpl.getMillisecondPart(intervalStr);
+				int result = DateRepeatImpl.getMillisecondPart(intervalStr);
 				result(result);
 			}
 		}

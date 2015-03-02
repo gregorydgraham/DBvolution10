@@ -19,9 +19,9 @@ package nz.co.gregs.dbvolution.expressions;
  *
  * @author gregory.graham
  */
-public interface IntervalResult extends DBExpression, ExpressionCanHaveNullValues {
+public interface DateRepeatResult extends DBExpression, ExpressionCanHaveNullValues {
 
     @Override
-    public IntervalResult copy();
+    public DateRepeatResult copy();
 	
 }

@@ -25,7 +25,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.supports.SupportsIntervalDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import org.joda.time.Period;
 
@@ -910,16 +910,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		});
 	}
 
-	public IntervalExpression minus(Date date) {
+	public DateRepeatExpression minus(Date date) {
 		return minus(value(date));
 	}
 
-	public IntervalExpression minus(DateResult dateExpression) {
-		return new IntervalExpression(new DateDateWithIntervalResult(this, dateExpression) {
+	public DateRepeatExpression minus(DateResult dateExpression) {
+		return new DateRepeatExpression(new DateDateWithDateRepeatResult(this, dateExpression) {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 					return db.getDefinition().doDateMinusTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
 					final DateExpression left = getFirst();
@@ -943,18 +943,18 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	public DateExpression minus(Period interval) {
-		return minus(IntervalExpression.value(interval));
+		return minus(DateRepeatExpression.value(interval));
 	}
 
-	public DateExpression minus(IntervalResult intervalExpression) {
-		return new DateExpression(new DateIntervalArithmeticDateResult(this, intervalExpression) {
+	public DateExpression minus(DateRepeatResult intervalExpression) {
+		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
 			@Override
 			protected String doExpressionTransformation(DBDatabase db) {
-				if (db instanceof SupportsIntervalDatatypeFunctions) {
-					return db.getDefinition().doDateIntervalSubtractionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
 					final DateExpression left = getFirst();
-					final IntervalExpression right = new IntervalExpression(getSecond());
+					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
 					return (
 							left.addYears(right.getYears().times(-1))
 							.addMonths(right.getMonths().times(-1))
@@ -975,14 +975,14 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	public DateExpression plus(Period interval) {
-		return plus(IntervalExpression.value(interval));
+		return plus(DateRepeatExpression.value(interval));
 	}
 
-	public DateExpression plus(IntervalResult intervalExpression) {
-		return new DateExpression(new DateIntervalArithmeticDateResult(this, intervalExpression) {
+	public DateExpression plus(DateRepeatResult intervalExpression) {
+		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
 			@Override
 			protected String doExpressionTransformation(DBDatabase db) {
-				return db.getDefinition().doDateIntervalAdditionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 			@Override
@@ -2341,13 +2341,13 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DateDateWithIntervalResult extends IntervalExpression {
+	private static abstract class DateDateWithDateRepeatResult extends DateRepeatExpression {
 
 		private DateExpression first;
 		private DateResult second;
 		private boolean requiresNullProtection = false;
 
-		DateDateWithIntervalResult(DateExpression first, DateResult second) {
+		DateDateWithDateRepeatResult(DateExpression first, DateResult second) {
 			this.first = first;
 			this.second = second;
 			if (second == null || second.getIncludesNull()) {
@@ -2356,8 +2356,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DateDateWithIntervalResult copy() {
-			DateDateWithIntervalResult newInstance;
+		public DateDateWithDateRepeatResult copy() {
+			DateDateWithDateRepeatResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2407,13 +2407,13 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DateIntervalArithmeticDateResult extends DateExpression {
+	private static abstract class DateDateRepeatArithmeticDateResult extends DateExpression {
 
 		private DateExpression first;
-		private IntervalResult second;
+		private DateRepeatResult second;
 		private boolean requiresNullProtection = false;
 
-		DateIntervalArithmeticDateResult(DateExpression first, IntervalResult second) {
+		DateDateRepeatArithmeticDateResult(DateExpression first, DateRepeatResult second) {
 			this.first = first;
 			this.second = second;
 			if (second == null || second.getIncludesNull()) {
@@ -2427,8 +2427,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DateIntervalArithmeticDateResult copy() {
-			DateIntervalArithmeticDateResult newInstance;
+		public DateDateRepeatArithmeticDateResult copy() {
+			DateDateRepeatArithmeticDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2475,7 +2475,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		/**
 		 * @return the second
 		 */
-		public IntervalResult getSecond() {
+		public DateRepeatResult getSecond() {
 			return second;
 		}
 	}

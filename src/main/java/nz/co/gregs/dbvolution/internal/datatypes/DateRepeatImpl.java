@@ -24,19 +24,19 @@ import org.joda.time.Period;
  *
  * @author gregorygraham
  */
-public class IntervalImpl {
+public class DateRepeatImpl {
 
-	private static final String ZERO_INTERVAL_STRING = "P0Y0M0D0h0n0.0s";
+	private static final String ZERO_DATEREPEAT_STRING = "P0Y0M0D0h0n0.0s";
 
-	public IntervalImpl() {
+	public DateRepeatImpl() {
 	}
 
-	public static String getZeroIntervalString() {
-		return ZERO_INTERVAL_STRING;
+	public static String getZeroDateRepeatString() {
+		return ZERO_DATEREPEAT_STRING;
 	}
 
 	@SuppressWarnings("deprecation")
-	public static String subtract2Dates(Date original, Date compareTo) {
+	public static String repeatFromTwoDates(Date original, Date compareTo) {
 		if (original == null || compareTo == null) {
 			return null;
 		}
@@ -51,7 +51,7 @@ public class IntervalImpl {
 		return intervalString;
 	}
 
-	public static String getIntervalString(Period interval) {
+	public static String getDateRepeatString(Period interval) {
 		if (interval == null) {
 			return null;
 		}
@@ -68,18 +68,18 @@ public class IntervalImpl {
 	}
 
 	public static boolean isEqualTo(String original, String compareTo) {
-		return compareIntervalStrings(original, compareTo) == 0;
+		return compareDateRepeatStrings(original, compareTo) == 0;
 	}
 
 	public static boolean isGreaterThan(String original, String compareTo) {
-		return compareIntervalStrings(original, compareTo) == 1;
+		return compareDateRepeatStrings(original, compareTo) == 1;
 	}
 
 	public static boolean isLessThan(String original, String compareTo) {
-		return compareIntervalStrings(original, compareTo) == -1;
+		return compareDateRepeatStrings(original, compareTo) == -1;
 	}
 
-	public static Integer compareIntervalStrings(String original, String compareTo) {
+	public static Integer compareDateRepeatStrings(String original, String compareTo) {
 		if (original == null || compareTo == null) {
 			return null;
 		}
@@ -99,7 +99,7 @@ public class IntervalImpl {
 		return 0;
 	}
 
-	public static Date addDateAndIntervalString(Date original, String intervalStr) {
+	public static Date addDateAndDateRepeatString(Date original, String intervalStr) {
 		if (original == null || intervalStr == null || intervalStr.length() == 0 || original.toString().length() == 0) {
 			return null;
 		}
@@ -124,7 +124,7 @@ public class IntervalImpl {
 		return cal.getTime();
 	}
 
-	public static Date subtractDateAndIntervalString(Date original, String intervalInput) {
+	public static Date subtractDateAndDateRepeatString(Date original, String intervalInput) {
 		if (original == null || intervalInput == null || intervalInput.length() == 0) {
 			return null;
 		}
@@ -149,7 +149,7 @@ public class IntervalImpl {
 		return cal.getTime();
 	}
 
-	public static Period parseIntervalFromGetString(String intervalStr) {
+	public static Period parseDateRepeatFromGetString(String intervalStr) {
 		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}

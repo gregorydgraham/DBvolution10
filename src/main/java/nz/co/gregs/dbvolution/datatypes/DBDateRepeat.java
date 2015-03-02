@@ -26,19 +26,19 @@ import org.joda.time.format.PeriodFormat;
  *
  * @author gregory.graham
  */
-public class DBInterval extends QueryableDatatype implements IntervalResult {
+public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult {
 
 	private static final long serialVersionUID = 1L;
 
-	public DBInterval() {
+	public DBDateRepeat() {
 		super();
 	}
 
-	public DBInterval(Period interval) {
+	public DBDateRepeat(Period interval) {
 		super(interval);
 	}
 
-	public DBInterval(IntervalExpression interval) {
+	public DBDateRepeat(DateRepeatExpression interval) {
 		super(interval);
 	}
 
@@ -70,7 +70,7 @@ public class DBInterval extends QueryableDatatype implements IntervalResult {
 		if (interval == null) {
 			return "NULL";
 		} else {
-			String str = db.getDefinition().transformPeriodIntoInterval(interval);
+			String str = db.getDefinition().transformPeriodIntoDateRepeat(interval);
 			return str;
 		}
 	}
@@ -81,7 +81,7 @@ public class DBInterval extends QueryableDatatype implements IntervalResult {
 		if (intervalStr == null || intervalStr.equals("")) {
 			return null;
 		} else {
-			return database.getDefinition().parseIntervalFromGetString(intervalStr);
+			return database.getDefinition().parseDateRepeatFromGetString(intervalStr);
 		}
 	}
 
@@ -91,8 +91,8 @@ public class DBInterval extends QueryableDatatype implements IntervalResult {
 	}
 
 	@Override
-	public DBInterval copy() {
-		return (DBInterval) super.copy();
+	public DBDateRepeat copy() {
+		return (DBDateRepeat) super.copy();
 	}
 
 	@Override
@@ -105,8 +105,8 @@ public class DBInterval extends QueryableDatatype implements IntervalResult {
 		if (getLiteralValue() == null) {
 			return super.toString(); //To change body of generated methods, choose Tools | Templates.
 		} else {
-			Period interval = (Period) getLiteralValue();
-			return PeriodFormat.getDefault().print(interval);
+			Period period = (Period) getLiteralValue();
+			return PeriodFormat.getDefault().print(period);
 		}
 	}
 }
