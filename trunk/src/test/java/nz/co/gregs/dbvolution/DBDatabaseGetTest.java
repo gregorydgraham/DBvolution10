@@ -145,7 +145,8 @@ public class DBDatabaseGetTest extends AbstractTest {
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertEquals(gotMarques.size(), 2);
 		} else {
-			Assert.assertEquals(gotMarques.size(), 1);
+			database.print(gotMarques);
+			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count()-1);
 		}
 		Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
 	}
@@ -158,7 +159,8 @@ public class DBDatabaseGetTest extends AbstractTest {
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 2);
 		} else {
-			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
+			database.print(gotMarques);
+			Assert.assertEquals(gotMarques.size(), 1);
 		}
 		Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNotNull());
 	}
