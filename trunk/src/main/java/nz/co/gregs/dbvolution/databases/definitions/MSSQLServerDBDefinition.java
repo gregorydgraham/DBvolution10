@@ -214,6 +214,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
+		return "DATEADD( MILLISECOND, " + numberOfSeconds + "," + dateValue + ")";
+	}
+
+		@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
 	}
