@@ -931,7 +931,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 							.append(left.hour().minus(right.hour())).append(HOUR_SUFFIX)
 							.append(left.minute().minus(right.minute())).append(MINUTE_SUFFIX)
 							.append(left.second().minus(right.second())).append(SECOND_SUFFIX)
-							).toSQLString(db);
+							).bracket().toSQLString(db);
 				}
 			}
 

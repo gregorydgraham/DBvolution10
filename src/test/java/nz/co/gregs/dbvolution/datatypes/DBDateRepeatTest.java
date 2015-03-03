@@ -49,19 +49,19 @@ public class DBDateRepeatTest extends AbstractTest {
 
 	@Test
 	public void basicTest() throws SQLException {
-		final DateRepeatTable intervalTable = new DateRepeatTable();
+		final DateRepeatTable dateRepeatTable = new DateRepeatTable();
 		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(intervalTable);
-		database.createTable(intervalTable);
+		database.dropTableNoExceptions(dateRepeatTable);
+		database.createTable(dateRepeatTable);
 		final Period testPeriod = new Period().withMillis(1).withSeconds(2).withMinutes(3).withHours(4).withDays(5).withWeeks(6).withMonths(7).withYears(8);
-		intervalTable.intervalCol.setValue(testPeriod);
-		database.insert(intervalTable);
-		DBTable<DateRepeatTable> tab = database.getDBTable(intervalTable).setBlankQueryAllowed(true);
+		dateRepeatTable.dateRepeatCol.setValue(testPeriod);
+		database.insert(dateRepeatTable);
+		DBTable<DateRepeatTable> tab = database.getDBTable(dateRepeatTable).setBlankQueryAllowed(true);
 		List<DateRepeatTable> allRows = tab.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 
-		Assert.assertThat(allRows.get(0).intervalCol.periodValue().normalizedStandard(), is(testPeriod.normalizedStandard()));
+		Assert.assertThat(allRows.get(0).dateRepeatCol.periodValue().normalizedStandard(), is(testPeriod.normalizedStandard()));
 	}
 
 	public static class MarqueWithDateRepeatExprCol extends Marque {
@@ -287,6 +287,6 @@ public class DBDateRepeatTest extends AbstractTest {
 		DBInteger pkid = new DBInteger();
 
 		@DBColumn
-		DBDateRepeat intervalCol = new DBDateRepeat();
+		DBDateRepeat dateRepeatCol = new DBDateRepeat();
 	}
 }

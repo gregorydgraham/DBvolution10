@@ -272,8 +272,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(EXTRACT(MILLISECOND FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
-				+ "+(" + doSecondDifferenceTransform(dateValue, otherDateValue) + "*1000))";
+		return  "(" + doSecondDifferenceTransform(dateValue, otherDateValue) + "*1000)";
 	}
 
 	@Override
