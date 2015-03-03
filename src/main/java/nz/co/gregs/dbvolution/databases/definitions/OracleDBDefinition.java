@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -90,9 +91,16 @@ public class OracleDBDefinition extends DBDefinition {
 			return " TIMESTAMP ";
 		} else if (qdt instanceof DBJavaObject) {
 			return " BLOB ";
+		} else if (qdt instanceof DBBooleanArray) {
+			return " VARCHAR(64) ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
+	}
+
+	@Override
+	public boolean supportsArraysNatively() {
+		return false;
 	}
 
 //    @Override
