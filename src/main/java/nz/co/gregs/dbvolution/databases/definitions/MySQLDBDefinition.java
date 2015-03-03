@@ -142,7 +142,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "TIMESTAMPDIFF(MILLISECOND, " + dateValue + "," + otherDateValue + ")";
+		return "(TIMESTAMPDIFF(MICROSECOND, " + dateValue + "," + otherDateValue + ")/1000.0)";
 	}
 
 	@Override
