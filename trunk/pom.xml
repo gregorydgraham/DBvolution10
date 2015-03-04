@@ -63,6 +63,18 @@
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>2.18.1</version>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<check></check>
+					<formats>
+						<format>html</format>
+						<format>xml</format>
+					</formats>
+				</configuration>
+			</plugin>
 			<!--integrate maven emma plugin to project site--> 
 			<!--            <plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -87,6 +99,11 @@
 			</extension>
 		</extensions>
 		<plugins>  
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.5.2</version>
+			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

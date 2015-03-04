@@ -330,7 +330,8 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " (TO_CHAR("+dateSQL+",'D')+1)";
+//		return " (TO_CHAR("+dateSQL+",'D')+1)";
+		return "DECODE(trim(to_char(("+dateSQL+"), 'Day', 'NLS_DATE_LANGUAGE=ENGLISH')), 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday', 7)";
 	}
 
 	@Override
