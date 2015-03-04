@@ -88,7 +88,7 @@ public class OracleDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBString) {
 			return " VARCHAR(1000) ";
 		} else if (qdt instanceof DBDate) {
-			return " TIMESTAMP ";
+			return " TIMESTAMP WITH TIME ZONE ";
 		} else if (qdt instanceof DBJavaObject) {
 			return " BLOB ";
 		} else if (qdt instanceof DBBooleanArray) {

@@ -212,7 +212,7 @@ public class DBDateRepeatTest extends AbstractTest {
 	public void testGetHours() throws SQLException {
 		DateRepeatMaths marq = new DateRepeatMaths();
 		DBQuery query = database.getDBQuery(marq);
-		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
+		//database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
 		query.addCondition(
 				marq.column(marq.creationDate).getDateRepeatFrom(march23rd2013).getHours().is(-11)
