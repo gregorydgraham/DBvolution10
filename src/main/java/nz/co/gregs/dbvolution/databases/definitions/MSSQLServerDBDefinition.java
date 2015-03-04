@@ -387,14 +387,14 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public boolean supportsArraysNatively() {
 		return false;
 	}
-//
-//	@Override
-//	public String doBooleanArrayTransform(Boolean[] bools) {
-//		StringBuilder str = new StringBuilder();
-//		for (Boolean bool : bools) {
-//			str.append((bool?"1":"0"));
-//		}
-//		Long parseLong = Long.parseLong(str.toString(),2);
-//		return "0x"+ parseLong.byteValue();
-//	}
+
+	@Override
+	public String getArctan2FunctionName() {
+		return "ATN2";
+	}
+
+	@Override
+	public boolean supportsHyperbolicFunctionsNatively() {
+		return false;
+	}
 }
