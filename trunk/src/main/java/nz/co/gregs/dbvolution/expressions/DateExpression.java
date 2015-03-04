@@ -925,12 +925,12 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 					final DateExpression left = getFirst();
 					final DateExpression right = new DateExpression(getSecond());
 					return (StringExpression.value(INTERVAL_PREFIX)
-							.append(left.year().minus(right.year())).append(YEAR_SUFFIX)
-							.append(left.month().minus(right.month())).append(MONTH_SUFFIX)
-							.append(left.day().minus(right.day())).append(DAY_SUFFIX)
-							.append(left.hour().minus(right.hour())).append(HOUR_SUFFIX)
-							.append(left.minute().minus(right.minute())).append(MINUTE_SUFFIX)
-							.append(left.second().minus(right.second())).append(SECOND_SUFFIX)
+							.append(left.year().minus(right.year()).bracket()).append(YEAR_SUFFIX)
+							.append(left.month().minus(right.month()).bracket()).append(MONTH_SUFFIX)
+							.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
+							.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
+							.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
+							.append(left.second().minus(right.second()).bracket()).append(SECOND_SUFFIX)
 							).bracket().toSQLString(db);
 				}
 			}
