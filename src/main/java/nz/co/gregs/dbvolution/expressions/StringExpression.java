@@ -47,6 +47,16 @@ import nz.co.gregs.dbvolution.datatypes.*;
  */
 public class StringExpression implements StringResult, RangeComparable<StringResult> {
 
+	static StringExpression nullExpression() {
+		return new StringExpression(){
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().getNull();
+			}
+			
+		};
+	}
+
 	private StringResult string1=null;
 	private boolean nullProtectionRequired;
 

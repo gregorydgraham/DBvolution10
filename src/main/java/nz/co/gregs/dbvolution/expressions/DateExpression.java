@@ -156,6 +156,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	public static DateExpression value(Date date) {
 		return new DateExpression(date);
 	}
+	
+	static DateExpression nullExpression() {
+		return new DateExpression(){
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().getNull();
+			}
+			
+		};
+	}
 
 	/**
 	 * Creates a date expression that returns only the date part of current date
@@ -924,14 +934,17 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				} else {
 					final DateExpression left = getFirst();
 					final DateExpression right = new DateExpression(getSecond());
-					return (StringExpression.value(INTERVAL_PREFIX)
-							.append(left.year().minus(right.year()).bracket()).append(YEAR_SUFFIX)
-							.append(left.month().minus(right.month()).bracket()).append(MONTH_SUFFIX)
-							.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
-							.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
-							.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
-							.append(left.second().minus(right.second()).bracket()).append(SECOND_SUFFIX)
-							).bracket().toSQLString(db);
+					return BooleanExpression.anyOf(left.isNull(),right.isNull())
+							.ifThenElse(
+									StringExpression.nullExpression(), 
+									StringExpression.value(INTERVAL_PREFIX)
+									.append(left.year().minus(right.year()).bracket()).append(YEAR_SUFFIX)
+									.append(left.month().minus(right.month()).bracket()).append(MONTH_SUFFIX)
+									.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
+									.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
+									.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
+									.append(left.second().minus(right.second()).bracket()).append(SECOND_SUFFIX)
+							).toSQLString(db);
 				}
 			}
 
@@ -955,14 +968,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				} else {
 					final DateExpression left = getFirst();
 					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
-					return (
-							left.addYears(right.getYears().times(-1))
-							.addMonths(right.getMonths().times(-1))
-							.addDays(right.getDays().times(-1))
-							.addHours(right.getHours().times(-1))
-							.addMinutes(right.getMinutes().times(-1))
-							.addSeconds(right.getSeconds().times(-1))
-							.addMilliseconds(right.getMilliseconds().times(-1))
+					return BooleanExpression.anyOf(left.isNull(),right.isNull())
+							.ifThenElse(
+									DateExpression.nullExpression(), 
+									left.addYears(right.getYears().times(-1))
+									.addMonths(right.getMonths().times(-1))
+									.addDays(right.getDays().times(-1))
+									.addHours(right.getHours().times(-1))
+									.addMinutes(right.getMinutes().times(-1))
+									.addSeconds(right.getSeconds().times(-1))
+									.addMilliseconds(right.getMilliseconds().times(-1))
 							).toSQLString(db);
 				}
 			}
@@ -1447,6 +1462,14 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 						return db.getDefinition().doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
 					}
 				});
+	}
+
+	public DateExpression addMilliseconds(int millisecondsToAdd) {
+		return addMilliseconds(NumberExpression.value(millisecondsToAdd));
+	}
+
+	public DateExpression addMilliseconds(long millisecondsToAdd) {
+		return addMilliseconds(NumberExpression.value(millisecondsToAdd));
 	}
 
 	public DateExpression addMilliseconds(NumberExpression millisecondsToAdd) {

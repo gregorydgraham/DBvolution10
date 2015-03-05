@@ -97,6 +97,15 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return nullProtectionRequired || innerDateRepeatResult.getIncludesNull();
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to NULL, otherwise FALSE.
+	 *
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isNull() {
+		return BooleanExpression.isNull(this);
+	}
+
 	public BooleanExpression isLessThan(Period period) {
 		return this.isLessThan(value(period));
 	}
@@ -199,7 +208,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 					return db.getDefinition().doDateRepeatGetYearsTransform(getFirst().toSQLString(db));
 				} else {
-					return getFirst().stringResult().stringBefore(YEAR_SUFFIX).stringAfter(INTERVAL_PREFIX).numberResult().toSQLString(db);
+					return BooleanExpression.isNull(getFirst()).ifThenElse(
+							NumberExpression.nullExpression(),
+							getFirst().stringResult().stringBefore(YEAR_SUFFIX).stringAfter(INTERVAL_PREFIX).numberResult()
+					).toSQLString(db);
 				}
 			}
 		}
@@ -214,7 +226,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 					return db.getDefinition().doDateRepeatGetMonthsTransform(getFirst().toSQLString(db));
 				} else {
-					return getFirst().stringResult().stringBefore(MONTH_SUFFIX).stringAfter(YEAR_SUFFIX).numberResult().toSQLString(db);
+					return BooleanExpression.isNull(getFirst()).ifThenElse(
+							NumberExpression.nullExpression(),
+							getFirst().stringResult().stringBefore(MONTH_SUFFIX).stringAfter(YEAR_SUFFIX).numberResult()
+					).toSQLString(db);
 				}
 			}
 		}
@@ -229,7 +244,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 					return db.getDefinition().doDateRepeatGetDaysTransform(getFirst().toSQLString(db));
 				} else {
-					return getFirst().stringResult().stringBefore(DAY_SUFFIX).stringAfter(MONTH_SUFFIX).numberResult().toSQLString(db);
+					return BooleanExpression.isNull(getFirst()).ifThenElse(
+							NumberExpression.nullExpression(),
+							getFirst().stringResult().stringBefore(DAY_SUFFIX).stringAfter(MONTH_SUFFIX).numberResult()
+					).toSQLString(db);
 				}
 			}
 		}
@@ -244,7 +262,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 					return db.getDefinition().doDateRepeatGetHoursTransform(getFirst().toSQLString(db));
 				} else {
-					return getFirst().stringResult().stringBefore(HOUR_SUFFIX).stringAfter(DAY_SUFFIX).numberResult().toSQLString(db);
+					return BooleanExpression.isNull(getFirst()).ifThenElse(
+							NumberExpression.nullExpression(),
+							getFirst().stringResult().stringBefore(HOUR_SUFFIX).stringAfter(DAY_SUFFIX).numberResult()
+					).toSQLString(db);
 				}
 			}
 		}
@@ -259,7 +280,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 					return db.getDefinition().doDateRepeatGetMinutesTransform(getFirst().toSQLString(db));
 				} else {
-					return getFirst().stringResult().stringBefore(MINUTE_SUFFIX).stringAfter(HOUR_SUFFIX).numberResult().toSQLString(db);
+					return BooleanExpression.isNull(getFirst()).ifThenElse(
+							NumberExpression.nullExpression(),
+							getFirst().stringResult().stringBefore(MINUTE_SUFFIX).stringAfter(HOUR_SUFFIX).numberResult()
+					).toSQLString(db);
 				}
 			}
 		}
@@ -274,7 +298,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 					return db.getDefinition().doDateRepeatGetSecondsTransform(getFirst().toSQLString(db));
 				} else {
-					return getFirst().stringResult().stringBefore(SECOND_SUFFIX).stringAfter(MINUTE_SUFFIX).numberResult().toSQLString(db);
+					return BooleanExpression.isNull(getFirst()).ifThenElse(
+							NumberExpression.nullExpression(),
+							getFirst().stringResult().stringBefore(SECOND_SUFFIX).stringAfter(MINUTE_SUFFIX).numberResult()
+					).toSQLString(db);
 				}
 			}
 		}
@@ -289,7 +316,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 					return db.getDefinition().doDateRepeatGetMillisecondsTransform(getFirst().toSQLString(db));
 				} else {
-					return getFirst().stringResult().stringBefore("s").stringAfter(SECOND_SUFFIX).numberResult().decimalPart().times(1000).toSQLString(db);
+					return BooleanExpression.isNull(getFirst()).ifThenElse(
+							NumberExpression.nullExpression(),
+							getFirst().stringResult().stringBefore(SECOND_SUFFIX).stringAfter(MINUTE_SUFFIX).numberResult().bracket().decimalPart().bracket().times(1000).bracket())
+							.toSQLString(db);
 				}
 			}
 		}

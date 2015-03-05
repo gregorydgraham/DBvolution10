@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.columns.DateColumn;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import static nz.co.gregs.dbvolution.expressions.DateRepeatExpression.MINUTE_SUFFIX;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.april2nd2011;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.march23rd2013;
@@ -103,6 +104,7 @@ public class DBDateRepeatTest extends AbstractTest {
 	@Test
 	public void testOverlaps() throws SQLException {
 		Marque marq = new Marque();
+		marq.creationDate.excludedValues((Date) null);
 		DBQuery query = database.getDBQuery(marq);
 		final DateColumn creationDateCol = marq.column(marq.creationDate);
 		final DateExpression creationDateMinus5Days = creationDateCol.minus(new Period().withDays(5));
@@ -249,6 +251,32 @@ public class DBDateRepeatTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	public static class DateRepeatMilliseconds extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString intervalString = new DBString(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).stringResult());
+		@DBColumn
+		DBNumber numberOfMillis = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getMilliseconds());
+		@DBColumn
+		DBDateRepeat addedMillis = new DBDateRepeat(this.column(this.creationDate).addMilliseconds(5).getDateRepeatFrom(march23rd2013));
+	}
+
+	@Test
+	public void testGetMilliseconds() throws SQLException {
+		DateRepeatMilliseconds marq = new DateRepeatMilliseconds();
+		DBQuery query = database.getDBQuery(marq);
+		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
+
+		query.addCondition(
+				marq.column(marq.creationDate).addMilliseconds(5).getDateRepeatFrom(march23rd2013).getMilliseconds().is(5)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(18));
 	}
 
 	@Test

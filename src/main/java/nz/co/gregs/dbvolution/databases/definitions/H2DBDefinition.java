@@ -88,6 +88,11 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doAddMillisecondsTransform(String secondValue, String numberOfSeconds) {
+		return "DATEADD('millisecond'," + numberOfSeconds + "," + secondValue + ")";
+	}
+
+	@Override
 	public String doAddSecondsTransform(String secondValue, String numberOfSeconds) {
 		return "DATEADD('second'," + numberOfSeconds + "," + secondValue + ")";
 	}

@@ -47,6 +47,17 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
  */
 public class NumberExpression implements NumberResult, RangeComparable<NumberResult> {
 
+	
+	static NumberExpression nullExpression() {
+		return new NumberExpression(){
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().getNull();
+			}
+			
+		};
+	}
+
 	private NumberResult innerNumberResult;
 	private boolean nullProtectionRequired;
 
@@ -1675,7 +1686,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	}
 
 	public NumberExpression decimalPart() {
-		return this.minus(this.trunc());
+		return this.minus(this.trunc()).bracket();
 	}
 
 	/**
