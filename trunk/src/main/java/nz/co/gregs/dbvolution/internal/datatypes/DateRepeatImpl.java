@@ -186,37 +186,37 @@ public class DateRepeatImpl {
 		return valueOf.intValue();
 	}
 
-	public static int getMinutePart(String intervalStr) throws NumberFormatException {
+	public static Integer getMinutePart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
-			return 0;
+			return null;
 		}
 		return Integer.parseInt(intervalStr.replaceAll(".*h([-0-9.]+)n.*", "$1"));
 	}
 
-	public static int getHourPart(String intervalStr) throws NumberFormatException {
+	public static Integer getHourPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
-			return 0;
+			return null;
 		}
 		return Integer.parseInt(intervalStr.replaceAll(".*D([-0-9.]+)h.*", "$1"));
 	}
 
-	public static int getDayPart(String intervalStr) throws NumberFormatException {
+	public static Integer getDayPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
-			return 0;
+			return null;
 		}
 		return Integer.parseInt(intervalStr.replaceAll(".*M([-0-9.]+)D.*", "$1"));
 	}
 
-	public static int getMonthPart(String intervalStr) throws NumberFormatException {
+	public static Integer getMonthPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
-			return 0;
+			return null;
 		}
 		return Integer.parseInt(intervalStr.replaceAll(".*Y([-0-9.]+)M.*", "$1"));
 	}
 
-	public static int getYearPart(String intervalStr) throws NumberFormatException {
+	public static Integer getYearPart(String intervalStr) throws NumberFormatException {
 		if (intervalStr == null || intervalStr.length() == 0) {
-			return 0;
+			return null;
 		}
 		return Integer.parseInt(intervalStr.replaceAll(".*P([-0-9.]+)Y.*", "$1"));
 	}

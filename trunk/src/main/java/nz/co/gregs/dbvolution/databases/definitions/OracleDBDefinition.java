@@ -192,6 +192,10 @@ public class OracleDBDefinition extends DBDefinition {
 		return " remainder(" + firstNumber + ", " + secondNumber + ")";
 	}
 
+	public String doAddMillisecondsTransform(String dateValue, String numberOfMillis) {
+		return "((" + dateValue + ") + (numtodsinterval( (" + numberOfMillis + "/1000.0), 'SECOND')))";
+	}
+
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'SECOND'))";
