@@ -174,10 +174,10 @@ public class NuoDBDefinition extends DBDefinition{
 		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60*60)"; 
 	}
 
-	@Override
-	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60*60*1000)"; 
-	}
+//	@Override
+//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+//		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60*60*1000)"; 
+//	}
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {

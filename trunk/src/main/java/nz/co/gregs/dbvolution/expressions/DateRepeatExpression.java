@@ -308,23 +308,23 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		);
 	}
 
-	public NumberExpression getMilliseconds() {
-		return new NumberExpression(new DateRepeatWithNumberResult(this) {
-
-			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateRepeatGetMillisecondsTransform(getFirst().toSQLString(db));
-				} else {
-					return BooleanExpression.isNull(getFirst()).ifThenElse(
-							NumberExpression.nullExpression(),
-							getFirst().stringResult().stringBefore(SECOND_SUFFIX).stringAfter(MINUTE_SUFFIX).numberResult().bracket().decimalPart().bracket().times(1000).bracket())
-							.toSQLString(db);
-				}
-			}
-		}
-		);
-	}
+//	public NumberExpression getMilliseconds() {
+//		return new NumberExpression(new DateRepeatWithNumberResult(this) {
+//
+//			@Override
+//			protected String doExpressionTransform(DBDatabase db) {
+//				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+//					return db.getDefinition().doDateRepeatGetMillisecondsTransform(getFirst().toSQLString(db));
+//				} else {
+//					return BooleanExpression.isNull(getFirst()).ifThenElse(
+//							NumberExpression.nullExpression(),
+//							getFirst().stringResult().stringBefore(SECOND_SUFFIX).stringAfter(MINUTE_SUFFIX).numberResult().bracket().decimalPart().bracket().times(1000).bracket())
+//							.toSQLString(db);
+//				}
+//			}
+//		}
+//		);
+//	}
 
 	/**
 	 * Converts the interval expression into a string/character expression.

@@ -45,10 +45,7 @@ public class DateRepeatImpl {
 		int days = original.getDate() - compareTo.getDate();
 		int hours = original.getHours() - compareTo.getHours();
 		int minutes = original.getMinutes() - compareTo.getMinutes();
-		
-		final long originalMillis = original.getTime() - ((original.getTime() / 1000) * 1000);
-		final long compareToMillis = compareTo.getTime() - ((compareTo.getTime() / 1000) * 1000);
-		double seconds = ((original.getSeconds()*1000+originalMillis) - (compareTo.getSeconds()*1000 + compareToMillis))/1000.0;
+		int seconds = original.getSeconds() - compareTo.getSeconds();
 		
 		String intervalString = "P" + years + "Y" + months + "M" + days + "D" + hours + "h" + minutes + "n" + seconds + "s";
 		return intervalString;

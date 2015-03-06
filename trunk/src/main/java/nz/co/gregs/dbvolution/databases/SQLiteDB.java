@@ -104,7 +104,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_HOUR_PART_FUNCTION, new DateRepeatGetHour());
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_MINUTE_PART_FUNCTION, new DateRepeatGetMinute());
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_SECOND_PART_FUNCTION, new DateRepeatGetSecond());
-		Function.create(connection, SQLiteDefinition.DATEREPEAT_MILLISECOND_PART_FUNCTION, new DateRepeatGetMillisecond());
+//		Function.create(connection, SQLiteDefinition.DATEREPEAT_MILLISECOND_PART_FUNCTION, new DateRepeatGetMillisecond());
 			}
 
 	@Override

@@ -464,15 +464,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				});
 	}
 	
-	public NumberExpression milliseconds() {
-		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doMillisecondTransform(this.only.toSQLString(db));
-					}
-				});
-	}
+//	public NumberExpression milliseconds() {
+//		return new NumberExpression(
+//				new UnaryComplicatedNumberFunction(this) {
+//					@Override
+//					public String toSQLString(DBDatabase db) {
+//						return db.getDefinition().doMillisecondTransform(this.only.toSQLString(db));
+//					}
+//				});
+//	}
 
 	/**
 	 * Creates an SQL expression that tests the second part of this date
@@ -987,7 +987,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 									.addHours(right.getHours().times(-1))
 									.addMinutes(right.getMinutes().times(-1))
 									.addSeconds(right.getSeconds().times(-1))
-									.addMilliseconds(right.getMilliseconds().times(-1))
+//									.addMilliseconds(right.getMilliseconds().times(-1))
 							).toSQLString(db);
 				}
 			}
@@ -1474,29 +1474,29 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				});
 	}
 
-	public DateExpression addMilliseconds(int millisecondsToAdd) {
-		return addMilliseconds(NumberExpression.value(millisecondsToAdd));
-	}
-
-	public DateExpression addMilliseconds(long millisecondsToAdd) {
-		return addMilliseconds(NumberExpression.value(millisecondsToAdd));
-	}
-
-	public DateExpression addMilliseconds(NumberExpression millisecondsToAdd) {
-		return new DateExpression(
-				new DBBinaryDateNumberFunctionWithDateResult(this, millisecondsToAdd) {
-
-					@Override
-					public boolean getIncludesNull() {
-						return false;
-					}
-
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doAddMillisecondsTransform(first.toSQLString(db), second.toSQLString(db));
-					}
-				});
-	}
+//	public DateExpression addMilliseconds(int millisecondsToAdd) {
+//		return addMilliseconds(NumberExpression.value(millisecondsToAdd));
+//	}
+//
+//	public DateExpression addMilliseconds(long millisecondsToAdd) {
+//		return addMilliseconds(NumberExpression.value(millisecondsToAdd));
+//	}
+//
+//	public DateExpression addMilliseconds(NumberExpression millisecondsToAdd) {
+//		return new DateExpression(
+//				new DBBinaryDateNumberFunctionWithDateResult(this, millisecondsToAdd) {
+//
+//					@Override
+//					public boolean getIncludesNull() {
+//						return false;
+//					}
+//
+//					@Override
+//					public String toSQLString(DBDatabase db) {
+//						return db.getDefinition().doAddMillisecondsTransform(first.toSQLString(db), second.toSQLString(db));
+//					}
+//				});
+//	}
 
 	/**
 	 * Date Arithmetic: add the supplied number of minutes to the date
@@ -2010,25 +2010,25 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				});
 	}
 
-	public NumberExpression millisecondsFrom(Date date) {
-		return millisecondsFrom(value(date));
-	}
-
-	public NumberExpression millisecondsFrom(DateResult dateExpression) {
-		return new NumberExpression(
-				new DBBinaryDateFunctionWithNumberResult(this, dateExpression) {
-
-					@Override
-					public boolean getIncludesNull() {
-						return false;
-					}
-
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doMillisecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-					}
-				});
-	}
+//	public NumberExpression millisecondsFrom(Date date) {
+//		return millisecondsFrom(value(date));
+//	}
+//
+//	public NumberExpression millisecondsFrom(DateResult dateExpression) {
+//		return new NumberExpression(
+//				new DBBinaryDateFunctionWithNumberResult(this, dateExpression) {
+//
+//					@Override
+//					public boolean getIncludesNull() {
+//						return false;
+//					}
+//
+//					@Override
+//					public String toSQLString(DBDatabase db) {
+//						return db.getDefinition().doMillisecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+//					}
+//				});
+//	}
 
 	public DateExpression firstOfMonth() {
 		return this.addDays(this.day().minus(1).bracket().times(-1));

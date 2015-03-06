@@ -129,14 +129,12 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				+ "		int seconds = Integer.parseInt(dateRepeatStr.replaceAll(\".*m([-0-9.]+)s.*\", \"$1\"));\n"
 				+ "		final Double secondsDouble = Double.parseDouble(dateRepeatStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\"));\n"
 				+ "		final int secondsInt = secondsDouble.intValue();\n"
-				+ "		final int millis = (int) (secondsDouble*1000-secondsInt*1000);\n"
 				+ "		cal.add(Calendar.YEAR, years);\n"
 				+ "		cal.add(Calendar.MONTH, months);\n"
 				+ "		cal.add(Calendar.DAY_OF_MONTH, days);\n"
 				+ "		cal.add(Calendar.HOUR, hours);\n"
 				+ "		cal.add(Calendar.MINUTE, minutes);\n"
 				+ "		cal.add(Calendar.SECOND, seconds);\n"
-				+ "		cal.add(Calendar.MILLISECOND, millis);\n"
 				+ "		return cal.getTime();}\n"
 				+ "	} $$;");
 		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_DATESUBTRACTION_FUNCTION + " DETERMINISTIC AS $$ \n"
@@ -155,7 +153,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				+ "		int hours = getHourPart(dateRepeatStr);\n"
 				+ "		int minutes = getMinutePart(dateRepeatStr);\n"
 				+ "		int seconds = getSecondPart(dateRepeatStr);\n"
-				+ "		int millis = getMillisecondPart(dateRepeatStr);\n"
 				+ "\n"
 				+ "		cal.add(Calendar.YEAR, -1 * years);\n"
 				+ "		cal.add(Calendar.MONTH, -1 * months);\n"
@@ -163,7 +160,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				+ "		cal.add(Calendar.HOUR, -1 * hours);\n"
 				+ "		cal.add(Calendar.MINUTE, -1 * minutes);\n"
 				+ "		cal.add(Calendar.SECOND, -1 * seconds);\n"
-				+ "		cal.add(Calendar.MILLISECOND, -1 * millis);\n"
 				+ "		return cal.getTime();"
 				+ "	} \n"
 				+ "\n"
@@ -348,14 +344,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				+ "Integer getSecondPart(String dateRepeatStr) throws NumberFormatException {\n"
 				+ "		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 				+ "		return Double.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\")).intValue();\n"
-				+ "	} $$;");
-		stmt.execute("CREATE ALIAS IF NOT EXISTS " + H2DBDefinition.DATEREPEAT_MILLISECOND_PART_FUNCTION + " DETERMINISTIC AS $$ \n"
-				+ "Integer getMillisecondPart(String dateRepeatStr) throws NumberFormatException {\n"
-				+ "		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
-				+ "		final Double secondsDouble = Double.parseDouble(dateRepeatStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\"));\n"
-				+ "		final int secondsInt = secondsDouble.intValue();\n"
-				+ "		final int millis = (int) (secondsDouble*1000.0-secondsInt*1000);\n"
-				+ "		return millis;\n"
 				+ "	} $$;");
 	}
 
