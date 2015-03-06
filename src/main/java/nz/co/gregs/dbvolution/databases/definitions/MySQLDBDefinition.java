@@ -59,7 +59,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		if (qdt instanceof DBString) {
 			return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
-			return " DATETIME ";
+			return " DATETIME(6) ";
 		} else if (qdt instanceof DBByteArray) {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBLargeObject) {
@@ -103,6 +103,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doModulusTransform(String firstNumber, String secondNumber) {
 		return getTruncFunctionName() + "(" + super.doModulusTransform(firstNumber, secondNumber) + ",0)";
+	}
+	
+	@Override
+	public String doMillisecondTransform(String dateExpression) {
+		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000.0)";
 	}
 
 	@Override
@@ -183,8 +188,8 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfSeconds + ")*1000) MICROSECOND )";
+	public String doAddMillisecondsTransform(String dateValue, String numberOfMillis) {
+		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfMillis + ")*1000) MICROSECOND )";
 	}
 	
 	@Override

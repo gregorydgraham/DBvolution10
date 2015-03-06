@@ -43,7 +43,7 @@ import org.joda.time.Period;
  */
 public class SQLiteDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
 	public static String DATEREPEAT_CREATION_FUNCTION = "DBV_DATEREPEAT_CREATE";
 	public static String DATEREPEAT_EQUALS_FUNCTION = "DBV_DATEREPEAT_EQUALS";
 	public static String DATEREPEAT_LESSTHAN_FUNCTION = "DBV_DATEREPEAT_LESSTHAN";
@@ -63,7 +63,7 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
-		return " DATETIME('" + DATETIME_FORMAT.format(date) + "') ";
+		return " strftime('%Y-%m-%d %H:%M:%f', '" + DATETIME_FORMAT.format(date) + "') ";
 	}
 
 	@Override
@@ -204,6 +204,11 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doMillisecondTransform(String dateExpression) {
+		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL)*1000)-(CAST(strftime('%S', " + dateExpression + ") as INTEGER)*1000))";
+	}
+
+	@Override
 	public String getGreatestOfFunctionName() {
 		return " MAX "; //To change body of generated methods, choose Tools | Templates.
 	}
@@ -248,43 +253,43 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-		return "datetime(" + dateValue + ", (" + numberOfSeconds + ")||' MILLISECOND' )";
+	public String doAddMillisecondsTransform(String dateValue, String numberOfMilliseconds) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMilliseconds + "/1000.0)||' SECOND' )";
 	}
 
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
-		return "datetime(" + dateValue + ", (" + numberOfSeconds + ")||' SECOND')";
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfSeconds + ")||' SECOND')";
 	}
 
 	@Override
 	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
-		return "datetime(" + dateValue + ", (" + numberOfMinutes + ")||' minute')";
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMinutes + ")||' minute')";
 	}
 
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
-		return "datetime(" + dateValue + ", (" + numberOfHours + ")||' hour')";
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfHours + ")||' hour')";
 	}
 	
 	@Override
-	public String doAddDaysTransform(String dayValue, String numberOfDays) {
-		return "datetime(" + dayValue + ", (" + numberOfDays + ")||' days')";
+	public String doAddDaysTransform(String dateValue, String numberOfDays) {
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfDays + ")||' days')";
 	}
 
 	@Override
 	public String doAddWeeksTransform(String dateValue, String numberOfWeeks) {
-		return "datetime(" + dateValue + ", (7*(" + numberOfWeeks + "))||' days')";
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (7*(" + numberOfWeeks + "))||' days')";
 	}
 
 	@Override
 	public String doAddMonthsTransform(String dateValue, String numberOfMonths) {
-		return "datetime(" + dateValue + ", (" + numberOfMonths + ")||' month')";
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMonths + ")||' month')";
 	}
 
 	@Override
 	public String doAddYearsTransform(String dateValue, String numberOfYears) {
-		return "datetime(" + dateValue + ", (" + numberOfYears + ")||' year')";
+		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfYears + ")||' year')";
 	}
 	
 	@Override
@@ -324,7 +329,7 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(cast((strftime('%s',"+otherDateValue+")-strftime('%s',"+dateValue+")) AS real)*1000.0)"; 
+		return "((CAST(strftime('%f',"+dateValue+") AS real)*1000.0)-(CAST(strftime('%s',("+otherDateValue+")) as INTEGER)*1000.0))"; 
 	}
 
 	@Override

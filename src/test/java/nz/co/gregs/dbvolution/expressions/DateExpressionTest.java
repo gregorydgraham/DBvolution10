@@ -421,6 +421,18 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testMillisecondFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).addMilliseconds(5).milliseconds().is(5));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(21));
+	}
+
+	@Test
 	public void testIsInWithNulls() throws SQLException, ParseException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);

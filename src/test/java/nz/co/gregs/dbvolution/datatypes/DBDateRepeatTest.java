@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -262,7 +263,9 @@ public class DBDateRepeatTest extends AbstractTest {
 		@DBColumn
 		DBNumber numberOfMillis = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getMilliseconds());
 		@DBColumn
-		DBDateRepeat addedMillis = new DBDateRepeat(this.column(this.creationDate).addMilliseconds(5).getDateRepeatFrom(march23rd2013));
+		DBString addedMillisDR = new DBString(this.column(this.creationDate).addMilliseconds(5).getDateRepeatFrom(march23rd2013).stringResult());
+		@DBColumn
+		DBNumber addedMillis = new DBNumber(this.column(this.creationDate).addMilliseconds(5).getDateRepeatFrom(march23rd2013).getMilliseconds());
 	}
 
 	@Test
@@ -303,6 +306,17 @@ public class DBDateRepeatTest extends AbstractTest {
 		Assert.assertThat(resultDate.getYear() + 1900, is(2010));
 		Assert.assertThat(resultDate.getMonth() + 1, is(4));
 		Assert.assertThat(resultDate.getDate(), is(2));
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void testRepeatFromTwoDates() {
+		String oneYear = "P1Y0M0D0h0n0s";
+		GregorianCalendar march23rd2013Plus5MillisCalendar = new GregorianCalendar(2013, 2, 23, 12, 34, 56);
+		march23rd2013Plus5MillisCalendar.add(GregorianCalendar.MILLISECOND, 5);
+		Date march23rd2013Plus5Millis = march23rd2013Plus5MillisCalendar.getTime();
+		String resultDate = DateRepeatImpl.repeatFromTwoDates(march23rd2013Plus5Millis, march23rd2013);
+		Assert.assertThat(resultDate,is("P0Y0M0D0h0n0.0050s"));
 	}
 
 	public static class DateRepeatTable extends DBRow {
