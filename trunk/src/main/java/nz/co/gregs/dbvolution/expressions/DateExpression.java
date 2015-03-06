@@ -463,6 +463,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 					}
 				});
 	}
+	
+	public NumberExpression milliseconds() {
+		return new NumberExpression(
+				new UnaryComplicatedNumberFunction(this) {
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doMillisecondTransform(this.only.toSQLString(db));
+					}
+				});
+	}
 
 	/**
 	 * Creates an SQL expression that tests the second part of this date

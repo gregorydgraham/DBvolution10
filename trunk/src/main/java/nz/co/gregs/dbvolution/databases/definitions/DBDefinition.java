@@ -1289,6 +1289,10 @@ public abstract class DBDefinition {
 	public String doSecondTransform(String dateExpression) {
 		return "EXTRACT(SECOND FROM " + dateExpression + ")";
 	}
+	
+	public String doMillisecondTransform(String dateExpression) {
+		return "EXTRACT(MILLISECOND FROM " + dateExpression + ")";
+	}
 
 	/**
 	 * Transforms an SQL snippet into an SQL snippet that provides the index of

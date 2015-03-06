@@ -72,7 +72,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
 		}
 		if (System.getProperty("testMySQL") != null) {
-			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv")});
+			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv")});
 		}
 		if (System.getProperty("testMySQLRDS") != null) {
 			databases.add(new Object[]{"MySQLDB-RDS", new MySQLDB("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv")});
