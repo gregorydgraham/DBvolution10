@@ -59,7 +59,7 @@ public class SQLiteDefinition extends DBDefinition {
 	public static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_DATEREPEAT_HOUR_PART";
 	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
 	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
-	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_DATEREPEAT_MILLI_PART";
+//	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_DATEREPEAT_MILLI_PART";
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -139,12 +139,12 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doCurrentDateOnlyTransform() {
-		return " DATETIME('now','localtime') ";
+		return " strftime('%Y-%m-%d %H:%M:%f', 'now','localtime') ";
 	}
 
 	@Override
 	protected String getCurrentDateTimeFunction() {
-		return " DATETIME('now','localtime') ";
+		return " strftime('%Y-%m-%d %H:%M:%f', 'now','localtime') ";
 	}
 
 	@Override
@@ -203,10 +203,10 @@ public class SQLiteDefinition extends DBDefinition {
 		return " (CAST(strftime('%S', " + dateExpression + ") as INTEGER))";
 	}
 
-	@Override
-	public String doMillisecondTransform(String dateExpression) {
-		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL)*1000)-(CAST(strftime('%S', " + dateExpression + ") as INTEGER)*1000))";
-	}
+//	@Override
+//	public String doMillisecondTransform(String dateExpression) {
+//		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL)*1000)-(CAST(strftime('%S', " + dateExpression + ") as INTEGER)*1000))";
+//	}
 
 	@Override
 	public String getGreatestOfFunctionName() {
@@ -252,10 +252,10 @@ public class SQLiteDefinition extends DBDefinition {
 		return false;
 	}
 
-	@Override
-	public String doAddMillisecondsTransform(String dateValue, String numberOfMilliseconds) {
-		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMilliseconds + "/1000.0)||' SECOND' )";
-	}
+//	@Override
+//	public String doAddMillisecondsTransform(String dateValue, String numberOfMilliseconds) {
+//		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMilliseconds + "/1000.0)||' SECOND' )";
+//	}
 
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
@@ -327,10 +327,10 @@ public class SQLiteDefinition extends DBDefinition {
 		return "cast((strftime('%s',"+otherDateValue+")-strftime('%s',"+dateValue+")) AS real)"; 
 	}
 
-	@Override
-	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "((CAST(strftime('%f',"+dateValue+") AS real)*1000.0)-(CAST(strftime('%s',("+otherDateValue+")) as INTEGER)*1000.0))"; 
-	}
+//	@Override
+//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+//		return "((CAST(strftime('%f',"+dateValue+") AS real)*1000.0)-(CAST(strftime('%s',("+otherDateValue+")) as INTEGER)*1000.0))"; 
+//	}
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
@@ -423,11 +423,6 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doDateRepeatGetSecondsTransform(String intervalStr) {
 		return DATEREPEAT_SECOND_PART_FUNCTION+"("+intervalStr +")";
-	}
-
-	@Override
-	public String doDateRepeatGetMillisecondsTransform(String intervalStr) {
-		return DATEREPEAT_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
 	}
 
 	@Override

@@ -274,10 +274,10 @@ public class OracleDBDefinition extends DBDefinition {
 				+ "+(" + doMinuteDifferenceTransform(dateValue, otherDateValue) + "*60))";
 	}
 
-	@Override
-	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return  "(" + doSecondDifferenceTransform(dateValue, otherDateValue) + "*1000)";
-	}
+//	@Override
+//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+//		return  "(" + doSecondDifferenceTransform(dateValue, otherDateValue) + "*1000)";
+//	}
 
 	@Override
 	public String doInTransform(String column, List<String> values) {

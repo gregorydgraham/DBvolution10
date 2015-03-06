@@ -105,10 +105,10 @@ public class MySQLDBDefinition extends DBDefinition {
 		return getTruncFunctionName() + "(" + super.doModulusTransform(firstNumber, secondNumber) + ",0)";
 	}
 	
-	@Override
-	public String doMillisecondTransform(String dateExpression) {
-		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000.0)";
-	}
+//	@Override
+//	public String doMillisecondTransform(String dateExpression) {
+//		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000.0)";
+//	}
 
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
@@ -145,10 +145,10 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "TIMESTAMPDIFF(SECOND, " + dateValue + "," + otherDateValue + ")";
 	}
 
-	@Override
-	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(TIMESTAMPDIFF(MICROSECOND, " + dateValue + "," + otherDateValue + ")/1000.0)";
-	}
+//	@Override
+//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+//		return "(TIMESTAMPDIFF(MICROSECOND, " + dateValue + "," + otherDateValue + ")/1000.0)";
+//	}
 
 	@Override
 	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper field) {
@@ -187,10 +187,10 @@ public class MySQLDBDefinition extends DBDefinition {
 		return false;
 	}
 
-	@Override
-	public String doAddMillisecondsTransform(String dateValue, String numberOfMillis) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfMillis + ")*1000) MICROSECOND )";
-	}
+//	@Override
+//	public String doAddMillisecondsTransform(String dateValue, String numberOfMillis) {
+//		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfMillis + ")*1000) MICROSECOND )";
+//	}
 	
 	@Override
 	public String doGeometryEqualsTransform(String firstGeometry, String secondGeometry) {

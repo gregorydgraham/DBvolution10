@@ -213,10 +213,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return " GETDATE";
 	}
 
-	@Override
-	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-		return "DATEADD( MILLISECOND, " + numberOfSeconds + "," + dateValue + ")";
-	}
+//	@Override
+//	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
+//		return "DATEADD( MILLISECOND, " + numberOfSeconds + "," + dateValue + ")";
+//	}
 
 		@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
@@ -288,10 +288,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "(DATEDIFF(SECOND, " + dateValue + "," + otherDateValue + "))";
 	}
 
-	@Override
-	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(DATEDIFF(MILLISECOND, " + dateValue + "," + otherDateValue + "))";
-	}
+//	@Override
+//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+//		return "(DATEDIFF(MILLISECOND, " + dateValue + "," + otherDateValue + "))";
+//	}
 
 	@Override
 	public String doTruncTransform(String realNumberExpression, String numberOfDecimalPlacesExpression) {
@@ -329,10 +329,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "DATEPART(SECOND , " + dateExpression + ")";
 	}
 
-	@Override
-	public String doMillisecondTransform(String dateExpression) {
-		return "DATEPART(MILLISECOND , " + dateExpression + ")";
-	}
+//	@Override
+//	public String doMillisecondTransform(String dateExpression) {
+//		return "DATEPART(MILLISECOND , " + dateExpression + ")";
+//	}
 
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.

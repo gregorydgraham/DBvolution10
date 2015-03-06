@@ -150,10 +150,10 @@ public class PostgresDBDefinition extends DBDefinition {
 		return false;
 	}
 
-	@Override
-	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 MILLISECOND' )";
-	}
+//	@Override
+//	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
+//		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 MILLISECOND' )";
+//	}
 	
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
@@ -239,10 +239,10 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1)";
 	}
 
-	@Override
-	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1000)";
-	}
+//	@Override
+//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+//		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1000)";
+//	}
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {

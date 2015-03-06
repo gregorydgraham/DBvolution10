@@ -52,7 +52,7 @@ public class H2DBDefinition extends DBDefinition {
 	public static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_DATEREPEAT_HOUR_PART";
 	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
 	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
-	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_DATEREPEAT_MILLI_PART";
+//	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_DATEREPEAT_MILLI_PART";
 
 
 	@Override
@@ -87,10 +87,10 @@ public class H2DBDefinition extends DBDefinition {
 		return "DATEADD('day'," + numberOfDays + ", " + dayValue + ")";
 	}
 
-	@Override
-	public String doAddMillisecondsTransform(String secondValue, String numberOfSeconds) {
-		return "DATEADD('millisecond'," + numberOfSeconds + "," + secondValue + ")";
-	}
+//	@Override
+//	public String doAddMillisecondsTransform(String secondValue, String numberOfSeconds) {
+//		return "DATEADD('millisecond'," + numberOfSeconds + "," + secondValue + ")";
+//	}
 
 	@Override
 	public String doAddSecondsTransform(String secondValue, String numberOfSeconds) {
@@ -238,10 +238,5 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String doDateRepeatGetSecondsTransform(String intervalStr) {
 		return DATEREPEAT_SECOND_PART_FUNCTION+"("+intervalStr +")";
-	}
-
-	@Override
-	public String doDateRepeatGetMillisecondsTransform(String intervalStr) {
-		return DATEREPEAT_MILLISECOND_PART_FUNCTION+"("+intervalStr +")";
 	}
 }

@@ -1290,9 +1290,9 @@ public abstract class DBDefinition {
 		return "EXTRACT(SECOND FROM " + dateExpression + ")";
 	}
 	
-	public String doMillisecondTransform(String dateExpression) {
-		return "EXTRACT(MILLISECOND FROM " + dateExpression + ")";
-	}
+//	public String doMillisecondTransform(String dateExpression) {
+//		return "EXTRACT(MILLISECOND FROM " + dateExpression + ")";
+//	}
 
 	/**
 	 * Transforms an SQL snippet into an SQL snippet that provides the index of
@@ -2041,9 +2041,9 @@ public abstract class DBDefinition {
 		return true;
 	}
 
-	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfSeconds + ") MILLISECOND )";
-	}
+//	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
+//		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfSeconds + ") MILLISECOND )";
+//	}
 
 	/**
 	 * Does the required transformation to produce an SQL snippet that adds
@@ -2388,9 +2388,9 @@ public abstract class DBDefinition {
 	 * @param otherDateValue otherDateValue
 	 * @return SQL
 	 */
-	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "(DATEDIFF('MILLISECOND', " + dateValue + "," + otherDateValue + "))";
-	}
+//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
+//		return "(DATEDIFF('MILLISECOND', " + dateValue + "," + otherDateValue + "))";
+//	}
 
 	/**
 	 * Create a foreign key clause for use in a CREATE TABLE statement from the
@@ -2763,7 +2763,7 @@ public abstract class DBDefinition {
 		str.append(interval.getDays()+(interval.getWeeks()*7)).append(DateRepeatExpression.DAY_SUFFIX);
 		str.append(interval.getHours()).append(DateRepeatExpression.HOUR_SUFFIX);
 		str.append(interval.getMinutes()).append(DateRepeatExpression.MINUTE_SUFFIX);
-		str.append(interval.getSeconds()+(interval.getMillis()/1000.0)).append(DateRepeatExpression.SECOND_SUFFIX);
+		str.append(interval.getSeconds()).append(DateRepeatExpression.SECOND_SUFFIX);
 		str.append("'");
 		return str.toString();
 	}
@@ -2879,10 +2879,6 @@ public abstract class DBDefinition {
 	}
 
 	public String doDateRepeatGetSecondsTransform(String interval) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	public String doDateRepeatGetMillisecondsTransform(String interval) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
