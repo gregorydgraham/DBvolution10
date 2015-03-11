@@ -1407,19 +1407,19 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				});
 	}
 	
-	public StringExpression stringBefore(String splitBeforeThis) {
-		return stringBefore(value(splitBeforeThis));
+	public StringExpression substringBefore(String splitBeforeThis) {
+		return substringBefore(value(splitBeforeThis));
 	}
 	
-	public StringExpression stringBefore(StringResult splitBeforeThis) {
+	public StringExpression substringBefore(StringResult splitBeforeThis) {
 		return this.locationOf(splitBeforeThis).isGreaterThan(0).ifThenElse(this.substring(0, this.locationOf(splitBeforeThis).minus(1)), value(""));
 	}
 	
-	public StringExpression stringAfter(String splitAfterThis) {
-		return stringAfter(value(splitAfterThis));
+	public StringExpression substringAfter(String splitAfterThis) {
+		return substringAfter(value(splitAfterThis));
 	}
 	
-	public StringExpression stringAfter(StringResult splitAfterThis) {
+	public StringExpression substringAfter(StringResult splitAfterThis) {
 		return this.locationOf(splitAfterThis).isGreaterThan(0).ifThenElse(this.substring(this.locationOf(splitAfterThis), this.length()), value(""));
 	}
 

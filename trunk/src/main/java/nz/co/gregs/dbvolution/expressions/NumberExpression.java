@@ -2051,6 +2051,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		});
 	}
 
+	public static NumberExpression countIf(BooleanResult booleanResult) {
+		return new NumberExpression(new BooleanExpression(booleanResult).ifThenElse(1, 0)).sum();
+	}
+
 	@Override
 	public DBNumber getQueryableDatatypeForExpressionValue() {
 		return new DBNumber();

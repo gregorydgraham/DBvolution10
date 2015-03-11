@@ -1380,6 +1380,9 @@ public abstract class DBDatabase implements Cloneable {
 	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException {
 		return DBReport.getRows(this, report, examples);
 	}
+	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException {
+		return DBReport.getAllRows(this, report, examples);
+	}
 
 	/**
 	 * Get The Rows For The Supplied DBReport Constrained By The Examples.

@@ -106,7 +106,15 @@ public class DBReport extends RowDefinition {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
-		DBQuery query = getDBQuery(database, exampleReport, new DBRow[]{});
+//		DBQuery query = getDBQuery(database, exampleReport, new DBRow[]{});
+//		List<A> reportRows;
+//		query.setBlankQueryAllowed(true);
+//		List<DBQueryRow> allRows = query.getAllRows();
+//		reportRows = getReportsFromQueryResults(allRows, exampleReport);
+		return getAllRows(database, exampleReport, new DBRow[]{});
+	}
+	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport, DBRow... extraExamples) throws SQLException {
+		DBQuery query = getDBQuery(database, exampleReport, extraExamples);
 		List<A> reportRows;
 		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
