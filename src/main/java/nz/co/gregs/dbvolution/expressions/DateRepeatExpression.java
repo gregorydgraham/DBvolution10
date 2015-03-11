@@ -210,7 +210,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
-							getFirst().stringResult().stringBefore(YEAR_SUFFIX).stringAfter(INTERVAL_PREFIX).numberResult()
+							getFirst().stringResult().substringBefore(YEAR_SUFFIX).substringAfter(INTERVAL_PREFIX).numberResult()
 					).toSQLString(db);
 				}
 			}
@@ -228,7 +228,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
-							getFirst().stringResult().stringBefore(MONTH_SUFFIX).stringAfter(YEAR_SUFFIX).numberResult()
+							getFirst().stringResult().substringBefore(MONTH_SUFFIX).substringAfter(YEAR_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
 			}
@@ -246,7 +246,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
-							getFirst().stringResult().stringBefore(DAY_SUFFIX).stringAfter(MONTH_SUFFIX).numberResult()
+							getFirst().stringResult().substringBefore(DAY_SUFFIX).substringAfter(MONTH_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
 			}
@@ -264,7 +264,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
-							getFirst().stringResult().stringBefore(HOUR_SUFFIX).stringAfter(DAY_SUFFIX).numberResult()
+							getFirst().stringResult().substringBefore(HOUR_SUFFIX).substringAfter(DAY_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
 			}
@@ -282,7 +282,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
-							getFirst().stringResult().stringBefore(MINUTE_SUFFIX).stringAfter(HOUR_SUFFIX).numberResult()
+							getFirst().stringResult().substringBefore(MINUTE_SUFFIX).substringAfter(HOUR_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
 			}
@@ -300,7 +300,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
-							getFirst().stringResult().stringBefore(SECOND_SUFFIX).stringAfter(MINUTE_SUFFIX).numberResult()
+							getFirst().stringResult().substringBefore(SECOND_SUFFIX).substringAfter(MINUTE_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
 			}
@@ -318,7 +318,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 //				} else {
 //					return BooleanExpression.isNull(getFirst()).ifThenElse(
 //							NumberExpression.nullExpression(),
-//							getFirst().stringResult().stringBefore(SECOND_SUFFIX).stringAfter(MINUTE_SUFFIX).numberResult().bracket().decimalPart().bracket().times(1000).bracket())
+//							getFirst().stringResult().substringBefore(SECOND_SUFFIX).substringAfter(MINUTE_SUFFIX).numberResult().bracket().decimalPart().bracket().times(1000).bracket())
 //							.toSQLString(db);
 //				}
 //			}

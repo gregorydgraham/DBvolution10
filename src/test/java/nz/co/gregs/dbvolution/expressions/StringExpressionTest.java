@@ -214,7 +214,7 @@ public class StringExpressionTest extends AbstractTest {
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
 
-		query.addCondition(marq.column(marq.name).stringBefore("Y").is("TO"));
+		query.addCondition(marq.column(marq.name).substringBefore("Y").is("TO"));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 		database.print(got);
@@ -229,7 +229,7 @@ public class StringExpressionTest extends AbstractTest {
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
 
-		query.addCondition(marq.column(marq.name).stringAfter("Y").is("OTA"));
+		query.addCondition(marq.column(marq.name).substringAfter("Y").is("OTA"));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 		database.print(got);
@@ -244,7 +244,7 @@ public class StringExpressionTest extends AbstractTest {
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
 
-		query.addCondition(marq.column(marq.name).stringBefore("Y").stringAfter("T").is("O"));
+		query.addCondition(marq.column(marq.name).substringBefore("Y").substringAfter("T").is("O"));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 		database.print(got);
