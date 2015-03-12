@@ -521,6 +521,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return a BooleanExpression comparing the DateResult and this
 	 * DateExpression.
 	 */
+	@Override
 	public BooleanExpression is(DateResult dateExpression) {
 		BooleanExpression isExpr = new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
 			@Override
