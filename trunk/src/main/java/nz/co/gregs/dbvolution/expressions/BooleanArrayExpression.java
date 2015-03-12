@@ -28,7 +28,6 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author gregory.graham
  */
-// TODO imlement EqualsComparable<BooleanArrayExpression>
 public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<BooleanArrayResult> {
 
 	private final BooleanArrayResult innerBooleanArrayResult;
