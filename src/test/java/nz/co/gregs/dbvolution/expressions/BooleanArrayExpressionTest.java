@@ -15,12 +15,21 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static org.hamcrest.Matchers.*;
+import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -77,5 +86,85 @@ public class BooleanArrayExpressionTest extends AbstractTest{
 		boolean expResult = true;
 		boolean result = instance.isPurelyFunctional();
 		assertEquals(expResult, result);
+	}
+
+	@Test
+	public void testIsExpression() throws SQLException {
+		final BooleanArrayExpressionTable tab = new BooleanArrayExpressionTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(tab);
+		database.createTable(tab);
+		tab.boolArrayColumn.setValue(new Boolean[]{true,false,true,true});
+		database.insert(tab);
+		
+		final BooleanArrayExpressionTable example = new BooleanArrayExpressionTable();
+		DBQuery dbQuery = database.getDBQuery(example);
+		dbQuery.addCondition(example.column(example.boolArrayColumn).is(new Boolean[]{true,false,true,true}));
+		List<BooleanArrayExpressionTable> allRows = dbQuery.getAllInstancesOf(example);
+		Assert.assertThat(allRows.size(), is(1));
+		
+		dbQuery = database.getDBQuery(example);
+		dbQuery.addCondition(example.column(example.boolArrayColumn).is(new Boolean[]{false,false,true,true}));
+		allRows = dbQuery.getAllInstancesOf(example);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIsExpressionWithNull() throws SQLException {
+		BooleanArrayExpressionTable tab = new BooleanArrayExpressionTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(tab);
+		database.createTable(tab);
+		tab.boolArrayColumn.setValue(new Boolean[]{true,false,true,true});
+		database.insert(tab);
+		tab = new BooleanArrayExpressionTable();
+		tab.boolArrayColumn.setValue(null);
+		database.insert(tab);
+		
+		final BooleanArrayExpressionTable example = new BooleanArrayExpressionTable();
+		DBQuery dbQuery = database.getDBQuery(example);
+		dbQuery.addCondition(example.column(example.boolArrayColumn).is((DBBooleanArray)null));
+		List<BooleanArrayExpressionTable> allRows = dbQuery.getAllInstancesOf(example);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).pk.intValue(), is(2));
+		
+		dbQuery = database.getDBQuery(example);
+		dbQuery.addCondition(example.column(example.boolArrayColumn).is((DBBooleanArray)null).not());
+		allRows = dbQuery.getAllInstancesOf(example);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).pk.intValue(), is(1));
+	}
+
+	@Test
+	public void testIsExpressionWithBooleanArrayResult() throws SQLException {
+		final BooleanArrayExpressionTable tab = new BooleanArrayExpressionTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(tab);
+		database.createTable(tab);
+		tab.boolArrayColumn.setValue(new Boolean[]{true,false,true,true});
+		database.insert(tab);
+		
+		final BooleanArrayExpressionTable example = new BooleanArrayExpressionTable();
+		DBQuery dbQuery = database.getDBQuery(example);
+		dbQuery.addCondition(example.column(example.boolArrayColumn).is(new DBBooleanArray(new Boolean[]{true,false,true,true})));
+		List<BooleanArrayExpressionTable> allRows = dbQuery.getAllInstancesOf(example);
+		Assert.assertThat(allRows.size(), is(1));
+		
+		dbQuery = database.getDBQuery(example);
+		dbQuery.addCondition(example.column(example.boolArrayColumn).is(new DBBooleanArray(new Boolean[]{false,false,true,true})));
+		allRows = dbQuery.getAllInstancesOf(example);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+	
+	public static class BooleanArrayExpressionTable extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		DBInteger pk = new DBInteger();
+
+		@DBColumn
+		DBBooleanArray boolArrayColumn = new DBBooleanArray();
 	}
 }
