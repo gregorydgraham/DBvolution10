@@ -613,7 +613,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	/**
 	 * Creates an expression that will always return FALSE.
 	 *
-	 * @return an expression that will always evaluate to TRUE.
+	 * @return an expression that will always evaluate to FALSE.
 	 */
 	public static BooleanExpression falseExpression() {
 		return new BooleanExpression() {
