@@ -53,7 +53,7 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 	 * @param row the row containing the field
 	 * @param field the field representing the column
 	 */
-	public BooleanArrayColumn(RowDefinition row, byte[] field) {
+	public BooleanArrayColumn(RowDefinition row, boolean[] field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -74,7 +74,16 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 
 	@Override
 	public BooleanArrayColumn copy() {
-		return (BooleanArrayColumn) super.copy();
+		BooleanArrayColumn newColumn;
+		RowDefinition instanceOfRow = column.getRowDefinition();
+		Object field = column.getField();
+		if (field instanceof DBBooleanArray){
+			newColumn = new BooleanArrayColumn(instanceOfRow,(DBBooleanArray)field);
+		}else {
+			newColumn = new BooleanArrayColumn(instanceOfRow,(boolean[])field);
+		}
+		
+		return newColumn;
 	}
 
 	@Override

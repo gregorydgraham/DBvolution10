@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -62,8 +63,8 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 * Creates a DBBits with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBBits will be set as having the value provided but will
-	 * not be defined in the database.
+	 * The resulting DBBits will be set as having the value provided but will not
+	 * be defined in the database.
 	 *
 	 * @param bools	bits
 	 */
@@ -109,8 +110,9 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	protected Boolean[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		Boolean[] result = new Boolean[]{};
 		if (database.getDefinition().supportsArraysNatively()) {
-			Object array = resultSet.getArray(fullColumnName).getArray();
+			Array sqlArray = resultSet.getArray(fullColumnName);
 			if (!resultSet.wasNull()) {
+				Object array = sqlArray.getArray();
 				if (array instanceof Object[]) {
 					Object[] objArray = (Object[]) array;
 					if (objArray.length > 0) {
@@ -125,6 +127,8 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 						}
 					}
 				}
+			} else {
+				return null;
 			}
 		} else {
 			String string = resultSet.getString(fullColumnName);

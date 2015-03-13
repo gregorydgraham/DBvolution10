@@ -48,6 +48,10 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 		this.innerBooleanArrayResult = bitResult;
 	}
 
+	private BooleanArrayExpression(Boolean[] bools) {
+		this.innerBooleanArrayResult = new DBBooleanArray(bools);
+	}
+
 	@Override
 	public BooleanArrayExpression copy() {
 		return new BooleanArrayExpression(this.getInnerBooleanArrayResult());
@@ -117,6 +121,24 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 * provided to this BooleanArrayExpression using the equivalent of the
 	 * EQUALS operator.
 	 *
+	 * @param bools the value to compare this expression to
+	 * @return a BooleanExpresson of the Bit comparison of the number and this
+	 * expression.
+	 */
+	public BooleanExpression is(Boolean[] bools) {
+		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, new BooleanArrayExpression(bools)) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " = ";
+			}
+		});
+	}
+
+	/**
+	 * Create a BooleanExpression that will compare the BooleanArrayResult
+	 * provided to this BooleanArrayExpression using the equivalent of the
+	 * EQUALS operator.
+	 *
 	 * @param i the value to compare this expression to
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
 	 * expression.
@@ -139,7 +161,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 		DBBinaryBooleanArithmetic(BooleanArrayExpression first, BooleanArrayResult second) {
 			this.first = first;
 			this.second = second;
-			if (this.second == null || this.second.getIncludesNull()) {
+			if (this.second == null || this.second == null || this.second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
 		}
