@@ -402,4 +402,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public boolean supportsHyperbolicFunctionsNatively() {
 		return false;
 	}
+	
+	@Override
+	public String doStringToNumberTransform(String stringResultContainingANumber) {
+		return "(CAST(0.0 as numeric(15,10))+(" + stringResultContainingANumber + "))";
+	}
+
+
 }
