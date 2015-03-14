@@ -25,6 +25,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -676,6 +677,16 @@ public class BooleanExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
+		
+		dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(
+				BooleanExpression.isNull((ColumnProvider)marque.column(marque.updateCount))
+		);
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
 
 		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", datetimeFormat.parse(firstDateStr), 4, null);
 		database.insert(newMarque);
@@ -734,6 +745,16 @@ public class BooleanExpressionTest extends AbstractTest {
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(4));
+
+		dbQuery = database.getDBQuery(carCo);
+
+		dbQuery.addCondition(
+				BooleanExpression.isNotNull((ColumnProvider)carCo.column(carCo.name))
+		);
+
+		allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(4));
 
