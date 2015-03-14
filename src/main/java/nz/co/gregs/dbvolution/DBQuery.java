@@ -406,9 +406,24 @@ public class DBQuery {
 					colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
 
 					// Now deal with the GROUP BY and ORDER BY clause requirements
-					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
-					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-					indexesOfSelectedColumns.put(propWrapper.getDefinition(), columnIndex);
+					DBExpression expression = propWrapper.getColumnExpression();
+					if(expression!=null&& expression.isAggregator()){
+						details.setGroupByRequiredByAggregator(true);
+					}
+					if (expression==null||
+							(!expression.isAggregator()
+							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns()))
+							) {
+						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
+						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
+						if (expression!=null){
+							groupByClause.append(groupByColSep).append(expression.toSQLString(getDatabase()));
+							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+						}
+
+						indexesOfSelectedColumns.put(propWrapper.getDefinition(), columnIndex);
+					}
+
 					columnIndex++;
 				}
 				if (!options.isUseANSISyntax()) {
@@ -456,11 +471,17 @@ public class DBQuery {
 				final DBExpression expression = entry.getValue();
 				selectClause.append(colSep).append(expression.toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
 				colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+				if(expression.isAggregator()){
+						details.setGroupByRequiredByAggregator(true);
+				}
 				if (!expression.isAggregator() &&
 						(!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())
 						) {
 					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
+					groupByClause.append(groupByColSep).append(expression.toSQLString(getDatabase()));
+					groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+
 				}
 				indexesOfSelectedExpressions.put(expression, columnIndex);
 				columnIndex++;
@@ -485,8 +506,14 @@ public class DBQuery {
 			}
 
 			if (queryType == QueryType.SELECT) {
-				// Clean up the formatting of the optional clauses
-				String groupByClauseFinal = (details.getDbReportGroupByColumns().size() > 0 ? (useColumnIndexGroupBy ? groupByColumnIndex : groupByClause.toString()) + lineSep : "");
+				String groupByClauseFinal= "";
+				if (details.isGroupedQuery()) {
+					if (useColumnIndexGroupBy) {
+						groupByClauseFinal = groupByColumnIndex;
+					} else {
+						groupByClauseFinal = groupByClause.toString() + lineSep;
+					}
+				}
 				String orderByClauseFinal = getOrderByClause(indexesOfSelectedColumns, indexesOfSelectedExpressions);
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
@@ -615,7 +642,7 @@ public class DBQuery {
 
 					setExpressionColumns(resultSet, queryRow);
 
-					setQueryRowFromResultSet(resultSet, queryRow, details.getDbReportGroupByColumns().size() > 0);
+					setQueryRowFromResultSet(resultSet, queryRow, details.isGroupedQuery());
 					results.add(queryRow);
 				}
 			} finally {

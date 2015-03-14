@@ -42,6 +42,7 @@ public class QueryDetails {
 	private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
 	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<Object, DBExpression>();
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
+	private boolean groupByRequiredByAggregator = false;
 
 	/**
 	 * @return the allQueryTables
@@ -111,6 +112,18 @@ public class QueryDetails {
 	 */
 	public Map<Class<?>, Map<String, DBRow>> getExistingInstances() {
 		return existingInstances;
+	}
+
+	public void setGroupByRequiredByAggregator(boolean b) {
+		this.groupByRequiredByAggregator = true;
+	}
+
+	public boolean getGroupByRequiredByAggregator() {
+		return this.groupByRequiredByAggregator;
+	}
+
+	public boolean isGroupedQuery() {
+		return getDbReportGroupByColumns().size() > 0 || getGroupByRequiredByAggregator();
 	}
 
 }

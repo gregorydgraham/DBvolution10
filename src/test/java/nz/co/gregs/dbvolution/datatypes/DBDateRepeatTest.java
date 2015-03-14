@@ -82,7 +82,7 @@ public class DBDateRepeatTest extends AbstractTest {
 
 	@Test
 	public void testDateExpressionProducingDateRepeats() throws SQLException {
-		Marque marq;
+		MarqueWithDateRepeatExprCol marq;
 		marq = new MarqueWithDateRepeatExprCol();
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
