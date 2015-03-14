@@ -19,7 +19,6 @@ import com.vividsolutions.jts.geom.*;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -47,8 +46,8 @@ public class SpatialTest extends AbstractTest {
 			database.dropTableNoExceptions(spatial);
 			database.createTable(spatial);
 
-			GeometryFactory fac = new GeometryFactory();
-			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			GeometryFactory geoFactory = new GeometryFactory();
+			Point createPoint = geoFactory.createPoint(new Coordinate(5, 10));
 			spatial.myfirstgeom.setValue(createPoint);
 			database.insert(spatial);
 
@@ -58,7 +57,7 @@ public class SpatialTest extends AbstractTest {
 			Assert.assertThat(allRows.get(0).myfirstgeom.getValue().getGeometryType(), is("Point"));
 			Assert.assertThat(allRows.get(0).myfirstgeom.getValue().equals(createPoint), is(true));
 			
-			createPoint = fac.createPoint(new Coordinate(12, 12));
+			createPoint = geoFactory.createPoint(new Coordinate(12, 12));
 			spatial = new BasicSpatialTable();
 			spatial.myfirstgeom.setValue(createPoint);
 			database.insert(spatial);
