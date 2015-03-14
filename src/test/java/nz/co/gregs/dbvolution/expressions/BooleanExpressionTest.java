@@ -24,8 +24,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -733,6 +735,29 @@ public class BooleanExpressionTest extends AbstractTest {
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
+	}
+	
+	public static class MarqueWithBooleanExpressionCount extends DBReport {
+
+		private static final long serialVersionUID = 1L;
+		
+		public Marque marque = new Marque();
+		public DBBoolean greaterThan3 = new DBBoolean(marque.column(marque.carCompany).isGreaterThan(3));
+		public DBNumber counted = new DBNumber(marque.column(marque.carCompany).isGreaterThan(3).count());
+		
+	}
+
+	@Test
+	public void testCount() throws SQLException, ParseException {
+		MarqueWithBooleanExpressionCount marque = new MarqueWithBooleanExpressionCount();
+		List<MarqueWithBooleanExpressionCount> allRows = database.getAllRows(marque);
+
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).greaterThan3.booleanValue(), is(true));
+		Assert.assertThat(allRows.get(1).greaterThan3.booleanValue(), is(false));
+		Assert.assertThat(allRows.get(0).counted.intValue(), is(16));
+		Assert.assertThat(allRows.get(1).counted.intValue(), is(6));
 	}
 
 	@Test
