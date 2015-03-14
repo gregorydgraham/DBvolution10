@@ -73,7 +73,7 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 
 	@Override
 	public boolean isAggregator() {
-		return innerGeometry.isAggregator();
+		return innerGeometry == null ? false : innerGeometry.isAggregator();
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return innerGeometry.isPurelyFunctional();
+		return innerGeometry == null ? true : innerGeometry.isPurelyFunctional();
 	}
 
 	@Override
@@ -226,7 +226,7 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 
 	public GeometryExpression exteriorRing() {
 		GeometryExpression exteriorRingExpr = new GeometryExpression(new GeometryWithGeometryResult(this) {
-			
+
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
 				return db.getDefinition().doGeometryGetExteriorRingTransform(getFirst().toSQLString(db));
@@ -335,7 +335,6 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 //		GeometryResult getSecond() {
 //			return second;
 //		}
-
 		@Override
 		public final String toSQLString(DBDatabase db) {
 			if (this.getIncludesNull()) {
@@ -376,7 +375,7 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() ;//|| second.isAggregator();
+			return first.isAggregator();//|| second.isAggregator();
 		}
 
 		@Override
@@ -384,7 +383,6 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 			return requiresNullProtection;
 		}
 	}
-
 
 	private static abstract class GeometryWithGeometryResult extends GeometryExpression {
 
@@ -407,7 +405,6 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 //		GeometryResult getSecond() {
 //			return second;
 //		}
-
 		@Override
 		public final String toSQLString(DBDatabase db) {
 			if (this.getIncludesNull()) {
@@ -448,7 +445,7 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() ;//|| second.isAggregator();
+			return first.isAggregator();//|| second.isAggregator();
 		}
 
 		@Override

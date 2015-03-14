@@ -89,7 +89,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return innerDateRepeatResult.isPurelyFunctional();
+		return innerDateRepeatResult == null ? true : innerDateRepeatResult.isPurelyFunctional();
 	}
 
 	@Override
@@ -325,7 +325,6 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 //		}
 //		);
 //	}
-
 	/**
 	 * Converts the interval expression into a string/character expression.
 	 *

@@ -737,27 +737,61 @@ public class BooleanExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(1));
 	}
 	
-	public static class MarqueWithBooleanExpressionCount extends DBReport {
+	public static class MarqueReportWithBooleanExpressionCount extends DBReport {
 
 		private static final long serialVersionUID = 1L;
 		
 		public Marque marque = new Marque();
+		@DBColumn
 		public DBBoolean greaterThan3 = new DBBoolean(marque.column(marque.carCompany).isGreaterThan(3));
+		@DBColumn
 		public DBNumber counted = new DBNumber(marque.column(marque.carCompany).isGreaterThan(3).count());
+		{
+			this.setSortOrder(greaterThan3, counted);
+		}
 		
 	}
 
 	@Test
 	public void testCount() throws SQLException, ParseException {
-		MarqueWithBooleanExpressionCount marque = new MarqueWithBooleanExpressionCount();
-		List<MarqueWithBooleanExpressionCount> allRows = database.getAllRows(marque);
+		MarqueReportWithBooleanExpressionCount marque = new MarqueReportWithBooleanExpressionCount();
+		List<MarqueReportWithBooleanExpressionCount> allRows = database.getAllRows(marque);
 
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
-		Assert.assertThat(allRows.get(0).greaterThan3.booleanValue(), is(true));
-		Assert.assertThat(allRows.get(1).greaterThan3.booleanValue(), is(false));
-		Assert.assertThat(allRows.get(0).counted.intValue(), is(16));
-		Assert.assertThat(allRows.get(1).counted.intValue(), is(6));
+		Assert.assertThat(allRows.get(0).greaterThan3.booleanValue(), is(false));
+		Assert.assertThat(allRows.get(1).greaterThan3.booleanValue(), is(true));
+		Assert.assertThat(allRows.get(0).counted.intValue(), is(6));
+		Assert.assertThat(allRows.get(1).counted.intValue(), is(16));
+	}
+	
+	public static class MarqueWithBooleanExpressionCount extends Marque {
+
+		private static final long serialVersionUID = 1L;
+		
+		@DBColumn
+		public DBBoolean greaterThan3 = new DBBoolean(this.column(this.carCompany).isGreaterThan(3));
+		@DBColumn
+		public DBNumber counted = new DBNumber(this.column(this.carCompany).isGreaterThan(3).count());
+		{
+			this.setReturnFields(greaterThan3, counted);
+		}
+	}
+
+	@Test
+	public void testCountUsingDBRow() throws SQLException, ParseException {
+		MarqueWithBooleanExpressionCount marque = new MarqueWithBooleanExpressionCount();
+		final DBQuery dbQuery = database.getDBQuery(marque);
+		dbQuery.setBlankQueryAllowed(true);
+		dbQuery.setSortOrder(marque.column(marque.greaterThan3));
+		List<MarqueWithBooleanExpressionCount> allRows = dbQuery.getAllInstancesOf(marque);
+
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).greaterThan3.booleanValue(), is(false));
+		Assert.assertThat(allRows.get(0).counted.intValue(), is(6));
+		Assert.assertThat(allRows.get(1).greaterThan3.booleanValue(), is(true));
+		Assert.assertThat(allRows.get(1).counted.intValue(), is(16));
 	}
 
 	@Test
