@@ -68,7 +68,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 public class BooleanExpression implements BooleanResult, EqualComparable<BooleanResult> {
 
 	private final BooleanResult onlyBool;
-	private boolean includeNulls;
+	private boolean includeNulls = false;
 
 	/**
 	 * Default Constructor for creating new BooleanExpressions.
@@ -598,6 +598,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 */
 	public NumberExpression count() {
 		return new NumberExpression(new DBUnaryNumberFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				String valueToCount = db.getDefinition().transformToStorableType(onlyBool).toSQLString(db);
+				return this.beforeValue(db) + (onlyBool == null ? "" : valueToCount) + this.afterValue(db);
+			}
+			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getCountFunctionName();

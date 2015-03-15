@@ -174,11 +174,6 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 		return false;
 	}
 
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		return new HashSet<DBRow>();
-	}
-
 	/**
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of

@@ -417,7 +417,7 @@ public class DBQuery {
 						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
 						if (expression!=null){
-							groupByClause.append(groupByColSep).append(expression.toSQLString(getDatabase()));
+							groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
 							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 						}
 
@@ -469,7 +469,7 @@ public class DBQuery {
 			for (Map.Entry<Object, DBExpression> entry : details.getExpressionColumns().entrySet()) {
 				final Object key = entry.getKey();
 				final DBExpression expression = entry.getValue();
-				selectClause.append(colSep).append(expression.toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
+				selectClause.append(colSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
 				colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
 				if(expression.isAggregator()){
 						details.setGroupByRequiredByAggregator(true);
@@ -479,7 +479,7 @@ public class DBQuery {
 						) {
 					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-					groupByClause.append(groupByColSep).append(expression.toSQLString(getDatabase()));
+					groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
 					groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 
 				}
@@ -490,7 +490,7 @@ public class DBQuery {
 			for (Map.Entry<Object, DBExpression> entry : details.getDbReportGroupByColumns().entrySet()) {
 				final DBExpression expression = entry.getValue();
 				if ((!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
-					groupByClause.append(groupByColSep).append(expression.toSQLString(getDatabase()));
+					groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
 					groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 				}
 			}
@@ -1324,7 +1324,7 @@ public class DBQuery {
 					sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 				} else {
 					if (qdt.hasColumnExpression()) {
-						final String dbColumnName = qdt.getColumnExpression().toSQLString(getDatabase());
+						final String dbColumnName = defn.transformToStorableType(qdt.getColumnExpression()).toSQLString(getDatabase());
 						if (dbColumnName != null) {
 							orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
 							sortSeparator = defn.getSubsequentOrderByClauseSeparator();

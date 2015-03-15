@@ -519,7 +519,7 @@ public class PropertyWrapperDefinition {
 		DBDefinition defn = db.getDefinition();
 		checkForColumnAlias(actualRow);
 		if (hasColumnExpression()) {
-			return getColumnExpression().toSQLString(db);
+			return db.getDefinition().transformToStorableType(getColumnExpression()).toSQLString(db);
 		} else {
 			return defn.formatTableAliasAndColumnName(actualRow, getColumnName());
 		}

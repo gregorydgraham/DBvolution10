@@ -831,6 +831,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
+		if (getColumnExpression()!=null){
+			return getColumnExpression().getTablesInvolved();
+		}
 		return new HashSet<DBRow>();
 	}
 
