@@ -736,6 +736,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
+	@Override
 	public BooleanExpression isGreaterThan(NumberResult number) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, number) {
 			@Override
@@ -2677,6 +2678,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return first.isPurelyFunctional()&&second.isPurelyFunctional();
+		}
 	}
 
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
@@ -2771,7 +2777,17 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 				result = result || numer.isAggregator();
 			}
 			return result;
+		}		
+		
+		@Override
+		public boolean isPurelyFunctional() {
+			boolean result = getColumn().isPurelyFunctional();
+			for (NumberResult numer : getValues()) {
+				result = result && numer.isPurelyFunctional();
+			}
+			return result;
 		}
+
 
 		@Override
 		public boolean getIncludesNull() {

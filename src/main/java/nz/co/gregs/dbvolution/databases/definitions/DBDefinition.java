@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -2887,6 +2888,10 @@ public abstract class DBDefinition {
 
 	public boolean supportsCotangentFunction() {
 		return true;
+	}
+
+	public DBExpression transformToStorableType(DBExpression columnExpression) {
+		return columnExpression;
 	}
 
 }

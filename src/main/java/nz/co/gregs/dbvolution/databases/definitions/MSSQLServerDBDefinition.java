@@ -21,6 +21,8 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -34,7 +36,7 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * @author Gregory Graham
  */
 public class MSSQLServerDBDefinition extends DBDefinition {
-	
+
 	private static final String[] reservedWordsArray = new String[]{"ADD", "EXTERNAL", "PROCEDURE", "ALL", "FETCH", "PUBLIC", "ALTER", "FILE", "RAISERROR", "AND", "FILLFACTOR", "READ", "ANY", "FOR", "READTEXT", "AS", "FOREIGN", "RECONFIGURE", "ASC", "FREETEXT", "REFERENCES", "AUTHORIZATION", "FREETEXTTABLE", "REPLICATION", "BACKUP", "FROM", "RESTORE", "BEGIN", "FULL", "RESTRICT", "BETWEEN", "FUNCTION", "RETURN", "BREAK", "GOTO", "REVERT", "BROWSE", "GRANT", "REVOKE", "BULK", "GROUP", "RIGHT", "BY", "HAVING", "ROLLBACK", "CASCADE", "HOLDLOCK", "ROWCOUNT", "CASE", "IDENTITY", "ROWGUIDCOL", "CHECK", "IDENTITY_INSERT", "RULE", "CHECKPOINT", "IDENTITYCOL", "SAVE", "CLOSE", "IF", "SCHEMA", "CLUSTERED", "IN", "SECURITYAUDIT", "COALESCE", "INDEX", "SELECT", "COLLATE", "INNER", "SEMANTICKEYPHRASETABLE", "COLUMN", "INSERT", "SEMANTICSIMILARITYDETAILSTABLE", "COMMIT", "INTERSECT", "SEMANTICSIMILARITYTABLE", "COMPUTE", "INTO", "SESSION_USER", "CONSTRAINT", "IS", "SET", "CONTAINS", "JOIN", "SETUSER", "CONTAINSTABLE", "KEY", "SHUTDOWN", "CONTINUE", "KILL", "SOME", "CONVERT", "LEFT", "STATISTICS", "CREATE", "LIKE", "SYSTEM_USER", "CROSS", "LINENO", "TABLE", "CURRENT", "LOAD", "TABLESAMPLE", "CURRENT_DATE", "MERGE", "TEXTSIZE", "CURRENT_TIME", "NATIONAL", "THEN", "CURRENT_TIMESTAMP", "NOCHECK", "TO", "CURRENT_USER", "NONCLUSTERED", "TOP", "CURSOR", "NOT", "TRAN", "DATABASE", "NULL", "TRANSACTION", "DBCC", "NULLIF", "TRIGGER", "DEALLOCATE", "OF", "TRUNCATE", "DECLARE", "OFF", "TRY_CONVERT", "DEFAULT", "OFFSETS", "TSEQUAL", "DELETE", "ON", "UNION", "DENY", "OPEN", "UNIQUE", "DESC", "OPENDATASOURCE", "UNPIVOT", "DISK", "OPENQUERY", "UPDATE", "DISTINCT", "OPENROWSET", "UPDATETEXT", "DISTRIBUTED", "OPENXML", "USE", "DOUBLE", "OPTION", "USER", "DROP", "OR", "VALUES", "DUMP", "ORDER", "VARYING", "ELSE", "OUTER", "VIEW", "END", "OVER", "WAITFOR", "ERRLVL", "PERCENT", "WHEN", "ESCAPE", "PIVOT", "WHERE", "EXCEPT", "PLAN", "WHILE", "EXEC", "PRECISION", "WITH", "EXECUTE", "PRIMARY", "WITHIN GROUP", "EXISTS", "PRINT", "WRITETEXT", "EXIT", "PROC"};
 	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
 
@@ -141,8 +143,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * like it or not.
 	 *
 	 * <p>
-	 * While this seems useful, in fact it prevents checking for incorrect
-	 * strings and breaks the industrial standard.
+	 * While this seems useful, in fact it prevents checking for incorrect strings
+	 * and breaks the industrial standard.
 	 *
 	 * @param firstSQLExpression
 	 * @param secondSQLExpression
@@ -217,8 +219,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 //	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
 //		return "DATEADD( MILLISECOND, " + numberOfSeconds + "," + dateValue + ")";
 //	}
-
-		@Override
+	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "DATEADD( SECOND, " + numberOfSeconds + "," + dateValue + ")";
 	}
@@ -292,7 +293,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 //	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
 //		return "(DATEDIFF(MILLISECOND, " + dateValue + "," + otherDateValue + "))";
 //	}
-
 	@Override
 	public String doTruncTransform(String realNumberExpression, String numberOfDecimalPlacesExpression) {
 		//When the third parameter != 0 it truncates rather than rounds
@@ -333,10 +333,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 //	public String doMillisecondTransform(String dateExpression) {
 //		return "DATEPART(MILLISECOND , " + dateExpression + ")";
 //	}
-
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.
-	 * 
+	 *
 	 * @return FALSE
 	 */
 	@Override
@@ -346,7 +345,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	/**
 	 * MS SQLServer does not support the GREATESTOF operation natively.
-	 * 
+	 *
 	 * @return FALSE
 	 */
 	@Override
@@ -355,8 +354,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * MS SQLServer does not support the grouping by columns that do not access table data.
-	 * 
+	 * MS SQLServer does not support the grouping by columns that do not access
+	 * table data.
+	 *
 	 * @return FALSE
 	 */
 	@Override
@@ -375,7 +375,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String doNumberToStringTransform(String numberExpression) {
 		DBString dbs = new DBString();
-		return "CONVERT(NVARCHAR(1000), "+numberExpression+")";
+		return "CONVERT(NVARCHAR(1000), " + numberExpression + ")";
 	}
 
 	@Override
@@ -385,7 +385,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " datepart(dw,("+dateSQL+"))";
+		return " datepart(dw,(" + dateSQL + "))";
 	}
 
 	@Override
@@ -402,11 +402,19 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public boolean supportsHyperbolicFunctionsNatively() {
 		return false;
 	}
-	
+
 	@Override
 	public String doStringToNumberTransform(String stringResultContainingANumber) {
 		return "(CAST(0.0 as numeric(15,10))+(" + stringResultContainingANumber + "))";
 	}
 
+	@Override
+	public DBExpression transformToStorableType(DBExpression columnExpression) {
+		if (columnExpression instanceof BooleanExpression) {
+			return ((BooleanExpression) columnExpression).ifThenElse(1, 0);
+		} else {
+			return super.transformToStorableType(columnExpression);
+		}
+	}
 
 }

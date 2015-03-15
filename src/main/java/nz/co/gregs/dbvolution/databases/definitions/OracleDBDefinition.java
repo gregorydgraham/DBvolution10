@@ -25,6 +25,8 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -343,4 +345,12 @@ public class OracleDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	@Override
+	public DBExpression transformToStorableType(DBExpression columnExpression) {
+		if (columnExpression instanceof BooleanExpression) {
+			return ((BooleanExpression) columnExpression).ifThenElse(1, 0);
+		} else {
+			return super.transformToStorableType(columnExpression);
+		}
+	}
 }
