@@ -104,8 +104,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 *
 	 * <p>
 	 * BooleanExpressions generally wrap other BooleanExpressions or similar
-	 * objects and add functionality to them. Use this constructor to wrap a
-	 * known value for use in a BooleanExpression.
+	 * objects and add functionality to them. Use this constructor to wrap a known
+	 * value for use in a BooleanExpression.
 	 *
 	 *
 	 */
@@ -138,10 +138,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -150,8 +149,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * </ul>
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static BooleanExpression value(Boolean bool) {
 		return new BooleanExpression(bool);
@@ -162,8 +161,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * operator, that is "=" or similar.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(Boolean bool) {
 		return is(new BooleanExpression(bool));
@@ -177,8 +176,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(BooleanExpression bool) {
 		return is((BooleanResult) bool);
@@ -192,8 +191,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	@Override
 	public BooleanExpression is(BooleanResult bool) {
@@ -465,8 +464,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL,
-	 * otherwise FALSE.
+	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL, otherwise
+	 * FALSE.
 	 *
 	 * <p>
 	 * DBExpression subclasses include
@@ -597,22 +596,11 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @return a NumberExpression to add to a DBReport field.
 	 */
 	public NumberExpression count() {
-		return new NumberExpression(new DBUnaryNumberFunction(this) {
+		return new NumberExpression(new DBBooleanAggregatorFunctionReturningNumber(this) {
 
-			@Override
-			public String toSQLString(DBDatabase db) {
-				String valueToCount = db.getDefinition().transformToStorableType(onlyBool).toSQLString(db);
-				return this.beforeValue(db) + (onlyBool == null ? "" : valueToCount) + this.afterValue(db);
-			}
-			
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getCountFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
 			}
 		});
 	}
@@ -671,9 +659,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -691,11 +679,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * type of the same.
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
-	 * @param whenEqualsFallbackComparison the comparison used when the ColumnA and ValueA are equal.
+	 * @param whenEqualsFallbackComparison the comparison used when the ColumnA
+	 * and ValueA are equal.
 	 * @return a BooleanExpression
 	 */
-	public static <A extends DBExpression, Z extends RangeComparable<? super A>> 
-		BooleanExpression seekLessThan(Z columnA, A valueA, BooleanExpression whenEqualsFallbackComparison) {
+	public static <A extends DBExpression, Z extends RangeComparable<? super A>>
+			BooleanExpression seekLessThan(Z columnA, A valueA, BooleanExpression whenEqualsFallbackComparison) {
 		return columnA.isLessThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
 	}
 
@@ -703,9 +692,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -723,63 +712,64 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * type of the same.
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
-	 * @param whenEqualsFallbackComparison the comparison used when the ColumnA and ValueA are equal.
+	 * @param whenEqualsFallbackComparison the comparison used when the ColumnA
+	 * and ValueA are equal.
 	 * @return a BooleanExpression
 	 */
-	public static <A extends DBExpression, Z extends RangeComparable<? super A>> 
-		BooleanExpression seekGreaterThan(Z columnA, A valueA, BooleanExpression whenEqualsFallbackComparison) {
+	public static <A extends DBExpression, Z extends RangeComparable<? super A>>
+			BooleanExpression seekGreaterThan(Z columnA, A valueA, BooleanExpression whenEqualsFallbackComparison) {
 		return columnA.isGreaterThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
 	}
 
-	public static 
-		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>> 
-		BooleanExpression 
-		seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB) {
+	public static
+			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>>
+			BooleanExpression
+			seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), columnB.isLessThanOrEqual(valueB)));
 	}
 
-	public static 
-		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>> 
-		BooleanExpression 
-		seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB) {
+	public static
+			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>>
+			BooleanExpression
+			seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), columnB.isGreaterThanOrEqual(valueB)));
 	}
 
-	public static 
-		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>> 
-		BooleanExpression 
-		seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC) {
+	public static
+			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>>
+			BooleanExpression
+			seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC)));
 	}
 
-	public static 
-		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>> 
-		BooleanExpression 
-		seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC, RangeComparableW columnD, RangeComparableW valueD) {
+	public static
+			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>>
+			BooleanExpression
+			seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC, RangeComparableW columnD, RangeComparableW valueD) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC, columnD, valueD)));
 	}
 
-	public static 
-		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>> 
-		BooleanExpression 
-		seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC) {
+	public static
+			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>>
+			BooleanExpression
+			seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC)));
 	}
 
-	public static 
-		<RangeComparableZ extends RangeComparable<? super RangeComparableZ>,RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>> 
-		BooleanExpression 
-		seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC, RangeComparableW columnD, RangeComparableW valueD) {
+	public static
+			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>>
+			BooleanExpression
+			seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC, RangeComparableW columnD, RangeComparableW valueD) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC, columnD, valueD)));
@@ -814,8 +804,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Indicates if this expression is a relationship between 2, or more,
-	 * tables.
+	 * Indicates if this expression is a relationship between 2, or more, tables.
 	 *
 	 * @return the relationship
 	 */
@@ -961,15 +950,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 	}
 
-	private static abstract class DBUnaryNumberFunction extends NumberExpression {
+	private static abstract class DBBooleanAggregatorFunctionReturningNumber extends NumberExpression {
 
-		protected BooleanExpression onlyBool;
+		protected BooleanExpression onlyBool = null;
 
-		DBUnaryNumberFunction() {
+		DBBooleanAggregatorFunctionReturningNumber() {
 			this.onlyBool = null;
 		}
 
-		DBUnaryNumberFunction(BooleanExpression only) {
+		DBBooleanAggregatorFunctionReturningNumber(BooleanExpression only) {
 			this.onlyBool = only;
 		}
 
@@ -990,12 +979,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
+			String valueToCount = db.getDefinition().transformToStorableType(onlyBool).toSQLString(db);
+			return this.beforeValue(db) + (onlyBool == null ? "" : valueToCount) + this.afterValue(db);
 		}
 
 		@Override
-		public DBUnaryNumberFunction copy() {
-			DBUnaryNumberFunction newInstance;
+		public DBBooleanAggregatorFunctionReturningNumber copy() {
+			DBBooleanAggregatorFunctionReturningNumber newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -1009,7 +999,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 		@Override
 		public boolean isAggregator() {
-			return onlyBool.isAggregator();
+			return true;
 		}
 
 		@Override
