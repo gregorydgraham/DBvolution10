@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.exceptions;
+package nz.co.gregs.dbvolution.expressions;
 
 /**
  *
  * @author gregorygraham
  */
-public class ParsingGeometryValueException extends DBRuntimeException {
+public interface Point2DResult extends DBExpression, ExpressionCanHaveNullValues {
 
-	private static final long serialVersionUID = 1L;
-	
-	public ParsingGeometryValueException(String fullColumnName, String string) {
-		super("Failed To Parse Geometry Data: unable to create a Geometry for column <"+fullColumnName+"> from '"+string+"'");
-	}
-	
 }

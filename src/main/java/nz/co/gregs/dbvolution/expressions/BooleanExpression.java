@@ -567,12 +567,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		});
 	}
 
-	public GeometryExpression ifThenElse(Geometry thenExpr, Geometry elseExpr) {
-		return this.ifThenElse(new GeometryExpression(thenExpr), new GeometryExpression(elseExpr));
+	public Geometry2DExpression ifThenElse(Geometry thenExpr, Geometry elseExpr) {
+		return this.ifThenElse(new Geometry2DExpression(thenExpr), new Geometry2DExpression(elseExpr));
 	}
 
-	public GeometryExpression ifThenElse(GeometryExpression thenExpr, GeometryExpression elseExpr) {
-		return new GeometryExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
+	public Geometry2DExpression ifThenElse(Geometry2DExpression thenExpr, Geometry2DExpression elseExpr) {
+		return new Geometry2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1396,17 +1396,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 	}
 
-	private static abstract class DBBinaryGeometryGeometryFunction extends GeometryExpression {
+	private static abstract class DBBinaryGeometryGeometryFunction extends Geometry2DExpression {
 
 		protected BooleanExpression onlyBool = null;
-		protected GeometryExpression first = null;
-		protected GeometryExpression second = null;
+		protected Geometry2DExpression first = null;
+		protected Geometry2DExpression second = null;
 //		private boolean includeNulls;
 
 		DBBinaryGeometryGeometryFunction() {
 		}
 
-		DBBinaryGeometryGeometryFunction(BooleanExpression only, GeometryExpression first, GeometryExpression second) {
+		DBBinaryGeometryGeometryFunction(BooleanExpression only, Geometry2DExpression first, Geometry2DExpression second) {
 			this.onlyBool = only;
 			this.first = first;
 			this.second = second;

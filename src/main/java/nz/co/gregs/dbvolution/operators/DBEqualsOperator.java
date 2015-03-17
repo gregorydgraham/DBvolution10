@@ -26,8 +26,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.DateResult;
 import nz.co.gregs.dbvolution.expressions.EqualComparable;
-import nz.co.gregs.dbvolution.expressions.GeometryExpression;
-import nz.co.gregs.dbvolution.expressions.GeometryResult;
+import nz.co.gregs.dbvolution.expressions.Geometry2DExpression;
+import nz.co.gregs.dbvolution.expressions.Geometry2DResult;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -96,9 +96,9 @@ public class DBEqualsOperator extends DBOperator {
 			} else if ((genericExpression instanceof DateRepeatExpression) && ((firstValue instanceof DateRepeatResult)||firstValue==null)) {
 				DateRepeatExpression intervalExpr = (DateRepeatExpression) genericExpression;
 				op = intervalExpr.is((DateRepeatResult) firstValue);
-			} else if ((genericExpression instanceof GeometryExpression) && ((firstValue instanceof GeometryResult)||firstValue==null)) {
-				GeometryExpression intervalExpr = (GeometryExpression) genericExpression;
-				op = intervalExpr.is((GeometryResult) firstValue);
+			} else if ((genericExpression instanceof Geometry2DExpression) && ((firstValue instanceof Geometry2DResult)||firstValue==null)) {
+				Geometry2DExpression intervalExpr = (Geometry2DExpression) genericExpression;
+				op = intervalExpr.is((Geometry2DResult) firstValue);
 			} else {
 				throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, firstValue);
 			}

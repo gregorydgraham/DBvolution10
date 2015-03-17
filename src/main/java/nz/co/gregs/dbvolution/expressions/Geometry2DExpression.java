@@ -20,41 +20,41 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
 
 /**
  *
  * @author gregorygraham
  */
-public class GeometryExpression implements GeometryResult, EqualComparable<GeometryResult> {
+public class Geometry2DExpression implements Geometry2DResult, EqualComparable<Geometry2DResult> {
 
-	private GeometryResult innerGeometry;
+	private Geometry2DResult innerGeometry;
 	private boolean nullProtectionRequired;
 
-	protected GeometryExpression() {
+	protected Geometry2DExpression() {
 	}
 
-	public GeometryExpression(GeometryResult value) {
+	public Geometry2DExpression(Geometry2DResult value) {
 		innerGeometry = value;
 		if (value == null || innerGeometry.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
-	public GeometryExpression(Geometry geometry) {
-		innerGeometry = new DBGeometry(geometry);
+	public Geometry2DExpression(Geometry geometry) {
+		innerGeometry = new DBGeometry2D(geometry);
 		if (geometry == null || innerGeometry.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
-	public static GeometryExpression value(Geometry geometry) {
-		return new GeometryExpression(geometry);
+	public static Geometry2DExpression value(Geometry geometry) {
+		return new Geometry2DExpression(geometry);
 	}
 
 	@Override
-	public DBGeometry getQueryableDatatypeForExpressionValue() {
-		return new DBGeometry();
+	public DBGeometry2D getQueryableDatatypeForExpressionValue() {
+		return new DBGeometry2D();
 	}
 
 	@Override
@@ -67,8 +67,8 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 	}
 
 	@Override
-	public GeometryExpression copy() {
-		return new GeometryExpression(innerGeometry);
+	public Geometry2DExpression copy() {
+		return new Geometry2DExpression(innerGeometry);
 	}
 
 	@Override
@@ -96,100 +96,100 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 	}
 
 	public BooleanExpression intersects(Geometry rightHandSide) {
-		return intersects(new DBGeometry(rightHandSide));
+		return intersects(new DBGeometry2D(rightHandSide));
 	}
 
-	public BooleanExpression intersects(GeometryResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+	public BooleanExpression intersects(Geometry2DResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Geometry2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryIntersectionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doGeometry2DIntersectionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
 
 	public BooleanExpression is(Geometry rightHandSide) {
-		return is(new DBGeometry(rightHandSide));
+		return is(new DBGeometry2D(rightHandSide));
 	}
 
 	@Override
-	public BooleanExpression is(GeometryResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+	public BooleanExpression is(Geometry2DResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Geometry2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doGeometry2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
 
 	public BooleanExpression contains(Geometry rightHandSide) {
-		return contains(new DBGeometry(rightHandSide));
+		return contains(new DBGeometry2D(rightHandSide));
 	}
 
-	public BooleanExpression contains(GeometryResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+	public BooleanExpression contains(Geometry2DResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Geometry2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryContainsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doGeometry2DContainsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
 
 	public BooleanExpression doesNotIntersect(Geometry rightHandSide) {
-		return doesNotIntersect(new DBGeometry(rightHandSide));
+		return doesNotIntersect(new DBGeometry2D(rightHandSide));
 	}
 
-	public BooleanExpression doesNotIntersect(GeometryResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+	public BooleanExpression doesNotIntersect(Geometry2DResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Geometry2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryDoesNotIntersectTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doGeometry2DDoesNotIntersectTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
 
 	public BooleanExpression overlaps(Geometry rightHandSide) {
-		return overlaps(new DBGeometry(rightHandSide));
+		return overlaps(new DBGeometry2D(rightHandSide));
 	}
 
-	public BooleanExpression overlaps(GeometryResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+	public BooleanExpression overlaps(Geometry2DResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Geometry2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doGeometry2DOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
 
 	public BooleanExpression touches(Geometry rightHandSide) {
-		return touches(new DBGeometry(rightHandSide));
+		return touches(new DBGeometry2D(rightHandSide));
 	}
 
-	public BooleanExpression touches(GeometryResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+	public BooleanExpression touches(Geometry2DResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Geometry2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryTouchesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doGeometry2DTouchesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
 
 	public BooleanExpression within(Geometry rightHandSide) {
-		return within(new DBGeometry(rightHandSide));
+		return within(new DBGeometry2D(rightHandSide));
 	}
 
-	public BooleanExpression within(GeometryResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new GeometryExpression(rightHandSide)) {
+	public BooleanExpression within(Geometry2DResult rightHandSide) {
+		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Geometry2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryWithinTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doGeometry2DWithinTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -199,7 +199,7 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryGetDimensionTransform(getFirst().toSQLString(db));
+				return db.getDefinition().doGeometry2DGetDimensionTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -209,27 +209,27 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryGetAreaTransform(getFirst().toSQLString(db));
+				return db.getDefinition().doGeometry2DGetAreaTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
 
-	public GeometryExpression boundingBox() {
-		return new GeometryExpression(new GeometryWithGeometryResult(this) {
+	public Geometry2DExpression boundingBox() {
+		return new Geometry2DExpression(new GeometryWithGeometryResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryGetBoundingBoxTransform(getFirst().toSQLString(db));
+				return db.getDefinition().doGeometry2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
 
-	public GeometryExpression exteriorRing() {
-		GeometryExpression exteriorRingExpr = new GeometryExpression(new GeometryWithGeometryResult(this) {
+	public Geometry2DExpression exteriorRing() {
+		Geometry2DExpression exteriorRingExpr = new Geometry2DExpression(new GeometryWithGeometryResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doGeometryGetExteriorRingTransform(getFirst().toSQLString(db));
+				return db.getDefinition().doGeometry2DGetExteriorRingTransform(getFirst().toSQLString(db));
 			}
 		});
 		return this.dimension().is(2).ifThenElse(exteriorRingExpr, this);
@@ -239,17 +239,17 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 		return this.is(geometry).not();
 	}
 
-	public BooleanExpression isNot(GeometryResult geometry) {
+	public BooleanExpression isNot(Geometry2DResult geometry) {
 		return this.is(geometry).not();
 	}
 
 	private static abstract class GeometryGeometryWithBooleanResult extends BooleanExpression {
 
-		private GeometryExpression first;
-		private GeometryExpression second;
+		private Geometry2DExpression first;
+		private Geometry2DExpression second;
 		private boolean requiresNullProtection;
 
-		GeometryGeometryWithBooleanResult(GeometryExpression first, GeometryExpression second) {
+		GeometryGeometryWithBooleanResult(Geometry2DExpression first, Geometry2DExpression second) {
 			this.first = first;
 			this.second = second;
 			if (this.second == null || this.second.getIncludesNull()) {
@@ -257,11 +257,11 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 			}
 		}
 
-		GeometryExpression getFirst() {
+		Geometry2DExpression getFirst() {
 			return first;
 		}
 
-		GeometryResult getSecond() {
+		Geometry2DResult getSecond() {
 			return second;
 		}
 
@@ -316,11 +316,11 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 
 	private static abstract class GeometryWithNumberResult extends NumberExpression {
 
-		private GeometryExpression first;
-//		private GeometryExpression second;
+		private Geometry2DExpression first;
+//		private Geometry2DExpression second;
 		private boolean requiresNullProtection;
 
-		GeometryWithNumberResult(GeometryExpression first) {
+		GeometryWithNumberResult(Geometry2DExpression first) {
 			this.first = first;
 //			this.second = second;
 //			if (this.second == null || this.second.getIncludesNull()) {
@@ -328,11 +328,11 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 //			}
 		}
 
-		GeometryExpression getFirst() {
+		Geometry2DExpression getFirst() {
 			return first;
 		}
 
-//		GeometryResult getSecond() {
+//		Geometry2DResult getSecond() {
 //			return second;
 //		}
 		@Override
@@ -384,13 +384,13 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 		}
 	}
 
-	private static abstract class GeometryWithGeometryResult extends GeometryExpression {
+	private static abstract class GeometryWithGeometryResult extends Geometry2DExpression {
 
-		private GeometryExpression first;
-//		private GeometryExpression second;
+		private Geometry2DExpression first;
+//		private Geometry2DExpression second;
 		private boolean requiresNullProtection;
 
-		GeometryWithGeometryResult(GeometryExpression first) {
+		GeometryWithGeometryResult(Geometry2DExpression first) {
 			this.first = first;
 //			this.second = second;
 //			if (this.second == null || this.second.getIncludesNull()) {
@@ -398,11 +398,11 @@ public class GeometryExpression implements GeometryResult, EqualComparable<Geome
 //			}
 		}
 
-		GeometryExpression getFirst() {
+		Geometry2DExpression getFirst() {
 			return first;
 		}
 
-//		GeometryResult getSecond() {
+//		Geometry2DResult getSecond() {
 //			return second;
 //		}
 		@Override
