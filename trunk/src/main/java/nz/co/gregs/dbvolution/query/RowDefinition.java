@@ -15,13 +15,13 @@
  */
 package nz.co.gregs.dbvolution.query;
 
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.columns.*;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.datatypes.spatial.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
@@ -113,7 +113,7 @@ public class RowDefinition implements Serializable {
 		return new BooleanArrayColumn(this, fieldOfThisInstance);
 	}
 	
-	public GeometryColumn column(DBGeometry fieldOfThisInstance) {
+	public GeometryColumn column(DBGeometry2D fieldOfThisInstance) {
 		return new GeometryColumn(this, fieldOfThisInstance);
 	}
 
@@ -155,8 +155,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBDateRepeat) fieldOfThisInstance);
 		} else if (DBBooleanArray.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBBooleanArray) fieldOfThisInstance);
-		} else if (DBGeometry.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBGeometry) fieldOfThisInstance);
+		} else if (DBGeometry2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBGeometry2D) fieldOfThisInstance);
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);

@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.exceptions;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  *
  * @author gregorygraham
  */
-public interface GeometryResult extends DBExpression, ExpressionCanHaveNullValues {
-	
+public class IncorrectGeometryReturnedForDatatype extends DBRuntimeException {
+
+	private static final long serialVersionUID = 1L;
+
+	public IncorrectGeometryReturnedForDatatype(Geometry databaseReturned, Geometry wasExpecting) {
+		super("Geometry Type Returned By Database Clashes With Declared Geometry: Was expecting " + wasExpecting.getGeometryType() + " but the database has provided a " + databaseReturned.getGeometryType() + ".  Please check that the field is declared correctly and that the expression returns the correct type.");
+	}
+
 }

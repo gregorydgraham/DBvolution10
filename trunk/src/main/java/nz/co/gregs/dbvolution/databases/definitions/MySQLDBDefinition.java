@@ -15,12 +15,13 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.datatypes.spatial.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
@@ -73,7 +74,9 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
-		if (qdt instanceof DBGeometry) {
+		if (qdt instanceof DBGeometry2D) {
+			return "AsText(" + selectableName + ")";
+		} else if (qdt instanceof DBPoint2D) {
 			return "AsText(" + selectableName + ")";
 		} else {
 			return selectableName;
@@ -104,12 +107,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doModulusTransform(String firstNumber, String secondNumber) {
 		return getTruncFunctionName() + "(" + super.doModulusTransform(firstNumber, secondNumber) + ",0)";
 	}
-	
+
 //	@Override
 //	public String doMillisecondTransform(String dateExpression) {
 //		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000.0)";
 //	}
-
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
 		return "TIMESTAMPDIFF(DAY, " + dateValue + "," + otherDateValue + ")";
@@ -144,11 +146,6 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "TIMESTAMPDIFF(SECOND, " + dateValue + "," + otherDateValue + ")";
 	}
-
-//	@Override
-//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-//		return "(TIMESTAMPDIFF(MICROSECOND, " + dateValue + "," + otherDateValue + ")/1000.0)";
-//	}
 
 	@Override
 	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper field) {
@@ -187,70 +184,70 @@ public class MySQLDBDefinition extends DBDefinition {
 		return false;
 	}
 
-//	@Override
-//	public String doAddMillisecondsTransform(String dateValue, String numberOfMillis) {
-//		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfMillis + ")*1000) MICROSECOND )";
-//	}
-	
 	@Override
-	public String doGeometryEqualsTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		return "Equals(" + firstGeometry + ", " + secondGeometry + ")";
 	}
-	
+
 	@Override
-	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "Intersects(" + firstGeometry + ", " + secondGeometry + ")";
 	}
-	
+
 	@Override
-	public String doGeometryContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DContainsTransform(String firstGeometry, String secondGeometry) {
 		return "Contains(" + firstGeometry + ", " + secondGeometry + ")";
 	}
-	
+
 	@Override
-	public String doGeometryDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
 		return "Disjoint(" + firstGeometry + ", " + secondGeometry + ")";
 	}
-	
+
 	@Override
-	public String doGeometryOverlapsTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DOverlapsTransform(String firstGeometry, String secondGeometry) {
 		return "Overlaps(" + firstGeometry + ", " + secondGeometry + ")";
 	}
-	
+
 	@Override
-	public String doGeometryTouchesTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DTouchesTransform(String firstGeometry, String secondGeometry) {
 		return "Touches(" + firstGeometry + ", " + secondGeometry + ")";
 	}
-	
+
 	@Override
-	public String doGeometryWithinTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//Returns 1 or 0 to indicate whether g1 is spatially within g2. This tests the opposite relationship as Contains(). 
 		return "Within(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doGeometryGetDimensionTransform(String thisGeometry) {
+	public String doGeometry2DGetDimensionTransform(String thisGeometry) {
 		return "Dimension(" + thisGeometry + ")";
 	}
 
 	@Override
-	public String doGeometryGetBoundingBoxTransform(String thisGeometry) {
+	public String doGeometry2DGetBoundingBoxTransform(String thisGeometry) {
 		return "Envelope(" + thisGeometry + ")";
 	}
-	
+
 	@Override
-	public String doGeometryGetAreaTransform(String thisGeometry) {
+	public String doGeometry2DGetAreaTransform(String thisGeometry) {
 		return "Area(" + thisGeometry + ")";
 	}
 
 	@Override
-	public String doGeometryGetExteriorRingTransform(String thisGeometry) {
+	public String doGeometry2DGetExteriorRingTransform(String thisGeometry) {
 		return "ExteriorRing(" + thisGeometry + ")";
 	}
-	
+
 	@Override
 	public boolean supportsHyperbolicFunctionsNatively() {
 		return false;
+	}
+
+	@Override
+	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
+		return "Equals(" + firstPoint + ", " + secondPoint + ")";
 	}
 
 

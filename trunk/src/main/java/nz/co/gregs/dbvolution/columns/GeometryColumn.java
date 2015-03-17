@@ -16,18 +16,18 @@
 package nz.co.gregs.dbvolution.columns;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
-import nz.co.gregs.dbvolution.expressions.GeometryExpression;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
+import nz.co.gregs.dbvolution.expressions.Geometry2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
  * @author gregorygraham
  */
-public class GeometryColumn extends GeometryExpression implements ColumnProvider{
+public class GeometryColumn extends Geometry2DExpression implements ColumnProvider{
 	private AbstractColumn column;
 
-	public GeometryColumn(RowDefinition row, DBGeometry field) {	
+	public GeometryColumn(RowDefinition row, DBGeometry2D field) {	
 		this.column = new AbstractColumn(row, field);
 	}
 

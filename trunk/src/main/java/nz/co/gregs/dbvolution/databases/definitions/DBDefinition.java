@@ -2760,11 +2760,11 @@ public abstract class DBDefinition {
 		return str.toString();
 	}
 
-	public String doGeometryEqualsTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
 
-	public String doGeometryIntersectionTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
 
@@ -2804,41 +2804,41 @@ public abstract class DBDefinition {
 		return DateRepeatImpl.parseDateRepeatFromGetString(intervalStr);
 	}
 
-	public String doGeometryContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DContainsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometryDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometryOverlapsTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DOverlapsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometryTouchesTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DTouchesTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometryWithinTransform(String firstGeometry, String secondGeometry) {
+	public String doGeometry2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometryGetDimensionTransform(String toSQLString) {
+	public String doGeometry2DGetDimensionTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometryGetBoundingBoxTransform(String toSQLString) {
+	public String doGeometry2DGetBoundingBoxTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometryGetAreaTransform(String toSQLString) {
+	public String doGeometry2DGetAreaTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometryGetExteriorRingTransform(String toSQLString) {
+	public String doGeometry2DGetExteriorRingTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -2893,5 +2893,10 @@ public abstract class DBDefinition {
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		return columnExpression;
 	}
+
+	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
 
 }

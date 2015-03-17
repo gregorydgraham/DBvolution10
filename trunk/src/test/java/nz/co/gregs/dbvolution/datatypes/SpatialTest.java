@@ -24,8 +24,8 @@ import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.supports.SupportsGeometryDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial.DBGeometry;
-import nz.co.gregs.dbvolution.expressions.GeometryExpression;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
+import nz.co.gregs.dbvolution.expressions.Geometry2DExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -88,14 +88,14 @@ public class SpatialTest extends AbstractTest {
 			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 			
 			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
-			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom)));
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 			
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom)));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom)));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(2));
@@ -128,14 +128,14 @@ public class SpatialTest extends AbstractTest {
 			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 			
 			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
-			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).contains(spatial.column(spatial.myfirstgeom)));
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).contains(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 			
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).contains(spatial.column(spatial.myfirstgeom)));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).contains(spatial.column(spatial.myfirstgeom)));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(2));
@@ -168,7 +168,7 @@ public class SpatialTest extends AbstractTest {
 			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 			
 			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
-			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).doesNotIntersect(spatial.column(spatial.myfirstgeom)));
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).doesNotIntersect(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
@@ -180,7 +180,7 @@ public class SpatialTest extends AbstractTest {
 			Assert.assertThat(allRows.size(), is(1));
 			
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).doesNotIntersect(spatial.column(spatial.myfirstgeom)));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).doesNotIntersect(spatial.column(spatial.myfirstgeom)));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(0));
@@ -213,7 +213,7 @@ public class SpatialTest extends AbstractTest {
 			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 			
 			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
-			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).is(spatial.column(spatial.myfirstgeom)));
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).is(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(0));
@@ -253,7 +253,7 @@ public class SpatialTest extends AbstractTest {
 			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 			
 			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
-			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).isNot(spatial.column(spatial.myfirstgeom)));
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).isNot(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(2));
@@ -311,7 +311,7 @@ public class SpatialTest extends AbstractTest {
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
 			
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).overlaps(spatial.column(spatial.myfirstgeom)));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).overlaps(spatial.column(spatial.myfirstgeom)));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
@@ -357,7 +357,7 @@ public class SpatialTest extends AbstractTest {
 			Assert.assertThat(allRows.size(), is(0));
 			
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(2, 2), new Coordinate(13, 2), new Coordinate(13, 13), new Coordinate(2, 13), new Coordinate(2, 2)});
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).touches(spatial.column(spatial.myfirstgeom)));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).touches(spatial.column(spatial.myfirstgeom)));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
@@ -404,7 +404,7 @@ public class SpatialTest extends AbstractTest {
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 			
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(1, 0), new Coordinate(1, 1), new Coordinate(0, 1), new Coordinate(0, 0)});
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(GeometryExpression.value(polygon).within(spatial.column(spatial.myfirstgeom)));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Geometry2DExpression.value(polygon).within(spatial.column(spatial.myfirstgeom)));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
@@ -612,10 +612,10 @@ public class SpatialTest extends AbstractTest {
 		DBInteger pkid = new DBInteger();
 
 		@DBColumn
-		DBGeometry myfirstgeom = new DBGeometry();
+		DBGeometry2D myfirstgeom = new DBGeometry2D();
 
 		@DBColumn
-		DBGeometry boundingBox = new DBGeometry(this.column(this.myfirstgeom).exteriorRing());
+		DBGeometry2D boundingBox = new DBGeometry2D(this.column(this.myfirstgeom).exteriorRing());
 
 	}
 
