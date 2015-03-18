@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Point;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -250,5 +251,34 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "Equals(" + firstPoint + ", " + secondPoint + ")";
 	}
 
+	@Override
+	public String doPoint2DGetXTransform(String point2D) {
+		return " X(" + point2D + ")";
+	}
 
+	@Override
+	public String doPoint2DGetYTransform(String point2D) {
+		return " Y(" + point2D + ")";
+	}
+
+	@Override
+	public String doPoint2DDimensionTransform(String point2D) {
+		return doGeometry2DGetDimensionTransform(point2D);
+	}
+
+	@Override
+	public String doPoint2DGetBoundingBoxTransform(String point2D) {
+		return doGeometry2DGetBoundingBoxTransform(point2D);
+	}
+
+	@Override
+	public String doPoint2DAsTextTransform(String point2DString) {
+		return " AsText(" + point2DString + ")";
+	}
+
+	@Override
+	public String transformPointIntoDatabaseFormat(Point point) {
+		String wktValue = point.toText();
+		return "PointFromText('" + wktValue + "')";
+	}
 }

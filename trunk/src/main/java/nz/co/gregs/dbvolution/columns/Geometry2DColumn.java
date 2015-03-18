@@ -15,7 +15,9 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
 import nz.co.gregs.dbvolution.expressions.Geometry2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -24,10 +26,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * @author gregorygraham
  */
-public class GeometryColumn extends Geometry2DExpression implements ColumnProvider{
+public class Geometry2DColumn extends Geometry2DExpression implements ColumnProvider{
 	private AbstractColumn column;
 
-	public GeometryColumn(RowDefinition row, DBGeometry2D field) {	
+	public Geometry2DColumn(RowDefinition row, DBGeometry2D field) {	
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -45,4 +47,14 @@ public class GeometryColumn extends Geometry2DExpression implements ColumnProvid
     public String toSQLString(DBDatabase db) {
         return column.toSQLString(db);
     }
+
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		return column.getTablesInvolved();
+	}
+
+	@Override
+	public boolean isPurelyFunctional() {
+		return column.isPurelyFunctional();
+	}
 }

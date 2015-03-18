@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.WKTReader;
 import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,6 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
+import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -2898,5 +2902,47 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
 
+	public String doPoint2DGetXTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPoint2DGetYTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPoint2DDimensionTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPoint2DGetBoundingBoxTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPoint2DAsTextTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String transformPointIntoDatabaseFormat(Point point) {
+		String wktValue = point.toText();
+		return "'" + wktValue + "'";
+	}
+
+	public Point transformDatabaseValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
+		Point point = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(pointAsString);
+		if (geometry instanceof Point) {
+			point = (Point) geometry;
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
+		}
+		return point;
+	}
+
+	public Geometry transformDatabaseValueToJTSGeometry(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(geometryAsString);
+		return geometry;
+	}
 
 }

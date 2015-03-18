@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -99,6 +100,8 @@ public class SQLiteDefinition extends DBDefinition {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME ";
+		} else if (qdt instanceof DBPoint2D) {
+			return " VARCHAR(2000) ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
