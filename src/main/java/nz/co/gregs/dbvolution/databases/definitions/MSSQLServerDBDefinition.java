@@ -15,11 +15,18 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -69,6 +76,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return " NTEXT ";
 		} else if (qdt instanceof DBString) {
 			return " NVARCHAR(1000) COLLATE Latin1_General_CS_AS_KS_WS ";
+		} else if (qdt instanceof DBPoint2D) {
+			return " GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -417,4 +426,91 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		}
 	}
 
+	@Override
+	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
+		return "((" + firstPoint + ").STEquals( " + secondPoint + ")=1)";
+	}
+
+	@Override
+	public String doPoint2DGetXTransform(String point2D) {
+		return "(" + point2D + ").STX";
+	}
+
+	@Override
+	public String doPoint2DGetYTransform(String point2D) {
+		return "("+point2D + ").STY";
+	}
+
+	@Override
+	public String doPoint2DDimensionTransform(String point2D) {
+		return "("+point2D+").STDimension()";
+	}
+
+	@Override
+	public String doPoint2DGetBoundingBoxTransform(String point2D) {
+		return "("+point2D+").STEnvelope()";
+	}
+
+	@Override
+	public String doPoint2DAsTextTransform(String point2DString) {
+		return "("+point2DString+").STAsText()";
+	}
+
+	@Override
+	public String transformPointIntoDatabaseFormat(Point point) {
+		return "geometry::STGeomFromText ('" +point.toText()+"',0)";
+	}
+	
+	@Override
+	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+		if (qdt instanceof DBGeometry2D) {
+			return "(" + selectableName + ").STAsText()";
+		} else if (qdt instanceof DBPoint2D) {
+			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+		} else {
+			return selectableName;
+		}
+	}
+
+	public Point transformDatabaseValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
+		Point point = null;
+		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")){
+			String[] split = pointAsString.split("[^-0-9.]+");
+			for (String split1 : split) {
+				System.out.println("DATABASE VALUE: "+split1);
+			}
+		GeometryFactory geometryFactory = new GeometryFactory();
+			final double x = Double.parseDouble(split[1]);
+			final double y = Double.parseDouble(split[2]);
+			point = geometryFactory.createPoint(new Coordinate(x, y));
+		} else {
+//			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
+		}
+		return point;
+	}
+	
+	// ((2,3),(2,3),(2,3),(2,3)) => POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))
+//	@Override
+//	public Geometry transformDatabaseValueToJTSGeometry(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+//		String string = "POLYGON "+geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
+//		String[] splits = geometryAsString.split("[(),]+");
+//		System.out.println(geometryAsString+" => "+string);
+//		List<Coordinate> coords = new ArrayList<Coordinate>();
+//		Coordinate firstCoord = null;
+//		for (int i = 1; i < splits.length; i++) {
+//			String splitX = splits[i];
+//			String splitY = splits[i+1];
+//			System.out.println("COORD: "+splitX+", "+splitY);
+//			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
+//			coords.add(coordinate);
+//			if (firstCoord==null){
+//				firstCoord=coordinate;
+//			}
+//			i++;
+//		}
+//		coords.add(firstCoord);
+//		final GeometryFactory geometryFactory = new GeometryFactory();
+//		Polygon polygon = geometryFactory.createPolygon(coords.toArray(new Coordinate[]{}));
+//		return polygon;
+//	}
 }

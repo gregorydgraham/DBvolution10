@@ -231,8 +231,9 @@ public class Point2DExpressionTest extends AbstractTest {
 		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(3));
 	}
-	
-	public static class BoundingBoxTest extends PointTestTable{
+
+	public static class BoundingBoxTest extends PointTestTable {
+
 		@DBColumn
 		public DBString stringPoint = new DBString(this.column(this.point).stringResult().substringBetween("(", " "));
 		@DBColumn
@@ -243,7 +244,7 @@ public class Point2DExpressionTest extends AbstractTest {
 		public DBGeometry2D boundingBox = new DBGeometry2D(this.column(this.point).boundingBox());
 		@DBColumn
 		public DBBoolean getXis2 = new DBBoolean(this.column(this.point).getX().is(2));
-		
+
 	}
 
 	@Test
@@ -256,7 +257,17 @@ public class Point2DExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(0).boundingBox.getGeometryValue().toText(), is("POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))"));
+		final String boundingText = allRows.get(0).boundingBox.getGeometryValue().toText();
+		String[] splits = boundingText.split("[^-0-9.]+");
+		int numbersTested = 0;
+		for (String split : splits) {
+			System.out.println("SPLIT: " + split);
+			if (split.length() > 0) {
+				Assert.assertThat(Math.round(Double.parseDouble(split) * 1000) / 1000.0, isOneOf(2.0, 3.0));
+				numbersTested++;
+			}
+		}
+		Assert.assertThat(numbersTested, is(10));
 	}
 
 }
