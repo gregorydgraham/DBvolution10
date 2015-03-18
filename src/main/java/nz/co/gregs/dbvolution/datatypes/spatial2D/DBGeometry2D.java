@@ -62,13 +62,12 @@ public class DBGeometry2D extends QueryableDatatype implements TransformRequired
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 
 		Geometry geometry = null;
-		WKTReader wktReader = new WKTReader();
 		String string = resultSet.getString(fullColumnName);
 		if (string == null) {
 			return null;
 		} else {
 			try {
-				geometry = wktReader.read(string);
+				geometry = database.getDefinition().transformDatabaseValueToJTSGeometry(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBGeometry2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException(fullColumnName, string);

@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.Point2DResult;
+import org.joda.time.Period;
 
 public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 
@@ -38,6 +39,19 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 
 	public void setValue(Point point) {
 		setLiteralValue(point);
+	}
+
+	@Override
+	public Point getValue() {
+		if (!isDefined() || isNull()) {
+			return null;
+		} else {
+			return (Point) getLiteralValue();
+		}
+	}
+	
+	public Point getJTSPointValue(){
+		return getValue();
 	}
 
 	public DBPoint2D(nz.co.gregs.dbvolution.expressions.Point2DExpression columnExpression) {
@@ -55,27 +69,25 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		Point point = (Point) getLiteralValue();
-		String wktValue = point.toText();
-		return "PointFromText('" + wktValue + "')";
+		Point point = getValue();
+		if (point == null) {
+			return db.getDefinition().getNull();
+		} else {
+			String str = db.getDefinition().transformPointIntoDatabaseFormat(point);
+			return str;
+		}
 	}
 
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		Point point = null;
-		WKTReader wktReader = new WKTReader();
 		String string = resultSet.getString(fullColumnName);
 		if (string == null) {
 			return null;
 		} else {
 			try {
-				Geometry geometry = wktReader.read(string);
-				if (geometry instanceof Point) {
-					point = (Point) geometry;
-				} else {
-					throw new IncorrectGeometryReturnedForDatatype(geometry, point);
-				}
+				point = database.getDefinition().transformDatabaseValueToJTSPoint(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string);

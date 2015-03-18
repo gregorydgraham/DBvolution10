@@ -1423,6 +1423,14 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return this.locationOf(splitAfterThis).isGreaterThan(0).ifThenElse(this.substring(this.locationOf(splitAfterThis), this.length()), value(""));
 	}
 
+	public StringExpression substringBetween(String splitAfterThis, String butBeforeThis) {
+		return substringBetween(value(splitAfterThis), value(butBeforeThis));
+	}
+	
+	public StringExpression substringBetween(StringResult splitAfterThis, StringResult butBeforeThis) {
+		return substringAfter(splitAfterThis).substringBefore(butBeforeThis);
+	}
+	
 	/**
 	 * Creates a query expression that trims all leading and trailing spaces from
 	 * the current StringExpression.

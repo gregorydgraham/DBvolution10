@@ -22,6 +22,7 @@ import java.util.*;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.columns.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
@@ -113,8 +114,12 @@ public class RowDefinition implements Serializable {
 		return new BooleanArrayColumn(this, fieldOfThisInstance);
 	}
 	
-	public GeometryColumn column(DBGeometry2D fieldOfThisInstance) {
-		return new GeometryColumn(this, fieldOfThisInstance);
+	public Geometry2DColumn column(DBGeometry2D fieldOfThisInstance) {
+		return new Geometry2DColumn(this, fieldOfThisInstance);
+	}
+
+	public Point2DColumn column(DBPoint2D fieldOfThisInstance) {
+		return new Point2DColumn(this, fieldOfThisInstance);
 	}
 
 	/**
@@ -157,6 +162,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBBooleanArray) fieldOfThisInstance);
 		} else if (DBGeometry2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBGeometry2D) fieldOfThisInstance);
+		} else if (DBPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBPoint2D) fieldOfThisInstance);
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);
