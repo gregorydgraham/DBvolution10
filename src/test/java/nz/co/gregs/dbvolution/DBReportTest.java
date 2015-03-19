@@ -71,12 +71,18 @@ public class DBReportTest extends AbstractTest {
 	
 	@Test
 	public void GroupTest() throws SQLException {
+		System.out.println("GroupTest");
 		GroupReport reportExample = new GroupReport();
 		List<GroupReport> foundGroupReports = database.getRows(reportExample);
 		Assert.assertThat(foundGroupReports.size(), is(4));
 		for (GroupReport rep : foundGroupReports) {
 			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.average.stringValue() + ": " + rep.stddev.stringValue());
 		}
+		final GroupReport firstRow = foundGroupReports.get(3);
+		// TOYOTA: 6: 0.7071067811865476
+		Assert.assertThat(firstRow.carCompanyName.stringValue(), is("TOYOTA"));
+		Assert.assertThat(firstRow.average.intValue(), is(6));
+		Assert.assertThat(Math.round(firstRow.stddev.doubleValue()*100), is(71L));
 	}
 	
 	@Test
@@ -227,6 +233,7 @@ public class DBReportTest extends AbstractTest {
 		{
 			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Integer) null);
+			this.setSortOrder(this.column(this.carCompanyName));
 		}
 	}
 	
