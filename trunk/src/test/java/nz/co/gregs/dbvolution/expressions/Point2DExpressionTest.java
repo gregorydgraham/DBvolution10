@@ -68,6 +68,8 @@ public class Point2DExpressionTest extends AbstractTest {
 	}
 
 	public static class PointTestTable extends DBRow {
+		
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn
 		@DBPrimaryKey
@@ -233,6 +235,8 @@ public class Point2DExpressionTest extends AbstractTest {
 	}
 
 	public static class BoundingBoxTest extends PointTestTable {
+		
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn
 		public DBString stringPoint = new DBString(this.column(this.point).stringResult().substringBetween("(", " "));
