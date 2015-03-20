@@ -1404,7 +1404,7 @@ public abstract class DBDefinition {
 	 * @return "stddev"
 	 */
 	public String getStandardDeviationFunctionName() {
-		return "stddev";
+		return "STDDEV";
 	}
 
 	/**

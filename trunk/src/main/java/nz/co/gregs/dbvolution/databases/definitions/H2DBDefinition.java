@@ -83,6 +83,10 @@ public class H2DBDefinition extends DBDefinition {
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
+	}	
+	
+	public String doStringLengthTransform(String enclosedValue) {
+		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(15,10))";
 	}
 
 	@Override

@@ -199,6 +199,18 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "STDEV";
 	}
 
+	/**
+	 * Wraps the provided SQL snippet in a statement that the length of the value
+	 * of the snippet.
+	 *
+	 * @param enclosedValue	enclosedValue
+	 * @return SQL snippet
+	 */
+	@Override
+	public String doStringLengthTransform(String enclosedValue) {
+		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(15,10))";
+	}
+	
 	@Override
 	public boolean supportsPagingNatively(QueryOptions options) {
 		return false;

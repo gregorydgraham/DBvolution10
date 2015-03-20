@@ -2094,6 +2094,14 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return nullProtectionRequired;
 	}
 
+	public NumberExpression squared() {
+		return this.bracket().times(this.bracket());
+	}
+
+	public NumberExpression cubed() {
+		return this.squared().times(this.bracket());
+	}
+
 	private static abstract class DBBinaryArithmetic extends NumberExpression {
 
 		public NumberResult first;
