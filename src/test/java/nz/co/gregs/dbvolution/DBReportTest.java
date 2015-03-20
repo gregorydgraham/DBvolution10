@@ -75,14 +75,16 @@ public class DBReportTest extends AbstractTest {
 		GroupReport reportExample = new GroupReport();
 		List<GroupReport> foundGroupReports = database.getRows(reportExample);
 		Assert.assertThat(foundGroupReports.size(), is(4));
+		database.print(foundGroupReports);
 		for (GroupReport rep : foundGroupReports) {
 			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.average.stringValue() + ": " + rep.stddev.stringValue());
 		}
-		final GroupReport firstRow = foundGroupReports.get(3);
+		final GroupReport otherRow = foundGroupReports.get(2);
 		// TOYOTA: 6: 0.7071067811865476
-		Assert.assertThat(firstRow.carCompanyName.stringValue(), is("TOYOTA"));
-		Assert.assertThat(firstRow.average.intValue(), is(6));
-		Assert.assertThat(Math.round(firstRow.stddev.doubleValue()*100), is(71L));
+		//OTHER: 5.8667: 1.9955506062794353
+		Assert.assertThat(otherRow.carCompanyName.stringValue(), is("OTHER"));
+		Assert.assertThat(Math.round(otherRow.average.doubleValue()*100), is(587L));
+		Assert.assertThat(Math.round(otherRow.stddev.doubleValue()*100), is(207L));
 	}
 	
 	@Test
@@ -225,6 +227,10 @@ public class DBReportTest extends AbstractTest {
 		public CarCompany carCompany = new CarCompany();
 		@DBColumn
 		public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+		@DBColumn
+		public DBNumber count = new DBNumber(NumberExpression.countAll());
+		@DBColumn
+		public DBNumber sum = new DBNumber(marque.column(marque.name).length().sum());
 		@DBColumn
 		public DBNumber average = new DBNumber(marque.column(marque.name).length().average());
 		@DBColumn

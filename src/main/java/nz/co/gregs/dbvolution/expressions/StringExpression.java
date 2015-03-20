@@ -1617,6 +1617,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public NumberExpression length() {
 		return new NumberExpression(
 				new DBUnaryNumberFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doStringLengthTransform(only.toSQLString(db));
+			}
+					
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getStringLengthFunctionName();

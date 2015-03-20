@@ -109,6 +109,16 @@ public class MySQLDBDefinition extends DBDefinition {
 		return getTruncFunctionName() + "(" + super.doModulusTransform(firstNumber, secondNumber) + ",0)";
 	}
 
+	/**
+	 * Provides the function of the function that provides the standard deviation
+	 * of a selection.
+	 *
+	 * @return "stddev"
+	 */
+	public String getStandardDeviationFunctionName() {
+		return "STDDEV_SAMP";
+	}
+
 //	@Override
 //	public String doMillisecondTransform(String dateExpression) {
 //		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000.0)";
