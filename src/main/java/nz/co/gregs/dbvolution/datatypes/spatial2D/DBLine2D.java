@@ -15,62 +15,61 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import com.vividsolutions.jts.geom.LineString;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
-import nz.co.gregs.dbvolution.expressions.Point2DResult;
+import nz.co.gregs.dbvolution.expressions.Line2DResult;
 
-public class DBPoint2D extends QueryableDatatype implements Point2DResult {
+public class DBLine2D extends QueryableDatatype implements Line2DResult {
 
 	private static final long serialVersionUID = 1L;
 
-	public DBPoint2D() {
+	public DBLine2D() {
 	}
 
-	public void setValue(Point point) {
-		setLiteralValue(point);
+	public DBLine2D(LineString lineCollection) {
+		super(lineCollection);
 	}
 
-	@Override
-	public Point getValue() {
-		if (!isDefined() || isNull()) {
-			return null;
-		} else {
-			return (Point) getLiteralValue();
-		}
-	}
-	
-	public Point jtsPointValue(){
-		return getValue();
-	}
-
-	public DBPoint2D(nz.co.gregs.dbvolution.expressions.Point2DExpression columnExpression) {
+	public DBLine2D(nz.co.gregs.dbvolution.expressions.Line2DExpression columnExpression) {
 		super(columnExpression);
 	}
 
-	public DBPoint2D(Point point) {
-		super(point);
+	public void setValue(LineString line) {
+		setLiteralValue(line);
+	}
+
+	@Override
+	public LineString getValue() {
+		if (!isDefined() || isNull()) {
+			return null;
+		} else {
+			return (LineString) getLiteralValue();
+		}
+	}
+	
+	public LineString jtsLineStringValue(){
+		return getValue();
 	}
 
 	@Override
 	public String getSQLDatatype() {
-		return " POINT ";
+		return "LINESTRING";
 	}
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		Point point = getValue();
-		if (point == null) {
+		LineString lineString = getValue();
+		if (lineString == null) {
 			return db.getDefinition().getNull();
 		} else {
-			String str = db.getDefinition().transformPointIntoDatabaseFormat(point);
+			String str = db.getDefinition().transformLineStringIntoDatabaseFormat(lineString);
 			return str;
 		}
 	}
@@ -78,18 +77,18 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
-		Point point = null;
+		LineString lineString = null;
 		String string = resultSet.getString(fullColumnName);
 		if (string == null) {
 			return null;
 		} else {
 			try {
-				point = database.getDefinition().transformDatabaseValueToJTSPoint(string);
-			} catch (ParseException ex) {
+				lineString = database.getDefinition().transformDatabaseValueToJTSLineString(string);
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string);
 			}
-			return point;
+			return lineString;
 		}
 	}
 
@@ -102,5 +101,5 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	public boolean getIncludesNull() {
 		return false;
 	}
-
+	
 }

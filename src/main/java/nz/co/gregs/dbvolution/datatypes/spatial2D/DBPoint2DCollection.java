@@ -22,18 +22,18 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 
-public class DBMultipoint2D extends QueryableDatatype {
+public class DBPoint2DCollection extends QueryableDatatype {
 
 	private static final long serialVersionUID = 1L;
 
-	public DBMultipoint2D() {
+	public DBPoint2DCollection() {
 	}
 
-	public DBMultipoint2D(Object obj) {
+	public DBPoint2DCollection(Object obj) {
 		super(obj);
 	}
 
-	public DBMultipoint2D(DBExpression columnExpression) {
+	public DBPoint2DCollection(DBExpression columnExpression) {
 		super(columnExpression);
 	}
 

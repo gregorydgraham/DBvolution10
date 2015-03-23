@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 gregorygraham.
+ * Copyright 2015 greg.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package nz.co.gregs.dbvolution.expressions;
 
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+//import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 
 /**
  *
- * @author gregorygraham
+ * @author greg
  */
-public class Point2DExpression implements Point2DResult, EqualComparable<Point2DResult> {
+public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult> {
 
-	private Point2DResult innerPoint;
+	private Line2DResult innerLineString;
 	private boolean nullProtectionRequired;
 
-	protected Point2DExpression() {
+	protected Line2DExpression() {
 	}
 
-	public Point2DExpression(Point2DResult value) {
-		innerPoint = value;
-		if (value == null || innerPoint.getIncludesNull()) {
+	public Line2DExpression(Line2DResult value) {
+		innerLineString = value;
+		if (value == null || innerLineString.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
-	public Point2DExpression(Point point) {
-		innerPoint = new DBPoint2D(point);
-		if (point == null || innerPoint.getIncludesNull()) {
+	public Line2DExpression(LineString line) {
+		innerLineString = new DBLine2D(line);
+		if (line == null || innerLineString.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
@@ -53,50 +56,50 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 	}
 
 	@Override
-	public DBPoint2D getQueryableDatatypeForExpressionValue() {
-		return new DBPoint2D();
+	public DBLine2D getQueryableDatatypeForExpressionValue() {
+		return new DBLine2D();
 	}
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		if (innerPoint == null) {
+		if (innerLineString == null) {
 			return db.getDefinition().getNull();
 		} else {
-			return innerPoint.toSQLString(db);
+			return innerLineString.toSQLString(db);
 		}
 	}
 
 	@Override
-	public Point2DExpression copy() {
-		return new Point2DExpression(innerPoint);
+	public Line2DExpression copy() {
+		return new Line2DExpression(innerLineString);
 	}
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof Point2DExpression) {
-			Point2DExpression otherExpr = (Point2DExpression) other;
-			return this.innerPoint == otherExpr.innerPoint;
+		if (other instanceof Line2DExpression) {
+			Line2DExpression otherExpr = (Line2DExpression) other;
+			return this.innerLineString == otherExpr.innerLineString;
 		}
 		return false;
 	}
 
 	@Override
 	public boolean isAggregator() {
-		return innerPoint == null ? false : innerPoint.isAggregator();
+		return innerLineString == null ? false : innerLineString.isAggregator();
 	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		HashSet<DBRow> hashSet = new HashSet<DBRow>();
-		if (innerPoint != null) {
-			hashSet.addAll(innerPoint.getTablesInvolved());
+		if (innerLineString != null) {
+			hashSet.addAll(innerLineString.getTablesInvolved());
 		}
 		return hashSet;
 	}
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return innerPoint == null ? true : innerPoint.isPurelyFunctional();
+		return innerLineString == null ? true : innerLineString.isPurelyFunctional();
 	}
 
 	@Override
@@ -105,12 +108,12 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 	}
 
 	public StringExpression stringResult() {
-		return new StringExpression(new PointFunctionWithStringResult(this) {
+		return new StringExpression(new Line2DExpression.LineFunctionWithStringResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
 				try {
-					return db.getDefinition().doPoint2DAsTextTransform(getFirst().toSQLString(db));
+					return db.getDefinition().doLine2DAsTextTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().toSQLString(db);
 				}
@@ -118,18 +121,18 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
-	public BooleanExpression is(Point rightHandSide) {
-		return is(new DBPoint2D(rightHandSide));
+	public BooleanExpression is(LineString rightHandSide) {
+		return is(new DBLine2D(rightHandSide));
 	}
 
 	@Override
-	public BooleanExpression is(Point2DResult rightHandSide) {
-		return new BooleanExpression(new PointPointWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
+	public BooleanExpression is(Line2DResult rightHandSide) {
+		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
 				try {
-					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.getDefinition().doLine2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
 				}
@@ -137,77 +140,13 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
-	public NumberExpression getX() {
-		return new NumberExpression(new PointFunctionWithNumberResult(this) {
+	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
 
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				try {
-					return db.getDefinition().doPoint2DGetXTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().substringBetween("(", " ").numberResult().toSQLString(db);
-				}
-			}
-		});
-	}
-
-	public NumberExpression getY() {
-		return new NumberExpression(new PointFunctionWithNumberResult(this) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				try {
-					return db.getDefinition().doPoint2DGetYTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult().toSQLString(db);
-				}
-			}
-		});
-	}
-
-	public NumberExpression dimension() {
-		return new NumberExpression(new PointFunctionWithNumberResult(this) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				try {
-					return db.getDefinition().doPoint2DDimensionTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(0).toSQLString(db);
-				}
-			}
-		});
-	}
-
-	public Geometry2DExpression boundingBox() {
-		return new Geometry2DExpression(new PointFunctionWithGeometry2DResult(this) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				try {
-					return db.getDefinition().doPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					final StringExpression coordinates = getFirst().stringResult().substringBetween("(", ")");
-					return StringExpression.value("POLYGON((")
-							.append(coordinates)
-							.append(",").append(coordinates)
-							.append(",").append(coordinates)
-							.append(",").append(coordinates)
-							.append(",").append(coordinates)
-							.append("))")
-							.toSQLString(db);
-				}
-			}
-		});
-	}
-
-	private static abstract class PointPointWithBooleanResult extends BooleanExpression {
-
-		private Point2DExpression first;
-		private Point2DExpression second;
+		private Line2DExpression first;
+		private Line2DExpression second;
 		private boolean requiresNullProtection;
 
-		PointPointWithBooleanResult(Point2DExpression first, Point2DExpression second) {
+		LineLineWithBooleanResult(Line2DExpression first, Line2DExpression second) {
 			this.first = first;
 			this.second = second;
 			if (this.second == null || this.second.getIncludesNull()) {
@@ -215,11 +154,11 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 			}
 		}
 
-		Point2DExpression getFirst() {
+		Line2DExpression getFirst() {
 			return first;
 		}
 
-		Point2DExpression getSecond() {
+		Line2DExpression getSecond() {
 			return second;
 		}
 
@@ -233,8 +172,8 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		}
 
 		@Override
-		public PointPointWithBooleanResult copy() {
-			PointPointWithBooleanResult newInstance;
+		public LineLineWithBooleanResult copy() {
+			LineLineWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -342,13 +281,74 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		}
 	}
 
-	private static abstract class PointFunctionWithStringResult extends StringExpression {
+	private static abstract class LineFunctionWithStringResult extends StringExpression {
+
+		private Line2DExpression first;
+		private boolean requiresNullProtection;
+
+		LineFunctionWithStringResult(Line2DExpression first) {
+			this.first = first;
+			if (this.first == null) {// || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		Line2DExpression getFirst() {
+			return first;
+		}
+		
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public LineFunctionWithStringResult copy() {
+			LineFunctionWithStringResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class LineFunctionWithGeometry2DResult extends Geometry2DExpression {
 
 		private Point2DExpression first;
 //		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
-		PointFunctionWithStringResult(Point2DExpression first) {
+		LineFunctionWithGeometry2DResult(Point2DExpression first) {
 			this.first = first;
 //			this.second = second;
 			if (this.first == null) {// || this.second.getIncludesNull()) {
@@ -373,8 +373,8 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		}
 
 		@Override
-		public PointFunctionWithStringResult copy() {
-			PointFunctionWithStringResult newInstance;
+		public LineFunctionWithGeometry2DResult copy() {
+			LineFunctionWithGeometry2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -412,74 +412,5 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		}
 	}
 
-	private static abstract class PointFunctionWithGeometry2DResult extends Geometry2DExpression {
-
-		private Point2DExpression first;
-//		private Point2DExpression second;
-		private boolean requiresNullProtection;
-
-		PointFunctionWithGeometry2DResult(Point2DExpression first) {
-			this.first = first;
-//			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
-				this.requiresNullProtection = true;
-			}
-		}
-
-		Point2DExpression getFirst() {
-			return first;
-		}
-
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
-		@Override
-		public final String toSQLString(DBDatabase db) {
-			if (this.getIncludesNull()) {
-				return BooleanExpression.isNull(first).toSQLString(db);
-			} else {
-				return doExpressionTransform(db);
-			}
-		}
-
-		@Override
-		public PointFunctionWithGeometry2DResult copy() {
-			PointFunctionWithGeometry2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
-			return newInstance;
-		}
-
-		protected abstract String doExpressionTransform(DBDatabase db);
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
-			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return requiresNullProtection;
-		}
-	}
-
+	
 }

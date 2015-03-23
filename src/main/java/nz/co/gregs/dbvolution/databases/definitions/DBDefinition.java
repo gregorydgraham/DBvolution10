@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
 import java.sql.ResultSet;
@@ -2943,6 +2944,31 @@ public abstract class DBDefinition {
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(geometryAsString);
 		return geometry;
+	}
+
+	public LineString transformDatabaseValueToJTSLineString(String lineStringAsString)  throws com.vividsolutions.jts.io.ParseException {
+		LineString lineString = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(lineStringAsString);
+		if (geometry instanceof LineString) {
+			lineString = (LineString) geometry;
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
+		}
+		return lineString;
+	}
+
+	public String transformLineStringIntoDatabaseFormat(LineString lineString) {
+		String wktValue = lineString.toText();
+		return "'" + wktValue + "'";
+	}
+
+	public String doLine2DAsTextTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doLine2DEqualsTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }
