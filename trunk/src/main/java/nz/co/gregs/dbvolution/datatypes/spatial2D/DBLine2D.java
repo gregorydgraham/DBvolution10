@@ -15,11 +15,16 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
@@ -33,8 +38,8 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	public DBLine2D() {
 	}
 
-	public DBLine2D(LineString lineCollection) {
-		super(lineCollection);
+	public DBLine2D(LineString lineString) {
+		super(lineString);
 	}
 
 	public DBLine2D(nz.co.gregs.dbvolution.expressions.Line2DExpression columnExpression) {
@@ -42,6 +47,22 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	}
 
 	public void setValue(LineString line) {
+		setLiteralValue(line);
+	}
+
+	public void setValue(Point... points) {
+		GeometryFactory geometryFactory = new GeometryFactory();
+		List<Coordinate> coords = new ArrayList<Coordinate>();
+		for (Point point : points) {			
+			coords.add(point.getCoordinate());	
+		}
+		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+		setLiteralValue(line);
+	}
+
+	public void setValue(Coordinate... coords) {
+		GeometryFactory geometryFactory = new GeometryFactory();
+		LineString line = geometryFactory.createLineString(coords);
 		setLiteralValue(line);
 	}
 
@@ -60,7 +81,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 
 	@Override
 	public String getSQLDatatype() {
-		return "LINESTRING";
+		return " LINESTRING ";
 	}
 
 	@Override

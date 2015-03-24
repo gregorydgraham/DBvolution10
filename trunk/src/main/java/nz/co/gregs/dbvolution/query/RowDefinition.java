@@ -22,6 +22,7 @@ import java.util.*;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.columns.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
@@ -122,6 +123,10 @@ public class RowDefinition implements Serializable {
 		return new Point2DColumn(this, fieldOfThisInstance);
 	}
 
+	public Line2DColumn column(DBLine2D fieldOfThisInstance) {
+		return new Line2DColumn(this, fieldOfThisInstance);
+	}
+
 	/**
 	 * Creates a new ColumnProvider instance to help create
 	 * {@link DBExpression expressions}
@@ -164,6 +169,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBGeometry2D) fieldOfThisInstance);
 		} else if (DBPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBPoint2D) fieldOfThisInstance);
+		} else if (DBLine2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBLine2D) fieldOfThisInstance);
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);

@@ -16,20 +16,23 @@
 
 package nz.co.gregs.dbvolution.expressions;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-//import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 
 /**
  *
  * @author greg
  */
-public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult> {
+public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult>, SpatialExpression {
 
 	private Line2DResult innerLineString;
 	private boolean nullProtectionRequired;
@@ -38,21 +41,49 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	public Line2DExpression(Line2DResult value) {
+		initInnerLine(value, value);
+	}
+
+	protected final void initInnerLine(Object original, Line2DResult value) {
 		innerLineString = value;
-		if (value == null || innerLineString.getIncludesNull()) {
+		if (original == null || innerLineString.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
 	public Line2DExpression(LineString line) {
 		innerLineString = new DBLine2D(line);
-		if (line == null || innerLineString.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		initInnerLine(line, innerLineString);
 	}
 
-	public static Point2DExpression value(Point point) {
-		return new Point2DExpression(point);
+	public Line2DExpression(Point... points) {
+		GeometryFactory geometryFactory = new GeometryFactory();
+		List<Coordinate> coords = new ArrayList<Coordinate>();
+		for (Point point : points) {			
+			coords.add(point.getCoordinate());	
+		}
+		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+		innerLineString = new DBLine2D(line);
+		initInnerLine(points, innerLineString);
+	}
+
+	public Line2DExpression(Coordinate... coords) {
+		GeometryFactory geometryFactory = new GeometryFactory();
+		LineString line = geometryFactory.createLineString(coords);
+		innerLineString = new DBLine2D(line);
+		initInnerLine(coords, innerLineString);
+	}
+
+	public static Line2DExpression value(Point... points) {
+		return new Line2DExpression(points);
+	}
+
+	public static Line2DExpression value(Coordinate... coords) {
+		return new Line2DExpression(coords);
+	}
+
+	public static Line2DExpression value(LineString line) {
+		return new Line2DExpression(line);
 	}
 
 	@Override
@@ -81,6 +112,14 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			return this.innerLineString == otherExpr.innerLineString;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 37 * hash + (this.innerLineString != null ? this.innerLineString.hashCode() : 0);
+		hash = 37 * hash + (this.nullProtectionRequired ? 1 : 0);
+		return hash;
 	}
 
 	@Override
@@ -135,6 +174,21 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 					return db.getDefinition().doLine2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression dimension() {
+		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doLine2DDimensionTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return NumberExpression.value(1).toSQLString(db);
 				}
 			}
 		});
@@ -211,13 +265,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 	}
 
-	private static abstract class PointFunctionWithNumberResult extends NumberExpression {
+	private static abstract class LineFunctionWithNumberResult extends NumberExpression {
 
-		private Point2DExpression first;
+		private Line2DExpression first;
 //		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
-		PointFunctionWithNumberResult(Point2DExpression first) {
+		LineFunctionWithNumberResult(Line2DExpression first) {
 			this.first = first;
 //			this.second = second;
 			if (this.first == null) {// || this.second.getIncludesNull()) {
@@ -225,7 +279,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			}
 		}
 
-		Point2DExpression getFirst() {
+		Line2DExpression getFirst() {
 			return first;
 		}
 
@@ -242,8 +296,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 
 		@Override
-		public PointFunctionWithNumberResult copy() {
-			PointFunctionWithNumberResult newInstance;
+		public LineFunctionWithNumberResult copy() {
+			LineFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
