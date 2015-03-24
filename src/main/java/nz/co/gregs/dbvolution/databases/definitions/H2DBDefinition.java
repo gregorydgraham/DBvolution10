@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 
 /**
@@ -80,6 +81,8 @@ public class H2DBDefinition extends DBDefinition {
 			return " DBV_DATEREPEAT ";
 		} else if (qdt instanceof DBPoint2D) {
 			return " VARCHAR(2000) ";
+		} else if (qdt instanceof DBLine2D) {
+			return " VARCHAR(2001) ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}

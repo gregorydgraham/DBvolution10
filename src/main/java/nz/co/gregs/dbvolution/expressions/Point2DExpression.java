@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
  *
  * @author gregorygraham
  */
-public class Point2DExpression implements Point2DResult, EqualComparable<Point2DResult> {
+public class Point2DExpression implements Point2DResult, EqualComparable<Point2DResult>, SpatialExpression {
 
 	private Point2DResult innerPoint;
 	private boolean nullProtectionRequired;
@@ -78,6 +78,14 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 			return this.innerPoint == otherExpr.innerPoint;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 97 * hash + (this.innerPoint != null ? this.innerPoint.hashCode() : 0);
+		hash = 97 * hash + (this.nullProtectionRequired ? 1 : 0);
+		return hash;
 	}
 
 	@Override
@@ -165,6 +173,7 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
+	@Override
 	public NumberExpression dimension() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
