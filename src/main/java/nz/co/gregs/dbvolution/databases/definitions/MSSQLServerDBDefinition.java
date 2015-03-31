@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.text.*;
@@ -25,7 +25,8 @@ import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -77,6 +78,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBString) {
 			return " NVARCHAR(1000) COLLATE Latin1_General_CS_AS_KS_WS ";
 		} else if (qdt instanceof DBPoint2D) {
+			return " GEOMETRY ";
+		} else if (qdt instanceof DBLine2D) {
+			return " GEOMETRY ";
+		} else if (qdt instanceof DBPolygon2D) {
 			return " GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
@@ -469,21 +474,74 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doLine2DAsTextTransform(String line2DSQL) {
+		return "("+line2DSQL+").STAsText()";
+	}
+
+	@Override
+	public String doLine2DGetMinYTransform(String toSQLString) {
+		return super.doLine2DGetMaxYTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DGetMaxYTransform(String toSQLString) {
+		return super.doLine2DGetMaxYTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DGetMinXTransform(String toSQLString) {
+		return super.doLine2DGetMinXTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DGetMaxXTransform(String toSQLString) {
+		return super.doLine2DGetMaxXTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
+		return super.doLine2DGetBoundingBoxTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DDimensionTransform(String toSQLString) {
+		return super.doLine2DDimensionTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DEqualsTransform(String toSQLString, String toSQLString0) {
+		return super.doLine2DEqualsTransform(toSQLString, toSQLString0); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String transformPolygonIntoDatabaseFormat(Polygon polygon) {
+		return "geometry::STGeomFromText ('" +polygon.toText()+"',0)";
+	}
+	
+	@Override
+	public String transformLineStringIntoDatabaseFormat(LineString line) {
+		return "geometry::STGeomFromText ('" +line.toText()+"',0)";
+	}
+	
+	@Override
 	public String transformPointIntoDatabaseFormat(Point point) {
 		return "geometry::STGeomFromText ('" +point.toText()+"',0)";
 	}
 	
 	@Override
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
-		if (qdt instanceof DBGeometry2D) {
+		if (qdt instanceof DBPolygon2D) {
 			return "(" + selectableName + ").STAsText()";
 		} else if (qdt instanceof DBPoint2D) {
+			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+		} else if (qdt instanceof DBLine2D) {
 			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
 		} else {
 			return selectableName;
 		}
 	}
 
+	@Override
 	public Point transformDatabaseValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point point = null;
 		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")){
@@ -503,7 +561,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	
 	// ((2,3),(2,3),(2,3),(2,3)) => POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))
 //	@Override
-//	public Geometry transformDatabaseValueToJTSGeometry(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+//	public Geometry transformDatabaseValueToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
 //		String string = "POLYGON "+geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 //		String[] splits = geometryAsString.split("[(),]+");
 //		System.out.println(geometryAsString+" => "+string);

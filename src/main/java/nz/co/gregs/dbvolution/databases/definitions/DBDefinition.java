@@ -16,6 +16,8 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
@@ -2928,6 +2930,10 @@ public abstract class DBDefinition {
 		return "'" + wktValue + "'";
 	}
 
+	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 	public Point transformDatabaseValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point point = null;
 		WKTReader wktReader = new WKTReader();
@@ -2940,10 +2946,20 @@ public abstract class DBDefinition {
 		return point;
 	}
 
-	public Geometry transformDatabaseValueToJTSGeometry(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+	public Polygon transformDatabaseValueToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+		Polygon poly = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(geometryAsString);
-		return geometry;
+		if (geometry instanceof Polygon) {
+			poly = (Polygon) geometry;
+		} else if (geometry instanceof LineString) {
+			GeometryFactory geofactory = new GeometryFactory();
+			LineString lineString = (LineString) geometry;
+			poly = geofactory.createPolygon(lineString.getCoordinateSequence());
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, poly);
+		}
+		return poly;
 	}
 
 	public LineString transformDatabaseValueToJTSLineString(String lineStringAsString)  throws com.vividsolutions.jts.io.ParseException {
@@ -2963,6 +2979,11 @@ public abstract class DBDefinition {
 		return "'" + wktValue + "'";
 	}
 
+	public String transformPolygonIntoDatabaseFormat(Polygon polygon) {
+		String wktValue = polygon.toText();
+		return "'" + wktValue + "'";
+	}
+
 	public String doLine2DAsTextTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -2972,6 +2993,30 @@ public abstract class DBDefinition {
 	}
 
 	public String doLine2DDimensionTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doLine2DGetMaxXTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doLine2DGetMinXTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doLine2DGetMaxYTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doLine2DGetMinYTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

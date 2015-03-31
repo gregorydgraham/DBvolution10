@@ -15,26 +15,34 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
+import nz.co.gregs.dbvolution.datatypes.TransformRequiredForSelectClause;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.Polygon2DResult;
 
-
-public class DBPolygon2D extends QueryableDatatype {
+public class DBPolygon2D extends QueryableDatatype implements TransformRequiredForSelectClause, Polygon2DResult {
 
 	private static final long serialVersionUID = 1L;
 
 	public DBPolygon2D() {
 	}
 
-	public DBPolygon2D(Object obj) {
-		super(obj);
+	public void setValue(Polygon geometry) {
+		setLiteralValue(geometry);
 	}
 
-	public DBPolygon2D(DBExpression columnExpression) {
+	public DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression columnExpression) {
 		super(columnExpression);
+	}
+
+	public DBPolygon2D(Polygon geometry) {
+		super(geometry);
 	}
 
 	@Override
@@ -44,17 +52,45 @@ public class DBPolygon2D extends QueryableDatatype {
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		Polygon geom = (Polygon) getLiteralValue();
+		String wktValue = geom.toText();
+		return "PolyFromText('" + wktValue + "')";
 	}
 
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+		Polygon geometry = null;
+		String string = resultSet.getString(fullColumnName);
+		if (string == null) {
+			return null;
+		} else {
+			try {
+				geometry = database.getDefinition().transformDatabaseValueToJTSPolygon(string);
+			} catch (ParseException ex) {
+				Logger.getLogger(DBPolygon2D.class.getName()).log(Level.SEVERE, null, ex);
+				throw new nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException(fullColumnName, string);
+			}
+			return geometry;
+		}
+	}
+
+	public Polygon getGeometryValue() {
+		return (Polygon) ((this.getLiteralValue() != null) ? this.getLiteralValue() : null);
+	}
+
+	@Override
+	public Polygon getValue() {
+		return getGeometryValue();
 	}
 
 	@Override
 	public boolean isAggregator() {
 		return false;
 	}
-	
+
+	@Override
+	public boolean getIncludesNull() {
+		return false;
+	}
 }

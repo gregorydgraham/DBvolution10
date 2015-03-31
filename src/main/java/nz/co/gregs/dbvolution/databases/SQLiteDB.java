@@ -15,6 +15,12 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -85,7 +91,16 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		Function.create(connection, "CURRENT_USER", new CurrentUser(getUsername()));
 		Function.create(connection, "STDEV", new StandardDeviation());
 		addDateRepeatFunctions(connection);
+		addSpatialFunctions(connection);
 		return connection;
+	}
+
+	private void addSpatialFunctions(Connection connection) throws SQLException {
+		Function.create(connection, SQLiteDefinition.SPATIAL_POLYGON_CREATE_FROM_POINT2DS_FUNCTION, new SpatialCreatePolygon());
+		Function.create(connection, SQLiteDefinition.SPATIAL_POLYGON_MAX_X_COORD_FUNCTION, new SpatialPolygonGetMaxX());
+		Function.create(connection, SQLiteDefinition.SPATIAL_POLYGON_MIN_X_COORD_FUNCTION, new SpatialPolygonGetMinX());
+		Function.create(connection, SQLiteDefinition.SPATIAL_POLYGON_MAX_Y_COORD_FUNCTION, new SpatialPolygonGetMaxY());
+		Function.create(connection, SQLiteDefinition.SPATIAL_POLYGON_MIN_Y_COORD_FUNCTION, new SpatialPolygonGetMinY());
 	}
 
 	private void addDateRepeatFunctions(Connection connection) throws SQLException {
@@ -97,7 +112,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_GREATERTHANEQUALS_FUNCTION, new DateRepeatGreaterThanOrEqual());
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_DATEADDITION_FUNCTION, new DateRepeatDateAddition());
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_DATESUBTRACTION_FUNCTION, new DateRepeatDateSubtraction());
-		
+
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_YEAR_PART_FUNCTION, new DateRepeatGetYear());
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_MONTH_PART_FUNCTION, new DateRepeatGetMonth());
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_DAY_PART_FUNCTION, new DateRepeatGetDay());
@@ -105,7 +120,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_MINUTE_PART_FUNCTION, new DateRepeatGetMinute());
 		Function.create(connection, SQLiteDefinition.DATEREPEAT_SECOND_PART_FUNCTION, new DateRepeatGetSecond());
 //		Function.create(connection, SQLiteDefinition.DATEREPEAT_MILLISECOND_PART_FUNCTION, new DateRepeatGetMillisecond());
-			}
+	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
@@ -344,7 +359,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 				final String dateStr = value_text(0);
 				final String intervalStr = value_text(1);
 
-				if (dateStr == null || intervalStr == null||dateStr.length()==0||intervalStr.length()==0) {
+				if (dateStr == null || intervalStr == null || dateStr.length() == 0 || intervalStr.length() == 0) {
 					result((String) null);
 				} else {
 					Date date = defn.parseDateFromGetString(dateStr);
@@ -366,7 +381,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		@Override
 		protected void xFunc() throws SQLException {
 			final String intervalStr = value_text(0);
-			if (intervalStr == null||intervalStr.length()==0) {
+			if (intervalStr == null || intervalStr.length() == 0) {
 				result((String) null);
 			} else {
 				int result = DateRepeatImpl.getYearPart(intervalStr);
@@ -383,7 +398,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		@Override
 		protected void xFunc() throws SQLException {
 			final String intervalStr = value_text(0);
-			if (intervalStr == null||intervalStr.length()==0) {
+			if (intervalStr == null || intervalStr.length() == 0) {
 				result((String) null);
 			} else {
 				int result = DateRepeatImpl.getMonthPart(intervalStr);
@@ -400,7 +415,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		@Override
 		protected void xFunc() throws SQLException {
 			final String intervalStr = value_text(0);
-			if (intervalStr == null||intervalStr.length()==0) {
+			if (intervalStr == null || intervalStr.length() == 0) {
 				result((String) null);
 			} else {
 				int result = DateRepeatImpl.getDayPart(intervalStr);
@@ -417,7 +432,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		@Override
 		protected void xFunc() throws SQLException {
 			final String intervalStr = value_text(0);
-			if (intervalStr == null||intervalStr.length()==0) {
+			if (intervalStr == null || intervalStr.length() == 0) {
 				result((String) null);
 			} else {
 				int result = DateRepeatImpl.getHourPart(intervalStr);
@@ -434,7 +449,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		@Override
 		protected void xFunc() throws SQLException {
 			final String intervalStr = value_text(0);
-			if (intervalStr == null||intervalStr.length()==0) {
+			if (intervalStr == null || intervalStr.length() == 0) {
 				result((String) null);
 			} else {
 				int result = DateRepeatImpl.getMinutePart(intervalStr);
@@ -451,7 +466,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		@Override
 		protected void xFunc() throws SQLException {
 			final String intervalStr = value_text(0);
-			if (intervalStr == null||intervalStr.length()==0) {
+			if (intervalStr == null || intervalStr.length() == 0) {
 				result((String) null);
 			} else {
 				int result = DateRepeatImpl.getSecondPart(intervalStr);
@@ -468,7 +483,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		@Override
 		protected void xFunc() throws SQLException {
 			final String intervalStr = value_text(0);
-			if (intervalStr == null||intervalStr.length()==0) {
+			if (intervalStr == null || intervalStr.length() == 0) {
 				result((String) null);
 			} else {
 				int result = DateRepeatImpl.getMillisecondPart(intervalStr);
@@ -476,4 +491,219 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 			}
 		}
 	}
+
+	private static class SpatialCreatePolygon extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				SQLiteDefinition defn = new SQLiteDefinition();
+				WKTReader wktReader = new WKTReader();
+				GeometryFactory factory = new GeometryFactory();
+				List<Coordinate> coords = new ArrayList<Coordinate>();
+				String originalStr = null;
+				int numberOfPoints = args();
+				for (int index = 0; index < numberOfPoints; index++) {
+					originalStr = value_text(index);
+					if (originalStr == null) {
+						result((String) null);
+					} else {
+						Point point = null;
+						Geometry geometry;
+						geometry = wktReader.read(originalStr);
+						if (geometry instanceof Point) {
+							point = (Point) geometry;
+							coords.add(point.getCoordinate());
+						} else {
+							throw new ParseException(originalStr, 0);
+						}
+					}
+				}
+				Polygon createPolygon = factory.createPolygon(coords.toArray(new Coordinate[]{}));
+				result(createPolygon.toText());
+			} catch (ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			}
+		}
+	}
+
+	private static class SpatialPolygonGetMaxX extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				SQLiteDefinition defn = new SQLiteDefinition();
+				WKTReader wktReader = new WKTReader();
+				GeometryFactory factory = new GeometryFactory();
+				List<Coordinate> coords = new ArrayList<Coordinate>();
+				String originalStr = null;
+				int numberOfPoints = args();
+					originalStr = value_text(0);
+					if (originalStr == null) {
+						result((String) null);
+					} else {
+						Polygon polygon = null;
+						Geometry geometry;
+						geometry = wktReader.read(originalStr);
+						if (geometry instanceof Polygon) {
+							polygon = (Polygon) geometry;
+							Double maxX = null;
+							Coordinate[] coordinates = polygon.getCoordinates();
+							for (Coordinate coordinate : coordinates) {
+								if (maxX == null || coordinate.x > maxX){
+									maxX = coordinate.x;
+								}
+							}
+							result(maxX);
+						} else {
+							throw new ParseException(originalStr, 0);
+						}
+					}
+				Polygon createPolygon = factory.createPolygon(coords.toArray(new Coordinate[]{}));
+				result(createPolygon.toText());
+			} catch (ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			}
+		}
+	}
+
+	private static class SpatialPolygonGetMinX extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				SQLiteDefinition defn = new SQLiteDefinition();
+				WKTReader wktReader = new WKTReader();
+				GeometryFactory factory = new GeometryFactory();
+				List<Coordinate> coords = new ArrayList<Coordinate>();
+				String originalStr = null;
+				int numberOfPoints = args();
+					originalStr = value_text(0);
+					if (originalStr == null) {
+						result((String) null);
+					} else {
+						Polygon polygon = null;
+						Geometry geometry;
+						geometry = wktReader.read(originalStr);
+						if (geometry instanceof Polygon) {
+							polygon = (Polygon) geometry;
+							Double minX = null;
+							Coordinate[] coordinates = polygon.getCoordinates();
+							for (Coordinate coordinate : coordinates) {
+								if (minX == null || coordinate.x < minX){
+									minX = coordinate.x;
+								}
+							}
+							result(minX);
+						} else {
+							throw new ParseException(originalStr, 0);
+						}
+					}
+				Polygon createPolygon = factory.createPolygon(coords.toArray(new Coordinate[]{}));
+				result(createPolygon.toText());
+			} catch (ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			}
+		}
+	}
+	private static class SpatialPolygonGetMaxY extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				SQLiteDefinition defn = new SQLiteDefinition();
+				WKTReader wktReader = new WKTReader();
+				GeometryFactory factory = new GeometryFactory();
+				List<Coordinate> coords = new ArrayList<Coordinate>();
+				String originalStr = null;
+				int numberOfPoints = args();
+					originalStr = value_text(0);
+					if (originalStr == null) {
+						result((String) null);
+					} else {
+						Polygon polygon = null;
+						Geometry geometry;
+						geometry = wktReader.read(originalStr);
+						if (geometry instanceof Polygon) {
+							polygon = (Polygon) geometry;
+							Double maxY = null;
+							Coordinate[] coordinates = polygon.getCoordinates();
+							for (Coordinate coordinate : coordinates) {
+								if (maxY == null || coordinate.y > maxY){
+									maxY = coordinate.y;
+								}
+							}
+							result(maxY);
+						} else {
+							throw new ParseException(originalStr, 0);
+						}
+					}
+				Polygon createPolygon = factory.createPolygon(coords.toArray(new Coordinate[]{}));
+				result(createPolygon.toText());
+			} catch (ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			}
+		}
+	}
+
+	private static class SpatialPolygonGetMinY extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				SQLiteDefinition defn = new SQLiteDefinition();
+				WKTReader wktReader = new WKTReader();
+				GeometryFactory factory = new GeometryFactory();
+				List<Coordinate> coords = new ArrayList<Coordinate>();
+				String originalStr = null;
+				int numberOfPoints = args();
+					originalStr = value_text(0);
+					if (originalStr == null) {
+						result((String) null);
+					} else {
+						Polygon polygon = null;
+						Geometry geometry;
+						geometry = wktReader.read(originalStr);
+						if (geometry instanceof Polygon) {
+							polygon = (Polygon) geometry;
+							Double minY = null;
+							Coordinate[] coordinates = polygon.getCoordinates();
+							for (Coordinate coordinate : coordinates) {
+								if (minY == null || coordinate.y < minY){
+									minY = coordinate.y;
+								}
+							}
+							result(minY);
+						} else {
+							throw new ParseException(originalStr, 0);
+						}
+					}
+				Polygon createPolygon = factory.createPolygon(coords.toArray(new Coordinate[]{}));
+				result(createPolygon.toText());
+			} catch (ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Point", ex);
+			}
+		}
+	}
+
 }

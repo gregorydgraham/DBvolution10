@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -245,7 +245,7 @@ public class Point2DExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBNumber getY = new DBNumber(this.column(this.point).getY());
 		@DBColumn
-		public DBGeometry2D boundingBox = new DBGeometry2D(this.column(this.point).boundingBox());
+		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.point).boundingBox());
 		@DBColumn
 		public DBBoolean getXis2 = new DBBoolean(this.column(this.point).getX().is(2));
 

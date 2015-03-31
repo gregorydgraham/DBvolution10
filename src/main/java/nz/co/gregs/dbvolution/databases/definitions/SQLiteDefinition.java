@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
@@ -26,6 +27,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
@@ -60,7 +62,18 @@ public class SQLiteDefinition extends DBDefinition {
 	public static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_DATEREPEAT_HOUR_PART";
 	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
 	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
-//	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_DATEREPEAT_MILLI_PART";
+
+	public static String SPATIAL_POLYGON_CREATE_FROM_POINT2DS_FUNCTION = "DBV_CREATE_POLYGON2D_FROM_POINTS2D";
+	public static String SPATIAL_POLYGON_BOUNDINGBOX_FUNCTION = "DBV_POLYGON_BOUNDINGBOX2D";
+	public static String SPATIAL_POLYGON_MAX_X_COORD_FUNCTION = "DBV_POLYGON_MAX_X2D_COORD";
+	public static String SPATIAL_POLYGON_MIN_X_COORD_FUNCTION = "DBV_POLYGON_MIN_X2D_COORD";
+	public static String SPATIAL_POLYGON_MAX_Y_COORD_FUNCTION = "DBV_POLYGON_MAX_Y2D_COORD";
+	public static String SPATIAL_POLYGON_MIN_Y_COORD_FUNCTION = "DBV_POLYGON_MIN_Y2D_COORD";
+
+	public static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINE_MAX_X2D_COORD";
+	public static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_LINE_MIN_X2D_COORD";
+	public static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINE_MAX_Y2D_COORD";
+	public static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINE_MIN_Y2D_COORD";
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -102,6 +115,8 @@ public class SQLiteDefinition extends DBDefinition {
 			return " DATETIME ";
 		} else if (qdt instanceof DBPoint2D) {
 			return " VARCHAR(2000) ";
+		} else if (qdt instanceof DBLine2D) {
+			return " VARCHAR(2001) ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}

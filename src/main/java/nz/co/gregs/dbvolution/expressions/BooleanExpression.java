@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -567,12 +568,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		});
 	}
 
-	public Geometry2DExpression ifThenElse(Geometry thenExpr, Geometry elseExpr) {
-		return this.ifThenElse(new Geometry2DExpression(thenExpr), new Geometry2DExpression(elseExpr));
+	public Polygon2DExpression ifThenElse(Polygon thenExpr, Polygon elseExpr) {
+		return this.ifThenElse(new Polygon2DExpression(thenExpr), new Polygon2DExpression(elseExpr));
 	}
 
-	public Geometry2DExpression ifThenElse(Geometry2DExpression thenExpr, Geometry2DExpression elseExpr) {
-		return new Geometry2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
+	public Polygon2DExpression ifThenElse(Polygon2DExpression thenExpr, Polygon2DExpression elseExpr) {
+		return new Polygon2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1396,17 +1397,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 	}
 
-	private static abstract class DBBinaryGeometryGeometryFunction extends Geometry2DExpression {
+	private static abstract class DBBinaryGeometryGeometryFunction extends Polygon2DExpression {
 
 		protected BooleanExpression onlyBool = null;
-		protected Geometry2DExpression first = null;
-		protected Geometry2DExpression second = null;
+		protected Polygon2DExpression first = null;
+		protected Polygon2DExpression second = null;
 //		private boolean includeNulls;
 
 		DBBinaryGeometryGeometryFunction() {
 		}
 
-		DBBinaryGeometryGeometryFunction(BooleanExpression only, Geometry2DExpression first, Geometry2DExpression second) {
+		DBBinaryGeometryGeometryFunction(BooleanExpression only, Polygon2DExpression first, Polygon2DExpression second) {
 			this.onlyBool = only;
 			this.first = first;
 			this.second = second;

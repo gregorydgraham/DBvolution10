@@ -27,11 +27,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -77,9 +73,9 @@ public class Line2DExpressionTest extends AbstractTest {
 		@DBColumn
 		@DBPrimaryKey
 		@DBAutoIncrement
-		public DBInteger point_id = new DBInteger();
+		public DBInteger line_id = new DBInteger();
 
-		@DBColumn("point_col")
+		@DBColumn("line_col")
 		public DBLine2D line = new DBLine2D();
 	}
 
@@ -92,7 +88,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(Line2DExpression.value(point).is(pointTestTable.column(pointTestTable.line)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -166,7 +162,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(Line2DExpression.value(line).stringResult().is(pointTestTable.column(pointTestTable.line).stringResult()));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -178,7 +174,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).is(line));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 	@Test
@@ -191,7 +187,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
 //	@Test
@@ -202,13 +198,13 @@ public class Line2DExpressionTest extends AbstractTest {
 //		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getX().is(2));
 //		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 //		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 //
 //		dbQuery = database.getDBQuery(pointTestTable);
 //		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getX().is(4));
 //		allRows = dbQuery.getAllInstancesOf(pointTestTable);
 //		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).point_id.intValue(), is(2));
+//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
 //	}
 //
 //	@Test
@@ -219,13 +215,13 @@ public class Line2DExpressionTest extends AbstractTest {
 //		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getY().is(3));
 //		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 //		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 //
 //		dbQuery = database.getDBQuery(pointTestTable);
 //		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getY().is(6));
 //		allRows = dbQuery.getAllInstancesOf(pointTestTable);
 //		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).point_id.intValue(), is(2));
+//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
 //	}
 
 	@Test
@@ -253,7 +249,7 @@ public class Line2DExpressionTest extends AbstractTest {
 //		@DBColumn
 //		public DBNumber getY = new DBNumber(this.column(this.line).getY());
 //		@DBColumn
-//		public DBGeometry2D boundingBox = new DBGeometry2D(this.column(this.line).boundingBox());
+//		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.line).boundingBox());
 //		@DBColumn
 //		public DBBoolean getXis2 = new DBBoolean(this.column(this.line).getX().is(2));
 //
@@ -268,7 +264,7 @@ public class Line2DExpressionTest extends AbstractTest {
 //		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 //		database.print(allRows);
 //		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 //		final String boundingText = allRows.get(0).boundingBox.getGeometryValue().toText();
 //		String[] splits = boundingText.split("[^-0-9.]+");
 //		int numbersTested = 0;
