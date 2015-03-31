@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.query;
 
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -115,7 +115,7 @@ public class RowDefinition implements Serializable {
 		return new BooleanArrayColumn(this, fieldOfThisInstance);
 	}
 	
-	public Geometry2DColumn column(DBGeometry2D fieldOfThisInstance) {
+	public Geometry2DColumn column(DBPolygon2D fieldOfThisInstance) {
 		return new Geometry2DColumn(this, fieldOfThisInstance);
 	}
 
@@ -165,8 +165,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBDateRepeat) fieldOfThisInstance);
 		} else if (DBBooleanArray.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBBooleanArray) fieldOfThisInstance);
-		} else if (DBGeometry2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBGeometry2D) fieldOfThisInstance);
+		} else if (DBPolygon2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBPolygon2D) fieldOfThisInstance);
 		} else if (DBPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBPoint2D) fieldOfThisInstance);
 		} else if (DBLine2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {

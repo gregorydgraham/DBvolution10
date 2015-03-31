@@ -18,18 +18,18 @@ package nz.co.gregs.dbvolution.columns;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
-import nz.co.gregs.dbvolution.expressions.Geometry2DExpression;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
+import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
  * @author gregorygraham
  */
-public class Geometry2DColumn extends Geometry2DExpression implements ColumnProvider{
+public class Geometry2DColumn extends Polygon2DExpression implements ColumnProvider{
 	private AbstractColumn column;
 
-	public Geometry2DColumn(RowDefinition row, DBGeometry2D field) {	
+	public Geometry2DColumn(RowDefinition row, DBPolygon2D field) {	
 		this.column = new AbstractColumn(row, field);
 	}
 

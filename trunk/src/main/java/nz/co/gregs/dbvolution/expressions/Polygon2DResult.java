@@ -19,6 +19,6 @@ package nz.co.gregs.dbvolution.expressions;
  *
  * @author gregorygraham
  */
-public interface Geometry2DResult extends DBExpression, ExpressionCanHaveNullValues {
+public interface Polygon2DResult extends DBExpression, ExpressionCanHaveNullValues {
 	
 }

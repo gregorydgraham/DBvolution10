@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.expressions;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -59,8 +58,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	public Line2DExpression(Point... points) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		List<Coordinate> coords = new ArrayList<Coordinate>();
-		for (Point point : points) {			
-			coords.add(point.getCoordinate());	
+		for (Point point : points) {
+			coords.add(point.getCoordinate());
 		}
 		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
 		innerLineString = new DBLine2D(line);
@@ -190,6 +189,75 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(1).toSQLString(db);
 				}
+			}
+		});
+	}
+
+	@Override
+	public Polygon2DExpression boundingBox() {
+		return new Polygon2DExpression(new LineFunctionWithGeometry2DResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doLine2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					final Line2DExpression first = getFirst();
+					final NumberExpression maxX = first.getMaxX();
+					final NumberExpression maxY = first.getMaxY();
+					final NumberExpression minX = first.getMinX();
+					final NumberExpression minY = first.getMinY();
+					return Polygon2DExpression.value(
+							Point2DExpression.value(minX, minY), 
+							Point2DExpression.value(maxX, minY), 
+							Point2DExpression.value(maxX, maxY), 
+							Point2DExpression.value(minX, maxY), 
+							Point2DExpression.value(minX, minY)).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	public NumberExpression getMaxX() {
+
+		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLine2DGetMaxXTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public NumberExpression getMinX() {
+
+		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLine2DGetMinXTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public NumberExpression getMaxY() {
+
+		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLine2DGetMaxYTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public NumberExpression getMinY() {
+
+		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLine2DGetMinYTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -350,7 +418,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		Line2DExpression getFirst() {
 			return first;
 		}
-		
+
 		@Override
 		public final String toSQLString(DBDatabase db) {
 			if (this.getIncludesNull()) {
@@ -396,13 +464,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 	}
 
-	private static abstract class LineFunctionWithGeometry2DResult extends Geometry2DExpression {
+	private static abstract class LineFunctionWithGeometry2DResult extends Polygon2DExpression {
 
-		private Point2DExpression first;
+		private Line2DExpression first;
 //		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
-		LineFunctionWithGeometry2DResult(Point2DExpression first) {
+		LineFunctionWithGeometry2DResult(Line2DExpression first) {
 			this.first = first;
 //			this.second = second;
 			if (this.first == null) {// || this.second.getIncludesNull()) {
@@ -410,7 +478,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			}
 		}
 
-		Point2DExpression getFirst() {
+		Line2DExpression getFirst() {
 			return first;
 		}
 
@@ -466,5 +534,4 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 	}
 
-	
 }

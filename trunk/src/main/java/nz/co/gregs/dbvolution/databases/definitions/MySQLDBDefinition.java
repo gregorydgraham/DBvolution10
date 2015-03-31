@@ -15,13 +15,15 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
@@ -68,6 +70,8 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
+		} else if (qdt instanceof DBLine2D) {
+			return " VARCHAR(2001) ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
@@ -75,9 +79,11 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
-		if (qdt instanceof DBGeometry2D) {
+		if (qdt instanceof DBPolygon2D) {
 			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBPoint2D) {
+			return "AsText(" + selectableName + ")";
+		} else if (qdt instanceof DBLine2D) {
 			return "AsText(" + selectableName + ")";
 		} else {
 			return selectableName;
@@ -290,5 +296,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String transformPointIntoDatabaseFormat(Point point) {
 		String wktValue = point.toText();
 		return "PointFromText('" + wktValue + "')";
+	}
+
+	@Override
+	public String transformLineStringIntoDatabaseFormat(LineString line) {
+		String wktValue = line.toText();
+		return "LineFromText('" + wktValue + "')";
 	}
 }

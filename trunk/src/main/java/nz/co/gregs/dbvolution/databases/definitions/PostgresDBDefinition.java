@@ -16,8 +16,9 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.text.DateFormat;
@@ -33,7 +34,8 @@ import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBGeometry2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 
 /**
@@ -94,6 +96,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " BOOLEAN ";
 		} else  if (qdt instanceof DBBooleanArray) {
 			return " BOOL[] ";
+		} else  if (qdt instanceof DBLine2D) {
+			return " PATH ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -365,18 +369,34 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String transformPointIntoDatabaseFormat(Point point) {
 		return "POINT (" +point.getX()+", "+point.getY()+")";
 	}
+
+	//path '[(0,0),(1,1),(2,0)]'
+	@Override
+	public String transformLineStringIntoDatabaseFormat(LineString line) {
+		StringBuilder str = new  StringBuilder();
+		String separator = "";
+		Coordinate[] coordinates = line.getCoordinates();
+		for (Coordinate coordinate : coordinates) {
+			str.append(separator).append("(").append(coordinate.x).append(",").append(coordinate.y).append(")");
+			separator=",";
+		}
+		return "PATH '[" +str+"]'";
+	}
 	
 	@Override
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
-		if (qdt instanceof DBGeometry2D) {
+		if (qdt instanceof DBPolygon2D) {
 			return "(" + selectableName + ")::VARCHAR";
 		} else if (qdt instanceof DBPoint2D) {
+			return "(" + selectableName + ")::VARCHAR";
+		} else if (qdt instanceof DBLine2D) {
 			return "(" + selectableName + ")::VARCHAR";
 		} else {
 			return selectableName;
 		}
 	}
 
+	@Override
 	public Point transformDatabaseValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point point = null;
 		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")){
@@ -396,7 +416,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	
 	// ((2,3),(2,3),(2,3),(2,3)) => POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))
 	@Override
-	public Geometry transformDatabaseValueToJTSGeometry(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+	public Polygon transformDatabaseValueToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
 		String string = "POLYGON "+geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 		String[] splits = geometryAsString.split("[(),]+");
 		System.out.println(geometryAsString+" => "+string);
@@ -417,5 +437,39 @@ public class PostgresDBDefinition extends DBDefinition {
 		final GeometryFactory geometryFactory = new GeometryFactory();
 		Polygon polygon = geometryFactory.createPolygon(coords.toArray(new Coordinate[]{}));
 		return polygon;
+	}
+
+	@Override
+	public LineString transformDatabaseValueToJTSLineString(String lineStringAsString)  throws com.vividsolutions.jts.io.ParseException {
+		String string = "LINESTRING "+lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
+		String[] splits = lineStringAsString.split("[(),]+");
+		System.out.println(lineStringAsString+" => "+string);
+		List<Coordinate> coords = new ArrayList<Coordinate>();
+		Coordinate firstCoord = null;
+		for (int i = 1; i < splits.length-1; i++) {
+			String splitX = splits[i];
+			String splitY = splits[i+1];
+			System.out.println("COORD: "+splitX+", "+splitY);
+			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
+			coords.add(coordinate);
+			if (firstCoord==null){
+				firstCoord=coordinate;
+			}
+			i++;
+		}
+		coords.add(firstCoord);
+		final GeometryFactory geometryFactory = new GeometryFactory();
+		LineString lineString = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+		return lineString;
+	}
+
+	@Override
+	public String doLine2DEqualsTransform(String firstLineSQL, String secondLineSQL) {
+		return "("+firstLineSQL+")::TEXT = ("+secondLineSQL+")::TEXT";
+	}
+	
+	@Override
+	public String doLine2DAsTextTransform(String line2DSQL) {
+		return "("+line2DSQL+")::TEXT";
 	}
 }
