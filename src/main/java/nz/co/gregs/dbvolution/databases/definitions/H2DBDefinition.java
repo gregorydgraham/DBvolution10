@@ -15,14 +15,15 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.internal.h2.*;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -39,23 +40,6 @@ public class H2DBDefinition extends DBDefinition {
 	private final String dateFormatStr = "yyyy-M-d HH:mm:ss Z";
 	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss Z";
 	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
-	public static String DATEREPEAT_CREATION_FUNCTION = "DBV_DATEREPEAT_CREATE";
-	public static String DATEREPEAT_EQUALS_FUNCTION = "DBV_DATEREPEAT_EQUALS";
-	public static String DATEREPEAT_LESSTHAN_FUNCTION = "DBV_DATEREPEAT_LESSTHAN";
-	public static String DATEREPEAT_LESSTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_LESSTHANEQUALS";
-	public static String DATEREPEAT_GREATERTHAN_FUNCTION = "DBV_DATEREPEAT_GREATERTHAN";
-	public static String DATEREPEAT_GREATERTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_GREATERTHANEQUALS";
-	public static String DATEREPEAT_DATEADDITION_FUNCTION = "DBV_DATEREPEAT_DATEPLUSDATEREPEAT";
-	public static String DATEREPEAT_DATESUBTRACTION_FUNCTION = "DBV_DATEREPEAT_DATEMINUSDATEREPEAT";
-	
-	public static String DATEREPEAT_YEAR_PART_FUNCTION = "DBV_DATEREPEAT_YEAR_PART";
-	public static String DATEREPEAT_MONTH_PART_FUNCTION = "DBV_DATEREPEAT_MONTH_PART";
-	public static String DATEREPEAT_DAY_PART_FUNCTION = "DBV_DATEREPEAT_DAY_PART";
-	public static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_DATEREPEAT_HOUR_PART";
-	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
-	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
-//	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_DATEREPEAT_MILLI_PART";
-
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -78,16 +62,19 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBDateRepeat) {
-			return " DBV_DATEREPEAT ";
+			return DateRepeatFunctions.DATATYPE;
 		} else if (qdt instanceof DBPoint2D) {
-			return " VARCHAR(2000) ";
+			return Point2D.POINT2D.datatype();
 		} else if (qdt instanceof DBLine2D) {
-			return " VARCHAR(2001) ";
+			return Line2D.LINE2D.datatype();
+		} else if (qdt instanceof DBPolygon2D) {
+			return Polygon2D.POLYGON2D.datatype();
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
-	}	
-	
+	}
+
+	@Override
 	public String doStringLengthTransform(String enclosedValue) {
 		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(15,10))";
 	}
@@ -101,7 +88,6 @@ public class H2DBDefinition extends DBDefinition {
 //	public String doAddMillisecondsTransform(String secondValue, String numberOfSeconds) {
 //		return "DATEADD('millisecond'," + numberOfSeconds + "," + secondValue + ")";
 //	}
-
 	@Override
 	public String doAddSecondsTransform(String secondValue, String numberOfSeconds) {
 		return "DATEADD('second'," + numberOfSeconds + "," + secondValue + ")";
@@ -149,9 +135,9 @@ public class H2DBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " DAY_OF_WEEK("+dateSQL+")";
+		return " DAY_OF_WEEK(" + dateSQL + ")";
 	}
-	
+
 	@Override
 	public String doBooleanArrayTransform(Boolean[] bools) {
 		StringBuilder str = new StringBuilder();
@@ -175,78 +161,230 @@ public class H2DBDefinition extends DBDefinition {
 //	public String transformPeriodIntoDateRepeat(Period interval) {
 //		return "'"+DateRepeatImpl.getIntervalString(interval)+"'";
 //	}
-
 //	@Override
 //	public Period parseDateRepeatFromGetString(String intervalStr) {
 //		return DateRepeatImpl.parseDateRepeatFromGetString(intervalStr);
 //	}
-
 	@Override
 	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
-		return " "+DATEREPEAT_CREATION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return " " + DateRepeatFunctions.DATEREPEAT_CREATION_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDatePlusDateRepeatTransform(String leftHandSide, String rightHandSide) {
-		return " "+DATEREPEAT_DATEADDITION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return " " + DateRepeatFunctions.DATEREPEAT_DATEADDITION_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateMinusDateRepeatTransform(String leftHandSide, String rightHandSide) {
-		return " "+DATEREPEAT_DATESUBTRACTION_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return " " + DateRepeatFunctions.DATEREPEAT_DATESUBTRACTION_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
-		return " "+DATEREPEAT_EQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return " " + DateRepeatFunctions.DATEREPEAT_EQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
-		return DATEREPEAT_LESSTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return DateRepeatFunctions.DATEREPEAT_LESSTHAN_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return DATEREPEAT_LESSTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return DateRepeatFunctions.DATEREPEAT_LESSTHANEQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
-		return DATEREPEAT_GREATERTHAN_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return DateRepeatFunctions.DATEREPEAT_GREATERTHAN_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return DATEREPEAT_GREATERTHANEQUALS_FUNCTION+"("+leftHandSide +", "+rightHandSide+")";
+		return DateRepeatFunctions.DATEREPEAT_GREATERTHANEQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetYearsTransform(String intervalStr) {
-		return DATEREPEAT_YEAR_PART_FUNCTION+"("+intervalStr +")";
+		return DateRepeatFunctions.DATEREPEAT_YEAR_PART_FUNCTION + "(" + intervalStr + ")";
 	}
+
 	@Override
 	public String doDateRepeatGetMonthsTransform(String intervalStr) {
-		return DATEREPEAT_MONTH_PART_FUNCTION+"("+intervalStr +")";
+		return DateRepeatFunctions.DATEREPEAT_MONTH_PART_FUNCTION + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetDaysTransform(String intervalStr) {
-		return DATEREPEAT_DAY_PART_FUNCTION+"("+intervalStr +")";
+		return DateRepeatFunctions.DATEREPEAT_DAY_PART_FUNCTION + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetHoursTransform(String intervalStr) {
-		return DATEREPEAT_HOUR_PART_FUNCTION+"("+intervalStr +")";
+		return DateRepeatFunctions.DATEREPEAT_HOUR_PART_FUNCTION + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetMinutesTransform(String intervalStr) {
-		return DATEREPEAT_MINUTE_PART_FUNCTION+"("+intervalStr +")";
+		return DateRepeatFunctions.DATEREPEAT_MINUTE_PART_FUNCTION + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetSecondsTransform(String intervalStr) {
-		return DATEREPEAT_SECOND_PART_FUNCTION+"("+intervalStr +")";
+		return DateRepeatFunctions.DATEREPEAT_SECOND_PART_FUNCTION + "(" + intervalStr + ")";
+	}
+
+	@Override
+	public String doLine2DAsTextTransform(String toSQLString) {
+		return Line2DFunctions.ASTEXT + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DEqualsTransform(String toSQLString, String toSQLString0) {
+		return Line2DFunctions.EQUALS + "(" + toSQLString + ", " + toSQLString0 + ")";
+	}
+
+	@Override
+	public String doLine2DDimensionTransform(String toSQLString) {
+		return Line2DFunctions.DIMENSION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
+		return Line2DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMaxXTransform(String toSQLString) {
+		return Line2DFunctions.MAXX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMinXTransform(String toSQLString) {
+		return Line2DFunctions.MINX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMaxYTransform(String toSQLString) {
+		return Line2DFunctions.MAXY + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMinYTransform(String toSQLString) {
+		return Line2DFunctions.MINY + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
+		return Point2DFunctions.EQUALS + "(" + firstPoint + ", " + secondPoint + ")";
+	}
+
+	@Override
+	public String doPoint2DGetXTransform(String toSQLString) {
+		return Point2DFunctions.GETX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint2DGetYTransform(String toSQLString) {
+		return Point2DFunctions.GETY + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint2DDimensionTransform(String toSQLString) {
+		return Point2DFunctions.DIMENSION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint2DGetBoundingBoxTransform(String toSQLString) {
+		return Point2DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint2DAsTextTransform(String toSQLString) {
+		return Point2DFunctions.ASTEXT + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doDBPolygon2DFormatTransform(Polygon geom) {
+		String wktValue = geom.toText();
+		return Polygon2DFunctions.CREATE_FROM_WKTPOLYGON2D.alias() + "('" + wktValue + "')";
+	}
+
+	@Override
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.EQUALS.alias() + "(" + firstGeometry + ", " + secondGeometry + ") ";
+	}
+
+	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.INTERSECTS.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.CONTAINS.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.DISJOINT.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.OVERLAPS.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.TOUCHES.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		return Polygon2DFunctions.WITHIN.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+		return Polygon2DFunctions.DIMENSION.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
+		return Polygon2DFunctions.BOUNDINGBOX.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetAreaTransform(String toSQLString) {
+		return Polygon2DFunctions.AREA.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetExteriorRingTransform(String toSQLString) {
+		return Polygon2DFunctions.EXTERIORRING.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxXTransform(String toSQLString) {
+		return Polygon2DFunctions.MAX_X.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMinXTransform(String toSQLString) {
+		return Polygon2DFunctions.MIN_Y.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxYTransform(String toSQLString) {
+		return Polygon2DFunctions.MAX_Y.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMinYTransform(String toSQLString) {
+		return Polygon2DFunctions.MIN_Y.alias() + "(" + toSQLString + ")";
 	}
 }

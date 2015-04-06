@@ -26,6 +26,7 @@ package nz.co.gregs.dbvolution.databases.supports;
  *
  * @author gregorygraham
  */
-public interface SupportsGeometryDatatype {
+@Deprecated
+public interface SupportsPolygonDatatype {
 
 }
