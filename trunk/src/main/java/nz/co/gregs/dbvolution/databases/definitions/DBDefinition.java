@@ -2767,14 +2767,6 @@ public abstract class DBDefinition {
 		return str.toString();
 	}
 
-	public String doGeometry2DEqualsTransform(String firstGeometry, String secondGeometry) {
-		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
-	}
-
-	public String doGeometry2DIntersectionTransform(String firstGeometry, String secondGeometry) {
-		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
-	}
-
 	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " - " + rightHandSide + ")";
 	}
@@ -2811,41 +2803,49 @@ public abstract class DBDefinition {
 		return DateRepeatImpl.parseDateRepeatFromGetString(intervalStr);
 	}
 
-	public String doGeometry2DContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
+	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometry2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometry2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometry2DTouchesTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometry2DWithinTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometry2DGetDimensionTransform(String toSQLString) {
+	public String doPolygon2DGetDimensionTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometry2DGetBoundingBoxTransform(String toSQLString) {
+	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometry2DGetAreaTransform(String toSQLString) {
+	public String doPolygon2DGetAreaTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doGeometry2DGetExteriorRingTransform(String toSQLString) {
+	public String doPolygon2DGetExteriorRingTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3000,11 +3000,11 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DGetMaxXTransform(String toSQLString) {
+	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+	public String doLine2DGetMaxXTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3018,6 +3018,27 @@ public abstract class DBDefinition {
 
 	public String doLine2DGetMinYTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPolygon2DGetMaxXTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPolygon2DGetMinXTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPolygon2DGetMaxYTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPolygon2DGetMinYTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doDBPolygon2DFormatTransform(Polygon geom) {
+		String wktValue = geom.toText();
+		return "PolyFromText('" + wktValue + "')";
 	}
 
 }

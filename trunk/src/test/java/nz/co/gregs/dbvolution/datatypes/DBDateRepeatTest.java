@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -29,7 +28,6 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.columns.DateColumn;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
-import static nz.co.gregs.dbvolution.expressions.DateRepeatExpression.MINUTE_SUFFIX;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.april2nd2011;
 import static nz.co.gregs.dbvolution.generic.AbstractTest.march23rd2013;

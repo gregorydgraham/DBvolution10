@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.databases.supports.SupportsGeometryDatatype;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -44,16 +44,16 @@ public class DBPolygonTest extends AbstractTest {
 		double y = point.getY();
 		Polygon createPolygon = geoFactory.createPolygon(new Coordinate[]{
 			new Coordinate(x, y),
-			new Coordinate(x+1, y),
-			new Coordinate(x+1, y+1),
-			new Coordinate(x, y+1),
+			new Coordinate(x + 1, y),
+			new Coordinate(x + 1, y + 1),
+			new Coordinate(x, y + 1),
 			new Coordinate(x, y)});
 		return createPolygon;
 	}
 
 	@Test
 	public void basicSpatialTest() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -82,7 +82,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testIntersects() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -122,7 +122,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testContains() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -162,7 +162,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testDoesNotIntersect() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -207,7 +207,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testIs() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -247,7 +247,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testIsNot() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -287,7 +287,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testOverlaps() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -340,7 +340,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testTouches() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -386,7 +386,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testWithin() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -427,7 +427,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testDimension() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -473,8 +473,140 @@ public class DBPolygonTest extends AbstractTest {
 	}
 
 	@Test
+	public void testMaxX() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(polygon);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).maxX().is(2));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
+		}
+	}
+
+	@Test
+	public void testMinX() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(polygon);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).minX().is(-1));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
+		}
+	}
+
+	@Test
+	public void testMaxY() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(polygon);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).maxY().is(2));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
+		}
+	}
+
+	@Test
+	public void testMinY() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(polygon);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).minY().is(-1));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
+		}
+	}
+
+	@Test
 	public void testArea() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -521,7 +653,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testBoundingBox() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -569,7 +701,7 @@ public class DBPolygonTest extends AbstractTest {
 
 	@Test
 	public void testExteriorRing() throws SQLException {
-		if (database instanceof SupportsGeometryDatatype) {
+		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(spatial);
@@ -584,7 +716,7 @@ public class DBPolygonTest extends AbstractTest {
 			spatial = new BasicSpatialTable();
 			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
 			database.insert(spatial);
-
+//POLYGON ((-1 -1, 2 -1, 2 2, -1 2, -1 -1))
 			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
 			spatial = new BasicSpatialTable();
 			spatial.myfirstgeom.setValue(polygon);
@@ -598,8 +730,9 @@ public class DBPolygonTest extends AbstractTest {
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
 
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().is(
-					fac.createPolygon(new Coordinate[]{new Coordinate(5, 10), new Coordinate(6, 10), new Coordinate(6, 11), new Coordinate(5, 11), new Coordinate(5, 10)}))
+			query = database.getDBQuery(new BasicSpatialTable())
+					.addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().is(
+							fac.createPolygon(new Coordinate[]{new Coordinate(5, 10), new Coordinate(6, 10), new Coordinate(6, 11), new Coordinate(5, 11), new Coordinate(5, 10)}))
 			);
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
@@ -627,8 +760,11 @@ public class DBPolygonTest extends AbstractTest {
 		@DBColumn
 		DBPolygon2D myfirstgeom = new DBPolygon2D();
 
-		@DBColumn
-		DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.myfirstgeom).exteriorRing());
+//		@DBColumn
+//		DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.myfirstgeom).boundingBox());
+//
+//		@DBColumn
+//		DBPolygon2D exteriorRing = new DBPolygon2D(this.column(this.myfirstgeom).exteriorRing());
 
 	}
 

@@ -70,8 +70,8 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
-		} else if (qdt instanceof DBLine2D) {
-			return " VARCHAR(2001) ";
+//		} else if (qdt instanceof DBLine2D) {
+//			return " VARCHAR(2001) ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
@@ -121,6 +121,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	 *
 	 * @return "stddev"
 	 */
+	@Override
 	public String getStandardDeviationFunctionName() {
 		return "STDDEV_SAMP";
 	}
@@ -202,59 +203,79 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doGeometry2DEqualsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		return "Equals(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "Intersects(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
 		return "Contains(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
 		return "Disjoint(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
 		return "Overlaps(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DTouchesTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
 		return "Touches(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DWithinTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//Returns 1 or 0 to indicate whether g1 is spatially within g2. This tests the opposite relationship as Contains(). 
 		return "Within(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DGetDimensionTransform(String thisGeometry) {
+	public String doPolygon2DGetDimensionTransform(String thisGeometry) {
 		return "Dimension(" + thisGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DGetBoundingBoxTransform(String thisGeometry) {
+	public String doPolygon2DGetBoundingBoxTransform(String thisGeometry) {
 		return "Envelope(" + thisGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DGetAreaTransform(String thisGeometry) {
+	public String doPolygon2DGetAreaTransform(String thisGeometry) {
 		return "Area(" + thisGeometry + ")";
 	}
 
 	@Override
-	public String doGeometry2DGetExteriorRingTransform(String thisGeometry) {
+	public String doPolygon2DGetExteriorRingTransform(String thisGeometry) {
 		return "ExteriorRing(" + thisGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxXTransform(String toSQLString) {
+		return "X(PointN(ExteriorRing(Envelope(" + toSQLString + ")),3))";
+	}
+
+	@Override
+	public String doPolygon2DGetMinXTransform(String toSQLString) {
+		return "X(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxYTransform(String toSQLString) {
+		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),3))";
+	}
+
+	@Override
+	public String doPolygon2DGetMinYTransform(String toSQLString) {
+		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
 	}
 
 	@Override
@@ -279,12 +300,12 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DDimensionTransform(String point2D) {
-		return doGeometry2DGetDimensionTransform(point2D);
+		return doPolygon2DGetDimensionTransform(point2D);
 	}
 
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2D) {
-		return doGeometry2DGetBoundingBoxTransform(point2D);
+		return doPolygon2DGetBoundingBoxTransform(point2D);
 	}
 
 	@Override
@@ -302,5 +323,30 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String transformLineStringIntoDatabaseFormat(LineString line) {
 		String wktValue = line.toText();
 		return "LineFromText('" + wktValue + "')";
+	}
+
+	@Override
+	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
+		return "Envelope(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMaxXTransform(String toSQLString) {
+		return "X(PointN(ExteriorRing(Envelope(" + toSQLString + ")),3))";
+	}
+
+	@Override
+	public String doLine2DGetMinXTransform(String toSQLString) {
+		return "X(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
+	}
+
+	@Override
+	public String doLine2DGetMaxYTransform(String toSQLString) {
+		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),3))";
+	}
+
+	@Override
+	public String doLine2DGetMinYTransform(String toSQLString) {
+		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
 	}
 }

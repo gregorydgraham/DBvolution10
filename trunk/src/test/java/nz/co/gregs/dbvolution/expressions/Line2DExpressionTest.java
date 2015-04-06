@@ -27,8 +27,8 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -190,39 +190,60 @@ public class Line2DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
-//	@Test
-//	public void testGetX() throws SQLException {
-//		System.out.println("getX");
-//		final LineTestTable pointTestTable = new LineTestTable();
-//		DBQuery dbQuery = database.getDBQuery(pointTestTable);
-//		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getX().is(2));
-//		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-//		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-//
-//		dbQuery = database.getDBQuery(pointTestTable);
-//		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getX().is(4));
-//		allRows = dbQuery.getAllInstancesOf(pointTestTable);
-//		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
-//	}
-//
-//	@Test
-//	public void testGetY() throws SQLException {
-//		System.out.println("getY");
-//		final LineTestTable pointTestTable = new LineTestTable();
-//		DBQuery dbQuery = database.getDBQuery(pointTestTable);
-//		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getY().is(3));
-//		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-//		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-//
-//		dbQuery = database.getDBQuery(pointTestTable);
-//		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getY().is(6));
-//		allRows = dbQuery.getAllInstancesOf(pointTestTable);
-//		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
-//	}
+	@Test
+	public void testGetMaxX() throws SQLException {
+		System.out.println("getMaxX");
+//		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.setSortOrder(lineTestTable.column(lineTestTable.line_id));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).getMaxX().is(4));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
+		Assert.assertThat(allRows.get(1).line_id.intValue(), is(3));
+	}
+
+	@Test
+	public void testGetMinX() throws SQLException {
+		System.out.println("getMaxX");
+//		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).getMinX().is(3));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(3));
+	}
+
+	@Test
+	public void testGetMaxY() throws SQLException {
+		System.out.println("getMaxY");
+//		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).getMaxY().is(4));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+	}
+
+	@Test
+	public void testGetMinY() throws SQLException {
+		System.out.println("getMinY");
+//		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).getMinY().is(3));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(1).line_id.intValue(), is(2));
+	}
 
 	@Test
 	public void testDimension() throws SQLException {
@@ -238,44 +259,35 @@ public class Line2DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(3));
 	}
 
-//	public static class BoundingBoxTest extends LineTestTable {
-//
-//		private static final long serialVersionUID = 1L;
-//
-//		@DBColumn
-//		public DBString stringLine = new DBString(this.column(this.line).stringResult().substringBetween("(", " "));
-//		@DBColumn
-//		public DBNumber getX = new DBNumber(this.column(this.line).getX());
-//		@DBColumn
-//		public DBNumber getY = new DBNumber(this.column(this.line).getY());
-//		@DBColumn
-//		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.line).boundingBox());
-//		@DBColumn
-//		public DBBoolean getXis2 = new DBBoolean(this.column(this.line).getX().is(2));
-//
-//	}
-//
-//	@Test
-//	public void testBoundingBox() throws SQLException {
-//		System.out.println("boundingBox");
-//		final BoundingBoxTest pointTestTable = new BoundingBoxTest();
-//		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
-//		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getY().is(3));
-//		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-//		database.print(allRows);
-//		Assert.assertThat(allRows.size(), is(1));
-//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-//		final String boundingText = allRows.get(0).boundingBox.getGeometryValue().toText();
-//		String[] splits = boundingText.split("[^-0-9.]+");
-//		int numbersTested = 0;
-//		for (String split : splits) {
-//			System.out.println("SPLIT: " + split);
-//			if (split.length() > 0) {
-//				Assert.assertThat(Math.round(Double.parseDouble(split) * 1000) / 1000.0, isOneOf(2.0, 3.0));
-//				numbersTested++;
-//			}
-//		}
-//		Assert.assertThat(numbersTested, is(10));
-//	}
+	public static class BoundingBoxTest extends LineTestTable {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		public DBString stringLine = new DBString(this.column(this.line).stringResult().substringBetween("(", " "));
+		@DBColumn
+		public DBNumber getX = new DBNumber(this.column(this.line).getMaxX());
+		@DBColumn
+		public DBNumber getY = new DBNumber(this.column(this.line).getMaxY());
+		@DBColumn
+		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.line).boundingBox());
+		@DBColumn
+		public DBBoolean getXis2 = new DBBoolean(this.column(this.line).getMaxX().is(2));
+
+	}
+
+	@Test
+	public void testBoundingBox() throws SQLException {
+		System.out.println("boundingBox");
+		final BoundingBoxTest pointTestTable = new BoundingBoxTest();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getMaxY().is(4));
+		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		final String boundingText = allRows.get(0).boundingBox.getGeometryValue().toText();
+		Assert.assertThat(boundingText, is("POLYGON ((2 3, 3 3, 3 4, 2 4, 2 3))"));
+	}
 
 }
