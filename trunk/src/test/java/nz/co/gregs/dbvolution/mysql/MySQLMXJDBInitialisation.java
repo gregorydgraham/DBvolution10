@@ -2,6 +2,7 @@ package nz.co.gregs.dbvolution.mysql;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
 
 /*
@@ -25,7 +26,7 @@ import nz.co.gregs.dbvolution.databases.MySQLMXJDB;
  */
 public class MySQLMXJDBInitialisation {
 
-	public synchronized static MySQLMXJDB getMySQLDBInstance() throws IOException, ClassNotFoundException {
+	public synchronized static MySQLMXJDB getMySQLDBInstance() throws IOException, ClassNotFoundException, SQLException {
 
 		int port = Integer.parseInt(System.getProperty("c-mxj_test_port", "3336"));
 
