@@ -265,14 +265,14 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		@DBColumn
 		public DBString stringLine = new DBString(this.column(this.line).stringResult().substringBetween("(", " "));
-		@DBColumn
-		public DBNumber getX = new DBNumber(this.column(this.line).getMaxX());
-		@DBColumn
-		public DBNumber getY = new DBNumber(this.column(this.line).getMaxY());
+//		@DBColumn
+//		public DBNumber getX = new DBNumber(this.column(this.line).getMaxX());
+//		@DBColumn
+//		public DBNumber getY = new DBNumber(this.column(this.line).getMaxY());
 		@DBColumn
 		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.line).boundingBox());
-		@DBColumn
-		public DBBoolean getXis2 = new DBBoolean(this.column(this.line).getMaxX().is(2));
+//		@DBColumn
+//		public DBBoolean getXis2 = new DBBoolean(this.column(this.line).getMaxX().is(2));
 
 	}
 
