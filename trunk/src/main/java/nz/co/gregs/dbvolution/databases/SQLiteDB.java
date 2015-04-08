@@ -41,7 +41,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 	 *
 	 * @param ds	ds
 	 */
-	public SQLiteDB(DataSource ds) {
+	public SQLiteDB(DataSource ds) throws SQLException {
 		super(new SQLiteDefinition(), ds);
 	}
 
@@ -53,7 +53,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 	 * @param username username
 	 * @param password password
 	 */
-	public SQLiteDB(String jdbcURL, String username, String password) {
+	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
 	}
 

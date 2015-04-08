@@ -186,9 +186,10 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(DBDefinition definition, DataSource ds) {
+	public DBDatabase(DBDefinition definition, DataSource ds) throws SQLException {
 		this.definition = definition;
 		this.dataSource = ds;
+		this.addDatabaseSpecificFeatures(getRawConnection().createStatement());
 	}
 
 	/**
@@ -217,12 +218,13 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see InformixDB
 	 * @see PostgresDB
 	 */
-	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this.definition = definition;
 		this.driverName = driverName;
 		this.jdbcURL = jdbcURL;
 		this.password = password;
 		this.username = username;
+		this.addDatabaseSpecificFeatures(getRawConnection().createStatement());
 	}
 
 	private DBTransactionStatement getDBTransactionStatement() throws SQLException {
@@ -1574,5 +1576,10 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public boolean supportsRecursiveQueriesNatively() {
 		return true;
+	}
+
+	protected void addDatabaseSpecificFeatures(Statement createStatement) throws SQLException {
+		// be default there are no extras to be added to the database
+		;
 	}
 }

@@ -3037,8 +3037,7 @@ public abstract class DBDefinition {
 	}
 
 	public String doDBPolygon2DFormatTransform(Polygon geom) {
-		String wktValue = geom.toText();
-		return "PolyFromText('" + wktValue + "')";
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }

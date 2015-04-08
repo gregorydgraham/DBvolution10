@@ -17,12 +17,15 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
+import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.
@@ -48,7 +51,7 @@ public class PostgresDB extends DBDatabase {
 	 *
 	 * @param ds	ds
 	 */
-	public PostgresDB(DataSource ds) {
+	public PostgresDB(DataSource ds) throws SQLException {
 		super(new PostgresDBDefinition(), ds);
 	}
 
@@ -59,7 +62,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-	public PostgresDB(String jdbcURL, String username, String password) {
+	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
 	}
 
@@ -73,7 +76,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-	public PostgresDB(String hostname, int port, String databaseName, String username, String password) {
+	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
 		this(hostname, port, databaseName, username, password, null);
 	}
 
@@ -92,7 +95,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param username username
 	 * @param urlExtras urlExtras
 	 */
-	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
+	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
 		super(new PostgresDBDefinition(),
 				POSTGRES_DRIVER_NAME,
 				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
@@ -113,7 +116,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param password password
 	 * @param urlExtras urlExtras
 	 */
-	public PostgresDB(String databaseName, String username, String password, String urlExtras) {
+	public PostgresDB(String databaseName, String username, String password, String urlExtras) throws SQLException {
 		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
 	}
 
@@ -173,7 +176,7 @@ public class PostgresDB extends DBDatabase {
 	 * <p>
 	 * Generally requires all sorts of privileges and is best performed by
 	 * database administrator (DBA).
-	 * 
+	 *
 	 * @param username
 	 * @param password
 	 * @throws SQLException
@@ -187,7 +190,7 @@ public class PostgresDB extends DBDatabase {
 			dbStatement.close();
 		}
 	}
-	
+
 	@Override
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		try {
@@ -196,6 +199,16 @@ public class PostgresDB extends DBDatabase {
 			exp.printStackTrace();
 		} catch (SQLException exp) {
 			exp.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement stmnt) throws SQLException {
+		for (StringFunctions fn : StringFunctions.values()) {
+			fn.add(stmnt);
+		}
+		for (Line2DFunctions fn : Line2DFunctions.values()) {
+			fn.add(stmnt);
 		}
 	}
 }
