@@ -38,7 +38,7 @@ public class Oracle11DB extends OracleDB {
 	 *
 	 * @param dataSource a datasource to an Oracle database
 	 */
-	public Oracle11DB(DataSource dataSource) {
+	public Oracle11DB(DataSource dataSource) throws SQLException {
 		super(new Oracle11DBDefinition(), dataSource);
 	}
 
@@ -51,7 +51,7 @@ public class Oracle11DB extends OracleDB {
 	 * @param password password
 	 * @param username username
 	 */
-	public Oracle11DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+	public Oracle11DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
@@ -63,7 +63,7 @@ public class Oracle11DB extends OracleDB {
 	 * @param username username
 	 * @param password password
 	 */
-	public Oracle11DB(String driverName, String jdbcURL, String username, String password) {
+	public Oracle11DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle11DBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -74,7 +74,7 @@ public class Oracle11DB extends OracleDB {
 	 * @param username username
 	 * @param password password
 	 */
-	public Oracle11DB(String jdbcURL, String username, String password) {
+	public Oracle11DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle11DBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
 	}
 
@@ -87,7 +87,7 @@ public class Oracle11DB extends OracleDB {
 	 * @param password password
 	 * @param username username
 	 */
-	public Oracle11DB(String host, int port, String serviceName, String username, String password) {
+	public Oracle11DB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new Oracle11DBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}
 

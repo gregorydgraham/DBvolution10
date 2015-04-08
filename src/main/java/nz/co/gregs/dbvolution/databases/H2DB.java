@@ -77,7 +77,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 		super(new H2DBDefinition(), dataSource);
 		jamDatabaseConnectionOpen();
 		final Statement stmt = getConnection().createStatement();
-		addExtras(stmt);
+		addDatabaseSpecificFeatures(stmt);
 	}
 	/**
 	 * Creates a DBDatabase for a H2 database.
@@ -95,11 +95,12 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
 		jamDatabaseConnectionOpen();
-		final Statement stmt = getConnection().createStatement();
-		addExtras(stmt);
+//		final Statement stmt = getConnection().createStatement();
+//		addDatabaseSpecificFeatures(stmt);
 	}
 
-	private void addExtras(final Statement stmt) throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+	@Override
+	protected void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
 		DateRepeatFunctions.addFunctions(stmt);
 		Point2D.POINT2D.add(stmt);
 		Line2D.LINE2D.add(stmt);

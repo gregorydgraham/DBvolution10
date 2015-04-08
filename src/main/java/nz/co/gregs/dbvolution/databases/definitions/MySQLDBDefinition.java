@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -200,6 +201,12 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public boolean supportsArraysNatively() {
 		return false;
+	}
+	
+	@Override
+	public String doDBPolygon2DFormatTransform(Polygon geom) {
+		String wktValue = geom.toText();
+		return "PolyFromText('" + wktValue + "')";
 	}
 
 	@Override

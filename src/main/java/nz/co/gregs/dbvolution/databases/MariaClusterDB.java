@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -38,7 +39,7 @@ public class MariaClusterDB extends DBDatabase {
 	 *
 	 * @param ds	 ds	
 	 */
-	public MariaClusterDB(DataSource ds) {
+	public MariaClusterDB(DataSource ds) throws SQLException {
 		super(new MariaDBDefinition(), ds);
 	}
 
@@ -51,7 +52,7 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-	public MariaClusterDB(String jdbcURL, String username, String password) {
+	public MariaClusterDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -69,7 +70,7 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param username username
 	 * @param databaseName databaseName
 	 */
-	public MariaClusterDB(String server, long port, String databaseName, String username, String password) {
+	public MariaClusterDB(String server, long port, String databaseName, String username, String password) throws SQLException {
 		super(new MariaDBDefinition(),
 				MARIADBDRIVERNAME,
 				"jdbc:mariadb://" + server + ":" + port + "/" + databaseName,

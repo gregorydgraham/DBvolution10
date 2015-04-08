@@ -16,6 +16,7 @@
 
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 
@@ -32,7 +33,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 *
 	 * @param ds	 ds	
 	 */
-	public PostgresDBOverSSL(DataSource ds) {
+	public PostgresDBOverSSL(DataSource ds) throws SQLException {
         super(ds);
     }
 	
@@ -46,7 +47,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @param password password
 	 * @param urlExtras urlExtras
 	 */
-	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
+	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
         super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"+(urlExtras==null||urlExtras.isEmpty()?"":"&"+urlExtras));
     }
 
@@ -59,7 +60,7 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @param port port
 	 * @param username username
 	 */
-	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) {
+	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) throws SQLException {
         this(hostname, port, databaseName, username, password, "");
     }
 

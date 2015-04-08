@@ -15,9 +15,9 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 
 /**
@@ -50,7 +50,7 @@ public class Oracle12DB extends OracleDB {
 	 *
 	 * @param dataSource a datasource to an Oracle database
 	 */
-	public Oracle12DB(DataSource dataSource) {
+	public Oracle12DB(DataSource dataSource) throws SQLException {
 		super(new Oracle12DBDefinition(), dataSource);
 	}
 
@@ -62,7 +62,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param password password
 	 * @param username username
 	 */
-	public Oracle12DB(String driverName, String jdbcURL, String username, String password) {
+	public Oracle12DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle12DBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -73,7 +73,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param username username
 	 * @param password password
 	 */
-	public Oracle12DB(String jdbcURL, String username, String password) {
+	public Oracle12DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, jdbcURL, username, password);
 	}
 
@@ -86,7 +86,7 @@ public class Oracle12DB extends OracleDB {
 	 * @param username username
 	 * @param password password
 	 */
-	public Oracle12DB(String host, int port, String serviceName, String username, String password) {
+	public Oracle12DB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}
 

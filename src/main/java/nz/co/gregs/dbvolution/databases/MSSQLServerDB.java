@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
@@ -50,7 +51,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 *
 	 * @param ds	 a DataSource to an MS SQLServer database	
 	 */
-	public MSSQLServerDB(DataSource ds) {
+	public MSSQLServerDB(DataSource ds) throws SQLException {
         super(new MSSQLServerDBDefinition(), ds);
     }
 
@@ -62,7 +63,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-    public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
+    public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
         super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
     }
     
@@ -76,7 +77,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-    public MSSQLServerDB(String jdbcURL, String username, String password) {
+    public MSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
         super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
     }
 	
@@ -90,7 +91,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * @param username
 	 * @param password
 	 */
-	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
         super(
 				new MSSQLServerDBDefinition(), 
 				SQLSERVERDRIVERNAME, 
@@ -111,7 +112,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * @param username
 	 * @param password
 	 */
-	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
         super(
 				new MSSQLServerDBDefinition(), 
 				driverName, 

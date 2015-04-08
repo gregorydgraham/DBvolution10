@@ -233,6 +233,10 @@ public class Point2DExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBString stringPoint = new DBString(this.column(this.point).stringResult().substringBetween("(", " "));
 		@DBColumn
+		public DBString stringAfter = new DBString(this.column(this.point).stringResult().substringAfter("("));
+		@DBColumn
+		public DBString stringBefore = new DBString(this.column(this.point).stringResult().substringBefore(" "));
+		@DBColumn
 		public DBNumber getX = new DBNumber(this.column(this.point).getX());
 		@DBColumn
 		public DBNumber getY = new DBNumber(this.column(this.point).getY());

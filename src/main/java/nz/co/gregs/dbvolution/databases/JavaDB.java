@@ -15,12 +15,10 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
-import org.apache.derby.agg.Aggregator;
 
 /**
  * A version of DBDatabase tweaked for JavaDB.
@@ -47,7 +45,7 @@ public class JavaDB extends DBDatabase {
 	 *
 	 * @param dataSource	 dataSource	
 	 */
-	public JavaDB(DataSource dataSource) {
+	public JavaDB(DataSource dataSource) throws SQLException {
 		super(new JavaDBDefinition(), dataSource);
 	}
 
@@ -59,7 +57,7 @@ public class JavaDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-	public JavaDB(String jdbcURL, String username, String password) {
+	public JavaDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new JavaDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -73,7 +71,7 @@ public class JavaDB extends DBDatabase {
 	 * @param password password
 	 * @param username username
 	 */
-	public JavaDB(String host, int port, String database, String username, String password) {
+	public JavaDB(String host, int port, String database, String username, String password) throws SQLException {
 		super(new JavaDBDefinition(), driverName, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
 	}
 

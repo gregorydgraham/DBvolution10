@@ -15,28 +15,14 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import com.vividsolutions.jts.geom.*;
+import java.text.*;
+import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
-import nz.co.gregs.dbvolution.datatypes.DBByteArray;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard
@@ -471,5 +457,30 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doLine2DAsTextTransform(String line2DSQL) {
 		return "("+line2DSQL+")::TEXT";
+	}
+	
+	@Override
+	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
+		return Line2DFunctions.BOUNDINGBOX+"(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMaxXTransform(String toSQLString) {
+		return Line2DFunctions.MAXX+"(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMinXTransform(String toSQLString) {
+		return Line2DFunctions.MINX+"(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMaxYTransform(String toSQLString) {
+		return Line2DFunctions.MAXY+"(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine2DGetMinYTransform(String toSQLString) {
+		return Line2DFunctions.MINY+"(" + toSQLString + ")";
 	}
 }
