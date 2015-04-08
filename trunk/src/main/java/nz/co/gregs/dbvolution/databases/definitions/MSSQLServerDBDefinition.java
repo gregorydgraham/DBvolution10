@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.sqlserver.Line2DFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -480,27 +481,27 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DGetMinYTransform(String toSQLString) {
-		return super.doLine2DGetMaxYTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+		return Line2DFunctions.MINY+"("+toSQLString+")";
 	}
 
 	@Override
 	public String doLine2DGetMaxYTransform(String toSQLString) {
-		return super.doLine2DGetMaxYTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+		return Line2DFunctions.MAXY+"("+toSQLString+")";
 	}
 
 	@Override
 	public String doLine2DGetMinXTransform(String toSQLString) {
-		return super.doLine2DGetMinXTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+		return Line2DFunctions.MINX+"("+toSQLString+")";
 	}
 
 	@Override
 	public String doLine2DGetMaxXTransform(String toSQLString) {
-		return super.doLine2DGetMaxXTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+		return Line2DFunctions.MAXX+"("+toSQLString+")";
 	}
 
 	@Override
 	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
-		return super.doLine2DGetBoundingBoxTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+		return "("+toSQLString+").STEnvelope()";
 	}
 
 	@Override

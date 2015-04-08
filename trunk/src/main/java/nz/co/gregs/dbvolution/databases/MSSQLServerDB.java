@@ -15,10 +15,13 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import com.sun.org.apache.xpath.internal.functions.FuncBoolean;
 import java.sql.SQLException;
+import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
+import nz.co.gregs.dbvolution.internal.sqlserver.Line2DFunctions;
 
 /**
  * A DBDatabase object tweaked to work with Microsoft SQL Server.
@@ -125,6 +128,13 @@ public class MSSQLServerDB extends DBDatabase {
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		for(Line2DFunctions fn :Line2DFunctions.values()){
+			fn.add(statement);
+		}
 	}
 
 }

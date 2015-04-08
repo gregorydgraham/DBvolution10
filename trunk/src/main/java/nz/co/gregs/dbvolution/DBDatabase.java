@@ -1578,7 +1578,7 @@ public abstract class DBDatabase implements Cloneable {
 		return true;
 	}
 
-	protected void addDatabaseSpecificFeatures(Statement createStatement) throws SQLException {
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		// be default there are no extras to be added to the database
 		;
 	}
