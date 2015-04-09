@@ -430,7 +430,7 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
-		return "POINT (" + xValue + " " + yValue + ")";
+		return "'POINT (" + xValue + " " + yValue + ")'";
 	}
 
 	@Override

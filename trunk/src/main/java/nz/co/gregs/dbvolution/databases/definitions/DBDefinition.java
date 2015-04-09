@@ -38,6 +38,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.Point2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
@@ -2962,7 +2963,7 @@ public abstract class DBDefinition {
 		return poly;
 	}
 
-	public LineString transformDatabaseValueToJTSLineString(String lineStringAsString)  throws com.vividsolutions.jts.io.ParseException {
+	public LineString transformDatabaseValueToJTSLineString(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineStringAsString);
@@ -3038,6 +3039,18 @@ public abstract class DBDefinition {
 
 	public String doDBPolygon2DFormatTransform(Polygon geom) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPoint2DDistanceBetweenTransform(String toSQLString, Point2DExpression second) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doRoundTransform(String toSQLString) {
+		return "ROUND(" + toSQLString + ")";
+	}
+
+	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
+		throw new UnsupportedOperationException();
 	}
 
 }

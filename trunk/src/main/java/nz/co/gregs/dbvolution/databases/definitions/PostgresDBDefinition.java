@@ -322,6 +322,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+		return "POINT (" +xValue+", "+yValue+")";
+	}
+
+	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return "((" + firstPoint + ")~=( " + secondPoint + "))";
 	}
