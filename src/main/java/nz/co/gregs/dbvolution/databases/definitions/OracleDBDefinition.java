@@ -362,4 +362,9 @@ public class OracleDBDefinition extends DBDefinition {
 			return super.transformToStorableType(columnExpression);
 		}
 	}
+
+	@Override
+	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+		return "'POINT (" + xValue + " " + yValue + ")'";
+	}
 }

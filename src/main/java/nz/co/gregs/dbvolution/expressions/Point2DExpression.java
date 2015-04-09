@@ -52,14 +52,26 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		return new Point2DExpression(point);
 	}
 
+	public static Point2DExpression value(Integer xValue, Integer yValue) {
+		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
+	}
+
+	public static Point2DExpression value(Long xValue, Long yValue) {
+		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
+	}
+
+	public static Point2DExpression value(Double xValue, Double yValue) {
+		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
+	}
+
 	public static Point2DExpression value(NumberExpression xValue, NumberExpression yValue) {
-		return new Point2DExpression(new NumberNumberFunctionWithPoint2DResult(xValue,yValue){
+		return new Point2DExpression(new NumberNumberFunctionWithPoint2DResult(xValue, yValue) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
 				return db.getDefinition().transformCoordinatesIntoDatabasePointFormat(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
-			
+
 		});
 	}
 
@@ -199,6 +211,20 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
+	public NumberExpression distanceBetween(Point2DExpression otherPoint) {
+		return new NumberExpression(new PointPointFunctionWithNumberResult(this, otherPoint) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doPoint2DDistanceBetweenTransform(getFirst().toSQLString(db), getSecond());
+				} catch (UnsupportedOperationException unsupported) {
+					return getSecond().getX().minus(getFirst().getX()).bracket().squared().plus(getSecond().getY().minus(getFirst().getY()).bracket().squared()).squareRoot().toSQLString(db);
+				}
+			}
+		});
+	}
+
 	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new PointFunctionWithGeometry2DResult(this) {
@@ -256,6 +282,77 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		@Override
 		public PointPointFunctionWithBooleanResult copy() {
 			PointPointFunctionWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class PointPointFunctionWithNumberResult extends NumberExpression {
+
+		private Point2DExpression first;
+		private Point2DExpression second;
+		private boolean requiresNullProtection;
+
+		PointPointFunctionWithNumberResult(Point2DExpression first, Point2DExpression second) {
+			this.first = first;
+			this.second = second;
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		Point2DExpression getFirst() {
+			return first;
+		}
+
+		Point2DExpression getSecond() {
+			return second;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public PointPointFunctionWithNumberResult copy() {
+			PointPointFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

@@ -416,6 +416,16 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doRoundTransform(String toSQLString) {
+		return "ROUND("+toSQLString+", 0)";
+	}
+
+	@Override
+	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
+		return "ROUND("+number+", "+decimalPlaces+")";
+	}
+
+	@Override
 	public boolean supportsArraysNatively() {
 		return false;
 	}
@@ -522,6 +532,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String transformLineStringIntoDatabaseFormat(LineString line) {
 		return "geometry::STGeomFromText ('" +line.toText()+"',0)";
+	}
+	
+	@Override
+	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+		return "geometry::STGeomFromText ('POINT (" + xValue+" "+yValue + ")',0)";
 	}
 	
 	@Override

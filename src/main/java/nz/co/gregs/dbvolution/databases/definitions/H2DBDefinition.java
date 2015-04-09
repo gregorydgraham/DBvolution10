@@ -301,6 +301,11 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+		return "'POINT (" + xValue + " " + yValue + ")'";
+	}
+
+	@Override
 	public String doPoint2DAsTextTransform(String toSQLString) {
 		return Point2DFunctions.ASTEXT + "(" + toSQLString + ")";
 	}

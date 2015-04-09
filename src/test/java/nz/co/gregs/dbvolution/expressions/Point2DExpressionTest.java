@@ -60,7 +60,7 @@ public class Point2DExpressionTest extends AbstractTest {
 	}
 
 	public static class PointTestTable extends DBRow {
-		
+
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
@@ -227,7 +227,7 @@ public class Point2DExpressionTest extends AbstractTest {
 	}
 
 	public static class BoundingBoxTest extends PointTestTable {
-		
+
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
@@ -270,4 +270,40 @@ public class Point2DExpressionTest extends AbstractTest {
 		Assert.assertThat(numbersTested, is(10));
 	}
 
+	public static class DistanceTest extends PointTestTable {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		public DBNumber getX = new DBNumber(this.column(this.point).getX());
+		@DBColumn
+		public DBNumber getY = new DBNumber(this.column(this.point).getY());
+		@DBColumn
+		public DBPoint2D point2 = new DBPoint2D(Point2DExpression.value(2, 3));
+		@DBColumn
+		public DBNumber getX2 = new DBNumber(Point2DExpression.value(2, 3).getX());
+		@DBColumn
+		public DBNumber getY2 = new DBNumber(Point2DExpression.value(2, 3).getY());
+		@DBColumn
+		public DBNumber distance = new DBNumber(this.column(this.point).distanceBetween(Point2DExpression.value(2, 3)));
+	}
+
+	@Test
+	public void testDistance() throws SQLException {
+		System.out.println("boundingBox");
+		final DistanceTest pointTestTable = new DistanceTest();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
+		database.print(dbQuery.getAllInstancesOf(pointTestTable));
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.distance).is(0));
+		List<DistanceTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		
+		dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.distance).round(2).is(3.61));
+		allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+	}
 }

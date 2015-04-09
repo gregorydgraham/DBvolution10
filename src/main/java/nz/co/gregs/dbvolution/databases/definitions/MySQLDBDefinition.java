@@ -291,6 +291,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+		return "PointFromText('POINT (" + xValue+" "+yValue + ")')";
+	}
+	
+	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return "Equals(" + firstPoint + ", " + secondPoint + ")";
 	}
