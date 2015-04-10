@@ -100,6 +100,9 @@ public abstract class AbstractTest {
 //			databases.addPoint2D(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 		}
+		if (System.getProperty("testOracle12") != null) {
+			databases.add(new Object[]{"Oracle12DB", new Oracle12DB("dbvtest-oracle12.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
+		}
 		if (System.getProperty("testMSSQLServer") != null) {
 //			databases.addPoint2D(new Object[]{"MSSQLServer", new MSSQLServerDB("dbvtest-mssql.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv")});
 			databases.add(new Object[]{"MSSQLServer", new MSSQLServerDB("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv")});
