@@ -16,9 +16,12 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.internal.oracle.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
@@ -73,6 +76,16 @@ public abstract class OracleDB extends DBDatabase {
 	@Override
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return false;
+	}
+
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		for (StringFunctions fn : StringFunctions.values()) {
+			fn.add(statement);
+		}
+		for (Line2DFunctions fn : Line2DFunctions.values()) {
+			fn.add(statement);
+		}
 	}
 
 }

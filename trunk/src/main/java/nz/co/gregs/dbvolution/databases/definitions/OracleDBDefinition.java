@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.oracle.Line2DFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -366,5 +367,35 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
 		return "'POINT (" + xValue + " " + yValue + ")'";
+	}
+
+	@Override
+	public String doLine2DAsTextTransform(String line2DSQL) {
+		return "("+line2DSQL+")";
+	}
+
+	@Override
+	public String doLine2DGetMinYTransform(String toSQLString) {
+		return Line2DFunctions.MINY+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLine2DGetMaxYTransform(String toSQLString) {
+		return Line2DFunctions.MAXY+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLine2DGetMinXTransform(String toSQLString) {
+		return Line2DFunctions.MINX+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLine2DGetMaxXTransform(String toSQLString) {
+		return Line2DFunctions.MAXX+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
+		return Line2DFunctions.BOUNDINGBOX+"("+toSQLString+")";
 	}
 }
