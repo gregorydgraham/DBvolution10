@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard
@@ -487,5 +488,15 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doLine2DGetMinYTransform(String toSQLString) {
 		return Line2DFunctions.MINY+"(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
+		return StringFunctions.SUBSTRINGBEFORE+"("+fromThis+", "+beforeThis+")";
+	}
+
+	@Override
+	public String doSubstringAfterTransform(String fromThis, String afterThis) {
+		return StringFunctions.SUBSTRINGAFTER+"("+fromThis+", "+afterThis+")";
 	}
 }

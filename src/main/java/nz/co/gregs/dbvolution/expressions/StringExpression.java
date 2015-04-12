@@ -48,16 +48,16 @@ import nz.co.gregs.dbvolution.datatypes.*;
 public class StringExpression implements StringResult, RangeComparable<StringResult> {
 
 	static StringExpression nullExpression() {
-		return new StringExpression(){
+		return new StringExpression() {
 			@Override
 			public String toSQLString(DBDatabase db) {
 				return db.getDefinition().getNull();
 			}
-			
+
 		};
 	}
 
-	private StringResult string1=null;
+	private StringResult string1 = null;
 	private boolean nullProtectionRequired;
 
 	/**
@@ -169,12 +169,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression copy() {
 		return new StringExpression(this);
 	}
-	
+
 	@Override
-	public boolean isPurelyFunctional(){
-		if (string1==null){
+	public boolean isPurelyFunctional() {
+		if (string1 == null) {
 			return true;
-		}else{
+		} else {
 			return string1.isPurelyFunctional();
 		}
 	}
@@ -289,13 +289,13 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * equal.
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isLessThan(String value, BooleanExpression fallBackWhenEquals){
+	public BooleanExpression isLessThan(String value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
-	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
-	 * matches.
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the
+	 * fallback matches.
 	 *
 	 * <p>
 	 * Often used to implement efficient paging by using LESSTHAN across 2
@@ -312,7 +312,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * equal.
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isGreaterThan(String value, BooleanExpression fallBackWhenEquals){
+	public BooleanExpression isGreaterThan(String value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
@@ -336,13 +336,13 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression
 	 */
 	@Override
-	public BooleanExpression isLessThan(StringResult value, BooleanExpression fallBackWhenEquals){
+	public BooleanExpression isLessThan(StringResult value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
-	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
-	 * matches.
+	 * Like GREATERTHAN_OR_EQUAL but only includes the EQUAL values if the
+	 * fallback matches.
 	 *
 	 * <p>
 	 * Often used to implement efficient paging by using LESSTHAN across 2
@@ -360,7 +360,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression
 	 */
 	@Override
-	public BooleanExpression isGreaterThan(StringResult value, BooleanExpression fallBackWhenEquals){
+	public BooleanExpression isGreaterThan(StringResult value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
@@ -1093,7 +1093,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public BooleanExpression isLessThanOrEqual(String equivalentString) {
 		return isLessThanOrEqual(value(equivalentString));
 	}
-	
+
 	/**
 	 * Creates a query comparison using the "&lt;=" operator.
 	 *
@@ -1406,31 +1406,61 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 					}
 				});
 	}
-	
+
 	public StringExpression substringBefore(String splitBeforeThis) {
 		return substringBefore(value(splitBeforeThis));
 	}
-	
+
 	public StringExpression substringBefore(StringResult splitBeforeThis) {
-		return this.locationOf(splitBeforeThis).isGreaterThan(0).ifThenElse(this.substring(0, this.locationOf(splitBeforeThis).minus(1)), value(""));
+		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitBeforeThis)) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				try {
+					return db.getDefinition().doSubstringBeforeTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				} catch (UnsupportedOperationException exp) {
+					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1)), value("")).toSQLString(db);
+				}
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		});
 	}
-	
+
 	public StringExpression substringAfter(String splitAfterThis) {
 		return substringAfter(value(splitAfterThis));
 	}
-	
+
 	public StringExpression substringAfter(StringResult splitAfterThis) {
-		return this.locationOf(splitAfterThis).isGreaterThan(0).ifThenElse(this.substring(this.locationOf(splitAfterThis), this.length()), value(""));
+		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitAfterThis)) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				try {
+					return db.getDefinition().doSubstringAfterTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				} catch (UnsupportedOperationException exp) {
+					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()), getFirst().length()), value("")).toSQLString(db);
+				}
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		});
 	}
 
 	public StringExpression substringBetween(String splitAfterThis, String butBeforeThis) {
 		return substringBetween(value(splitAfterThis), value(butBeforeThis));
 	}
-	
+
 	public StringExpression substringBetween(StringResult splitAfterThis, StringResult butBeforeThis) {
 		return substringAfter(splitAfterThis).substringBefore(butBeforeThis);
 	}
-	
+
 	/**
 	 * Creates a query expression that trims all leading and trailing spaces from
 	 * the current StringExpression.
@@ -1618,11 +1648,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new NumberExpression(
 				new DBUnaryNumberFunction(this) {
 
-			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doStringLengthTransform(only.toSQLString(db));
-			}
-					
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doStringLengthTransform(only.toSQLString(db));
+					}
+
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getStringLengthFunctionName();
@@ -1901,11 +1931,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return isInExpression;
 		}
 	}
-	
+
 	public NumberExpression numberResult() {
 		return new NumberExpression(
 				new DBUnaryNumberFunction(this) {
-					
+
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doStringToNumberTransform(this.only.toSQLString(db));
@@ -2106,8 +2136,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		@Override
 		public boolean getIncludesNull() {
 			return false;
-		}		
-		
+		}
+
 		@Override
 		public boolean isPurelyFunctional() {
 			if (only == null) {
@@ -2374,15 +2404,15 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 	private static abstract class DBBinaryStringFunction extends StringExpression {
 
-		private StringResult first;
-		private StringResult second;
+		private StringExpression first;
+		private StringExpression second;
 
-		DBBinaryStringFunction(StringResult first) {
+		DBBinaryStringFunction(StringExpression first) {
 			this.first = first;
 			this.second = null;
 		}
 
-		DBBinaryStringFunction(StringResult first, StringResult second) {
+		DBBinaryStringFunction(StringExpression first, StringExpression second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -2448,14 +2478,14 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		/**
 		 * @return the first
 		 */
-		protected StringResult getFirst() {
+		protected StringExpression getFirst() {
 			return first;
 		}
 
 		/**
 		 * @return the second
 		 */
-		protected StringResult getSecond() {
+		protected StringExpression getSecond() {
 			return second;
 		}
 
@@ -2597,15 +2627,15 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		@Override
 		public boolean getIncludesNull() {
 			return false;
-		}		
-		
+		}
+
 		@Override
 		public boolean isPurelyFunctional() {
 			if (startingPosition == null && length == null && string1 == null) {
 				return true;
 			} else {
-				return (startingPosition == null || startingPosition.isPurelyFunctional()) 
-						&& (length == null || length.isPurelyFunctional()) 
+				return (startingPosition == null || startingPosition.isPurelyFunctional())
+						&& (length == null || length.isPurelyFunctional())
 						&& (string1 == null || string1.isPurelyFunctional());
 			}
 		}
@@ -2621,7 +2651,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			this.first = first;
 			this.second = second;
 		}
-		
+
 		@Override
 		public String toSQLString(DBDatabase db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);

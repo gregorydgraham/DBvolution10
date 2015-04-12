@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.oracle.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -397,5 +398,15 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
 		return Line2DFunctions.BOUNDINGBOX+"("+toSQLString+")";
+	}
+	
+	@Override
+	public String doSubstringBeforeTransform(String afterThis, String butBeforeThis) {
+		return StringFunctions.SUBSTRINGBEFORE+"("+afterThis+", "+butBeforeThis+")";
+	}
+
+	@Override
+	public String doSubstringAfterTransform(String fromThis, String afterThis) {
+		return StringFunctions.SUBSTRINGAFTER+"("+fromThis+", "+afterThis+")";
 	}
 }
