@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
-import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
@@ -24,12 +23,19 @@ import nz.co.gregs.dbvolution.expressions.Line2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
+ * Provides a portable representation of a column of Line2D values.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class Line2DColumn  extends Line2DExpression implements ColumnProvider{
-	private AbstractColumn column;
+	private final AbstractColumn column;
 
+	/**
+	 * Creates a portable reference to the column represented by the field of the row.
+	 *
+	 * @param row
+	 * @param field
+	 */
 	public Line2DColumn(RowDefinition row, DBLine2D field) {	
 		this.column = new AbstractColumn(row, field);
 	}

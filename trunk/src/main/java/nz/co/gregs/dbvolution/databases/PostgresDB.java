@@ -50,6 +50,7 @@ public class PostgresDB extends DBDatabase {
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
 	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(DataSource ds) throws SQLException {
 		super(new PostgresDBDefinition(), ds);
@@ -61,6 +62,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
@@ -75,6 +77,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param databaseName databaseName
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
 		this(hostname, port, databaseName, username, password, null);
@@ -94,6 +97,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param port port
 	 * @param username username
 	 * @param urlExtras urlExtras
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
 		super(new PostgresDBDefinition(),
@@ -115,6 +119,7 @@ public class PostgresDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 * @param urlExtras urlExtras
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(String databaseName, String username, String password, String urlExtras) throws SQLException {
 		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
@@ -196,9 +201,9 @@ public class PostgresDB extends DBDatabase {
 		try {
 			this.dropTable(tableRow);
 		} catch (org.postgresql.util.PSQLException exp) {
-			exp.printStackTrace();
+//			exp.printStackTrace();
 		} catch (SQLException exp) {
-			exp.printStackTrace();
+//			exp.printStackTrace();
 		}
 	}
 

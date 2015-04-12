@@ -121,7 +121,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 							if (objArray[i] instanceof Boolean) {
 								result[i] = (Boolean) objArray[i];
 							} else {
-								Boolean bool = database.getDefinition().doBooleanArrayElementTransform();
+								Boolean bool = database.getDefinition().doBooleanArrayElementTransform(objArray[i]);
 								result[i] = bool;
 							}
 						}

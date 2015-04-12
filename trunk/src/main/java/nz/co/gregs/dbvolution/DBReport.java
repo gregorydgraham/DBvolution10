@@ -95,24 +95,34 @@ public class DBReport extends RowDefinition {
 	 * <p>
 	 * If you require extra criteria to be add to the DBReport, limiting the
 	 * results to a subset, use the
-	 * {@link DBReport#getRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) getRows method}.
+	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) getRows method}.
 	 *
 	 * @param <A> DBReport type
 	 * @param database database
 	 * @param exampleReport exampleReport
-	 * @return a list of DBReport instances representing the results of the
-	 * report query.
-	  1 Database exceptions may be thrown
+	 * @return a list of DBReport instances representing the results of the report
+	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
-//		DBQuery query = getDBQuery(database, exampleReport, new DBRow[]{});
-//		List<A> reportRows;
-//		query.setBlankQueryAllowed(true);
-//		List<DBQueryRow> allRows = query.getAllRows();
-//		reportRows = getReportsFromQueryResults(allRows, exampleReport);
 		return getAllRows(database, exampleReport, new DBRow[]{});
 	}
+
+	/**
+	 * Gets all the report rows of the supplied DBReport using conditions in the DBreport and the supplied examples.
+	 *
+	 * <p>
+	 * Use this method to retrieve all rows when the criteria have been supplied
+	 * as part of the DBReport subclass.
+	 *
+	 * @param <A> DBReport type
+	 * @param database database
+	 * @param exampleReport exampleReport
+	 * @param extraExamples
+	 * @return a list of DBReport instances representing the results of the report
+	 * query. 1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport, DBRow... extraExamples) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, extraExamples);
 		List<A> reportRows;
@@ -165,28 +175,27 @@ public class DBReport extends RowDefinition {
 	 *
 	 * <p>
 	 * This method allows you to create generic reports and apply dynamic
-	 * limitations such as date ranges, department name, and other highly
-	 * variable parameters.
+	 * limitations such as date ranges, department name, and other highly variable
+	 * parameters.
 	 *
 	 * @param <A> DBReport type
 	 * @param database database
 	 * @param exampleReport exampleReport
 	 * @param rows rows
-	 * @return a list of DBReport instances representing the results of the
-	 * report query.
-	  1 Database exceptions may be thrown
+	 * @return a list of DBReport instances representing the results of the report
+	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
 		List<A> reportRows;
 		List<DBQueryRow> allRows = query.getAllRows();
-		reportRows = getReportsFromQueryResults(allRows,exampleReport);
+		reportRows = getReportsFromQueryResults(allRows, exampleReport);
 		return reportRows;
 	}
 
 	private static <A extends DBReport> List<A> getReportsFromQueryResults(List<DBQueryRow> allRows, A exampleReport) {
-		 List<A> reportRows = new ArrayList<A>();
+		List<A> reportRows = new ArrayList<A>();
 		for (DBQueryRow row : allRows) {
 			reportRows.add(DBReport.getReportInstance(exampleReport, row));
 		}
@@ -201,8 +210,8 @@ public class DBReport extends RowDefinition {
 	 * DBvolution is really doing.
 	 *
 	 * <p>
-	 * Generates the SQL query for retrieving the objects but does not execute
-	 * the SQL. Use
+	 * Generates the SQL query for retrieving the objects but does not execute the
+	 * SQL. Use
 	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  the getAllRows method}
 	 * to retrieve the rows.
 	 *
@@ -214,8 +223,8 @@ public class DBReport extends RowDefinition {
 	 * @param database the database the SQL will be run against.
 	 * @param exampleReport the report required.
 	 * @param rows additional conditions to apply to the report.
-	 * @return a String of the SQL that will be used by this DBQuery.
-	  1 Database exceptions may be thrown
+	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static <A extends DBReport> String getSQLForQuery(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
@@ -235,8 +244,7 @@ public class DBReport extends RowDefinition {
 	 * @param exampleReport the report to retrieve.
 	 * @param rows additional conditions to be applied.
 	 * @return a String of the SQL query that will be used to count the rows
-	 * returned by this report
-	  1 Database exceptions may be thrown
+	 * returned by this report 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static String getSQLForCount(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException {
@@ -258,8 +266,8 @@ public class DBReport extends RowDefinition {
 	 * @param database the database to format the query for.
 	 * @param exampleReport the report required.
 	 * @param rows additional conditions for the query.
-	 * @return the number of rows that have or will be retrieved.
-	  1 Database exceptions may be thrown
+	 * @return the number of rows that have or will be retrieved. 1 Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static Long count(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException {
@@ -294,7 +302,8 @@ public class DBReport extends RowDefinition {
 	 * <p>
 	 * ONLY USE FIELDS FROM THE SAME INSTANCE.
 	 * <p>
-	 * For example the following code snippet will sort by the name and accountNumber columns:
+	 * For example the following code snippet will sort by the name and
+	 * accountNumber columns:
 	 * <pre>
 	 * CustomerReport customers = ...;
 	 * customers.setSortOrder(customers.name, customers.accountNumber);

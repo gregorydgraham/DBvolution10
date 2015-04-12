@@ -2655,6 +2655,19 @@ public abstract class DBDefinition {
 		return primaryKeyColumnName;
 	}
 
+	/**
+	 * Choose a string option based on the number in the first parameter.
+	 *
+	 * <p>
+	 * Based on the MS SQLserver CHOOSE function, this method allows the first
+	 * parameter to determine which string is appropriate. If the number is 1, the
+	 * first string is returned, 2 returns the second and so forth. If the number
+	 * exceeds the number of strings the last string is returned.s
+	 *
+	 * @param numberToChooseWith
+	 * @param strs
+	 * @return
+	 */
 	public String doChooseTransformation(String numberToChooseWith, List<String> strs) {
 		if (supportsChooseNatively()) {
 			StringBuilder sql = new StringBuilder(getChooseFunctionName() + "(" + numberToChooseWith);
@@ -2687,24 +2700,90 @@ public abstract class DBDefinition {
 		return sql;
 	}
 
+	/**
+	 * Allows the DBDatabase instance to provide the database-specific name for
+	 * the CHOOSE function.
+	 *
+	 * <p>
+	 * Used by {@link #doChooseTransformation(java.lang.String, java.util.List)
+	 * } to connect to the correct database function.
+	 *
+	 * @return
+	 */
 	public String getChooseFunctionName() {
 		return "";
 	}
 
+	/**
+	 * Switchs the
+	 * {@link #doChooseTransformation(java.lang.String, java.util.List)} to using
+	 * the database's native function.
+	 *
+	 * <p>
+	 * Override this method and return TRUE if the database has a native
+	 * equivalent to the CHOOSE function as used by  {@link #doChooseTransformation(java.lang.String, java.util.List) }.
+	 *
+	 * <p>
+	 * You will also need to implement {@link #getChooseFunctionName() }.
+	 *
+	 * @return TRUE if the database has a CHOOSE equivalent, otherwise FALSE
+	 */
 	protected boolean supportsChooseNatively() {
 		return false;
 	}
 
+	/**
+	 * Implements functionality similar to IF THEN ELSE probably using CASE.
+	 *
+	 * <p>
+	 * Returns the second parameter if the first is TRUE, otherwise returns the
+	 * third parameter.
+	 *
+	 * @param booleanTest
+	 * @param thenResult
+	 * @param elseResult
+	 * @return IF the booleanTest is TRUE returns the thenResult, otherwise
+	 * returns elseResult.
+	 */
 	public String doIfThenElseTransform(String booleanTest, String thenResult, String elseResult) {
 		return "(CASE WHEN " + booleanTest + " THEN " + thenResult + " ELSE " + elseResult + " END)";
 	}
 
+	/**
+	 * Extracts the weekday from the date provided as a number from 1 to 7.
+	 *
+	 * <p>
+	 * Provides access to the day of the week as a number from 1 for Sunday to 7
+	 * for Saturday.
+	 *
+	 * @param dateSQL
+	 * @return a number between 1 and 7 for the weekday.
+	 */
 	abstract public String doDayOfWeekTransform(String dateSQL);
 
+	/**
+	 * Provides the CREATE INDEX clause for this database.
+	 *
+	 * <p>
+	 * Used in {@link DBDatabase#createIndexesOnAllFields(nz.co.gregs.dbvolution.DBRow)
+	 * } to create indexes for the fields of the table.
+	 *
+	 * @param field
+	 * @return
+	 */
 	public String getIndexClauseForCreateTable(PropertyWrapper field) {
 		return "CREATE INDEX " + formatNameForDatabase("DBI_" + field.tableName() + "_" + field.columnName()) + " ON " + formatNameForDatabase(field.tableName()) + "(" + formatNameForDatabase(field.columnName()) + ")";
 	}
 
+	/**
+	 * Transforms the array of booleans into the database format.
+	 *
+	 * <p>
+	 * The default implementation changes the array into a string of 0s and 1s.
+	 *
+	 * @param bools
+	 * @return a string of 1s and 0s representing the boolean array.
+	 */
 	public String doBooleanArrayTransform(Boolean[] bools) {
 		StringBuilder str = new StringBuilder();
 		for (Boolean bool : bools) {
@@ -2713,6 +2792,17 @@ public abstract class DBDefinition {
 		return "'" + str.toString() + "'";
 	}
 
+	/**
+	 * Reverses the {@link #doBooleanArrayTransform(java.lang.Boolean[]) } and
+	 * creates an array of booleans.
+	 *
+	 * <p>
+	 * The default implementation transforms a string of 0s and 1s into an array
+	 * of Booleans.
+	 *
+	 * @param stringOfBools
+	 * @return an array of Booleans.
+	 */
 	public Boolean[] doBooleanArrayResultInterpretation(String stringOfBools) {
 		if (stringOfBools != null && stringOfBools.length() > 0) {
 			Boolean[] result = new Boolean[stringOfBools.length()];
@@ -2725,18 +2815,54 @@ public abstract class DBDefinition {
 		}
 	}
 
+	/**
+	 * Indicates if the database supports ARRAYs natively and the functionality
+	 * has been implemented.
+	 *
+	 * @return TRUE by default.
+	 */
 	public boolean supportsArraysNatively() {
 		return true;
 	}
 
-	public Boolean doBooleanArrayElementTransform() {
+	/**
+	 * Implement this method if the database implements ARRAYs but not BOOLEAN.
+	 *
+	 * <p>
+	 * Not used at present but available if the array of booleans is stored as,
+	 * for instance, numbers.
+	 *
+	 * @param objRepresentingABoolean
+	 * @return a boolean derived from objRepresentingABoolean.
+	 */
+	public Boolean doBooleanArrayElementTransform(Object objRepresentingABoolean) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Transform the to numbers to compare then with equals.
+	 *
+	 * <p>
+	 * The default implementation is {@code leftHandSide + " = " + rightHandSide}.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to compare the two numbers.
+	 */
 	public String doNumberEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "" + leftHandSide + " = " + rightHandSide + "";
 	}
 
+	/**
+	 * Creates the ALTER TABLE statement required to add a FOREIGN KEY constraint.
+	 *
+	 * <p>
+	 * Remember to check {@code field.isForeignKey()} first.
+	 *
+	 * @param newTableRow
+	 * @param field
+	 * @return the SQL to add a foreign key.
+	 */
 	public String getAlterTableAddForeignKeyStatement(DBRow newTableRow, PropertyWrapper field) {
 		if (field.isForeignKey()) {
 			return "ALTER TABLE " + this.formatTableName(newTableRow) + " ADD " + this.getForeignKeyClauseForCreateTable(field);
@@ -2744,6 +2870,17 @@ public abstract class DBDefinition {
 		return "";
 	}
 
+	/**
+	 * Creates the ALTER TABLE statement required to remove a FOREIGN KEY
+	 * constraint.
+	 *
+	 * <p>
+	 * Remember to check {@code field.isForeignKey()} first.
+	 *
+	 * @param newTableRow
+	 * @param field
+	 * @return the SQL to remove a foreign key.
+	 */
 	public String getAlterTableDropForeignKeyStatement(DBRow newTableRow, PropertyWrapper field) {
 		if (field.isForeignKey()) {
 			return "ALTER TABLE " + this.formatTableName(newTableRow) + " DROP FOREIGN KEY " + field.columnName();
@@ -2751,10 +2888,29 @@ public abstract class DBDefinition {
 		return "";
 	}
 
+	/**
+	 * Perform necessary transformations on the stored value to make it readable
+	 * by Java.
+	 *
+	 * <p>
+	 * Primarily used on Spatial types, this method allows a data type unknown to
+	 * JDBC to be transformed into the necessary type (usually a String) to be
+	 * read by Java and DBvolution.
+	 *
+	 * @param qdt
+	 * @param selectableName
+	 * @return
+	 */
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		return selectableName;
 	}
 
+	/**
+	 * Creates a string representation of a DateRepeat from the Period
+	 *
+	 * @param interval
+	 * @return a DateRpeat as an SQL string
+	 */
 	public String transformPeriodIntoDateRepeat(Period interval) {
 		StringBuilder str = new StringBuilder();
 		str.append("'").append(DateRepeatExpression.INTERVAL_PREFIX);
@@ -2768,80 +2924,215 @@ public abstract class DBDefinition {
 		return str.toString();
 	}
 
+	/**
+	 * Create a DateRepeat by subtracting the 2 dates.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to create a DateRepeat from the dates
+	 */
 	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " - " + rightHandSide + ")";
 	}
 
+	/**
+	 * Compare 2 DateRepeats using EQUALS.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to create to compare DateRepeats
+	 */
 	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " = " + rightHandSide + ")";
 	}
 
+	/**
+	 * Compare 2 DateRepeats using LESSTHAN.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to create to compare DateRepeats
+	 */
 	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " < " + rightHandSide + ")";
 	}
 
+	/**
+	 * Compare 2 DateRepeats using LESSTHANEQUALS.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to create to compare DateRepeats
+	 */
 	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " <= " + rightHandSide + ")";
 	}
 
+	/**
+	 * Compare 2 DateRepeats using GREATERTHAN.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to create to compare DateRepeats
+	 */
 	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " > " + rightHandSide + ")";
 	}
 
+	/**
+	 * Compare 2 DateRepeats using GREATERTHANEQUALS.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to create to compare DateRepeats
+	 */
 	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " >= " + rightHandSide + ")";
 	}
 
+	/**
+	 * Offset the date by the DateRepeat.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to change the date by the required amount.
+	 */
 	public String doDatePlusDateRepeatTransform(String leftHandSide, String rightHandSide) {
 		return "(" + leftHandSide + " + " + rightHandSide + ")";
 	}
 
+	/**
+	 * Offset the date by subtracting the DateRepeat.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to change the date by the required amount.
+	 */
 	public String doDateMinusDateRepeatTransform(String leftHandSide, String rightHandSide) {
 		return leftHandSide + "-" + rightHandSide;
 	}
 
+	/**
+	 * Create a Period from the database version of the DateRepeat.
+	 *
+	 * @param intervalStr
+	 * @return a Period.
+	 */
 	public Period parseDateRepeatFromGetString(String intervalStr) {
 		return DateRepeatImpl.parseDateRepeatFromGetString(intervalStr);
 	}
 
+	/**
+	 * Compare 2 polygons with EQUALS.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL
+	 */
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
 
-	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+	/**
+	 * Test whether the 2 polygons intersect.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that returns TRUE if they intersect.
+	 */
+	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
 
+	/**
+	 * Test whether the first polygon completely contains the second polygon.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is TRUE if the first polygon contains the second.
+	 */
 	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
+	/**
+	 * Inverse of {@link #doPolygon2DIntersectsTransform(java.lang.String, java.lang.String) }, tests whether the 2 polygons are non-coincident.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is FALSE if the polygons intersect.
+	 */
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
+	/**
+	 * Test whether the 2 polygons intersect but not contained or within.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is TRUE if the polygons have intersecting and non-intersecting parts.
+	 */
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
+	/**
+	 * Tests whether the polygons touch.
+	 * 
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return
+	 */
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
+	/**
+	 * Test whether the first polygon is completely within the second polygon.
+	 * 
+	 * <p>
+	 * Compare this to {@link #doPolygon2DContainsTransform(java.lang.String, java.lang.String) }
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is TRUE if the first polygon is within the second.
+	 */
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
+	/**
+	 * Returns the dimension of the polygon.
+	 * 
+	 * <p>
+	 * This will be "2"
+	 *
+	 * @param toSQLString
+	 * @return "2" unless something has gone horribly wrong.
+	 */
 	public String doPolygon2DGetDimensionTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
+	/**
+	 * Create a simple four sided bounding for the polygon.
+	 *
+	 * @param toSQLString
+	 * @return the SQL required to create a bounding box for the polygon.
+	 */
 	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
+	/**
+	 * Retrieve the area of the polygon.
+	 *
+	 * @param toSQLString
+	 * @return SQL that will return the area of the Polygon2D
+	 */
 	public String doPolygon2DGetAreaTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
@@ -2850,10 +3141,20 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
+	/**
+	 * Indicates that this database supports hyperbolic functions natively.
+	 *
+	 * @return TRUE by default.
+	 */
 	public boolean supportsHyperbolicFunctionsNatively() {
 		return true;
 	}
 
+	/**
+	 * Provides the ARCTAN2 function name for this database.
+	 *
+	 * @return "atan2" by default.
+	 */
 	public String getArctan2FunctionName() {
 		return "atan2";
 	}
@@ -2886,18 +3187,46 @@ public abstract class DBDefinition {
 		return doConcatTransform(getEmptyString(), interval);
 	}
 
+	/**
+	 * Provide SQL to interpret the String value as a number.
+	 * 
+	 * <p>
+	 * Full of ways to fail this is.
+	 *
+	 * @param stringResultContainingANumber
+	 * @return SQL that converts the string value into number.
+	 */
 	public String doStringToNumberTransform(String stringResultContainingANumber) {
 		return "(0.0+(" + stringResultContainingANumber + "))";
 	}
 
+	/**
+	 * Indicates that the database supports the ARCSINE function.
+	 *
+	 * @return true by default.
+	 */
 	public boolean supportsArcSineFunction() {
 		return true;
 	}
 
+	/**
+	 * Indicates that the database supports the COTANGENT function.
+	 *
+	 * @return true by default.
+	 */
 	public boolean supportsCotangentFunction() {
 		return true;
 	}
 
+	/**
+	 * Transform a datatype not supported by the database into a type that the database does support.
+	 * 
+	 * <p>
+	 * Used mostly to turn Booleans into numbers.
+	 *
+	 * @param columnExpression
+	 * @return The DBExpression as a DBExpression supported by the database.
+	 */
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		return columnExpression;
 	}

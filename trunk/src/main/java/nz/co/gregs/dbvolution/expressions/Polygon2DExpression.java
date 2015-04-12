@@ -113,7 +113,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DIntersectionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doPolygon2DIntersectsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}

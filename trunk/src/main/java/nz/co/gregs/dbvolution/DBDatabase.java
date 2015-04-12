@@ -174,6 +174,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
 	 * @param ds - a DataSource for the required database.
+	 * @throws java.sql.SQLException
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MySQLDB
@@ -209,6 +210,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param jdbcURL - The JDBC URL to connect to the database.
 	 * @param username - The username to login to the database as.
 	 * @param password - The users password for the database.
+	 * @throws java.sql.SQLException
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MySQLDB
@@ -1011,6 +1013,26 @@ public abstract class DBDatabase implements Cloneable {
 		}
 	}
 
+	/**
+	 * Drops All Foreign Key Constraints From The Supplied Table, does not affect
+	 * @DBForeignKey.
+	 *
+	 * <p>
+	 * Generates and executes the required SQL to remove all foreign key
+	 * constraints on this table defined within the database.
+	 *
+	 * <p>
+	 * This methods is supplied as an inverse to {@link #createForeignKeyConstraints(nz.co.gregs.dbvolution.DBRow).
+	 *
+	 * <p>
+	 * If a pair of tables have foreign keys constraints to each other it may be
+	 * necessary to remove the constraints to successfully insert some rows.
+	 * DBvolution cannot to protect you from this situation, however this method
+	 * will remove some of the problem.
+	 *
+	 * @param newTableRow
+	 * @throws SQLException
+	 */
 	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
 		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
@@ -1035,6 +1057,21 @@ public abstract class DBDatabase implements Cloneable {
 		}
 	}
 
+	/**
+	 * Adds Database Indexes To All Fields Of This Table.
+	 * 
+	 * <p>
+	 * Use this method to add indexes to all the columns of the table.  This is only necessary once and should really be performed by a DBA.
+	 * 
+	 * <p>
+	 * Adding indexes can improve response time for queries, but has consequences for storage and insertion time.  However in a small database the query improvement will far out weigh the down sides and this is a recommend route to improvements.
+	 * 
+	 * <p>
+	 * As usual, your mileage may vary and consult a DBA if trouble persists.
+	 * 
+	 * @param newTableRow
+	 * @throws SQLException
+	 */
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 
 		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
@@ -1220,6 +1257,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Do NOT Use This.
 	 *
+	 * @param databaseName
 	 * @param doIt don't do it.
 	 * @throws java.lang.Exception java.lang.Exception
 	 */
@@ -1382,6 +1420,26 @@ public abstract class DBDatabase implements Cloneable {
 	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException {
 		return DBReport.getRows(this, report, examples);
 	}
+
+	/**
+	 * Get All The Rows For The Supplied DBReport Constrained By The Examples.
+	 * 
+	 * <p>
+	 * Provides convenient access to the using DBReport with a blank query.
+	 *
+	 * <p>
+	 * Calls the
+	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
+	 *
+	 * Retrieves a list of report rows from the database using the constraints
+	 * supplied by the report and the examples supplied.
+	 *
+	 * @param <A>
+	 * @param report
+	 * @param examples
+	 * @return
+	 * @throws SQLException
+	 */
 	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException {
 		return DBReport.getAllRows(this, report, examples);
 	}
@@ -1578,8 +1636,20 @@ public abstract class DBDatabase implements Cloneable {
 		return true;
 	}
 
+	/**
+	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
+	 *
+	 * @param statement
+	 * @throws SQLException
+	 * @see PostgresDB
+	 * @see H2DB
+	 * @see SQLiteDB
+	 * @see OracleDB
+	 * @see MSSQLServerDB
+	 * @see MySQLDB
+	*/
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
-		// be default there are no extras to be added to the database
+		// by default there are no extras to be added to the database
 		;
 	}
 }

@@ -57,6 +57,32 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		};
 	}
 
+	/**
+	 * Create An Appropriate Expression Object For This Object
+	 *
+	 * <p>
+	 * The expression framework requires a *Expression to work with. The easiest
+	 * way to get that is the {@code DBRow.column()} method.
+	 *
+	 * <p>
+	 * However if you wish your expression to start with a literal value it is a
+	 * little trickier.
+	 *
+	 * <p>
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
+	 *
+	 * <ul>
+	 * <li>Only object classes that are appropriate need to be handle by the
+	 * DBExpression subclass.<li>
+	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
+	 *
+	 * @param number a literal value to use in the expression
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
+	 */
 	public static NumberExpression value(NumberResult number) {
 		return new NumberExpression(number);
 	}
@@ -1644,14 +1670,32 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return round(NumberExpression.value(decimalPlaces));
 	}
 
+	/**
+	 * Implements support for rounding to an arbitrary number of decimal places.
+	 *
+	 * @param decimalPlaces
+	 * @return the equation rounded to the nearest integer.
+	 */
 	public NumberExpression round(Long decimalPlaces) {
 		return round(NumberExpression.value(decimalPlaces));
 	}
 
+	/**
+	 * Implements support for rounding to an arbitrary number of decimal places.
+	 *
+	 * @param decimalPlaces
+	 * @return the equation rounded to the nearest integer.
+	 */
 	public NumberExpression round(NumberResult decimalPlaces) {
 		return round(NumberExpression.value(decimalPlaces));
 	}
 
+	/**
+	 * Implements support for rounding to an arbitrary number of decimal places.
+	 *
+	 * @param decimalPlaces
+	 * @return the equation rounded to the nearest integer.
+	 */
 	public NumberExpression round(NumberExpression decimalPlaces) {
 		return new NumberExpression(new NumberNumberFunctionNumberResult(this, NumberExpression.value(decimalPlaces)) {
 
@@ -1726,10 +1770,28 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		});
 	}
 
+	/**
+	 * Removes the decimal part, if there is any, from this number and returns
+	 * only the integer part.
+	 *
+	 * <p>
+	 * For example value(3.5).integerPart() = 3
+	 *
+	 * @return a NumberExpression
+	 */
 	public NumberExpression integerPart() {
 		return this.trunc();
 	}
 
+	/**
+	 * Removes the integer part, if there is any, from this number and returns
+	 * only the decimal part.
+	 *
+	 * <p>
+	 * For example value(3.5).decimalPart() = 0.5
+	 *
+	 * @return a NumberExpression
+	 */
 	public NumberExpression decimalPart() {
 		return this.minus(this.trunc()).bracket();
 	}
@@ -1925,6 +1987,21 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return this.mod(new NumberExpression(num));
 	}
 
+	/**
+	 * Based on the value of this expression, select a string from the list
+	 * provided.
+	 *
+	 * <p>
+	 * Based on the MS SQLServer CHOOSE function, this method will select the
+	 * string as though the list was a 1-based array of strings and this
+	 * expression were the index.
+	 *
+	 * Value 1 returns the first string, value 2 returns the second, etc. If the
+	 * index is too large the last string is returned.
+	 *
+	 * @param stringsToChooseFrom
+	 * @return SQL that selects the string from the list based on this expression.
+	 */
 	public StringExpression choose(String... stringsToChooseFrom) {
 		List<StringResult> strResult = new ArrayList<StringResult>();
 		for (String str : stringsToChooseFrom) {
@@ -1933,6 +2010,21 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return choose(strResult.toArray(new StringResult[]{}));
 	}
 
+	/**
+	 * Based on the value of this expression, select a string from the list
+	 * provided.
+	 *
+	 * <p>
+	 * Based on the MS SQLServer CHOOSE function, this method will select the
+	 * string as though the list was a 1-based array of strings and this
+	 * expression were the index.
+	 *
+	 * Value 1 returns the first string, value 2 returns the second, etc. If the
+	 * index is too large the last string is returned.
+	 *
+	 * @param stringsToChooseFrom
+	 * @return SQL that selects the string from the list based on this expression.
+	 */
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
 		StringExpression leastExpr
 				= new StringExpression(new DBNumberAndNnaryStringFunction(this, stringsToChooseFrom) {
@@ -2096,6 +2188,12 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		});
 	}
 
+	/**
+	 * Aggregrator that counts this row if the booleanResult is true.
+	 *
+	 * @param booleanResult
+	 * @return The number of rows where the test is true.
+	 */
 	public static NumberExpression countIf(BooleanResult booleanResult) {
 		return new NumberExpression(new BooleanExpression(booleanResult).ifThenElse(1, 0)).sum();
 	}
@@ -2138,10 +2236,20 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return nullProtectionRequired;
 	}
 
+	/**
+	 * Multiples this expression by itself to return the value squared.
+	 *
+	 * @return a NumberExpression
+	 */
 	public NumberExpression squared() {
 		return this.bracket().times(this.bracket());
 	}
 
+	/**
+	 * Multiples this expression by its square to return the value cubed.
+	 *
+	 * @return a NumberExpression
+	 */
 	public NumberExpression cubed() {
 		return this.squared().times(this.bracket());
 	}

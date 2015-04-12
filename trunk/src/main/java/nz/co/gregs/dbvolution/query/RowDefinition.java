@@ -115,8 +115,8 @@ public class RowDefinition implements Serializable {
 		return new BooleanArrayColumn(this, fieldOfThisInstance);
 	}
 	
-	public Geometry2DColumn column(DBPolygon2D fieldOfThisInstance) {
-		return new Geometry2DColumn(this, fieldOfThisInstance);
+	public Polygon2DColumn column(DBPolygon2D fieldOfThisInstance) {
+		return new Polygon2DColumn(this, fieldOfThisInstance);
 	}
 
 	public Point2DColumn column(DBPoint2D fieldOfThisInstance) {

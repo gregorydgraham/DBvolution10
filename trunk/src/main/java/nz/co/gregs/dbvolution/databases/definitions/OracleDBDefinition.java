@@ -352,6 +352,11 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doStringToNumberTransform(String stringResultContainingANumber) {
+		return " TO_NUMBER(" + stringResultContainingANumber + ")";
+	}
+
+	@Override
 	public boolean supportsCotangentFunction() {
 		return false;
 	}

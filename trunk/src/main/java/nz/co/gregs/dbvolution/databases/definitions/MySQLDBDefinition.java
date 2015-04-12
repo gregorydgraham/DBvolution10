@@ -215,7 +215,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
 		return "Intersects(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 

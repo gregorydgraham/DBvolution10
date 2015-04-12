@@ -48,6 +48,7 @@ public abstract class OracleDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param driverName driverName
 	 * @param username username
+	 * @throws java.sql.SQLException
 	 */
 	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
@@ -58,6 +59,7 @@ public abstract class OracleDB extends DBDatabase {
 	 *
 	 * @param dbDefinition an oracle database definition instance
 	 * @param dataSource a data source to an Oracle database
+	 * @throws java.sql.SQLException
 	 */
 	public OracleDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
 		super(dbDefinition, dataSource);

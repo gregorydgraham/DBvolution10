@@ -53,6 +53,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
 	 * @param ds	 a DataSource to an MS SQLServer database	
+	 * @throws java.sql.SQLException	
 	 */
 	public MSSQLServerDB(DataSource ds) throws SQLException {
         super(new MSSQLServerDBDefinition(), ds);
@@ -65,6 +66,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
     public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
         super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
@@ -79,6 +81,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
     public MSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
         super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
@@ -93,6 +96,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * @param portNumber
 	 * @param username
 	 * @param password
+	 * @throws java.sql.SQLException
 	 */
 	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
         super(
@@ -114,6 +118,7 @@ public class MSSQLServerDB extends DBDatabase {
 	 * @param portNumber
 	 * @param username
 	 * @param password
+	 * @throws java.sql.SQLException
 	 */
 	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
         super(
