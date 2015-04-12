@@ -3053,4 +3053,12 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException();
 	}
 
+	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doSubstringAfterTransform(String fromThis, String afterThis) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 }

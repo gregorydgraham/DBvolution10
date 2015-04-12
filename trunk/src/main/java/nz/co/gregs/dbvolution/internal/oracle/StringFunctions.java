@@ -23,10 +23,33 @@ import java.sql.Statement;
  * @author gregorygraham
  */
 public enum StringFunctions {
-	
-	SUBSTRINGBEFORE("VARCHAR", "sourceText VARCHAR, rightHandSide VARCHAR", "BEGIN CASE WHEN POSITION(rightHandSide IN (sourceText)) > 0 THEN  RETURN SUBSTRING((sourceText) FROM 0 + 1 FOR POSITION(rightHandSide IN (sourceText)) - 1 - 0);  ELSE RETURN NULL; END CASE; END;"),
-	SUBSTRINGAFTER("VARCHAR", "sourceText VARCHAR, leftHandSide VARCHAR", " BEGIN CASE WHEN POSITION(leftHandSide IN (sourceText)) > 0 THEN  RETURN SUBSTRING((sourceText) FROM POSITION(leftHandSide IN (sourceText)) + 1 FOR  CHAR_LENGTH( (sourceText) )  - POSITION(leftHandSide IN (sourceText)))  ELSE RETURN NULL END CASE; END;");
-	
+
+	SUBSTRINGBEFORE("VARCHAR", "sourceText VARCHAR, rightHandSide VARCHAR",
+			"BEGIN\n"
+			+ "   CASE\n"
+			+ "      WHEN INSTR (sourceText, rightHandSide) > 0\n"
+			+ "      THEN\n"
+			+ "         RETURN SUBSTR (sourceText, 1, INSTR (sourceText, rightHandSide) - 1);\n"
+			+ "      ELSE\n"
+			+ "         RETURN '';\n"
+			+ "   END CASE;\n"
+			+ "END;"),
+	SUBSTRINGAFTER("VARCHAR", "sourceText VARCHAR, leftHandSide VARCHAR",
+			"BEGIN\n"
+			+ "   CASE\n"
+			+ "      WHEN INSTR (sourceText, (leftHandSide)) > 0\n"
+			+ "      THEN\n"
+			+ "         RETURN SUBSTR (\n"
+			+ "                   (sourceText),\n"
+			+ "                   INSTR (sourceText, (leftHandSide)) + LENGTH (leftHandSide),\n"
+			+ "                     LENGTH ( (sourceText))\n"
+			+ "                   - INSTR (sourceText, (leftHandSide))\n"
+			+ "                   + LENGTH (leftHandSide));\n"
+			+ "      ELSE\n"
+			+ "         RETURN NULL;\n"
+			+ "   END CASE;\n"
+			+ "END;");
+
 //	private final String functionName;
 	private final String returnType;
 	private final String parameters;
@@ -40,18 +63,17 @@ public enum StringFunctions {
 
 	@Override
 	public String toString() {
-		return "DBV_STRINGFN_"+name();
+		return "DBV_STRINGFN_" + name();
 	}
 
 	public void add(Statement stmt) throws SQLException {
 		try {
-			stmt.execute("DROP FUNCTION " + this + "("+parameters+");");
+			stmt.execute("DROP FUNCTION " + this + "(" + parameters + ");");
 		} catch (SQLException sqlex) {
 			;
 		}
-		stmt.execute("CREATE OR REPLACE FUNCTION "+this+"("+this.parameters+")\n" +"    RETURN "+this.returnType+" AS\n" + this.code+"\n;");
-		
+		stmt.execute("CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURN " + this.returnType + " AS\n" + this.code);
+
 	}
 
-	
 }
