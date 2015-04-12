@@ -700,7 +700,7 @@ public class DBQuery {
 			if (newInstance.isEmptyRow()) {
 				queryRow.put(newInstance.getClass(), null);
 			} else {
-				if (isGroupedQuery) {
+				if (isGroupedQuery||newInstance.getPrimaryKey()==null||!newInstance.getPrimaryKey().hasBeenSet()) {
 					queryRow.put(newInstance.getClass(), newInstance);
 				} else {
 					DBRow existingInstance = getOrSetExistingInstanceForRow(newInstance, existingInstancesOfThisTableRow);
