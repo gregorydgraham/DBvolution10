@@ -43,6 +43,7 @@ public class NuoDB extends DBDatabase {
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
 	 * @param ds	 ds	
+	 * @throws java.sql.SQLException	
 	 */
 	public NuoDB(DataSource ds) throws SQLException {
         super(new NuoDBDefinition(), ds);

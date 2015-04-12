@@ -24,7 +24,11 @@ import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.joda.time.Period;
 
-
+/**
+ * Represents a column of DateRepeat type.
+ *
+ * @author Gregory Graham
+ */
 public class DateRepeatColumn extends DateRepeatExpression implements ColumnProvider {
 	
 	private AbstractColumn column;

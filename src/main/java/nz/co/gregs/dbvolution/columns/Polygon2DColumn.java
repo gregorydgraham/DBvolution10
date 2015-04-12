@@ -23,13 +23,22 @@ import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
+ * Provides a portable representation of a column of Polygon2D values.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
-public class Geometry2DColumn extends Polygon2DExpression implements ColumnProvider{
-	private AbstractColumn column;
+public class Polygon2DColumn extends Polygon2DExpression implements ColumnProvider {
 
-	public Geometry2DColumn(RowDefinition row, DBPolygon2D field) {	
+	private final AbstractColumn column;
+
+	/**
+	 * Creates a portable reference to the column represented by the field of the
+	 * row.
+	 *
+	 * @param row
+	 * @param field
+	 */
+	public Polygon2DColumn(RowDefinition row, DBPolygon2D field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -41,12 +50,12 @@ public class Geometry2DColumn extends Polygon2DExpression implements ColumnProvi
 	@Override
 	public void setUseTableAlias(boolean useTableAlias) {
 		this.column.setUseTableAlias(useTableAlias);
-	}	
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
-    }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return column.toSQLString(db);
+	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {

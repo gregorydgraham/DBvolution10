@@ -268,7 +268,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 	
 	@Override
-	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Intersects(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 	

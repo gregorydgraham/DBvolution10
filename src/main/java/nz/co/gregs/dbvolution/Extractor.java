@@ -27,10 +27,32 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 
 /**
+ * Extractor to retrieve data from unreliable or resource constrained databases,
+ * or from exceptionally large queries.
  *
- * @author gregory.graham
+ * <p>
+ * To use Extractor, create a subclass implementing the
+ * {@link #getQuery(nz.co.gregs.dbvolution.DBDatabase, int, int)} and
+ * {@link #processRows(java.util.List)} methods and call {@link #extract() }.
+ * <p>
+ * The extractor uses primary key ranges to reduce the size of the query to
+ * something the database can handle. The range is increased or decreased
+ * automatically depending on whether database coped with the request well or
+ * not.
+ *
+ * <p>
+ * All values will be returned, unless the database failed to process a range of
+ * 1 (that is a single row) which case the value is skipped and the Extractor
+ * will continue.
+ *
+ * <p>
+ * A key feature of using Extractor over other methods is its ability to
+ * accelerate and brake as possible or required to achieve close to optimal
+ * throughput.
+ *
+ * @author Gregory Graham
  */
-public abstract class Extractor  extends DBScript {
+public abstract class Extractor extends DBScript {
 	/*
 	 * To change this license header, choose License Headers in Project Properties.
 	 * To change this template file, choose Tools | Templates
@@ -38,48 +60,83 @@ public abstract class Extractor  extends DBScript {
 	 */
 
 	private int maxBoundIncrease = 10000000;
-	private int minBoundIncrease = 1;
+	private final int minBoundIncrease = 1;
 	private int boundIncrease = 10;
 
 	private int maxBound = 200 * 1000000;
 	private int startLowerBound = 0;
 	private int lowerBound = 0;
-	boolean foundSomeVehicles = false;
 	private boolean moreRecords = true;
 	private double previousTimePerRecord = Double.MAX_VALUE; // ridiculous default is only to seed the process.
-	private DBDatabase database;
+	private final DBDatabase database;
 
-//	private final boolean printedHeader = false;
-//	private final File csvFile = null; 
-//	private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//	BufferedOutputStream csvOutput;
-//	{
-//		FileOutputStream fileOutputStream;
-//		try {
-//			fileOutputStream = new FileOutputStream(getCsvFile());
-//			csvOutput = new BufferedOutputStream(fileOutputStream);
-//		} catch (FileNotFoundException ex) {
-//			throw new RuntimeException(ex);
-//		}
-//	}
-	
-	public Extractor(DBDatabase db){
+	/**
+	 * Default constructor.
+	 *
+	 * @param db
+	 */
+	public Extractor(DBDatabase db) {
 		database = db;
 	}
 
-	abstract public void processRows(List<DBQueryRow> rows) throws Exception ;
+	/**
+	 * When Extractor has successfully extract some rows, they are handed to this
+	 * method for processing.
+	 *
+	 * @param rows
+	 * @throws Exception
+	 */
+	abstract public void processRows(List<DBQueryRow> rows) throws Exception;
 
+	/**
+	 * Using the database and bounds provided, construct the required query.
+	 *
+	 * <p>
+	 * Extractor does not know the query you want executed so this is the place to
+	 * add it.
+	 *
+	 * <p>
+	 * Choose one important table in your query and add the lower- and
+	 * upper-bounds provided to the primary key as a permitted range:<br>
+	 * {@code employee.employeeID.permittedRange(lowerbound, upperbound);}
+	 *
+	 * <p>
+	 * Add the table to your query and return it to the extractor process:<br>
+	 * {@code return db.getDBQuery(employee);}
+	 *
+	 * <p>
+	 * The rows found by the Extractor will be sent to
+	 * {@link #processRows(java.util.List)} .
+	 *
+	 * @param db
+	 * @param lowerbound
+	 * @param upperbound
+	 * @return
+	 */
 	abstract public DBQuery getQuery(DBDatabase db, int lowerbound, int upperbound);
-
-
 
 	private DBDatabase getDatabase() {
 		return database;
 	}
 
+	/**
+	 * Starts the extraction process.
+	 *
+	 * <p>
+	 * Call this method in your Extractor subclass to start extracting rows from
+	 * the database and processing them.
+	 *
+	 * <p>
+	 * Works in conjuction with the
+	 * {@link #getQuery(nz.co.gregs.dbvolution.DBDatabase, int, int)} and
+	 * {@link #processRows(java.util.List)} method to provide a dynamic extraction
+	 * process that achieves fast results on unreliable or under-resourced
+	 * databases.
+	 *
+	 * @return @throws Exception
+	 */
 	public final DBActionList extract() throws Exception {
 		DBActionList actions = new DBActionList();
-//		setCsvFile();
 		DBDatabase db = getDatabase();
 		startLowerBound = lowerBound;
 		Date startTime = new Date();
@@ -113,6 +170,15 @@ public abstract class Extractor  extends DBScript {
 		return actions;
 	}
 
+	/**
+	 * Used to maintain the process in isolation from all other processes and
+	 * ensure that the processing does not alter any rows.
+	 * 
+	 * <p>
+	 * This method cannot be changed.
+	 * @return an action list
+	 * @throws java.io.FileNotFoundException
+	 */
 	@Override
 	public final DBActionList script(DBDatabase db) throws FileNotFoundException, IOException, Exception {
 		DBActionList actions = new DBActionList();
@@ -128,7 +194,7 @@ public abstract class Extractor  extends DBScript {
 		return actions;
 	}
 
-	protected List<DBQueryRow> getRows(DBDatabase db) throws AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	private List<DBQueryRow> getRows(DBDatabase db) throws AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> rows = null;
 		double timePerRecord = 10000.0;
 		while (hasMoreRecords() && rows == null) {
@@ -163,23 +229,23 @@ public abstract class Extractor  extends DBScript {
 		return rows;
 	}
 
-	protected void stepForward(double timePerRecord) {
+	private void stepForward(double timePerRecord) {
 		setLowerBound(getLowerBound() + getBoundIncrease());
 		accelerateIfImproved(timePerRecord);
 	}
 
-	protected void stepForward() {
+	private void stepForward() {
 		setLowerBound(getLowerBound() + getBoundIncrease());
 	}
 
-	protected void brake() {
+	private void brake() {
 		setBoundIncrease(getBoundIncrease() / 2);
 		if (getBoundIncrease() < getMinBoundIncrease()) {
 			setBoundIncrease(getMinBoundIncrease());
 		}
 	}
 
-	protected void accelerate() {
+	private void accelerate() {
 		setBoundIncrease(getBoundIncrease() * 2);
 		if (getBoundIncrease() > getMaxBoundIncrease()) {
 			setBoundIncrease(getMaxBoundIncrease());
@@ -189,34 +255,18 @@ public abstract class Extractor  extends DBScript {
 	/**
 	 * @return the noMoreRecords
 	 */
-	protected boolean hasMoreRecords() {
+	private boolean hasMoreRecords() {
 		return moreRecords;
 	}
 
 	/**
 	 * @param noMoreRecords the noMoreRecords to set
 	 */
-	protected void setMoreRecords(boolean noMoreRecords) {
+	private void setMoreRecords(boolean noMoreRecords) {
 		this.moreRecords = noMoreRecords;
 	}
 
-	/**
-	 * @return the csvFile
-	 */
-//	protected File getCsvFile() {
-//		if (csvFile == null) {
-//			this.setCsvFile();
-//		}
-//		return csvFile;
-//	}
-
-	/**
-	 */
-//	protected void setCsvFile() {
-//		this.csvFile = new File("VIS_" + extractorFileDesignation() + "_" + (new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())) + ".csv");
-//	}
-
-	protected void accelerateIfImproved(double timePerRecord) {
+	private void accelerateIfImproved(double timePerRecord) {
 		if (timePerRecord < previousTimePerRecord) {
 			accelerate();
 		} else {
@@ -225,7 +275,7 @@ public abstract class Extractor  extends DBScript {
 		previousTimePerRecord = timePerRecord;
 	}
 
-	protected int getUpperBound() {
+	private int getUpperBound() {
 		return getLowerBound() + getBoundIncrease();
 	}
 
@@ -237,6 +287,8 @@ public abstract class Extractor  extends DBScript {
 	}
 
 	/**
+	 * Allows the programmer to specify a maximum difference between the lower- and upper-bounds.
+	 * 
 	 * @param maxBoundIncrease the maxBoundIncrease to set
 	 */
 	protected void setMaxBoundIncrease(int maxBoundIncrease) {
@@ -246,15 +298,8 @@ public abstract class Extractor  extends DBScript {
 	/**
 	 * @return the minBoundIncrease
 	 */
-	protected int getMinBoundIncrease() {
+	private int getMinBoundIncrease() {
 		return minBoundIncrease;
-	}
-
-	/**
-	 * @param minBoundIncrease the minBoundIncrease to set
-	 */
-	protected void setMinBoundIncrease(int minBoundIncrease) {
-		this.minBoundIncrease = minBoundIncrease;
 	}
 
 	/**
@@ -267,7 +312,7 @@ public abstract class Extractor  extends DBScript {
 	/**
 	 * @param boundIncrease the boundIncrease to set
 	 */
-	protected void setBoundIncrease(int boundIncrease) {
+	private void setBoundIncrease(int boundIncrease) {
 		this.boundIncrease = boundIncrease;
 	}
 
@@ -279,6 +324,8 @@ public abstract class Extractor  extends DBScript {
 	}
 
 	/**
+	 * Allows the programmer to set the last number to be extracted.
+	 * 
 	 * @param maxBound the maxBound to set
 	 */
 	protected void setMaxBound(int maxBound) {
@@ -298,9 +345,4 @@ public abstract class Extractor  extends DBScript {
 	protected void setLowerBound(int lowerBound) {
 		this.lowerBound = lowerBound;
 	}
-
-	protected void setDatabase(DBDatabase database) {
-		this.database = database;
-	}
-	
 }
