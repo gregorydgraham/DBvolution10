@@ -93,6 +93,8 @@ public class DBQuery {
 	private JFrame queryGraphFrame = null;
 	private ColumnProvider[] sortOrderColumns;
 	private List<PropertyWrapper> sortOrder = null;
+	private Integer timeoutInMilliseconds;
+	private CancelTask timeoutTask;
 
 	QueryDetails getQueryDetails() {
 		return details;
@@ -407,16 +409,15 @@ public class DBQuery {
 
 					// Now deal with the GROUP BY and ORDER BY clause requirements
 					DBExpression expression = propWrapper.getColumnExpression();
-					if(expression!=null&& expression.isAggregator()){
+					if (expression != null && expression.isAggregator()) {
 						details.setGroupByRequiredByAggregator(true);
 					}
-					if (expression==null||
-							(!expression.isAggregator()
-							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns()))
-							) {
+					if (expression == null
+							|| (!expression.isAggregator()
+							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns()))) {
 						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-						if (expression!=null){
+						if (expression != null) {
 							groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
 							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 						}
@@ -471,12 +472,11 @@ public class DBQuery {
 				final DBExpression expression = entry.getValue();
 				selectClause.append(colSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
 				colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-				if(expression.isAggregator()){
-						details.setGroupByRequiredByAggregator(true);
+				if (expression.isAggregator()) {
+					details.setGroupByRequiredByAggregator(true);
 				}
-				if (!expression.isAggregator() &&
-						(!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())
-						) {
+				if (!expression.isAggregator()
+						&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
 					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
 					groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
@@ -506,7 +506,7 @@ public class DBQuery {
 			}
 
 			if (queryType == QueryType.SELECT) {
-				String groupByClauseFinal= "";
+				String groupByClauseFinal = "";
 				if (details.isGroupedQuery()) {
 					if (useColumnIndexGroupBy) {
 						groupByClauseFinal = groupByColumnIndex;
@@ -609,13 +609,14 @@ public class DBQuery {
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.sql.SQLTimeoutException
 	 * @see DBRow
 	 * @see DBForeignKey
 	 * @see QueryableDatatype
 	 * @see BooleanExpression
 	 * @see DBDatabase
 	 */
-	public List<DBQueryRow> getAllRows() throws SQLException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
+	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		prepareForQuery();
 
 		final QueryOptions options = details.getOptions();
@@ -658,7 +659,6 @@ public class DBQuery {
 		} else {
 			return results;
 		}
-//		return results;
 	}
 
 	/**
@@ -669,9 +669,17 @@ public class DBQuery {
 	 * @return the ResultSet returned from the actual database. Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.sql.SQLTimeoutException
 	 */
-	protected ResultSet getResultSetForSQL(DBStatement dbStatement, String sql) throws SQLException {
-		return dbStatement.executeQuery(sql);
+	protected ResultSet getResultSetForSQL(DBStatement dbStatement, String sql) throws SQLException, SQLTimeoutException {
+		if (this.timeoutInMilliseconds != null) {
+			this.timeoutTask = QueryTimeout.scheduleTimeout(dbStatement, this.timeoutInMilliseconds);
+		}
+		final ResultSet queryResults = dbStatement.executeQuery(sql);
+		if (this.timeoutTask != null) {
+			this.timeoutTask.cancel();
+		}
+		return queryResults;
 	}
 
 	/**
@@ -700,7 +708,7 @@ public class DBQuery {
 			if (newInstance.isEmptyRow()) {
 				queryRow.put(newInstance.getClass(), null);
 			} else {
-				if (isGroupedQuery||newInstance.getPrimaryKey()==null||!newInstance.getPrimaryKey().hasBeenSet()) {
+				if (isGroupedQuery || newInstance.getPrimaryKey() == null || !newInstance.getPrimaryKey().hasBeenSet()) {
 					queryRow.put(newInstance.getClass(), newInstance);
 				} else {
 					DBRow existingInstance = getOrSetExistingInstanceForRow(newInstance, existingInstancesOfThisTableRow);
@@ -879,7 +887,7 @@ public class DBQuery {
 	 * @param expected The expected number of rows, an exception will be thrown
 	 * if this expectation is not met.
 	 * @return a list of all the instances of the exemplar found by this query.
-	 * 
+	 *
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
@@ -921,8 +929,8 @@ public class DBQuery {
 	 *
 	 * @param <R> a class that extends DBRow
 	 * @param exemplar an instance of R that has been included in the query
-	 * @return A List of all the instances found of the exemplar. 
-	 * 
+	 * @return A List of all the instances found of the exemplar.
+	 *
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -1210,7 +1218,7 @@ public class DBQuery {
 		blankResults();
 
 		sortOrderColumns = Arrays.copyOf(sortColumns, sortColumns.length);
-		
+
 		sortOrder = new ArrayList<PropertyWrapper>();
 		PropertyWrapper prop;
 		for (ColumnProvider col : sortColumns) {
@@ -1440,7 +1448,7 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Database exceptions may be thrown.
-	 * 
+	 *
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -2080,9 +2088,7 @@ public class DBQuery {
 	 *
 	 */
 	void addExtraExamples(DBRow... extraExamples) {
-		for (DBRow extraExample : extraExamples) {
-			this.details.getExtraExamples().add(extraExample);
-		}
+		this.details.getExtraExamples().addAll(Arrays.asList(extraExamples));
 		blankResults();
 	}
 
@@ -2400,6 +2406,17 @@ public class DBQuery {
 		return this;
 	}
 
+	public DBQuery setTimeoutInMilliseconds(int milliseconds) {
+		this.timeoutInMilliseconds = milliseconds;
+
+		return this;
+	}
+
+	public DBQuery clearTimeout() {
+		this.timeoutInMilliseconds = null;
+		return this;
+	}
+
 	/**
 	 * Helper class to store the progress of turning the DBQuery into an actual
 	 * piece of SQL.
@@ -2407,9 +2424,9 @@ public class DBQuery {
 	 */
 	protected static class QueryState {
 
-		private final DBQuery query;
-		private final DBDatabase database;
-		private final DBDefinition defn;
+//		private final DBQuery query;
+//		private final DBDatabase database;
+//		private final DBDefinition defn;
 		private QueryGraph graph;
 		private final List<BooleanExpression> remainingExpressions;
 		private final List<BooleanExpression> consumedExpressions = new ArrayList<BooleanExpression>();
@@ -2417,9 +2434,9 @@ public class DBQuery {
 		private final List<String> optionalConditions = new ArrayList<String>();
 
 		QueryState(DBQuery query, DBDatabase database) {
-			this.query = query;
-			this.database = database;
-			this.defn = database.getDefinition();
+//			this.query = query;
+//			this.database = database;
+//			this.defn = database.getDefinition();
 			this.remainingExpressions = new ArrayList<BooleanExpression>(query.getConditions());
 		}
 

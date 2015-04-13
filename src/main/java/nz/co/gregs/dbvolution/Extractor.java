@@ -68,6 +68,9 @@ public abstract class Extractor extends DBScript {
 	private int lowerBound = 0;
 	private boolean moreRecords = true;
 	private double previousTimePerRecord = Double.MAX_VALUE; // ridiculous default is only to seed the process.
+	private Integer timeoutInMilliseconds = 10000;
+	public Long rowCount = null;
+	private boolean countOnly = false;
 	private final DBDatabase database;
 
 	/**
@@ -196,6 +199,7 @@ public abstract class Extractor extends DBScript {
 
 	private List<DBQueryRow> getRows(DBDatabase db) throws AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> rows = null;
+		this.rowCount=0L;
 		double timePerRecord = 10000.0;
 		while (hasMoreRecords() && rows == null) {
 			try {
@@ -204,8 +208,14 @@ public abstract class Extractor extends DBScript {
 				} else {
 					System.out.println("RETRIEVING: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ")");
 					DBQuery dbQuery = getQuery(db, getLowerBound(), getUpperBound());
+					setQueryTimeout(dbQuery);
 					Date startTime = new Date();
-					rows = dbQuery.getAllRows();
+					if (this.countOnly) {
+						rowCount = dbQuery.count();
+					} else {
+						rows = dbQuery.getAllRows();
+						rowCount = 0L+ rows.size();
+					}
 					Date finishTime = new Date();
 					timePerRecord = (0.0 + finishTime.getTime() - startTime.getTime()) / getBoundIncrease();
 					System.out.println("RETRIEVED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") at " + timePerRecord + "ms/record.");
@@ -345,4 +355,31 @@ public abstract class Extractor extends DBScript {
 	protected void setLowerBound(int lowerBound) {
 		this.lowerBound = lowerBound;
 	}
+//
+//	protected void setDatabase(DBDatabase database) {
+//		this.database = database;
+//	}
+
+	protected void setTimeoutInMilliseconds(Integer milliseconds) {
+		if (milliseconds != null) {
+			this.timeoutInMilliseconds = milliseconds;
+		}
+	}
+
+	private void setQueryTimeout(DBQuery query) {
+		if (this.timeoutInMilliseconds == null) {
+			query.clearTimeout();
+		} else {
+			query.setTimeoutInMilliseconds(this.timeoutInMilliseconds);
+		}
+	}
+	
+	public void setToCountOnly(){
+		countOnly=true;
+	}
+
+	public void setToRetrieveRows(){
+		countOnly=false;
+	}
+
 }
