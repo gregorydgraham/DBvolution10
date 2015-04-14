@@ -94,7 +94,7 @@ public class DBQuery {
 	private ColumnProvider[] sortOrderColumns;
 	private List<PropertyWrapper> sortOrder = null;
 	private Integer timeoutInMilliseconds;
-	private CancelTask timeoutTask;
+	private QueryTimeout timeout;
 
 	QueryDetails getQueryDetails() {
 		return details;
@@ -673,11 +673,11 @@ public class DBQuery {
 	 */
 	protected ResultSet getResultSetForSQL(DBStatement dbStatement, String sql) throws SQLException, SQLTimeoutException {
 		if (this.timeoutInMilliseconds != null) {
-			this.timeoutTask = QueryTimeout.scheduleTimeout(dbStatement, this.timeoutInMilliseconds);
+			this.timeout = QueryTimeout.scheduleTimeout(dbStatement, this.timeoutInMilliseconds);
 		}
 		final ResultSet queryResults = dbStatement.executeQuery(sql);
-		if (this.timeoutTask != null) {
-			this.timeoutTask.cancel();
+		if (this.timeout != null) {
+			this.timeout.cancel();
 		}
 		return queryResults;
 	}

@@ -82,11 +82,33 @@ public class DBTransactionStatement extends DBStatement {
 		}
 		try {
 			setInternalStatement(getConnection().createStatement());
-		} catch (SQLException ex) {
+		} catch (Exception ex) {
+			try {
+				setInternalStatement(getConnection().createStatement());
+			} catch (Exception ex1) {
+				throw new SQLException(ex);
+			}
+		}
+	}
+
+	@Override
+	public synchronized void cancel() throws SQLException {
+		try {
+			getInternalStatement().cancel();
+		} catch (Exception ex) {
+			try {
+				getInternalStatement().cancel();
+			} catch (SQLException ex1) {
+				log.info("Exception while closing transaction, continuing regardless.", ex);
+			}
+		}
+		try {
+			setInternalStatement(getConnection().createStatement());
+		} catch (Exception ex) {
 			try {
 				setInternalStatement(getConnection().createStatement());
 			} catch (SQLException ex1) {
-				throw ex;
+				throw new SQLException(ex);
 			}
 		}
 	}

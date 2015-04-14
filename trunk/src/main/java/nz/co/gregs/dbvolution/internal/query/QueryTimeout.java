@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 
@@ -22,21 +24,22 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
  *
  * @author gregory.graham
  */
-public class QueryTimeout {
-	Timer timer;
+public class QueryTimeout extends Timer{
+
 	CancelTask task;
 
 	private QueryTimeout(CancelTask task) {
-		timer = new Timer();
 		this.task = task;
 	}
 
-	public static CancelTask scheduleTimeout(DBStatement statement, Integer timeoutInMilliseconds) {
+	public static QueryTimeout scheduleTimeout(DBStatement statement, Integer timeoutInMilliseconds) {
 		QueryTimeout queryTimeout;
 		queryTimeout = new QueryTimeout(new CancelTask(statement));
-		System.out.println("SCHEDULING TIMEOUT: "+timeoutInMilliseconds);
-		queryTimeout.timer.schedule(queryTimeout.task, timeoutInMilliseconds);
-		return queryTimeout.task;
+		Calendar cal = new GregorianCalendar();
+		cal.add(Calendar.MILLISECOND, timeoutInMilliseconds);
+		System.out.println("SCHEDULING TIMEOUT: " + cal);
+		queryTimeout.schedule(queryTimeout.task, cal.getTime());
+		return queryTimeout;
 	}
-	
+
 }
