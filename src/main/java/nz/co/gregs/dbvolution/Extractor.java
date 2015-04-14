@@ -217,10 +217,11 @@ public abstract class Extractor extends DBScript {
 						rowCount = 0L+ rows.size();
 					}
 					Date finishTime = new Date();
-					timePerRecord = (0.0 + finishTime.getTime() - startTime.getTime()) / getBoundIncrease();
-					System.out.println("RETRIEVED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") at " + timePerRecord + "ms/record.");
+					final double timeTaken = 0.0 + finishTime.getTime() - startTime.getTime();
+					timePerRecord = timeTaken / getBoundIncrease();
+					System.out.println("RETRIEVED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") after "+timeTaken+" at " + timePerRecord + "ms/record.");
 				}
-			} catch (SQLException ex) {
+			} catch (Exception ex) {
 				ex.printStackTrace();
 				if (getBoundIncrease() == getMinBoundIncrease()) {
 					// We can't get this row so acknowledge the error

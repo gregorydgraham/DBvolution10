@@ -21,6 +21,8 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
+import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -49,7 +51,7 @@ public class DBStatement implements Statement {
 	private Statement internalStatement;
 	private boolean batchHasEntries;
 	private final DBDatabase database;
-	private final Connection connection;
+	private Connection connection;
 
 	/**
 	 * Creates a statement object for the given DBDatabase and Connection.
@@ -61,12 +63,12 @@ public class DBStatement implements Statement {
 	public DBStatement(DBDatabase db, Connection connection) throws SQLException {
 		this.database = db;
 		this.connection = connection;
-		//db.usedConnection(connection);
 		this.internalStatement = connection.createStatement();
 	}
 
 	/**
-	 * Executes the given SQL statement, which returns a single ResultSet object.
+	 * Executes the given SQL statement, which returns a single ResultSet
+	 * object.
 	 *
 	 * @param string SQL
 	 * @return a ResultSet
@@ -81,14 +83,14 @@ public class DBStatement implements Statement {
 	}
 
 	/**
-	 * Executes the given SQL statement, which may be an INSERT, UPDATE, or DELETE
-	 * statement or an SQL statement that returns nothing, such as an SQL DDL
-	 * statement.
+	 * Executes the given SQL statement, which may be an INSERT, UPDATE, or
+	 * DELETE statement or an SQL statement that returns nothing, such as an SQL
+	 * DDL statement.
 	 *
-	 * @param string	 string	
+	 * @param string	string
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
-	 * statements or (2) 0 for SQL statements that return nothing
-	  1 Database exceptions may be thrown
+	 * statements or (2) 0 for SQL statements that return nothing 1 Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -103,7 +105,8 @@ public class DBStatement implements Statement {
 	 * Also informs the DBDatabase that there is one less connection to the
 	 * database.
 	 *
-	  1 Database exceptions may be thrown
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -111,25 +114,25 @@ public class DBStatement implements Statement {
 		try {
 			database.unusedConnection(getConnection());
 			getInternalStatement().close();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
 			log.warn("Exception occurred during close(): " + e.getMessage(), e);
 //			throw e;
-            e.printStackTrace(System.err);
+			e.printStackTrace(System.err);
 		}
 	}
 
 	/**
 	 * Retrieves the maximum number of bytes that can be returned for character
 	 * and binary column values in a ResultSet object produced by this Statement
-	 * object. This limit applies only to BINARY, VARBINARY, LONGVARBINARY, CHAR,
-	 * VARCHAR, NCHAR, NVARCHAR, LONGNVARCHAR and LONGVARCHAR columns. If the
-	 * limit is exceeded, the excess data is silently discarded.
+	 * object. This limit applies only to BINARY, VARBINARY, LONGVARBINARY,
+	 * CHAR, VARCHAR, NCHAR, NVARCHAR, LONGNVARCHAR and LONGVARCHAR columns. If
+	 * the limit is exceeded, the excess data is silently discarded.
 	 *
 	 * @return the current column size limit for columns storing character and
-	 * binary values; zero means there is no limit.
-	  1 Database exceptions may be thrown
+	 * binary values; zero means there is no limit. 1 Database exceptions may be
+	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -141,12 +144,13 @@ public class DBStatement implements Statement {
 	 * Sets the limit for the maximum number of bytes that can be returned for
 	 * character and binary column values in a ResultSet object produced by this
 	 * Statement object. This limit applies only to BINARY, VARBINARY,
-	 * LONGVARBINARY, CHAR, VARCHAR, NCHAR, NVARCHAR, LONGNVARCHAR and LONGVARCHAR
-	 * fields. If the limit is exceeded, the excess data is silently discarded.
-	 * For maximum portability, use values greater than 256.
+	 * LONGVARBINARY, CHAR, VARCHAR, NCHAR, NVARCHAR, LONGNVARCHAR and
+	 * LONGVARCHAR fields. If the limit is exceeded, the excess data is silently
+	 * discarded. For maximum portability, use values greater than 256.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -161,9 +165,8 @@ public class DBStatement implements Statement {
 	 * rows are silently dropped.
 	 *
 	 * @return the current maximum number of rows for a <code>ResultSet</code>
-	 * object produced by this <code>Statement</code> object; zero means there is
-	 * no limit
-	  1 Database exceptions may be thrown
+	 * object produced by this <code>Statement</code> object; zero means there
+	 * is no limit 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -173,11 +176,12 @@ public class DBStatement implements Statement {
 
 	/**
 	 * Sets the limit for the maximum number of rows that any ResultSet object
-	 * generated by this Statement object can contain to the given number. If the
-	 * limit is exceeded, the excess rows are silently dropped.
+	 * generated by this Statement object can contain to the given number. If
+	 * the limit is exceeded, the excess rows are silently dropped.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -188,13 +192,14 @@ public class DBStatement implements Statement {
 
 	/**
 	 * Sets escape processing on or off. If escape scanning is on (the default),
-	 * the driver will do escape substitution before sending the SQL statement to
-	 * the database. Note: Since prepared statements have usually been parsed
+	 * the driver will do escape substitution before sending the SQL statement
+	 * to the database. Note: Since prepared statements have usually been parsed
 	 * prior to making this call, disabling escape processing for
 	 * PreparedStatements objects will have no effect.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param bln bln
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -204,12 +209,11 @@ public class DBStatement implements Statement {
 	}
 
 	/**
-	 * Retrieves the number of seconds the driver will wait for a Statement object
-	 * to execute. If the limit is exceeded, a SQLException is thrown.
+	 * Retrieves the number of seconds the driver will wait for a Statement
+	 * object to execute. If the limit is exceeded, a SQLException is thrown.
 	 *
-	 * @return the current query timeout limit in seconds; zero means there is no
-	 * limit
-	  1 Database exceptions may be thrown
+	 * @return the current query timeout limit in seconds; zero means there is
+	 * no limit 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -219,13 +223,14 @@ public class DBStatement implements Statement {
 
 	/**
 	 * Sets the number of seconds the driver will wait for a Statement object to
-	 * execute to the given number of seconds. By default there is no limit on the
-	 * amount of time allowed for a running statement to complete. If the limit is
-	 * exceeded, an SQLTimeoutException is thrown. A JDBC driver must apply this
-	 * limit to the execute, executeQuery and executeUpdate methods.
+	 * execute to the given number of seconds. By default there is no limit on
+	 * the amount of time allowed for a running statement to complete. If the
+	 * limit is exceeded, an SQLTimeoutException is thrown. A JDBC driver must
+	 * apply this limit to the execute, executeQuery and executeUpdate methods.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -235,16 +240,26 @@ public class DBStatement implements Statement {
 	}
 
 	/**
-	 * Cancels this Statement object if both the DBMS and driver support aborting
-	 * an SQL statement. This method can be used by one thread to cancel a
-	 * statement that is being executed by another thread.
+	 * Cancels this Statement object if both the DBMS and driver support
+	 * aborting an SQL statement. This method can be used by one thread to
+	 * cancel a statement that is being executed by another thread.
 	 *
-	  1 Database exceptions may be thrown
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
-	public void cancel() throws SQLException {
+	public synchronized void cancel() throws SQLException {
 		getInternalStatement().cancel();
+		if (database.getDefinition().willCloseConnectionOnStatementCancel()) {
+			replaceBrokenConnection();
+		}
+	}
+
+	private synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
+		database.discardConnection(connection);
+		connection = database.getConnection();
+		internalStatement = connection.createStatement();
 	}
 
 	/**
@@ -258,8 +273,7 @@ public class DBStatement implements Statement {
 	 * doing so will cause an SQLException to be thrown.
 	 *
 	 * @return the first <code>SQLWarning</code> object or <code>null</code> if
-	 * there are no warnings
-	  1 Database exceptions may be thrown
+	 * there are no warnings 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -268,11 +282,12 @@ public class DBStatement implements Statement {
 	}
 
 	/**
-	 * Clears all the warnings reported on this Statement object. After a call to
-	 * this method, the method getWarnings will return null until a new warning is
-	 * reported for this Statement object.
+	 * Clears all the warnings reported on this Statement object. After a call
+	 * to this method, the method getWarnings will return null until a new
+	 * warning is reported for this Statement object.
 	 *
-	  1 Database exceptions may be thrown
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -285,15 +300,17 @@ public class DBStatement implements Statement {
 	 * subsequent Statement object execute methods.
 	 *
 	 * <P>
-	 * This name can then be used in SQL positioned update or delete statements to
-	 * identify the current row in the ResultSet object generated by this
-	 * statement. If the database does not support positioned update/delete, this
-	 * method is a noop. To insure that a cursor has the proper isolation level to
-	 * support updates, the cursor's SELECT statement should have the form SELECT
-	 * FOR UPDATE. If FOR UPDATE is not present, positioned updates may fail.
+	 * This name can then be used in SQL positioned update or delete statements
+	 * to identify the current row in the ResultSet object generated by this
+	 * statement. If the database does not support positioned update/delete,
+	 * this method is a noop. To insure that a cursor has the proper isolation
+	 * level to support updates, the cursor's SELECT statement should have the
+	 * form SELECT FOR UPDATE. If FOR UPDATE is not present, positioned updates
+	 * may fail.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param string string
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -312,15 +329,15 @@ public class DBStatement implements Statement {
 	 * results or (2) you are dynamically executing an unknown SQL string.
 	 *
 	 * <p>
-	 * The execute method executes an SQL statement and indicates the form of the
-	 * first result. You must then use the methods getResultSet or getUpdateCount
-	 * to retrieve the result, and getMoreResults to move to any subsequent
-	 * result(s).
+	 * The execute method executes an SQL statement and indicates the form of
+	 * the first result. You must then use the methods getResultSet or
+	 * getUpdateCount to retrieve the result, and getMoreResults to move to any
+	 * subsequent result(s).
 	 *
-	 * @param string	 string	
+	 * @param string	string
 	 * @return <code>TRUE</code> if the first result is a <code>ResultSet</code>
-	 * object; <code>FALSE</code> if it is an update count or there are no results
-	  1 Database exceptions may be thrown
+	 * object; <code>FALSE</code> if it is an update count or there are no
+	 * results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -339,8 +356,7 @@ public class DBStatement implements Statement {
 	 *
 	 * @return the current result as a <code>ResultSet</code> object or
 	 * <code>null</code> if the result is an update count or there are no more
-	 * results
-	  1 Database exceptions may be thrown
+	 * results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -354,9 +370,9 @@ public class DBStatement implements Statement {
 	 * <p>
 	 * This method should be called only once per result.
 	 *
-	 * @return the current result as an update count; -1 if the current result is
-	 * a <code>ResultSet</code> object or there are no more results.
-	  1 Database exceptions may be thrown
+	 * @return the current result as an update count; -1 if the current result
+	 * is a <code>ResultSet</code> object or there are no more results. 1
+	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -377,8 +393,8 @@ public class DBStatement implements Statement {
 	 * </code>
 	 *
 	 * @return true if the next result is a ResultSet object; false if it is an
-	 * update count or there are no more results
-	  1 Database exceptions may be thrown
+	 * update count or there are no more results 1 Database exceptions may be
+	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -387,13 +403,14 @@ public class DBStatement implements Statement {
 	}
 
 	/**
-	 * Gives the driver a hint as to the direction in which rows will be processed
-	 * in ResultSet objects created using this Statement object.
+	 * Gives the driver a hint as to the direction in which rows will be
+	 * processed in ResultSet objects created using this Statement object.
 	 * <P>
 	 * The default value is ResultSet.FETCH_FORWARD.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -403,15 +420,14 @@ public class DBStatement implements Statement {
 	}
 
 	/**
-	 * Retrieves the direction for fetching rows from database tables that is the
-	 * default for result sets generated from this Statement object.
+	 * Retrieves the direction for fetching rows from database tables that is
+	 * the default for result sets generated from this Statement object.
 	 * <P>
 	 * If this Statement object has not set a fetch direction by calling the
 	 * method setFetchDirection, the return value is implementation-specific.
 	 *
 	 * @return the default fetch direction for result sets generated from this
-	 * Statement object
-	  1 Database exceptions may be thrown
+	 * Statement object 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -424,11 +440,12 @@ public class DBStatement implements Statement {
 	 * fetched from the database when more rows are needed for ResultSet objects
 	 * generated by this Statement.
 	 * <P>
-	 * If the value specified is zero, then the hint is ignored. The default value
-	 * is zero.
+	 * If the value specified is zero, then the hint is ignored. The default
+	 * value is zero.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param i i
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -438,8 +455,8 @@ public class DBStatement implements Statement {
 	}
 
 	/**
-	 * Retrieves the number of result set rows that is the default fetch size for
-	 * ResultSet objects generated from this Statement object.
+	 * Retrieves the number of result set rows that is the default fetch size
+	 * for ResultSet objects generated from this Statement object.
 	 * <P>
 	 * If this Statement object has not set a fetch size by calling the method
 	 * setFetchSize, the return value is implementation-specific.
@@ -447,7 +464,7 @@ public class DBStatement implements Statement {
 	 * @return the default fetch size for result sets generated from this
 	 * Statement object
 	 *
-	  1 Database exceptions may be thrown
+	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -459,8 +476,8 @@ public class DBStatement implements Statement {
 	 * Retrieves the result set concurrency for ResultSet objects generated by
 	 * this Statement object.
 	 *
-	 * @return either ResultSet.CONCUR_READ_ONLY or ResultSet.CONCUR_UPDATABLE
-	  1 Database exceptions may be thrown
+	 * @return either ResultSet.CONCUR_READ_ONLY or ResultSet.CONCUR_UPDATABLE 1
+	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -473,8 +490,8 @@ public class DBStatement implements Statement {
 	 * Statement object.
 	 *
 	 * @return one of ResultSet.TYPE_FORWARD_ONLY,
-	 * ResultSet.TYPE_SCROLL_INSENSITIVE, or ResultSet.TYPE_SCROLL_SENSITIVE
-	  1 Database exceptions may be thrown
+	 * ResultSet.TYPE_SCROLL_INSENSITIVE, or ResultSet.TYPE_SCROLL_SENSITIVE 1
+	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -487,8 +504,9 @@ public class DBStatement implements Statement {
 	 * Statement object. The commands in this list can be executed as a batch by
 	 * calling the method executeBatch.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param string string
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -501,7 +519,8 @@ public class DBStatement implements Statement {
 	/**
 	 * Empties this Statement object's current list of SQL commands.
 	 *
-	  1 Database exceptions may be thrown
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -514,27 +533,27 @@ public class DBStatement implements Statement {
 	 * Submits a batch of commands to the database for execution and if all
 	 * commands execute successfully, returns an array of update counts.
 	 * <P>
-	 * The int elements of the array that is returned are ordered to correspond to
-	 * the commands in the batch, which are ordered according to the order in
+	 * The int elements of the array that is returned are ordered to correspond
+	 * to the commands in the batch, which are ordered according to the order in
 	 * which they were added to the batch. The elements in the array returned by
 	 * the method executeBatch may be one of the following: <ol><li>A number
 	 * greater than or equal to zero -- indicates that the command was processed
 	 * successfully and is an update count giving the number of rows in the
-	 * database that were affected by the command's execution </li><li>A value of
-	 * SUCCESS_NO_INFO -- indicates that the command was processed successfully
-	 * but that the number of rows affected is unknown </li><li>A value of
-	 * EXECUTE_FAILED -- indicates that the command failed to execute successfully
-	 * and occurs only if a driver continues to process commands after a command
-	 * fails</li></ol><p>
+	 * database that were affected by the command's execution </li><li>A value
+	 * of SUCCESS_NO_INFO -- indicates that the command was processed
+	 * successfully but that the number of rows affected is unknown </li><li>A
+	 * value of EXECUTE_FAILED -- indicates that the command failed to execute
+	 * successfully and occurs only if a driver continues to process commands
+	 * after a command fails</li></ol><p>
 	 * If one of the commands in a batch update fails to execute properly, this
 	 * method throws a BatchUpdateException, and a JDBC driver may or may not
 	 * continue to process the remaining commands in the batch. However, the
-	 * driver's behavior must be consistent with a particular DBMS, either always
-	 * continuing to process commands or never continuing to process commands. If
-	 * the driver continues processing after a failure, the array returned by the
-	 * method BatchUpdateException.getUpdateCounts will contain as many elements
-	 * as there are commands in the batch, and at least one of the elements will
-	 * be a value of EXECUTE_FAILED.
+	 * driver's behavior must be consistent with a particular DBMS, either
+	 * always continuing to process commands or never continuing to process
+	 * commands. If the driver continues processing after a failure, the array
+	 * returned by the method BatchUpdateException.getUpdateCounts will contain
+	 * as many elements as there are commands in the batch, and at least one of
+	 * the elements will be a value of EXECUTE_FAILED.
 	 * <p>
 	 * The possible implementations and return values have been modified in the
 	 * Java 2 SDK, Standard Edition, version 1.3 to accommodate the option of
@@ -542,9 +561,9 @@ public class DBStatement implements Statement {
 	 * BatchUpdateException object has been thrown.
 	 *
 	 * @return an array of update counts containing one element for each command
-	 * in the batch. The elements of the array are ordered according to the order
-	 * in which commands were added to the batch.
-	  1 Database exceptions may be thrown
+	 * in the batch. The elements of the array are ordered according to the
+	 * order in which commands were added to the batch. 1 Database exceptions
+	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -555,8 +574,8 @@ public class DBStatement implements Statement {
 	/**
 	 * Retrieves the Connection object that produced this Statement object.
 	 *
-	 * @return the connection that produced this statement
-	  1 Database exceptions may be thrown
+	 * @return the connection that produced this statement 1 Database exceptions
+	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -576,10 +595,10 @@ public class DBStatement implements Statement {
 	 * &amp;&amp; (statement.getUpdateCount() == -1))
 	 * </code>
 	 *
-	 * @param i	 i	
+	 * @param i	i
 	 * @return true if the next result is a ResultSet object; false if it is an
-	 * update count or there are no more results.
-	  1 Database exceptions may be thrown
+	 * update count or there are no more results. 1 Database exceptions may be
+	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -595,8 +614,8 @@ public class DBStatement implements Statement {
 	 * object is returned.
 	 *
 	 * @return a ResultSet object containing the auto-generated key(s) generated
-	 * by the execution of this Statement object
-	  1 Database exceptions may be thrown
+	 * by the execution of this Statement object 1 Database exceptions may be
+	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -605,19 +624,19 @@ public class DBStatement implements Statement {
 	}
 
 	/**
-	 * Executes the given SQL statement and signals the driver with the given flag
-	 * about whether the auto-generated keys produced by this Statement object
-	 * should be made available for retrieval.
+	 * Executes the given SQL statement and signals the driver with the given
+	 * flag about whether the auto-generated keys produced by this Statement
+	 * object should be made available for retrieval.
 	 * <P>
 	 * The driver will ignore the flag if the SQL statement is not an INSERT
-	 * statement, or an SQL statement able to return auto-generated keys (the list
-	 * of such statements is vendor-specific).
+	 * statement, or an SQL statement able to return auto-generated keys (the
+	 * list of such statements is vendor-specific).
 	 *
 	 * @param string string
 	 * @param i i
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
-	 * statements or (2) 0 for SQL statements that return nothing
-	  1 Database exceptions may be thrown
+	 * statements or (2) 0 for SQL statements that return nothing 1 Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -639,8 +658,8 @@ public class DBStatement implements Statement {
 	 * @param string string
 	 * @param ints ints
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
-	 * statements or (2) 0 for SQL statements that return nothing
-	  1 Database exceptions may be thrown
+	 * statements or (2) 0 for SQL statements that return nothing 1 Database
+	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -661,9 +680,9 @@ public class DBStatement implements Statement {
 	 *
 	 * @param string string
 	 * @param strings strings
-	 * @return either the row count for INSERT, UPDATE, or DELETE statements, or 0
-	 * for SQL statements that return nothing
-	  1 Database exceptions may be thrown
+	 * @return either the row count for INSERT, UPDATE, or DELETE statements, or
+	 * 0 for SQL statements that return nothing 1 Database exceptions may be
+	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -680,23 +699,22 @@ public class DBStatement implements Statement {
 	 * for retrieval.
 	 * <P>
 	 * The driver will ignore this signal if the SQL statement is not an INSERT
-	 * statement, or an SQL statement able to return auto-generated keys (the list
-	 * of such statements is vendor-specific). In some (uncommon) situations, a
-	 * single SQL statement may return multiple result sets and/or update counts.
-	 * Normally you can ignore this unless you are (1) executing a stored
-	 * procedure that you know may return multiple results or (2) you are
-	 * dynamically executing an unknown SQL string.
+	 * statement, or an SQL statement able to return auto-generated keys (the
+	 * list of such statements is vendor-specific). In some (uncommon)
+	 * situations, a single SQL statement may return multiple result sets and/or
+	 * update counts. Normally you can ignore this unless you are (1) executing
+	 * a stored procedure that you know may return multiple results or (2) you
+	 * are dynamically executing an unknown SQL string.
 	 * <P>
-	 * The execute method executes an SQL statement and indicates the form of the
-	 * first result. You must then use the methods getResultSet or getUpdateCount
-	 * to retrieve the result, and getMoreResults to move to any subsequent
-	 * result(s).
+	 * The execute method executes an SQL statement and indicates the form of
+	 * the first result. You must then use the methods getResultSet or
+	 * getUpdateCount to retrieve the result, and getMoreResults to move to any
+	 * subsequent result(s).
 	 *
 	 * @param string string
 	 * @param i i
 	 * @return true if the first result is a ResultSet object; false if it is an
-	 * update count or there are no results.
-	  1 Database exceptions may be thrown
+	 * update count or there are no results. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -716,22 +734,21 @@ public class DBStatement implements Statement {
 	 * contain the auto-generated keys that should be made available. The driver
 	 * will ignore the array if the SQL statement is not an INSERT statement, or
 	 * an SQL statement able to return auto-generated keys (the list of such
-	 * statements is vendor-specific). Under some (uncommon) situations, a single
-	 * SQL statement may return multiple result sets and/or update counts.
-	 * Normally you can ignore this unless you are (1) executing a stored
-	 * procedure that you know may return multiple results or (2) you are
+	 * statements is vendor-specific). Under some (uncommon) situations, a
+	 * single SQL statement may return multiple result sets and/or update
+	 * counts. Normally you can ignore this unless you are (1) executing a
+	 * stored procedure that you know may return multiple results or (2) you are
 	 * dynamically executing an unknown SQL string.
 	 * <P>
-	 * The execute method executes an SQL statement and indicates the form of the
-	 * first result. You must then use the methods getResultSet or getUpdateCount
-	 * to retrieve the result, and getMoreResults to move to any subsequent
-	 * result(s).
+	 * The execute method executes an SQL statement and indicates the form of
+	 * the first result. You must then use the methods getResultSet or
+	 * getUpdateCount to retrieve the result, and getMoreResults to move to any
+	 * subsequent result(s).
 	 *
 	 * @param string string
 	 * @param ints ints
 	 * @return true if the first result is a ResultSet object; false if it is an
-	 * update count or there are no results
-	  1 Database exceptions may be thrown
+	 * update count or there are no results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -751,22 +768,22 @@ public class DBStatement implements Statement {
 	 * contain the auto-generated keys that should be made available. The driver
 	 * will ignore the array if the SQL statement is not an INSERT statement, or
 	 * an SQL statement able to return auto-generated keys (the list of such
-	 * statements is vendor-specific). In some (uncommon) situations, a single SQL
-	 * statement may return multiple result sets and/or update counts. Normally
-	 * you can ignore this unless you are (1) executing a stored procedure that
-	 * you know may return multiple results or (2) you are dynamically executing
-	 * an unknown SQL string.
+	 * statements is vendor-specific). In some (uncommon) situations, a single
+	 * SQL statement may return multiple result sets and/or update counts.
+	 * Normally you can ignore this unless you are (1) executing a stored
+	 * procedure that you know may return multiple results or (2) you are
+	 * dynamically executing an unknown SQL string.
 	 * <P>
-	 * The execute method executes an SQL statement and indicates the form of the
-	 * first result. You must then use the methods getResultSet or getUpdateCount
-	 * to retrieve the result, and getMoreResults to move to any subsequent
-	 * result(s).
+	 * The execute method executes an SQL statement and indicates the form of
+	 * the first result. You must then use the methods getResultSet or
+	 * getUpdateCount to retrieve the result, and getMoreResults to move to any
+	 * subsequent result(s).
 	 *
 	 * @param string string
 	 * @param strings strings
 	 * @return true if the next result is a ResultSet object; false if it is an
-	 * update count or there are no more results
-	  1 Database exceptions may be thrown
+	 * update count or there are no more results 1 Database exceptions may be
+	 * thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -782,8 +799,7 @@ public class DBStatement implements Statement {
 	 * this Statement object.
 	 *
 	 * @return either ResultSet.HOLD_CURSORS_OVER_COMMIT or
-	 * ResultSet.CLOSE_CURSORS_AT_COMMIT
-	  1 Database exceptions may be thrown
+	 * ResultSet.CLOSE_CURSORS_AT_COMMIT 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -793,11 +809,11 @@ public class DBStatement implements Statement {
 
 	/**
 	 * Retrieves whether this Statement object has been closed. A Statement is
-	 * closed if the method close has been called on it, or if it is automatically
-	 * closed.
+	 * closed if the method close has been called on it, or if it is
+	 * automatically closed.
 	 *
-	 * @return true if this Statement object is closed; false if it is still open
-	  1 Database exceptions may be thrown
+	 * @return true if this Statement object is closed; false if it is still
+	 * open 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -809,17 +825,18 @@ public class DBStatement implements Statement {
 	 * Requests that a Statement be pooled or not pooled.
 	 * <P>
 	 * The value specified is a hint to the statement pool implementation
-	 * indicating whether the applicaiton wants the statement to be pooled. It is
-	 * up to the statement pool manager as to whether the hint is used. The
+	 * indicating whether the applicaiton wants the statement to be pooled. It
+	 * is up to the statement pool manager as to whether the hint is used. The
 	 * poolable value of a statement is applicable to both internal statement
-	 * caches implemented by the driver and external statement caches implemented
-	 * by application servers and other applications.
+	 * caches implemented by the driver and external statement caches
+	 * implemented by application servers and other applications.
 	 * <P>
 	 * By default, a Statement is not poolable when created, and a
 	 * PreparedStatement and CallableStatement are poolable when created.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param bln bln
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -833,7 +850,7 @@ public class DBStatement implements Statement {
 	 *
 	 * @return true if the Statement is poolable; false otherwise
 	 *
-	  1 Database exceptions may be thrown
+	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -845,19 +862,19 @@ public class DBStatement implements Statement {
 	 * Returns an object that implements the given interface to allow access to
 	 * non-standard methods, or standard methods not exposed by the proxy.
 	 *
-	 * If the receiver implements the interface then the result is the receiver or
-	 * a proxy for the receiver. If the receiver is a wrapper and the wrapped
-	 * object implements the interface then the result is the wrapped object or a
-	 * proxy for the wrapped object. Otherwise return the the result of calling
-	 * <code>unwrap</code> recursively on the wrapped object or a proxy for that
-	 * result. If the receiver is not a wrapper and does not implement the
-	 * interface, then an <code>SQLException</code> is thrown.
+	 * If the receiver implements the interface then the result is the receiver
+	 * or a proxy for the receiver. If the receiver is a wrapper and the wrapped
+	 * object implements the interface then the result is the wrapped object or
+	 * a proxy for the wrapped object. Otherwise return the the result of
+	 * calling <code>unwrap</code> recursively on the wrapped object or a proxy
+	 * for that result. If the receiver is not a wrapper and does not implement
+	 * the interface, then an <code>SQLException</code> is thrown.
 	 *
-	 * @param iface A Class defining an interface that the result must implement.
+	 * @param iface A Class defining an interface that the result must
+	 * implement.
 	 * @param <T> the required interface.
 	 * @return an object that implements the interface. May be a proxy for the
-	 * actual implementing object.
-	  1 Database exceptions may be thrown
+	 * actual implementing object. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
@@ -868,20 +885,21 @@ public class DBStatement implements Statement {
 	/**
 	 * Returns true if this either implements the interface argument or is
 	 * directly or indirectly a wrapper for an object that does. Returns false
-	 * otherwise. If this implements the interface then return true, else if this
-	 * is a wrapper then return the result of recursively calling
-	 * <code>isWrapperFor</code> on the wrapped object. If this does not implement
-	 * the interface and is not a wrapper, return false. This method should be
-	 * implemented as a low-cost operation compared to <code>unwrap</code> so that
-	 * callers can use this method to avoid expensive <code>unwrap</code> calls
-	 * that may fail. If this method returns true then calling <code>unwrap</code>
-	 * with the same argument should succeed.
+	 * otherwise. If this implements the interface then return true, else if
+	 * this is a wrapper then return the result of recursively calling
+	 * <code>isWrapperFor</code> on the wrapped object. If this does not
+	 * implement the interface and is not a wrapper, return false. This method
+	 * should be implemented as a low-cost operation compared to
+	 * <code>unwrap</code> so that callers can use this method to avoid
+	 * expensive <code>unwrap</code> calls that may fail. If this method returns
+	 * true then calling <code>unwrap</code> with the same argument should
+	 * succeed.
 	 *
 	 * @param iface a Class defining an interface.
 	 * @return true if this implements the interface or directly or indirectly
 	 * wraps an object that does.
-	 * @throws java.sql.SQLException if an error occurs while determining whether
-	 * this is a wrapper for an object with the given interface.
+	 * @throws java.sql.SQLException if an error occurs while determining
+	 * whether this is a wrapper for an object with the given interface.
 	 * @since 1.6
 	 */
 	@Override
@@ -905,7 +923,8 @@ public class DBStatement implements Statement {
 	/**
 	 * Unsupported.
 	 *
-	  1 Database exceptions may be thrown
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public void closeOnCompletion() throws SQLException {
@@ -915,8 +934,7 @@ public class DBStatement implements Statement {
 	/**
 	 * Unsupported.
 	 *
-	 * @return unsupported
-	  1 Database exceptions may be thrown
+	 * @return unsupported 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public boolean isCloseOnCompletion() throws SQLException {

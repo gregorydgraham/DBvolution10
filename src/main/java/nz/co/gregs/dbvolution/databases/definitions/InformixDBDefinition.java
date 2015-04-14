@@ -194,7 +194,13 @@ public class InformixDBDefinition extends DBDefinition {
 		return "((" + dateValue + ")+ (" + numberOfSeconds + ") UNITS SECOND)";
 	}
 
+	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " (WEEKDAY("+dateSQL+")+1)";
+	}
+
+	@Override
+	public boolean willCloseConnectionOnStatementCancel() {
+		return true;
 	}
 }
