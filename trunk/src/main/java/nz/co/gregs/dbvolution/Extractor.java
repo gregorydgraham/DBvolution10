@@ -149,7 +149,7 @@ public abstract class Extractor extends DBScript {
 			Date finishTime = new Date();
 			final double elapsedTimeInMilliseconds = 0.0 + finishTime.getTime() - startTime.getTime();
 			double timePerRecord = elapsedTimeInMilliseconds / (lowerBound - startLowerBound);
-			System.out.println("EXTRACTED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") at " + timePerRecord + "ms/record.");
+			System.out.println("EXTRACTED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") in "+elapsedTimeInMilliseconds+"ms at " + timePerRecord + "ms/record.");
 			double estimatedRequiredTime = timePerRecord * (maxBound - startLowerBound);
 			cal.setTime(startTime);
 			int secondsValue = (new Double(estimatedRequiredTime / 1000)).intValue();

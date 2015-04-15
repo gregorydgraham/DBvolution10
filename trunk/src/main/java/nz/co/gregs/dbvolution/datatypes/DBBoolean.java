@@ -87,6 +87,11 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 		super(bool);
 	}
 
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 	/**
 	 * Implements the standard Java equals method.
 	 *
@@ -94,7 +99,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
-	public boolean equals(QueryableDatatype other) {
+	public boolean equals(Object other) {
 		if (other instanceof DBBoolean) {
 			DBBoolean otherDBBoolean=  (DBBoolean) other;
 			return getValue().equals(otherDBBoolean.getValue());

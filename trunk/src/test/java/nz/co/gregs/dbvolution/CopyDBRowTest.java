@@ -39,7 +39,8 @@ public class CopyDBRowTest extends AbstractTest {
         System.out.println(first);
         System.out.println(firstCopy);
         Assert.assertThat(firstCopy,is(not(first)));
-        Assert.assertThat(firstCopy.name,is(not(first.name)));
+        Assert.assertThat(firstCopy.name,not(sameInstance(first.name)));
+        Assert.assertThat(firstCopy.name,is(first.name));
         Assert.assertThat(firstCopy.carCompany.getValue(),is(equalTo(first.carCompany.getValue())));
         Assert.assertThat(firstCopy.name.getValue(),is(equalTo(first.name.getValue())));
         Assert.assertThat(firstCopy.creationDate.getValue(),is(equalTo(first.creationDate.getValue())));

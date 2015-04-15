@@ -77,7 +77,7 @@ public abstract class DBDatabase implements Cloneable {
 	private boolean batchIfPossible = true;
 	private boolean preventAccidentalDroppingOfTables = true;
 	private boolean preventAccidentalDroppingDatabase = true;
-	private int connectionsActive = 0;
+//	private int connectionsActive = 0;
 	private final Object getStatementSynchronizeObject = new Object();
 	private final Object getConnectionSynchronizeObject = new Object();
 	private Connection transactionConnection;
@@ -285,8 +285,8 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @return the Connection to be used.
 	 */
-	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
-		if (isInATransaction) {
+	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+		if (isInATransaction && !this.transactionConnection.isClosed()) {
 			return this.transactionConnection;
 		}
 		Connection conn = null;
@@ -337,7 +337,7 @@ public abstract class DBDatabase implements Cloneable {
 					throw new UnableToCreateDatabaseConnectionException(dataSource, noConnection);
 				}
 			}
-			connectionOpened(connection);
+//			connectionOpened(connection);
 		}
 		return connection;
 	}
@@ -640,12 +640,17 @@ public abstract class DBDatabase implements Cloneable {
 					log.info("Transaction Successful: ROLLBACK Performed");
 				}
 			} catch (Exception ex) {
-				db.transactionConnection.rollback();
+				try {
+					db.transactionConnection.rollback();
+				} catch (Exception excp) {	
+					log.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
+					discardConnection(db.transactionConnection);
+				}
 				log.warn("Exception Occurred: ROLLBACK Performed! " + ex.getMessage(), ex);
 				throw ex;
 			} finally {
-				db.transactionConnection.setAutoCommit(wasAutoCommit);
 				discardConnection(db.transactionConnection);
+//				db.transactionConnection.setAutoCommit(wasAutoCommit);
 			}
 		} finally {
 			db.transactionStatement.transactionFinished();
@@ -1487,12 +1492,11 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param connection	connection
 	 */
-	public void connectionOpened(Connection connection) {
-		synchronized (getConnectionSynchronizeObject) {
-			connectionsActive++;
-		}
-	}
-
+//	public void connectionOpened(Connection connection) {
+//		synchronized (getConnectionSynchronizeObject) {
+//			connectionsActive++;
+//		}
+//	}
 	/**
 	 * Indicates to the DBDatabase that the provided connection has been closed.
 	 *
@@ -1501,12 +1505,11 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param connection	connection
 	 */
-	public void connectionClosed(Connection connection) {
-		synchronized (getConnectionSynchronizeObject) {
-			connectionsActive--;
-		}
-	}
-
+//	public void connectionClosed(Connection connection) {
+//		synchronized (getConnectionSynchronizeObject) {
+//			connectionsActive--;
+//		}
+//	}
 	/**
 	 * Provided to allow DBDatabase sub-classes to tweak their connections
 	 * before use.
@@ -1606,8 +1609,22 @@ public abstract class DBDatabase implements Cloneable {
 			Logger.getLogger(DBDatabase.class
 					.getName()).log(Level.FINEST, null, ex);
 		}
-		connectionClosed(connection);
+//		connectionClosed(connection);
 	}
+
+//	public synchronized Connection replaceConnection(Connection connection) throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+//		getConnectionList(busyConnections).remove(connection);
+//		getConnectionList(freeConnections).remove(connection);
+//		try {
+//			connection.close();
+//
+//		} catch (SQLException ex) {
+//			Logger.getLogger(DBDatabase.class
+//					.getName()).log(Level.FINEST, null, ex);
+//		}
+////		connectionClosed(connection);
+//		return getConnection();
+//	}
 
 	private synchronized List<Connection> getConnectionList(Map<DBDatabase, List<Connection>> connectionMap) {
 		List<Connection> connList = connectionMap.get(this);

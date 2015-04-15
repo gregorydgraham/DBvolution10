@@ -157,7 +157,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		if (newLiteralValue == null) {
 			super.setLiteralValue(null);
 		} else {
-			super.setLiteralValue(newLiteralValue);
+			super.setLiteralValue(newLiteralValue.doubleValue());
 		}
 	}
 

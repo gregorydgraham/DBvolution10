@@ -58,14 +58,16 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	/**
 	 * Used to indicate the the QDT should be sorted so that the values run from
-	 * A-&gt;Z or 0-&gt;9 when using the {@link #setSortOrder(java.lang.Boolean) }
+	 * A-&gt;Z or 0-&gt;9 when using the {@link #setSortOrder(java.lang.Boolean)
+	 * }
 	 * method.
 	 */
 	public final static Boolean SORT_ASCENDING = Boolean.TRUE;
 
 	/**
 	 * Used to indicate the the QDT should be sorted so that the values run from
-	 * Z-&gt;A or 9-&gt;0 when using the {@link #setSortOrder(java.lang.Boolean) }
+	 * Z-&gt;A or 9-&gt;0 when using the {@link #setSortOrder(java.lang.Boolean)
+	 * }
 	 * method.
 	 */
 	public final static Boolean SORT_DESCENDING = Boolean.FALSE;
@@ -110,7 +112,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * This is particularly useful for trimming strings or converting between
 	 * types but also allows for complex arithmetic and transformations.
 	 *
-	 * @param columnExpression	 columnExpression	
+	 * @param columnExpression	columnExpression
 	 */
 	protected QueryableDatatype(DBExpression columnExpression) {
 		this.columnExpression = columnExpression.copy();
@@ -150,11 +152,11 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Returns an appropriate QueryableDatatype for the provided object.
 	 *
 	 * <p>
-	 * Provides the base QDTs for Integer, Number, String, Date, Byte[], Boolean,
-	 * NumberResult, StringResult, DateResult, LargeObjectResult, BooleanResult
-	 * and defaults everything else to DBJavaObject.
+	 * Provides the base QDTs for Integer, Number, String, Date, Byte[],
+	 * Boolean, NumberResult, StringResult, DateResult, LargeObjectResult,
+	 * BooleanResult and defaults everything else to DBJavaObject.
 	 *
-	 * @param o	 o	
+	 * @param o	o
 	 * @return a QDT that will provide good results for the provided object.
 	 */
 	static public QueryableDatatype getQueryableDatatypeForObject(Object o) {
@@ -204,8 +206,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * this moment in time and copy or clone any internal objects that might
 	 * change.
 	 *
-	 * Subclasses should extend this method if they have fields that maintain the
-	 * state of the QDT.
+	 * Subclasses should extend this method if they have fields that maintain
+	 * the state of the QDT.
 	 *
 	 * Always use the super.copy() method first when overriding this method.
 	 *
@@ -258,12 +260,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	/**
 	 * Remove the conditions, criteria, and operators applied to this QDT.
-	 * 
-	 * Deprecated as confusingly named.  Use {@link #removeConstraints() } instead.
+	 *
+	 * Deprecated as confusingly named. Use {@link #removeConstraints() }
+	 * instead.
 	 *
 	 * <p>
-	 * After calling this method, this object will not cause a where clause to be
-	 * generated in any subsequent queries.
+	 * After calling this method, this object will not cause a where clause to
+	 * be generated in any subsequent queries.
 	 *
 	 * @return this instance.
 	 */
@@ -276,8 +279,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Remove the conditions, criteria, and operators applied to this QDT.
 	 *
 	 * <p>
-	 * After calling this method, this object will not cause a where clause to be
-	 * generated in any subsequent queries.
+	 * After calling this method, this object will not cause a where clause to
+	 * be generated in any subsequent queries.
 	 *
 	 * @return this instance.
 	 */
@@ -289,8 +292,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	/**
 	 *
-	 
-	 
+	 *
+	 *
 	 * @return the section of the SQL query between WHERE and ORDER BY
 	 */
 //	public String getWhereClause(DBDatabase db, String columnName) {
@@ -337,8 +340,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * will cause the operator to return everything other than 1.
 	 *
 	 * <p>
-	 * If this object has an operator defined for it, this method will invert the
-	 * meaning of the operator by calling the operator's {@link DBOperator#invertOperator(java.lang.Boolean)
+	 * If this object has an operator defined for it, this method will invert
+	 * the meaning of the operator by calling the operator's {@link DBOperator#invertOperator(java.lang.Boolean)
 	 * } with "true".
 	 */
 	public void negateOperator() {
@@ -381,14 +384,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * <b>Set the value of this QDT to the value provided.</b>
 	 *
 	 * <p>
-	 * Subclass writers should ensure that the method handles nulls correctly and
-	 * throws an exception if an inappropriate value is supplied.
+	 * Subclass writers should ensure that the method handles nulls correctly
+	 * and throws an exception if an inappropriate value is supplied.
 	 *
 	 * <p>
 	 * This method is public for internal reasons and you should provide/use
 	 * another more strongly typed version of setValue.
 	 *
-	 
+	 *
 	 */
 	void setValue(Object newLiteralValue) {
 		this.setLiteralValue(newLiteralValue);
@@ -419,8 +422,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	}
 
 	/**
-	 * Clear the changes to this QDT and remove the previous value as though this
-	 * QDT had never had any value other than the current value.
+	 * Clear the changes to this QDT and remove the previous value as though
+	 * this QDT had never had any value other than the current value.
 	 *
 	 */
 	public void setUnchanged() {
@@ -464,7 +467,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * Example return value: "VARCHAR(1000)"
 	 *
-	 * @return the standard SQL datatype that corresponds to this QDT as a String
+	 * @return the standard SQL datatype that corresponds to this QDT as a
+	 * String
 	 */
 	public abstract String getSQLDatatype();
 
@@ -472,10 +476,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Formats the literal value for use within an SQL statement.
 	 *
 	 * <p>
-	 * This is used internally to transform the Java object in to SQL format. You
-	 * won't need to use it.
+	 * This is used internally to transform the Java object in to SQL format.
+	 * You won't need to use it.
 	 *
-	 
+	 *
 	 * @return the literal value as it would appear in an SQL statement i.e.
 	 * {yada} =&gt; 'yada', {1} =&gt; 1 and {} =&gt; NULL
 	 */
@@ -498,8 +502,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * This should be overridden in each subclass
 	 *
 	 * This method is called by toSQLString after checking for NULLs and should
-	 * return a string representation of the object formatted for use within a SQL
-	 * select, insert, update, or delete statement.
+	 * return a string representation of the object formatted for use within a
+	 * SQL select, insert, update, or delete statement.
 	 *
 	 * For Example:
 	 *
@@ -509,7 +513,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * DBDate{1/March/2013} =&gt; TO_DATE('20130301', 'YYYYMMDD')
 	 *
-	 * @param db	 db	
+	 * @param db	db
 	 * @return the literal value translated to a String ready to insert into an
 	 * SQL statement
 	 */
@@ -551,20 +555,21 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * <p>
 	 * If you create a new QDT you should override this method. The default
-	 * implementation in {@link QueryableDatatype} processes the ResultSet column
-	 * as a String. You should follow the basic pattern but change
+	 * implementation in {@link QueryableDatatype} processes the ResultSet
+	 * column as a String. You should follow the basic pattern but change
 	 * {@link ResultSet#getString(java.lang.String) ResultSet.getString(String)}
 	 * to the required ResultSet method and add any required post-processing.
 	 *
 	 * <p>
-	 * Note that most of the method is dedicated to detecting NULL values. This is
-	 * very important as are the calls to {@link #setUnchanged() } and {@link #setDefined(boolean)
+	 * Note that most of the method is dedicated to detecting NULL values. This
+	 * is very important as are the calls to {@link #setUnchanged() } and {@link #setDefined(boolean)
 	 * }.
 	 *
-	 
-	 
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param database database
 	 * @param resultSet resultSet
 	 * @param resultSetColumnName resultSetColumnName
@@ -597,14 +602,14 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	}
 
 	/**
-	 * Returns the correct object from the ResultSet for the QueryableDatatype to
-	 * handle.
+	 * Returns the correct object from the ResultSet for the QueryableDatatype
+	 * to handle.
 	 *
 	 * @param database database
 	 * @param resultSet resultSet
 	 * @param fullColumnName fullColumnName
-	 * @return the expected object from the ResultSet.
-	  1 Database exceptions may be thrown
+	 * @return the expected object from the ResultSet. 1 Database exceptions may
+	 * be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	abstract protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException;
@@ -631,8 +636,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * meanings.
 	 *
 	 * <p>
-	 * This method indicates whether the field represented by this object is NULL
-	 * in the database sense.
+	 * This method indicates whether the field represented by this object is
+	 * NULL in the database sense.
 	 *
 	 * @return TRUE if this object represents a NULL database value, otherwise
 	 * FALSE
@@ -649,8 +654,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * meanings.
 	 *
 	 * <p>
-	 * This method indicates whether the field represented by this object is NULL
-	 * in the database sense.
+	 * This method indicates whether the field represented by this object is
+	 * NULL in the database sense.
 	 *
 	 * @return TRUE if this object represents a NULL database value, otherwise
 	 * FALSE
@@ -666,7 +671,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Used by {@link DBActionList} to generate
 	 * {@link DBActionList#getRevertActionList() revert action lists}.
 	 *
-	 * @param db	 db	
+	 * @param db	db
 	 * @return the previous value of this field as an SQL formatted String
 	 */
 	public String getPreviousSQLValue(DBDatabase db) {
@@ -683,7 +688,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * Use Boolean.TRUE for Ascending Use Boolean.FALSE for Descending
 	 *
-	 
+	 *
 	 * @return this object
 	 */
 	private QueryableDatatype setSortOrder(Boolean order) {
@@ -723,8 +728,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Remove the conditions, criteria, and operators applied to this QDT.
 	 *
 	 * <p>
-	 * After calling this method, this object will not cause a where clause to be
-	 * generated in any subsequent queries.
+	 * After calling this method, this object will not cause a where clause to
+	 * be generated in any subsequent queries.
 	 *
 	 * <p>
 	 * Synonym for {@link #removeConstraints() }.
@@ -735,23 +740,29 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		return removeConstraints();
 	}
 
-	/**
-	 * Implements the standard Java equals method.
-	 *
-	 * @param other	 other	
-	 * @return true if the other QDT is the same as this one.
-	 */
-	public boolean equals(QueryableDatatype other) {
-		if (other == null) {
-			return false;
-		} else if (this.operator == null && other.operator == null) {
-			return true;
-		} else if (this.operator != null && other.operator == null) {
-			return false;
-		} else if (this.operator == null && other.operator != null) {
-			return false;
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject instanceof QueryableDatatype) {
+			QueryableDatatype other = (QueryableDatatype) otherObject;
+			if (other == null) {
+				return false;
+			} else if (this.operator == null && other.operator == null) {
+				return this.getLiteralValue().equals(other.getLiteralValue());
+//			return true;
+			} else if (this.operator != null && other.operator == null) {
+				return false;
+			} else if (this.operator == null && other.operator != null) {
+				return false;
+			} else {
+				return this.getOperator().equals(other.getOperator());
+			}
 		} else {
-			return this.getOperator().equals(other.getOperator());
+			return false;
 		}
 	}
 
@@ -783,10 +794,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * {@link InternalQueryableDatatypeProxy}.
 	 *
 	 * <p>
-	 * <i>Thread-safety: relatively safe, as PropertyWrappers are thread-safe and
-	 * interchangeable.</i>
+	 * <i>Thread-safety: relatively safe, as PropertyWrappers are thread-safe
+	 * and interchangeable.</i>
 	 *
-	 
+	 *
 	 */
 	void setPropertyWrapper(PropertyWrapperDefinition propertyWrapper) {
 		this.propertyWrapperDefn = propertyWrapper;
@@ -831,7 +842,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		if (getColumnExpression()!=null){
+		if (getColumnExpression() != null) {
 			return getColumnExpression().getTablesInvolved();
 		}
 		return new HashSet<DBRow>();
@@ -862,8 +873,8 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * Used during setFromResultSet to set the QDT to a database NULL value.
 	 *
 	 * <p>
-	 * DBDatabase is supplied so that database-specific processing, such as Oracle
-	 * empty strings, can be performed.
+	 * DBDatabase is supplied so that database-specific processing, such as
+	 * Oracle empty strings, can be performed.
 	 *
 	 * <p>
 	 * Sets the value of this column to DBNull Also changes the operator to
@@ -872,7 +883,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * <p>
 	 * The default implementation just calls {@link #setToNull() }
 	 *
-	 * @param database	 database	
+	 * @param database	database
 	 * @return the DBOperator that will be used with this QDT
 	 */
 	protected DBOperator setToNull(DBDatabase database) {
@@ -882,7 +893,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	/**
 	 * Used internally.
 	 *
-	 * @param hasChanged	 hasChanged	
+	 * @param hasChanged	hasChanged
 	 */
 	protected void setChanged(boolean hasChanged) {
 		if (hasChanged) {
@@ -904,7 +915,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	/**
 	 * Used internally.
 	 *
-	 * @param queryableDatatype	 queryableDatatype	
+	 * @param queryableDatatype	queryableDatatype
 	 */
 	protected void setPreviousValue(QueryableDatatype queryableDatatype) {
 		this.previousValueAsQDT = queryableDatatype;
@@ -937,10 +948,10 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	}
 
 	@Override
-	public boolean isPurelyFunctional(){
-		if (!hasColumnExpression()){
+	public boolean isPurelyFunctional() {
+		if (!hasColumnExpression()) {
 			return getTablesInvolved().isEmpty();
-		}else{
+		} else {
 			return getColumnExpression().isPurelyFunctional();
 		}
 	}

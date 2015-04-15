@@ -61,7 +61,7 @@ public class DBIntegerEditorTest {
 		String text = "5";
 		DBIntegerEditor instance = new DBIntegerEditor();
 		instance.setAsText(text);
-		Assert.assertThat((Integer) ((QueryableDatatype) instance.getValue()).literalValue, is(5));
+		Assert.assertThat((Long) ((QueryableDatatype) instance.getValue()).literalValue, is(5L));
 	}
 
 }
