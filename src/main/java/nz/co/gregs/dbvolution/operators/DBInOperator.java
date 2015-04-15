@@ -63,7 +63,12 @@ public class DBInOperator extends DBOperator {
 	}
 
 	@Override
-	public boolean equals(DBOperator other) {
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object other) {
 
 		if (super.equals(other) == false) {
 			return false;

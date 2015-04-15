@@ -93,7 +93,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
-	public boolean equals(QueryableDatatype other) {
+	public boolean equals(Object other) {
 		if (other instanceof DBBooleanArray) {
 			DBBooleanArray otherDBBits = (DBBooleanArray) other;
 			return Arrays.equals(getValue(), otherDBBits.getValue());
@@ -214,6 +214,11 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 }

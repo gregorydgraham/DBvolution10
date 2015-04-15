@@ -665,7 +665,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 		if (newLiteralValue == null) {
 			super.setLiteralValue(null);
 		} else {
-			super.setLiteralValue(newLiteralValue);
+			super.setLiteralValue(newLiteralValue.longValue());
 		}
 	}
 
@@ -691,7 +691,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 		if (newLiteralValue == null) {
 			super.setLiteralValue(null);
 		} else {
-			super.setLiteralValue(newLiteralValue);
+			super.setLiteralValue(newLiteralValue.longValue());
 		}
 	}
 

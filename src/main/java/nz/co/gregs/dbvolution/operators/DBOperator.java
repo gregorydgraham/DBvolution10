@@ -26,51 +26,75 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  * @author Gregory Graham
  */
 abstract public class DBOperator implements Serializable {
-    private static final long serialVersionUID = 1L;
 
-    Boolean invertOperator = false;
-    Boolean includeNulls = false;
-    protected DBExpression firstValue;
-    protected DBExpression secondValue;
-    protected DBExpression thirdValue;
+	private static final long serialVersionUID = 1L;
+
+	Boolean invertOperator = false;
+	Boolean includeNulls = false;
+	protected DBExpression firstValue;
+	protected DBExpression secondValue;
+	protected DBExpression thirdValue;
 	private BooleanExpression expression;
 
-    public DBOperator() {
-        firstValue = null;
-        secondValue = null;
-        thirdValue = null;
-    }
-	
-	protected DBExpression getExpression(){
+	public DBOperator() {
+		firstValue = null;
+		secondValue = null;
+		thirdValue = null;
+	}
+
+	protected DBExpression getExpression() {
 		return this.expression;
 	}
-	
-	protected void setExpression(BooleanExpression operatorExpression){
+
+	protected void setExpression(BooleanExpression operatorExpression) {
 		this.expression = operatorExpression;
 	}
+
+	public void invertOperator(Boolean invertOperator) {
+		this.invertOperator = invertOperator;
+	}
+
+	public void not() {
+		invertOperator = true;
+	}
+
+	public void includeNulls() {
+		includeNulls = true;
+	}
+
+//	@Override
+//	public int hashCode() {
+//		int hash = 7;
+//		hash = 41 * hash + (this.invertOperator != null ? this.invertOperator.hashCode() : 0);
+//		hash = 41 * hash + (this.includeNulls != null ? this.includeNulls.hashCode() : 0);
+//		hash = 41 * hash + (this.firstValue != null ? this.firstValue.hashCode() : 0);
+//		hash = 41 * hash + (this.secondValue != null ? this.secondValue.hashCode() : 0);
+//		hash = 41 * hash + (this.thirdValue != null ? this.thirdValue.hashCode() : 0);
+//		hash = 41 * hash + (this.expression != null ? this.expression.hashCode() : 0);
+//		return hash;
+//	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 	
-    public void invertOperator(Boolean invertOperator) {
-        this.invertOperator = invertOperator;
-    }
+	@Override
+	public boolean equals(Object otherObject) {
+		if (otherObject instanceof DBOperator) {
+			DBOperator other = (DBOperator) otherObject;
+			return this.getClass() == other.getClass()
+					&& this.invertOperator.equals(other.invertOperator)
+					&& this.includeNulls.equals(other.includeNulls)
+					&& (firstValue == null ? other.firstValue == null : firstValue.equals(other.firstValue))
+					&& (secondValue == null ? other.secondValue == null : secondValue.equals(other.secondValue))
+					&& (thirdValue == null ? other.thirdValue == null : thirdValue.equals(other.thirdValue));
+		} else {
+			return false;
+		}
+	}
 
-    public void not() {
-        invertOperator = true;
-    }
-	
-    public void includeNulls() {
-        includeNulls = true;
-    }
-
-    public boolean equals(DBOperator other) {
-        return this.getClass() == other.getClass()
-                && this.invertOperator.equals(other.invertOperator)
-                && this.includeNulls.equals(other.includeNulls)
-                && (firstValue==null?other.firstValue==null:firstValue.equals(other.firstValue))
-                && (secondValue==null?other.secondValue==null:secondValue.equals(other.secondValue))
-                && (thirdValue==null?other.thirdValue==null:thirdValue.equals(other.thirdValue));
-    }
-
-    abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
+	abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
 
 	abstract public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column);
 }
