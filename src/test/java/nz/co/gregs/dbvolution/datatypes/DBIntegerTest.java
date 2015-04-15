@@ -6,13 +6,9 @@ import static org.junit.Assert.*;
 import java.sql.SQLException;
 import java.util.List;
 
-import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBQueryRow;
-import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
