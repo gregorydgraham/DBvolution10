@@ -1094,20 +1094,23 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			this.second = second;
 		}
 
-		DBBinaryBooleanArithmetic(BooleanResult first, BooleanExpression second) {
-			this.first = new BooleanExpression(first);
-			this.second = second;
-		}
+//		DBBinaryBooleanArithmetic(BooleanResult first, BooleanExpression second) {
+//			this(new BooleanExpression(first), second);
+////			this.first = new BooleanExpression(first);
+////			this.second = second;
+//		}
 
 		DBBinaryBooleanArithmetic(BooleanExpression first, BooleanResult second) {
-			this.first = first;
-			this.second = new BooleanExpression(second);
+			this(first, new BooleanExpression(second));
+//			this.first = first;
+//			this.second = new BooleanExpression(second);
 		}
 
-		DBBinaryBooleanArithmetic(BooleanResult first, BooleanResult second) {
-			this.first = new BooleanExpression(first);
-			this.second = new BooleanExpression(second);
-		}
+//		DBBinaryBooleanArithmetic(BooleanResult first, BooleanResult second) {
+//			this(new BooleanExpression(first),new BooleanExpression(second));
+////			this.first = new BooleanExpression(first);
+////			this.second = new BooleanExpression(second);
+//		}
 
 		@Override
 		public DBBoolean getQueryableDatatypeForExpressionValue() {

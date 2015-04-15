@@ -60,6 +60,18 @@ public class DBRecursiveQuery<T extends DBRow> {
 	private final DBQuery originalQuery;
 	private final ColumnProvider keyToFollow;
 	private T typeToReturn = null;
+	private Integer timeoutInMilliseconds = 10000;
+
+	/**
+	 * @param timeoutInMilliseconds the timeoutInMilliseconds to set
+	 */
+	public void setTimeoutInMilliseconds(Integer timeoutInMilliseconds) {
+		this.timeoutInMilliseconds = timeoutInMilliseconds;
+	}
+
+	public void clearTimeout() {
+		this.timeoutInMilliseconds = null;
+	}
 
 	private static enum RecursiveSQLDirection {
 
@@ -157,6 +169,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		DBStatement dbStatement = originalQuery.getDatabase().getDBStatement();
 		try {
 			String descendingQuery = getRecursiveSQL(this.keyToFollow, direction);
+			originalQuery.setTimeoutInMilliseconds(this.timeoutInMilliseconds);
 			ResultSet resultSet = originalQuery.getResultSetForSQL(dbStatement, descendingQuery);
 			try {
 				while (resultSet.next()) {
@@ -335,8 +348,8 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	/**
-	 * Queries that database and returns all descendants including priming and leaf nodes of
-	 * this query.
+	 * Queries that database and returns all descendants including priming and
+	 * leaf nodes of this query.
 	 *
 	 * <p>
 	 * Using this DBRecursiveQuery as a basis, this method descends the tree
@@ -357,14 +370,14 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	/**
-	 * Queries that database and returns all ancestors including priming and root nodes of
-	 * this query.
+	 * Queries that database and returns all ancestors including priming and root
+	 * nodes of this query.
 	 *
 	 * <p>
 	 * Using this DBRecursiveQuery as a basis, this method ascends the tree
-	 * structure finding all ancestors of the rows returned by the priming
-	 * query. This is used by {@link #getPathsToRoot() } to recreate the paths
-	 * stored in the database as a list of {@link TreeNode TreeNodes}.
+	 * structure finding all ancestors of the rows returned by the priming query.
+	 * This is used by {@link #getPathsToRoot() } to recreate the paths stored in
+	 * the database as a list of {@link TreeNode TreeNodes}.
 	 *
 	 * @return a list of all descendants of this query.
 	 * @throws SQLException
@@ -529,6 +542,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 
 		final T returnType = getReturnType();
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		Integer timeout = this.timeoutInMilliseconds;
+		long start = new java.util.Date().getTime();
+		this.originalQuery.setTimeoutInMilliseconds(timeout);
 		List<DBQueryRow> primingRows = this.originalQuery.getAllRows();
 		this.originalQuery.getDatabase().print(primingRows);
 		List<String> values = new ArrayList<String>();
@@ -543,7 +559,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 		}
 		DBRow instanceOfRow = this.keyToFollow.getColumn().getInstanceOfRow();
 		setQDTPermittedValues(instanceOfRow.getPrimaryKey(), values);
-		List<DBQueryRow> allRows = this.originalQuery.getDatabase().getDBQuery(instanceOfRow).getAllRows();
+		final DBQuery dbQuery = this.originalQuery.getDatabase().getDBQuery(instanceOfRow);
+		dbQuery.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		this.originalQuery.getDatabase().print(allRows);
 		while (allRows.size() > 0) {
 			values.clear();
@@ -573,7 +591,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 					qdt = this.keyToFollow.getColumn().getAppropriateQDTFromRow(instanceOfRow);
 				}
 				setQDTPermittedValues(qdt, values);
-				allRows = this.originalQuery.getDatabase().getDBQuery(instanceOfRow).getAllRows();
+				final DBQuery dbQuery1 = this.originalQuery.getDatabase().getDBQuery(instanceOfRow);
+				dbQuery1.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
+				allRows = dbQuery1.getAllRows();
 				this.originalQuery.getDatabase().print(allRows);
 			}
 		}
