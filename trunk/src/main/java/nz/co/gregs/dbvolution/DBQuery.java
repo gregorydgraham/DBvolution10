@@ -618,10 +618,17 @@ public class DBQuery {
 		if (this.needsResults()) {
 			getAllRowsInternal();
 		}
-		return results;
+		final QueryOptions options = details.getOptions();
+		if (options.getRowLimit() > 0 && results.size() > options.getRowLimit()) {
+			final int firstItemOfPage = options.getPageIndex() * options.getRowLimit();
+			final int firstItemOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit();
+			return results.subList(firstItemOfPage, firstItemOfNextPage);
+		} else {
+			return results;
+		}
 	}
 
-	private List<DBQueryRow> getAllRowsInternal() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
+	private void getAllRowsInternal() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		prepareForQuery();
 
 		final QueryOptions options = details.getOptions();
@@ -656,13 +663,6 @@ public class DBQuery {
 			}
 		} finally {
 			dbStatement.close();
-		}
-		if (options.getRowLimit() > 0 && results.size() > options.getRowLimit()) {
-			final int firstItemOfPage = options.getPageIndex() * options.getRowLimit();
-			final int firstItemOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit();
-			return results.subList(firstItemOfPage, firstItemOfNextPage);
-		} else {
-			return results;
 		}
 	}
 
@@ -1457,7 +1457,7 @@ public class DBQuery {
 	 * @see #getAllRowsInternal()
 	 */
 	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
-		List<DBQueryRow> allRows = getAllRowsInternal();
+		List<DBQueryRow> allRows = getAllRows();
 		if (allRows.size() != expectedRows) {
 			throw new UnexpectedNumberOfRowsException(expectedRows, allRows.size());
 		} else {
@@ -2249,7 +2249,7 @@ public class DBQuery {
 					final ColumnProvider column = fieldRow.column(fieldDefn.getQueryableDatatype(fieldRow));
 					distinctQuery.addToSortOrder(column);
 					distinctQuery.addGroupByColumn(fieldRow, column.getColumn().asExpression());
-					returnList = distinctQuery.getAllRowsInternal();
+					returnList = distinctQuery.getAllRows();
 				} else {
 					throw new DBRuntimeException("Unable To Find Columns Specified");
 				}

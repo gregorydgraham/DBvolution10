@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.sql.SQLDataException;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +36,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.exceptions.IncomparableTypeUsedInComparison;
 
 /**
  *
@@ -71,6 +75,18 @@ public class DBScriptTest extends AbstractTest {
 		System.out.println("test");
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		DBScript script = new ScriptThatAdds2Marques();
+		DBActionList result = script.test(database);
+		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+		Assert.assertThat(
+				allMarques2.size(),
+				is(allMarques.size()));
+	}
+
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testExceptionThrowing() throws Exception {
+		System.out.println("test");
+		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+		DBScript script = new ScriptThatThrowsAnException(new IndexOutOfBoundsException("Correct Exception"));
 		DBActionList result = script.test(database);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(
@@ -136,6 +152,22 @@ public class DBScriptTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(origRows.size()));
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(scriptTestTable);
+	}
+
+	public class ScriptThatThrowsAnException extends DBScript {
+		private Exception exc;
+		
+		public ScriptThatThrowsAnException(Exception exception){
+			this.exc = exception;
+		}
+
+		@Override
+		public DBActionList script(DBDatabase db) throws Exception {
+			if (exc!=null){
+				throw exc;
+			}
+			return new DBActionList();
+		}
 	}
 
 	public class ScriptThatAdds2Marques extends DBScript {
