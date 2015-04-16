@@ -69,7 +69,7 @@ public abstract class Extractor extends DBScript {
 	private boolean moreRecords = true;
 	private double previousTimePerRecord = Double.MAX_VALUE; // ridiculous default is only to seed the process.
 	private Integer timeoutInMilliseconds = 10000;
-	public Long rowCount = null;
+	private Long rowCount = null;
 	private boolean countOnly = false;
 	private final DBDatabase database;
 
@@ -149,7 +149,7 @@ public abstract class Extractor extends DBScript {
 			Date finishTime = new Date();
 			final double elapsedTimeInMilliseconds = 0.0 + finishTime.getTime() - startTime.getTime();
 			double timePerRecord = elapsedTimeInMilliseconds / (lowerBound - startLowerBound);
-			System.out.println("EXTRACTED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") in "+elapsedTimeInMilliseconds+"ms at " + timePerRecord + "ms/record.");
+			System.out.println("EXTRACTED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") in " + elapsedTimeInMilliseconds + "ms at " + timePerRecord + "ms/record.");
 			double estimatedRequiredTime = timePerRecord * (maxBound - startLowerBound);
 			cal.setTime(startTime);
 			int secondsValue = (new Double(estimatedRequiredTime / 1000)).intValue();
@@ -176,9 +176,10 @@ public abstract class Extractor extends DBScript {
 	/**
 	 * Used to maintain the process in isolation from all other processes and
 	 * ensure that the processing does not alter any rows.
-	 * 
+	 *
 	 * <p>
 	 * This method cannot be changed.
+	 *
 	 * @return an action list
 	 * @throws java.io.FileNotFoundException
 	 */
@@ -199,7 +200,7 @@ public abstract class Extractor extends DBScript {
 
 	private List<DBQueryRow> getRows(DBDatabase db) throws AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> rows = null;
-		this.rowCount=0L;
+		this.rowCount = 0L;
 		double timePerRecord = 10000.0;
 		while (hasMoreRecords() && rows == null) {
 			try {
@@ -214,12 +215,12 @@ public abstract class Extractor extends DBScript {
 						rowCount = dbQuery.count();
 					} else {
 						rows = dbQuery.getAllRows();
-						rowCount = 0L+ rows.size();
+						rowCount = 0L + rows.size();
 					}
 					Date finishTime = new Date();
 					final double timeTaken = 0.0 + finishTime.getTime() - startTime.getTime();
 					timePerRecord = timeTaken / getBoundIncrease();
-					System.out.println("RETRIEVED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") after "+timeTaken+" at " + timePerRecord + "ms/record.");
+					System.out.println("RETRIEVED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") after " + timeTaken + " at " + timePerRecord + "ms/record.");
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -298,8 +299,9 @@ public abstract class Extractor extends DBScript {
 	}
 
 	/**
-	 * Allows the programmer to specify a maximum difference between the lower- and upper-bounds.
-	 * 
+	 * Allows the programmer to specify a maximum difference between the lower-
+	 * and upper-bounds.
+	 *
 	 * @param maxBoundIncrease the maxBoundIncrease to set
 	 */
 	protected void setMaxBoundIncrease(int maxBoundIncrease) {
@@ -336,7 +338,7 @@ public abstract class Extractor extends DBScript {
 
 	/**
 	 * Allows the programmer to set the last number to be extracted.
-	 * 
+	 *
 	 * @param maxBound the maxBound to set
 	 */
 	protected void setMaxBound(int maxBound) {
@@ -356,11 +358,18 @@ public abstract class Extractor extends DBScript {
 	protected void setLowerBound(int lowerBound) {
 		this.lowerBound = lowerBound;
 	}
-//
-//	protected void setDatabase(DBDatabase database) {
-//		this.database = database;
-//	}
 
+	/**
+	 * Changes the default timeout for the underlying query during this extraction.
+	 * 
+	 * <p>
+	 * DBvolution default timeout is 10000 milliseconds to avoid excessive queries.
+	 * 
+	 * <p>
+	 * Use this method to extend or reduce the timeout period as required.
+	 * 
+	 * @param milliseconds 
+	 */
 	protected void setTimeoutInMilliseconds(Integer milliseconds) {
 		if (milliseconds != null) {
 			this.timeoutInMilliseconds = milliseconds;
@@ -374,13 +383,57 @@ public abstract class Extractor extends DBScript {
 			query.setTimeoutInMilliseconds(this.timeoutInMilliseconds);
 		}
 	}
-	
-	public void setToCountOnly(){
-		countOnly=true;
+
+	/**
+	 * Restrict this extraction to only returning the row count.
+	 *
+	 * <p>
+	 * The default is to return the rows found, however it is much more efficient
+	 * to only count the rows.
+	 *
+	 * <p>
+	 * Use the method to switch to only counting the rows. Handling the results of
+	 * the extraction is still done in {@link #processRows(java.util.List) } but
+	 * the list will be empty.
+	 * <p>
+	 * Use {@link #getRowCount() } to retrieve the row count within {@link #processRows(java.util.List)
+	 * }.
+	 */
+	public void setToCountOnly() {
+		countOnly = true;
 	}
 
-	public void setToRetrieveRows(){
-		countOnly=false;
+	/**
+	 * Set this extraction to retrieve rows.
+	 *
+	 * <p>
+	 * This is the default behavior.
+	 *
+	 * <p>
+	 * Use this method to switch from {@link #setToCountOnly() } back to
+	 * retrieving the full collection of data.
+	 *
+	 * <p>
+	 * Processing of rows extracted is done in {@link #processRows(java.util.List)
+	 * }.
+	 *
+	 *
+	 */
+	public void setToRetrieveRows() {
+		countOnly = false;
+	}
+
+	/**
+	 * Return the number of rows found by this iteration of the extraction.
+	 *
+	 * <p>
+	 * For use with {@link #setToCountOnly() } but also with {@link #setToRetrieveRows()
+	 * }
+	 *
+	 * @return the number of rows found in the last partial extraction
+	 */
+	public Long getRowCount() {
+		return rowCount;
 	}
 
 }

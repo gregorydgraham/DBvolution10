@@ -69,7 +69,7 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().transformCoordinatesIntoDatabasePointFormat(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().transformCoordinatesIntoDatabasePoint2DFormat(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 		});

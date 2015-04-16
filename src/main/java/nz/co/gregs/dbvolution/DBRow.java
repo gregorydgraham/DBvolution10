@@ -1693,7 +1693,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						arrayRequired = true;
 					} else if (Collection.class.isAssignableFrom(requiredClass)) {
 						listRequired = true;
-						requiredClass = field.getAnnotation(AutoFillDuringQueryIfPossible.class).requiredClass();
+						final AutoFillDuringQueryIfPossible autoFillAnnotation = field.getAnnotation(AutoFillDuringQueryIfPossible.class);
+						requiredClass = autoFillAnnotation.requiredClass();
+						if (requiredClass.isAssignableFrom(DBRow.class)){
+							throw new nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation(field, requiredClass);
+						}
 					}
 					if (DBRow.class.isAssignableFrom(requiredClass)) {
 						DBRow fieldInstance = (DBRow) requiredClass.newInstance();

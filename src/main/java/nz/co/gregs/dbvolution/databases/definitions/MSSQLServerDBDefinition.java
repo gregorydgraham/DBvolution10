@@ -535,12 +535,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 	
 	@Override
-	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
 		return "geometry::STGeomFromText ('POINT (" + xValue+" "+yValue + ")',0)";
 	}
 	
 	@Override
-	public String transformPointIntoDatabaseFormat(Point point) {
+	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		return "geometry::STGeomFromText ('" +point.toText()+"',0)";
 	}
 	
@@ -558,7 +558,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Point transformDatabaseValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
+	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point point = null;
 		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")){
 			String[] split = pointAsString.split("[^-0-9.]+");
@@ -577,7 +577,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	
 	// ((2,3),(2,3),(2,3),(2,3)) => POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))
 //	@Override
-//	public Geometry transformDatabaseValueToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+//	public Geometry transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
 //		String string = "POLYGON "+geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 //		String[] splits = geometryAsString.split("[(),]+");
 //		System.out.println(geometryAsString+" => "+string);
