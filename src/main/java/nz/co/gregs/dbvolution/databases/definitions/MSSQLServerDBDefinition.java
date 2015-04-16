@@ -525,12 +525,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String transformPolygonIntoDatabaseFormat(Polygon polygon) {
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		return "geometry::STGeomFromText ('" +polygon.toText()+"',0)";
 	}
 	
 	@Override
-	public String transformLineStringIntoDatabaseFormat(LineString line) {
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
 		return "geometry::STGeomFromText ('" +line.toText()+"',0)";
 	}
 	

@@ -90,7 +90,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 		if (lineString == null) {
 			return db.getDefinition().getNull();
 		} else {
-			String str = db.getDefinition().transformLineStringIntoDatabaseFormat(lineString);
+			String str = db.getDefinition().transformLineStringIntoDatabaseLine2DFormat(lineString);
 			return str;
 		}
 	}
@@ -104,7 +104,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 			return null;
 		} else {
 			try {
-				lineString = database.getDefinition().transformDatabaseValueToJTSLineString(string);
+				lineString = database.getDefinition().transformDatabaseLine2DValueToJTSLineString(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string);

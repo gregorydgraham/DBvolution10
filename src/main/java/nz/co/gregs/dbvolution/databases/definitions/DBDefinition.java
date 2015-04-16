@@ -3395,10 +3395,10 @@ public abstract class DBDefinition {
 	 * From the database's representation of a Polygon2D create a JTS Polygon.
 	 * 
 	 * <p>
-	 * This is the inverse of {@link #transformPolygonIntoDatabaseFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 * This is the inverse of {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
 	 *
 	 * @param polygon2DSQL 
-	 * @return a point.
+	 * @return a polygon.
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String polygon2DSQL) throws com.vividsolutions.jts.io.ParseException {
@@ -3417,10 +3417,20 @@ public abstract class DBDefinition {
 		return poly;
 	}
 
-	public LineString transformDatabaseValueToJTSLineString(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
+	/**
+	 * From the database's representation of a Lin2D create a JTS LineString.
+	 * 
+	 * <p>
+	 * This is the inverse of {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 *
+	 * @param lineStringAsSQL 
+	 * @return a line.
+	 * @throws com.vividsolutions.jts.io.ParseException
+	 */
+	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString = null;
 		WKTReader wktReader = new WKTReader();
-		Geometry geometry = wktReader.read(lineStringAsString);
+		Geometry geometry = wktReader.read(lineStringAsSQL);
 		if (geometry instanceof LineString) {
 			lineString = (LineString) geometry;
 		} else {
@@ -3429,32 +3439,75 @@ public abstract class DBDefinition {
 		return lineString;
 	}
 
-	public String transformLineStringIntoDatabaseFormat(LineString lineString) {
+	/**
+	 * Provide the SQL that correctly represents this LineString in this database.
+	 *
+	 * @param lineString  
+	 * @return SQL
+	 */
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString lineString) {
 		String wktValue = lineString.toText();
 		return "'" + wktValue + "'";
 	}
 
-	public String transformPolygonIntoDatabaseFormat(Polygon polygon) {
+	/**
+	 * Provide the SQL that correctly represents this Polygon2D in this database.
+	 *
+	 * @param polygon  
+	 * @return SQL
+	 */
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		String wktValue = polygon.toText();
 		return "'" + wktValue + "'";
 	}
 
-	public String doLine2DAsTextTransform(String toSQLString) {
+	/**
+	 * Provide the SQL to derive the WKT version of the Line2D.
+	 *
+	 * @param line2DSQL 
+	 * @return SQL
+	 */
+	public String doLine2DAsTextTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DEqualsTransform(String toSQLString, String toSQLString0) {
+	/**
+	 * Transform the 2 Line2D SQL snippets into an EQUALS comparison of the 2
+	 *
+	 * @param line2DSQL
+	 * @param otherLine2DSQL
+	 * @return SQL
+	 */
+	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DDimensionTransform(String toSQLString) {
+	/**
+	 * Create the SQL required to get the dimension of this Line2D SQL.
+	 *
+	 * @param line2DSQL
+	 * @return the dimension (probably 1)
+	 */
+	public String doLine2DDimensionTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
+	/**
+	 * Create the SQL to derive the bounding box of this Line2D SQL
+	 *
+	 * @param line2DSQL
+	 * @return SQL
+	 */
+	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Create the SQL to transform a Point2DArray SQL into a Polygon2D
+	 *
+	 * @param pointSQL
+	 * @return SQL
+	 */
 	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
