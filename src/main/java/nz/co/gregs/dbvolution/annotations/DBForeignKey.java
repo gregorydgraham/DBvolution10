@@ -75,5 +75,5 @@ public @interface DBForeignKey {
      * @return the name of the column this foreign key references.
      */
     String column() default "";
-
+		
 }

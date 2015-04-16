@@ -235,7 +235,8 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
-	 * SQL. Use {@link #getAllRowsInternal() the get*Rows methods} to retrieve the rows.
+	 * SQL. Use {@link #getAllRowsInternal() the get*Rows methods} to retrieve the
+	 * rows.
 	 *
 	 * <p>
 	 * See also {@link DBQuery#getSQLForCount() getSQLForCount}
@@ -663,6 +664,14 @@ public class DBQuery {
 			}
 		} finally {
 			dbStatement.close();
+		}
+		for (DBQueryRow result : results) {
+			List<DBRow> rows = result.getAll();
+			for (DBRow row : rows) {
+				if (row != null) {
+					row.setAutoFilledFields(this);
+				}
+			}
 		}
 	}
 
@@ -1417,10 +1426,10 @@ public class DBQuery {
 	 * returning the rows found.
 	 *
 	 * <p>
-	 * Like {@link #getAllRowsInternal() getAllRows()} this method retrieves all the rows
-	 * for this DBQuery. However it checks the number of rows retrieved and throws
-	 * a {@link UnexpectedNumberOfRowsException} if the number of rows retrieved
-	 * differs from the expected number.
+	 * Like {@link #getAllRowsInternal() getAllRows()} this method retrieves all
+	 * the rows for this DBQuery. However it checks the number of rows retrieved
+	 * and throws a {@link UnexpectedNumberOfRowsException} if the number of rows
+	 * retrieved differs from the expected number.
 	 *
 	 * <p>
 	 * Adds all required DBRows as inner join tables and all optional DBRow as
