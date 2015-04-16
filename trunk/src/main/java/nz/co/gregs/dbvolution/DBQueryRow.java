@@ -65,8 +65,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * Returns the instance of exemplar contained within this DBQueryRow.
 	 *
 	 * <p>
-	 * Finds the instance of the class supplied that is relevant to the DBRow
-	 * and returns it.
+	 * Finds the instance of the class supplied that is relevant to the DBRow and
+	 * returns it.
 	 *
 	 * <p>
 	 * If the exemplar represents an optional table an there were no appropriate
@@ -103,7 +103,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	/**
 	 * Print the all columns to the specified PrintStream as one line.
 	 *
-	 * @param ps	 ps	
+	 * @param ps	ps
 	 */
 	public void print(PrintStream ps) {
 		for (DBRow row : values()) {
@@ -161,7 +161,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 *
 	 * @param dateFormat format that date should be formatted to.
 	 * @return a list of field names.
-	 
+	 *
 	 */
 	public List<String> getFieldValues(SimpleDateFormat dateFormat) {
 		List<String> returnList = new ArrayList<String>();
@@ -184,10 +184,10 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * header.
 	 *
 	 * <p>
-	 * The line separator is not included in the results, to allow for
-	 * portability and post-processing.
+	 * The line separator is not included in the results, to allow for portability
+	 * and post-processing.
 	 *
-	 * @param separatorToUseBetweenValues	 separatorToUseBetweenValues	
+	 * @param separatorToUseBetweenValues	separatorToUseBetweenValues
 	 * @return a list of all the fields in the DBQueryRow separated by the
 	 * supplied value
 	 */
@@ -203,14 +203,13 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	}
 
 	/**
-	 * Convenience method to convert this DBQueryRow into a CSV or TSV type
-	 * line.
+	 * Convenience method to convert this DBQueryRow into a CSV or TSV type line.
 	 *
 	 * <p>
-	 * The line separator is not included in the results, to allow for
-	 * portability and post-processing.
+	 * The line separator is not included in the results, to allow for portability
+	 * and post-processing.
 	 *
-	 * @param separatorToUseBetweenValues	 separatorToUseBetweenValues	
+	 * @param separatorToUseBetweenValues	separatorToUseBetweenValues
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV or
 	 * CSV file
 	 */
@@ -219,14 +218,13 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	}
 
 	/**
-	 * Convenience method to convert this DBQueryRow into a CSV or TSV type
-	 * line.
+	 * Convenience method to convert this DBQueryRow into a CSV or TSV type line.
 	 *
 	 * <p>
-	 * The line separator is not included in the results, to allow for
-	 * portability and post-processing.
+	 * The line separator is not included in the results, to allow for portability
+	 * and post-processing.
 	 *
-	 * @param separatorToUseBetweenValues	 separatorToUseBetweenValues	
+	 * @param separatorToUseBetweenValues	separatorToUseBetweenValues
 	 * @param dateFormat format that dates should be formatted to.
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV or
 	 * CSV file
@@ -246,11 +244,10 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * Convenience method to convert this DBQueryRow into a CSV file's header.
 	 *
 	 * <p>
-	 * The line separator is not included in the results, to allow for
-	 * portability and post-processing.
+	 * The line separator is not included in the results, to allow for portability
+	 * and post-processing.
 	 *
-	 * @return a list of all the fields in the DBQueryRow formatted for a CSV
-	 * file
+	 * @return a list of all the fields in the DBQueryRow formatted for a CSV file
 	 */
 	public String toCSVHeader() {
 		return toSeparatedHeader(",");
@@ -260,11 +257,10 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * Convenience method to convert this DBQueryRow into a CSV line.
 	 *
 	 * <p>
-	 * The line separator is not included in the results, to allow for
-	 * portability and post-processing.
+	 * The line separator is not included in the results, to allow for portability
+	 * and post-processing.
 	 *
-	 * @return a list of all the values in the DBQueryRow formatted for a CSV
-	 * file
+	 * @return a list of all the values in the DBQueryRow formatted for a CSV file
 	 */
 	public String toCSVLine() {
 		return toSeparatedLine(",");
@@ -274,12 +270,11 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * Convenience method to convert this DBQueryRow into a CSV line.
 	 *
 	 * <p>
-	 * The line separator is not included in the results, to allow for
-	 * portability and post-processing.
+	 * The line separator is not included in the results, to allow for portability
+	 * and post-processing.
 	 *
-	 * @param dateFormat	 dateFormat	
-	 * @return a list of all the values in the DBQueryRow formatted for a CSV
-	 * file
+	 * @param dateFormat	dateFormat
+	 * @return a list of all the values in the DBQueryRow formatted for a CSV file
 	 */
 	public String toCSVLine(SimpleDateFormat dateFormat) {
 		return toSeparatedLine(",", dateFormat);
@@ -290,11 +285,10 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * file's header.
 	 *
 	 * <p>
-	 * The line separator is not included in the results, to allow for
-	 * portability and post-processing.
+	 * The line separator is not included in the results, to allow for portability
+	 * and post-processing.
 	 *
-	 * @return a list of all the fields in the DBQueryRow formatted for a TSV
-	 * file
+	 * @return a list of all the fields in the DBQueryRow formatted for a TSV file
 	 */
 	public String toTabbedHeader() {
 		return toSeparatedHeader("\t");
@@ -304,13 +298,12 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * Convenience method to convert this DBQueryRow into a Tab Separated Values
 	 * line.
 	 * <p>
-	 * The line separator is not included in the results, to allow for
-	 * portability and post-processing.
+	 * The line separator is not included in the results, to allow for portability
+	 * and post-processing.
 	 *
-	 * @return a list of all the values in the DBQueryRow formatted for a TSV
-	 * file
+	 * @return a list of all the values in the DBQueryRow formatted for a TSV file
 	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
-	 
+	 *
 	 */
 	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
 		return toSeparatedLine("\t");
@@ -319,5 +312,11 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	@Override
 	public DBQueryRow clone() {
 		return (DBQueryRow) super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	List<DBRow> getAll() {
+		final ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		arrayList.addAll(this.values());
+		return arrayList;
 	}
 }

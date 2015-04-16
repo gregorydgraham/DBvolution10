@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;

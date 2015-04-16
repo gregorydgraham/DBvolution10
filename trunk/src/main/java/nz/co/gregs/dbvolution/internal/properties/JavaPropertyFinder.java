@@ -105,6 +105,7 @@ class JavaPropertyFinder {
 		// get all public fields
 		// (these are inherited, so need to use the proper inheritance-aware method)
 		for (Field field: clazz.getFields()) {
+			field.setAccessible(true);
 			if (filter.acceptField(field)) {
 				properties.add(new JavaField(field));
 			}
@@ -116,6 +117,7 @@ class JavaPropertyFinder {
 		//  so we're probably not going to be inherited protected/default fields this way)
 		if (fieldVisibility.ordinal() > Visibility.PUBLIC.ordinal()) {
 			for (Field field: clazz.getDeclaredFields()) {
+				field.setAccessible(true);
 				if (!observedFieldNames.contains(field.getName())) {
 					if (visibilityOf(field).ordinal() <= fieldVisibility.ordinal()) {
 						// skip standard java fields

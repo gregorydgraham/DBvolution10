@@ -34,6 +34,7 @@ public class JavaField implements JavaProperty {
 	 */
 	public JavaField(Field field) {
 		this.field = field;
+		field.setAccessible(true);
 	}
 
 	@Override

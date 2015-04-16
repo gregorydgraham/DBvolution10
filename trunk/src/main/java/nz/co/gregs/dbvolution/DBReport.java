@@ -138,6 +138,7 @@ public class DBReport extends RowDefinition {
 		StringBuilder str = new StringBuilder();
 		Field[] fields = this.getClass().getFields();
 		for (Field field : fields) {
+			field.setAccessible(true);
 			final Object value;
 			try {
 				value = field.get(this);
@@ -347,6 +348,7 @@ public class DBReport extends RowDefinition {
 			throw new UnableToAccessDBReportFieldException(exampleReport, null);
 		}
 		for (Field field : fields) {
+			field.setAccessible(true);
 			final Object value;
 			try {
 				value = field.get(exampleReport);
@@ -383,6 +385,7 @@ public class DBReport extends RowDefinition {
 			A newReport = (A) exampleReport.getClass().newInstance();
 			Field[] fields = exampleReport.getClass().getFields();
 			for (Field field : fields) {
+				field.setAccessible(true);
 				final Object value;
 				try {
 					value = field.get(exampleReport);
