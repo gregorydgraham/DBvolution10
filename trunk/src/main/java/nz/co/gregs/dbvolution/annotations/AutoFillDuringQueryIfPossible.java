@@ -58,6 +58,20 @@ import nz.co.gregs.dbvolution.DBRow;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutoFillDuringQueryIfPossible {
 
-	Class requiredClass() default Object.class;
+	/**
+	 * Specifies the class required to fill this field.
+	 * 
+	 * <p>
+	 * Only used for Collections like List due to type-erasure.
+	 * 
+	 * <p>
+	 * Required to resolve the expected type for the field.  Be careful that the annotation and the field use compatible types.
+	 * 
+	 * <p>
+	 * Must be a DBRow subclass.
+	 *
+	 * @return
+	 */
+	Class<? extends DBRow> requiredClass() default DBRow.class;
 
 }

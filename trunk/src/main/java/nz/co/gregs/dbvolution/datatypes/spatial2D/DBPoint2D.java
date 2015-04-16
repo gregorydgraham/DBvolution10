@@ -70,7 +70,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 		if (point == null) {
 			return db.getDefinition().getNull();
 		} else {
-			String str = db.getDefinition().transformPointIntoDatabaseFormat(point);
+			String str = db.getDefinition().transformPoint2DIntoDatabaseFormat(point);
 			return str;
 		}
 	}
@@ -84,7 +84,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 			return null;
 		} else {
 			try {
-				point = database.getDefinition().transformDatabaseValueToJTSPoint(string);
+				point = database.getDefinition().transformDatabasePoint2DValueToJTSPoint(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string);

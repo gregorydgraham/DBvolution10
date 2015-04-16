@@ -73,7 +73,7 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
 	NULL)
     */
 	@Override
-	public String transformPointIntoDatabaseFormat(Point point) {
+	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		final Coordinate coordinate = point.getCoordinate();
 		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE("+coordinate.x+", " +coordinate.y+",NULL), NULL, NULL)";
 	}
@@ -84,18 +84,18 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
 	}
 
 	@Override
-	public Polygon transformDatabaseValueToJTSPolygon(String geometryAsString) throws ParseException {
-		return super.transformDatabaseValueToJTSPolygon(geometryAsString); //To change body of generated methods, choose Tools | Templates.
+	public Polygon transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws ParseException {
+		return super.transformDatabasePolygon2DToJTSPolygon(geometryAsString); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public Point transformDatabaseValueToJTSPoint(String pointAsString) throws ParseException {
-		return super.transformDatabaseValueToJTSPoint(pointAsString); //To change body of generated methods, choose Tools | Templates.
+	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws ParseException {
+		return super.transformDatabasePoint2DValueToJTSPoint(pointAsString); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
-		return super.transformCoordinatesIntoDatabasePointFormat(xValue, yValue); //To change body of generated methods, choose Tools | Templates.
+	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
+		return super.transformCoordinatesIntoDatabasePoint2DFormat(xValue, yValue); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }

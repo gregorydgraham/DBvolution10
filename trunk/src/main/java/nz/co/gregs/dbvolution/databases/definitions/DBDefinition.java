@@ -3056,7 +3056,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Inverse of {@link #doPolygon2DIntersectsTransform(java.lang.String, java.lang.String) }, tests whether the 2 polygons are non-coincident.
+	 * Inverse of {@link #doPolygon2DIntersectsTransform(java.lang.String, java.lang.String)
+	 * }, tests whether the 2 polygons are non-coincident.
 	 *
 	 * @param firstGeometry
 	 * @param secondGeometry
@@ -3071,7 +3072,8 @@ public abstract class DBDefinition {
 	 *
 	 * @param firstGeometry
 	 * @param secondGeometry
-	 * @return SQL that is TRUE if the polygons have intersecting and non-intersecting parts.
+	 * @return SQL that is TRUE if the polygons have intersecting and
+	 * non-intersecting parts.
 	 */
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
@@ -3079,7 +3081,7 @@ public abstract class DBDefinition {
 
 	/**
 	 * Tests whether the polygons touch.
-	 * 
+	 *
 	 * @param firstGeometry
 	 * @param secondGeometry
 	 * @return
@@ -3090,9 +3092,10 @@ public abstract class DBDefinition {
 
 	/**
 	 * Test whether the first polygon is completely within the second polygon.
-	 * 
+	 *
 	 * <p>
-	 * Compare this to {@link #doPolygon2DContainsTransform(java.lang.String, java.lang.String) }
+	 * Compare this to {@link #doPolygon2DContainsTransform(java.lang.String, java.lang.String)
+	 * }
 	 *
 	 * @param firstGeometry
 	 * @param secondGeometry
@@ -3106,7 +3109,7 @@ public abstract class DBDefinition {
 
 	/**
 	 * Returns the dimension of the polygon.
-	 * 
+	 *
 	 * <p>
 	 * This will be "2"
 	 *
@@ -3137,7 +3140,14 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
-	public String doPolygon2DGetExteriorRingTransform(String toSQLString) {
+	/**
+	 * Defines the transformation require to transform an SQL Polygon2D into a
+	 * polygon representing the exterior ring of the polygon.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3159,37 +3169,79 @@ public abstract class DBDefinition {
 		return "atan2";
 	}
 
-	public String doDateRepeatGetYearsTransform(String toSQLString) {
+	/**
+	 * Get the year part of the DateRepeat, an integer
+	 *
+	 * @param dateRepeatSQL
+	 * @return SQL
+	 */
+	public String doDateRepeatGetYearsTransform(String dateRepeatSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doDateRepeatGetMonthsTransform(String interval) {
+	/**
+	 * Get the month part of the DateRepeat, an integer
+	 *
+	 * @param dateRepeatSQL 
+	 * @return SQL
+	 */
+	public String doDateRepeatGetMonthsTransform(String dateRepeatSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doDateRepeatGetDaysTransform(String interval) {
+	/**
+	 * Get the Days part of the DateRepeat, an integer
+	 *
+	 * @param dateRepeatSQL 
+	 * @return SQL
+	 */
+	public String doDateRepeatGetDaysTransform(String dateRepeatSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doDateRepeatGetHoursTransform(String interval) {
+	/**
+	 * Get the hour part of the DateRepeat, an integer
+	 *
+	 * @param dateRepeatSQL 
+	 * @return SQL
+	 */
+	public String doDateRepeatGetHoursTransform(String dateRepeatSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doDateRepeatGetMinutesTransform(String interval) {
+	/**
+	 * Get the minute part of the DateRepeat, an integer
+	 *
+	 * @param dateRepeatSQL 
+	 * @return SQL
+	 */
+	public String doDateRepeatGetMinutesTransform(String dateRepeatSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doDateRepeatGetSecondsTransform(String interval) {
+	/**
+	 * Get the seconds part of the DateRepeat, a decimal number
+	 *
+	 * @param dateRepeatSQL 
+	 * @return SQL
+	 */
+	public String doDateRepeatGetSecondsTransform(String dateRepeatSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doDateRepeatToStringTransform(String interval) {
-		return doConcatTransform(getEmptyString(), interval);
+	/**
+	 * Transform the DateRepeat into it's character based equivalent.
+	 *
+	 * @param dateRepeatSQL
+	 * @return SQL
+	 */
+	public String doDateRepeatToStringTransform(String dateRepeatSQL) {
+		return doConcatTransform(getEmptyString(), dateRepeatSQL);
 	}
 
 	/**
 	 * Provide SQL to interpret the String value as a number.
-	 * 
+	 *
 	 * <p>
 	 * Full of ways to fail this is.
 	 *
@@ -3219,8 +3271,9 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Transform a datatype not supported by the database into a type that the database does support.
-	 * 
+	 * Transform a datatype not supported by the database into a type that the
+	 * database does support.
+	 *
 	 * <p>
 	 * Used mostly to turn Booleans into numbers.
 	 *
@@ -3231,40 +3284,102 @@ public abstract class DBDefinition {
 		return columnExpression;
 	}
 
+	/**
+	 * Provide the SQL to compare 2 Point2Ds
+	 *
+	 * @param firstPoint
+	 * @param secondPoint
+	 * @return SQL
+	 */
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
 
-	public String doPoint2DGetXTransform(String toSQLString) {
+	/**
+	 * Provide the SQL to return the X coordinate of the Point2D
+	 *
+	 * @param pont2DSQL
+	 * @return SQL
+	 */
+	public String doPoint2DGetXTransform(String pont2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPoint2DGetYTransform(String toSQLString) {
+	/**
+	 * Provide the SQL to return the Y coordinate of the Point2D
+	 *
+	 * @param point2DSQL 
+	 * @return SQL
+	 */
+	public String doPoint2DGetYTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPoint2DDimensionTransform(String toSQLString) {
+	/**
+	 * Provide the SQL to return the dimension of the Point2D
+	 * 
+	 * <p>
+	 * Points a 0-dimensional objects for this purpose.
+	 *
+	 * @param point2DSQL 
+	 * @return SQL
+	 */
+	public String doPoint2DDimensionTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPoint2DGetBoundingBoxTransform(String toSQLString) {
+	/**
+	 * Provide the SQL to derive the Polygon2D representing the Bounding Box of the Point2D.
+	 *
+	 * @param point2DSQL
+	 * @return SQL
+	 */
+	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPoint2DAsTextTransform(String toSQLString) {
+	/**
+	 * Provide the SQL to derive the WKT version of the Point2D.
+	 *
+	 * @param point2DSQL
+	 * @return SQL
+	 */
+	public String doPoint2DAsTextTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String transformPointIntoDatabaseFormat(Point point) {
+	/**
+	 * Provide the SQL that correctly represents this Point2D in this database.
+	 *
+	 * @param point 
+	 * @return SQL
+	 */
+	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		String wktValue = point.toText();
 		return "'" + wktValue + "'";
 	}
 
-	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+	/**
+	 * The same as {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point) but for to coordinates as SQL.
+	 * @param xValue
+	 * @param yValue
+	 * @return SQL
+	 */
+	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public Point transformDatabaseValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
+	/**
+	 * From the database's representation of a Point2D create a JTS Point.
+	 * 
+	 * <p>
+	 * This is the inverse of {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point) }.
+	 *
+	 * @param pointAsString
+	 * @return a point.
+	 * @throws com.vividsolutions.jts.io.ParseException
+	 */
+	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point point = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointAsString);
@@ -3276,10 +3391,20 @@ public abstract class DBDefinition {
 		return point;
 	}
 
-	public Polygon transformDatabaseValueToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+	/**
+	 * From the database's representation of a Polygon2D create a JTS Polygon.
+	 * 
+	 * <p>
+	 * This is the inverse of {@link #transformPolygonIntoDatabaseFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 *
+	 * @param polygon2DSQL 
+	 * @return a point.
+	 * @throws com.vividsolutions.jts.io.ParseException
+	 */
+	public Polygon transformDatabasePolygon2DToJTSPolygon(String polygon2DSQL) throws com.vividsolutions.jts.io.ParseException {
 		Polygon poly = null;
 		WKTReader wktReader = new WKTReader();
-		Geometry geometry = wktReader.read(geometryAsString);
+		Geometry geometry = wktReader.read(polygon2DSQL);
 		if (geometry instanceof Polygon) {
 			poly = (Polygon) geometry;
 		} else if (geometry instanceof LineString) {
@@ -3390,6 +3515,17 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Indicates that closing or canceling a statement will cause the connection
+	 * to close as well.
+	 *
+	 * <p>
+	 * Override this method and return FALSE if the database closes connections
+	 * when closing statements
+	 *
+	 * @return TRUE if closing a statement does NOT effect the connection,
+	 * otherwise FALSE.
+	 */
 	public boolean willCloseConnectionOnStatementCancel() {
 		return false;
 	}

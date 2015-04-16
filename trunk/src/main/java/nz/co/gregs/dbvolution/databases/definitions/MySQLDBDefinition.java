@@ -291,7 +291,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String transformCoordinatesIntoDatabasePointFormat(String xValue, String yValue) {
+	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
 		return "PointFromText('POINT (" + xValue+" "+yValue + ")')";
 	}
 	
@@ -326,7 +326,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String transformPointIntoDatabaseFormat(Point point) {
+	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		String wktValue = point.toText();
 		return "PointFromText('" + wktValue + "')";
 	}

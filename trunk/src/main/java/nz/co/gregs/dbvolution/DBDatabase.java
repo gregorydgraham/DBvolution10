@@ -282,6 +282,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * elsewhere.
 	 *
 	 * @return the Connection to be used.
+	 * @throws java.sql.SQLException
+	 * @throws UnableToCreateDatabaseConnectionException
+	 * @throws UnableToFindJDBCDriver
 	 */
 	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (isInATransaction && !this.transactionConnection.isClosed()) {
@@ -1592,6 +1595,12 @@ public abstract class DBDatabase implements Cloneable {
 		}
 	}
 
+	/**
+	 * Removes a connection from the available pool.
+	 * 
+	 * You'll not need to use this unless you're replacing DBvolution's database connection handling.
+	 * @param connection 
+	 */
 	public synchronized void discardConnection(Connection connection) {
 		getConnectionList(busyConnections).remove(connection);
 		getConnectionList(freeConnections).remove(connection);
@@ -1605,19 +1614,6 @@ public abstract class DBDatabase implements Cloneable {
 //		connectionClosed(connection);
 	}
 
-//	public synchronized Connection replaceConnection(Connection connection) throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
-//		getConnectionList(busyConnections).remove(connection);
-//		getConnectionList(freeConnections).remove(connection);
-//		try {
-//			connection.close();
-//
-//		} catch (SQLException ex) {
-//			Logger.getLogger(DBDatabase.class
-//					.getName()).log(Level.FINEST, null, ex);
-//		}
-////		connectionClosed(connection);
-//		return getConnection();
-//	}
 	private synchronized List<Connection> getConnectionList(Map<DBDatabase, List<Connection>> connectionMap) {
 		List<Connection> connList = connectionMap.get(this);
 		if (connList == null) {

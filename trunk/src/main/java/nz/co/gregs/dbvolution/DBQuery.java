@@ -2416,12 +2416,34 @@ public class DBQuery {
 		return this;
 	}
 
+	/**
+	 * Changes the default timeout for this query.
+	 * 
+	 * <p>
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid eternal queries.
+	 * 
+	 * <p>
+	 * Use this method If you require a longer running query.
+	 *
+	 * @param milliseconds
+	 * @return this query.
+	 */
 	public DBQuery setTimeoutInMilliseconds(int milliseconds) {
 		this.timeoutInMilliseconds = milliseconds;
-
 		return this;
 	}
 
+	/**
+	 * Completely removes the timeout from this query.
+	 * 
+	 * <p>
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid eternal queries.
+	 * 
+	 * <p>
+	 * Use this method if you expect an extremely long query.
+	 *
+	 * @return 
+	 */
 	public DBQuery clearTimeout() {
 		this.timeoutInMilliseconds = null;
 		return this;

@@ -63,14 +63,38 @@ public class DBRecursiveQuery<T extends DBRow> {
 	private Integer timeoutInMilliseconds = 10000;
 
 	/**
-	 * @param timeoutInMilliseconds the timeoutInMilliseconds to set
+	 * Changes the default timeout for this query.
+	 *
+	 * <p>
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
+	 * eternal queries.
+	 *
+	 * <p>
+	 * Use this method If you require a longer running query.
+	 *
+	 * @param timeoutInMilliseconds
+	 * @return this query.
 	 */
-	public void setTimeoutInMilliseconds(Integer timeoutInMilliseconds) {
+	public DBRecursiveQuery<T> setTimeoutInMilliseconds(Integer timeoutInMilliseconds) {
 		this.timeoutInMilliseconds = timeoutInMilliseconds;
+		return this;
 	}
 
-	public void clearTimeout() {
+	/**
+	 * Changes the default timeout for this query.
+	 *
+	 * <p>
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
+	 * eternal queries.
+	 *
+	 * <p>
+	 * Use this method If you expect an extremely long query.
+	 *
+	 * @return this query.
+	 */
+	public DBRecursiveQuery<T> clearTimeout() {
 		this.timeoutInMilliseconds = null;
+		return this;
 	}
 
 	private static enum RecursiveSQLDirection {

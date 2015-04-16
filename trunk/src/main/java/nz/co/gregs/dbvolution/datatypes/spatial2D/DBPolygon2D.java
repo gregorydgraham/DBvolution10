@@ -65,7 +65,7 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 			return null;
 		} else {
 			try {
-				geometry = database.getDefinition().transformDatabaseValueToJTSPolygon(string);
+				geometry = database.getDefinition().transformDatabasePolygon2DToJTSPolygon(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPolygon2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException(fullColumnName, string);
