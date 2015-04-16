@@ -332,7 +332,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String transformLineStringIntoDatabaseFormat(LineString line) {
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
 		String wktValue = line.toText();
 		return "LineFromText('" + wktValue + "')";
 	}

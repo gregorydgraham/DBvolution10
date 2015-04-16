@@ -49,8 +49,8 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
     SDO_ORDINATE_ARRAY(3,3, 6,3, 6,5, 4,5, 3,3)
   )*/
 	@Override
-	public String transformPolygonIntoDatabaseFormat(Polygon polygon) {
-		return super.transformPolygonIntoDatabaseFormat(polygon); //To change body of generated methods, choose Tools | Templates.
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+		return super.transformPolygonIntoDatabasePolygon2DFormat(polygon); //To change body of generated methods, choose Tools | Templates.
 	}
 
 /*SDO_GEOMETRY(
@@ -61,8 +61,8 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
     SDO_ORDINATE_ARRAY(3,3, 6,3, 6,5, 4,5, 3,3)
   )*/
 	@Override
-	public String transformLineStringIntoDatabaseFormat(LineString lineString) {
-		return super.transformLineStringIntoDatabaseFormat(lineString); //To change body of generated methods, choose Tools | Templates.
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString lineString) {
+		return super.transformLineStringIntoDatabaseLine2DFormat(lineString); //To change body of generated methods, choose Tools | Templates.
 	}
 
 /*SDO_GEOMETRY(
@@ -79,8 +79,8 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
 	}
 	
 	@Override
-	public LineString transformDatabaseValueToJTSLineString(String lineStringAsString) throws ParseException {
-		return super.transformDatabaseValueToJTSLineString(lineStringAsString); //To change body of generated methods, choose Tools | Templates.
+	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws ParseException {
+		return super.transformDatabaseLine2DValueToJTSLineString(lineStringAsString); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

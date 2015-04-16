@@ -364,7 +364,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	//path '[(0,0),(1,1),(2,0)]'
 	@Override
-	public String transformLineStringIntoDatabaseFormat(LineString line) {
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
 		StringBuilder str = new  StringBuilder();
 		String separator = "";
 		Coordinate[] coordinates = line.getCoordinates();
@@ -432,7 +432,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LineString transformDatabaseValueToJTSLineString(String lineStringAsString)  throws com.vividsolutions.jts.io.ParseException {
+	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString)  throws com.vividsolutions.jts.io.ParseException {
 		String string = "LINESTRING "+lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 		String[] splits = lineStringAsString.split("[(),]+");
 		System.out.println(lineStringAsString+" => "+string);
