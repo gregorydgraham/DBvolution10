@@ -203,4 +203,9 @@ public class InformixDBDefinition extends DBDefinition {
 	public boolean willCloseConnectionOnStatementCancel() {
 		return true;
 	}
+
+	@Override
+	public boolean supportsStatementIsClosed() {
+		return false;
+	}
 }

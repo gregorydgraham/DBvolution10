@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -83,8 +84,8 @@ public abstract class Extractor extends DBScript {
 	}
 
 	/**
-	 * When Extractor has successfully extract some rows, they are handed to this
-	 * method for processing.
+	 * When Extractor has successfully extract some rows, they are handed to
+	 * this method for processing.
 	 *
 	 * @param rows
 	 * @throws Exception
@@ -95,8 +96,8 @@ public abstract class Extractor extends DBScript {
 	 * Using the database and bounds provided, construct the required query.
 	 *
 	 * <p>
-	 * Extractor does not know the query you want executed so this is the place to
-	 * add it.
+	 * Extractor does not know the query you want executed so this is the place
+	 * to add it.
 	 *
 	 * <p>
 	 * Choose one important table in your query and add the lower- and
@@ -132,9 +133,9 @@ public abstract class Extractor extends DBScript {
 	 * <p>
 	 * Works in conjuction with the
 	 * {@link #getQuery(nz.co.gregs.dbvolution.DBDatabase, int, int)} and
-	 * {@link #processRows(java.util.List)} method to provide a dynamic extraction
-	 * process that achieves fast results on unreliable or under-resourced
-	 * databases.
+	 * {@link #processRows(java.util.List)} method to provide a dynamic
+	 * extraction process that achieves fast results on unreliable or
+	 * under-resourced databases.
 	 *
 	 * @return @throws Exception
 	 */
@@ -192,7 +193,7 @@ public abstract class Extractor extends DBScript {
 		processRows(rows);
 		Date finishTime = new Date();
 		double timePerRecord = (0.0 + finishTime.getTime() - startTime.getTime()) / getBoundIncrease();
-		System.out.println("PROCESSED: " + (getLowerBound() - getBoundIncrease()) + "-" + (getUpperBound() - getBoundIncrease()) + " (+" + getBoundIncrease() + ") at " + timePerRecord + "ms/record.");
+		System.out.println("PROCESSED: " + (getLowerBound()) + "-" + (getUpperBound() - getBoundIncrease()) + " (+" + getBoundIncrease() + ") at " + timePerRecord + "ms/record.");
 		rows = null;
 
 		return actions;
@@ -213,6 +214,7 @@ public abstract class Extractor extends DBScript {
 					Date startTime = new Date();
 					if (this.countOnly) {
 						rowCount = dbQuery.count();
+						rows = new ArrayList<DBQueryRow>();
 					} else {
 						rows = dbQuery.getAllRows();
 						rowCount = 0L + rows.size();
@@ -371,9 +373,7 @@ public abstract class Extractor extends DBScript {
 	 * @param milliseconds 
 	 */
 	protected void setTimeoutInMilliseconds(Integer milliseconds) {
-		if (milliseconds != null) {
-			this.timeoutInMilliseconds = milliseconds;
-		}
+		this.timeoutInMilliseconds = milliseconds;
 	}
 
 	private void setQueryTimeout(DBQuery query) {

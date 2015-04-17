@@ -3583,4 +3583,8 @@ public abstract class DBDefinition {
 		return false;
 	}
 
+	public boolean supportsStatementIsClosed() {
+		return true;
+	}
+
 }
