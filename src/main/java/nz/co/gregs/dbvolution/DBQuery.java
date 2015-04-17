@@ -374,6 +374,7 @@ public class DBQuery {
 			DBDefinition defn = getDatabase().getDefinition();
 			StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
 			int columnIndex = 1;
+			boolean groupByIsRequired = false;
 			String groupByColumnIndex = defn.beginGroupByClause();
 			String groupByColumnIndexSeparator = "";
 			HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<PropertyWrapperDefinition, Integer>();
@@ -414,6 +415,7 @@ public class DBQuery {
 					if (expression == null
 							|| (!expression.isAggregator()
 							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns()))) {
+						groupByIsRequired=true;
 						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
 						if (expression != null) {
@@ -476,6 +478,7 @@ public class DBQuery {
 				}
 				if (!expression.isAggregator()
 						&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
+					groupByIsRequired = true;
 					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
 					groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
@@ -506,7 +509,7 @@ public class DBQuery {
 
 			if (queryType == QueryType.SELECT) {
 				String groupByClauseFinal = "";
-				if (details.isGroupedQuery()) {
+				if (details.isGroupedQuery()&&groupByIsRequired) {
 					if (useColumnIndexGroupBy) {
 						groupByClauseFinal = groupByColumnIndex;
 					} else {
@@ -2446,6 +2449,9 @@ public class DBQuery {
 	 */
 	public DBQuery clearTimeout() {
 		this.timeoutInMilliseconds = null;
+		if (this.timeout != null) {
+			this.timeout.cancel();
+		}
 		return this;
 	}
 

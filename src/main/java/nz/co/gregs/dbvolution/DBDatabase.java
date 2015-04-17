@@ -251,27 +251,33 @@ public abstract class DBDatabase implements Cloneable {
 	 * @return the DBStatement to be used: either a new one, or the current
 	 * transaction statement.
 	 */
-	public DBStatement getDBStatement() {
-		Connection connection = null;
+	public DBStatement getDBStatement() throws SQLException {
 		DBStatement statement;
 		synchronized (getStatementSynchronizeObject) {
 			if (isInATransaction) {
 				statement = this.transactionStatement;
-			} else {
-				try {
-					connection = getConnection();
-					while (connection.isClosed()) {
-						discardConnection(connection);
-						connection = getConnection();
-					}
-					statement = new DBStatement(this, connection);
-				} catch (SQLException cantCreateStatement) {
-					discardConnection(connection);
-					throw new UnableToCreateDatabaseConnectionException(getJdbcURL(), getUsername(), cantCreateStatement);
+				if (statement.isClosed()) {
+					this.transactionStatement = new DBTransactionStatement(this, getLowLevelStatement());
 				}
+			} else {
+				statement = getLowLevelStatement();
 			}
 		}
 		return statement;
+	}
+
+	private DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+		Connection connection = getConnection();
+		try {
+			while (connection.isClosed()) {
+				discardConnection(connection);
+				connection = getConnection();
+			}
+			return new DBStatement(this, connection);
+		} catch (SQLException cantCreateStatement) {
+			discardConnection(connection);
+			throw new UnableToCreateDatabaseConnectionException(getJdbcURL(), getUsername(), cantCreateStatement);
+		}
 	}
 
 	/**
@@ -637,8 +643,15 @@ public abstract class DBDatabase implements Cloneable {
 					db.transactionConnection.commit();
 					log.info("Transaction Successful: Commit Performed");
 				} else {
-					db.transactionConnection.rollback();
-					log.info("Transaction Successful: ROLLBACK Performed");
+					try {
+						db.transactionConnection.rollback();
+						log.info("Transaction Successful: ROLLBACK Performed");
+					} catch (SQLException rollbackFailed) {
+						System.out.println("ROLLBACK FAILED");
+//						rollbackFailed.printStackTrace();
+						System.out.println("CONTINUING REGARDLESS");
+						discardConnection(db.transactionConnection);
+					}
 				}
 			} catch (Exception ex) {
 				try {
@@ -1609,7 +1622,7 @@ public abstract class DBDatabase implements Cloneable {
 
 		} catch (SQLException ex) {
 			Logger.getLogger(DBDatabase.class
-					.getName()).log(Level.FINEST, null, ex);
+					.getName()).log(Level.WARNING, null, ex);
 		}
 //		connectionClosed(connection);
 	}

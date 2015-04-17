@@ -53,6 +53,7 @@ public class DBStatement implements Statement {
 	private boolean batchHasEntries;
 	final DBDatabase database;
 	private Connection connection;
+	private boolean isClosed = false;
 
 	/**
 	 * Creates a statement object for the given DBDatabase and Connection.
@@ -111,6 +112,7 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public void close() throws SQLException {
+		isClosed=true;
 		try {
 			database.unusedConnection(getConnection());
 			getInternalStatement().close();
@@ -828,7 +830,11 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public boolean isClosed() throws SQLException {
-		return getInternalStatement().isClosed();
+		if (database.getDefinition().supportsStatementIsClosed()){
+			return getInternalStatement().isClosed();
+		} else{
+			return isClosed;
+		}
 	}
 
 	/**
