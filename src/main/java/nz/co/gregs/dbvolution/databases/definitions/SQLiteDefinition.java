@@ -50,12 +50,11 @@ import org.joda.time.Period;
  */
 public class SQLiteDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
-
-	public static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINE_MAX_X2D_COORD";
-	public static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_LINE_MIN_X2D_COORD";
-	public static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINE_MAX_Y2D_COORD";
-	public static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINE_MIN_Y2D_COORD";
+	/**
+	 * The date format used internally within DBvolution's SQLite implementation.
+	 *
+	 */
+	public static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -203,10 +202,11 @@ public class SQLiteDefinition extends DBDefinition {
 		return " (CAST(strftime('%S', " + dateExpression + ") as INTEGER))";
 	}
 
-//	@Override
-//	public String doMillisecondTransform(String dateExpression) {
-//		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL)*1000)-(CAST(strftime('%S', " + dateExpression + ") as INTEGER)*1000))";
-//	}
+	@Override
+	public String doSubsecondTransform(String dateExpression) {
+		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL))-(CAST(strftime('%S', " + dateExpression + ") as INTEGER)))";
+	}
+	
 	@Override
 	public String getGreatestOfFunctionName() {
 		return " MAX "; //To change body of generated methods, choose Tools | Templates.
@@ -225,10 +225,6 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public Date parseDateFromGetString(String getStringDate) throws ParseException {
 		return DATETIME_FORMAT.parse(getStringDate);
-	}
-
-	public String formatDateForGetString(Date date) throws ParseException {
-		return DATETIME_FORMAT.format(date);
 	}
 
 	@Override

@@ -40,12 +40,12 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class MySQLDBDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss.SSS");
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 
-		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s') ";
+		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f') ";
 
 	}
 
@@ -125,6 +125,10 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String getStandardDeviationFunctionName() {
 		return "STDDEV_SAMP";
+	}
+	@Override
+	public String doSubsecondTransform(String dateExpression) {
+		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
 	}
 
 //	@Override

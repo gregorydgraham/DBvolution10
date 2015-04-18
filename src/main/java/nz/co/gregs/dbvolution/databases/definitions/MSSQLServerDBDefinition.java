@@ -356,10 +356,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "DATEPART(SECOND , " + dateExpression + ")";
 	}
 
-//	@Override
-//	public String doMillisecondTransform(String dateExpression) {
-//		return "DATEPART(MILLISECOND , " + dateExpression + ")";
-//	}
+	@Override
+	public String doSubsecondTransform(String dateExpression) {
+		return "(DATEPART(MILLISECOND , " + dateExpression + ")/1000.0000)";
+	}
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.
 	 *

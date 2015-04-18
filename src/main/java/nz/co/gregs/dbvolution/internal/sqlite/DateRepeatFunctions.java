@@ -67,6 +67,10 @@ public class DateRepeatFunctions {
 		Function.create(connection, DATEREPEAT_SECOND_PART_FUNCTION, new DateRepeatFunctions.GetSecond());
 	}
 
+	public static String formatDateForGetString(Date date) throws ParseException {
+		return SQLiteDefinition.DATETIME_FORMAT.format(date);
+	}
+
 	public static class Create extends Function {
 
 		@Override
@@ -106,7 +110,7 @@ public class DateRepeatFunctions {
 				} else {
 					Date date = defn.parseDateFromGetString(dateStr);
 					Date result = DateRepeatImpl.addDateAndDateRepeatString(date, intervalStr);
-					result(defn.formatDateForGetString(result));
+					result(DateRepeatFunctions.formatDateForGetString(result));
 				}
 			} catch (ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,7 +136,7 @@ public class DateRepeatFunctions {
 				} else {
 					Date date = defn.parseDateFromGetString(dateStr);
 					Date result = DateRepeatImpl.subtractDateAndDateRepeatString(date, intervalStr);
-					result(defn.formatDateForGetString(result));
+					result(DateRepeatFunctions.formatDateForGetString(result));
 				}
 			} catch (ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);

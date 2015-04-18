@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  */
 public class JavaDBDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private static final String[] reservedWordsArray = new String[]{};
 	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
 
@@ -209,6 +209,11 @@ public class JavaDBDefinition extends DBDefinition {
 	@Override
 	public String doSecondTransform(String dateExpression) {
 		return "SECOND(" + dateExpression + ")";
+	}
+
+	@Override
+	public String doSubsecondTransform(String dateExpression) {
+		return "(MILLISECOND(" + dateExpression + ")/1000.0000)";
 	}
 
 	@Override

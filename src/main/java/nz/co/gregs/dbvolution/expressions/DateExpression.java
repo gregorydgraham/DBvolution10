@@ -451,6 +451,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Creates an SQL expression that returns the second part of this date
 	 * expression.
+	 * 
+	 * <p>
+	 * Contains only whole seconds, use {@link #subsecond()} to retrieve the fractional part.
 	 *
 	 * @return the second of this date expression as a number.
 	 */
@@ -464,15 +467,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				});
 	}
 	
-//	public NumberExpression milliseconds() {
-//		return new NumberExpression(
-//				new UnaryComplicatedNumberFunction(this) {
-//					@Override
-//					public String toSQLString(DBDatabase db) {
-//						return db.getDefinition().doMillisecondTransform(this.only.toSQLString(db));
-//					}
-//				});
-//	}
+	public NumberExpression subsecond() {
+		return new NumberExpression(
+				new UnaryComplicatedNumberFunction(this) {
+					@Override
+					public String toSQLString(DBDatabase db) {
+						return db.getDefinition().doSubsecondTransform(this.only.toSQLString(db));
+					}
+				});
+	}
 
 	/**
 	 * Creates an SQL expression that tests the second part of this date
@@ -2018,11 +2021,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 //	public NumberExpression millisecondsFrom(DateResult dateExpression) {
 //		return new NumberExpression(
 //				new DBBinaryDateFunctionWithNumberResult(this, dateExpression) {
-//
-//					@Override
-//					public boolean getIncludesNull() {
-//						return false;
-//					}
 //
 //					@Override
 //					public String toSQLString(DBDatabase db) {
