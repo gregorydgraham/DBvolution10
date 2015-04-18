@@ -250,6 +250,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @return the DBStatement to be used: either a new one, or the current
 	 * transaction statement.
+	 * @throws java.sql.SQLException
 	 */
 	public DBStatement getDBStatement() throws SQLException {
 		DBStatement statement;

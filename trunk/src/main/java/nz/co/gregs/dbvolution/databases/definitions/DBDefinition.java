@@ -1297,9 +1297,20 @@ public abstract class DBDefinition {
 		return "EXTRACT(SECOND FROM " + dateExpression + ")";
 	}
 
-//	public String doMillisecondTransform(String dateExpression) {
-//		return "EXTRACT(MILLISECOND FROM " + dateExpression + ")";
-//	}
+	/**
+	 * Returns the partial second value from the date.
+	 *
+	 * <p>
+	 * This should return the most detailed possible value less than a second for
+	 * the date expression provided. It should always return a value less than 1s.
+	 *
+	 * @param dateExpression
+	 * @return
+	 */
+	public String doSubsecondTransform(String dateExpression) {
+		return "(EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000)";
+	}
+
 	/**
 	 * Transforms an SQL snippet into an SQL snippet that provides the index of
 	 * the string to find.
@@ -2372,7 +2383,7 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Convert the 2 SQL date values into a difference in seconds.
+	 * Convert the 2 SQL date values into a difference in whole seconds.
 	 *
 	 * @param dateValue dateValue
 	 * @param otherDateValue otherDateValue
@@ -2383,7 +2394,7 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Convert the 2 SQL date values into a difference in seconds.
+	 * Convert the 2 SQL date values into a difference in milliseconds.
 	 *
 	 * @param dateValue dateValue
 	 * @param otherDateValue otherDateValue
@@ -2392,6 +2403,7 @@ public abstract class DBDefinition {
 //	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
 //		return "(DATEDIFF('MILLISECOND', " + dateValue + "," + otherDateValue + "))";
 //	}
+	
 	/**
 	 * Create a foreign key clause for use in a CREATE TABLE statement from the
 	 * {@link PropertyWrapper} provided.
@@ -3182,7 +3194,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the month part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL 
+	 * @param dateRepeatSQL
 	 * @return SQL
 	 */
 	public String doDateRepeatGetMonthsTransform(String dateRepeatSQL) {
@@ -3192,7 +3204,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the Days part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL 
+	 * @param dateRepeatSQL
 	 * @return SQL
 	 */
 	public String doDateRepeatGetDaysTransform(String dateRepeatSQL) {
@@ -3202,7 +3214,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the hour part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL 
+	 * @param dateRepeatSQL
 	 * @return SQL
 	 */
 	public String doDateRepeatGetHoursTransform(String dateRepeatSQL) {
@@ -3212,7 +3224,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the minute part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL 
+	 * @param dateRepeatSQL
 	 * @return SQL
 	 */
 	public String doDateRepeatGetMinutesTransform(String dateRepeatSQL) {
@@ -3222,7 +3234,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the seconds part of the DateRepeat, a decimal number
 	 *
-	 * @param dateRepeatSQL 
+	 * @param dateRepeatSQL
 	 * @return SQL
 	 */
 	public String doDateRepeatGetSecondsTransform(String dateRepeatSQL) {
@@ -3308,7 +3320,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL to return the Y coordinate of the Point2D
 	 *
-	 * @param point2DSQL 
+	 * @param point2DSQL
 	 * @return SQL
 	 */
 	public String doPoint2DGetYTransform(String point2DSQL) {
@@ -3317,11 +3329,11 @@ public abstract class DBDefinition {
 
 	/**
 	 * Provide the SQL to return the dimension of the Point2D
-	 * 
+	 *
 	 * <p>
 	 * Points a 0-dimensional objects for this purpose.
 	 *
-	 * @param point2DSQL 
+	 * @param point2DSQL
 	 * @return SQL
 	 */
 	public String doPoint2DDimensionTransform(String point2DSQL) {
@@ -3329,7 +3341,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provide the SQL to derive the Polygon2D representing the Bounding Box of the Point2D.
+	 * Provide the SQL to derive the Polygon2D representing the Bounding Box of
+	 * the Point2D.
 	 *
 	 * @param point2DSQL
 	 * @return SQL
@@ -3351,7 +3364,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL that correctly represents this Point2D in this database.
 	 *
-	 * @param point 
+	 * @param point
 	 * @return SQL
 	 */
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
@@ -3361,6 +3374,7 @@ public abstract class DBDefinition {
 
 	/**
 	 * The same as {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point) but for to coordinates as SQL.
+	 *
 	 * @param xValue
 	 * @param yValue
 	 * @return SQL
@@ -3371,9 +3385,10 @@ public abstract class DBDefinition {
 
 	/**
 	 * From the database's representation of a Point2D create a JTS Point.
-	 * 
+	 *
 	 * <p>
-	 * This is the inverse of {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point) }.
+	 * This is the inverse of {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)
+	 * }.
 	 *
 	 * @param pointAsString
 	 * @return a point.
@@ -3393,11 +3408,12 @@ public abstract class DBDefinition {
 
 	/**
 	 * From the database's representation of a Polygon2D create a JTS Polygon.
-	 * 
-	 * <p>
-	 * This is the inverse of {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
 	 *
-	 * @param polygon2DSQL 
+	 * <p>
+	 * This is the inverse of
+	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 *
+	 * @param polygon2DSQL
 	 * @return a polygon.
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
@@ -3419,11 +3435,12 @@ public abstract class DBDefinition {
 
 	/**
 	 * From the database's representation of a Lin2D create a JTS LineString.
-	 * 
-	 * <p>
-	 * This is the inverse of {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
 	 *
-	 * @param lineStringAsSQL 
+	 * <p>
+	 * This is the inverse of
+	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 *
+	 * @param lineStringAsSQL
 	 * @return a line.
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
@@ -3442,7 +3459,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL that correctly represents this LineString in this database.
 	 *
-	 * @param lineString  
+	 * @param lineString
 	 * @return SQL
 	 */
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString lineString) {
@@ -3453,7 +3470,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL that correctly represents this Polygon2D in this database.
 	 *
-	 * @param polygon  
+	 * @param polygon
 	 * @return SQL
 	 */
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
@@ -3464,7 +3481,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL to derive the WKT version of the Line2D.
 	 *
-	 * @param line2DSQL 
+	 * @param line2DSQL
 	 * @return SQL
 	 */
 	public String doLine2DAsTextTransform(String line2DSQL) {
@@ -3512,58 +3529,158 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DGetMaxXTransform(String toSQLString) {
+	/**
+	 * Generate the SQL that will return the largest X value within the Line2D
+	 * expression.
+	 *
+	 * @param line2DSQL
+	 * @return SQL
+	 */
+	public String doLine2DGetMaxXTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DGetMinXTransform(String toSQLString) {
+	/**
+	 * Generate the SQL that will return the smallest X value within the Line2D
+	 * expression.
+	 *
+	 * @param line2DSQL
+	 * @return SQL
+	 */
+	public String doLine2DGetMinXTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DGetMaxYTransform(String toSQLString) {
+	/**
+	 * Generate the SQL that will return the largest Y value within the Line2D
+	 * expression.
+	 *
+	 * @param line2DSQL
+	 * @return SQL
+	 */
+	public String doLine2DGetMaxYTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DGetMinYTransform(String toSQLString) {
+	/**
+	 * Generate the SQL that will return the smallest Y value within the Line2D
+	 * expression.
+	 *
+	 * @param line2DSQL
+	 * @return SQL
+	 */
+	public String doLine2DGetMinYTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPolygon2DGetMaxXTransform(String toSQLString) {
+	/**
+	 * Generate the SQL that will return the largest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPolygon2DGetMinXTransform(String toSQLString) {
+	/**
+	 * Generate the SQL that will return the smallest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPolygon2DGetMaxYTransform(String toSQLString) {
+	/**
+	 * Generate the SQL that will return the largest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPolygon2DGetMinYTransform(String toSQLString) {
+	/**
+	 * Generate the SQL that will return the smallest Y value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doDBPolygon2DFormatTransform(Polygon geom) {
+	/**
+	 * Generate the SQL that will transform a WKT version of a Polygon2D into the
+	 * database's version of a Polygon2D.
+	 *
+	 * @param polygon2DInWKTFormat
+	 * @return SQL
+	 */
+	public String doDBPolygon2DFormatTransform(Polygon polygon2DInWKTFormat) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPoint2DDistanceBetweenTransform(String toSQLString, Point2DExpression second) {
+	/**
+	 * Generate SQL to derive the distance between the two Polygon2D expressions.
+	 *
+	 * @param polygon2DSQL
+	 * @param otherPolygon2DSQL
+	 * @return SQL:
+	 */
+	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, Point2DExpression otherPolygon2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doRoundTransform(String toSQLString) {
-		return "ROUND(" + toSQLString + ")";
+	/**
+	 * Generate the SQL to apply rounding to the Number expressions
+	 *
+	 * @param numberSQL
+	 * @return SQL
+	 */
+	public String doRoundTransform(String numberSQL) {
+		return "ROUND(" + numberSQL + ")";
 	}
 
+	/**
+	 * Generate the SQL to apply rounding to the Number expressions with the
+	 * specified number of decimal places.
+	 *
+	 * @param number
+	 * @param decimalPlaces
+	 * @return SQL
+	 */
 	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Generate the SQL to use the SUBSTRING_BEFORE function with the 2 String
+	 * expressions.
+	 *
+	 * @param fromThis
+	 * @param beforeThis
+	 * @return SQL
+	 */
 	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Generate the SQL to use the SUBSTRING_AFTER function with the 2 String
+	 * expressions.
+	 *
+	 * @param fromThis
+	 * @param afterThis
+	 * @return SQL
+	 */
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -3583,6 +3700,12 @@ public abstract class DBDefinition {
 		return false;
 	}
 
+	/**
+	 * Indicates that the database driver does not provide the
+	 * Statement.isClosed() method.
+	 *
+	 * @return TRUE by default.
+	 */
 	public boolean supportsStatementIsClosed() {
 		return true;
 	}

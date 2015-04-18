@@ -25,9 +25,18 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 
-
+/**
+ * Defines the features of the Oracle 12 database when spatial options are
+ * available.
+ *
+ * <p>
+ * {@link Oracle12DB} instances automatically use the
+ * {@link Oracle12DBDefinition}, switch to this definition if Oracle's builtin
+ * spatial options are available to you.
+ *
+ * @author Gregory Graham
+ */
 public class Oracle12SpatialDB extends Oracle12DBDefinition {
-		
 
 	@Override
 	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
@@ -41,43 +50,44 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
 	}
-/*SDO_GEOMETRY(
-    2003,  -- 2= two-dimensional, 0 = m value is not included, 03 = polygon
-    NULL,
-    NULL,
-    SDO_ELEM_INFO_ARRAY(1,1003,1), -- one polygon (exterior polygon ring)
-    SDO_ORDINATE_ARRAY(3,3, 6,3, 6,5, 4,5, 3,3)
-  )*/
+	/*SDO_GEOMETRY(
+	 2003,  -- 2= two-dimensional, 0 = m value is not included, 03 = polygon
+	 NULL,
+	 NULL,
+	 SDO_ELEM_INFO_ARRAY(1,1003,1), -- one polygon (exterior polygon ring)
+	 SDO_ORDINATE_ARRAY(3,3, 6,3, 6,5, 4,5, 3,3)
+	 )*/
+
 	@Override
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		return super.transformPolygonIntoDatabasePolygon2DFormat(polygon); //To change body of generated methods, choose Tools | Templates.
 	}
 
-/*SDO_GEOMETRY(
-    2002,  -- 2= two-dimensional, 0 = m value is not included, 02 = l1ne or curve
-    NULL,
-    NULL,
-    SDO_ELEM_INFO_ARRAY(1,1003,1), -- one polygon (exterior polygon ring)
-    SDO_ORDINATE_ARRAY(3,3, 6,3, 6,5, 4,5, 3,3)
-  )*/
+	/*SDO_GEOMETRY(
+	 2002,  -- 2= two-dimensional, 0 = m value is not included, 02 = l1ne or curve
+	 NULL,
+	 NULL,
+	 SDO_ELEM_INFO_ARRAY(1,1003,1), -- one polygon (exterior polygon ring)
+	 SDO_ORDINATE_ARRAY(3,3, 6,3, 6,5, 4,5, 3,3)
+	 )*/
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString lineString) {
 		return super.transformLineStringIntoDatabaseLine2DFormat(lineString); //To change body of generated methods, choose Tools | Templates.
 	}
 
-/*SDO_GEOMETRY(
-	2001, -- 2= two-dimensional, 0 = m value is not included, 01 = point
-	NULL,
-	SDO_POINT_TYPE(15917.343,28141.968,NULL),
-	NULL,
-	NULL)
-    */
+	/*SDO_GEOMETRY(
+	 2001, -- 2= two-dimensional, 0 = m value is not included, 01 = point
+	 NULL,
+	 SDO_POINT_TYPE(15917.343,28141.968,NULL),
+	 NULL,
+	 NULL)
+	 */
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		final Coordinate coordinate = point.getCoordinate();
-		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE("+coordinate.x+", " +coordinate.y+",NULL), NULL, NULL)";
+		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
 	}
-	
+
 	@Override
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws ParseException {
 		return super.transformDatabaseLine2DValueToJTSLineString(lineStringAsString); //To change body of generated methods, choose Tools | Templates.

@@ -60,9 +60,9 @@ public class DateExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBDate currentDateTimePlus10Seconds = new DBDate(DateExpression.currentDate().addSeconds(10));
 	}
-	
+
 	@Test
-	public void testOverlaps()throws SQLException{
+	public void testOverlaps() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(DateExpression.overlaps(
@@ -103,7 +103,7 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(21));
 
 		marq.creationDate.permittedRangeInclusive(
-				DateExpression.currentDate().addMinutes(-5),null);
+				DateExpression.currentDate().addMinutes(-5), null);
 		got = database.getDBTable(marq).getAllRows();
 		database.print(got);
 		Assert.assertThat(got.size(), is(1));
@@ -431,7 +431,6 @@ public class DateExpressionTest extends AbstractTest {
 //		database.print(got);
 //		Assert.assertThat(got.size(), is(21));
 //	}
-
 	@Test
 	public void testIsInWithNulls() throws SQLException, ParseException {
 		Marque marque = new Marque();
@@ -779,6 +778,22 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
+	public static class MarqueWithSecondsFromDate extends Marque {
+
+		Date date = new Date(10l);
+		@DBColumn
+		DBNumber subseconds = new DBNumber(DateExpression.value(date).subsecond());
+	}
+
+	@Test
+	public void testSecondsFromReturnsDecimal() throws SQLException {
+		final List<MarqueWithSecondsFromDate> allRows = database.getDBTable(new MarqueWithSecondsFromDate()).setBlankQueryAllowed(true).getAllRows();
+		database.print(allRows);
+		for (MarqueWithSecondsFromDate row : allRows) {
+				Assert.assertThat(row.subseconds.doubleValue(), is(0.01));
+		}
+	}
+
 //	@Test
 //	public void testMillisecondsDifferenceFunction() throws SQLException, ParseException {
 //		Marque marq = new Marque();
@@ -809,7 +824,6 @@ public class DateExpressionTest extends AbstractTest {
 //		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
 //		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 //	}
-
 	@Test
 	public void testEndOfMonthCalculation() throws SQLException {
 		MarqueWithEndOfMonthColumn marq = new MarqueWithEndOfMonthColumn();

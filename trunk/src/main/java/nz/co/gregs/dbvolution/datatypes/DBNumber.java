@@ -31,11 +31,11 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
- * Encapsulates database values that are Number.
+ * Encapsulates database values that are Numbers.
  *
  * <p>
  * Use DBNumber when the column is a {@code NUMBER} or {@code NUMBER(x,y)}, that
- * is any numeric datatype with a decimal or fractional part.
+ * is any integer or real datatype..
  *
  * <p>
  * Use {@link DBInteger} when the numbers do not have a decimal or fractional

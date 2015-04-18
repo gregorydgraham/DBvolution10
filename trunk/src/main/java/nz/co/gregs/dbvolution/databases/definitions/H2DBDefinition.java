@@ -37,8 +37,8 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  */
 public class H2DBDefinition extends DBDefinition {
 
-	private final String dateFormatStr = "yyyy-M-d HH:mm:ss Z";
-	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss Z";
+	private final String dateFormatStr = "yyyy-M-d HH:mm:ss.SSS Z";
+	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss.SSS Z";
 	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
 
 	@Override
