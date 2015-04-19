@@ -362,16 +362,16 @@ public enum Line2DFunctions {
 	}
 
 	public void add(Statement stmt) throws SQLException {
-		try {
-			stmt.execute("DROP FUNCTION " + this + ";");
-		} catch (SQLException sqlex) {
-			;
-		}
+//		try {
+//			stmt.execute("DROP FUNCTION " + this + ";");
+//		} catch (SQLException sqlex) {
+//			;
+//		}
 		if (!this.code.isEmpty()) {
 			final String createFn = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
 					+ "    RETURN " + this.returnType
 					+ " AS \n" + "\n" + this.code;
-			System.out.println("" + createFn);
+//			System.out.println("" + createFn);
 			stmt.execute(createFn);
 		}
 	}

@@ -19,7 +19,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import nz.co.gregs.dbvolution.databases.NuoDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
@@ -39,13 +38,13 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class NuoDBDefinition extends DBDefinition{
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 
 	@Override
 	@SuppressWarnings("deprecation")
 	public String getDateFormattedForQuery(Date date) {
 
-		return " DATE_FROM_STR('" + DATETIME_FORMAT.format(date) + "', 'dd/MM/yyyy HH:mm:ss') ";
+		return " DATE_FROM_STR('" + DATETIME_FORMAT.format(date) + "', 'dd/MM/yyyy HH:mm:ss.SSS') ";
 
 	}
 
