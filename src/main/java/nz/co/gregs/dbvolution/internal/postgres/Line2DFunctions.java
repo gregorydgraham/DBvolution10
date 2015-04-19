@@ -168,7 +168,7 @@ public enum Line2DFunctions {
 	private final String returnType;
 	private final String parameters;
 	private final String code;
-	private Language language;
+	private final Language language;
 
 	Line2DFunctions(Language language, String returnType, String parameters, String code) {
 		this.language = language;
