@@ -23,9 +23,9 @@ import java.sql.Statement;
  * @author gregorygraham
  */
 public enum Polygon2D {	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values());
-	private String datatype;
-	private String actualType;
-	private Polygon2DFunctions[] functions;
+	private final String datatype;
+	private final String actualType;
+	private final Polygon2DFunctions[] functions;
 
 	Polygon2D(String datatype, String actualType, Polygon2DFunctions[] functions) {
 		this.datatype = datatype;
