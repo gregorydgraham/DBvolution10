@@ -40,22 +40,55 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Default constructor.
+	 *
+	 */
 	public DBDateRepeat() {
 		super();
 	}
 
+	/**
+	 * Creates a new DBDateRepeat with the value specified.
+	 *
+	 * @param interval
+	 */
 	public DBDateRepeat(Period interval) {
 		super(interval);
 	}
 
+	/**
+	 * Creates a DBDateRepeat with the DateRepeatExpression specified.
+	 * 
+	 * <p>
+	 * Very useful for adding column expressions to a DBRow subclass.
+	 *
+	 * @param interval
+	 */
 	public DBDateRepeat(DateRepeatExpression interval) {
 		super(interval);
 	}
 
+	/**
+	 * Set the value of this DBDateRepeat to the period specified.
+	 * 
+	 * <p>
+	 * Use this method before inserting the value into the database.
+	 *
+	 * @param newLiteralValue
+	 */
 	public void setValue(Period newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 
+	/**
+	 * Returns the value of this DBDateRepeat as a Period, if the value is defined and is not null.
+	 * 
+	 * <p>
+	 * Returns NULL otherwise.
+	 *
+	 * @return
+	 */
 	public Period periodValue() {
 		if (!isDefined() || isNull()) {
 			return null;
