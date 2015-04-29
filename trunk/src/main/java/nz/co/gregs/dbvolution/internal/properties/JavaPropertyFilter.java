@@ -50,20 +50,4 @@ interface JavaPropertyFilter {
 		}
 	}
 	
-	/**
-	 * Implementation that accepts only fields and bean-properties that have
-	 * a {@link DBColumn} annotation.
-	 */
-	class ColumnPropertyFilter implements JavaPropertyFilter {
-		@Override
-		public boolean acceptField(Field field) {
-			return field.isAnnotationPresent(DBColumn.class);
-		}
-
-		@Override
-		public boolean acceptBeanProperty(Method getter, Method setter) {
-			return (getter != null && getter.isAnnotationPresent(DBColumn.class)) ||
-					(setter != null && setter.isAnnotationPresent(DBColumn.class));
-		}
-	}
 }
