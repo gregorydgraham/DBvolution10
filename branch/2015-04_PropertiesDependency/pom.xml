@@ -766,6 +766,11 @@
 			<version>2.7</version>
 			<type>jar</type>
 		</dependency>
+	 <dependency>
+	  <groupId>nz.co.gregs</groupId>
+	  <artifactId>properties</artifactId>
+	  <version>1.0.0</version>
+	 </dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>
