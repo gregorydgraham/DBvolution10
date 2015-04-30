@@ -82,6 +82,7 @@ import nz.co.gregs.dbvolution.internal.query.*;
  */
 public class DBQuery {
 
+	public final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();
 	private String resultSQL;
@@ -93,7 +94,7 @@ public class DBQuery {
 	private JFrame queryGraphFrame = null;
 	private ColumnProvider[] sortOrderColumns;
 	private List<PropertyWrapper> sortOrder = null;
-	private Integer timeoutInMilliseconds = 10000;
+	private Integer timeoutInMilliseconds = DEFAULT_TIMEOUT_MILLISECONDS;
 	private QueryTimeout timeout;
 
 	QueryDetails getQueryDetails() {
