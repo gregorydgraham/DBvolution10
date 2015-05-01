@@ -35,7 +35,7 @@ public class InformixDBDefinition extends DBDefinition {
 
 	private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 	//TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
-	private final String informixDateFormat = "%Y-%m-%d %H:%M:%S.%F3";
+	private final String informixDateFormat = "%Y-%m-%d %H:%M:%S%F3";
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 
 	@Override
