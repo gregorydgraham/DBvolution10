@@ -51,7 +51,7 @@ public class DBEnumTest extends AbstractTest {
 	@Test
 	public void createRecordUsingLiteral() {
 		IntegerEnumTable row = new IntegerEnumTable();
-		row.recordType.setLiteralValue(
+		row.recordType.setValue(
 				IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getCode());
 
 		String sqlFragment = row.recordType.toSQLString(database);
@@ -259,13 +259,13 @@ public class DBEnumTest extends AbstractTest {
 		 * <p>
 		 * Nested class to make it obvious which table the enum is for
 		 */
-		public static enum RecordType implements DBEnumValue<Integer> {
+		public static enum RecordType implements DBEnumValue<Long> {
 
 			SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),
 			MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
 			MOVEMENT_CANCELLATION_REQUEST(3, "Movement Cancellation Request");
 
-			private int code;
+			private long code;
 			private String displayName;
 
 			private RecordType(int code, String displayName) {
@@ -274,7 +274,7 @@ public class DBEnumTest extends AbstractTest {
 			}
 
 			@Override
-			public Integer getCode() {
+			public Long getCode() {
 				return code;
 			}
 

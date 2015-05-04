@@ -26,17 +26,21 @@ import org.joda.time.format.PeriodFormat;
  * Encapsulates database values that are differences between dates.
  *
  * <p>
- * Use {@link DBDateRepeat} when the column is used to represent an specific period of time between events expressed in days, weeks, months or years.
- * 
- * <p>Please note that exact differences between dates should probably be derived using {@link DateExpression#secondsFrom(java.util.Date)} and stored with a DBNumber.
+ * Use {@link DBDateRepeat} when the column is used to represent an specific
+ * period of time between events expressed in days, weeks, months or years.
+ *
+ * <p>
+ * Please note that exact differences between dates should probably be derived
+ * using {@link DateExpression#secondsFrom(java.util.Date)} and stored with a
+ * DBNumber.
  *
  * <p>
  * Generally DBDateRepeat is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBDateRepeat myColumn = new DBDateRepeat();}
- * 
+ *
  * @author Gregory Graham
  */
-public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult {
+public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepeatResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -59,7 +63,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 
 	/**
 	 * Creates a DBDateRepeat with the DateRepeatExpression specified.
-	 * 
+	 *
 	 * <p>
 	 * Very useful for adding column expressions to a DBRow subclass.
 	 *
@@ -71,19 +75,21 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 
 	/**
 	 * Set the value of this DBDateRepeat to the period specified.
-	 * 
+	 *
 	 * <p>
 	 * Use this method before inserting the value into the database.
 	 *
 	 * @param newLiteralValue
 	 */
+	@Override
 	public void setValue(Period newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
 
 	/**
-	 * Returns the value of this DBDateRepeat as a Period, if the value is defined and is not null.
-	 * 
+	 * Returns the value of this DBDateRepeat as a Period, if the value is defined
+	 * and is not null.
+	 *
 	 * <p>
 	 * Returns NULL otherwise.
 	 *
@@ -93,7 +99,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
-			return (Period) getLiteralValue();
+			return getLiteralValue();
 		}
 	}
 
@@ -109,7 +115,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		Period interval = (Period) getLiteralValue();
+		Period interval = getLiteralValue();
 		if (interval == null) {
 			return "NULL";
 		} else {
@@ -148,8 +154,17 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 		if (getLiteralValue() == null) {
 			return super.toString(); //To change body of generated methods, choose Tools | Templates.
 		} else {
-			Period period = (Period) getLiteralValue();
+			Period period = getLiteralValue();
 			return PeriodFormat.getDefault().print(period);
+		}
+	}
+
+	@Override
+	protected void setValue(String inputText) {
+		if (inputText == null) {
+			setValue((Period)null);
+		} else {
+			setValue(PeriodFormat.getDefault().parsePeriod(inputText));
 		}
 	}
 }

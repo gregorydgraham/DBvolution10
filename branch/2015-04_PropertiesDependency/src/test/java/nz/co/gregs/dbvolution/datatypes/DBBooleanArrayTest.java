@@ -50,10 +50,12 @@ public class DBBooleanArrayTest extends AbstractTest {
 	}
 
 	@Before
+	@Override
 	public void setUp() {
 	}
 
 	@After
+	@Override
 	public void tearDown() {
 	}
 
@@ -95,7 +97,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 	@Test
 	public void testSetValue_Object() {
 		System.out.println("setValue");
-		Object newLiteralValue = new Boolean[]{true, false, true};
+		Boolean[] newLiteralValue = new Boolean[]{true, false, true};
 		DBBooleanArray instance = new DBBooleanArray();
 		instance.setValue(newLiteralValue);
 		Assert.assertThat(instance.booleanArrayValue(), is(newLiteralValue));
@@ -109,7 +111,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 
 		Object newLiteralValue = 5;
 		DBBooleanArray instance = new DBBooleanArray();
-		instance.setValue(newLiteralValue);
+		instance.setValue((Boolean[])newLiteralValue);
 	}
 
 	/**

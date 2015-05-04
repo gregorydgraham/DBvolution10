@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.DBRow;
  *
  * @author Gregory Graham
  */
-public class DBUnknownDatatype extends QueryableDatatype {
+public class DBUnknownDatatype extends QueryableDatatype<Object> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -54,7 +54,7 @@ public class DBUnknownDatatype extends QueryableDatatype {
 	}
 
 	@Override
-	void setValue(Object newLiteralValue) {
+	public void setValue(Object newLiteralValue) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -102,5 +102,10 @@ public class DBUnknownDatatype extends QueryableDatatype {
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getString(fullColumnName);
+	}
+
+	@Override
+	protected void setValue(String inputText) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

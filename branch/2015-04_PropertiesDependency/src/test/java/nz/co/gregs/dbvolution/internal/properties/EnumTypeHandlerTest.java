@@ -26,7 +26,7 @@ public class EnumTypeHandlerTest {
 	@Test
 	public void acceptsInvalidDeclarationGivenNonColumn() {
 		class TestClass extends DBRow {
-			public DBEnum<?> field;
+			public DBEnum<?,?> field;
 		}
 
 		try {
@@ -42,7 +42,7 @@ public class EnumTypeHandlerTest {
 	public void acceptsValidDeclarationGivenColumn() {
 		class TestClass extends DBRow {
 			@DBColumn
-			public DBEnum<MyIntegerEnum> field;
+			public DBEnum<MyIntegerEnum, Integer> field;
 		}
 
 		try {
@@ -69,7 +69,7 @@ public class EnumTypeHandlerTest {
 	public void rejectsInvalidDeclarationGivenColumnAndWildcardGenerics() {
 		class TestClass extends DBRow {
 			@DBColumn
-			public DBEnum<?> field;
+			public DBEnum<?,?> field;
 		}
 
 		typeHandlerOf(TestClass.class, "field");
@@ -79,7 +79,7 @@ public class EnumTypeHandlerTest {
 	public void rejectsInvalidDeclarationGivenColumnAndWildcardGenerics2() {
 		class TestClass extends DBRow {
 			@DBColumn
-			public DBEnum<? extends MyIntegerEnum> field;
+			public DBEnum<? extends MyIntegerEnum, Integer> field;
 		}
 
 		typeHandlerOf(TestClass.class, "field");
@@ -89,7 +89,7 @@ public class EnumTypeHandlerTest {
 	public void infersEnumTypeGivenIntegerEnum() {
 		class TestClass extends DBRow {
 			@DBColumn
-			public DBEnum<MyIntegerEnum> field;
+			public DBEnum<MyIntegerEnum,Integer> field;
 		}
 
 		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");
@@ -100,7 +100,7 @@ public class EnumTypeHandlerTest {
 	public void infersEnumLiteralValueTypeGivenIntegerEnum() {
 		class TestClass extends DBRow {
 			@DBColumn
-			public DBEnum<MyIntegerEnum> field;
+			public DBEnum<MyIntegerEnum,Integer> field;
 		}
 
 		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");
@@ -111,7 +111,7 @@ public class EnumTypeHandlerTest {
 	public void infersEnumLiteralValueTypeGivenStringEnum() {
 		class TestClass extends DBRow {
 			@DBColumn
-			public DBEnum<MyStringEnum> field;
+			public DBEnum<MyStringEnum,String> field;
 		}
 
 		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");

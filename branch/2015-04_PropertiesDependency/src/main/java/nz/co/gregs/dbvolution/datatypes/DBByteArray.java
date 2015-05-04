@@ -42,7 +42,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author Gregory Graham
  */
-public class DBByteArray extends DBLargeObject {
+public class DBByteArray extends DBLargeObject<byte[]> {
 
 	private static final long serialVersionUID = 1;
 	transient InputStream byteStream = null;
@@ -88,7 +88,7 @@ public class DBByteArray extends DBLargeObject {
 	 * @param inputViaStream	inputViaStream
 	 */
 	public void setValue(InputStream inputViaStream) {
-		super.setLiteralValue(inputViaStream);
+//		super.setLiteralValue(inputViaStream);
 		byteStream = new BufferedInputStream(inputViaStream);
 	}
 
@@ -116,21 +116,11 @@ public class DBByteArray extends DBLargeObject {
 		setValue(string.getBytes());
 	}
 
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof byte[]) {
-			setValue((byte[]) newLiteralValue);
-		} else if (newLiteralValue instanceof DBByteArray) {
-			final DBByteArray valBytes = (DBByteArray) newLiteralValue;
-			setValue(valBytes.getValue());
-		} else if (newLiteralValue instanceof String) {
-			final String valBytes = (String) newLiteralValue;
-			setValue(valBytes.getBytes());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Byte[]: Use only byte arrays with this class");
-		}
+	void setValue(DBByteArray newLiteralValue) {
+		final DBByteArray valBytes = newLiteralValue;
+		setValue(valBytes.getValue());
 	}
-
+	
 	private byte[] getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		InputStream inputStream;
@@ -486,7 +476,7 @@ public class DBByteArray extends DBLargeObject {
 	 * @return the byte[] value of this DBByteArray.
 	 */
 	public byte[] getBytes() {
-		return (byte[]) this.getLiteralValue();
+		return this.getLiteralValue();
 	}
 
 	@Override
@@ -530,7 +520,7 @@ public class DBByteArray extends DBLargeObject {
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		DBDefinition defn = database.getDefinition();
 		if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {

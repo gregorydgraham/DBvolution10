@@ -15,24 +15,29 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import nz.co.gregs.dbvolution.datatypes.TransformRequiredForSelectClause;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.Polygon2DResult;
 
-public class DBPolygon2D extends QueryableDatatype implements TransformRequiredForSelectClause, Polygon2DResult {
+public class DBPolygon2D extends QueryableDatatype<Polygon> implements TransformRequiredForSelectClause, Polygon2DResult {
 
 	private static final long serialVersionUID = 1L;
 
 	public DBPolygon2D() {
 	}
 
+	@Override
 	public void setValue(Polygon geometry) {
 		setLiteralValue(geometry);
 	}
@@ -52,12 +57,12 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		Polygon geom = (Polygon) getLiteralValue();
+		Polygon geom = getLiteralValue();
 		return db.getDefinition().doDBPolygon2DFormatTransform(geom);
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Polygon getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 
 		Polygon geometry = null;
 		String string = resultSet.getString(fullColumnName);
@@ -75,7 +80,7 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	}
 
 	public Polygon getGeometryValue() {
-		return (Polygon) ((this.getLiteralValue() != null) ? this.getLiteralValue() : null);
+		return (this.getLiteralValue() != null) ? this.getLiteralValue() : null;
 	}
 
 	@Override
@@ -91,5 +96,23 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+	@Override
+	protected void setValue(String inputText) {
+		Polygon spatialValue = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = null;
+		try {
+			geometry = wktReader.read(inputText);
+			if (geometry instanceof LineString) {
+				spatialValue = (Polygon) geometry;
+			} else {
+				throw new IncorrectGeometryReturnedForDatatype(geometry, spatialValue);
+			}
+		} catch (ParseException ex) {
+			Logger.getLogger(DBLine2D.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+		setValue(spatialValue);
 	}
 }

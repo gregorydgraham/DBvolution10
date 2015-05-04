@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
@@ -15,8 +16,9 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
  * isn't in the enumeration.
  *
  * @param <E> the enumeration type. Must implement {@link DBEnumValue}.
+ * @param <A> The return type expected from the database.
  */
-public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends QueryableDatatype {
+public abstract class DBEnum<E extends Enum<E> & DBEnumValue<A>,A> extends QueryableDatatype<A> {
 
 	private static final long serialVersionUID = 1L;
 	private Class<E> enumType;
@@ -45,8 +47,12 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 *
 	 * @param literalValue	 literalValue	
 	 */
-	protected DBEnum(Object literalValue) {
+	protected DBEnum(A literalValue) {
 		super(literalValue);
+	}
+	
+	protected DBEnum(DBExpression expression) {
+		super(expression);
 	}
 
 	/**
@@ -258,12 +264,12 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * @param enumValue	 enumValue	
 	 * @return the literal database value for the enumeration value.
 	 */
-	protected final Object convertToLiteral(E enumValue) {
+	protected final A convertToLiteral(E enumValue) {
 		if (enumValue == null || enumValue.getCode() == null) {
 			return null;
 		} else {
 			validateLiteralValue(enumValue);
-			Object newLiteralValue = enumValue.getCode();
+			A newLiteralValue = enumValue.getCode();
 			return newLiteralValue;
 		}
 	}

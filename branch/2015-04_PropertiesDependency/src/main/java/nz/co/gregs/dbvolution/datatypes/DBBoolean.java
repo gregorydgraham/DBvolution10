@@ -17,8 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -46,8 +45,8 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @author Gregory Graham
  */
-public class DBBoolean extends QueryableDatatype implements BooleanResult {
-
+public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResult {
+	
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -67,7 +66,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * The resulting DBBoolean will be set as having the value provided but will
 	 * not be defined in the database.
 	 *
-	 * @param bool	 bool	
+	 * @param bool	bool
 	 */
 	public DBBoolean(Boolean bool) {
 		super(bool);
@@ -81,12 +80,12 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param bool	 bool	
+	 * @param bool	bool
 	 */
 	public DBBoolean(BooleanResult bool) {
 		super(bool);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -95,48 +94,42 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	/**
 	 * Implements the standard Java equals method.
 	 *
-	 * @param other	 other	
+	 * @param other	other
 	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof DBBoolean) {
-			DBBoolean otherDBBoolean=  (DBBoolean) other;
+			DBBoolean otherDBBoolean = (DBBoolean) other;
 			return getValue().equals(otherDBBoolean.getValue());
 		}
 		return false;
 	}
-
+	
 	@Override
 	public String getSQLDatatype() {
 		return "BIT(1)";
 	}
-
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof Boolean) {
-			setValue((Boolean) newLiteralValue);
-		} else if (newLiteralValue instanceof DBBoolean) {
-			setValue(((DBBoolean) newLiteralValue).getValue());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Boolean: Use only Booleans with this class");
-		}
+	
+	void setValue(DBBoolean newLiteralValue) {
+		setValue(newLiteralValue.getValue());
 	}
 
 	/**
 	 * Sets the value of this DBBoolean to the value provided.
 	 *
-	 * @param newLiteralValue	 newLiteralValue	
+	 * @param newLiteralValue	newLiteralValue
 	 */
+	@Override
 	public void setValue(Boolean newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
-
+	
 	@Override
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
 		if (getLiteralValue() instanceof Boolean) {
-			Boolean boolValue = (Boolean) getLiteralValue();
+			Boolean boolValue = getLiteralValue();
 			return defn.doBooleanValueTransform(boolValue);
 //			return defn.beginNumberValue() + (boolValue ? 1 : 0) + defn.endNumberValue();
 		}
@@ -145,7 +138,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 * Returns the defined or set value of this DBBoolean as an actual Boolean.
-	 * 
+	 *
 	 * <p>
 	 * May return a null.
 	 *
@@ -153,27 +146,27 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 */
 	public Boolean booleanValue() {
 		if (this.getLiteralValue() instanceof Boolean) {
-			return (Boolean) this.getLiteralValue();
+			return this.getLiteralValue();
 		} else {
 			return null;
 		}
 	}
-
+	
 	@Override
 	public DBBoolean copy() {
 		return (DBBoolean) (BooleanResult) super.copy();
 	}
-
+	
 	@Override
 	public Boolean getValue() {
 		return booleanValue();
 	}
-
+	
 	@Override
 	public DBBoolean getQueryableDatatypeForExpressionValue() {
 		return new DBBoolean();
 	}
-
+	
 	@Override
 	public boolean isAggregator() {
 		return false;
@@ -181,10 +174,9 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Boolean permitted) {
 		this.setOperator(new DBBooleanPermittedValuesOperator(permitted));
@@ -195,7 +187,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(Boolean excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -204,10 +196,9 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(BooleanExpression permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -218,7 +209,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(BooleanExpression excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -234,7 +225,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	public boolean getIncludesNull() {
 		return false;
 	}
-
+	
 	@Override
 	protected Boolean getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		Boolean dbValue = resultSet.getBoolean(fullColumnName);
@@ -243,5 +234,16 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 		}
 		return dbValue;
 	}
-
+	
+	private static String[] TRUEVALUES = new String[]{"t", "true", "1", "y", "yes"};
+	
+	@Override
+	protected void setValue(String inputText) {
+		if (Arrays.asList(TRUEVALUES).contains(inputText.trim().toLowerCase())) {
+			setValue(true);
+		} else {
+			setValue(false);
+		}
+	}
+	
 }

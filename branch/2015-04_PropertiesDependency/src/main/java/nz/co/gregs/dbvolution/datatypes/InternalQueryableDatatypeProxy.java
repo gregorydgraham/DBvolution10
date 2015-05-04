@@ -50,6 +50,9 @@ public class InternalQueryableDatatypeProxy {
 	 *
 	 * @param obj	 obj	
 	 */
+	public void setValue(QueryableDatatype obj) {
+		qdt.setValue(obj.getValue());
+	}
 	public void setValue(Object obj) {
 		qdt.setValue(obj);
 	}

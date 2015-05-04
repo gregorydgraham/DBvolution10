@@ -59,6 +59,11 @@ public class UnableInstantiateQueryableDatatypeExceptionTest {
 		public boolean isAggregator() {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
+
+		@Override
+		protected void setValue(String inputText) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
 	}
 	
 }

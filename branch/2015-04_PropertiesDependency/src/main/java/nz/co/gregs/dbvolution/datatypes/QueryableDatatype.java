@@ -41,15 +41,16 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.properties.adapt.AdaptableType;
 
 /**
  *
  * @author Gregory Graham
  */
-public abstract class QueryableDatatype extends Object implements Serializable, DBExpression {
+public abstract class QueryableDatatype<A> extends AdaptableType<A> implements Serializable, DBExpression {
 
 	private static final long serialVersionUID = 1L;
-	Object literalValue = null;
+//	Object literalValue = null;
 	private boolean isDBNull = false;
 	private DBOperator operator = null;
 	private boolean undefined = true;
@@ -91,11 +92,11 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * @param obj the literal value of the QDT.
 	 */
-	protected QueryableDatatype(Object obj) {
+	protected QueryableDatatype(A obj) {
 		if (obj == null) {
 			this.isDBNull = true;
 		} else {
-			this.literalValue = obj;
+			this.setLiteralValueOnly(obj);
 			this.operator = new DBEqualsOperator(this);
 			undefined = false;
 		}
@@ -214,12 +215,13 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @return a complete copy of the QDT with all values set.
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public QueryableDatatype copy() {
 		QueryableDatatype newQDT = this;
 		try {
 			newQDT = this.getClass().newInstance();
 
-			newQDT.literalValue = this.getLiteralValue();
+			newQDT.setLiteralValueOnly(this.getLiteralValue());
 			newQDT.isDBNull = this.isDBNull;
 			newQDT.operator = this.operator;
 			newQDT.undefined = this.undefined;
@@ -271,7 +273,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @return this instance.
 	 */
 	@Deprecated
-	protected QueryableDatatype blankQuery() {
+	protected QueryableDatatype<A> blankQuery() {
 		return removeConstraints();
 	}
 
@@ -284,7 +286,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * @return this instance.
 	 */
-	public QueryableDatatype removeConstraints() {
+	public QueryableDatatype<A> removeConstraints() {
 		isDBNull = false;
 		this.operator = null;
 		return this;
@@ -368,7 +370,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * @return the literal value, if defined, which may be null
 	 */
-	public Object getValue() {
+	public A getValue() {
 		if (undefined || isNull()) {
 			return null;
 		} else {
@@ -376,40 +378,23 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		}
 	}
 
-	/**
-	 * Internal method, use the subclasses setValue methods or {@link DBRow#setPrimaryKey(java.lang.Object)
-	 * } instead.
-	 *
-	 * <p>
-	 * <b>Set the value of this QDT to the value provided.</b>
-	 *
-	 * <p>
-	 * Subclass writers should ensure that the method handles nulls correctly
-	 * and throws an exception if an inappropriate value is supplied.
-	 *
-	 * <p>
-	 * This method is public for internal reasons and you should provide/use
-	 * another more strongly typed version of setValue.
-	 *
-	 *
-	 */
-	void setValue(Object newLiteralValue) {
-		this.setLiteralValue(newLiteralValue);
+	protected final void setLiteralValueOnly(A newLiteralValue) {
+		super.setLiteralValue(newLiteralValue);
 	}
-
 	/**
 	 * Sets the literal value of this queryable data type. Replaces any assigned
 	 * operator with an {@code equals} operator on the given value.
 	 *
 	 * @param newLiteralValue the literalValue to set
 	 */
-	protected void setLiteralValue(Object newLiteralValue) {
+	@Override
+	protected final void setLiteralValue(A newLiteralValue) {
 		if (newLiteralValue == null) {
 			QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
 			setToNull();
 		} else {
 			QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
-			this.literalValue = newLiteralValue;
+			super.setLiteralValue(newLiteralValue);
 			if (newLiteralValue instanceof Date) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));
 			} else if (newLiteralValue instanceof Timestamp) {
@@ -439,7 +424,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * @return the DBOperator that will be used with this QDT
 	 */
 	protected DBOperator setToNull() {
-		this.literalValue = null;
+		super.setLiteralValue(null);
 		this.isDBNull = true;
 		this.setOperator(new DBIsNullOperator());
 		return getOperator();
@@ -486,10 +471,11 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	@Override
 	public final String toSQLString(DBDatabase db) {
 		DBDefinition def = db.getDefinition();
-		if (this.isDBNull || getLiteralValue() == null) {
+		final A literalValue = getLiteralValue();
+		if (this.isDBNull || literalValue == null) {
 			return def.getNull();
-		} else if (getLiteralValue() instanceof DBExpression) {
-			return "(" + ((DBExpression) getLiteralValue()).toSQLString(db) + ")";
+		} else if (literalValue instanceof DBExpression) {
+			return "(" + ((DBExpression) literalValue).toSQLString(db) + ")";
 		} else {
 			return formatValueForSQLStatement(db);
 		}
@@ -580,7 +566,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		if (resultSet == null || resultSetColumnName == null) {
 			this.setToNull();
 		} else {
-			Object dbValue;
+			A dbValue;
 			try {
 				dbValue = getFromResultSet(database, resultSet, resultSetColumnName);
 				if (resultSet.wasNull()) {
@@ -612,11 +598,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	abstract protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException;
+	abstract protected A getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException;
 
+	@SuppressWarnings("unchecked")
 	private void moveCurrentValueToPreviousValue(Object newLiteralValue) {
 		if ((this.isDBNull && newLiteralValue != null)
-				|| (getLiteralValue() != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
+				|| (getLiteralValue() != null && (newLiteralValue == null || !newLiteralValue.equals(getLiteralValue())))) {
 			changed = true;
 			QueryableDatatype copyOfOldValues = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
 			if (this.isDBNull) {
@@ -736,7 +723,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 *
 	 * @return this instance
 	 */
-	public QueryableDatatype clear() {
+	@Override
+	public QueryableDatatype<A> clear() {
+		super.clear();
 		return removeConstraints();
 	}
 
@@ -865,8 +854,9 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	/**
 	 * @return the literalValue
 	 */
-	protected Object getLiteralValue() {
-		return literalValue;
+	@Override
+	protected A getLiteralValue() {
+		return super.getLiteralValue();
 	}
 
 	/**
@@ -955,4 +945,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 			return getColumnExpression().isPurelyFunctional();
 		}
 	}
+
+	protected abstract void setValue(String inputText);
 }

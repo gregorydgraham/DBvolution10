@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +24,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,7 +51,7 @@ import nz.co.gregs.dbvolution.expressions.Line2DResult;
  *
  * @author gregorygraham
  */
-public class DBLine2D extends QueryableDatatype implements Line2DResult {
+public class DBLine2D extends QueryableDatatype<LineString> implements Line2DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -96,20 +99,21 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	 *
 	 * @param line
 	 */
+	@Override
 	public void setValue(LineString line) {
 		setLiteralValue(line);
 	}
 
 	/**
 	 * Set the value of this DBLine2D to the value provided.
-	 * 
+	 *
 	 * <p>
 	 * The series of points will combined into a line for you.
 	 *
 	 * <p>
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
-	 * 
+	 *
 	 * @param points
 	 */
 	public void setValue(Point... points) {
@@ -124,7 +128,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 
 	/**
 	 * Set the value of this DBLine2D to the value provided.
-	 * 
+	 *
 	 * <p>
 	 * The series of coordinates will combined into a line for you.
 	 *
@@ -145,12 +149,13 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
-			return (LineString) getLiteralValue();
+			return getLiteralValue();
 		}
 	}
 
 	/**
-	 * Transform the value of the DBLine2D into a {@link LineString JTS LineString}
+	 * Transform the value of the DBLine2D into a
+	 * {@link LineString JTS LineString}
 	 *
 	 * @return the value of this object if defined and not NULL, NULL otherwise.
 	 */
@@ -175,7 +180,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected LineString getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		LineString lineString = null;
 		String string = resultSet.getString(fullColumnName);
@@ -200,6 +205,25 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	protected void setValue(String inputText) {
+		LineString spatialValue = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = null;
+		try {
+			geometry = wktReader.read(inputText);
+			if (geometry instanceof LineString) {
+				spatialValue = (LineString) geometry;
+			} else {
+				throw new IncorrectGeometryReturnedForDatatype(geometry, spatialValue);
+			}
+		} catch (ParseException ex) {
+			Logger.getLogger(DBLine2D.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+		setValue(spatialValue);
 	}
 
 }

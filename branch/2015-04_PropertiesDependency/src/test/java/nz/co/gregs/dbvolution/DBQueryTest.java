@@ -72,7 +72,7 @@ public class DBQueryTest extends AbstractTest {
 			String carCoName = carCo.name.toString();
 
 			Marque marque = queryRow.get(new Marque());
-			Long marqueUID = marque.getUidMarque().getValue();
+			Long marqueUID = marque.getUidMarque().longValue();
 
 			System.out.println(carCoName + ": " + marqueUID);
 			assertTrue(carCoName.equals("TOYOTA"));
@@ -103,7 +103,7 @@ public class DBQueryTest extends AbstractTest {
 			String carCoName = carCo.name.toString();
 
 			marque = queryRow.get(new Marque());
-			Long marqueUID = marque.getUidMarque().getValue();
+			Long marqueUID = marque.getUidMarque().longValue();
 
 			System.out.println(carCoName + ": " + marqueUID);
 			assertTrue(carCoName.equals("TOYOTA"));
@@ -136,7 +136,7 @@ public class DBQueryTest extends AbstractTest {
 			String carCoName = carCo.name.toString();
 
 			Marque marque = queryRow.get(new Marque());
-			Long marqueUID = marque.getUidMarque().getValue();
+			Long marqueUID = marque.getUidMarque().longValue();
 
 			System.out.println(carCoName + ": " + marqueUID);
 			assertTrue(carCoName.equals("TOYOTA"));

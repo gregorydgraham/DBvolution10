@@ -46,7 +46,7 @@ public class QueryableDatatypeEditor extends PropertyEditorSupport {
 			qdt.setValue(inputText);
 			setValue(qdt);
 		} else {
-			QueryableDatatype type = new DBString();
+			DBString type = new DBString();
 			type.setValue(inputText);
 			setValue(type);
 		}

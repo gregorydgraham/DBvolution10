@@ -48,7 +48,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @author Gregory Graham
  */
-public class DBDate extends QueryableDatatype implements DateResult {
+public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	private static final long serialVersionUID = 1L;
 	private static SimpleDateFormat toStringFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
@@ -139,21 +139,14 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 */
 	public Date dateValue() {
 		if (getLiteralValue() instanceof Date) {
-			return (Date) getLiteralValue();
+			return getLiteralValue();
 		} else {
 			return null;
 		}
 	}
 
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof Date) {
-			setValue((Date) newLiteralValue);
-		} else if (newLiteralValue instanceof DBDate) {
-			setValue(((QueryableDatatype) newLiteralValue).getLiteralValue());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Date: Use only Dates with this class");
-		}
+	void setValue(DBDate newLiteralValue) {
+			setValue(newLiteralValue.dateValue());
 	}
 
 	/**
@@ -161,6 +154,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 *
 	 * @param date	 date	
 	 */
+	@Override
 	public void setValue(Date date) {
 		super.setLiteralValue(date);
 	}

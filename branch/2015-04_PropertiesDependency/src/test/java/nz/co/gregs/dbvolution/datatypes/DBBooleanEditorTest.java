@@ -61,13 +61,13 @@ public class DBBooleanEditorTest {
 		DBBooleanEditor instance = new DBBooleanEditor();
 		instance.setAsText(text);
 		// TODO review the generated test code and remove the default call to fail.
-		Assert.assertThat((Boolean)((QueryableDatatype)instance.getValue()).literalValue, is(true));
+		Assert.assertThat((Boolean)((QueryableDatatype)instance.getValue()).getLiteralValue(), is(true));
 		
 		text = "";
 		instance = new DBBooleanEditor();
 		instance.setAsText(text);
 		// TODO review the generated test code and remove the default call to fail.
-		Assert.assertThat((Boolean)((QueryableDatatype)instance.getValue()).literalValue, nullValue());
+		Assert.assertThat((Boolean)((QueryableDatatype)instance.getValue()).getLiteralValue(), nullValue());
 	}
 	
 }

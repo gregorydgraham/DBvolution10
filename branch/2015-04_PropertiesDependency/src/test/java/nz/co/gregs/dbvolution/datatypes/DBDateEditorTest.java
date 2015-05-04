@@ -63,7 +63,7 @@ public class DBDateEditorTest {
 		instance.setAsText(text);
 		Date dateValue = new Date();
 		dateValue.setTime(Date.parse(text));
-		Assert.assertThat((Date) ((QueryableDatatype) instance.getValue()).literalValue, is(dateValue));
+		Assert.assertThat((Date) ((QueryableDatatype) instance.getValue()).getLiteralValue(), is(dateValue));
 	}
 
 }

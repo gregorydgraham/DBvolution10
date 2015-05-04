@@ -58,6 +58,6 @@ public class DBStringEditorTest {
 		String text = "5.1";
 		DBStringEditor instance = new DBStringEditor();
 		instance.setAsText(text);
-		Assert.assertThat((String) ((QueryableDatatype) instance.getValue()).literalValue, is("5.1"));
+		Assert.assertThat((String) ((QueryableDatatype) instance.getValue()).getLiteralValue(), is("5.1"));
 	}
 }

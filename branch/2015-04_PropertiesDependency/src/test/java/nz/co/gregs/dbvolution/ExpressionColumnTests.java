@@ -96,7 +96,7 @@ public class ExpressionColumnTests extends AbstractTest {
 		query.addExpressionColumn(strangeEquation, marque.column(marque.uidMarque).times(5).dividedBy(3).plus(2));
 		
 		for (DBQueryRow row : query.getAllRows()) {
-			Long uid = row.get(new Marque()).uidMarque.getValue();
+			Long uid = row.get(new Marque()).uidMarque.longValue();
 			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
 			System.out.println(expressionColumnValue.toSQLString(database));
 			if (expressionColumnValue instanceof DBNumber) {

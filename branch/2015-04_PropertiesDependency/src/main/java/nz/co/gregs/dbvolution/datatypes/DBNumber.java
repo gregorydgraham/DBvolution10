@@ -47,7 +47,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @author Gregory Graham
  */
-public class DBNumber extends QueryableDatatype implements NumberResult {
+public class DBNumber extends QueryableDatatype<Number> implements NumberResult {
 
 	private static final long serialVersionUID = 1;
 
@@ -96,26 +96,6 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	@Override
 	public DBNumber copy() {
 		return (DBNumber) super.copy();
-	}
-
-	/**
-	 * Sets the value of this DBNumber to the value of the object provided.
-	 *
-	 * <p>
-	 * You probably want {@link #setValue(java.lang.Number)} or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)
-	 * }
-	 *
-	 
-	 */
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof Number) {
-			setValue((Number) newLiteralValue);
-		} else if (newLiteralValue instanceof DBNumber) {
-			setValue((DBNumber) newLiteralValue);
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A " + newLiteralValue.getClass().getSimpleName() + ": Use only Numbers with this class");
-		}
 	}
 
 	/**
@@ -208,10 +188,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	public Number numberValue() {
 		if (getLiteralValue() == null) {
 			return null;
-		} else if (getLiteralValue() instanceof Number) {
-			return (Number) getLiteralValue();
 		} else {
-			return Double.parseDouble(getLiteralValue().toString());
+			return getLiteralValue();
 		}
 	}
 
@@ -226,7 +204,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		if (getLiteralValue() == null) {
 			return null;
 		} else if (getLiteralValue() instanceof Number) {
-			return ((Number) getLiteralValue()).doubleValue();
+			return getLiteralValue().doubleValue();
 		} else {
 			return Double.parseDouble(getLiteralValue().toString());
 		}
@@ -241,10 +219,10 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	public Long longValue() {
 		if (getLiteralValue() == null) {
 			return null;
-		} else if (getLiteralValue() instanceof Long) {
-			return (Long) getLiteralValue();
+//		} else if (getLiteralValue() instanceof Long) {
+//			return (Long) getLiteralValue();
 		} else if (getLiteralValue() instanceof Number) {
-			return ((Number) getLiteralValue()).longValue();
+			return getLiteralValue().longValue();
 		} else {
 			return Long.parseLong(getLiteralValue().toString());
 		}
@@ -261,7 +239,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 		if (getLiteralValue() == null) {
 			return null;
 		} else if (getLiteralValue() instanceof Number) {
-			return ((Number) getLiteralValue()).intValue();
+			return getLiteralValue().intValue();
 		} else {
 			return Integer.parseInt(getLiteralValue().toString());
 		}
@@ -660,6 +638,15 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 			} catch (SQLException ex2) {
 				return null;
 			}
+		}
+	}
+
+	@Override
+	protected void setValue(String inputText) {
+		if (inputText==null){
+			setToNull();
+		}else{
+			setValue(Double.parseDouble(inputText));
 		}
 	}
 }

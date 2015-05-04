@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * @author Gregory Graham
  * @author Malcolm Lett
  */
-public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> extends DBEnum<E> {
+public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum<E, Long> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -115,7 +115,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 //	}
 
 	/**
-	 * Used to set the value of the instance to the Long provided.
+	 * Used to set the value of the instance to the integer provided.
 	 *
 	 * <p>
 	 * DBIntegerEnums retrieved from the database will be automatically set.
@@ -124,11 +124,11 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
 	 * } method.
 	 *
-	 
+	 * @param newLiteralValue	 
 	 */
-//	private void setValue(Long newLiteralValue) {
-//		super.setLiteralValue(newLiteralValue);
-//	}
+	public void setValue(Integer newLiteralValue) {
+		super.setLiteralValue(newLiteralValue.longValue());
+	}
 
 	/**
 	 * Used to set the value of the instance to the Integer provided.
@@ -709,7 +709,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 		if (getLiteralValue() == null) {
 			return null;
 		} else if (getLiteralValue() instanceof Long) {
-			return (Long) getLiteralValue();
+			return getLiteralValue();
 		} else {
 			return Long.parseLong(getLiteralValue().toString());
 		}
@@ -723,20 +723,23 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	public Integer intValue() {
 		if (getLiteralValue() == null) {
 			return null;
-		} else if (getLiteralValue() instanceof Integer) {
-			return (Integer) getLiteralValue();
 		} else {
-			return Integer.parseInt(getLiteralValue().toString());
+			return getLiteralValue().intValue();
 		}
 	}
 
 	@Override
-	public Number getValue() {
-		return numberValue();
+	protected Long getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		return resultSet.getLong(fullColumnName);
 	}
 
+
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-		return resultSet.getLong(fullColumnName);
+	protected void setValue(String inputText) {
+		if (inputText==null){
+			setToNull();
+		}else{
+			setValue(Long.parseLong(inputText));
+		}
 	}
 }

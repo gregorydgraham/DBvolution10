@@ -70,12 +70,12 @@ public class DBInsertTest extends AbstractTest {
 			row.name.setValue("First Row");
 			row2.name.setValue("Second Row");
 			database.insert(row);
-			Assert.assertThat(row.pk_uid.getValue(), is(1L));
+			Assert.assertThat(row.pk_uid.longValue(), is(1L));
 			database.insert(row2);
-			Assert.assertThat(row2.pk_uid.getValue(), is(2L));
-			final Long pkValue = row2.pk_uid.getValue();
+			Assert.assertThat(row2.pk_uid.longValue(), is(2L));
+			final Long pkValue = row2.pk_uid.longValue();
 			TestDefaultValueRetrieval gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-			Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+			Assert.assertThat(gotRow2.pk_uid.longValue(), is(2L));
 
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);
@@ -94,12 +94,12 @@ public class DBInsertTest extends AbstractTest {
 			database.createTable(row);
 
 			database.insert(row);
-			Assert.assertThat(row.pk_uid.getValue(), is(1L));
+			Assert.assertThat(row.pk_uid.longValue(), is(1L));
 			database.insert(row2);
-			Assert.assertThat(row2.pk_uid.getValue(), is(2L));
-			final Long pkValue = row2.pk_uid.getValue();
+			Assert.assertThat(row2.pk_uid.longValue(), is(2L));
+			final Long pkValue = row2.pk_uid.longValue();
 			TestDefaultValueRetrieval gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
-			Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+			Assert.assertThat(gotRow2.pk_uid.longValue(), is(2L));
 
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(row);

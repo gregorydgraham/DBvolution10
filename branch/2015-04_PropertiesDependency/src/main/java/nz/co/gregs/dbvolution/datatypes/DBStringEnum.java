@@ -44,7 +44,7 @@ import nz.co.gregs.dbvolution.operators.*;
  * @param <E> an enumeration class that implements the {@link DBEnumValue}
  * interface for String values.
  */
-public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnum<E> {
+public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnum<E, String> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -800,7 +800,12 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 //		propertyWrapper = null;
 //	}
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected String getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getString(fullColumnName);
+	}
+
+	@Override
+	public void setValue(String inputText) {
+		super.setValue(inputText);
 	}
 }

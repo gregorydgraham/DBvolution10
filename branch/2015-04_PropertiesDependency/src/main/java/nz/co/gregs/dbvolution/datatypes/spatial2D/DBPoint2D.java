@@ -15,8 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -27,13 +30,14 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.Point2DResult;
 
-public class DBPoint2D extends QueryableDatatype implements Point2DResult {
+public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult {
 
 	private static final long serialVersionUID = 1L;
 
 	public DBPoint2D() {
 	}
 
+	@Override
 	public void setValue(Point point) {
 		setLiteralValue(point);
 	}
@@ -43,7 +47,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
-			return (Point) getLiteralValue();
+			return getLiteralValue();
 		}
 	}
 	
@@ -76,7 +80,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected Point getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		Point point = null;
 		String string = resultSet.getString(fullColumnName);
@@ -101,6 +105,25 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+	
+	@Override
+	protected void setValue(String inputText) {
+		Point spatialValue = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = null;
+		try {
+			geometry = wktReader.read(inputText);
+			if (geometry instanceof LineString) {
+				spatialValue = (Point) geometry;
+			} else {
+				throw new IncorrectGeometryReturnedForDatatype(geometry, spatialValue);
+			}
+		} catch (ParseException ex) {
+			Logger.getLogger(DBLine2D.class.getName()).log(Level.SEVERE, null, ex);
+		}
+
+		setValue(spatialValue);
 	}
 
 }

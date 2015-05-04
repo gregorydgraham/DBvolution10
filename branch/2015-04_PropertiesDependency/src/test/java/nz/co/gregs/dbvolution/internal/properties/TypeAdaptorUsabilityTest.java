@@ -232,37 +232,42 @@ public class TypeAdaptorUsabilityTest {
 		}
 	}
 
+	public static class TwentyThreeQDT extends QueryableDatatype {
+
+		@SuppressWarnings("unused")
+		public TwentyThreeQDT() {
+			super(23);
+		}
+
+		@Override
+		public String getSQLDatatype() {
+			return "unknown";
+		}
+
+		@Override
+		protected String formatValueForSQLStatement(DBDatabase db) {
+			return "unknown";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+			return resultSet.getString(fullColumnName);
+		}
+
+		@Override
+		protected void setValue(String inputText) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+	}
+
 	// not sure if need to support this
 	@Test
 	public void stringFieldAdaptedAsCustomQDT_whenAdaptingOnSimpleTypes() {
-
-		class MyQDT extends QueryableDatatype {
-
-			@SuppressWarnings("unused")
-			public MyQDT() {
-				super(23);
-			}
-
-			@Override
-			public String getSQLDatatype() {
-				return "unknown";
-			}
-
-			@Override
-			protected String formatValueForSQLStatement(DBDatabase db) {
-				return "unknown";
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return false;
-			}
-
-			@Override
-			protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-				return resultSet.getString(fullColumnName);
-			}
-		}
 
 		class MyTypeAdaptor implements DBTypeAdaptor<String, Integer> {
 
@@ -281,8 +286,53 @@ public class TypeAdaptorUsabilityTest {
 		class MyTable extends DBRow {
 
 			@DBColumn
-			@DBAdaptType(value = MyTypeAdaptor.class, type = MyQDT.class)
+			@DBAdaptType(value = MyTypeAdaptor.class, type = TwentyThreeQDT.class)
 			public String year;
+		}
+	}
+
+	public static class MyUnknownQDT extends QueryableDatatype {
+
+		@SuppressWarnings("unused")
+		public MyUnknownQDT() {
+			super(new MyUnknownDataType());
+		}
+
+		@Override
+		public String getSQLDatatype() {
+			return "unknown";
+		}
+
+		@Override
+		protected String formatValueForSQLStatement(DBDatabase db) {
+			return "unknown";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+			return resultSet.getString(fullColumnName);
+		}
+
+		@Override
+		protected void setValue(String inputText) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+	}
+
+	public static class MyUnknownDataType {
+
+		public MyUnknownDataType parse(String str) {
+			return new MyUnknownDataType();
+		}
+
+		@Override
+		public String toString() {
+			return MyUnknownDataType.class.getSimpleName();
 		}
 	}
 
@@ -291,56 +341,17 @@ public class TypeAdaptorUsabilityTest {
 //    @Test
 	public
 			void stringFieldAdaptedAsCustomQDT_whenAdaptingOnComplexPOJOTypes() {
-		class MyDataType {
 
-			public MyDataType parse(String str) {
-				return new MyDataType();
-			}
+		class MyTypeAdaptor implements DBTypeAdaptor<String, MyUnknownDataType> {
 
 			@Override
-			public String toString() {
-				return MyDataType.class.getSimpleName();
-			}
-		}
-
-		class MyQDT extends QueryableDatatype {
-
-			@SuppressWarnings("unused")
-			public MyQDT() {
-				super(new MyDataType());
-			}
-
-			@Override
-			public String getSQLDatatype() {
-				return "unknown";
-			}
-
-			@Override
-			protected String formatValueForSQLStatement(DBDatabase db) {
-				return "unknown";
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return false;
-			}
-
-			@Override
-			protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
-				return resultSet.getString(fullColumnName);
-			}
-		}
-
-		class MyTypeAdaptor implements DBTypeAdaptor<String, MyDataType> {
-
-			@Override
-			public String fromDatabaseValue(MyDataType dbvValue) {
+			public String fromDatabaseValue(MyUnknownDataType dbvValue) {
 				return (dbvValue == null) ? null : dbvValue.toString();
 			}
 
 			@Override
-			public MyDataType toDatabaseValue(String objectValue) {
-				return (objectValue == null) ? null : new MyDataType().parse(objectValue);
+			public MyUnknownDataType toDatabaseValue(String objectValue) {
+				return (objectValue == null) ? null : new MyUnknownDataType().parse(objectValue);
 			}
 		}
 
@@ -348,7 +359,7 @@ public class TypeAdaptorUsabilityTest {
 		class MyTable extends DBRow {
 
 			@DBColumn
-			@DBAdaptType(value = MyTypeAdaptor.class, type = MyQDT.class)
+			@DBAdaptType(value = MyTypeAdaptor.class, type = TwentyThreeQDT.class)
 			public String text;
 		}
 	}

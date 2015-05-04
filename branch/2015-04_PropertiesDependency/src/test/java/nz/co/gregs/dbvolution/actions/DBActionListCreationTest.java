@@ -87,7 +87,7 @@ public class DBActionListCreationTest extends AbstractTest {
 		marqueExample = new Marque();
 		marqueExample.name.permittedValuesIgnoreCase("ford");
 		Marque ford = marquesTable.getOnlyRowByExample(marqueExample);
-		final Long fordOriginalUpdateCount = ford.updateCount.getValue();
+		final Long fordOriginalUpdateCount = ford.updateCount.longValue();
 		ford.updateCount.setValue(fordOriginalUpdateCount + 10);
 
 		DBActionList updates = database.update(toyota, ford);
@@ -112,8 +112,8 @@ public class DBActionListCreationTest extends AbstractTest {
 		marqueExample.name.permittedValuesIgnoreCase("ford");
 		ford = marquesTable.getOnlyRowByExample(marqueExample);
 
-		Assert.assertThat(toyota.uidMarque.getValue(), is(toyotaUID));
-		Assert.assertThat(ford.updateCount.getValue(), is(fordOriginalUpdateCount));
+		Assert.assertThat(toyota.uidMarque.longValue(), is(toyotaUID));
+		Assert.assertThat(ford.updateCount.longValue(), is(fordOriginalUpdateCount));
 	}
 
 	@Test

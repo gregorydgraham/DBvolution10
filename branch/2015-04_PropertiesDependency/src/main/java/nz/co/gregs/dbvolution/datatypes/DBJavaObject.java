@@ -323,4 +323,10 @@ public class DBJavaObject<O> extends DBLargeObject {
 	public boolean getIncludesNull() {
 		return false;
 	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void setValue(String inputText) {
+		setValue((Object)inputText);
+	}
 }
