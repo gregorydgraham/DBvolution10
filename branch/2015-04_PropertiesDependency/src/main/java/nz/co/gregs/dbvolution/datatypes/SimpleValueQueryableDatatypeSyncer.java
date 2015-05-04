@@ -54,7 +54,7 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 			// TODO complete this
 			internalQDT.setDefined(false);
 			internalQDT.setOperator(null);
-			internalQDT.setLiteralValue(null);
+			internalQDT.setLiteralValueOnly(null);
 			internalQDT.setChanged(false);
 			internalQDT.setPreviousValue(null);
 		} else {
