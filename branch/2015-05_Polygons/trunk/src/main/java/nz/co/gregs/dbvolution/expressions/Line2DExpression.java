@@ -19,13 +19,16 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 
 /**
  *
@@ -163,6 +166,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return is(new DBLine2D(rightHandSide));
 	}
 
+	public BooleanExpression is(Polygon rightHandSide) {
+		return is(rightHandSide.getExteriorRing());
+	}
+
 	@Override
 	public BooleanExpression is(Line2DResult rightHandSide) {
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
@@ -173,6 +180,29 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 					return db.getDefinition().doLine2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	public BooleanExpression isNot(LineString rightHandSide) {
+		return isNot(new DBLine2D(rightHandSide));
+	}
+
+	public BooleanExpression isNot(Polygon rightHandSide) {
+		return isNot(rightHandSide.getExteriorRing());
+	}
+
+	public BooleanExpression isNot(Line2DResult rightHandSide) {
+		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					final DBDefinition defn = db.getDefinition();
+					return defn.doLine2DNotEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return getFirst().stringResult().is(getSecond().stringResult()).not().toSQLString(db);
 				}
 			}
 		});

@@ -268,44 +268,150 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 	
 	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return "ST_INTERSECTION((" + firstGeometry + ")::GEOMETRY,  (" + secondGeometry + ")::GEOMETRY)";
+	}
+
+	@Override
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+//		return "(" + firstGeometry + ") ?#  (" + secondGeometry + ")";
+		return "ST_OVERLAPS((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+	}	
+
+	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
-		return "ST_Intersects(" + firstGeometry + ", " + secondGeometry + ")";
+//		return "(" + firstGeometry + ") ?#  (" + secondGeometry + ")";
+		return "((" + firstGeometry + ") && (" + secondGeometry + "))";
+	}	
+	
+	@Override
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return "ST_TOUCHES(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 	
-//	@Override
-//	public String doDateRepeatGetYearsTransform(String interval) {
-//		return doTruncTransform("(EXTRACT(DAY FROM "+interval+")/365.25)","0");
-//	}
-//	
-//	@Override
-//	public String doDateRepeatGetMonthsTransform(String interval) {
-//		return doModulusTransform(doTruncTransform("((EXTRACT(DAY FROM "+interval+")/30.4375))","0"), "12");
-//	}
-//	
-//	@Override
-//	public String doDateRepeatGetDaysTransform(String interval) {
-//		return "(EXTRACT(DAY FROM "+interval+")";
-//	}
-//	
-//	@Override
-//	public String doDateRepeatGetHoursTransform(String interval) {
-//		return "EXTRACT(HOUR FROM "+interval+")";
-//	}
-//	
-//	@Override
-//	public String doDateRepeatGetMinutesTransform(String interval) {
-//		return "EXTRACT(MINUTE FROM "+interval+")";
-//	}
-//	
-//	@Override
-//	public String doDateRepeatGetSecondsTransform(String interval) {
-//		return "EXTRACT(SECOND FROM "+interval+")";
-//	}
-//	
-//	@Override
-//	public String doDateRepeatGetMillisecondsTransform(String interval) {
-//		return "EXTRACT(MILLISECONDS FROM "+interval+")";
-//	}
+	@Override
+	public String doPolygon2DGetAreaTransform(String toSQLString) {
+		return "ST_AREA(("+toSQLString+")::GEOMETRY)";
+	}	
+	
+	@Override
+	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
+		return "BOX2D("+toSQLString+"::GEOMETRY)";
+	}	
+	
+	@Override
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return "ST_EQUALS(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+	}
+
+	/**
+	 * Test whether the first polygon completely contains the second polygon.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is TRUE if the first polygon contains the second.
+	 */
+	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+		return "ST_CONTAINS(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+	}
+
+	/**
+	 * Inverse of {@link #doPolygon2DIntersectsTransform(java.lang.String, java.lang.String)
+	 * }, tests whether the 2 polygons are non-coincident.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is FALSE if the polygons intersect.
+	 */
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return "ST_DISJOINT(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+	}
+
+	/**
+	 * Test whether the first polygon is completely within the second polygon.
+	 *
+	 * <p>
+	 * Compare this to {@link #doPolygon2DContainsTransform(java.lang.String, java.lang.String)
+	 * }
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is TRUE if the first polygon is within the second.
+	 */
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		return "ST_WITHIN(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+	}
+
+	/**
+	 * Returns the dimension of the polygon.
+	 *
+	 * <p>
+	 * This will be "2"
+	 *
+	 * @param toSQLString
+	 * @return "2" unless something has gone horribly wrong.
+	 */
+	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+		return "ST_DIMENSION(("+ toSQLString + ")::GEOMETRY)";
+	}
+
+	/**
+	 * Defines the transformation require to transform an SQL Polygon2D into a
+	 * polygon representing the exterior ring of the polygon.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
+		return "ST_EXTERIORRING(("+ polygon2DSQL + ")::GEOMETRY)::PATH";
+	}
+
+	/**
+	 * Generate the SQL that will return the largest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
+		return "ST_XMAX(("+ polygon2DSQL + ")::GEOMETRY)";
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
+		return "ST_XMIN(("+ polygon2DSQL + ")::GEOMETRY)";
+	}
+
+	/**
+	 * Generate the SQL that will return the largest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
+		return "ST_YMAX(("+ polygon2DSQL + ")::GEOMETRY)";
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest Y value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
+		return "ST_YMIN(("+ polygon2DSQL + ")::GEOMETRY)";
+	}
+
 
 	@Override
 	public boolean supportsHyperbolicFunctionsNatively() {
@@ -512,7 +618,6 @@ public class PostgresDBDefinition extends DBDefinition {
 			str.append(separator).append("(").append(coordinate.x).append(",").append(coordinate.y).append(")");
 			separator=",";
 		}
-//		return "PATH '[" +str+"]'";
 		
 		return "POLYGON '(" + str + ")'";
 	}

@@ -3044,6 +3044,17 @@ public abstract class DBDefinition {
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
+	
+	/**
+	 * Creates a Polygon2D representing the intersection of the Polygon2Ds.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that represents a polygon of the intersection, null if there is no intersection.
+	 */
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
 
 	/**
 	 * Test whether the 2 polygons intersect.
@@ -3093,10 +3104,12 @@ public abstract class DBDefinition {
 
 	/**
 	 * Tests whether the polygons touch.
+	 * 
+	 * <p>Checks that a) the polygons have at least on point in common and b) that their interiors do not overlap.
 	 *
 	 * @param firstGeometry
 	 * @param secondGeometry
-	 * @return
+	 * @return SQL snippet
 	 */
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
@@ -3500,6 +3513,18 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Transform the 2 Line2D SQL snippets into an NOT_EQUALS comparison of the 2
+	 *
+	 * @param line2DSQL
+	 * @param otherLine2DSQL
+	 * @return SQL
+	 */
+	public String doLine2DNotEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+		return "NOT ("+doLine2DEqualsTransform(line2DSQL, otherLine2DSQL)+ ")";
+	}
+
+
+	/**
 	 * Create the SQL required to get the dimension of this Line2D SQL.
 	 *
 	 * @param line2DSQL
@@ -3709,5 +3734,4 @@ public abstract class DBDefinition {
 	public boolean supportsStatementIsClosed() {
 		return true;
 	}
-
 }
