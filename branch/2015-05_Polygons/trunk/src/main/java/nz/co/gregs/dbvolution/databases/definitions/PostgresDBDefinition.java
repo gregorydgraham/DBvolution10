@@ -365,7 +365,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
-		return "ST_EXTERIORRING(("+ polygon2DSQL + ")::GEOMETRY)::PATH";
+		return "ST_MAKEPOLYGON(ST_EXTERIORRING(("+ polygon2DSQL + ")::GEOMETRY))";
 	}
 
 	/**

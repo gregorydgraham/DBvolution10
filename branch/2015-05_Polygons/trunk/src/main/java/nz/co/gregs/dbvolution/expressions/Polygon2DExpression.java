@@ -308,8 +308,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		});
 	}
 
-	public Line2DExpression exteriorRing() {
-		Line2DExpression exteriorRingExpr = new Line2DExpression(new Polygon2DFunctionWithLine2DResult(this) {
+	public Polygon2DExpression exteriorRing() {
+		Polygon2DExpression exteriorRingExpr = new Polygon2DExpression(new Polygon2DFunctionWithPolygon2DResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
