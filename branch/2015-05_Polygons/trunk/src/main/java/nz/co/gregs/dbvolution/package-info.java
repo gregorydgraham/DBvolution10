@@ -5,6 +5,9 @@
  * and store the information on each table, and using special datatypes to make
  * setting query conditions trivial and intuitive.
  * <p>
+ * Demonstration application available at <a href="https://github.com/gregorydgraham/DBvolution-Demo">gitHub</a> and there are more docs and examples at <a href="http://dbvolution.gregs.co.nz">dbvolution.gregs.co.nz</a>.
+ * 
+ * <p>
  * To use DBV, first create a connection to your database using the DBDatabase
  * subclasses in {@link nz.co.gregs.dbvolution.databases}.
  * <p>
