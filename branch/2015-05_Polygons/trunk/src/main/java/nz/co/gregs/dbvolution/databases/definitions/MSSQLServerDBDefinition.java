@@ -716,7 +716,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
-		return "(("+ polygon2DSQL + ").STExteriorRing().STConvexHull())";
+		return "(("+ polygon2DSQL + ").STExteriorRing())";
 	}
 
 	/**

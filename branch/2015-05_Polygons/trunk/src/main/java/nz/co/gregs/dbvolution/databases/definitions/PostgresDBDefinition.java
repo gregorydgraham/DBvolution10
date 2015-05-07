@@ -311,6 +311,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @param secondGeometry
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
+	@Override
 	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
 		return "ST_CONTAINS(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
@@ -323,6 +324,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @param secondGeometry
 	 * @return SQL that is FALSE if the polygons intersect.
 	 */
+	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
 		return "ST_DISJOINT(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
@@ -338,6 +340,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @param secondGeometry
 	 * @return SQL that is TRUE if the first polygon is within the second.
 	 */
+	@Override
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
@@ -353,19 +356,21 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @param toSQLString
 	 * @return "2" unless something has gone horribly wrong.
 	 */
+	@Override
 	public String doPolygon2DGetDimensionTransform(String toSQLString) {
 		return "ST_DIMENSION(("+ toSQLString + ")::GEOMETRY)";
 	}
 
 	/**
 	 * Defines the transformation require to transform an SQL Polygon2D into a
-	 * polygon representing the exterior ring of the polygon.
+	 * linestring representing the exterior ring of the polygon.
 	 *
 	 * @param polygon2DSQL
 	 * @return SQL
 	 */
+	@Override
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
-		return "ST_MAKEPOLYGON(ST_EXTERIORRING(("+ polygon2DSQL + ")::GEOMETRY))";
+		return "ST_EXTERIORRING(("+ polygon2DSQL + ")::GEOMETRY)";
 	}
 
 	/**
@@ -375,6 +380,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @param polygon2DSQL
 	 * @return SQL
 	 */
+	@Override
 	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
 		return "ST_XMAX(("+ polygon2DSQL + ")::GEOMETRY)";
 	}
@@ -386,6 +392,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @param polygon2DSQL
 	 * @return SQL
 	 */
+	@Override
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
 		return "ST_XMIN(("+ polygon2DSQL + ")::GEOMETRY)";
 	}
@@ -397,6 +404,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @param polygon2DSQL
 	 * @return SQL
 	 */
+	@Override
 	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
 		return "ST_YMAX(("+ polygon2DSQL + ")::GEOMETRY)";
 	}
@@ -408,6 +416,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @param polygon2DSQL
 	 * @return SQL
 	 */
+	@Override
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
 		return "ST_YMIN(("+ polygon2DSQL + ")::GEOMETRY)";
 	}

@@ -308,8 +308,16 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		});
 	}
 
-	public Polygon2DExpression exteriorRing() {
-		Polygon2DExpression exteriorRingExpr = new Polygon2DExpression(new Polygon2DFunctionWithPolygon2DResult(this) {
+	/**
+	 * Return a Line2DExpression representing a line drawn around the outside of the Polygon2D.
+	 * 
+	 * <p>
+	 * The line is coincident with the edge of the polygon but it does not contain any points within the polygon as it is only a line.
+	 *
+	 * @return
+	 */
+	public Line2DExpression exteriorRing() {
+		Line2DExpression exteriorRingExpr = new Line2DExpression(new Polygon2DFunctionWithLine2DResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {

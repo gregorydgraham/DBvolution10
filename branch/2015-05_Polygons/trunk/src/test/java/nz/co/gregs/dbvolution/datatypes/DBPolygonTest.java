@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -683,14 +684,14 @@ public class DBPolygonTest extends AbstractTest {
 		spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
 		database.insert(spatial);
 //POLYGON ((-1 -1, 2 -1, 2 2, -1 2, -1 -1))
-		Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
+		LineString lineString = fac.createLineString(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
 		spatial = new BasicSpatialTable();
-		spatial.myfirstgeom.setValue(polygon);
+		spatial.myfirstgeom.setValue(fac.createPolygon(lineString.getCoordinateSequence()));
 		database.insert(spatial);
 
 		database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 
-		DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().is(polygon));
+		DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().is(lineString));
 		List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
@@ -698,14 +699,14 @@ public class DBPolygonTest extends AbstractTest {
 
 		query = database.getDBQuery(new BasicSpatialTable())
 				.addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().is(
-								fac.createPolygon(new Coordinate[]{new Coordinate(5, 10), new Coordinate(6, 10), new Coordinate(6, 11), new Coordinate(5, 11), new Coordinate(5, 10)}))
+								fac.createLineString(new Coordinate[]{new Coordinate(5, 10), new Coordinate(6, 10), new Coordinate(6, 11), new Coordinate(5, 11), new Coordinate(5, 10)}))
 				);
 		allRows = query.getAllInstancesOf(spatial);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 
-		query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().isNot(polygon));
+		query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().isNot(lineString));
 		allRows = query.getAllInstancesOf(spatial);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
@@ -728,8 +729,8 @@ public class DBPolygonTest extends AbstractTest {
 //		@DBColumn
 //		DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.myfirstgeom).boundingBox());
 //
-//		@DBColumn
-//		DBPolygon2D exteriorRing = new DBPolygon2D(this.column(this.myfirstgeom).exteriorRing());
+		@DBColumn
+		DBLine2D exteriorRing = new DBLine2D(this.column(this.myfirstgeom).exteriorRing());
 	}
 
 }

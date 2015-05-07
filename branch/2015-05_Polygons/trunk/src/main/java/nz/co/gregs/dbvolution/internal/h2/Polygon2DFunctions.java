@@ -284,8 +284,10 @@ public enum Polygon2DFunctions {
 			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
 			+ "						final LineString exteriorRing = firstPoly.getExteriorRing();\n"
 			+ "						exteriorRing.normalize();\n"
-			+ "						Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());\n"
-			+ "						return exteriorPolygon.toText();\n"
+			//+ "						Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());\n"
+			//+ "						return exteriorPolygon.toText();\n"
+			+ "						LineString createLineString = (new GeometryFactory()).createLineString(exteriorRing.getCoordinateSequence());\n" 
+			+ "						createLineString.toText();\n"
 			+ "					} else {\n"
 			+ "						return null;"
 			+ "					}\n"
@@ -409,11 +411,11 @@ public enum Polygon2DFunctions {
 	}
 
 	public void add(Statement stmt) throws SQLException {
-//		try {
-//			stmt.execute("DROP ALIAS " + alias() + ";");
-//		} catch (SQLException sqlex) {
-//			;
-//		}
+		try {
+			stmt.execute("DROP ALIAS " + alias() + ";");
+		} catch (SQLException sqlex) {
+			;
+		}
 		if (code.isEmpty()) {
 			stmt.execute("CREATE ALIAS IF NOT EXISTS " + alias() + " DETERMINISTIC AS $$ \n"
 					+ "import com.vividsolutions.jts.geom.*; import com.vividsolutions.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n throw new UnsupportedOperationException(\"Not supported yet.\");} $$;");

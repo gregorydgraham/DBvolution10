@@ -3167,7 +3167,7 @@ public abstract class DBDefinition {
 
 	/**
 	 * Defines the transformation require to transform an SQL Polygon2D into a
-	 * polygon representing the exterior ring of the polygon.
+	 * linestring representing the exterior ring of the polygon.
 	 *
 	 * @param polygon2DSQL
 	 * @return SQL

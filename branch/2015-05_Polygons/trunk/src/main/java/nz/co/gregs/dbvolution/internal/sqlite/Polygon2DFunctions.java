@@ -60,23 +60,28 @@ public class Polygon2DFunctions {
 	}
 
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
-		Function.create(connection, DIMENSION, new Dimension());
-		Function.create(connection, EQUALS, new Equals());
-		Function.create(connection, AREA, new Area());
-		Function.create(connection, TOUCHES, new Touches());
-		Function.create(connection, EXTERIORRING, new ExteriorRing());
-		Function.create(connection, CONTAINS, new Contains());
-		Function.create(connection, WITHIN, new Within());
-		Function.create(connection, OVERLAPS, new Overlaps());
-		Function.create(connection, INTERSECTS, new Intersects());
-		Function.create(connection, DISJOINT, new Disjoint());
-		Function.create(connection, CREATE_FROM_WKTPOLYGON2D, new CreatePolygonFromWKTPolygon2D());
-		Function.create(connection, CREATE_FROM_POINT2DS, new CreatePolygonFromPoint2Ds());
-		Function.create(connection, MAX_X, new MaxX());
-		Function.create(connection, MIN_X, new MinX());
-		Function.create(connection, MAX_Y, new MaxY());
-		Function.create(connection, MIN_Y, new MinY());
-		Function.create(connection, BOUNDINGBOX, new BoundingBox());
+		add(connection, DIMENSION, new Dimension());
+		add(connection, EQUALS, new Equals());
+		add(connection, AREA, new Area());
+		add(connection, TOUCHES, new Touches());
+		add(connection, EXTERIORRING, new ExteriorRing());
+		add(connection, CONTAINS, new Contains());
+		add(connection, WITHIN, new Within());
+		add(connection, OVERLAPS, new Overlaps());
+		add(connection, INTERSECTS, new Intersects());
+		add(connection, DISJOINT, new Disjoint());
+		add(connection, CREATE_FROM_WKTPOLYGON2D, new CreatePolygonFromWKTPolygon2D());
+		add(connection, CREATE_FROM_POINT2DS, new CreatePolygonFromPoint2Ds());
+		add(connection, MAX_X, new MaxX());
+		add(connection, MIN_X, new MinX());
+		add(connection, MAX_Y, new MaxY());
+		add(connection, MIN_Y, new MinY());
+		add(connection, BOUNDINGBOX, new BoundingBox());
+	}
+	
+	private static void add(java.sql.Connection connection, String functionName, Function function) throws SQLException{
+		Function.destroy(connection, functionName);
+		Function.create(connection, functionName, function);
 	}
 
 	public static class Dimension extends Function {
@@ -417,8 +422,11 @@ public class Polygon2DFunctions {
 				} else {
 					final LineString exteriorRing = poly1.getExteriorRing();
 					exteriorRing.normalize();
-					Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());
-					result(exteriorPolygon.toText());
+//					Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());
+//					result(exteriorPolygon.toText());
+					LineString createLineString = (new GeometryFactory()).createLineString(exteriorRing.getCoordinates());
+					createLineString.reverse();
+					result(createLineString.toText());
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
