@@ -599,4 +599,171 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 //		Polygon polygon = geometryFactory.createPolygon(coords.toArray(new Coordinate[]{}));
 //		return polygon;
 //	}
+	
+	//geometry::STGeomFromText('POLYGON ((0 0, 150 0, 150 150, 0 150, 0 0))', 0)
+	@Override
+	public String doDBPolygon2DFormatTransform(Polygon polygon2DInWKTFormat) {
+			StringBuilder str = new  StringBuilder();
+		String separator = "";
+		Coordinate[] coordinates = polygon2DInWKTFormat.getCoordinates();
+		for (Coordinate coordinate : coordinates) {
+			str.append(separator).append(coordinate.x).append(" ").append(coordinate.y);
+			separator=", ";
+		}
+		
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
+	}
+	
+	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return "((" + firstGeometry + ").STIntersection(" + secondGeometry + "))";
+	}
+
+	@Override
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+//		return "(" + firstGeometry + ") ?#  (" + secondGeometry + ")";
+		return "((" + firstGeometry + ").STOverlaps(" + secondGeometry + ")=1)";
+	}	
+
+	@Override
+	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
+		return "((" + firstGeometry + ").STIntersects(" + secondGeometry + ")=1)";
+	}	
+	
+	@Override
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return "(("+ firstGeometry + ").STTouches(" + secondGeometry + ")=1)";
+	}
+	
+	@Override
+	public String doPolygon2DGetAreaTransform(String toSQLString) {
+		return "(("+toSQLString+").STArea())";
+	}	
+	
+	@Override
+	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
+		return "("+toSQLString+").STEnvelope()";
+	}	
+	
+	@Override
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return "(("+ firstGeometry + ").STEquals(" + secondGeometry + ")=1)";
+	}
+
+	/**
+	 * Test whether the first polygon completely contains the second polygon.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is TRUE if the first polygon contains the second.
+	 */
+	@Override
+	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+		return "(("+ firstGeometry + ").STContains(" + secondGeometry + ")=1)";
+	}
+
+	/**
+	 * Inverse of {@link #doPolygon2DIntersectsTransform(java.lang.String, java.lang.String)
+	 * }, tests whether the 2 polygons are non-coincident.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is FALSE if the polygons intersect.
+	 */
+	@Override
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return "(("+ firstGeometry + ").STDisjoint(" + secondGeometry + ")=1)";
+	}
+
+	/**
+	 * Test whether the first polygon is completely within the second polygon.
+	 *
+	 * <p>
+	 * Compare this to {@link #doPolygon2DContainsTransform(java.lang.String, java.lang.String)
+	 * }
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that is TRUE if the first polygon is within the second.
+	 */
+	@Override
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		return "(("+ firstGeometry + ").STWithin(" + secondGeometry + ")=1)";
+	}
+
+	/**
+	 * Returns the dimension of the polygon.
+	 *
+	 * <p>
+	 * This will be "2"
+	 *
+	 * @param toSQLString
+	 * @return "2" unless something has gone horribly wrong.
+	 */
+	@Override
+	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+		return "(("+ toSQLString + ").STDimension())";
+	}
+
+	/**
+	 * Defines the transformation require to transform an SQL Polygon2D into a
+	 * polygon representing the exterior ring of the polygon.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	@Override
+	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
+		return "(("+ polygon2DSQL + ").STExteriorRing().STConvexHull())";
+	}
+
+	/**
+	 * Generate the SQL that will return the largest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	@Override
+	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
+		return doPoint2DGetXTransform("(("+ polygon2DSQL + ").STExteriorRing().STPointN(2))");
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	@Override
+	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
+		return doPoint2DGetXTransform("(("+ polygon2DSQL + ").STExteriorRing().STPointN(1))");
+	}
+
+	/**
+	 * Generate the SQL that will return the largest X value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	@Override
+	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
+		return doPoint2DGetYTransform("(("+ polygon2DSQL + ").STExteriorRing().STPointN(3))");
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest Y value within the Polygon2D
+	 * expression.
+	 *
+	 * @param polygon2DSQL
+	 * @return SQL
+	 */
+	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
+		return doPoint2DGetYTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(1))");
+	}
+
 }
