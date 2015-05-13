@@ -26,6 +26,19 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.Polygon2DResult;
 
+/**
+ * Represents database columns and values that are a 2 dimensional polygon: an closed ordered set of X and Y values defining a solid shape.
+ * 
+ * <p>
+ * Use DBPolygon2D when the column is a 2 dimensional {@code Polygon}, {@code ST_Polygon}, or {@code GEOMETRY} that represents a polygon.
+ *
+ * <p>
+ * Generally DBPolygon2D is declared inside your DBRow sub-class as:
+ * {@code @DBColumn public DBPolygon2D myPolygonColumn = new DBPolygon2D();}
+ *
+ * 
+ * @author Gregory Graham
+ */
 public class DBPolygon2D extends QueryableDatatype implements TransformRequiredForSelectClause, Polygon2DResult {
 
 	private static final long serialVersionUID = 1L;

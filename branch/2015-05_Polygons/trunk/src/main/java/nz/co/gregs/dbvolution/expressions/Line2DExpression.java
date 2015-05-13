@@ -28,11 +28,13 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 
 /**
+ * Represents SQL expressions that are a 2 dimensional path, a series of connected line segments with X and Y coordinates.
+ * 
+ * 
  *
- * @author greg
+ * @author Gregory Graham
  */
 public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult>, SpatialExpression {
 

@@ -27,13 +27,35 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.Point2DResult;
 
+/**
+ * Represents database columns and values that are a 2 dimensional point: an pair of X and Y values.
+ * 
+ * <p>
+ * Use DBPoint2D when the column is a 2 dimensional {@code Point}, {@code ST_Point}, or {@code GEOMETRY} that represents a point.
+ *
+ * <p>
+ * Generally DBPoint2D is declared inside your DBRow sub-class as:
+ * {@code @DBColumn public DBPoint2D myPointColumn = new DBPoint2D();}
+ *
+ * 
+ * @author Gregory Graham
+ */
 public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Create an unset undefined DBPoint2D object to represent a Point column or value.
+	 *
+	 */
 	public DBPoint2D() {
 	}
 
+	/**
+	 * Set the value of this DBPoint2D to the {@link Point} specified.
+	 *
+	 * @param point
+	 */
 	public void setValue(Point point) {
 		setLiteralValue(point);
 	}

@@ -17,8 +17,9 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
+ * Represents SQL results that are 2 dimensional paths: a series of connected line segments with X and Y coordinates.
  *
- * @author greg
+ * @author Gregory Graham
  */
 public interface Line2DResult extends DBExpression, ExpressionCanHaveNullValues {
 	

@@ -425,8 +425,8 @@ public class Polygon2DFunctions {
 //					Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());
 //					result(exteriorPolygon.toText());
 					LineString createLineString = (new GeometryFactory()).createLineString(exteriorRing.getCoordinates());
-					createLineString.reverse();
-					result(createLineString.toText());
+					Geometry reverse = createLineString.reverse();
+					result(reverse.toText());
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);

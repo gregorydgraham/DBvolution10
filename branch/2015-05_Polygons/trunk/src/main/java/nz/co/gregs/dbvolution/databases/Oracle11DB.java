@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 
 /**
  * Implements support for version 11 and prior of the Oracle database.
@@ -29,7 +30,9 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * @author Gregory Graham
  * @see OracleDB
  * @see Oracle12DB
+ * @see OracleDBDefinition
  * @see Oracle11DBDefinition
+ * @see Oracle12DBDefinition
  */
 public class Oracle11DB extends OracleDB {
 
@@ -53,7 +56,7 @@ public class Oracle11DB extends OracleDB {
 	 * @param username username
 	 * @throws java.sql.SQLException
 	 */
-	public Oracle11DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
+	public Oracle11DB(OracleDBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 

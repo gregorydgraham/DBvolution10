@@ -82,6 +82,9 @@ import nz.co.gregs.dbvolution.internal.query.*;
  */
 public class DBQuery {
 
+	/**
+	 * The default timeout value used to prevent accidental long running queries
+	 */
 	public final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();

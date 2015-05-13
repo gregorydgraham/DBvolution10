@@ -16,12 +16,16 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.WKBReader;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.Line2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 
@@ -370,7 +374,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
-		return "ST_EXTERIORRING(("+ polygon2DSQL + ")::GEOMETRY)";
+		return "PATH(ST_EXTERIORRING(("+ polygon2DSQL + ")::GEOMETRY))";
 	}
 
 	/**
@@ -548,25 +552,30 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString)  throws com.vividsolutions.jts.io.ParseException {
-		String string = "LINESTRING "+lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
-		String[] splits = lineStringAsString.split("[(),]+");
-		System.out.println(lineStringAsString+" => "+string);
-		List<Coordinate> coords = new ArrayList<Coordinate>();
-		Coordinate firstCoord = null;
-		for (int i = 1; i < splits.length-1; i++) {
-			String splitX = splits[i];
-			String splitY = splits[i+1];
-			System.out.println("COORD: "+splitX+", "+splitY);
-			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
-			coords.add(coordinate);
-			if (firstCoord==null){
-				firstCoord=coordinate;
+		LineString lineString = null;
+		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
+			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
+			String[] splits = lineStringAsString.split("[(),]+");
+			System.out.println(lineStringAsString + " => " + string);
+			Coordinate firstCoord = null;
+			List<Coordinate> coords = new ArrayList<Coordinate>();
+			for (int i = 1; i < splits.length - 1; i++) {
+				String splitX = splits[i];
+				String splitY = splits[i + 1];
+				System.out.println("COORD: " + splitX + ", " + splitY);
+				final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
+				coords.add(coordinate);
+				if (firstCoord == null) {
+					firstCoord = coordinate;
+				}
+				i++;
 			}
-			i++;
-		}
-		coords.add(firstCoord);
+			coords.add(firstCoord);
 		final GeometryFactory geometryFactory = new GeometryFactory();
-		LineString lineString = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+		lineString = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+		} else {
+			return super.transformDatabaseLine2DValueToJTSLineString(lineStringAsString);
+		}
 		return lineString;
 	}
 
@@ -630,4 +639,14 @@ public class PostgresDBDefinition extends DBDefinition {
 		
 		return "POLYGON '(" + str + ")'";
 	}
+	
+		@Override
+	public DBExpression transformToStorableType(DBExpression columnExpression) {
+		if (columnExpression instanceof Line2DExpression) {
+			return ((Line2DExpression) columnExpression).stringResult();
+		} else {
+			return super.transformToStorableType(columnExpression);
+		}
+	}
+
 }
