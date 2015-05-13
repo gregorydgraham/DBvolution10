@@ -28,16 +28,18 @@ import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.Point2DResult;
 
 /**
- * Represents database columns and values that are a 2 dimensional point: an pair of X and Y values.
- * 
+ * Represents database columns and values that are a 2 dimensional point: an
+ * pair of X and Y values.
+ *
  * <p>
- * Use DBPoint2D when the column is a 2 dimensional {@code Point}, {@code ST_Point}, or {@code GEOMETRY} that represents a point.
+ * Use DBPoint2D when the column is a 2 dimensional {@code Point},
+ * {@code ST_Point}, or {@code GEOMETRY} that represents a point.
  *
  * <p>
  * Generally DBPoint2D is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBPoint2D myPointColumn = new DBPoint2D();}
  *
- * 
+ *
  * @author Gregory Graham
  */
 public class DBPoint2D extends QueryableDatatype implements Point2DResult {
@@ -45,7 +47,8 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Create an unset undefined DBPoint2D object to represent a Point column or value.
+	 * Create an unset undefined DBPoint2D object to represent a Point column or
+	 * value.
 	 *
 	 */
 	public DBPoint2D() {
@@ -54,7 +57,11 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	/**
 	 * Set the value of this DBPoint2D to the {@link Point} specified.
 	 *
-	 * @param point
+	 * <p>
+	 * Set values are used to add the value to the database. Without a set value
+	 * the database entry will be NULL.
+	 *
+	 * @param point the value to be set in the database.
 	 */
 	public void setValue(Point point) {
 		setLiteralValue(point);
@@ -68,15 +75,39 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 			return (Point) getLiteralValue();
 		}
 	}
-	
-	public Point jtsPointValue(){
+
+	/**
+	 * Convert the value of this object to a JTS {@link Point}.
+	 * 
+	 * <p>
+	 * NULL is valid result from this method.
+	 *
+	 * @return the set value of this object as a JTS Point object.
+	 */
+	public Point jtsPointValue() {
 		return getValue();
 	}
 
+	/**
+	 * Create a DBPoint2D with the column expression specified.
+	 * 
+	 * <p>
+	 * When retrieving this object from the database the expression will be evaluated to provide the value.
+	 *
+	 * @param columnExpression
+	 */
 	public DBPoint2D(nz.co.gregs.dbvolution.expressions.Point2DExpression columnExpression) {
 		super(columnExpression);
 	}
 
+	/**
+	 * Create DBpoint2D and set it's value to the JTS {@link  Point} provided.
+	 * 
+	 * <p>
+	 * Equivalent to {code point2D = new DBPoint2D(); point2D.setValue(aPoint);}
+	 *
+	 * @param point
+	 */
 	public DBPoint2D(Point point) {
 		super(point);
 	}

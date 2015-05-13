@@ -257,7 +257,7 @@ public class Point2DExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
-		final String boundingText = allRows.get(0).boundingBox.getGeometryValue().toText();
+		final String boundingText = allRows.get(0).boundingBox.jtsPolygonValue().toText();
 		String[] splits = boundingText.split("[^-0-9.]+");
 		int numbersTested = 0;
 		for (String split : splits) {

@@ -18,13 +18,21 @@ package nz.co.gregs.dbvolution.exceptions;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
+ * Thrown when the database has returned a geometry that cannot be interpreted
+ * as the geometry expected.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class IncorrectGeometryReturnedForDatatype extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Thrown when the database has returned a geometry that cannot be interpreted
+	 * as the geometry expected.
+	 *
+	 * @author Gregory Graham
+	 */
 	public IncorrectGeometryReturnedForDatatype(Geometry databaseReturned, Geometry wasExpecting) {
 		super("Geometry Type Returned By Database Clashes With Declared Geometry: Was expecting " + wasExpecting.getGeometryType() + " but the database has provided a " + databaseReturned.getGeometryType() + ".  Please check that the field is declared correctly and that the expression returns the correct type.");
 	}

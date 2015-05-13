@@ -16,8 +16,10 @@
 package nz.co.gregs.dbvolution.exceptions;
 
 import java.lang.reflect.Field;
+import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 
 /**
+ * Thrown when the developer has attempted to use a POJO rather than a DBRow in the {@link AutoFillDuringQueryIfPossible} annotation.
  *
  * @author gregorygraham
  */
