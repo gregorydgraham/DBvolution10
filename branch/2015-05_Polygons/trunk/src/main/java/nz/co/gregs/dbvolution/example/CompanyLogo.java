@@ -69,8 +69,8 @@ public class CompanyLogo extends DBRow {
 	 *
 	 * <p>
 	 * DBInteger indicates that the field is INTEGER or NUMBER field that
-	 * naturally provides an Integer value in Java. It has an instance as that just
-	 * makes everyone's life easier.
+	 * naturally provides an Integer value in Java. It has an instance as that
+	 * just makes everyone's life easier.
 	 *
 	 */
 	@DBForeignKey(CarCompany.class)
@@ -85,9 +85,9 @@ public class CompanyLogo extends DBRow {
 	 * and protects the actual database column name from any refactoring.
 	 *
 	 * <p>
-	 * DBByteArray indicates that the field is BLOB or BITS field that
-	 * naturally provides a byte[] value in Java. It has an instance as that just
-	 * makes everyone's life easier.
+	 * DBByteArray indicates that the field is BLOB or BITS field that naturally
+	 * provides a byte[] value in Java. It has an instance as that just makes
+	 * everyone's life easier.
 	 *
 	 */
 	@DBColumn("image_file")
@@ -101,9 +101,9 @@ public class CompanyLogo extends DBRow {
 	 * and protects the actual database column name from any refactoring.
 	 *
 	 * <p>
-	 * DBInteger indicates that the field is CHAR or VARCHAR field that
-	 * naturally provides String values in Java. It has an instance as that just
-	 * makes everyone's life easier.
+	 * DBInteger indicates that the field is CHAR or VARCHAR field that naturally
+	 * provides String values in Java. It has an instance as that just makes
+	 * everyone's life easier.
 	 *
 	 */
 	@DBColumn("image_name")

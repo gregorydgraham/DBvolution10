@@ -28,12 +28,13 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Represents a database column storing a large object value.
  *
  * <p>
- * This class adds the necessary methods to use a large object column like a large object
- * expression.
+ * This class adds the necessary methods to use a large object column like a
+ * large object expression.
  *
  * <p>
  * Internally the class uses an AbsractColumn to store the column and overrides
- * methods in {@link LargeObjectExpression} to insert the column into the expression.
+ * methods in {@link LargeObjectExpression} to insert the column into the
+ * expression.
  *
  * <p>
  * Generally you get a LargeObjectColumn using
@@ -47,7 +48,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 public class LargeObjectColumn extends LargeObjectExpression implements ColumnProvider {
 
 	private final AbstractColumn column;
-	
+
 	/**
 	 * Create a LargeObjectColumn for the supplied field of the supplied row
 	 *
@@ -65,7 +66,7 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
 
 	@Override
 	public LargeObjectColumn copy() {
-		return new LargeObjectColumn(column.getRowDefinition(), (DBLargeObject)column.getField());
+		return new LargeObjectColumn(column.getRowDefinition(), (DBLargeObject) column.getField());
 	}
 
 	@Override
@@ -85,6 +86,6 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return getTablesInvolved().size()==0;
+		return getTablesInvolved().size() == 0;
 	}
 }

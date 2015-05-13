@@ -138,10 +138,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -150,20 +149,20 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * </ul>
 	 *
 	 * @param date a literal date to be used in the expression
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static DateExpression value(Date date) {
 		return new DateExpression(date);
 	}
-	
+
 	static DateExpression nullExpression() {
-		return new DateExpression(){
+		return new DateExpression() {
 			@Override
 			public String toSQLString(DBDatabase db) {
 				return db.getDefinition().getNull();
 			}
-			
+
 		};
 	}
 
@@ -198,8 +197,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * Creates a date expression that returns the current date on the database.
 	 *
 	 * <p>
-	 * That is to say the expression returns the current day and time according
-	 * to the database.
+	 * That is to say the expression returns the current day and time according to
+	 * the database.
 	 *
 	 * @return a date expression of the current database timestamp.
 	 */
@@ -262,8 +261,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that tests the year part of this date
-	 * expression.
+	 * Creates an SQL expression that tests the year part of this date expression.
 	 *
 	 * @param yearRequired the year to used in the expression
 	 * @return a BooleanExpression that is TRUE if the year is the same as the
@@ -274,8 +272,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that tests the year part of this date
-	 * expression.
+	 * Creates an SQL expression that tests the year part of this date expression.
 	 *
 	 * @param yearRequired the year to be used in the expression
 	 * @return a BooleanExpression that is TRUE if the year is the same as the
@@ -329,8 +326,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * Returns the day part of the date.
 	 *
 	 * <p>
-	 * Day in this sense is the number of the day within the month: that is the
-	 * 25 part of Monday 25th of August 2014
+	 * Day in this sense is the number of the day within the month: that is the 25
+	 * part of Monday 25th of August 2014
 	 *
 	 * @return a NumberExpression that will provide the day of this date.
 	 */
@@ -345,8 +342,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that tests the day part of this date
-	 * expression.
+	 * Creates an SQL expression that tests the day part of this date expression.
 	 *
 	 * @param dayRequired the day to be used in the expression
 	 * @return a BooleanExpression that is TRUE if the day is the same as the
@@ -357,8 +353,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that tests the day part of this date
-	 * expression.
+	 * Creates an SQL expression that tests the day part of this date expression.
 	 *
 	 * @param dayRequired the day to be used in the expression
 	 * @return a BooleanExpression that is TRUE if the day is the same as the
@@ -385,8 +380,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that tests the hour part of this date
-	 * expression.
+	 * Creates an SQL expression that tests the hour part of this date expression.
 	 *
 	 * @param hourRequired the hour to be used in the expression
 	 * @return a BooleanExpression that is TRUE if the hour is the same as the
@@ -397,8 +391,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that tests the hour part of this date
-	 * expression.
+	 * Creates an SQL expression that tests the hour part of this date expression.
 	 *
 	 * @param hourRequired the hour to be compared to.
 	 * @return a BooleanExpression that is TRUE if the hour is the same as the
@@ -451,9 +444,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Creates an SQL expression that returns the second part of this date
 	 * expression.
-	 * 
+	 *
 	 * <p>
-	 * Contains only whole seconds, use {@link #subsecond()} to retrieve the fractional part.
+	 * Contains only whole seconds, use {@link #subsecond()} to retrieve the
+	 * fractional part.
 	 *
 	 * @return the second of this date expression as a number.
 	 */
@@ -466,7 +460,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 					}
 				});
 	}
-	
+
 	public NumberExpression subsecond() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
@@ -560,8 +554,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -588,8 +582,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -616,8 +610,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -644,8 +638,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -948,9 +942,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				} else {
 					final DateExpression left = getFirst();
 					final DateExpression right = new DateExpression(getSecond());
-					return BooleanExpression.anyOf(left.isNull(),right.isNull())
+					return BooleanExpression.anyOf(left.isNull(), right.isNull())
 							.ifThenElse(
-									StringExpression.nullExpression(), 
+									StringExpression.nullExpression(),
 									StringExpression.value(INTERVAL_PREFIX)
 									.append(left.year().minus(right.year()).bracket()).append(YEAR_SUFFIX)
 									.append(left.month().minus(right.month()).bracket()).append(MONTH_SUFFIX)
@@ -982,16 +976,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				} else {
 					final DateExpression left = getFirst();
 					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
-					return BooleanExpression.anyOf(left.isNull(),right.isNull())
+					return BooleanExpression.anyOf(left.isNull(), right.isNull())
 							.ifThenElse(
-									DateExpression.nullExpression(), 
+									DateExpression.nullExpression(),
 									left.addYears(right.getYears().times(-1))
 									.addMonths(right.getMonths().times(-1))
 									.addDays(right.getDays().times(-1))
 									.addHours(right.getHours().times(-1))
 									.addMinutes(right.getMinutes().times(-1))
 									.addSeconds(right.getSeconds().times(-1))
-//									.addMilliseconds(right.getMilliseconds().times(-1))
+							//									.addMilliseconds(right.getMilliseconds().times(-1))
 							).toSQLString(db);
 				}
 			}
@@ -1055,8 +1049,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is
-	 * greater than the supplied date.
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than the supplied date.
 	 *
 	 * @param date the date this expression must be compared to
 	 * @return an expression that will evaluate to a greater than operation
@@ -1066,8 +1060,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is
-	 * greater than the supplied DateResult.
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than the supplied DateResult.
 	 *
 	 * @param dateExpression the date this expression must be compared to
 	 * @return a boolean expression representing the required comparison
@@ -1088,8 +1082,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is
-	 * greater than or equal to the supplied Date.
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than or equal to the supplied Date.
 	 *
 	 * @param date the date this expression must be compared to
 	 * @return a boolean expression representing the required comparison
@@ -1099,8 +1093,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is
-	 * greater than or equal to the supplied DateResult.
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than or equal to the supplied DateResult.
 	 *
 	 * @param dateExpression the date this expression must be compared to
 	 * @return a boolean expression representing the required comparison
@@ -1288,8 +1282,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Creates and expression that replaces a NULL result with the supplied
-	 * date.
+	 * Creates and expression that replaces a NULL result with the supplied date.
 	 *
 	 * <p>
 	 * This is a way of handling dates that should have a value but don't.
@@ -1439,8 +1432,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date
-	 * expression.
+	 * Date Arithmetic: add the supplied number of seconds to the date expression.
 	 *
 	 * <p>
 	 * Negative seconds are supported.
@@ -1453,8 +1445,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date
-	 * expression.
+	 * Date Arithmetic: add the supplied number of seconds to the date expression.
 	 *
 	 * <p>
 	 * Negative seconds are supported.
@@ -1501,10 +1492,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 //					}
 //				});
 //	}
-
 	/**
-	 * Date Arithmetic: add the supplied number of minutes to the date
-	 * expression.
+	 * Date Arithmetic: add the supplied number of minutes to the date expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1517,8 +1506,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of minutes to the date
-	 * expression.
+	 * Date Arithmetic: add the supplied number of minutes to the date expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1657,8 +1645,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date
-	 * expression.
+	 * Date Arithmetic: add the supplied number of months to the date expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1671,8 +1658,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date
-	 * expression.
+	 * Date Arithmetic: add the supplied number of months to the date expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1735,8 +1721,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the days between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the days between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1749,8 +1735,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the days between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the days between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1775,8 +1761,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the weeks between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the weeks between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1789,8 +1775,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the weeks between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the weeks between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1855,8 +1841,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the years between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the years between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1869,8 +1855,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the years between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the years between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1895,8 +1881,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the Hours between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the Hours between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1909,8 +1895,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the Hours between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the Hours between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1949,8 +1935,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the days between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the days between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1989,8 +1975,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
-	 * Date Arithmetic: get the days between the date expression and the
-	 * supplied date.
+	 * Date Arithmetic: get the days between the date expression and the supplied
+	 * date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2028,7 +2014,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 //					}
 //				});
 //	}
-
 	public DateExpression firstOfMonth() {
 		return this.addDays(this.day().minus(1).bracket().times(-1));
 	}

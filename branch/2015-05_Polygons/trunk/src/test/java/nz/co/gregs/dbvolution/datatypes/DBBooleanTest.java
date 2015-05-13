@@ -31,15 +31,15 @@ import org.junit.Test;
  *
  * @author gregorygraham
  */
-public class DBBooleanTest extends AbstractTest{
+public class DBBooleanTest extends AbstractTest {
 
 	public DBBooleanTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
 
 	/**
 	 * Test of getSQLDatatype method, of class DBDateOnly.
+	 *
 	 * @throws java.sql.SQLException
 	 */
 	@Test
@@ -48,61 +48,62 @@ public class DBBooleanTest extends AbstractTest{
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(boolTest);
 		database.createTable(boolTest);
-		
+
 		boolTest.boolColumn.setValue(true);
 		database.insert(boolTest);
 		List<BooleanTest> allRows = database.getDBTable(new BooleanTest()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).boolColumn.getValue(), is(true));
-		
+
 		boolTest = new BooleanTest();
 		boolTest.boolColumn.setValue(false);
 		database.insert(boolTest);
 		allRows = database.getDBTable(new BooleanTest()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(2));
-		
+
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(boolTest);
 	}
-	
+
 	@Test
 	public void testPermittedAndExcludedValues() throws SQLException {
 		BooleanTest boolTest = new BooleanTest();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(boolTest);
 		database.createTable(boolTest);
-		
+
 		boolTest.boolColumn.setValue(true);
 		database.insert(boolTest);
 		boolTest = new BooleanTest();
 		boolTest.boolColumn.setValue(false);
 		database.insert(boolTest);
-		
+
 		boolTest = new BooleanTest();
 		boolTest.boolColumn.excludedValues(true);
 		List<BooleanTest> allRows = database.getDBTable(boolTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).boolColumn.booleanValue(), is(false));
-		
+
 		boolTest = new BooleanTest();
 		boolTest.boolColumn.permittedValues(true);
 		allRows = database.getDBTable(boolTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).boolColumn.booleanValue(), is(true));
-		
+
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(boolTest);
 	}
-	
-	public static class BooleanTest extends DBRow{
+
+	public static class BooleanTest extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
 		@DBAutoIncrement
 		DBInteger ddateonlypk = new DBInteger();
-		
+
 		@DBColumn
 		DBBoolean boolColumn = new DBBoolean();
 	}
-	
+
 }

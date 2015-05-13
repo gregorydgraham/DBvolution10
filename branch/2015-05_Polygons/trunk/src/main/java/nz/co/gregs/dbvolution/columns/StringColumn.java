@@ -119,14 +119,15 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().isEmpty();
 	}
-	
+
 	/**
-	 * Create an expression to compare this column to the other column using EQUALS.
+	 * Create an expression to compare this column to the other column using
+	 * EQUALS.
 	 *
-	 * @param column 
+	 * @param column
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBString column){
+	public BooleanExpression is(DBString column) {
 		return super.is(column);
 	}
 

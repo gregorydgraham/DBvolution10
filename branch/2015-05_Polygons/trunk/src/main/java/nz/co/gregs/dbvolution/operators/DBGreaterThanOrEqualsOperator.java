@@ -34,22 +34,23 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public DBGreaterThanOrEqualsOperator() {
-        super();
-    }
+	public DBGreaterThanOrEqualsOperator() {
+		super();
+	}
 
-    public DBGreaterThanOrEqualsOperator(DBExpression greaterThanThis) {
-        super(greaterThanThis);
-    }
-    @Override
-    public DBGreaterThanOrEqualsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBGreaterThanOrEqualsOperator op = new DBGreaterThanOrEqualsOperator(typeAdaptor.convert(firstValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	public DBGreaterThanOrEqualsOperator(DBExpression greaterThanThis) {
+		super(greaterThanThis);
+	}
+
+	@Override
+	public DBGreaterThanOrEqualsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBGreaterThanOrEqualsOperator op = new DBGreaterThanOrEqualsOperator(typeAdaptor.convert(firstValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {

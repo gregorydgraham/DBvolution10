@@ -23,147 +23,146 @@ import java.sql.Statement;
  * @author gregorygraham
  */
 public enum Line2DFunctions {
-	
-	MAXY(Language.plpgsql, "decimal", "poly path","DECLARE \n" +
-" result decimal;\n" +
-" num integer;\n" +
-" currentcoord decimal;\n" +
-" pnt point;\n" +
-" textPoly text;\n" +
-" textCoord text;\n" +
-"BEGIN\n" +
-" if poly is null then return null; \n" +
-" else\n" +
-"  num := npoints(poly);\n" +
-"  textPoly := poly::text;\n" +
-"  textPoly := "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$[$$);\n" +
-"  textPoly :=  "+StringFunctions.SUBSTRINGBEFORE+"(textPoly, $$]$$);\n" +
-"  result:=null;\n" +
-"  FOR i IN 1 .. num LOOP\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$($$);\n" +
-"   textCoord :=  "+StringFunctions.SUBSTRINGAFTER+"( "+StringFunctions.SUBSTRINGBEFORE+"(textPoly, $$)$$), $$,$$);\n" +
-"   if char_length(textCoord) > 0 then \n" +
-"    currentcoord := textCoord::decimal;\n" +
-"    IF result is null or result < currentcoord THEN\n" +
-"     result := currentcoord;\n" +
-"    END IF;\n" +
-"   END IF;\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$)$$);\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$,$$);\n" +
-"  END LOOP;\n" +
-"  return result;\n" +
-" END IF;\n" +
-"END;"), 
-	MAXX(Language.plpgsql, "decimal", "poly path","DECLARE \n" +
-" result decimal;\n" +
-" num integer;\n" +
-" currentcoord decimal;\n" +
-" pnt point;\n" +
-" textPoly text;\n" +
-" textCoord text;\n" +
-"BEGIN\n" +
-" if poly is null then return null; \n" +
-" else\n" +
-"  num := npoints(poly);\n" +
-"  textPoly := poly::text;\n" +
-"  textPoly := "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$[$$);\n" +
-"  textPoly :=  "+StringFunctions.SUBSTRINGBEFORE+"(textPoly, $$]$$);\n" +
-"  result:=null;\n" +
-"  FOR i IN 1 .. num LOOP\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$($$);\n" +
-"   textCoord :=  "+StringFunctions.SUBSTRINGBEFORE+"( "+StringFunctions.SUBSTRINGBEFORE+"(textPoly, $$)$$), $$,$$);\n" +
-"   if char_length(textCoord) > 0 then \n" +
-"    currentcoord := textCoord::decimal;\n" +
-"    IF result is null or result < currentcoord THEN\n" +
-"     result := currentcoord;\n" +
-"    END IF;\n" +
-"   END IF;\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$)$$);\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$,$$);\n" +
-"  END LOOP;\n" +
-"  return result;\n" +
-" END IF;\n" +
-"END;"), 
-	MINX(Language.plpgsql, "decimal", "poly path","DECLARE \n" +
-" result decimal;\n" +
-" num integer;\n" +
-" currentcoord decimal;\n" +
-" pnt point;\n" +
-" textPoly text;\n" +
-" textCoord text;\n" +
-"BEGIN\n" +
-" if poly is null then return null; \n" +
-" else\n" +
-"  num := npoints(poly);\n" +
-"  textPoly := poly::text;\n" +
-"  textPoly := "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$[$$);\n" +
-"  textPoly :=  "+StringFunctions.SUBSTRINGBEFORE+"(textPoly, $$]$$);\n" +
-"  result:=null;\n" +
-"  FOR i IN 1 .. num LOOP\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$($$);\n" +
-"   textCoord :=  "+StringFunctions.SUBSTRINGBEFORE+"( "+StringFunctions.SUBSTRINGBEFORE+"(textPoly, $$)$$), $$,$$);\n" +
-"   if char_length(textCoord) > 0 then \n" +
-"    currentcoord := textCoord::decimal;\n" +
-"    IF result is null or result > currentcoord THEN\n" +
-"     result := currentcoord;\n" +
-"    END IF;\n" +
-"   END IF;\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$)$$);\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$,$$);\n" +
-"  END LOOP;\n" +
-"  return result;\n" +
-" END IF;\n" +
-"END;"), 
-	MINY(Language.plpgsql, "decimal", "poly path","DECLARE \n" +
-" result decimal;\n" +
-" num integer;\n" +
-" currentcoord decimal;\n" +
-" pnt point;\n" +
-" textPoly text;\n" +
-" textCoord text;\n" +
-"BEGIN\n" +
-" if poly is null then return null; \n" +
-" else\n" +
-"  num := npoints(poly);\n" +
-"  textPoly := poly::text;\n" +
-"  textPoly := "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$[$$);\n" +
-"  textPoly :=  "+StringFunctions.SUBSTRINGBEFORE+"(textPoly, $$]$$);\n" +
-"  result:=null;\n" +
-"  FOR i IN 1 .. num LOOP\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$($$);\n" +
-"   textCoord :=  "+StringFunctions.SUBSTRINGAFTER+"( "+StringFunctions.SUBSTRINGBEFORE+"(textPoly, $$)$$), $$,$$);\n" +
-"   if char_length(textCoord) > 0 then \n" +
-"    currentcoord := textCoord::decimal;\n" +
-"    IF result is null or result > currentcoord THEN\n" +
-"     result := currentcoord;\n" +
-"    END IF;\n" +
-"   END IF;\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$)$$);\n" +
-"   textPoly :=  "+StringFunctions.SUBSTRINGAFTER+"(textPoly, $$,$$);\n" +
-"  END LOOP;\n" +
-"  return result;\n" +
-" END IF;\n" +
-"END;"),	
-	BOUNDINGBOX(Language.plpgsql, "polygon", "poly path", "DECLARE \n" +
-" result polygon;\n" +
-" maxx decimal;\n" +
-" minx decimal;\n" +
-" maxy decimal;\n" +
-" miny decimal;\n" +
-"BEGIN\n" +
-" if poly is null then return null; \n" +
-" else\n" +
-"  maxx:= "+MAXX+"(poly);\n" +
-"  minx:= "+MINX+"(poly);\n" +
-"  maxy:= "+MAXY+"(poly);\n" +
-"  miny:= "+MINY+"(poly);\n" +
-"  result:=null;\n" +
-"  result:= polygon ($$($$||minx||$$,$$||miny||$$),($$||maxx||$$, $$||miny||$$),($$||maxx||$$,$$||maxy||$$),($$||minx||$$,$$||maxy||$$)$$);\n" +
-"  return result;\n" +
-" END IF;\n" +
-"END;")
-;
-	
+
+	MAXY(Language.plpgsql, "decimal", "poly path", "DECLARE \n"
+			+ " result decimal;\n"
+			+ " num integer;\n"
+			+ " currentcoord decimal;\n"
+			+ " pnt point;\n"
+			+ " textPoly text;\n"
+			+ " textCoord text;\n"
+			+ "BEGIN\n"
+			+ " if poly is null then return null; \n"
+			+ " else\n"
+			+ "  num := npoints(poly);\n"
+			+ "  textPoly := poly::text;\n"
+			+ "  textPoly := " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$[$$);\n"
+			+ "  textPoly :=  " + StringFunctions.SUBSTRINGBEFORE + "(textPoly, $$]$$);\n"
+			+ "  result:=null;\n"
+			+ "  FOR i IN 1 .. num LOOP\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$($$);\n"
+			+ "   textCoord :=  " + StringFunctions.SUBSTRINGAFTER + "( " + StringFunctions.SUBSTRINGBEFORE + "(textPoly, $$)$$), $$,$$);\n"
+			+ "   if char_length(textCoord) > 0 then \n"
+			+ "    currentcoord := textCoord::decimal;\n"
+			+ "    IF result is null or result < currentcoord THEN\n"
+			+ "     result := currentcoord;\n"
+			+ "    END IF;\n"
+			+ "   END IF;\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$)$$);\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$,$$);\n"
+			+ "  END LOOP;\n"
+			+ "  return result;\n"
+			+ " END IF;\n"
+			+ "END;"),
+	MAXX(Language.plpgsql, "decimal", "poly path", "DECLARE \n"
+			+ " result decimal;\n"
+			+ " num integer;\n"
+			+ " currentcoord decimal;\n"
+			+ " pnt point;\n"
+			+ " textPoly text;\n"
+			+ " textCoord text;\n"
+			+ "BEGIN\n"
+			+ " if poly is null then return null; \n"
+			+ " else\n"
+			+ "  num := npoints(poly);\n"
+			+ "  textPoly := poly::text;\n"
+			+ "  textPoly := " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$[$$);\n"
+			+ "  textPoly :=  " + StringFunctions.SUBSTRINGBEFORE + "(textPoly, $$]$$);\n"
+			+ "  result:=null;\n"
+			+ "  FOR i IN 1 .. num LOOP\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$($$);\n"
+			+ "   textCoord :=  " + StringFunctions.SUBSTRINGBEFORE + "( " + StringFunctions.SUBSTRINGBEFORE + "(textPoly, $$)$$), $$,$$);\n"
+			+ "   if char_length(textCoord) > 0 then \n"
+			+ "    currentcoord := textCoord::decimal;\n"
+			+ "    IF result is null or result < currentcoord THEN\n"
+			+ "     result := currentcoord;\n"
+			+ "    END IF;\n"
+			+ "   END IF;\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$)$$);\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$,$$);\n"
+			+ "  END LOOP;\n"
+			+ "  return result;\n"
+			+ " END IF;\n"
+			+ "END;"),
+	MINX(Language.plpgsql, "decimal", "poly path", "DECLARE \n"
+			+ " result decimal;\n"
+			+ " num integer;\n"
+			+ " currentcoord decimal;\n"
+			+ " pnt point;\n"
+			+ " textPoly text;\n"
+			+ " textCoord text;\n"
+			+ "BEGIN\n"
+			+ " if poly is null then return null; \n"
+			+ " else\n"
+			+ "  num := npoints(poly);\n"
+			+ "  textPoly := poly::text;\n"
+			+ "  textPoly := " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$[$$);\n"
+			+ "  textPoly :=  " + StringFunctions.SUBSTRINGBEFORE + "(textPoly, $$]$$);\n"
+			+ "  result:=null;\n"
+			+ "  FOR i IN 1 .. num LOOP\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$($$);\n"
+			+ "   textCoord :=  " + StringFunctions.SUBSTRINGBEFORE + "( " + StringFunctions.SUBSTRINGBEFORE + "(textPoly, $$)$$), $$,$$);\n"
+			+ "   if char_length(textCoord) > 0 then \n"
+			+ "    currentcoord := textCoord::decimal;\n"
+			+ "    IF result is null or result > currentcoord THEN\n"
+			+ "     result := currentcoord;\n"
+			+ "    END IF;\n"
+			+ "   END IF;\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$)$$);\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$,$$);\n"
+			+ "  END LOOP;\n"
+			+ "  return result;\n"
+			+ " END IF;\n"
+			+ "END;"),
+	MINY(Language.plpgsql, "decimal", "poly path", "DECLARE \n"
+			+ " result decimal;\n"
+			+ " num integer;\n"
+			+ " currentcoord decimal;\n"
+			+ " pnt point;\n"
+			+ " textPoly text;\n"
+			+ " textCoord text;\n"
+			+ "BEGIN\n"
+			+ " if poly is null then return null; \n"
+			+ " else\n"
+			+ "  num := npoints(poly);\n"
+			+ "  textPoly := poly::text;\n"
+			+ "  textPoly := " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$[$$);\n"
+			+ "  textPoly :=  " + StringFunctions.SUBSTRINGBEFORE + "(textPoly, $$]$$);\n"
+			+ "  result:=null;\n"
+			+ "  FOR i IN 1 .. num LOOP\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$($$);\n"
+			+ "   textCoord :=  " + StringFunctions.SUBSTRINGAFTER + "( " + StringFunctions.SUBSTRINGBEFORE + "(textPoly, $$)$$), $$,$$);\n"
+			+ "   if char_length(textCoord) > 0 then \n"
+			+ "    currentcoord := textCoord::decimal;\n"
+			+ "    IF result is null or result > currentcoord THEN\n"
+			+ "     result := currentcoord;\n"
+			+ "    END IF;\n"
+			+ "   END IF;\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$)$$);\n"
+			+ "   textPoly :=  " + StringFunctions.SUBSTRINGAFTER + "(textPoly, $$,$$);\n"
+			+ "  END LOOP;\n"
+			+ "  return result;\n"
+			+ " END IF;\n"
+			+ "END;"),
+	BOUNDINGBOX(Language.plpgsql, "polygon", "poly path", "DECLARE \n"
+			+ " result polygon;\n"
+			+ " maxx decimal;\n"
+			+ " minx decimal;\n"
+			+ " maxy decimal;\n"
+			+ " miny decimal;\n"
+			+ "BEGIN\n"
+			+ " if poly is null then return null; \n"
+			+ " else\n"
+			+ "  maxx:= " + MAXX + "(poly);\n"
+			+ "  minx:= " + MINX + "(poly);\n"
+			+ "  maxy:= " + MAXY + "(poly);\n"
+			+ "  miny:= " + MINY + "(poly);\n"
+			+ "  result:=null;\n"
+			+ "  result:= polygon ($$($$||minx||$$,$$||miny||$$),($$||maxx||$$, $$||miny||$$),($$||maxx||$$,$$||maxy||$$),($$||minx||$$,$$||maxy||$$)$$);\n"
+			+ "  return result;\n"
+			+ " END IF;\n"
+			+ "END;");
+
 //	private final String functionName;
 	private final String returnType;
 	private final String parameters;
@@ -179,17 +178,17 @@ public enum Line2DFunctions {
 
 	@Override
 	public String toString() {
-		return "DBV_LINE2DFN_"+name();
+		return "DBV_LINE2DFN_" + name();
 	}
 
 	public void add(Statement stmt) throws SQLException {
 		try {
-			stmt.execute("DROP FUNCTION " + this+"("+this.parameters+");");
+			stmt.execute("DROP FUNCTION " + this + "(" + this.parameters + ");");
 		} catch (SQLException sqlex) {
 			;
 		}
-		stmt.execute("CREATE OR REPLACE FUNCTION "+this+"("+this.parameters+")\n" +"    RETURNS "+this.returnType+" AS\n" +"'\n" + this.code+"'\n" +"LANGUAGE '"+language+"' IMMUTABLE;");
-		
+		stmt.execute("CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;");
+
 	}
 
 }

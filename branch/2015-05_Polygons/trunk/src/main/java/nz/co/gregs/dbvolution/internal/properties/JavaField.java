@@ -25,12 +25,13 @@ import nz.co.gregs.dbvolution.exceptions.FailedToSetPropertyValueOnRowDefinition
  * Implementation over java fields.
  */
 public class JavaField implements JavaProperty {
+
 	private final Field field;
 
 	/**
 	 * Create a JavaField for the supplied field.
 	 *
-	 * @param field	 field	
+	 * @param field	field
 	 */
 	public JavaField(Field field) {
 		this.field = field;
@@ -44,6 +45,7 @@ public class JavaField implements JavaProperty {
 
 	/**
 	 * Hash-code based on the underlying java field or bean-property.
+	 *
 	 * @return the hash code
 	 */
 	@Override
@@ -55,9 +57,10 @@ public class JavaField implements JavaProperty {
 	}
 
 	/**
-	 * Tests for equality, based entirely on whether the underlying java field or bean-property
-	 * is the same.
-	 * @param second	 second	
+	 * Tests for equality, based entirely on whether the underlying java field or
+	 * bean-property is the same.
+	 *
+	 * @param second	second
 	 * @return TRUE if second is equal to this instance, otherwise FALSE
 	 */
 	@Override
@@ -163,5 +166,5 @@ public class JavaField implements JavaProperty {
 	public <A extends Annotation> A getAnnotation(Class<A> annotationClass) {
 		return field.getAnnotation(annotationClass);
 	}
-	
+
 }

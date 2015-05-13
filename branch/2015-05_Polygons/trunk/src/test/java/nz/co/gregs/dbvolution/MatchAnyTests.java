@@ -91,7 +91,7 @@ public class MatchAnyTests extends AbstractTest {
 
 		dbQuery.setToMatchAnyRelationship();
 		System.out.println("testSimpleQueryJoinOfAnyRelationship:");
-		System.out.println(""+dbQuery.getSQLForQuery());
+		System.out.println("" + dbQuery.getSQLForQuery());
 		marquesFound = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(marquesFound.size(), is(0));
 	}
@@ -104,11 +104,11 @@ public class MatchAnyTests extends AbstractTest {
 
 		dbQuery.setToMatchAnyRelationship();
 		System.out.println("testSimpleQueryJoinOfAnyRelationship:");
-		System.out.println(""+dbQuery.getSQLForQuery());
+		System.out.println("" + dbQuery.getSQLForQuery());
 		Assert.assertThat(
-				testableSQL(dbQuery.getSQLForQuery()), 
+				testableSQL(dbQuery.getSQLForQuery()),
 				containsString(testableSQL("ON( __2076078474.FK_COMPANY_LOGO = _1159239592.LOGO_ID OR __2076078474.FK_PREV_COMPANY_LOGO = _1159239592.LOGO_ID )"))
 		);
 	}
-		
+
 }

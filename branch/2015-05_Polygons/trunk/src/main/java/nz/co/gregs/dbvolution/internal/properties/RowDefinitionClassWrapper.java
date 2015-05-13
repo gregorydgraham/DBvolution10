@@ -44,37 +44,34 @@ public class RowDefinitionClassWrapper {
 	 */
 	private final PropertyWrapperDefinition primaryKeyProperty;
 	/**
-	 * All properties of which DBvolution is aware, ordered as first
-	 * encountered. Properties are only included if they are columns.
+	 * All properties of which DBvolution is aware, ordered as first encountered.
+	 * Properties are only included if they are columns.
 	 */
 	private final List<PropertyWrapperDefinition> properties;
 	/**
 	 * Column names with original case for doing lookups on case-sensitive
-	 * databases. If column names duplicated, stores only the first encountered
-	 * of each column name. Assumes validation is done elsewhere in this class.
-	 * Note: doesn't need to be synchronized because it's never modified once
-	 * created.
+	 * databases. If column names duplicated, stores only the first encountered of
+	 * each column name. Assumes validation is done elsewhere in this class. Note:
+	 * doesn't need to be synchronized because it's never modified once created.
 	 */
 	private final Map<String, PropertyWrapperDefinition> propertiesByCaseSensitiveColumnName;
 	/**
-	 * Column names normalized to upper case for doing lookups on
-	 * case-insensitive databases. If column names duplicated, stores only the
-	 * first encountered of each column name. Assumes validation is done
-	 * elsewhere in this class. Note: doesn't need to be synchronized because
-	 * it's never modified once created.
+	 * Column names normalized to upper case for doing lookups on case-insensitive
+	 * databases. If column names duplicated, stores only the first encountered of
+	 * each column name. Assumes validation is done elsewhere in this class. Note:
+	 * doesn't need to be synchronized because it's never modified once created.
 	 */
 	private final Map<String, PropertyWrapperDefinition> propertiesByUpperCaseColumnName;
 	/**
-	 * Lists of properties that would have duplicated columns if-and-only-if
-	 * using a case-insensitive database. For each duplicate upper case column
-	 * name, lists all properties that have that same upper case column name.
+	 * Lists of properties that would have duplicated columns if-and-only-if using
+	 * a case-insensitive database. For each duplicate upper case column name,
+	 * lists all properties that have that same upper case column name.
 	 *
 	 * <p>
-	 * We don't know in advance whether the database in use is case-insensitive
-	 * or not. So we give case-different duplicates the benefit of doubt and
-	 * just record until later. If this class is accessed for use on a
-	 * case-insensitive database the exception will be thrown then, on first
-	 * access to this class.
+	 * We don't know in advance whether the database in use is case-insensitive or
+	 * not. So we give case-different duplicates the benefit of doubt and just
+	 * record until later. If this class is accessed for use on a case-insensitive
+	 * database the exception will be thrown then, on first access to this class.
 	 */
 	private final Map<String, List<PropertyWrapperDefinition>> duplicatedPropertiesByUpperCaseColumnName;
 	/**
@@ -101,11 +98,11 @@ public class RowDefinitionClassWrapper {
 	 * When processing identity only, only the primary key properties are
 	 * identified.
 	 *
-	 
+	 *
 	 * @param processIdentityOnly pass {@code true} to only process the set of
 	 * columns and primary keys, and to ensure that the primary key columns are
-	 * valid, but to exclude all other validations on non-primary key columns
-	 * and types etc.
+	 * valid, but to exclude all other validations on non-primary key columns and
+	 * types etc.
 	 */
 	RowDefinitionClassWrapper(Class<? extends RowDefinition> clazz, boolean processIdentityOnly) {
 		adapteeClass = clazz;
@@ -114,7 +111,7 @@ public class RowDefinitionClassWrapper {
 		// annotation handlers
 		tableHandler = new TableHandler(clazz);
 
-        // pre-calculate properties list
+		// pre-calculate properties list
 		// (note: skip if processing identity only, in order to avoid
 		//  all the per-property validation)
 		properties = new ArrayList<PropertyWrapperDefinition>();
@@ -130,7 +127,7 @@ public class RowDefinitionClassWrapper {
 			}
 		} else {
 			// extract all column properties
-			int columnIndex = 0;	
+			int columnIndex = 0;
 			JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
 			for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(clazz)) {
 				PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty, processIdentityOnly);
@@ -163,7 +160,7 @@ public class RowDefinitionClassWrapper {
 		for (PropertyWrapperDefinition property : properties) {
 			propertiesByPropertyName.put(property.javaName(), property);
 
-            // add unique values for case-sensitive lookups
+			// add unique values for case-sensitive lookups
 			// (error immediately on collisions)
 			if (propertiesByCaseSensitiveColumnName.containsKey(property.getColumnName())) {
 				if (!processIdentityOnly) {
@@ -173,7 +170,7 @@ public class RowDefinitionClassWrapper {
 				propertiesByCaseSensitiveColumnName.put(property.getColumnName(), property);
 			}
 
-            // add unique values for case-insensitive lookups
+			// add unique values for case-insensitive lookups
 			// (defer erroring until actually know database is case insensitive)
 			if (propertiesByUpperCaseColumnName.containsKey(property.getColumnName().toUpperCase())) {
 				if (!processIdentityOnly) {
@@ -244,7 +241,7 @@ public class RowDefinitionClassWrapper {
 
 	/**
 	 * Gets a string representation suitable for debugging.
-	 * 
+	 *
 	 * @return a string representation of this object.
 	 */
 	@Override
@@ -257,8 +254,10 @@ public class RowDefinitionClassWrapper {
 	}
 
 	/**
-	 * Two {@code RowDefinitionClassWrappers} are equal if they wrap the same classes.
-	 * @param obj	 obj	
+	 * Two {@code RowDefinitionClassWrappers} are equal if they wrap the same
+	 * classes.
+	 *
+	 * @param obj	obj
 	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
 	 */
 	@Override
@@ -285,6 +284,7 @@ public class RowDefinitionClassWrapper {
 
 	/**
 	 * Calculates the hash-code based on the hash-code of the wrapped class.
+	 *
 	 * @return the hash-code
 	 */
 	@Override
@@ -294,7 +294,7 @@ public class RowDefinitionClassWrapper {
 		result = prime * result + ((adapteeClass == null) ? 0 : adapteeClass.hashCode());
 		return result;
 	}
-	
+
 	/**
 	 * Gets the underlying wrapped class.
 	 *
@@ -332,8 +332,8 @@ public class RowDefinitionClassWrapper {
 	/**
 	 * Indicates whether this class maps to a database table.
 	 *
-	 * @return TRUE if this RowDefinitionClassWrapper represents a database
-	 * table or view, otherwise FALSE.
+	 * @return TRUE if this RowDefinitionClassWrapper represents a database table
+	 * or view, otherwise FALSE.
 	 */
 	public boolean isTable() {
 		return tableHandler.isTable();
@@ -349,8 +349,7 @@ public class RowDefinitionClassWrapper {
 	 * {@code null}.
 	 *
 	 * <p>
-	 * Use {@link TableHandler#getDBTableNameAnnotation() } for low level
-	 * access.
+	 * Use {@link TableHandler#getDBTableNameAnnotation() } for low level access.
 	 *
 	 * @return the table name, if specified explicitly or implicitly.
 	 */
@@ -369,9 +368,8 @@ public class RowDefinitionClassWrapper {
 	}
 
 	/**
-	 * Gets the property associated with the given column. If multiple
-	 * properties are annotated for the same column, this method will return
-	 * only the first.
+	 * Gets the property associated with the given column. If multiple properties
+	 * are annotated for the same column, this method will return only the first.
 	 *
 	 * <p>
 	 * Only provides access to properties annotated with {@code DBColumn}.
@@ -381,11 +379,10 @@ public class RowDefinitionClassWrapper {
 	 * names.
 	 *
 	 * @param database active database
-	 * @param columnName columnName
-	 columnName
-	
-	 * @return the PropertyWrapperDefinition for the column name supplied.
-	 *         Null if no such column is found.
+	 * @param columnName columnName columnName
+	 *
+	 * @return the PropertyWrapperDefinition for the column name supplied. Null if
+	 * no such column is found.
 	 * @throws AssertionError if called when in {@code identityOnly} mode.
 	 */
 	public PropertyWrapperDefinition getPropertyDefinitionByColumn(DBDatabase database, String columnName) {
@@ -402,14 +399,14 @@ public class RowDefinitionClassWrapper {
 	}
 
 	/**
-	 * Like {@link #getPropertyDefinitionByColumn(DBDatabase, String)} except
-	 * that handles the case where the database definition is not yet known, and
-	 * thus returns all possible matching properties by column name.
+	 * Like {@link #getPropertyDefinitionByColumn(DBDatabase, String)} except that
+	 * handles the case where the database definition is not yet known, and thus
+	 * returns all possible matching properties by column name.
 	 *
 	 * <p>
 	 * Assumes working in "identity-only" mode.
 	 *
-	 
+	 *
 	 * @return the non-null list of matching property definitions, with only
 	 * identity information available, empty if no such properties found
 	 */
@@ -432,13 +429,13 @@ public class RowDefinitionClassWrapper {
 	 * Only provides access to properties annotated with {@code DBColumn}.
 	 *
 	 * <p>
-	 * It's legal for a field and bean-property to have the same name, and to
-	 * both be annotated, but for different columns. This method doesn't handle
-	 * that well and returns only the first one it sees.
+	 * It's legal for a field and bean-property to have the same name, and to both
+	 * be annotated, but for different columns. This method doesn't handle that
+	 * well and returns only the first one it sees.
 	 *
-	 * @param propertyName	 propertyName	
-	 * @return the PropertyWrapperDefinition for the named object property
-	 *         Null if no such property is found.
+	 * @param propertyName	propertyName
+	 * @return the PropertyWrapperDefinition for the named object property Null if
+	 * no such property is found.
 	 * @throws AssertionError if called when in {@code identityOnly} mode.
 	 */
 	public PropertyWrapperDefinition getPropertyDefinitionByName(String propertyName) {

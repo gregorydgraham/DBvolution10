@@ -46,7 +46,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		DBQuery marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition(new ExistsExpression(marque, carCompany));
 
-		List<Marque> rowList =marquesQuery.getAllInstancesOf(marque);
+		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 		database.print(rowList);
 		Assert.assertThat(rowList.size(), is(3));
 

@@ -28,15 +28,15 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
 
 public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public DBEqualsIgnoreCaseOperator() {
-        super();
-    }
+	public DBEqualsIgnoreCaseOperator() {
+		super();
+	}
 
-    public DBEqualsIgnoreCaseOperator(DBExpression equalTo) {
-        super(equalTo);
-    }
+	public DBEqualsIgnoreCaseOperator(DBExpression equalTo) {
+		super(equalTo);
+	}
 
 //    @Override
 //    public String generateWhereLine(DBDatabase db, String columnName) {
@@ -48,20 +48,18 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 //        }
 //        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
 //    }
-
 //    @Override
 //    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
 //        DBDefinition defn = database.getDefinition();
 //        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(otherColumnName);
 //    }
-
-    @Override
-    public DBEqualsIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBEqualsIgnoreCaseOperator op = new DBEqualsIgnoreCaseOperator(typeAdaptor.convert(firstValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	@Override
+	public DBEqualsIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBEqualsIgnoreCaseOperator op = new DBEqualsIgnoreCaseOperator(typeAdaptor.convert(firstValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {

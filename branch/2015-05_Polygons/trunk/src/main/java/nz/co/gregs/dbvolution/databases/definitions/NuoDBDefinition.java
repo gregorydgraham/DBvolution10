@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
@@ -36,7 +35,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public class NuoDBDefinition extends DBDefinition{
+public class NuoDBDefinition extends DBDefinition {
 
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 
@@ -67,7 +66,7 @@ public class NuoDBDefinition extends DBDefinition{
 	public String doTruncTransform(String firstString, String secondString) {
 		//A1-MOD(A1,1*(A1/ABS(A1)))
 //		return ""+firstString+"-MOD("+firstString+",1*("+firstString+"/ABS("+firstString+")))";
-		return "(((CAST((("+firstString+")>0) AS INTEGER))-0.5)*2)*floor(abs("+firstString+"))";
+		return "(((CAST(((" + firstString + ")>0) AS INTEGER))-0.5)*2)*floor(abs(" + firstString + "))";
 	}
 
 	@Override
@@ -84,16 +83,16 @@ public class NuoDBDefinition extends DBDefinition{
 	public boolean supportsStandardDeviationFunction() {
 		return false;
 	}
-	
+
 	/**
 	 * God-awful hack to get past a bug in NuoDB LTRIM.
-	 * 
+	 *
 	 * <p>
 	 * To be removed as soon as NuoDB fixes the bug.
 	 *
 	 * @param toSQLString toSQLString
 	 * @return a hack masquerading as SQL.
-	 * @deprecated 
+	 * @deprecated
 	 */
 	@Override
 	@Deprecated
@@ -111,8 +110,8 @@ public class NuoDBDefinition extends DBDefinition{
 	 * like it or not.
 	 *
 	 * <p>
-	 * While this seems useful, in fact it prevents checking for incorrect
-	 * strings and breaks the industrial standard.
+	 * While this seems useful, in fact it prevents checking for incorrect strings
+	 * and breaks the industrial standard.
 	 *
 	 * @param firstSQLExpression
 	 * @param secondSQLExpression
@@ -125,74 +124,71 @@ public class NuoDBDefinition extends DBDefinition{
 
 	@Override
 	public String doAddHoursTransform(String dateValue, String numberOfHours) {
-		return "DATE_ADD("+dateValue+", INTERVAL (("+numberOfHours+")*60*60) SECOND )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfHours + ")*60*60) SECOND )";
 	}
 
 	@Override
 	public String doAddMinutesTransform(String dateValue, String numberOfMinutes) {
-		return "DATE_ADD("+dateValue+", INTERVAL (("+numberOfMinutes+")*60) SECOND )";
+		return "DATE_ADD(" + dateValue + ", INTERVAL ((" + numberOfMinutes + ")*60) SECOND )";
 	}
 
 	@Override
 	public String doCurrentDateOnlyTransform() {
 		return getCurrentDateOnlyFunctionName().trim();
 	}
-	
+
 	@Override
 	public String doDayDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND(CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))"; 
+		return "ROUND(CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))";
 	}
 
 	@Override
 	public String doWeekDifferenceTransform(String dateValue, String otherDateValue) {
-		return "("+doDayDifferenceTransform(dateValue, otherDateValue)+"/7)"; 
+		return "(" + doDayDifferenceTransform(dateValue, otherDateValue) + "/7)";
 	}
 
 	@Override
 	public String doMonthDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))/30.43)"; 
+		return "ROUND((CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))/30.43)";
 	}
 
 	@Override
 	public String doYearDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))/365.25)"; 
+		return "ROUND((CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))/365.25)";
 	}
 
 	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24)"; 
+		return "ROUND((CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))*24)";
 	}
 
 	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60)"; 
+		return "ROUND((CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))*24*60)";
 	}
 
 	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
-		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60*60)"; 
+		return "ROUND((CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))*24*60*60)";
 	}
 
 //	@Override
 //	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
 //		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60*60*1000)"; 
 //	}
-
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " DAYOFWEEK("+dateSQL+")";
+		return " DAYOFWEEK(" + dateSQL + ")";
 	}
 
-
-@Override
+	@Override
 	public boolean supportsArraysNatively() {
 		return false;
 	}
 
 	@Override
 	public String doNumberEqualsTransform(String leftHandSide, String rightHandSide) {
-		return "(("+super.doNumberEqualsTransform(leftHandSide, rightHandSide)+")=true)";
+		return "((" + super.doNumberEqualsTransform(leftHandSide, rightHandSide) + ")=true)";
 	}
 
-	
 }

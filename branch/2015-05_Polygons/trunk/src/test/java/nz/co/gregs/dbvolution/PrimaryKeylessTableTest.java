@@ -31,42 +31,42 @@ import org.junit.Test;
  */
 public class PrimaryKeylessTableTest extends AbstractTest {
 
-    public PrimaryKeylessTableTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public PrimaryKeylessTableTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void linkIntoTableTest() throws SQLException {
-        CarCompany carCompany = new CarCompany();
-        LinkCarCompanyAndLogo link = new LinkCarCompanyAndLogo();
-        DBQuery dbQuery = database.getDBQuery(carCompany, link);
-        dbQuery.setBlankQueryAllowed(true);
-        dbQuery.print();
-        dbQuery = database.getDBQuery(new CompanyLogo(), link);
-        dbQuery.setBlankQueryAllowed(true);
-        dbQuery.print();
-    }
+	@Test
+	public void linkIntoTableTest() throws SQLException {
+		CarCompany carCompany = new CarCompany();
+		LinkCarCompanyAndLogo link = new LinkCarCompanyAndLogo();
+		DBQuery dbQuery = database.getDBQuery(carCompany, link);
+		dbQuery.setBlankQueryAllowed(true);
+		dbQuery.print();
+		dbQuery = database.getDBQuery(new CompanyLogo(), link);
+		dbQuery.setBlankQueryAllowed(true);
+		dbQuery.print();
+	}
 
-    @Test
-    public void linkThruTableTest() throws SQLException {
-        CarCompany carCompany = new CarCompany();
-        LinkCarCompanyAndLogo link = new LinkCarCompanyAndLogo();
+	@Test
+	public void linkThruTableTest() throws SQLException {
+		CarCompany carCompany = new CarCompany();
+		LinkCarCompanyAndLogo link = new LinkCarCompanyAndLogo();
 
-        DBQuery dbQuery = database.getDBQuery(carCompany, link, new CompanyLogo());
-        dbQuery.setBlankQueryAllowed(true);
-        dbQuery.print();
-    }
+		DBQuery dbQuery = database.getDBQuery(carCompany, link, new CompanyLogo());
+		dbQuery.setBlankQueryAllowed(true);
+		dbQuery.print();
+	}
 
-    @Test
-    public void testCartesianJoinProtection() throws SQLException, Exception {
-        try {
-            DBQuery dbQuery = database.getDBQuery(new Marque(), new CompanyLogo());
-            dbQuery.setBlankQueryAllowed(true);
-            dbQuery.print();
-            throw new Exception("Should have thrown an AccidentalCartesianJoinException here.");
-        } catch (AccidentalCartesianJoinException ex) {
-        }
-    }
+	@Test
+	public void testCartesianJoinProtection() throws SQLException, Exception {
+		try {
+			DBQuery dbQuery = database.getDBQuery(new Marque(), new CompanyLogo());
+			dbQuery.setBlankQueryAllowed(true);
+			dbQuery.print();
+			throw new Exception("Should have thrown an AccidentalCartesianJoinException here.");
+		} catch (AccidentalCartesianJoinException ex) {
+		}
+	}
 
 //    @Test
 //    public void testAdHocRelations() throws SQLException, Exception {

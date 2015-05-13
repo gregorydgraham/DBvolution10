@@ -31,22 +31,22 @@ import static org.junit.Assert.*;
  * @author gregorygraham
  */
 public class QueryGraphNodeTest {
-	
+
 	public QueryGraphNodeTest() {
 	}
-	
+
 	@BeforeClass
 	public static void setUpClass() {
 	}
-	
+
 	@AfterClass
 	public static void tearDownClass() {
 	}
-	
+
 	@Before
 	public void setUp() {
 	}
-	
+
 	@After
 	public void tearDown() {
 	}
@@ -74,11 +74,11 @@ public class QueryGraphNodeTest {
 		boolean expResult = false;
 		boolean result = instance.equals(o);
 		assertEquals(expResult, result);
-		
+
 		o = new QueryGraphNode(new Marque().getClass());
 		expResult = true;
 		result = instance.equals(o);
 		assertEquals(expResult, result);
 	}
-	
+
 }

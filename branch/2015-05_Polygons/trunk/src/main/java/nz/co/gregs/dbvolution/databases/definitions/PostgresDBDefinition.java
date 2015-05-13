@@ -47,22 +47,21 @@ public class PostgresDBDefinition extends DBDefinition {
 	private static final String[] reservedWordsArray = new String[]{"LIMIT", "END"};
 	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
 
-
 	@Override
 	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
-		return "DROP DATABASE IF EXISTS '"+databaseName+"';";
+		return "DROP DATABASE IF EXISTS '" + databaseName + "';";
 	}
 
 	@Override
 	public String getDropTableStart() {
 		return super.getDropTableStart() + " IF EXISTS "; //To change body of generated methods, choose Tools | Templates.
 	}
-	
+
 	@Override
 	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
 		return primaryKeyColumnName.toLowerCase();
 	}
-	
+
 	@Override
 	protected String formatNameForDatabase(final String sqlObjectName) {
 		if (!(reservedWords.contains(sqlObjectName.toUpperCase()))) {
@@ -71,7 +70,7 @@ public class PostgresDBDefinition extends DBDefinition {
 			return formatNameForDatabase("p" + super.formatNameForDatabase(sqlObjectName));
 		}
 	}
-	
+
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		return "('" + DATETIME_FORMAT.format(date) + "'::timestamp)";
@@ -85,9 +84,9 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " BYTEA ";
 		} else if (qdt instanceof DBBoolean) {
 			return " BOOLEAN ";
-		} else  if (qdt instanceof DBBooleanArray) {
+		} else if (qdt instanceof DBBooleanArray) {
 			return " BOOL[] ";
-		} else  if (qdt instanceof DBLine2D) {
+		} else if (qdt instanceof DBLine2D) {
 			return " PATH ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
@@ -157,7 +156,6 @@ public class PostgresDBDefinition extends DBDefinition {
 //	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
 //		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 MILLISECOND' )";
 //	}
-	
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 SECOND' )";
@@ -246,10 +244,9 @@ public class PostgresDBDefinition extends DBDefinition {
 //	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
 //		return "round(EXTRACT(EPOCH FROM (" + dateValue + ") - (" + otherDateValue + "))*-1000)";
 //	}
-
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " (EXTRACT(DOW FROM ("+dateSQL+"))+1)";
+		return " (EXTRACT(DOW FROM (" + dateSQL + "))+1)";
 	}
 
 	@Override
@@ -263,14 +260,14 @@ public class PostgresDBDefinition extends DBDefinition {
 			return "'{" + bools[0] + "}'";
 		} else {
 			for (Boolean bool : bools) {
-				str.append(separator).append(bool?1:0);
-				separator =",";
+				str.append(separator).append(bool ? 1 : 0);
+				separator = ",";
 			}
 			str.append("}'");
 			return str.toString();
 		}
 	}
-	
+
 	@Override
 	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "ST_INTERSECTION((" + firstGeometry + ")::GEOMETRY,  (" + secondGeometry + ")::GEOMETRY)";
@@ -280,32 +277,32 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
 //		return "(" + firstGeometry + ") ?#  (" + secondGeometry + ")";
 		return "ST_OVERLAPS((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
-	}	
+	}
 
 	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
 //		return "(" + firstGeometry + ") ?#  (" + secondGeometry + ")";
 		return "((" + firstGeometry + ") && (" + secondGeometry + "))";
-	}	
-	
+	}
+
 	@Override
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
-		return "ST_TOUCHES(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+		return "ST_TOUCHES((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
-	
+
 	@Override
 	public String doPolygon2DGetAreaTransform(String toSQLString) {
-		return "ST_AREA(("+toSQLString+")::GEOMETRY)";
-	}	
-	
+		return "ST_AREA((" + toSQLString + ")::GEOMETRY)";
+	}
+
 	@Override
 	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
-		return "BOX2D("+toSQLString+"::GEOMETRY)";
-	}	
-	
+		return "BOX2D(" + toSQLString + "::GEOMETRY)";
+	}
+
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
-		return "ST_EQUALS(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+		return "ST_EQUALS((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
 	/**
@@ -317,7 +314,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
-		return "ST_CONTAINS(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+		return "ST_CONTAINS((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
 	/**
@@ -330,7 +327,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
-		return "ST_DISJOINT(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+		return "ST_DISJOINT((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
 	/**
@@ -348,7 +345,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
-		return "ST_WITHIN(("+ firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
+		return "ST_WITHIN((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
 	/**
@@ -362,7 +359,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetDimensionTransform(String toSQLString) {
-		return "ST_DIMENSION(("+ toSQLString + ")::GEOMETRY)";
+		return "ST_DIMENSION((" + toSQLString + ")::GEOMETRY)";
 	}
 
 	/**
@@ -374,7 +371,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
-		return "PATH(ST_EXTERIORRING(("+ polygon2DSQL + ")::GEOMETRY))";
+		return "PATH(ST_EXTERIORRING((" + polygon2DSQL + ")::GEOMETRY))";
 	}
 
 	/**
@@ -386,7 +383,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
-		return "ST_XMAX(("+ polygon2DSQL + ")::GEOMETRY)";
+		return "ST_XMAX((" + polygon2DSQL + ")::GEOMETRY)";
 	}
 
 	/**
@@ -398,7 +395,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
-		return "ST_XMIN(("+ polygon2DSQL + ")::GEOMETRY)";
+		return "ST_XMIN((" + polygon2DSQL + ")::GEOMETRY)";
 	}
 
 	/**
@@ -410,7 +407,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
-		return "ST_YMAX(("+ polygon2DSQL + ")::GEOMETRY)";
+		return "ST_YMAX((" + polygon2DSQL + ")::GEOMETRY)";
 	}
 
 	/**
@@ -422,9 +419,8 @@ public class PostgresDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
-		return "ST_YMIN(("+ polygon2DSQL + ")::GEOMETRY)";
+		return "ST_YMIN((" + polygon2DSQL + ")::GEOMETRY)";
 	}
-
 
 	@Override
 	public boolean supportsHyperbolicFunctionsNatively() {
@@ -433,7 +429,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringToNumberTransform(String stringResultContainingANumber) {
-		return "(CASE WHEN ("+stringResultContainingANumber+") IS NULL OR ("+stringResultContainingANumber+") = '' THEN 0 ELSE TO_NUMBER("+stringResultContainingANumber+", 'S999999999999999D9999999') END)";
+		return "(CASE WHEN (" + stringResultContainingANumber + ") IS NULL OR (" + stringResultContainingANumber + ") = '' THEN 0 ELSE TO_NUMBER(" + stringResultContainingANumber + ", 'S999999999999999D9999999') END)";
 	}
 
 	@Override
@@ -443,7 +439,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return "POINT (" +xValue+", "+yValue+")";
+		return "POINT (" + xValue + ", " + yValue + ")";
 	}
 
 	@Override
@@ -458,7 +454,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DGetYTransform(String point2D) {
-		return "("+point2D + ")[1]";
+		return "(" + point2D + ")[1]";
 	}
 
 	@Override
@@ -468,32 +464,32 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2D) {
-		return "POLYGON(BOX("+point2D+","+ point2D+"))";
+		return "POLYGON(BOX(" + point2D + "," + point2D + "))";
 	}
 
 	@Override
 	public String doPoint2DAsTextTransform(String point2DString) {
-		return "("+point2DString+")::VARCHAR";
+		return "(" + point2DString + ")::VARCHAR";
 	}
 
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
-		return "POINT (" +point.getX()+", "+point.getY()+")";
+		return "POINT (" + point.getX() + ", " + point.getY() + ")";
 	}
 
 	//path '[(0,0),(1,1),(2,0)]'
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
-		StringBuilder str = new  StringBuilder();
+		StringBuilder str = new StringBuilder();
 		String separator = "";
 		Coordinate[] coordinates = line.getCoordinates();
 		for (Coordinate coordinate : coordinates) {
 			str.append(separator).append("(").append(coordinate.x).append(",").append(coordinate.y).append(")");
-			separator=",";
+			separator = ",";
 		}
-		return "PATH '[" +str+"]'";
+		return "PATH '[" + str + "]'";
 	}
-	
+
 	@Override
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
@@ -510,12 +506,12 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point point = null;
-		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")){
+		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")) {
 			String[] split = pointAsString.split("[^-0-9.]+");
 			for (String split1 : split) {
-				System.out.println("DATABASE VALUE: "+split1);
+				System.out.println("DATABASE VALUE: " + split1);
 			}
-		GeometryFactory geometryFactory = new GeometryFactory();
+			GeometryFactory geometryFactory = new GeometryFactory();
 			final double x = Double.parseDouble(split[1]);
 			final double y = Double.parseDouble(split[2]);
 			point = geometryFactory.createPoint(new Coordinate(x, y));
@@ -524,23 +520,23 @@ public class PostgresDBDefinition extends DBDefinition {
 		}
 		return point;
 	}
-	
+
 	// ((2,3),(2,3),(2,3),(2,3)) => POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))
 	@Override
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
-		String string = "POLYGON "+geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
+		String string = "POLYGON " + geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 		String[] splits = geometryAsString.split("[(),]+");
-		System.out.println(geometryAsString+" => "+string);
+		System.out.println(geometryAsString + " => " + string);
 		List<Coordinate> coords = new ArrayList<Coordinate>();
 		Coordinate firstCoord = null;
 		for (int i = 1; i < splits.length; i++) {
 			String splitX = splits[i];
-			String splitY = splits[i+1];
-			System.out.println("COORD: "+splitX+", "+splitY);
+			String splitY = splits[i + 1];
+			System.out.println("COORD: " + splitX + ", " + splitY);
 			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
 			coords.add(coordinate);
-			if (firstCoord==null){
-				firstCoord=coordinate;
+			if (firstCoord == null) {
+				firstCoord = coordinate;
 			}
 			i++;
 		}
@@ -551,7 +547,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString)  throws com.vividsolutions.jts.io.ParseException {
+	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString = null;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
 			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
@@ -571,8 +567,8 @@ public class PostgresDBDefinition extends DBDefinition {
 				i++;
 			}
 			coords.add(firstCoord);
-		final GeometryFactory geometryFactory = new GeometryFactory();
-		lineString = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+			final GeometryFactory geometryFactory = new GeometryFactory();
+			lineString = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
 		} else {
 			return super.transformDatabaseLine2DValueToJTSLineString(lineStringAsString);
 		}
@@ -581,66 +577,66 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DEqualsTransform(String firstLineSQL, String secondLineSQL) {
-		return "("+firstLineSQL+")::TEXT = ("+secondLineSQL+")::TEXT";
+		return "(" + firstLineSQL + ")::TEXT = (" + secondLineSQL + ")::TEXT";
 	}
-	
+
 	@Override
 	public String doLine2DAsTextTransform(String line2DSQL) {
-		return "("+line2DSQL+")::TEXT";
+		return "(" + line2DSQL + ")::TEXT";
 	}
-	
+
 	@Override
 	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
-		return Line2DFunctions.BOUNDINGBOX+"(" + toSQLString + ")";
+		return Line2DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMaxXTransform(String toSQLString) {
-		return Line2DFunctions.MAXX+"(" + toSQLString + ")";
+		return Line2DFunctions.MAXX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMinXTransform(String toSQLString) {
-		return Line2DFunctions.MINX+"(" + toSQLString + ")";
+		return Line2DFunctions.MINX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMaxYTransform(String toSQLString) {
-		return Line2DFunctions.MAXY+"(" + toSQLString + ")";
+		return Line2DFunctions.MAXY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMinYTransform(String toSQLString) {
-		return Line2DFunctions.MINY+"(" + toSQLString + ")";
+		return Line2DFunctions.MINY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
-		return StringFunctions.SUBSTRINGBEFORE+"("+fromThis+", "+beforeThis+")";
+		return StringFunctions.SUBSTRINGBEFORE + "(" + fromThis + ", " + beforeThis + ")";
 	}
 
 	@Override
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
-		return StringFunctions.SUBSTRINGAFTER+"("+fromThis+", "+afterThis+")";
+		return StringFunctions.SUBSTRINGAFTER + "(" + fromThis + ", " + afterThis + ")";
 	}
-	
+
 	//INSERT INTO BasicSpatialTable( myfirstgeom)  VALUES ( polygon 'POLYGON ((5 10, 6 10, 6 11, 5 11, 5 10))')
 	//INSERT INTO BasicSpatialTable( myfirstgeom)  VALUES ( polygon '((5,10), (6,10), (6,11), (5,11), (5,10))');
 	@Override
 	public String doDBPolygon2DFormatTransform(Polygon polygon) {
-		
-		StringBuilder str = new  StringBuilder();
+
+		StringBuilder str = new StringBuilder();
 		String separator = "";
 		Coordinate[] coordinates = polygon.getCoordinates();
 		for (Coordinate coordinate : coordinates) {
 			str.append(separator).append("(").append(coordinate.x).append(",").append(coordinate.y).append(")");
-			separator=",";
+			separator = ",";
 		}
-		
+
 		return "POLYGON '(" + str + ")'";
 	}
-	
-		@Override
+
+	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		if (columnExpression instanceof Line2DExpression) {
 			return ((Line2DExpression) columnExpression).stringResult();

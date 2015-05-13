@@ -34,8 +34,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * byte[].
  *
  * <p>
- Internally the class uses an AbsractColumn to store the column and overrides
- methods in BooleanArrayExpression to insert the column into the expression.
+ * Internally the class uses an AbsractColumn to store the column and overrides
+ * methods in BooleanArrayExpression to insert the column into the expression.
  *
  *
  * @author Gregory Graham
@@ -77,12 +77,12 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 		BooleanArrayColumn newColumn;
 		RowDefinition instanceOfRow = column.getRowDefinition();
 		Object field = column.getField();
-		if (field instanceof DBBooleanArray){
-			newColumn = new BooleanArrayColumn(instanceOfRow,(DBBooleanArray)field);
-		}else {
-			newColumn = new BooleanArrayColumn(instanceOfRow,(boolean[])field);
+		if (field instanceof DBBooleanArray) {
+			newColumn = new BooleanArrayColumn(instanceOfRow, (DBBooleanArray) field);
+		} else {
+			newColumn = new BooleanArrayColumn(instanceOfRow, (boolean[]) field);
 		}
-		
+
 		return newColumn;
 	}
 
@@ -105,14 +105,14 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().isEmpty();
 	}
-	
+
 	/**
 	 * Creates an expression that will compare this column to the other column.
 	 *
 	 * @param boolArrayColumn
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBBooleanArray boolArrayColumn){
+	public BooleanExpression is(DBBooleanArray boolArrayColumn) {
 		return super.is(boolArrayColumn);
 	}
 }

@@ -33,7 +33,7 @@ import org.junit.Test;
  * @author gregory.graham
  */
 public class ForeignKeyCannotBeComparedToPrimaryKeyTest {
-	
+
 	public ForeignKeyCannotBeComparedToPrimaryKeyTest() {
 	}
 
@@ -41,54 +41,57 @@ public class ForeignKeyCannotBeComparedToPrimaryKeyTest {
 	public void testExceptionIsThrown() {
 		TableA tableA = new TableA();
 		TableE tableE = new TableE();
-		
+
 		List<DBExpression> foreignKeyExpressionsTo = tableE.getForeignKeyExpressionsTo(tableA);
 	}
-	
+
 	@Test()
 	public void testExceptionIsNotThrown() {
 		TableA tableA = new TableA();
 		TableAString tableAString = new TableAString();
 		TableB tableB = new TableB();
-		
+
 		List<DBExpression> foreignKeyExpressionsTo = tableB.getForeignKeyExpressionsTo(tableA);
 		Assert.assertThat(foreignKeyExpressionsTo.size(), is(1));
-		
+
 		foreignKeyExpressionsTo = tableB.getForeignKeyExpressionsTo(tableAString);
 		Assert.assertThat(foreignKeyExpressionsTo.size(), is(1));
 	}
-	
+
 	@Test(expected = ForeignKeyCannotBeComparedToPrimaryKey.class)
 	public void testExceptionIsThrownForStringToo() {
 		TableAString tableAString = new TableAString();
 		TableE tableE = new TableE();
-		
+
 		List<DBExpression> foreignKeyExpressionsTo = tableE.getForeignKeyExpressionsTo(tableAString);
 	}
-	
-	public static class TableA extends DBRow{
+
+	public static class TableA extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
 		public DBInteger apk = new DBInteger();
-		
-		public TableA(){
+
+		public TableA() {
 			super();
 		}
 	}
-	
-	public static class TableAString extends DBRow{
+
+	public static class TableAString extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
 		public DBString apk = new DBString();
-		
-		public TableAString(){
+
+		public TableAString() {
 			super();
 		}
 	}
-	
-	public static class TableE extends DBRow{
+
+	public static class TableE extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
@@ -102,8 +105,9 @@ public class ForeignKeyCannotBeComparedToPrimaryKeyTest {
 		@DBForeignKey(TableAString.class)
 		DBInteger aStringfk = new DBInteger();
 	}
-	
-	public static class TableB extends DBRow{
+
+	public static class TableB extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
@@ -116,10 +120,10 @@ public class ForeignKeyCannotBeComparedToPrimaryKeyTest {
 		@DBColumn
 		@DBForeignKey(TableAString.class)
 		public DBString aStringfk = new DBString();
-		
-		public TableB(){
+
+		public TableB() {
 			super();
 		}
 	}
-	
+
 }

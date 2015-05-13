@@ -5,8 +5,11 @@
  * and store the information on each table, and using special datatypes to make
  * setting query conditions trivial and intuitive.
  * <p>
- * Demonstration application available at <a href="https://github.com/gregorydgraham/DBvolution-Demo">gitHub</a> and there are more docs and examples at <a href="http://dbvolution.gregs.co.nz">dbvolution.gregs.co.nz</a>.
- * 
+ * Demonstration application available at
+ * <a href="https://github.com/gregorydgraham/DBvolution-Demo">gitHub</a> and
+ * there are more docs and examples at
+ * <a href="http://dbvolution.gregs.co.nz">dbvolution.gregs.co.nz</a>.
+ *
  * <p>
  * To use DBV, first create a connection to your database using the DBDatabase
  * subclasses in {@link nz.co.gregs.dbvolution.databases}.
@@ -24,8 +27,8 @@
  * or complex ones using
  * {@link nz.co.gregs.dbvolution.DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBQuery}.
  * <p>
- * You can create transactions easily using {@link  nz.co.gregs.dbvolution.DBScript} testing the
- * transaction with
+ * You can create transactions easily using
+ * {@link  nz.co.gregs.dbvolution.DBScript} testing the transaction with
  * {@link nz.co.gregs.dbvolution.DBScript#test(nz.co.gregs.dbvolution.DBDatabase) test}
  * or committing the changes with
  * {@link nz.co.gregs.dbvolution.DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) implement}.

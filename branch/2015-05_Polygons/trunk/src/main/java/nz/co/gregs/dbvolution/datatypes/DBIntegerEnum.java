@@ -54,7 +54,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Creates a DBIntegerEnum set to the value supplied..
 	 *
-	 * @param value	 value	
+	 * @param value	value
 	 */
 	public DBIntegerEnum(Integer value) {
 		super(value.longValue());
@@ -63,7 +63,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Creates a DBIntegerEnum set to the value supplied..
 	 *
-	 * @param value	 value	
+	 * @param value	value
 	 */
 	public DBIntegerEnum(Long value) {
 		super(value);
@@ -77,7 +77,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * This constructor is used in {@link DBReport DBReports} to generate new
 	 * information from existing data using the databases builtin capabilities.
 	 *
-	 * @param numberExpression	 numberExpression	
+	 * @param numberExpression	numberExpression
 	 */
 	public DBIntegerEnum(NumberResult numberExpression) {
 		super(numberExpression);
@@ -86,7 +86,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Creates a DBIntegerEnum set to the value supplied..
 	 *
-	 * @param value	 value	
+	 * @param value	value
 	 */
 	public DBIntegerEnum(E value) {
 		super(value);
@@ -99,7 +99,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * However only some types of objects can set the value of a DBIntegerEnum and
 	 * you should probably use the more particular versions of setValue.
 	 *
-	 
+	 *
 	 */
 //	@Override
 //	void setValue(Object newLiteralValue) {
@@ -113,7 +113,6 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 //			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Long: Use only Long with this class");
 //		}
 //	}
-
 	/**
 	 * Used to set the value of the instance to the Long provided.
 	 *
@@ -124,12 +123,11 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
 	 * } method.
 	 *
-	 
+	 *
 	 */
 //	private void setValue(Long newLiteralValue) {
 //		super.setLiteralValue(newLiteralValue);
 //	}
-
 	/**
 	 * Used to set the value of the instance to the Integer provided.
 	 *
@@ -140,12 +138,11 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
 	 * } method.
 	 *
-	 
+	 *
 	 */
 //	private void setValue(Integer newLiteralValue) {
 //		super.setLiteralValue(newLiteralValue);
 //	}
-
 	@Override
 	protected void validateLiteralValue(E enumValue) {
 		Object code = enumValue.getCode();
@@ -183,7 +180,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(E... permitted) {
 		this.setOperator(new DBPermittedValuesOperator(convertToLiteral(permitted)));
@@ -194,7 +191,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(E... excluded) {
 		this.setOperator(new DBPermittedValuesOperator(convertToLiteral(excluded)));
@@ -351,7 +348,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Long... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -362,7 +359,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(Long... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -520,7 +517,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 *
 	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Integer... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -531,7 +528,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(Integer... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));

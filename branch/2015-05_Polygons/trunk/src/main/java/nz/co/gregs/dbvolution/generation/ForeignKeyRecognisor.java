@@ -34,38 +34,38 @@ package nz.co.gregs.dbvolution.generation;
  */
 public class ForeignKeyRecognisor {
 
-    /**
-     * Default implementation, returns FALSE.
-     *
+	/**
+	 * Default implementation, returns FALSE.
+	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-     * @return TRUE if the column is a foreign key reference, FALSE otherwise
-     */
-    public boolean isForeignKeyColumn(String tableName, String columnName) {
-        return false;
-    }
+	 * @return TRUE if the column is a foreign key reference, FALSE otherwise
+	 */
+	public boolean isForeignKeyColumn(String tableName, String columnName) {
+		return false;
+	}
 
-    /**
-     * Default implementation, returns NULL.
-     *
+	/**
+	 * Default implementation, returns NULL.
+	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-     * @return The database name of the referenced column derived from the
-     * referencing table and column, or NULL
-     */
-    public String getReferencedColumn(String tableName, String columnName) {
-        return null;
-    }
+	 * @return The database name of the referenced column derived from the
+	 * referencing table and column, or NULL
+	 */
+	public String getReferencedColumn(String tableName, String columnName) {
+		return null;
+	}
 
-    /**
-     * Default implementation, returns NULL.
-     *
+	/**
+	 * Default implementation, returns NULL.
+	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-     * @return The database name of the referenced table based on the
-     * referencing table and column or NULL.
-     */
-    public String getReferencedTable(String tableName, String columnName) {
-        return null;
-    }
+	 * @return The database name of the referenced table based on the referencing
+	 * table and column or NULL.
+	 */
+	public String getReferencedTable(String tableName, String columnName) {
+		return null;
+	}
 }

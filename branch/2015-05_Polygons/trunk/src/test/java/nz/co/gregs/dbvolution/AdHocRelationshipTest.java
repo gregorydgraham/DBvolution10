@@ -25,12 +25,12 @@ import org.junit.Test;
  */
 public class AdHocRelationshipTest extends AbstractTest {
 
-    public AdHocRelationshipTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public AdHocRelationshipTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void testAdHocRelationship() throws SQLException {
+	@Test
+	public void testAdHocRelationship() throws SQLException {
 //        Marque marque = new Marque();
 //        CarCompany carCompany = new CarCompany();
 //
@@ -44,7 +44,7 @@ public class AdHocRelationshipTest extends AbstractTest {
 //        query.print();
 //
 //        assertTrue("There should only be a row for TOYOTA", allRows.size() == 1);
-    }
+	}
 
 //    @Test
 //    public void testAdHocRelationshipWithOperator() throws SQLException{

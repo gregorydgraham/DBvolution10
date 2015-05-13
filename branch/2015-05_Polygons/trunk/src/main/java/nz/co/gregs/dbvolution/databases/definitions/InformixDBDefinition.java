@@ -196,7 +196,7 @@ public class InformixDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " (WEEKDAY("+dateSQL+")+1)";
+		return " (WEEKDAY(" + dateSQL + ")+1)";
 	}
 
 	@Override

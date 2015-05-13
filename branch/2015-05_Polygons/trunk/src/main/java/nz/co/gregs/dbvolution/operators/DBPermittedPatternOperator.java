@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
-
 public class DBPermittedPatternOperator extends DBLikeOperator {
-    
-    private static final long serialVersionUID = 1L;
 
-    public DBPermittedPatternOperator(String likeableValue) {
-        super(new StringExpression(likeableValue));
-    }
+	private static final long serialVersionUID = 1L;
 
-    public DBPermittedPatternOperator(StringExpression likeableValue) {
-        super(likeableValue);
-    }
+	public DBPermittedPatternOperator(String likeableValue) {
+		super(new StringExpression(likeableValue));
+	}
 
-    public DBPermittedPatternOperator() {
-    }
-    
+	public DBPermittedPatternOperator(StringExpression likeableValue) {
+		super(likeableValue);
+	}
+
+	public DBPermittedPatternOperator() {
+	}
+
 }

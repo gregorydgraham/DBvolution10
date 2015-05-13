@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
@@ -32,8 +31,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link MariaDB} and {@link MariaClusterDB} instances, and
- * you should not need to use it directly.
+ * This DBDefinition is automatically included in {@link MariaDB} and
+ * {@link MariaClusterDB} instances, and you should not need to use it directly.
  *
  * @author Gregory Graham
  */
@@ -78,7 +77,6 @@ public class MariaDBDefinition extends DBDefinition {
 //	public String getDropDatabase(String databaseName) {
 //		return "DROP DATABASE IF EXISTS " + databaseName + ";";
 //	}
-
 	@Override
 	public String doConcatTransform(String firstString, String secondString) {
 		return " CONCAT(" + firstString + ", " + secondString + ") ";
@@ -101,7 +99,7 @@ public class MariaDBDefinition extends DBDefinition {
 
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
-		return " DAYOFWEEK("+dateSQL+")";
+		return " DAYOFWEEK(" + dateSQL + ")";
 	}
 
 }

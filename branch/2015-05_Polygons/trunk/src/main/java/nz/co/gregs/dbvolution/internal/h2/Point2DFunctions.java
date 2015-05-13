@@ -23,14 +23,15 @@ import java.sql.Statement;
  * @author gregorygraham
  */
 public enum Point2DFunctions {
-	CREATE("DBV_CREATE_POINT2D_FROM_COORDS", "String", "Double x, Double y", "if (x == null || y == null) {\n" + "				return null;\n" + "			} else {\n" + "				return \"POINT (\" + x + \" \" + y + \")\" ;\n" + "	}"), 
-	EQUALS("DBV_POINT2D_EQUALS", "Boolean", "String firstPoint, String secondPoint", "			if (firstPoint == null || secondPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				return firstPoint.equals(secondPoint);\n" + "			}"), 
-	GETX("DBV_POINT2D_GETX", "Double", "String firstPoint", "			if (firstPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				String[] split = firstPoint.split(\"[ ()]+\");\n" + "				double x = Double.parseDouble(split[1]);\n" + "				return x;\n" + "			}"), 
-	GETY("DBV_POINT2D_GETY", "Double", "String firstPoint", "			if (firstPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				String[] split = firstPoint.split(\"[ ()]+\");\n" + "				double y = Double.parseDouble(split[2]);\n" + "				return y;\n" + "			}"), 
-	DIMENSION("DBV_POINT2D_GETDIMENSION", "Integer", "String firstPoint", "			return 0;"), 
-	BOUNDINGBOX("DBV_POINT2D_GETBOUNDINGBOX", "String", "String firstPoint", "			if (firstPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				String[] split = firstPoint.split(\"[ ()]+\");\n" + "				double x = Double.parseDouble(split[1]);\n" + "				double y = Double.parseDouble(split[2]);\n" + "				String point = x+\" \"+y;\n" + "				String resultString = \"POLYGON ((\"+point+\", \"+point+\", \"+point+\", \"+point+\", \"+point+\"))\";\n" + "				return resultString;\n" + "			}"), 
+
+	CREATE("DBV_CREATE_POINT2D_FROM_COORDS", "String", "Double x, Double y", "if (x == null || y == null) {\n" + "				return null;\n" + "			} else {\n" + "				return \"POINT (\" + x + \" \" + y + \")\" ;\n" + "	}"),
+	EQUALS("DBV_POINT2D_EQUALS", "Boolean", "String firstPoint, String secondPoint", "			if (firstPoint == null || secondPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				return firstPoint.equals(secondPoint);\n" + "			}"),
+	GETX("DBV_POINT2D_GETX", "Double", "String firstPoint", "			if (firstPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				String[] split = firstPoint.split(\"[ ()]+\");\n" + "				double x = Double.parseDouble(split[1]);\n" + "				return x;\n" + "			}"),
+	GETY("DBV_POINT2D_GETY", "Double", "String firstPoint", "			if (firstPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				String[] split = firstPoint.split(\"[ ()]+\");\n" + "				double y = Double.parseDouble(split[2]);\n" + "				return y;\n" + "			}"),
+	DIMENSION("DBV_POINT2D_GETDIMENSION", "Integer", "String firstPoint", "			return 0;"),
+	BOUNDINGBOX("DBV_POINT2D_GETBOUNDINGBOX", "String", "String firstPoint", "			if (firstPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				String[] split = firstPoint.split(\"[ ()]+\");\n" + "				double x = Double.parseDouble(split[1]);\n" + "				double y = Double.parseDouble(split[2]);\n" + "				String point = x+\" \"+y;\n" + "				String resultString = \"POLYGON ((\"+point+\", \"+point+\", \"+point+\", \"+point+\", \"+point+\"))\";\n" + "				return resultString;\n" + "			}"),
 	ASTEXT("DBV_POINT2D_ASTEXT", "String", "String firstPoint", "return firstPoint;");
-	
+
 	private final String functionName;
 	private final String returnType;
 	private final String parameters;
@@ -56,5 +57,5 @@ public enum Point2DFunctions {
 //		}
 		stmt.execute("CREATE ALIAS IF NOT EXISTS " + functionName + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + functionName + "(" + parameters + ") {\n" + code + "} $$;");
 	}
-	
+
 }

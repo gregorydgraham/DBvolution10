@@ -309,10 +309,12 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Return a Line2DExpression representing a line drawn around the outside of the Polygon2D.
-	 * 
+	 * Return a Line2DExpression representing a line drawn around the outside of
+	 * the Polygon2D.
+	 *
 	 * <p>
-	 * The line is coincident with the edge of the polygon but it does not contain any points within the polygon as it is only a line.
+	 * The line is coincident with the edge of the polygon but it does not contain
+	 * any points within the polygon as it is only a line.
 	 *
 	 * @return
 	 */

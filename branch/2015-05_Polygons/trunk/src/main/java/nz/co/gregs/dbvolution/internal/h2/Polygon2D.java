@@ -22,7 +22,9 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum Polygon2D {	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values());
+public enum Polygon2D {
+
+	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values());
 	private final String datatype;
 	private final String actualType;
 	private final Polygon2DFunctions[] functions;
@@ -45,7 +47,7 @@ public enum Polygon2D {	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFun
 			; // I don't care.
 		}
 		stmt.execute("CREATE DOMAIN IF NOT EXISTS " + datatype + " AS " + actualType + "; ");
-		
+
 		for (Polygon2DFunctions function : functions) {
 			function.add(stmt);
 		}
@@ -54,7 +56,5 @@ public enum Polygon2D {	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFun
 	public String datatype() {
 		return datatype;
 	}
-	
 
-	
 }

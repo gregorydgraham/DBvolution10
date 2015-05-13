@@ -216,7 +216,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doStringLengthTransform(String enclosedValue) {
 		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(15,10))";
 	}
-	
+
 	@Override
 	public boolean supportsPagingNatively(QueryOptions options) {
 		return false;
@@ -360,6 +360,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doSubsecondTransform(String dateExpression) {
 		return "(DATEPART(MILLISECOND , " + dateExpression + ")/1000.0000)";
 	}
+
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.
 	 *
@@ -417,12 +418,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doRoundTransform(String toSQLString) {
-		return "ROUND("+toSQLString+", 0)";
+		return "ROUND(" + toSQLString + ", 0)";
 	}
 
 	@Override
 	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
-		return "ROUND("+number+", "+decimalPlaces+")";
+		return "ROUND(" + number + ", " + decimalPlaces + ")";
 	}
 
 	@Override
@@ -466,52 +467,52 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DGetYTransform(String point2D) {
-		return "("+point2D + ").STY";
+		return "(" + point2D + ").STY";
 	}
 
 	@Override
 	public String doPoint2DDimensionTransform(String point2D) {
-		return "("+point2D+").STDimension()";
+		return "(" + point2D + ").STDimension()";
 	}
 
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2D) {
-		return "("+point2D+").STEnvelope()";
+		return "(" + point2D + ").STEnvelope()";
 	}
 
 	@Override
 	public String doPoint2DAsTextTransform(String point2DString) {
-		return "("+point2DString+").STAsText()";
+		return "(" + point2DString + ").STAsText()";
 	}
 
 	@Override
 	public String doLine2DAsTextTransform(String line2DSQL) {
-		return "("+line2DSQL+").STAsText()";
+		return "(" + line2DSQL + ").STAsText()";
 	}
 
 	@Override
 	public String doLine2DGetMinYTransform(String toSQLString) {
-		return Line2DFunctions.MINY+"("+toSQLString+")";
+		return Line2DFunctions.MINY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMaxYTransform(String toSQLString) {
-		return Line2DFunctions.MAXY+"("+toSQLString+")";
+		return Line2DFunctions.MAXY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMinXTransform(String toSQLString) {
-		return Line2DFunctions.MINX+"("+toSQLString+")";
+		return Line2DFunctions.MINX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMaxXTransform(String toSQLString) {
-		return Line2DFunctions.MAXX+"("+toSQLString+")";
+		return Line2DFunctions.MAXX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
-		return "("+toSQLString+").STEnvelope()";
+		return "(" + toSQLString + ").STEnvelope()";
 	}
 
 	@Override
@@ -526,24 +527,24 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
-		return "geometry::STGeomFromText ('" +polygon.toText()+"',0)";
+		return "geometry::STGeomFromText ('" + polygon.toText() + "',0)";
 	}
-	
+
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
-		return "geometry::STGeomFromText ('" +line.toText()+"',0)";
+		return "geometry::STGeomFromText ('" + line.toText() + "',0)";
 	}
-	
+
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return "geometry::STGeomFromText ('POINT (" + xValue+" "+yValue + ")',0)";
+		return "geometry::STGeomFromText ('POINT (" + xValue + " " + yValue + ")',0)";
 	}
-	
+
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
-		return "geometry::STGeomFromText ('" +point.toText()+"',0)";
+		return "geometry::STGeomFromText ('" + point.toText() + "',0)";
 	}
-	
+
 	@Override
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
@@ -560,12 +561,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point point = null;
-		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")){
+		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")) {
 			String[] split = pointAsString.split("[^-0-9.]+");
 			for (String split1 : split) {
-				System.out.println("DATABASE VALUE: "+split1);
+				System.out.println("DATABASE VALUE: " + split1);
 			}
-		GeometryFactory geometryFactory = new GeometryFactory();
+			GeometryFactory geometryFactory = new GeometryFactory();
 			final double x = Double.parseDouble(split[1]);
 			final double y = Double.parseDouble(split[2]);
 			point = geometryFactory.createPoint(new Coordinate(x, y));
@@ -574,7 +575,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		}
 		return point;
 	}
-	
+
 	// ((2,3),(2,3),(2,3),(2,3)) => POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))
 //	@Override
 //	public Geometry transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
@@ -599,21 +600,20 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 //		Polygon polygon = geometryFactory.createPolygon(coords.toArray(new Coordinate[]{}));
 //		return polygon;
 //	}
-	
 	//geometry::STGeomFromText('POLYGON ((0 0, 150 0, 150 150, 0 150, 0 0))', 0)
 	@Override
 	public String doDBPolygon2DFormatTransform(Polygon polygon2DInWKTFormat) {
-			StringBuilder str = new  StringBuilder();
+		StringBuilder str = new StringBuilder();
 		String separator = "";
 		Coordinate[] coordinates = polygon2DInWKTFormat.getCoordinates();
 		for (Coordinate coordinate : coordinates) {
 			str.append(separator).append(coordinate.x).append(" ").append(coordinate.y);
-			separator=", ";
+			separator = ", ";
 		}
-		
+
 		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
 	}
-	
+
 	@Override
 	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "((" + firstGeometry + ").STIntersection(" + secondGeometry + "))";
@@ -623,31 +623,31 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
 //		return "(" + firstGeometry + ") ?#  (" + secondGeometry + ")";
 		return "((" + firstGeometry + ").STOverlaps(" + secondGeometry + ")=1)";
-	}	
+	}
 
 	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
 		return "((" + firstGeometry + ").STIntersects(" + secondGeometry + ")=1)";
-	}	
-	
+	}
+
 	@Override
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
-		return "(("+ firstGeometry + ").STTouches(" + secondGeometry + ")=1)";
+		return "((" + firstGeometry + ").STTouches(" + secondGeometry + ")=1)";
 	}
-	
+
 	@Override
 	public String doPolygon2DGetAreaTransform(String toSQLString) {
-		return "(("+toSQLString+").STArea())";
-	}	
-	
+		return "((" + toSQLString + ").STArea())";
+	}
+
 	@Override
 	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
-		return "("+toSQLString+").STEnvelope()";
-	}	
-	
+		return "(" + toSQLString + ").STEnvelope()";
+	}
+
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
-		return "(("+ firstGeometry + ").STEquals(" + secondGeometry + ")=1)";
+		return "((" + firstGeometry + ").STEquals(" + secondGeometry + ")=1)";
 	}
 
 	/**
@@ -659,7 +659,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
-		return "(("+ firstGeometry + ").STContains(" + secondGeometry + ")=1)";
+		return "((" + firstGeometry + ").STContains(" + secondGeometry + ")=1)";
 	}
 
 	/**
@@ -672,7 +672,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
-		return "(("+ firstGeometry + ").STDisjoint(" + secondGeometry + ")=1)";
+		return "((" + firstGeometry + ").STDisjoint(" + secondGeometry + ")=1)";
 	}
 
 	/**
@@ -690,7 +690,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
-		return "(("+ firstGeometry + ").STWithin(" + secondGeometry + ")=1)";
+		return "((" + firstGeometry + ").STWithin(" + secondGeometry + ")=1)";
 	}
 
 	/**
@@ -704,7 +704,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetDimensionTransform(String toSQLString) {
-		return "(("+ toSQLString + ").STDimension())";
+		return "((" + toSQLString + ").STDimension())";
 	}
 
 	/**
@@ -716,7 +716,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
-		return "(("+ polygon2DSQL + ").STExteriorRing())";
+		return "((" + polygon2DSQL + ").STExteriorRing())";
 	}
 
 	/**
@@ -728,7 +728,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
-		return doPoint2DGetXTransform("(("+ polygon2DSQL + ").STExteriorRing().STPointN(2))");
+		return doPoint2DGetXTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(2))");
 	}
 
 	/**
@@ -740,7 +740,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
-		return doPoint2DGetXTransform("(("+ polygon2DSQL + ").STExteriorRing().STPointN(1))");
+		return doPoint2DGetXTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(1))");
 	}
 
 	/**
@@ -752,7 +752,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
-		return doPoint2DGetYTransform("(("+ polygon2DSQL + ").STExteriorRing().STPointN(3))");
+		return doPoint2DGetYTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(3))");
 	}
 
 	/**

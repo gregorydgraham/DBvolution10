@@ -25,15 +25,15 @@ import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
  *
  * @author Gregory Graham
  */
-public class MySQLDB extends DBDatabase{
+public class MySQLDB extends DBDatabase {
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	 ds	
-	 * @throws java.sql.SQLException	
+	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public MySQLDB(DataSource ds) throws SQLException {
 		super(new MySQLDBDefinition(), ds);

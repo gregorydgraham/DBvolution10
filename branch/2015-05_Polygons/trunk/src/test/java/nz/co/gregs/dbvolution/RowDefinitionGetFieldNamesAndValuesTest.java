@@ -36,7 +36,7 @@ public class RowDefinitionGetFieldNamesAndValuesTest extends AbstractTest {
 
 	@Test
 	public void getFieldNamesAndValuesTest() throws SQLException, IllegalArgumentException, IllegalAccessException {
-		List<String> lines  = new ArrayList<String>();
+		List<String> lines = new ArrayList<String>();
 
 		Marque marque = new Marque();
 		CarCompany carCompany = new CarCompany();
@@ -56,7 +56,7 @@ public class RowDefinitionGetFieldNamesAndValuesTest extends AbstractTest {
 				String csvLine = "" + row.toCSVLine();
 				System.out.println(csvLine);
 				lines.add(csvLine);
-				
+
 			}
 		}
 		Assert.assertThat(lines.get(0), is("\"BMW\",\"OTHER\",\"4\""));

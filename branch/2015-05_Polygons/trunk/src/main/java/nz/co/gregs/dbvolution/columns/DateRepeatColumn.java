@@ -30,7 +30,7 @@ import org.joda.time.Period;
  * @author Gregory Graham
  */
 public class DateRepeatColumn extends DateRepeatExpression implements ColumnProvider {
-	
+
 	private AbstractColumn column;
 
 	private DateRepeatColumn() {
@@ -45,7 +45,6 @@ public class DateRepeatColumn extends DateRepeatExpression implements ColumnProv
 	public DateRepeatColumn(RowDefinition row, Period field) {
 		this.column = new AbstractColumn(row, field);
 	}
-
 
 	/**
 	 * Create a DateColumn for the supplied field of the supplied row
@@ -95,14 +94,15 @@ public class DateRepeatColumn extends DateRepeatExpression implements ColumnProv
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().isEmpty();
 	}
-	
+
 	/**
-	 * Create an expression to compare this column to the other column using EQUALS.
+	 * Create an expression to compare this column to the other column using
+	 * EQUALS.
 	 *
-	 * @param intervalColumn  
+	 * @param intervalColumn
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBDateRepeat intervalColumn){
+	public BooleanExpression is(DBDateRepeat intervalColumn) {
 		return super.is(intervalColumn);
 	}
 }

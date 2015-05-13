@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.internal.querygraph;
 
 import java.util.HashSet;
@@ -25,6 +24,7 @@ import nz.co.gregs.dbvolution.DBRow;
  * @author Gregory Graham
  */
 public class QueryGraphNode {
+
 	private boolean requiredNode = true;
 
 	private final Class<? extends DBRow> table;
@@ -76,7 +76,7 @@ public class QueryGraphNode {
 		hash = 89 * hash + (this.table != null ? this.table.hashCode() : 0);
 		return hash;
 	}
-	
+
 	public boolean isRequiredNode() {
 		return requiredNode;
 	}

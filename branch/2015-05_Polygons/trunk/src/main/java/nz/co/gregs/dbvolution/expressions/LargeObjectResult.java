@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.expressions;
-
 
 /**
  * Interface required to be implemented by all DBExpressions that produce
@@ -34,8 +32,7 @@ package nz.co.gregs.dbvolution.expressions;
  */
 public interface LargeObjectResult extends DBExpression, ExpressionCanHaveNullValues {
 
-    @Override
-    public LargeObjectResult copy();
-	
-    
+	@Override
+	public LargeObjectResult copy();
+
 }

@@ -57,7 +57,7 @@ public class DBDateOnly extends DBDate {
 	 * <p>
 	 * Any time information in the date will be ignored.
 	 *
-	 * @param date	 date	
+	 * @param date	date
 	 */
 	public DBDateOnly(Date date) {
 		super(date);
@@ -73,7 +73,7 @@ public class DBDateOnly extends DBDate {
 	 * <p>
 	 * Only date information in the timestamp will be retained.
 	 *
-	 * @param timestamp	 timestamp	
+	 * @param timestamp	timestamp
 	 */
 	public DBDateOnly(Timestamp timestamp) {
 		super(timestamp);
@@ -87,7 +87,7 @@ public class DBDateOnly extends DBDate {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param dateExpression	 dateExpression	
+	 * @param dateExpression	dateExpression
 	 */
 	public DBDateOnly(DateResult dateExpression) {
 		super(dateExpression);

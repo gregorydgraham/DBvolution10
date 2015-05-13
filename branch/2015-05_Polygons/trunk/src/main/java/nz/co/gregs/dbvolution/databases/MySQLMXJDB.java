@@ -26,17 +26,16 @@ import nz.co.gregs.dbvolution.DBDatabase;
  */
 public class MySQLMXJDB extends MySQLDB {
 
-
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	 ds	
-	 * @throws java.sql.SQLException	
+	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public MySQLMXJDB(DataSource ds) throws SQLException {
-        super(ds);
-    }
-	
+		super(ds);
+	}
+
 	/**
 	 * Creates a DBDatabase tweaked for MySQL MXJ.
 	 *

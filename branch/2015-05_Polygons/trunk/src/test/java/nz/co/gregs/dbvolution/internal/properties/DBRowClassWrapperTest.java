@@ -20,39 +20,39 @@ import org.junit.Test;
 @SuppressWarnings("warnings")
 public class DBRowClassWrapperTest {
 
-    private static DBDatabase database;
+	private static DBDatabase database;
 
-    @BeforeClass
-    public static void setup() throws SQLException {
-        database = new H2MemoryDB("dbvolutionTest", "", "", false);
-    }
+	@BeforeClass
+	public static void setup() throws SQLException {
+		database = new H2MemoryDB("dbvolutionTest", "", "", false);
+	}
 
-    @Test
-    public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
-        RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
-        assertThat(classWrapper.primaryKeyDefinition(), is(not(nullValue())));
-        assertThat(classWrapper.primaryKeyDefinition().getColumnName(), is("uid"));
-    }
+	@Test
+	public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
+		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
+		assertThat(classWrapper.primaryKeyDefinition(), is(not(nullValue())));
+		assertThat(classWrapper.primaryKeyDefinition().getColumnName(), is("uid"));
+	}
 
-    @SuppressWarnings("serial")
-    @Test(expected = UnsupportedOperationException.class)
-    public void errorsWhenConstructingGivenTwoPrimaryKeyColumns() {
-        @DBTableName("table1")
-        class TestClass extends DBRow {
+	@SuppressWarnings("serial")
+	@Test(expected = UnsupportedOperationException.class)
+	public void errorsWhenConstructingGivenTwoPrimaryKeyColumns() {
+		@DBTableName("table1")
+		class TestClass extends DBRow {
 
-            @DBPrimaryKey
-            @DBColumn
-            public DBInteger uid = new DBInteger();
-            @DBPrimaryKey
-            @DBColumn("table_text")
-            public DBString text = new DBString();
-            @DBColumn
-            @DBForeignKey(value = MyTable2.class)
-            public DBInteger fkTable2 = new DBInteger();
-        }
+			@DBPrimaryKey
+			@DBColumn
+			public DBInteger uid = new DBInteger();
+			@DBPrimaryKey
+			@DBColumn("table_text")
+			public DBString text = new DBString();
+			@DBColumn
+			@DBForeignKey(value = MyTable2.class)
+			public DBInteger fkTable2 = new DBInteger();
+		}
 
-        new RowDefinitionClassWrapper(TestClass.class);
-    }
+		new RowDefinitionClassWrapper(TestClass.class);
+	}
 
 //	@Test
 //	public void getsPrimaryKeyPropertiesGivenTwoPrimaryKeyColumns() {
@@ -73,44 +73,44 @@ public class DBRowClassWrapperTest {
 //		assertThat(classWrapper.primaryKey().get(0).getColumnName(), is("uid_2"));
 //		assertThat(classWrapper.primaryKey().get(1).getColumnName(), is("type"));
 //	}
-    @Test
-    public void getsProperties() {
-        RowDefinitionClassWrapper classAdaptor = new RowDefinitionClassWrapper(MyTable1.class);
-        assertThat(classAdaptor.getPropertyDefinitions().size(), is(3));
-    }
+	@Test
+	public void getsProperties() {
+		RowDefinitionClassWrapper classAdaptor = new RowDefinitionClassWrapper(MyTable1.class);
+		assertThat(classAdaptor.getPropertyDefinitions().size(), is(3));
+	}
 
-    @Test
-    public void getsForeignKeyReferencedTableName() {
-        RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
-        assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedTableName(), is("table2"));
-    }
+	@Test
+	public void getsForeignKeyReferencedTableName() {
+		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
+		assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedTableName(), is("table2"));
+	}
 
-    @Test
-    public void getsForeignKeyReferencedColumnName() {
-        RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
-        assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedColumnName(), is("uid_2"));
-    }
+	@Test
+	public void getsForeignKeyReferencedColumnName() {
+		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
+		assertThat(classWrapper.getPropertyDefinitionByName("fkTable2").referencedColumnName(), is("uid_2"));
+	}
 
-    @SuppressWarnings("serial")
-    @DBTableName("table1")
-    public static class MyTable1 extends DBRow {
+	@SuppressWarnings("serial")
+	@DBTableName("table1")
+	public static class MyTable1 extends DBRow {
 
-        @DBPrimaryKey
-        @DBColumn
-        public DBInteger uid = new DBInteger();
-        @DBColumn("table_text")
-        public DBString text = new DBString();
-        @DBColumn
-        @DBForeignKey(value = MyTable2.class)
-        public DBInteger fkTable2 = new DBInteger();
-    }
+		@DBPrimaryKey
+		@DBColumn
+		public DBInteger uid = new DBInteger();
+		@DBColumn("table_text")
+		public DBString text = new DBString();
+		@DBColumn
+		@DBForeignKey(value = MyTable2.class)
+		public DBInteger fkTable2 = new DBInteger();
+	}
 
-    @SuppressWarnings("serial")
-    @DBTableName("table2")
-    public static class MyTable2 extends DBRow {
+	@SuppressWarnings("serial")
+	@DBTableName("table2")
+	public static class MyTable2 extends DBRow {
 
-        @DBPrimaryKey
-        @DBColumn("uid_2")
-        public DBInteger uid = new DBInteger();
-    }
+		@DBPrimaryKey
+		@DBColumn("uid_2")
+		public DBInteger uid = new DBInteger();
+	}
 }

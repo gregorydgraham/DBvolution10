@@ -29,24 +29,24 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ExpressionColumnTests extends AbstractTest {
-	
+
 	public ExpressionColumnTests(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@Test
 	public void selectDateExpressionWithDBQuery() throws Exception {
 		final CarCompany carCompany = new CarCompany();
 		final Marque marque = new Marque();
 		marque.name.permittedValuesIgnoreCase("TOYOTA");
 		DBQuery query = database.getDBQuery(marque, carCompany);
-		
+
 		final Date dateKey = new Date();
 		query.addExpressionColumn(dateKey, DateExpression.currentDateOnly());
-		
+
 		final String sqlForQuery = query.getSQLForQuery();
 		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
-		
+
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(dateKey);
 			System.out.println(expressionColumnValue.toSQLString(database));
@@ -58,20 +58,20 @@ public class ExpressionColumnTests extends AbstractTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void selectStringExpressionWithDBQuery() throws Exception {
 		final CarCompany carCompany = new CarCompany();
 		final Marque marque = new Marque();
 		marque.name.permittedValuesIgnoreCase("TOYOTA");
 		DBQuery query = database.getDBQuery(marque, carCompany);
-		
+
 		final String shortMarqueName = "Short marque name";
 		query.addExpressionColumn(shortMarqueName, marque.column(marque.name).substring(0, 3));
-		
+
 		final String sqlForQuery = query.getSQLForQuery();
 		Assert.assertThat(sqlForQuery, containsString("SUBSTR"));
-		
+
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(shortMarqueName);
 			System.out.println(expressionColumnValue.toSQLString(database));
@@ -84,17 +84,17 @@ public class ExpressionColumnTests extends AbstractTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void selectNumberExpressionWithDBQuery() throws Exception {
 		final CarCompany carCompany = new CarCompany();
 		final Marque marque = new Marque();
 		marque.name.permittedValuesIgnoreCase("TOYOTA");
 		DBQuery query = database.getDBQuery(marque, carCompany);
-		
+
 		final String strangeEquation = "strange equation";
 		query.addExpressionColumn(strangeEquation, marque.column(marque.uidMarque).times(5).dividedBy(3).plus(2));
-		
+
 		for (DBQueryRow row : query.getAllRows()) {
 			Long uid = row.get(new Marque()).uidMarque.getValue();
 			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(strangeEquation);

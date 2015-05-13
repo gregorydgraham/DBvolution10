@@ -42,7 +42,7 @@ public class DBTableUpdateTest extends AbstractTest {
 		DBActionList updateList = marquesTable.update(toyota);
 		final String standardSQL = "UPDATE MARQUE SET UID_MARQUE = 99999 WHERE UID_MARQUE = 1;";
 		final String oracleSQL = "update OO1081299805 set uid_marque = 99999 where uid_marque = 1";
-		Assert.assertThat(testableSQL(updateList.get(0).getSQLStatements(database).get(0)), 
+		Assert.assertThat(testableSQL(updateList.get(0).getSQLStatements(database).get(0)),
 				anyOf(
 						is(testableSQL(standardSQL)),
 						is(testableSQL(oracleSQL))

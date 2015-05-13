@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 
 /**
- * Implementation that accepts only fields and bean-properties that have
- * a {@link DBColumn} annotation.
+ * Implementation that accepts only fields and bean-properties that have a
+ * {@link DBColumn} annotation.
  */
 class ColumnPropertyFilter implements JavaPropertyFilter {
 
@@ -34,5 +34,5 @@ class ColumnPropertyFilter implements JavaPropertyFilter {
 	public boolean acceptBeanProperty(Method getter, Method setter) {
 		return (getter != null && getter.isAnnotationPresent(DBColumn.class)) || (setter != null && setter.isAnnotationPresent(DBColumn.class));
 	}
-	
+
 }

@@ -19,9 +19,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 //	static String ACTUAL_DATATYPE = "VARCHAR(2000)";
-
 //	public static String DATATYPE = "DBV_POINT2D";
 public enum Point2D {
+
 	POINT2D("DBV_POINT2D", "VARCHAR(2000)", Point2DFunctions.values());
 	private String datatype;
 	private String actualType;
@@ -45,7 +45,7 @@ public enum Point2D {
 			; // I don't care.
 		}
 		stmt.execute("CREATE DOMAIN IF NOT EXISTS " + datatype + " AS " + actualType + "; ");
-		
+
 		for (Point2DFunctions function : functions) {
 			function.add(stmt);
 		}
@@ -54,5 +54,5 @@ public enum Point2D {
 	public String datatype() {
 		return datatype;
 	}
-	
+
 }

@@ -26,8 +26,8 @@ public class UnexpectedNumberOfRowsException extends Exception {
 	private long actualRows;
 
 	/**
-	 * The method requires an exact number of rows to be returned, and the
-	 * actual number was wrong.
+	 * The method requires an exact number of rows to be returned, and the actual
+	 * number was wrong.
 	 *
 	 * <p>
 	 * There has probably been a mistake.
@@ -44,11 +44,12 @@ public class UnexpectedNumberOfRowsException extends Exception {
 	}
 
 	/**
-	 * The method requires an exact number of rows to be returned, and the
-	 * actual number was wrong.
+	 * The method requires an exact number of rows to be returned, and the actual
+	 * number was wrong.
 	 *
 	 * <p>
 	 * There has probably been a mistake.
+	 *
 	 * @param expected expected
 	 * @param message message
 	 * @param actual actual
@@ -59,11 +60,12 @@ public class UnexpectedNumberOfRowsException extends Exception {
 	}
 
 	/**
-	 * The method requires an exact number of rows to be returned, and the
-	 * actual number was wrong.
+	 * The method requires an exact number of rows to be returned, and the actual
+	 * number was wrong.
 	 *
 	 * <p>
 	 * There has probably been a mistake.
+	 *
 	 * @param expected expected
 	 * @param actual actual
 	 */

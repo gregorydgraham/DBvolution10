@@ -299,7 +299,7 @@ public class Point2DExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
-		
+
 		dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.distance).round(2).is(3.61));
 		allRows = dbQuery.getAllInstancesOf(pointTestTable);

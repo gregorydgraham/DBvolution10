@@ -22,7 +22,7 @@ public class InternalQueryableDatatypeProxy {
 	/**
 	 * Internal class, do not use.
 	 *
-	 * @param qdt	 qdt	
+	 * @param qdt	qdt
 	 */
 	public InternalQueryableDatatypeProxy(QueryableDatatype qdt) {
 		this.qdt = qdt;
@@ -36,7 +36,7 @@ public class InternalQueryableDatatypeProxy {
 	 * For use with QDT types that need meta-data only available via property
 	 * wrappers.
 	 *
-	 * @param propertyWrapperDefn	 propertyWrapperDefn	
+	 * @param propertyWrapperDefn	propertyWrapperDefn
 	 */
 	public void setPropertyWrapper(PropertyWrapperDefinition propertyWrapperDefn) {
 		qdt.setPropertyWrapper(propertyWrapperDefn);
@@ -48,7 +48,7 @@ public class InternalQueryableDatatypeProxy {
 	 * Hides the generic setValue(Object) method within QueryableDatatype while
 	 * allowing it to be used.
 	 *
-	 * @param obj	 obj	
+	 * @param obj	obj
 	 */
 	public void setValue(Object obj) {
 		qdt.setValue(obj);

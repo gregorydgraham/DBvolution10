@@ -33,8 +33,9 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
  */
 @DBTableName("lt_carco_logo_with_prev")
 @SuppressWarnings("serial")
-public class LinkCarCompanyAndLogoWithPreviousLink extends DBRow{
-    	private static final long serialVersionUID = 1L;
+public class LinkCarCompanyAndLogoWithPreviousLink extends DBRow {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * A DBInteger field representing the "fk_car_company" column in the database.
@@ -51,14 +52,15 @@ public class LinkCarCompanyAndLogoWithPreviousLink extends DBRow{
 	 * DBInteger indicates that the field is INTEGER or NUMBER field that
 	 * naturally provides Integer values in Java. It has an instance as that just
 	 * makes everyone's life easier.
-	 * 
+	 *
 	 */
 	@DBForeignKey(CarCompany.class)
-    @DBColumn("fk_car_company")
-    public DBInteger fkCarCompany  = new DBInteger();
-    
+	@DBColumn("fk_car_company")
+	public DBInteger fkCarCompany = new DBInteger();
+
 	/**
-	 * A DBInteger field representing the "fk_company_logo" column in the database.
+	 * A DBInteger field representing the "fk_company_logo" column in the
+	 * database.
 	 *
 	 * <p>
 	 * &#64;DBColumn both indicates that the field is part of the database table
@@ -72,14 +74,15 @@ public class LinkCarCompanyAndLogoWithPreviousLink extends DBRow{
 	 * DBInteger indicates that the field is INTEGER or NUMBER field that
 	 * naturally provides Integer values in Java. It has an instance as that just
 	 * makes everyone's life easier.
-	 * 
+	 *
 	 */
 	@DBForeignKey(CompanyLogo.class)
-    @DBColumn("fk_company_logo")
-    public DBInteger fkCompanyLogo  = new DBInteger();
-    
+	@DBColumn("fk_company_logo")
+	public DBInteger fkCompanyLogo = new DBInteger();
+
 	/**
-	 * A DBInteger field representing the "fk_prev_company_logo" column in the database.
+	 * A DBInteger field representing the "fk_prev_company_logo" column in the
+	 * database.
 	 *
 	 * <p>
 	 * &#64;DBColumn both indicates that the field is part of the database table
@@ -93,9 +96,9 @@ public class LinkCarCompanyAndLogoWithPreviousLink extends DBRow{
 	 * DBInteger indicates that the field is INTEGER or NUMBER field that
 	 * naturally provides Integer values in Java. It has an instance as that just
 	 * makes everyone's life easier.
-	 * 
+	 *
 	 */
 	@DBForeignKey(CompanyLogo.class)
-    @DBColumn("fk_prev_company_logo")
-    public DBInteger fkPrevCompanyLogo  = new DBInteger();
+	@DBColumn("fk_prev_company_logo")
+	public DBInteger fkPrevCompanyLogo = new DBInteger();
 }

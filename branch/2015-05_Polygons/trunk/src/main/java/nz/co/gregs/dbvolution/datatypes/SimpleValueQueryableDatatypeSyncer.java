@@ -28,12 +28,11 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	 * @param internalQdtType internalQdtType
 	 * @param internalQdtLiteralType internalQdtLiteralType
 	 * @param typeAdaptor typeAdaptor
-	 * @param externalSimpleType externalSimpleType
-	 externalSimpleType
-	
-	 
-	 
-	 
+	 * @param externalSimpleType externalSimpleType externalSimpleType
+	 *
+	 *
+	 *
+	 *
 	 */
 	public SimpleValueQueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype> internalQdtType,
 			Class<?> internalQdtLiteralType, Class<?> externalSimpleType, DBTypeAdaptor<Object, Object> typeAdaptor) {

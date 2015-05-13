@@ -36,13 +36,11 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  */
 public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions {
 
-
 	/**
 	 * Used to hold the database open
 	 *
 	 */
 	protected Connection storedConnection;
-
 
 	/**
 	 * Creates a DBDatabase for a H2 database in the file supplied.
@@ -78,6 +76,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 		final Statement stmt = getConnection().createStatement();
 		addDatabaseSpecificFeatures(stmt);
 	}
+
 	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
@@ -126,7 +125,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	 */
 	@Override
 	public H2DB clone() throws CloneNotSupportedException {
-		return (H2DB) super.clone(); 
+		return (H2DB) super.clone();
 	}
 
 }

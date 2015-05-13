@@ -65,7 +65,8 @@ public class DBActionList extends ArrayList<DBAction> {
 	 * Returns the SQL that would be executed on the database provided.
 	 *
 	 * @param db the target database.
-	 * @return a List of SQL statements appropriate to the actions of this DBActionList and the database.
+	 * @return a List of SQL statements appropriate to the actions of this
+	 * DBActionList and the database.
 	 */
 	public synchronized List<String> getSQL(DBDatabase db) {
 		List<String> sqlList = new ArrayList<String>();
@@ -91,8 +92,8 @@ public class DBActionList extends ArrayList<DBAction> {
 	}
 
 	/**
-	 * Provides a list of {@link DBAction DBActions} intended to revert changed rows to their
-	 * previous state.
+	 * Provides a list of {@link DBAction DBActions} intended to revert changed
+	 * rows to their previous state.
 	 *
 	 * <p>
 	 * Creating revert scripts is particularly tricky in databases so be sure to
@@ -107,7 +108,8 @@ public class DBActionList extends ArrayList<DBAction> {
 	 * inserts and deletes, you should watch out for complex updates that may
 	 * change a different selection from the original.
 	 *
-	 * @return A DBactionList of DBActions required to revert the actions within this DBActionList.
+	 * @return A DBactionList of DBActions required to revert the actions within
+	 * this DBActionList.
 	 */
 	public DBActionList getRevertActionList() {
 		DBAction[] toArray = this.toArray(new DBAction[]{});

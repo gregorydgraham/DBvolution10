@@ -23,6 +23,7 @@ import java.sql.Statement;
  * @author gregorygraham
  */
 public enum Line2D {
+
 	LINE2D("DBV_LINE2D", "VARCHAR(2001)", Line2DFunctions.values());
 	private final String datatype;
 	private final String actualType;
@@ -46,7 +47,7 @@ public enum Line2D {
 			; // I don't care.
 		}
 		stmt.execute("CREATE DOMAIN IF NOT EXISTS " + datatype + " AS " + actualType + "; ");
-		
+
 		for (Line2DFunctions function : functions) {
 			function.add(stmt);
 		}
@@ -55,6 +56,5 @@ public enum Line2D {
 	public String datatype() {
 		return datatype;
 	}
-	
-	
+
 }

@@ -30,20 +30,21 @@ import java.lang.annotation.Target;
  * Please report this annotation with the associated value, the database engine
  * used, and the actual datatype in the database if known and I will add support
  * if possible.
- * 
+ *
  * <p>
- * &#64;DBUnknownJavaSQLType is generated automatically by DBTableClassGenerator.
+ * &#64;DBUnknownJavaSQLType is generated automatically by
+ * DBTableClassGenerator.
  *
  * @author Gregory Graham
- * 
+ *
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBUnknownJavaSQLType {
 
-    /**
-     *
-     * @return the java.sql.Types constant that has not been recognized
-     */
-    int value();
+	/**
+	 *
+	 * @return the java.sql.Types constant that has not been recognized
+	 */
+	int value();
 }

@@ -57,7 +57,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Utility function to return the values of a list of DBStrings in a list of
 	 * Strings.
 	 *
-	 * @param dbStrings	 dbStrings	
+	 * @param dbStrings	dbStrings
 	 * @return the defined values of all the DBStrings.
 	 */
 	public static List<String> toStringList(List<DBString> dbStrings) {
@@ -86,7 +86,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * The resulting DBString will be set as having the value provided but will
 	 * not be defined in the database.
 	 *
-	 * @param string	 string	
+	 * @param string	string
 	 */
 	public DBString(String string) {
 		super(string);
@@ -100,7 +100,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param stringExpression	 stringExpression	
+	 * @param stringExpression	stringExpression
 	 */
 	public DBString(StringResult stringExpression) {
 		super(stringExpression);
@@ -118,7 +118,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Sets the value of this DBString to the value provided.
 	 *
-	 * @param str	 str	
+	 * @param str	str
 	 */
 	public void setValue(String str) {
 		super.setLiteralValue(str);
@@ -177,10 +177,9 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(String... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -188,10 +187,9 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Object... permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -199,10 +197,9 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Collection<String> permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -210,10 +207,10 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * Strings ignoring letter case.
+	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
+	 * ignoring letter case.
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValuesIgnoreCase(String... permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -221,10 +218,10 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * Strings ignoring letter case.
+	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
+	 * ignoring letter case.
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValuesIgnoreCase(StringExpression... permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -232,10 +229,10 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * Strings ignoring letter case.
+	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
+	 * ignoring letter case.
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValuesIgnoreCase(List<String> permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -243,10 +240,10 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * Strings ignoring letter case.
+	 * reduces the rows to only the object, Set, List, Array, or vararg of Strings
+	 * ignoring letter case.
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValuesIgnoreCase(Set<String> permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(permitted));
@@ -256,7 +253,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValuesIgnoreCase(String... excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -267,7 +264,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValuesIgnoreCase(StringExpression... excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -278,7 +275,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Reduces the rows to excluding the object, Set, List, Array, or vararg of
 	 * Strings ignoring letter case.
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValuesIgnoreCase(Collection<String> excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -287,7 +284,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 
+	 *
 	 */
 //	public void excludedValuesIgnoreCase(Set<String> excluded) {
 //		setOperator(new DBPermittedValuesIgnoreCaseOperator(excluded));
@@ -298,7 +295,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(String... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -310,7 +307,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(Collection<String> excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -320,8 +317,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -393,8 +390,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified the lower-bound will be included
-	 * within the range and the upper-bound excluded. I.e excludedRange(1,3)
-	 * will exclude 1 and 2.
+	 * within the range and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * exclude 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -476,7 +473,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern	 pattern	
+	 * @param pattern	pattern
 	 */
 	public void permittedPattern(String pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -494,7 +491,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern	 pattern	
+	 * @param pattern	pattern
 	 */
 	public void excludedPattern(String pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -513,7 +510,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern	 pattern	
+	 * @param pattern	pattern
 	 */
 	public void permittedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -531,7 +528,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern	 pattern	
+	 * @param pattern	pattern
 	 */
 	public void excludedPattern(StringExpression pattern) {
 		this.setOperator(new DBPermittedPatternOperator(pattern));
@@ -540,10 +537,9 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(StringExpression... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -554,7 +550,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(StringExpression... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -564,8 +560,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -636,8 +632,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded from the range. I.e
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded from the range. I.e
 	 * excludedRange(1,3) will exclude 1 and 2.
 	 *
 	 * <p>
@@ -662,8 +658,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
-	 * exclude 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
+	 * 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -687,8 +683,8 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
+	 * 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
@@ -714,19 +710,18 @@ public class DBString extends QueryableDatatype implements StringResult {
 	}
 
 	/**
-	 * Indicates whether this DBString value is the SQL equivalent of a java
-	 * empty String.
+	 * Indicates whether this DBString value is the SQL equivalent of a java empty
+	 * String.
 	 *
 	 * <p>
-	 * Some databases, notably Oracle, cannot differentiate between empty
-	 * strings and NULL strings. This method helps programmers access the empty
-	 * or NULL states will allowing DBV to provide a consistent interface.
+	 * Some databases, notably Oracle, cannot differentiate between empty strings
+	 * and NULL strings. This method helps programmers access the empty or NULL
+	 * states will allowing DBV to provide a consistent interface.
 	 *
 	 * <p>
 	 * In Oracle and similar databases isDBNull and isEmptyString will both be
-	 * TRUE when the value is NULL. However most databases will have
-	 * isEmptyString false when the string is null, and isDBNull false when the
-	 * string is empty.
+	 * TRUE when the value is NULL. However most databases will have isEmptyString
+	 * false when the string is null, and isDBNull false when the string is empty.
 	 *
 	 * @return true if the database value represents an empty string, otherwise
 	 * FALSE.
@@ -759,7 +754,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * <p>
 	 * Java-style regular expressions are not yet supported.
 	 *
-	 * @param pattern	 pattern	
+	 * @param pattern	pattern
 	 */
 	public void permittedPatternIgnoreCase(String pattern) {
 		this.setOperator(new DBPermittedPatternIgnoreCaseOperator(pattern));
@@ -772,13 +767,13 @@ public class DBString extends QueryableDatatype implements StringResult {
 		}
 		return setToNull();
 	}
-	
+
 	/**
 	 * Returns TRUE if the database value is the empty string or NULL
 	 *
 	 * @return TRUE if the database value is "" or NULL, otherwise FALSE.
 	 */
-	public boolean isEmptyOrNullString(){
-		return isEmptyString()||isNull();
+	public boolean isEmptyOrNullString() {
+		return isEmptyString() || isNull();
 	}
 }

@@ -25,45 +25,52 @@ import javax.sql.DataSource;
  */
 public class H2MemoryDB extends H2DB {
 
-
 	/**
-	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC URL, user and password.
+	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC
+	 * URL, user and password.
 	 *
-	 
-	 
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2MemoryDB(String jdbcURL, String username, String password) throws SQLException {
-        super(jdbcURL, username, password);
-    }
+		super(jdbcURL, username, password);
+	}
+
 	/**
-	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC URL, user and password.
+	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC
+	 * URL, user and password.
 	 *
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param dataSource dataSource
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2MemoryDB(DataSource dataSource) throws SQLException {
-        super(dataSource);
-    }
+		super(dataSource);
+	}
 
 	/**
-	 * Creates a DBDatabase instance for an H2 Memory database with the given database name, user and password.
-	 * 
-	 * <p>
-	 * The dummy parameter is ignored and only used to differentiate between the to 2 constructors.
+	 * Creates a DBDatabase instance for an H2 Memory database with the given
+	 * database name, user and password.
 	 *
-	 
-	 
-	 
-	 
-	  1 Database exceptions may be thrown
+	 * <p>
+	 * The dummy parameter is ignored and only used to differentiate between the
+	 * to 2 constructors.
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param databaseName databaseName
 	 * @param username username
 	 * @param password password
@@ -71,9 +78,9 @@ public class H2MemoryDB extends H2DB {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
-        super("jdbc:h2:mem:" + databaseName, username, password);
-        setDatabaseName(databaseName);
-    }
+		super("jdbc:h2:mem:" + databaseName, username, password);
+		setDatabaseName(databaseName);
+	}
 
 	@Override
 	public H2MemoryDB clone() throws CloneNotSupportedException {

@@ -30,9 +30,10 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 
 /**
- * Represents SQL expressions that are a 2 dimensional path, a series of connected line segments with X and Y coordinates.
- * 
- * 
+ * Represents SQL expressions that are a 2 dimensional path, a series of
+ * connected line segments with X and Y coordinates.
+ *
+ *
  *
  * @author Gregory Graham
  */
@@ -240,10 +241,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 					final NumberExpression minX = first.getMinX();
 					final NumberExpression minY = first.getMinY();
 					return Polygon2DExpression.value(
-							Point2DExpression.value(minX, minY), 
-							Point2DExpression.value(maxX, minY), 
-							Point2DExpression.value(maxX, maxY), 
-							Point2DExpression.value(minX, maxY), 
+							Point2DExpression.value(minX, minY),
+							Point2DExpression.value(maxX, minY),
+							Point2DExpression.value(maxX, maxY),
+							Point2DExpression.value(minX, maxY),
 							Point2DExpression.value(minX, minY)).toSQLString(db);
 				}
 			}

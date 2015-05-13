@@ -27,16 +27,18 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.Polygon2DResult;
 
 /**
- * Represents database columns and values that are a 2 dimensional polygon: an closed ordered set of X and Y values defining a solid shape.
- * 
+ * Represents database columns and values that are a 2 dimensional polygon: an
+ * closed ordered set of X and Y values defining a solid shape.
+ *
  * <p>
- * Use DBPolygon2D when the column is a 2 dimensional {@code Polygon}, {@code ST_Polygon}, or {@code GEOMETRY} that represents a polygon.
+ * Use DBPolygon2D when the column is a 2 dimensional {@code Polygon},
+ * {@code ST_Polygon}, or {@code GEOMETRY} that represents a polygon.
  *
  * <p>
  * Generally DBPolygon2D is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBPolygon2D myPolygonColumn = new DBPolygon2D();}
  *
- * 
+ *
  * @author Gregory Graham
  */
 public class DBPolygon2D extends QueryableDatatype implements TransformRequiredForSelectClause, Polygon2DResult {
@@ -44,8 +46,8 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Create an unset undefined DBPolygon2D object to represent a Polygon column or
-	 * value.
+	 * Create an unset undefined DBPolygon2D object to represent a Polygon column
+	 * or value.
 	 *
 	 */
 	public DBPolygon2D() {
@@ -58,7 +60,7 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	 * Set values are used to add the value to the database. Without a set value
 	 * the database entry will be NULL.
 	 *
-	 * @param polygon  the value to be set in the database.
+	 * @param polygon the value to be set in the database.
 	 */
 	public void setValue(Polygon polygon) {
 		setLiteralValue(polygon);
@@ -66,9 +68,10 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 
 	/**
 	 * Create a DBPolygon2D with the column expression specified.
-	 * 
+	 *
 	 * <p>
-	 * When retrieving this object from the database the expression will be evaluated to provide the value.
+	 * When retrieving this object from the database the expression will be
+	 * evaluated to provide the value.
 	 *
 	 * @param columnExpression
 	 */
@@ -78,11 +81,12 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 
 	/**
 	 * Create DBPolygon2D and set it's value to the JTS {@link  Polygon} provided.
-	 * 
-	 * <p>
-	 * Equivalent to {code polygon2D = new DBPolygon2D(); polygon2D.setValue(aPolygon);}
 	 *
-	 * @param polygon 
+	 * <p>
+	 * Equivalent to {code polygon2D = new DBPolygon2D();
+	 * polygon2D.setValue(aPolygon);}
+	 *
+	 * @param polygon
 	 */
 	public DBPolygon2D(Polygon polygon) {
 		super(polygon);
@@ -119,7 +123,7 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 
 	/**
 	 * Convert the value of this object to a JTS {@link Polygon}.
-	 * 
+	 *
 	 * <p>
 	 * NULL is valid result from this method.
 	 *

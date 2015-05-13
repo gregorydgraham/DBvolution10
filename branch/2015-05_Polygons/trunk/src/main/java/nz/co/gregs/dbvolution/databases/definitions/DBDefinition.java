@@ -2403,7 +2403,6 @@ public abstract class DBDefinition {
 //	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
 //		return "(DATEDIFF('MILLISECOND', " + dateValue + "," + otherDateValue + "))";
 //	}
-	
 	/**
 	 * Create a foreign key clause for use in a CREATE TABLE statement from the
 	 * {@link PropertyWrapper} provided.
@@ -3044,13 +3043,14 @@ public abstract class DBDefinition {
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
 	}
-	
+
 	/**
 	 * Creates a Polygon2D representing the intersection of the Polygon2Ds.
 	 *
 	 * @param firstGeometry
 	 * @param secondGeometry
-	 * @return SQL that represents a polygon of the intersection, null if there is no intersection.
+	 * @return SQL that represents a polygon of the intersection, null if there is
+	 * no intersection.
 	 */
 	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
@@ -3104,8 +3104,10 @@ public abstract class DBDefinition {
 
 	/**
 	 * Tests whether the polygons touch.
-	 * 
-	 * <p>Checks that a) the polygons have at least on point in common and b) that their interiors do not overlap.
+	 *
+	 * <p>
+	 * Checks that a) the polygons have at least on point in common and b) that
+	 * their interiors do not overlap.
 	 *
 	 * @param firstGeometry
 	 * @param secondGeometry
@@ -3520,9 +3522,8 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLine2DNotEqualsTransform(String line2DSQL, String otherLine2DSQL) {
-		return "NOT ("+doLine2DEqualsTransform(line2DSQL, otherLine2DSQL)+ ")";
+		return "NOT (" + doLine2DEqualsTransform(line2DSQL, otherLine2DSQL) + ")";
 	}
-
 
 	/**
 	 * Create the SQL required to get the dimension of this Line2D SQL.

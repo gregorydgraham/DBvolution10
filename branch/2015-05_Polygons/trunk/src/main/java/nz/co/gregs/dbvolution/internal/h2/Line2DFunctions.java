@@ -50,94 +50,93 @@ public enum Line2DFunctions {
 			+ "			} else {\n"
 			+ "				return firstLine.equals(secondLine);\n"
 			+ "			}"),
-	MAXX("DBV_LINE2D_MAXX","Double", "String firstLine", "\n" +
-"			if (firstLine == null) {\n" +
-"				return null;\n" +
-"			} else {\n" +
-"				Double maxX = null;\n" +
-"				String[] split = firstLine.split(\"[ (),]+\");\n" +
-"				for (int i = 1; i < split.length; i += 2) {\n" +
-"					double x = Double.parseDouble(split[i]);\n" +
-"					if (maxX==null || maxX<x){\n" +
-"						maxX = x;\n" +
-"					}\n" +
-"				}\n" +
-"				return maxX;\n" +
-"			}"),
-	MAXY("DBV_LINE2D_MAXY","Double", "String firstLine","\n" +
-"			if (firstLine == null) {\n" +
-"				return null;\n" +
-"			} else {\n" +
-"				Double maxY = null;\n" +
-"				String[] split = firstLine.split(\"[ (),]+\");\n" +
-"				for (int i = 1; i < split.length; i += 2) {\n" +
-"					double y = Double.parseDouble(split[i + 1]);\n" +
-"					if (maxY==null || maxY<y){\n" +
-"						maxY = y;\n" +
-"					}\n" +
-"				}\n" +
-"				return maxY;\n" +
-"			}"),
-	MINX("DBV_LINE2D_MINX","Double", "String firstLine", "\n" +
-"			if (firstLine == null) {\n" +
-"				return null;\n" +
-"			} else {\n" +
-"				Double maxX = null;\n" +
-"				String[] split = firstLine.split(\"[ (),]+\");\n" +
-"				for (int i = 1; i < split.length; i += 2) {\n" +
-"					double x = Double.parseDouble(split[i]);\n" +
-"					if (maxX==null || maxX>x){\n" +
-"						maxX = x;\n" +
-"					}\n" +
-"				}\n" +
-"				return maxX;\n" +
-"			}"),
-	MINY("DBV_LINE2D_MINY","Double", "String firstLine","\n" +
-"			if (firstLine == null) {\n" +
-"				return null;\n" +
-"			} else {\n" +
-"				Double maxY = null;\n" +
-"				String[] split = firstLine.split(\"[ (),]+\");\n" +
-"				for (int i = 1; i < split.length; i += 2) {\n" +
-"					double y = Double.parseDouble(split[i + 1]);\n" +
-"					if (maxY==null || maxY>y){\n" +
-"						maxY = y;\n" +
-"					}\n" +
-"				}\n" +
-"				return maxY;\n" +
-"			}"),
-	BOUNDINGBOX("DBV_LINE2D_BOUNDINGBOX", "String", "String firstLine","\n" +
-"			if (firstLine == null) {\n" +
-"				return null;\n" +
-"			} else {\n" +
-"				Double maxX = null;\n" +
-"				Double maxY = null;\n" +
-"				Double minX = null;\n" +
-"				Double minY = null;\n" +
-"				String[] split = firstLine.split(\"[ (),]+\");\n" +
-"				for (int i = 1; i < split.length; i += 2) {\n" +
-"					double x = Double.parseDouble(split[i]);\n" +
-"					double y = Double.parseDouble(split[i + 1]);\n" +
-"					if (maxX==null || maxX<x){\n" +
-"						maxX = x;\n" +
-"					}\n" +
-"					if (maxY==null || maxY<y){\n" +
-"						maxY = y;\n" +
-"					}\n" +
-"					if (minX==null || minX>x){\n" +
-"						minX = x;\n" +
-"					}\n" +
-"					if (minY==null || minY>y){\n" +
-"						minY = y;\n" +
-"					}\n" +
-"				}\n" +
-"				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n" +
-"				return resultString;\n" +
-"			}"),
-	DIMENSION("DBV_LINE2D_DIMENSION","Integer","String firstLine","return 1;"),
-	ASTEXT("DBV_LINE2D_ASTEXT","String","String firstLine","return firstLine;")
-	;
-	
+	MAXX("DBV_LINE2D_MAXX", "Double", "String firstLine", "\n"
+			+ "			if (firstLine == null) {\n"
+			+ "				return null;\n"
+			+ "			} else {\n"
+			+ "				Double maxX = null;\n"
+			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
+			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "					double x = Double.parseDouble(split[i]);\n"
+			+ "					if (maxX==null || maxX<x){\n"
+			+ "						maxX = x;\n"
+			+ "					}\n"
+			+ "				}\n"
+			+ "				return maxX;\n"
+			+ "			}"),
+	MAXY("DBV_LINE2D_MAXY", "Double", "String firstLine", "\n"
+			+ "			if (firstLine == null) {\n"
+			+ "				return null;\n"
+			+ "			} else {\n"
+			+ "				Double maxY = null;\n"
+			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
+			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "					double y = Double.parseDouble(split[i + 1]);\n"
+			+ "					if (maxY==null || maxY<y){\n"
+			+ "						maxY = y;\n"
+			+ "					}\n"
+			+ "				}\n"
+			+ "				return maxY;\n"
+			+ "			}"),
+	MINX("DBV_LINE2D_MINX", "Double", "String firstLine", "\n"
+			+ "			if (firstLine == null) {\n"
+			+ "				return null;\n"
+			+ "			} else {\n"
+			+ "				Double maxX = null;\n"
+			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
+			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "					double x = Double.parseDouble(split[i]);\n"
+			+ "					if (maxX==null || maxX>x){\n"
+			+ "						maxX = x;\n"
+			+ "					}\n"
+			+ "				}\n"
+			+ "				return maxX;\n"
+			+ "			}"),
+	MINY("DBV_LINE2D_MINY", "Double", "String firstLine", "\n"
+			+ "			if (firstLine == null) {\n"
+			+ "				return null;\n"
+			+ "			} else {\n"
+			+ "				Double maxY = null;\n"
+			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
+			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "					double y = Double.parseDouble(split[i + 1]);\n"
+			+ "					if (maxY==null || maxY>y){\n"
+			+ "						maxY = y;\n"
+			+ "					}\n"
+			+ "				}\n"
+			+ "				return maxY;\n"
+			+ "			}"),
+	BOUNDINGBOX("DBV_LINE2D_BOUNDINGBOX", "String", "String firstLine", "\n"
+			+ "			if (firstLine == null) {\n"
+			+ "				return null;\n"
+			+ "			} else {\n"
+			+ "				Double maxX = null;\n"
+			+ "				Double maxY = null;\n"
+			+ "				Double minX = null;\n"
+			+ "				Double minY = null;\n"
+			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
+			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "					double x = Double.parseDouble(split[i]);\n"
+			+ "					double y = Double.parseDouble(split[i + 1]);\n"
+			+ "					if (maxX==null || maxX<x){\n"
+			+ "						maxX = x;\n"
+			+ "					}\n"
+			+ "					if (maxY==null || maxY<y){\n"
+			+ "						maxY = y;\n"
+			+ "					}\n"
+			+ "					if (minX==null || minX>x){\n"
+			+ "						minX = x;\n"
+			+ "					}\n"
+			+ "					if (minY==null || minY>y){\n"
+			+ "						minY = y;\n"
+			+ "					}\n"
+			+ "				}\n"
+			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n"
+			+ "				return resultString;\n"
+			+ "			}"),
+	DIMENSION("DBV_LINE2D_DIMENSION", "Integer", "String firstLine", "return 1;"),
+	ASTEXT("DBV_LINE2D_ASTEXT", "String", "String firstLine", "return firstLine;");
+
 	private final String functionName;
 	private final String returnType;
 	private final String parameters;

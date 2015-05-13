@@ -20,58 +20,58 @@ import org.junit.Test;
 @SuppressWarnings("unused")
 public class DBRowClassWrapperUsabilityTest {
 
-    private MyExampleTableClass obj = new MyExampleTableClass();
-    private RowDefinitionWrapperFactory factory = new RowDefinitionWrapperFactory();
-    private static DBDatabase database;
+	private MyExampleTableClass obj = new MyExampleTableClass();
+	private RowDefinitionWrapperFactory factory = new RowDefinitionWrapperFactory();
+	private static DBDatabase database;
 
-    @BeforeClass
-    public static void setup() throws SQLException {
-        database = new H2MemoryDB("dbvolutionTest", "", "", false);
-    }
+	@BeforeClass
+	public static void setup() throws SQLException {
+		database = new H2MemoryDB("dbvolutionTest", "", "", false);
+	}
 
-    @Test
-    public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
-        QueryableDatatype qdt = new RowDefinitionClassWrapper(MyExampleTableClass.class)
-                .instanceWrapperFor(obj)
-                .getPropertyByColumn(database, "column1")
-                .getQueryableDatatype();
-    }
+	@Test
+	public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
+		QueryableDatatype qdt = new RowDefinitionClassWrapper(MyExampleTableClass.class)
+				.instanceWrapperFor(obj)
+				.getPropertyByColumn(database, "column1")
+				.getQueryableDatatype();
+	}
 
-    @Test
-    public void easyToGetSpecificPropertyValueOnObjectWhenDoingVerbosely() {
-        RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyExampleTableClass.class);
-        RowDefinitionInstanceWrapper objectWrapper = classWrapper.instanceWrapperFor(obj);
-        PropertyWrapper property = objectWrapper.getPropertyByColumn(database, "column1");
-        if (property != null) {
-            QueryableDatatype qdt = property.getQueryableDatatype();
-            property.setQueryableDatatype(qdt);
-        }
-    }
+	@Test
+	public void easyToGetSpecificPropertyValueOnObjectWhenDoingVerbosely() {
+		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyExampleTableClass.class);
+		RowDefinitionInstanceWrapper objectWrapper = classWrapper.instanceWrapperFor(obj);
+		PropertyWrapper property = objectWrapper.getPropertyByColumn(database, "column1");
+		if (property != null) {
+			QueryableDatatype qdt = property.getQueryableDatatype();
+			property.setQueryableDatatype(qdt);
+		}
+	}
 
-    @Test
-    public void easyToGetInstanceWrapperGivenObject() {
-        RowDefinitionInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
-    }
+	@Test
+	public void easyToGetInstanceWrapperGivenObject() {
+		RowDefinitionInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
+	}
 
-    @Test
-    public void easyToIterateOverPropertiesUsingFactory() {
-        RowDefinitionInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
-        for (PropertyWrapper property : objectWrapper.getPropertyWrappers()) {
-            QueryableDatatype qdt = property.getQueryableDatatype();
-            property.columnName();
-            property.isForeignKey();
-            property.isColumn();
-            objectWrapper.isTable();
-            objectWrapper.tableName();
-        }
-    }
+	@Test
+	public void easyToIterateOverPropertiesUsingFactory() {
+		RowDefinitionInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
+		for (PropertyWrapper property : objectWrapper.getPropertyWrappers()) {
+			QueryableDatatype qdt = property.getQueryableDatatype();
+			property.columnName();
+			property.isForeignKey();
+			property.isColumn();
+			objectWrapper.isTable();
+			objectWrapper.tableName();
+		}
+	}
 
-    @DBTableName("table")
-    public static class MyExampleTableClass extends DBRow {
+	@DBTableName("table")
+	public static class MyExampleTableClass extends DBRow {
 
-        public static final long serialVersionUID = 1L;
-        @DBPrimaryKey
-        @DBColumn("column1")
-        public DBInteger uid = new DBInteger();
-    }
+		public static final long serialVersionUID = 1L;
+		@DBPrimaryKey
+		@DBColumn("column1")
+		public DBInteger uid = new DBInteger();
+	}
 }

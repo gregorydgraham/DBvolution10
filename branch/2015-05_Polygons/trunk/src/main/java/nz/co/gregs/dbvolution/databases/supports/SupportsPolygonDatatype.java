@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.databases.supports;
 
 /**
- * Indicates that this database is known to support or has a reliable extension that
- * supports spatial types.
+ * Indicates that this database is known to support or has a reliable extension
+ * that supports spatial types.
  *
  * <p>
  * Spatial types are not yet an industry standard and often require particular

@@ -109,7 +109,7 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 //					double y = Double.parseDouble(split[i + 1]);
-					if (maxX==null || maxX<x){
+					if (maxX == null || maxX < x) {
 						maxX = x;
 					}
 				}
@@ -132,7 +132,7 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 //					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
-					if (maxY==null || maxY<y){
+					if (maxY == null || maxY < y) {
 						maxY = y;
 					}
 				}
@@ -154,7 +154,7 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 //					double y = Double.parseDouble(split[i + 1]);
-					if (minX==null || minX>x){
+					if (minX == null || minX > x) {
 						minX = x;
 					}
 				}
@@ -177,7 +177,7 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 //					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
-					if (minY==null || minY>y){
+					if (minY == null || minY > y) {
 						minY = y;
 					}
 				}
@@ -210,20 +210,20 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
-					if (maxX==null || maxX<x){
+					if (maxX == null || maxX < x) {
 						maxX = x;
 					}
-					if (maxY==null || maxY<y){
+					if (maxY == null || maxY < y) {
 						maxY = y;
 					}
-					if (minX==null || minX>x){
+					if (minX == null || minX > x) {
 						minX = x;
 					}
-					if (minY==null || minY>y){
+					if (minY == null || minY > y) {
 						minY = y;
 					}
 				}
-				String resultString = "POLYGON ((" + minX+" "+minY + ", " + maxX+" "+minY + ", " + maxX+" "+maxY + ", " + minX+" "+maxY + ", " + minX+" "+minY + "))";
+				String resultString = "POLYGON ((" + minX + " " + minY + ", " + maxX + " " + minY + ", " + maxX + " " + maxY + ", " + minX + " " + maxY + ", " + minX + " " + minY + "))";
 				result(resultString);
 			}
 		}

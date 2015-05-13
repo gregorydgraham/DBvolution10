@@ -78,8 +78,8 @@ public class Polygon2DFunctions {
 		add(connection, MIN_Y, new MinY());
 		add(connection, BOUNDINGBOX, new BoundingBox());
 	}
-	
-	private static void add(java.sql.Connection connection, String functionName, Function function) throws SQLException{
+
+	private static void add(java.sql.Connection connection, String functionName, Function function) throws SQLException {
 		Function.destroy(connection, functionName);
 		Function.create(connection, functionName, function);
 	}

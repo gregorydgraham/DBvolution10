@@ -27,19 +27,21 @@ import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
  */
 public class InformixDB extends DBDatabase {
 
-    private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
+	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
 
 	/**
-	 * Creates  a DBDatabase configured for Informix with the given JDBC URL, username, and password.
-	 * 
+	 * Creates a DBDatabase configured for Informix with the given JDBC URL,
+	 * username, and password.
+	 *
 	 * <p>
 	 * Remember to include the Informix JDBC driver in your classpath.
 	 *
-	 
-	 
-	 
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
@@ -47,28 +49,30 @@ public class InformixDB extends DBDatabase {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
-        super(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
-        // Informix causes problems when using batched statements :(
-        setBatchSQLStatementsWhenPossible(false);
-    }
+		super(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
+		// Informix causes problems when using batched statements :(
+		setBatchSQLStatementsWhenPossible(false);
+	}
+
 	/**
-	 * Creates  a DBDatabase configured for Informix for the given data source.
-	 * 
+	 * Creates a DBDatabase configured for Informix for the given data source.
+	 *
 	 * <p>
 	 * Remember to include the Informix JDBC driver in your classpath.
 	 *
-	 
-	 
-	  1 Database exceptions may be thrown
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
 	 * @param dataSource dataSource
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public InformixDB(DataSource dataSource) throws ClassNotFoundException, SQLException {
-        super(new InformixDBDefinition(), dataSource);
-        // Informix causes problems when using batched statements :(
-        setBatchSQLStatementsWhenPossible(false);
-    }
+		super(new InformixDBDefinition(), dataSource);
+		// Informix causes problems when using batched statements :(
+		setBatchSQLStatementsWhenPossible(false);
+	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {

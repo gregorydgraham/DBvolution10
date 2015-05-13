@@ -126,6 +126,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String getStandardDeviationFunctionName() {
 		return "STDDEV_SAMP";
 	}
+
 	@Override
 	public String doSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
@@ -206,7 +207,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	public boolean supportsArraysNatively() {
 		return false;
 	}
-	
+
 	@Override
 	public String doDBPolygon2DFormatTransform(Polygon geom) {
 		String wktValue = geom.toText();
@@ -296,9 +297,9 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return "PointFromText('POINT (" + xValue+" "+yValue + ")')";
+		return "PointFromText('POINT (" + xValue + " " + yValue + ")')";
 	}
-	
+
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return "Equals(" + firstPoint + ", " + secondPoint + ")";

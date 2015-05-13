@@ -154,7 +154,7 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 		final TableE tableE = new TableE();
 		tableD.uidD.permittedValues(4);
 		tableE.uidE.permittedValues(5);
-		
+
 		Assert.assertThat(tableE.hasConditionsSet(), is(true));
 
 		optionalTables.add(tableA);

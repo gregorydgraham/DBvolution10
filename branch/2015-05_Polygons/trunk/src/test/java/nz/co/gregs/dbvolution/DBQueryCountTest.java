@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
@@ -29,15 +28,15 @@ import org.junit.Test;
  *
  * @author Gregory Graham
  */
-public class DBQueryCountTest extends AbstractTest{
+public class DBQueryCountTest extends AbstractTest {
 
 	public DBQueryCountTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@Test
-	public void simpleCountTest() throws SQLException{
-		
+	public void simpleCountTest() throws SQLException {
+
 		DBQuery dbQuery = database.getDBQuery();
 		CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedValues("TOYOTA");
@@ -58,11 +57,11 @@ public class DBQueryCountTest extends AbstractTest{
 		// make sure it works
 		Long count = dbQuery.count();
 		Assert.assertThat(count, is(2L));
-		
+
 	}
-	
+
 	@Test
-	public void countOtherMarquesTests() throws SQLException{
+	public void countOtherMarquesTests() throws SQLException {
 		DBQuery dbQuery = database.getDBQuery();
 		CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedValues("OTHER");
@@ -71,25 +70,25 @@ public class DBQueryCountTest extends AbstractTest{
 		// make sure it works
 		Long count = dbQuery.count();
 		Assert.assertThat(count, is(16L));
-		
+
 		carCompany.name.permittedValues("Ford");
 		dbQuery.add(new Marque());
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
 		Assert.assertThat(count, is(1L));
-		
+
 		carCompany.name.permittedValues("GENERAL MOTORS");
 		dbQuery.add(new Marque());
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
 		Assert.assertThat(count, is(3L));
-		
+
 	}
-	
+
 	@Test
-	public void countSingleTableTests() throws SQLException{
+	public void countSingleTableTests() throws SQLException {
 		DBQuery dbQuery = database.getDBQuery();
 		CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedValues("OTHER");
@@ -97,24 +96,24 @@ public class DBQueryCountTest extends AbstractTest{
 		// make sure it works
 		Long count = dbQuery.count();
 		Assert.assertThat(count, is(1L));
-		
+
 		carCompany.name.permittedPattern("%O%");
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
 		database.print(dbQuery.getAllRows());
 		Assert.assertThat(count, is(3L));
-		
+
 		carCompany.name.permittedRange("F", "O");
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
 		Assert.assertThat(count, is(2L));
-		
+
 	}
-	
+
 	@Test
-	public void countOuterJoinTests() throws SQLException{
+	public void countOuterJoinTests() throws SQLException {
 		DBQuery dbQuery = database.getDBQuery();
 		CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedValues("OTHER");
@@ -123,10 +122,10 @@ public class DBQueryCountTest extends AbstractTest{
 		// make sure it works
 		Long count = dbQuery.count();
 		Assert.assertThat(count, is(22L));
-		
+
 		dbQuery.addOptional(new CompanyLogo());
 		count = dbQuery.count();
 		Assert.assertThat(count, is(22L));
 	}
-	
+
 }

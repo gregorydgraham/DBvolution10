@@ -206,7 +206,7 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doSubsecondTransform(String dateExpression) {
 		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL))-(CAST(strftime('%S', " + dateExpression + ") as INTEGER)))";
 	}
-	
+
 	@Override
 	public String getGreatestOfFunctionName() {
 		return " MAX "; //To change body of generated methods, choose Tools | Templates.
@@ -462,7 +462,7 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doDBPolygon2DFormatTransform(Polygon geom) {
 		String wktValue = geom.toText();
-		return Polygon2DFunctions.CREATE_FROM_WKTPOLYGON2D+"('" + wktValue + "')";
+		return Polygon2DFunctions.CREATE_FROM_WKTPOLYGON2D + "('" + wktValue + "')";
 	}
 
 	@Override
@@ -497,49 +497,49 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DGetAreaTransform(String polygonSQL) {
-		return Polygon2DFunctions.AREA + "(" + polygonSQL+")";
+		return Polygon2DFunctions.AREA + "(" + polygonSQL + ")";
 	}
 
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String firstGeometry) {
-		return Polygon2DFunctions.EXTERIORRING + "(" + firstGeometry+ ")";
+		return Polygon2DFunctions.EXTERIORRING + "(" + firstGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.EQUALS + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.EQUALS + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.INTERSECTS + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.INTERSECTS + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.CONTAINS + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.CONTAINS + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.DISJOINT + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.DISJOINT + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.OVERLAPS + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.OVERLAPS + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.TOUCHES + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.TOUCHES + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
-		return Polygon2DFunctions.WITHIN + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.WITHIN + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override

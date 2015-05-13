@@ -20,7 +20,9 @@ package nz.co.gregs.dbvolution.expressions;
  * @author gregorygraham
  */
 public interface SpatialExpression {
-	public NumberExpression dimension() ;
+
+	public NumberExpression dimension();
+
 	public Polygon2DExpression boundingBox();
 
 }

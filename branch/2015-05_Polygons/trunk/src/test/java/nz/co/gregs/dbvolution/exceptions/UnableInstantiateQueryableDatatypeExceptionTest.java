@@ -26,7 +26,7 @@ import org.junit.Test;
  * @author gregory.graham
  */
 public class UnableInstantiateQueryableDatatypeExceptionTest {
-	
+
 	public UnableInstantiateQueryableDatatypeExceptionTest() {
 	}
 
@@ -35,8 +35,9 @@ public class UnableInstantiateQueryableDatatypeExceptionTest {
 		AQDT aqdt = new AQDT();
 		QueryableDatatype copy = aqdt.copy();
 	}
-	
-	public class AQDT extends QueryableDatatype{
+
+	public class AQDT extends QueryableDatatype {
+
 		private static final long serialVersionUID = 1L;
 		private final Object undefined = null;
 
@@ -60,5 +61,5 @@ public class UnableInstantiateQueryableDatatypeExceptionTest {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 	}
-	
+
 }

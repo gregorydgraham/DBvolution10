@@ -21,25 +21,25 @@ import java.beans.PropertyEditorSupport;
  *
  * @author Gregory Graham
  */
-public class DBDateEditor  extends PropertyEditorSupport {
+public class DBDateEditor extends PropertyEditorSupport {
 
-    private String format;
+	private String format;
 
-    /**
-     *
+	/**
+	 *
 	 * @param format format
-     */
-    public void setFormat(String format) {
-        this.format = format;
-    }
-    
-    /**
-     *
+	 */
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	/**
+	 *
 	 * @param text text
-     */
-    @Override
-    public void setAsText(String text) {
-        DBDate type = new DBDate(text);
-        setValue(type);
-    }
+	 */
+	@Override
+	public void setAsText(String text) {
+		DBDate type = new DBDate(text);
+		setValue(type);
+	}
 }

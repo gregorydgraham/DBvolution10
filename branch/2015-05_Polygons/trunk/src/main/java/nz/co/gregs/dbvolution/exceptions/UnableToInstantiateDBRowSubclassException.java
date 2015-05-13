@@ -31,8 +31,8 @@ public class UnableToInstantiateDBRowSubclassException extends DBRuntimeExceptio
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * DBvolution needed to create an instance of your DBRow but was unable
-	 * to do so.
+	 * DBvolution needed to create an instance of your DBRow but was unable to do
+	 * so.
 	 *
 	 * <p>
 	 * Please ensure all DBReports have a public, argument-less, default

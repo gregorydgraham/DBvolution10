@@ -99,7 +99,7 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		dbQuery.print();
 		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 	}
-	
+
 	@Test
 	public void testIgnoreForeignKeyUsingColumnProvidersAndADifferentObject() throws SQLException {
 		Marque marque = new Marque();

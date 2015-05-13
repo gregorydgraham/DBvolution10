@@ -130,7 +130,5 @@ public class Oracle11DB extends OracleDB {
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
 	}
-	
-	
 
 }

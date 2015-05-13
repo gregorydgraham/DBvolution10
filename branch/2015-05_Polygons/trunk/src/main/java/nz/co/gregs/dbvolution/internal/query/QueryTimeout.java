@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
  *
  * @author gregory.graham
  */
-public class QueryTimeout extends Timer{
+public class QueryTimeout extends Timer {
 
 	CancelTask task;
 

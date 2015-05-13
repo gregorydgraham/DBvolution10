@@ -26,11 +26,12 @@ public class ForeignKeyDoesNotReferenceATableInTheQuery extends DBRuntimeExcepti
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Creates an exception indicating that the column provided is not a foreign key referenced in the query.
+	 * Creates an exception indicating that the column provided is not a foreign
+	 * key referenced in the query.
 	 *
 	 * @param keyToFollow
 	 */
 	public ForeignKeyDoesNotReferenceATableInTheQuery(ColumnProvider keyToFollow) {
 	}
-	
+
 }

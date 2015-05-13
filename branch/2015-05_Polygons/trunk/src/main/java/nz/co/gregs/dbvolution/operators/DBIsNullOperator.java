@@ -28,7 +28,6 @@ public class DBIsNullOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
 
-
 	@Override
 	public DBIsNullOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
 		return this;

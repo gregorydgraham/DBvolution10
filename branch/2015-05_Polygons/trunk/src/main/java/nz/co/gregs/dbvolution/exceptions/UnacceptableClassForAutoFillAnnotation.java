@@ -19,16 +19,17 @@ import java.lang.reflect.Field;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 
 /**
- * Thrown when the developer has attempted to use a POJO rather than a DBRow in the {@link AutoFillDuringQueryIfPossible} annotation.
+ * Thrown when the developer has attempted to use a POJO rather than a DBRow in
+ * the {@link AutoFillDuringQueryIfPossible} annotation.
  *
  * @author gregorygraham
  */
 public class UnacceptableClassForAutoFillAnnotation extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public UnacceptableClassForAutoFillAnnotation(Field field, Class<?> requiredClass) {
-		super("Unable To AutoFill Given Type: field "+field.getDeclaringClass().getCanonicalName()+"."+field.getName()+" is a "+requiredClass.getCanonicalName()+" but needs to be a DBRow sub-class.");
+		super("Unable To AutoFill Given Type: field " + field.getDeclaringClass().getCanonicalName() + "." + field.getName() + " is a " + requiredClass.getCanonicalName() + " but needs to be a DBRow sub-class.");
 	}
-	
+
 }

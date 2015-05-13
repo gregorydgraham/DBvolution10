@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Represents SQL results that are 2 dimensional paths: a series of connected line segments with X and Y coordinates.
+ * Represents SQL results that are 2 dimensional paths: a series of connected
+ * line segments with X and Y coordinates.
  *
  * @author Gregory Graham
  */
 public interface Line2DResult extends DBExpression, ExpressionCanHaveNullValues {
-	
+
 }

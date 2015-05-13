@@ -78,7 +78,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 
 	/**
 	 * Convert the value of this object to a JTS {@link Point}.
-	 * 
+	 *
 	 * <p>
 	 * NULL is valid result from this method.
 	 *
@@ -90,9 +90,10 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 
 	/**
 	 * Create a DBPoint2D with the column expression specified.
-	 * 
+	 *
 	 * <p>
-	 * When retrieving this object from the database the expression will be evaluated to provide the value.
+	 * When retrieving this object from the database the expression will be
+	 * evaluated to provide the value.
 	 *
 	 * @param columnExpression
 	 */
@@ -102,7 +103,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 
 	/**
 	 * Create DBpoint2D and set it's value to the JTS {@link  Point} provided.
-	 * 
+	 *
 	 * <p>
 	 * Equivalent to {code point2D = new DBPoint2D(); point2D.setValue(aPoint);}
 	 *

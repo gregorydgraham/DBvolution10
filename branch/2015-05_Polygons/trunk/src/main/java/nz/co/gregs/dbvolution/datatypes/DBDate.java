@@ -68,10 +68,10 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Creates a DBDate with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBDate will be set as having the value provided but will
-	 * not be defined in the database.
+	 * The resulting DBDate will be set as having the value provided but will not
+	 * be defined in the database.
 	 *
-	 * @param date	 date	
+	 * @param date	date
 	 */
 	public DBDate(Date date) {
 		super(date);
@@ -85,7 +85,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param dateExpression	 dateExpression	
+	 * @param dateExpression	dateExpression
 	 */
 	public DBDate(DateResult dateExpression) {
 		super(dateExpression);
@@ -95,10 +95,10 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Creates a DBDate with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBDate will be set as having the value provided but will
-	 * not be defined in the database.
+	 * The resulting DBDate will be set as having the value provided but will not
+	 * be defined in the database.
 	 *
-	 
+	 *
 	 */
 	DBDate(Timestamp timestamp) {
 		super(timestamp);
@@ -115,14 +115,14 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Creates a DBDate with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBDate will be set as having the value provided but will
-	 * not be defined in the database.
+	 * The resulting DBDate will be set as having the value provided but will not
+	 * be defined in the database.
 	 *
 	 * <p>
-	 * The string is parsed using {@link Date#parse(java.lang.String) } so
-	 * please ensure your string matches the requirements of that method.
+	 * The string is parsed using {@link Date#parse(java.lang.String) } so please
+	 * ensure your string matches the requirements of that method.
 	 *
-	 
+	 *
 	 */
 	@SuppressWarnings("deprecation")
 	DBDate(String dateAsAString) {
@@ -159,7 +159,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Sets the value of this QDT to the Java Date provided.
 	 *
-	 * @param date	 date	
+	 * @param date	date
 	 */
 	public void setValue(Date date) {
 		super.setLiteralValue(date);
@@ -172,7 +172,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * The date String will be parsed by {@link Date#parse(java.lang.String) }
 	 * so please confirms to the requirements of that method.
 	 *
-	 * @param dateStr	 dateStr	
+	 * @param dateStr	dateStr
 	 */
 	@SuppressWarnings("deprecation")
 	public void setValue(String dateStr) {
@@ -284,10 +284,9 @@ public class DBDate extends QueryableDatatype implements DateResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Date... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -298,7 +297,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(Date... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -308,8 +307,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -386,9 +385,9 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
-	 * return everything except 1 and 2.
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will return
+	 * everything except 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended upwards and
@@ -414,8 +413,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the search. I.e excludedRangeInclusive(1,3) will
-	 * return ..., -1, 0, 4, 5, ... .
+	 * will be included in the search. I.e excludedRangeInclusive(1,3) will return
+	 * ..., -1, 0, 4, 5, ... .
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended upwards and
@@ -441,8 +440,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will
-	 * return ... -1, 0, 1, 3, 4,... but exclude 2.
+	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will return
+	 * ... -1, 0, 1, 3, 4,... but exclude 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended upwards and
@@ -466,10 +465,9 @@ public class DBDate extends QueryableDatatype implements DateResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(DateExpression... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -480,7 +478,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(DateExpression... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -490,8 +488,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -568,9 +566,9 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
-	 * return everything except 1 and 2.
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will return
+	 * everything except 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended upwards and
@@ -596,8 +594,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the search. I.e excludedRangeInclusive(1,3) will
-	 * return everything except 1, 2, and 3.
+	 * will be included in the search. I.e excludedRangeInclusive(1,3) will return
+	 * everything except 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended upwards and
@@ -623,8 +621,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will
-	 * return everything except 2.
+	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will return
+	 * everything except 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended upwards and
@@ -647,8 +645,8 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	}
 
 	/**
-	 * Used internally to decide whether the required query needs to include
-	 * NULL values.
+	 * Used internally to decide whether the required query needs to include NULL
+	 * values.
 	 *
 	 * @return whether the query expression needs to test for NULL.
 	 */
