@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -31,6 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.oracle.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.Polygon2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
@@ -409,5 +411,91 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
 		return StringFunctions.SUBSTRINGAFTER + "(" + fromThis + ", " + afterThis + ")";
+	}
+
+	@Override
+	public String doDBPolygon2DFormatTransform(Polygon geom) {
+		String wktValue = geom.toText();
+		return Polygon2DFunctions.CREATE_WKTPOLY2D + "('" + wktValue + "')";
+	}
+
+	@Override
+	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.MINY + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.MAXY + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.MINX + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.MAXX + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.EXTERIORRING + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetAreaTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.AREA + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetBoundingBoxTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.BOUNDINGBOX + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+		return Polygon2DFunctions.DIMENSION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.WITHIN + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.TOUCHES + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.OVERLAPS + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.DISJOINT + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.CONTAINS + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.INTERSECTS + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.INTERSECTION + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return "("+Polygon2DFunctions.EQUALS + "(" + firstGeometry + ", " + secondGeometry + ")=1)";
 	}
 }

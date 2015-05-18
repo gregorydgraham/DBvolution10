@@ -217,8 +217,13 @@ public class DBPolygonTest extends AbstractTest {
 		database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 
 		Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
-		DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).is(spatial.column(spatial.myfirstgeom)));
+		DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).is(polygon));
 		List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		
+		query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).is(spatial.column(spatial.myfirstgeom)));
+		allRows = query.getAllInstancesOf(spatial);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(0));
 
@@ -729,8 +734,8 @@ public class DBPolygonTest extends AbstractTest {
 //		@DBColumn
 //		DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.myfirstgeom).boundingBox());
 //
-		@DBColumn
-		DBLine2D exteriorRing = new DBLine2D(this.column(this.myfirstgeom).exteriorRing());
+//		@DBColumn
+//		DBLine2D exteriorRing = new DBLine2D(this.column(this.myfirstgeom).exteriorRing());
 	}
 
 }
