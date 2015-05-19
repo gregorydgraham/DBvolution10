@@ -209,11 +209,31 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			}
 		});
 	}
-
+	
+	/**
+	 * Tests whether the polygons touch.
+	 *
+	 * <p>
+	 * Checks that a) the polygons have at least on point in common and b) that
+	 * their interiors do not overlap.
+	 *
+	 * @param rightHandSide
+	 * @return BooleanExpression that returns TRUE if and only if the polygons touch without overlapping
+	 */
 	public BooleanExpression touches(Polygon rightHandSide) {
 		return touches(new DBPolygon2D(rightHandSide));
 	}
 
+	/**
+	 * Tests whether the polygons touch.
+	 *
+	 * <p>
+	 * Checks that a) the polygons have at least on point in common and b) that
+	 * their interiors do not overlap.
+	 *
+	 * @param rightHandSide
+	 * @return BooleanExpression that returns TRUE if and only if the polygons touch without overlapping
+	 */	
 	public BooleanExpression touches(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
