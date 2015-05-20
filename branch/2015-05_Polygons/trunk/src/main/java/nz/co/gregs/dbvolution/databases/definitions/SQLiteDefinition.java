@@ -516,8 +516,8 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.CONTAINS + "(" + firstGeometry + ", " + secondGeometry + ")";
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.CONTAINS_POLYGON2D + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
@@ -540,6 +540,13 @@ public class SQLiteDefinition extends DBDefinition {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
 		return Polygon2DFunctions.WITHIN + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		return Polygon2DFunctions.CONTAINS_POINT2D + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override

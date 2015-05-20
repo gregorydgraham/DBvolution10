@@ -462,7 +462,7 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "      XtoYminusYtoX := sumXtoY - sumYtoX;\n"
 			+ "      everythingDividedBy2 := XtoYminusYtoX / 2;\n"
-			+ "      result := everythingdividedby2;\n"
+			+ "      result := abs(everythingdividedby2);\n"
 			+ "   END IF;\n"
 			+ "\n"
 			+ "   --   END IF;\n"

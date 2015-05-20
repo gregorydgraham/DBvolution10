@@ -480,7 +480,7 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
 		return Polygon2DFunctions.CONTAINS + "(" + firstGeometry + ", " + secondGeometry + ")";	
 	}
 

@@ -50,11 +50,12 @@ public class Polygon2DFunctions {
 	public static String BOUNDINGBOX = "DBV_POLYGON2D_BOUNDINGBOX2D";
 	public static String TOUCHES = "DBV_POLYGON2D_TOUCHES";
 	public static String EXTERIORRING = "DBV_POLYGON2D_EXTERIORRING";
-	public static String CONTAINS = "DBV_POLYGON2D_CONTAINS";
+	public static String CONTAINS_POLYGON2D = "DBV_POLYGON2D_CONTAINS";
 	public static String WITHIN = "DBV_POLYGON2D_WITHIN";
 	public static String OVERLAPS = "DBV_POLYGON2D_OVERLAPS";
 	public static String INTERSECTS = "DBV_POLYGON2D_INTERSECTS";
 	public static String DISJOINT = "DBV_POLYGON2D_DISJOINT";
+	public static String CONTAINS_POINT2D = "DBV_POLYGON2D_CONTAINS_POINT2D";
 
 	private Polygon2DFunctions() {
 	}
@@ -65,7 +66,7 @@ public class Polygon2DFunctions {
 		add(connection, AREA, new Area());
 		add(connection, TOUCHES, new Touches());
 		add(connection, EXTERIORRING, new ExteriorRing());
-		add(connection, CONTAINS, new Contains());
+		add(connection, CONTAINS_POLYGON2D, new Contains());
 		add(connection, WITHIN, new Within());
 		add(connection, OVERLAPS, new Overlaps());
 		add(connection, INTERSECTS, new Intersects());
@@ -77,6 +78,7 @@ public class Polygon2DFunctions {
 		add(connection, MAX_Y, new MaxY());
 		add(connection, MIN_Y, new MinY());
 		add(connection, BOUNDINGBOX, new BoundingBox());
+		add(connection, CONTAINS_POINT2D, new ContainsPoint2D());
 	}
 
 	private static void add(java.sql.Connection connection, String functionName, Function function) throws SQLException {
@@ -453,6 +455,24 @@ public class Polygon2DFunctions {
 		}
 	}
 
+	private static class ContainsPoint2D extends PolygonFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				Polygon poly1 = getPolygon(value_text(0));
+				Point point = getPoint(value_text(1));
+				if (poly1 == null || point == null) {
+					result();
+				} else {
+					result(poly1.contains(point) ? 1 : 0);
+				}
+			} catch (Exception ex) {
+				throw new RuntimeException("Failed To Parse Polygon or Point", ex);
+			}
+		}
+	}
+
 	private static class Within extends PolygonFunction {
 
 		@Override
@@ -536,6 +556,15 @@ public class Polygon2DFunctions {
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Polygon) {
 				return (Polygon) firstGeom;
+			}
+			return null;
+		}
+		
+		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+			WKTReader wktReader = new WKTReader();
+			Geometry firstGeom = wktReader.read(possiblePoly);
+			if (firstGeom instanceof Point) {
+				return (Point) firstGeom;
 			}
 			return null;
 		}

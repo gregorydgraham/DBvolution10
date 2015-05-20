@@ -225,8 +225,13 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
 		return "Contains(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		return "Contains(" + polygon2DSQL+ ", " + point2DSQL + ")";
 	}
 
 	@Override

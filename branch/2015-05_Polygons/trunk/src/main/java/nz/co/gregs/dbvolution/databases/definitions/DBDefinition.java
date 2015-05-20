@@ -3074,7 +3074,7 @@ public abstract class DBDefinition {
 	 * @param secondGeometry
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3121,7 +3121,7 @@ public abstract class DBDefinition {
 	 * Test whether the first polygon is completely within the second polygon.
 	 *
 	 * <p>
-	 * Compare this to {@link #doPolygon2DContainsTransform(java.lang.String, java.lang.String)
+	 * Compare this to {@link #doPolygon2DContainsPolygon2DTransform(java.lang.String, java.lang.String)
 	 * }
 	 *
 	 * @param firstGeometry
@@ -3734,5 +3734,16 @@ public abstract class DBDefinition {
 	 */
 	public boolean supportsStatementIsClosed() {
 		return true;
+	}
+
+	/**
+	 * Generates the SQL to determine whether the first (polygon) argument contains the second point argument.
+	 *
+	 * @param polygon2DSQL
+	 * @param point2DSQL
+	 * @return
+	 */
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

@@ -327,8 +327,13 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.CONTAINS.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.CONTAINS_POLYGON2D.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		return Polygon2DFunctions.CONTAINS_POINT2D.alias() + "(" + polygon2DSQL + ", " + point2DSQL + ")";
 	}
 
 	@Override

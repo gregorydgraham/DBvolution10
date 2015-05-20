@@ -658,8 +658,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
 	@Override
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
 		return "((" + firstGeometry + ").STContains(" + secondGeometry + ")=1)";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		return "((" + polygon2DSQL + ").STContains(" + point2DSQL + ")=1)";
 	}
 
 	/**
@@ -679,7 +684,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * Test whether the first polygon is completely within the second polygon.
 	 *
 	 * <p>
-	 * Compare this to {@link #doPolygon2DContainsTransform(java.lang.String, java.lang.String)
+	 * Compare this to {@link #doPolygon2DContainsPolygon2DTransform(java.lang.String, java.lang.String)
 	 * }
 	 *
 	 * @param firstGeometry

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 
 /**
@@ -109,7 +110,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	public BooleanExpression intersects(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -159,11 +160,29 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 
 	@Override
 	public BooleanExpression is(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
 				return db.getDefinition().doPolygon2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
+	public BooleanExpression contains(Point rightHandSide) {
+		return contains(new Point2DExpression(rightHandSide));
+	}
+
+	public BooleanExpression contains(Point2DResult rightHandSide) {
+		return contains(new Point2DExpression(rightHandSide));
+	}
+
+	public BooleanExpression contains(Point2DExpression rightHandSide) {
+		return new BooleanExpression(new PolygonPointWithBooleanResult(this, rightHandSide) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doPolygon2DContainsPoint2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -173,11 +192,11 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	public BooleanExpression contains(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DContainsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doPolygon2DContainsPolygon2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -187,7 +206,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	public BooleanExpression doesNotIntersect(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -201,7 +220,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	public BooleanExpression overlaps(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -209,7 +228,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			}
 		});
 	}
-	
+
 	/**
 	 * Tests whether the polygons touch.
 	 *
@@ -218,7 +237,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * their interiors do not overlap.
 	 *
 	 * @param rightHandSide
-	 * @return BooleanExpression that returns TRUE if and only if the polygons touch without overlapping
+	 * @return BooleanExpression that returns TRUE if and only if the polygons
+	 * touch without overlapping
 	 */
 	public BooleanExpression touches(Polygon rightHandSide) {
 		return touches(new DBPolygon2D(rightHandSide));
@@ -232,10 +252,11 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * their interiors do not overlap.
 	 *
 	 * @param rightHandSide
-	 * @return BooleanExpression that returns TRUE if and only if the polygons touch without overlapping
-	 */	
+	 * @return BooleanExpression that returns TRUE if and only if the polygons
+	 * touch without overlapping
+	 */
 	public BooleanExpression touches(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -249,7 +270,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	public BooleanExpression within(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new GeometryGeometryWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -358,13 +379,13 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return this.is(geometry).not();
 	}
 
-	private static abstract class GeometryGeometryWithBooleanResult extends BooleanExpression {
+	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {
 
 		private Polygon2DExpression first;
 		private Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
-		GeometryGeometryWithBooleanResult(Polygon2DExpression first, Polygon2DExpression second) {
+		PolygonPolygonWithBooleanResult(Polygon2DExpression first, Polygon2DExpression second) {
 			this.first = first;
 			this.second = second;
 			if (this.second == null || this.second.getIncludesNull()) {
@@ -390,8 +411,78 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		}
 
 		@Override
-		public GeometryGeometryWithBooleanResult copy() {
-			GeometryGeometryWithBooleanResult newInstance;
+		public PolygonPolygonWithBooleanResult copy() {
+			PolygonPolygonWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+	private static abstract class PolygonPointWithBooleanResult extends BooleanExpression {
+
+		private Polygon2DExpression first;
+		private Point2DExpression second;
+		private boolean requiresNullProtection;
+
+		PolygonPointWithBooleanResult(Polygon2DExpression first, Point2DExpression second) {
+			this.first = first;
+			this.second = second;
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		Polygon2DExpression getFirst() {
+			return first;
+		}
+
+		Point2DExpression getSecond() {
+			return second;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public PolygonPointWithBooleanResult copy() {
+			PolygonPointWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
