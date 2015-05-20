@@ -543,7 +543,7 @@ public class Polygon2DFunctions {
 					result(poly1.disjoint(poly2) ? 1 : 0);
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
-				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(Polygon2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
 		}

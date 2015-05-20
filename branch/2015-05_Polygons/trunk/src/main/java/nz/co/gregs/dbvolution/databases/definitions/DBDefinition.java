@@ -3746,4 +3746,8 @@ public abstract class DBDefinition {
 	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	public String doLine2DIntersectsLine2DTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

@@ -588,4 +588,9 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doLine2DGetMinYTransform(String lineSQL) {
 		return Line2DFunctions.GETMINY_FUNCTION + "(" + lineSQL + ")";
 	}
+
+	@Override
+	public String doLine2DIntersectsLine2DTransform(String toSQLString, String toSQLString0) {
+		return Line2DFunctions.INTERSECTS + "(" + toSQLString + ", "+toSQLString0+")";
+	}
 }

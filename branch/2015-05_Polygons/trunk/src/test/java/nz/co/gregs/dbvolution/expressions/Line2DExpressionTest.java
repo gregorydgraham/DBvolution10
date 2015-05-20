@@ -259,6 +259,28 @@ public class Line2DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(3));
 	}
 
+	@Test
+	public void testIntersects() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Coordinate coordinate1 = new Coordinate(1, 2);
+		Coordinate coordinate2 = new Coordinate(1, 3);
+		final Line2DExpression nonCrossingLine = Line2DExpression.value(coordinate1, coordinate2);
+		
+		Coordinate coordinateA = new Coordinate(3, 3);
+		Coordinate coordinateB = new Coordinate(2, 4);
+		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB);
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
 	public static class BoundingBoxTest extends LineTestTable {
 
 		private static final long serialVersionUID = 1L;

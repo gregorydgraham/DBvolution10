@@ -371,4 +371,9 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doLine2DGetMinYTransform(String toSQLString) {
 		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
 	}
+
+	@Override
+	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+		return "Touches((" + firstLine + "), ("+secondLine+"))";
+	}
 }

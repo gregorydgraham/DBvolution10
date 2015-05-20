@@ -295,6 +295,76 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Tests whether this line and the line represented by the points ever cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param points 
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public BooleanExpression intersects(Point... points) {
+		return this.intersects(new Line2DExpression(points));
+	}
+	
+	/**
+	 * Tests whether this line and the line represented by the coordinates ever cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param coords 
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public BooleanExpression intersects(Coordinate... coords) {
+		return this.intersects(new Line2DExpression(coords));
+	}
+	
+	/**
+	 * Tests whether this line and the other line ever cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param lineString 
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public BooleanExpression intersects(LineString lineString) {
+		return this.intersects(new Line2DExpression(lineString));
+	}
+	
+	/**
+	 * Tests whether this line and the other line ever cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param crossingLine
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public BooleanExpression intersects(Line2DResult crossingLine) {
+		return new BooleanExpression(new LineLineWithBooleanResult(this, new Line2DExpression(crossingLine)) {
+			
+			@Override
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLine2DIntersectsLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+	
 	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
 
 		private Line2DExpression first;
