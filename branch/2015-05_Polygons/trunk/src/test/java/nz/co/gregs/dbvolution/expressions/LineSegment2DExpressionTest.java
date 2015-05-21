@@ -217,7 +217,7 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(3));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
 	}
 
 	@Test
@@ -244,7 +244,7 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(1).line_id.intValue(), is(2));
+		Assert.assertThat(allRows.get(1).line_id.intValue(), is(3));
 	}
 
 	@Test

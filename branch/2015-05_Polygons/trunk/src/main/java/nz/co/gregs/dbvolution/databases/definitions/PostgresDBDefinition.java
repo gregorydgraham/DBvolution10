@@ -16,14 +16,12 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKBReader;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
-import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.Line2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
@@ -89,7 +87,7 @@ public class PostgresDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBLine2D) {
 			return " PATH ";
 		} else if (qdt instanceof DBLineSegment2D) {
-			return " LSEG ";
+			return " PATH ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -659,17 +657,19 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
-		String str;
-		Coordinate coord1 = lineSegment.getCoordinate(0);
-		Coordinate coord2 = lineSegment.getCoordinate(1);
-		str = "LSEG (POINT '("+coord1.x+","+coord1.y+")',POINT '("+coord2.x+","+coord2.y+")')";
-		return str;
+		LineString toGeometry = lineSegment.toGeometry(new GeometryFactory());
+		return transformLineStringIntoDatabaseLine2DFormat(toGeometry);
+//		String str;
+//		Coordinate coord1 = lineSegment.getCoordinate(0);
+//		Coordinate coord2 = lineSegment.getCoordinate(1);
+//		str = "LSEG (POINT '("+coord1.x+","+coord1.y+")',POINT '("+coord2.x+","+coord2.y+")')";
+//		return str;
 	}
 
 	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
 		LineSegment lineString = null;
-		if (!lineStringAsString.matches("^ *LSEG.*")) {
+		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
 			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
 			System.out.println(lineStringAsString + " => " + string);
@@ -696,47 +696,42 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
-		return "(("+toSQLString+") ?# ("+toSQLString0+"))";
+		return "ST_INTERSECTS((" + toSQLString + ")::GEOMETRY , (" + toSQLString0 + ")::GEOMETRY)";
 	}
 
 	@Override
 	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
-		return "ST_XMAX("+toSQLString+")";
+		return Line2DFunctions.MAXX+"("+toSQLString+")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMinXTransform(String toSQLString) {
-		return "ST_XMIN("+toSQLString+")";
+		return Line2DFunctions.MINX+"("+toSQLString+")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
-		return "ST_YMAX("+toSQLString+")";
+		return Line2DFunctions.MAXY+"("+toSQLString+")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMinYTransform(String toSQLString) {
-		return "ST_YMIN("+toSQLString+")";
+		return Line2DFunctions.MINY+"("+toSQLString+")";
 	}
 
 	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
-		return "ST_ENVELOPE(("+toSQLString+")::PATH)";
-	}
-
-	@Override
-	public String doLineSegment2DDimensionTransform(String toSQLString) {
-		return "ST_DIMENSION("+toSQLString+")";
+		return Line2DFunctions.BOUNDINGBOX+"(("+toSQLString+")::PATH)";
 	}
 
 	@Override
 	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
-		return "!ST_EQUALS(("+toSQLString+"), ("+toSQLString0+"))";
+		return "(("+toSQLString+"):TEXT <> ("+toSQLString0+")::TEXT)";
 	}
 
 	@Override
 	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
-		return "ST_EQUALS(("+toSQLString+"), ("+toSQLString0+"))";
+		return "(("+toSQLString+")::TEXT = ("+toSQLString0+")::TEXT)";
 	}
 
 	@Override
