@@ -3759,7 +3759,7 @@ public abstract class DBDefinition {
 		Geometry geometry = wktReader.read(lineSegmentAsSQL);
 		if (geometry instanceof LineString) {
 			lineString = (LineString) geometry;
-			if (lineString == null) {
+			if (lineSegmentAsSQL == null) {
 				return null;
 			} else {
 				return new LineSegment(lineString.getCoordinateN(0), lineString.getCoordinateN(1));

@@ -159,7 +159,7 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 
 	@Override
 	public String getSQLDatatype() {
-		return " LINESEGMENT ";
+		return " LINESTRING ";
 	}
 
 	@Override
