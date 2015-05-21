@@ -88,6 +88,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " BOOL[] ";
 		} else if (qdt instanceof DBLine2D) {
 			return " PATH ";
+		} else if (qdt instanceof DBLineSegment2D) {
+			return " LSEG ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -653,6 +655,93 @@ public class PostgresDBDefinition extends DBDefinition {
 		} else {
 			return super.transformToStorableType(columnExpression);
 		}
+	}
+
+	@Override
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
+		String str;
+		Coordinate coord1 = lineSegment.getCoordinate(0);
+		Coordinate coord2 = lineSegment.getCoordinate(1);
+		str = "LSEG (POINT '("+coord1.x+","+coord1.y+")',POINT '("+coord2.x+","+coord2.y+")')";
+		return str;
+	}
+
+	@Override
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
+		LineSegment lineString = null;
+		if (!lineStringAsString.matches("^ *LSEG.*")) {
+			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
+			String[] splits = lineStringAsString.split("[(),]+");
+			System.out.println(lineStringAsString + " => " + string);
+			Coordinate firstCoord = null;
+			List<Coordinate> coords = new ArrayList<Coordinate>();
+			for (int i = 1; i < splits.length - 1; i+=2) {
+				String splitX = splits[i];
+				String splitY = splits[i + 1];
+				System.out.println("COORD: " + splitX + ", " + splitY);
+				final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
+				coords.add(coordinate);
+				if (firstCoord == null) {
+					firstCoord = coordinate;
+				}
+//				i++;
+			}
+			coords.add(firstCoord);
+			lineString = new LineSegment(coords.get(0), coords.get(1));
+		} else {
+			return super.transformDatabaseLineSegment2DValueToJTSLineSegment(lineStringAsString);
+		}
+		return lineString;
+	}
+
+	@Override
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
+		return "(("+toSQLString+") ?# ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
+		return "ST_XMAX("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMinXTransform(String toSQLString) {
+		return "ST_XMIN("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
+		return "ST_YMAX("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMinYTransform(String toSQLString) {
+		return "ST_YMIN("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
+		return "ST_ENVELOPE(("+toSQLString+")::PATH)";
+	}
+
+	@Override
+	public String doLineSegment2DDimensionTransform(String toSQLString) {
+		return "ST_DIMENSION("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
+		return "!ST_EQUALS(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
+		return "ST_EQUALS(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment2DAsTextTransform(String toSQLString) {
+		return "("+toSQLString+")::TEXT";
 	}
 
 }

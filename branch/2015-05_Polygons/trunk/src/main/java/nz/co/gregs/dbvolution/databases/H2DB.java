@@ -24,9 +24,8 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
-import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.internal.h2.*;
 
 /**
@@ -34,7 +33,7 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  *
  * @author Gregory Graham
  */
-public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions {
+public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
 	/**
 	 * Used to hold the database open

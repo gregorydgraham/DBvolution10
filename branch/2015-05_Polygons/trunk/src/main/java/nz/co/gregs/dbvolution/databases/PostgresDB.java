@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
@@ -33,7 +34,7 @@ import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
  *
  * @author Gregory Graham
  */
-public class PostgresDB extends DBDatabase {
+public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
 

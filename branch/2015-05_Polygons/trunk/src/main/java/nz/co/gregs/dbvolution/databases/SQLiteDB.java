@@ -23,6 +23,7 @@ import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
 
 /**
@@ -30,7 +31,7 @@ import nz.co.gregs.dbvolution.internal.sqlite.*;
  *
  * @author Gregory Graham
  */
-public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions {
+public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 

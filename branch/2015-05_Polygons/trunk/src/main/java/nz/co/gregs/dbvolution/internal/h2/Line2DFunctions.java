@@ -135,7 +135,8 @@ public enum Line2DFunctions {
 			+ "				return resultString;\n"
 			+ "			}"),
 	DIMENSION("DBV_LINE2D_DIMENSION", "Integer", "String firstLine", "return 1;"),
-	ASTEXT("DBV_LINE2D_ASTEXT", "String", "String firstLine", "return firstLine;");
+	ASTEXT("DBV_LINE2D_ASTEXT", "String", "String firstLine", "return firstLine;"), 
+	INTERSECTS_LINE2D("DBV_LINE2D_INTERSECTS_LINE2D", "Boolean", "String firstLine, String secondLine", "return null;");
 
 	private final String functionName;
 	private final String returnType;

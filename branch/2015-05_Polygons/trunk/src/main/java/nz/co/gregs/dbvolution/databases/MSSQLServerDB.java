@@ -20,6 +20,7 @@ import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.sqlserver.Line2DFunctions;
 
 /**
@@ -31,7 +32,7 @@ import nz.co.gregs.dbvolution.internal.sqlserver.Line2DFunctions;
  * @author Malcolm Lett
  * @author Gregory Graham
  */
-public class MSSQLServerDB extends DBDatabase {
+public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	/**
 	 * The Microsoft Driver used to connect to MS SQLServer databases.

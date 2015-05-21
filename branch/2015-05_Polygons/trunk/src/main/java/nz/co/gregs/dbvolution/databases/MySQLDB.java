@@ -19,13 +19,14 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 
 /**
  * A DBDatabase tweaked for MySQL databases
  *
  * @author Gregory Graham
  */
-public class MySQLDB extends DBDatabase {
+public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 
