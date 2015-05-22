@@ -400,7 +400,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
-		return doLine2DIntersectsLine2DTransform(toSQLString, toSQLString);
+		return doLine2DIntersectsLine2DTransform(toSQLString, toSQLString0);
 	}
 
 	@Override

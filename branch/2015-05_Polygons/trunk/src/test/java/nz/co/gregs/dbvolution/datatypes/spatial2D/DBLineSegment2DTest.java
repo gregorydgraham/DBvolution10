@@ -79,7 +79,7 @@ public class DBLineSegment2DTest extends AbstractTest{
 	public void testGetSQLDatatype() {
 		System.out.println("getSQLDatatype");
 		DBLineSegment2D instance = new DBLineSegment2D();
-		String expResult = " LINESEGMENT ";
+		String expResult = " LINESTRING ";
 		String result = instance.getSQLDatatype();
 		assertEquals(expResult, result);
 	}
