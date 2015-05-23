@@ -22,7 +22,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum Point2DFunctions {
+public enum Point2DFunctions implements Functions{
 
 	CREATE("DBV_CREATE_POINT2D_FROM_COORDS", "String", "Double x, Double y", "if (x == null || y == null) {\n" + "				return null;\n" + "			} else {\n" + "				return \"POINT (\" + x + \" \" + y + \")\" ;\n" + "	}"),
 	EQUALS("DBV_POINT2D_EQUALS", "Boolean", "String firstPoint, String secondPoint", "			if (firstPoint == null || secondPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				return firstPoint.equals(secondPoint);\n" + "			}"),

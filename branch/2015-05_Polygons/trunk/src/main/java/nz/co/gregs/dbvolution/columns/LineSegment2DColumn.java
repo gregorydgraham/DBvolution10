@@ -19,6 +19,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.LineSegment2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -65,5 +66,9 @@ public class LineSegment2DColumn extends LineSegment2DExpression implements Colu
 	@Override
 	public boolean isPurelyFunctional() {
 		return column.isPurelyFunctional();
+	}
+
+	public BooleanExpression intersection(LineSegment2DExpression crossingLine) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

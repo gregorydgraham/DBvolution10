@@ -99,9 +99,9 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	@Override
 	protected void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
 		DateRepeatFunctions.addFunctions(stmt);
-		Point2D.POINT2D.add(stmt);
-		Line2D.LINE2D.add(stmt);
-		Polygon2D.POLYGON2D.add(stmt);
+//		Point2D.POINT2D.add(stmt);
+		DataTypes.addAll(stmt);
+//		Polygon2D.POLYGON2D.add(stmt);
 	}
 
 	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {

@@ -22,7 +22,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum Polygon2DFunctions {
+public enum Polygon2DFunctions implements Functions {
 
 	CREATE_FROM_WKTPOLYGON2D("String", "String wkt", "return wkt;"),
 	//	GETPOLYGON_FROM_WKTPOLYGON2D("Polygon", "String wkt",
@@ -431,6 +431,7 @@ public enum Polygon2DFunctions {
 		return "DBV_POLYGON2D_" + name();
 	}
 
+	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP ALIAS " + alias() + ";");

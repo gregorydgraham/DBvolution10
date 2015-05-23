@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.expressions;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.Point;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
@@ -78,7 +80,11 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		public DBInteger line_id = new DBInteger();
 
 		@DBColumn("line_col")
-		public DBLineSegment2D line = new DBLineSegment2D();
+		public DBLineSegment2D line = new DBLineSegment2D();		
+		
+		@DBColumn
+		public DBPoint2D getXis2 = new DBPoint2D(this.column(this.line).intersectionWith(3d,3d,2d,4d));
+
 	}
 
 	@Test
@@ -283,6 +289,31 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(0));
 	}
 
+	@Test
+	public void testIntersectionWith() throws SQLException {
+		System.out.println("intersects");
+		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Coordinate coordinate1 = new Coordinate(1, 2);
+		Coordinate coordinate2 = new Coordinate(1, 3);
+		final LineSegment2DExpression nonCrossingLine = LineSegment2DExpression.value(coordinate1, coordinate2);
+		
+		Coordinate coordinateA = new Coordinate(3, 3);
+		Coordinate coordinateB = new Coordinate(2, 4);
+		final LineSegment2DExpression crossingLine = LineSegment2DExpression.value(coordinateA, coordinateB);
+		dbQuery.setBlankQueryAllowed(true);
+		database.print(dbQuery.getAllRows());
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
+		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
 	public static class BoundingBoxTest extends LineSegmentTestTable {
 
 		private static final long serialVersionUID = 1L;
@@ -295,8 +326,6 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 //		public DBNumber getY = new DBNumber(this.column(this.line).getMaxY());
 		@DBColumn
 		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.line).boundingBox());
-//		@DBColumn
-//		public DBBoolean getXis2 = new DBBoolean(this.column(this.line).getMaxX().is(2));
 
 	}
 

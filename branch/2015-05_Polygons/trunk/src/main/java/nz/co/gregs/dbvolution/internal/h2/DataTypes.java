@@ -22,14 +22,17 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum Line2D {
+public enum DataTypes {
 
-	LINE2D("DBV_LINE2D", "VARCHAR(2001)", Line2DFunctions.values());
+	POINT2D("DBV_POINT2D", "VARCHAR(2000)", Point2DFunctions.values()),
+	LINE2D("DBV_LINE2D", "VARCHAR(2001)", Line2DFunctions.values()),
+	LINESEGMENT2D("DBV_LINESEGMENT2D", "VARCHAR(2001)", LineSegment2DFunctions.values()),
+	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values());;
 	private final String datatype;
 	private final String actualType;
-	private final Line2DFunctions[] functions;
+	private final Functions[] functions;
 
-	Line2D(String datatype, String actualType, Line2DFunctions[] functions) {
+	DataTypes(String datatype, String actualType, Functions[] functions) {
 		this.datatype = datatype;
 		this.actualType = actualType;
 		this.functions = functions;
@@ -48,8 +51,14 @@ public enum Line2D {
 		}
 		stmt.execute("CREATE DOMAIN IF NOT EXISTS " + datatype + " AS " + actualType + "; ");
 
-		for (Line2DFunctions function : functions) {
+		for (Functions function : functions) {
 			function.add(stmt);
+		}
+	}
+	
+	public static void addAll(Statement stmt) throws SQLException{
+		for (DataTypes datatype : values()) {
+			datatype.add(stmt);
 		}
 	}
 

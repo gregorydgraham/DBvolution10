@@ -53,6 +53,17 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		initInnerLine(line, line, innerLineString);
 	}
 
+	public LineSegment2DExpression(Double point1x, Double point1y, Double point2x, Double point2y) {
+		LineSegment line = null;
+		if (point1x != null && point1y != null && point2x != null && point2y != null) {
+			line = new LineSegment(point1x, point1y, point2x, point2y);
+			innerLineString = new DBLineSegment2D(line);
+		} else {
+			innerLineString = new DBLineSegment2D(line);
+			nullProtectionRequired= true;
+		}
+	}
+
 	public LineSegment2DExpression(Point point1, Point point2) {
 		LineSegment line = null;
 		if (point1 != null && point2 != null) {
@@ -81,6 +92,10 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 
 	public static LineSegment2DExpression value(Coordinate coord1, Coordinate coord2) {
 		return new LineSegment2DExpression(coord1, coord2);
+	}
+
+	public static LineSegment2DExpression value(Double x1, Double y1, Double x2, Double y2) {
+		return new LineSegment2DExpression(new Coordinate(x1, y1), new Coordinate(x2, y2));
 	}
 
 	public static LineSegment2DExpression value(LineSegment line) {
@@ -284,8 +299,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Tests whether this line and the line represented by the points ever
-	 * cross.
+	 * Tests whether this line and the line represented by the points ever cross.
 	 *
 	 * <p>
 	 * Multiple line segments means it may cross at several points, however this
@@ -369,6 +383,32 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
+	public Point2DExpression intersectionWith(Point point1, Point point2) {
+		return this.intersectionWith(new LineSegment2DExpression(point1, point2));
+	}
+
+	public Point2DExpression intersectionWith(Double point1x, Double point1y, Double point2x, Double point2y) {
+		return this.intersectionWith(new LineSegment2DExpression(point1x, point1y, point2x, point2y));
+	}
+
+	public Point2DExpression intersectionWith(Coordinate coord1, Coordinate coord2) {
+		return this.intersectionWith(new LineSegment2DExpression(coord1, coord2));
+	}
+
+	public Point2DExpression intersectionWith(LineSegment lineString) {
+		return this.intersectionWith(new LineSegment2DExpression(lineString));
+	}
+
+	public Point2DExpression intersectionWith(LineSegment2DResult crossingLine) {
+		return new Point2DExpression(new LineLineWithPointResult(this, new LineSegment2DExpression(crossingLine)) {
+
+			@Override
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLineSegment2DIntersectionPointWithLineSegment2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
 	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
 
 		private LineSegment2DExpression first;
@@ -403,6 +443,77 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		@Override
 		public LineLineWithBooleanResult copy() {
 			LineLineWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class LineLineWithPointResult extends Point2DExpression {
+
+		private LineSegment2DExpression first;
+		private LineSegment2DExpression second;
+		private boolean requiresNullProtection;
+
+		LineLineWithPointResult(LineSegment2DExpression first, LineSegment2DExpression second) {
+			this.first = first;
+			this.second = second;
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		LineSegment2DExpression getFirst() {
+			return first;
+		}
+
+		LineSegment2DExpression getSecond() {
+			return second;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public LineLineWithPointResult copy() {
+			LineLineWithPointResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

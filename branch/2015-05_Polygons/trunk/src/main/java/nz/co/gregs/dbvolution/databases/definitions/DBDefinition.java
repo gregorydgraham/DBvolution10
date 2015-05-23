@@ -3775,7 +3775,7 @@ public abstract class DBDefinition {
 		return "'" + wktValue + "'";
 	}
 
-	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3812,6 +3812,10 @@ public abstract class DBDefinition {
 	}
 
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

@@ -22,7 +22,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum Line2DFunctions {
+public enum Line2DFunctions implements Functions{
 
 	CREATE("DBV_CREATE_LINE2D_FROM_COORDS", "String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
@@ -155,6 +155,7 @@ public enum Line2DFunctions {
 		return functionName;
 	}
 
+	@Override
 	public void add(Statement stmt) throws SQLException {
 //		try {
 //			stmt.execute("DROP ALIAS " + functionName + ";");
