@@ -82,8 +82,8 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		@DBColumn("line_col")
 		public DBLineSegment2D line = new DBLineSegment2D();		
 		
-		@DBColumn
-		public DBPoint2D getXis2 = new DBPoint2D(this.column(this.line).intersectionWith(3d,3d,2d,4d));
+//		@DBColumn
+//		public DBPoint2D getXis2 = new DBPoint2D(this.column(this.line).intersectionWith(3d,3d,2d,4d));
 
 	}
 

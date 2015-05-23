@@ -46,6 +46,7 @@ public class LineSegment2DFunctions {
 	public static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINESEGMENT2D_MIN_Y2D_COORD";
 	public static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINESEGMENT2D_MAX_X2D_COORD";
 	public static String INTERSECTS = "DBV_LINESEGMENT2D_INTERSECTS_LINESEGMENT2D";
+	public static String INTERSECTIONWITH_LINESEGMENT2D = "DBV_LINESEGMENT2D_INTERSECTIONWITH_LINESEGMENT2D";
 
 	private LineSegment2DFunctions() {
 	}
@@ -61,6 +62,7 @@ public class LineSegment2DFunctions {
 		Function.create(connection, GETBOUNDINGBOX_FUNCTION, new GetBoundingBox());
 		Function.create(connection, ASTEXT_FUNCTION, new AsText());
 		Function.create(connection, INTERSECTS, new Intersects());
+		Function.create(connection, INTERSECTIONWITH_LINESEGMENT2D, new IntersectionWith());
 	}
 
 	private static class CreateFromCoords extends PolygonFunction {
@@ -218,6 +220,37 @@ public class LineSegment2DFunctions {
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
+			}
+		}
+	}
+
+	private static class IntersectionWith extends PolygonFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				String firstLineStr = value_text(0);
+				String secondLineStr = value_text(1);
+				if (firstLineStr == null) {
+					result();
+				} else if (secondLineStr == null) {
+					result();
+				} else {
+					LineString firstLine = getLineString(firstLineStr);
+					LineString secondLine = getLineString(secondLineStr);
+					if (firstLine == null || secondLine == null) {
+						result();
+					} else {
+						final Geometry intersectionPoint = firstLine.intersection(secondLine);
+						if (intersectionPoint instanceof Point){
+							result(intersectionPoint.toText());
+						}else
+						result();
+					}
+				}
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite geometry", ex);
 			}
 		}
 	}

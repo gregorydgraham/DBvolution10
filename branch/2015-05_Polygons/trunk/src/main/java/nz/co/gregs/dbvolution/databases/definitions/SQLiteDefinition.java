@@ -675,4 +675,9 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
 		return LineSegment2DFunctions.ASTEXT_FUNCTION+"("+toSQLString+")";
 	}
+	
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
+		return LineSegment2DFunctions.INTERSECTIONWITH_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
 }

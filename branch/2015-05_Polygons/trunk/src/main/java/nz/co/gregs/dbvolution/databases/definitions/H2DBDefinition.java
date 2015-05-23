@@ -415,37 +415,47 @@ public class H2DBDefinition extends DBDefinition {
 		return LineSegment2DFunctions.MAXX+"("+toSQLString+")";
 	}
 
+	@Override
 	public String doLineSegment2DGetMinXTransform(String toSQLString) {
 		return LineSegment2DFunctions.MINX+"("+toSQLString+")";
 	}
 
+	@Override
 	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
 		return LineSegment2DFunctions.MAXY+"("+toSQLString+")";
 	}
 
+	@Override
 	public String doLineSegment2DGetMinYTransform(String toSQLString) {
 		return LineSegment2DFunctions.MINY+"("+toSQLString+")";
 	}
 
+	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
 		return LineSegment2DFunctions.BOUNDINGBOX+"("+toSQLString+")";
 	}
 
+	@Override
 	public String doLineSegment2DDimensionTransform(String toSQLString) {
 		return LineSegment2DFunctions.DIMENSION+"("+toSQLString+")";
 	}
 
+	@Override
 	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
 		return "!"+LineSegment2DFunctions.EQUALS+"(("+toSQLString+"), ("+toSQLString0+"))";
 	}
 
+	@Override
 	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
 		return LineSegment2DFunctions.EQUALS+"(("+toSQLString+"), ("+toSQLString0+"))";
 	}
 
+	@Override
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
 		return LineSegment2DFunctions.ASTEXT+"("+toSQLString+")";
 	}
+	
+	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
 		return LineSegment2DFunctions.INTERSECTIONPOINT_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
 	}

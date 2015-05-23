@@ -53,6 +53,8 @@ public class IncomparableTypeUsedInComparison extends DBRuntimeException {
 	 * Alternatively inform the developers and they will fix it.
 	 *
 	 * @author Gregory Graham
+	 * @param db
+	 * @param genericExpression
 	 */
 	public IncomparableTypeUsedInComparison(DBDatabase db, DBExpression genericExpression) {
 		super("Incomparable Type: " + genericExpression.toSQLString(db) + " is a " + genericExpression.getClass().getSimpleName() + " and is not an equals comparable expression");
