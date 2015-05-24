@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.Line2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
+import nz.co.gregs.dbvolution.internal.sqlite.LineSegment2DFunctions;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard
@@ -737,6 +738,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
 		return "("+toSQLString+")::TEXT";
+	}
+	
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String fisrstLineSegment, String secondLineSegment) {
+		return "ST_PointFROMTEXT(ST_ASTEXT(ST_INTERSECTION((" + fisrstLineSegment + ")::GEOMETRY , (" + secondLineSegment + ")::GEOMETRY)))::POINT";
 	}
 
 }
