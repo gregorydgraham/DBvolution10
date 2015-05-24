@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Timer;
@@ -39,7 +37,7 @@ public class QueryTimeout extends Timer {
 		queryTimeout = new QueryTimeout(new CancelTask(statement));
 		Calendar cal = new GregorianCalendar();
 		cal.add(Calendar.MILLISECOND, timeoutInMilliseconds);
-		System.out.println("SCHEDULING TIMEOUT: " + DateFormat.getDateTimeInstance().format(cal.getTime()));
+//		System.out.println("SCHEDULING TIMEOUT: " + DateFormat.getDateTimeInstance().format(cal.getTime()));
 		queryTimeout.schedule(queryTimeout.task, cal.getTime());
 		return queryTimeout;
 	}
