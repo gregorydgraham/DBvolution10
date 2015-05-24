@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -526,6 +527,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+		return "(" + firstLine + ").STIntersection("+secondLine+")";
+	}
+
+	@Override
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		return "geometry::STGeomFromText ('" + polygon.toText() + "',0)";
 	}
@@ -767,8 +773,73 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * @param polygon2DSQL
 	 * @return SQL
 	 */
+	@Override
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
 		return doPoint2DGetYTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(1))");
+	}
+	
+	@Override
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+		return super.transformDatabaseLineSegment2DValueToJTSLineSegment(lineSegmentAsSQL);
+	}
+
+	@Override
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
+		return super.transformLineSegmentIntoDatabaseLineSegment2DFormat(lineSegment);
+	}
+
+	@Override
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
+		return doLine2DIntersectsLine2DTransform(toSQLString, toSQLString0);
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
+		return doLine2DGetMaxXTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DGetMinXTransform(String toSQLString) {
+		return doLine2DGetMinXTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
+		return doLine2DGetMaxYTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DGetMinYTransform(String toSQLString) {
+		return doLine2DGetMinYTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
+		return doLine2DGetBoundingBoxTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DDimensionTransform(String toSQLString) {
+		return doLine2DDimensionTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
+		return doLine2DNotEqualsTransform(toSQLString, toSQLString0);
+	}
+
+	@Override
+	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
+		return doLine2DEqualsTransform(toSQLString, toSQLString0);
+	}
+
+	@Override
+	public String doLineSegment2DAsTextTransform(String toSQLString) {
+		return doLine2DAsTextTransform(toSQLString);
+	}
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
+		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment,secondLineSegment);
 	}
 
 }
