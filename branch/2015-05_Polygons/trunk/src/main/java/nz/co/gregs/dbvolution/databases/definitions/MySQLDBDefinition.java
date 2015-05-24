@@ -384,6 +384,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	}	
 	
 	@Override
+	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+		return "ST_Intersection((" + firstLine + "), ("+secondLine+"))";
+	}
+	
+	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		LineString line = transformDatabaseLine2DValueToJTSLineString(lineSegmentAsSQL);
 		LineSegment lineSegment = new LineSegment(line.getCoordinateN(0), line.getCoordinateN(1));
@@ -446,6 +451,10 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
 		return doLine2DAsTextTransform(toSQLString);
+	}
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
+		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment,secondLineSegment);
 	}
 
 }

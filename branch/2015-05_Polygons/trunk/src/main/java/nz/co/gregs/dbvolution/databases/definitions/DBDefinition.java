@@ -3761,6 +3761,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
+	 *
+	 * @param firstLine
+	 * @param secondLine
+	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 */
+	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Convert the String object returned by the database into a JTS LineSegment object.
 	 *
 	 * @param lineSegmentAsSQL
@@ -3902,11 +3913,11 @@ public abstract class DBDefinition {
 	/**
 	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
 	 *
-	 * @param fisrstLineSegment
+	 * @param firstLineSegment
 	 * @param secondLineSegment
 	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
 	 */
-	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String fisrstLineSegment, String secondLineSegment) {
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
